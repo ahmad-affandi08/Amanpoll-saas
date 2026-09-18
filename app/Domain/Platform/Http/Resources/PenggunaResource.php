@@ -27,6 +27,7 @@ final class PenggunaResource extends JsonResource
             'UnitOrganisasiId' => $pengguna->UnitOrganisasiId,
             'TerakhirMasukPada' => $pengguna->TerakhirMasukPada?->toIso8601String(),
             'Peran' => PenggunaPeranResource::collection($this->whenLoaded('penggunaPeran')),
+            'Perangkat' => PerangkatPenggunaResource::collection($this->whenLoaded('perangkat')),
             'DibuatPada' => $pengguna->DibuatPada->toIso8601String(),
         ];
     }

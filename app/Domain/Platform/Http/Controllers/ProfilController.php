@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Http\Controllers;
 
 use App\Domain\Platform\Application\Actions\GantiKataSandiSendiri;
+use App\Domain\Platform\Application\Actions\HapusPerangkatSendiri;
 use App\Domain\Platform\Application\Actions\UbahProfilSendiri;
 use App\Domain\Platform\Http\Requests\GantiKataSandiRequest;
 use App\Domain\Platform\Http\Requests\UbahProfilRequest;
 use App\Domain\Platform\Http\Resources\PenggunaResource;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PerangkatPengguna;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,5 +39,12 @@ final class ProfilController extends Controller
         $aksi->jalankan($request->user(), $request->validated()['KataSandiBaru']);
 
         return back()->with('sukses', 'Kata sandi berhasil diganti.');
+    }
+
+    public function hapusPerangkat(Request $request, PerangkatPengguna $perangkat, HapusPerangkatSendiri $aksi): RedirectResponse
+    {
+        $aksi->jalankan($request->user(), $perangkat);
+
+        return back()->with('sukses', 'Perangkat berhasil dihapus.');
     }
 }

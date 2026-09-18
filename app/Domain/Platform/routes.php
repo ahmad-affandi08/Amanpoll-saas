@@ -31,4 +31,5 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
         Route::put('/profil/kata-sandi', [ProfilController::class, 'gantiKataSandi'])->name('profil.kata-sandi');
+        Route::delete('/profil/perangkat/{perangkat}', [ProfilController::class, 'hapusPerangkat'])->name('profil.perangkat.destroy');
     });
