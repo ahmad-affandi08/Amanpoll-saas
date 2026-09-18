@@ -7309,12 +7309,6 @@ parameters:
 			path: app/Domain/Platform/Http/Resources/PeranResource.php
 
 		-
-			message: '#^Method App\\Domain\\Platform\\Http\\Resources\\PeranResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Platform/Http/Resources/PeranResource.php
-
-		-
 			message: '#^Method App\\Domain\\Platform\\Http\\Resources\\PerangkatPenggunaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

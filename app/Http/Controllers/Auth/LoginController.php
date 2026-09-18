@@ -10,12 +10,17 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class LoginController extends Controller
 {
+    private const MAKS_PERCOBAAN = 5;
+    private const DURASI_KUNCI_DETIK = 60;
+
     public function __construct(private readonly KonteksOrganisasi $konteks) {}
 
     public function create(): Response
@@ -31,12 +36,22 @@ final class LoginController extends Controller
             'KataSandi' => ['required', 'string'],
         ]);
 
+        $kunciBatas = $this->kunciBatasPercobaan($request, $data['KodeOrganisasi'], $data['Email']);
+
+        if (RateLimiter::tooManyAttempts($kunciBatas, self::MAKS_PERCOBAAN)) {
+            $detik = RateLimiter::availableIn($kunciBatas);
+            throw ValidationException::withMessages([
+                'Email' => "Terlalu banyak percobaan masuk. Coba lagi dalam {$detik} detik.",
+            ]);
+        }
+
         $organisasi = DB::table('Organisasi')
             ->where('Kode', $data['KodeOrganisasi'])
             ->where('Status', 'Aktif')
             ->first(['Id']);
 
         if (!$organisasi) {
+            RateLimiter::hit($kunciBatas, self::DURASI_KUNCI_DETIK);
             throw ValidationException::withMessages([
                 'Email' => 'Organisasi, email, atau kata sandi tidak sesuai.',
             ]);
@@ -50,16 +65,23 @@ final class LoginController extends Controller
         );
 
         if (!$berhasil) {
+            RateLimiter::hit($kunciBatas, self::DURASI_KUNCI_DETIK);
             $this->konteks->bersihkan();
             throw ValidationException::withMessages([
                 'Email' => 'Organisasi, email, atau kata sandi tidak sesuai.',
             ]);
         }
 
+        RateLimiter::clear($kunciBatas);
         $request->session()->regenerate();
         DB::table('Pengguna')->where('Id', $request->user()->Id)->update(['TerakhirMasukPada' => now()]);
 
         return redirect()->intended(route('dashboard'));
+    }
+
+    private function kunciBatasPercobaan(Request $request, string $kodeOrganisasi, string $email): string
+    {
+        return Str::lower("{$kodeOrganisasi}|{$email}").'|'.$request->ip();
     }
 
     public function destroy(Request $request): RedirectResponse

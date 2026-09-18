@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -71,6 +73,21 @@ final class Pengguna extends Authenticatable
     public function routeNotificationForMail(): ?string
     {
         return $this->Email ?: null;
+    }
+
+    /**
+     * Pengguna sengaja tidak memakai MilikOrganisasi (lihat ADR 0002) supaya
+     * resolusi user oleh guard autentikasi tidak butuh konteks organisasi
+     * yang belum ada. Tapi route model binding admin (mis. /pengguna/{pengguna})
+     * tetap wajib tenant-aware, jadi discope eksplisit di sini -- method ini
+     * tidak dipakai oleh EloquentUserProvider::retrieveById().
+     */
+    public function resolveRouteBinding($value, $field = null): ?Model
+    {
+        return static::query()
+            ->where('OrganisasiId', app(KonteksOrganisasi::class)->id())
+            ->where($field ?? $this->getRouteKeyName(), $value)
+            ->first();
     }
 
     public function organisasi(): BelongsTo

@@ -7,6 +7,7 @@ namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Peran extends ModelDasar
@@ -42,4 +43,19 @@ final class Peran extends ModelDasar
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return HasMany<PenggunaPeran, $this>
+     */
+    public function penggunaPeran(): HasMany
+    {
+        return $this->hasMany(PenggunaPeran::class, 'PeranId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PeranIzin, $this>
+     */
+    public function peranIzin(): HasMany
+    {
+        return $this->hasMany(PeranIzin::class, 'PeranId', 'Id');
+    }
 }
