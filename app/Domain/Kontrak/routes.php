@@ -1,0 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['web', 'auth', 'organisasi'])
+    ->prefix('kontrak')
+    ->name('kontrak.')
+    ->group(function (): void {
+        // Route domain Kontrak. Aktifkan hanya endpoint yang sudah memiliki policy/use-case.
+    });

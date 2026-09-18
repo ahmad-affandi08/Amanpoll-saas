@@ -1,0 +1,1 @@
+export type IdDaftarPeriksa = string;

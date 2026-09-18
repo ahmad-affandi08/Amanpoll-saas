@@ -1,0 +1,9 @@
+# hPanel -> Website -> Kelola/Dashboard -> Cron Jobs -> Custom
+# Jadwal: setiap menit. hPanel menampilkan jadwal cron dalam UTC, tetapi Laravel
+# menangani timezone task harian melalui konfigurasi Amanpoll.
+#
+# Gunakan file .sh supaya command hPanel tidak perlu redirect/special character:
+/bin/sh /home/u123456789/domains/domain-anda.tld/amanpoll/deploy/niagahoster/cron.sh
+
+# Jika CLI website memakai PHP 8.4, edit PHP_BIN di cron.sh menjadi:
+# /opt/alt/php84/usr/bin/php
