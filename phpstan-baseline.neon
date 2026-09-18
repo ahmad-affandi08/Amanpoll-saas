@@ -7273,20 +7273,8 @@ parameters:
 			path: app/Domain/Platform/Http/Resources/PenggunaPeranResource.php
 
 		-
-			message: '#^Method App\\Domain\\Platform\\Http\\Resources\\PenggunaPeranResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Platform/Http/Resources/PenggunaPeranResource.php
-
-		-
 			message: '#^Method App\\Domain\\Platform\\Http\\Resources\\PenggunaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Platform/Http/Resources/PenggunaResource.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Http\\Resources\\PenggunaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Platform/Http/Resources/PenggunaResource.php
 
@@ -7449,36 +7437,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Platform/Infrastructure/Persistence/Models/PenggunaPeran.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Infrastructure\\Persistence\\Models\\PenggunaPeran\:\:lokasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Platform/Infrastructure/Persistence/Models/PenggunaPeran.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Infrastructure\\Persistence\\Models\\PenggunaPeran\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Platform/Infrastructure/Persistence/Models/PenggunaPeran.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Infrastructure\\Persistence\\Models\\PenggunaPeran\:\:pengguna\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Platform/Infrastructure/Persistence/Models/PenggunaPeran.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Infrastructure\\Persistence\\Models\\PenggunaPeran\:\:peran\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Platform/Infrastructure/Persistence/Models/PenggunaPeran.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Infrastructure\\Persistence\\Models\\PenggunaPeran\:\:unitOrganisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Platform/Infrastructure/Persistence/Models/PenggunaPeran.php
 

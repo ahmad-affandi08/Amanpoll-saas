@@ -35,26 +35,41 @@ final class PenggunaPeran extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Pengguna, $this>
+     */
     public function pengguna(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PenggunaId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Peran, $this>
+     */
     public function peran(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Peran::class, 'PeranId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<UnitOrganisasi, $this>
+     */
     public function unitOrganisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Lokasi, $this>
+     */
     public function lokasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'LokasiId', 'Id');

@@ -6,3 +6,4 @@ parameters:
   paths:
     - app
   level: 7
+  parseModelCastsMethod: true

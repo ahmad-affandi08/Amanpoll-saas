@@ -8,6 +8,7 @@ use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -100,4 +101,19 @@ final class Pengguna extends Authenticatable
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
+    /**
+     * @return HasMany<PenggunaPeran, $this>
+     */
+    public function penggunaPeran(): HasMany
+    {
+        return $this->hasMany(PenggunaPeran::class, 'PenggunaId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PerangkatPengguna, $this>
+     */
+    public function perangkat(): HasMany
+    {
+        return $this->hasMany(PerangkatPengguna::class, 'PenggunaId', 'Id');
+    }
 }
