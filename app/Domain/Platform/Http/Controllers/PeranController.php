@@ -28,6 +28,7 @@ final class PeranController extends Controller
 
         $peran = Peran::query()
             ->withCount(['penggunaPeran', 'peranIzin'])
+            ->with('peranIzin')
             ->when($kataCari !== '', fn ($query) => $query->where('Nama', 'like', "%{$kataCari}%"))
             ->orderBy('Nama')
             ->paginate(15)

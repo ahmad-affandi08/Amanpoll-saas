@@ -1,6 +1,8 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import type { PageProps } from '@/types/global';
+import { useIzin } from '@/hooks/use-izin';
+import { Button } from '@/components/ui/button';
 
 const menu = [
   ['Dashboard', '/'], ['Aset', '/aset'], ['Perintah Kerja', '/pemeliharaan'],
@@ -8,25 +10,50 @@ const menu = [
   ['Pengadaan', '/perencanaan-pengadaan'], ['Laporan', '/pelaporan'],
 ];
 
+const menuAdministrasi: Array<[string, string, string | null]> = [
+  ['Pengguna', '/platform/pengguna', 'Pengguna.Kelola'],
+  ['Peran & Izin', '/platform/peran', 'Pengguna.Kelola'],
+  ['Kunci API', '/platform/kunci-api', 'Integrasi.Kelola'],
+  ['Profil', '/platform/profil', null],
+];
+
 export default function AppLayout({ children }: PropsWithChildren) {
   const { auth } = usePage<PageProps>().props;
+  const { boleh } = useIzin();
+  const keluar = () => router.post('/logout');
+
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-background">
       <div className="flex min-h-screen">
-        <aside className="hidden w-64 border-r bg-white p-5 lg:block">
-          <div className="mb-8 text-xl font-semibold">Amanpoll</div>
+        <aside className="hidden w-64 border-r border-border bg-card p-5 lg:block">
+          <div className="mb-8 text-xl font-semibold text-foreground">Amanpoll</div>
           <nav className="space-y-1">
             {menu.map(([label, href]) => (
-              <Link key={href} href={href} className="block rounded-md px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100">
+              <Link key={href} href={href} className="block rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground">
                 {label}
               </Link>
             ))}
           </nav>
+          <div className="mt-6 border-t border-border pt-4">
+            <p className="mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">Administrasi</p>
+            <nav className="space-y-1">
+              {menuAdministrasi
+                .filter(([, , kodeIzin]) => kodeIzin === null || boleh(kodeIzin))
+                .map(([label, href]) => (
+                  <Link key={href} href={href} className="block rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground">
+                    {label}
+                  </Link>
+                ))}
+            </nav>
+          </div>
         </aside>
         <main className="min-w-0 flex-1">
-          <header className="flex h-16 items-center justify-between border-b bg-white px-6">
-            <div className="font-medium">Asset & Maintenance Management</div>
-            <div className="text-sm text-zinc-600">{auth.pengguna?.Nama ?? ''}</div>
+          <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
+            <div className="font-medium text-foreground">Asset & Maintenance Management</div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">{auth.pengguna?.Nama ?? ''}</span>
+              <Button variant="outline" size="sm" onClick={keluar}>Keluar</Button>
+            </div>
           </header>
           <div className="p-6">{children}</div>
         </main>

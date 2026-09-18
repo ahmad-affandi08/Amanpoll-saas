@@ -21,8 +21,10 @@ final class IzinController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $penggunaId = (string) $request->user()->Id;
         abort_unless(
-            $this->pemeriksaIzin->boleh((string) $request->user()->Id, 'Pengguna.Kelola'),
+            $this->pemeriksaIzin->boleh($penggunaId, 'Pengguna.Kelola')
+                || $this->pemeriksaIzin->boleh($penggunaId, 'Integrasi.Kelola'),
             403,
         );
 

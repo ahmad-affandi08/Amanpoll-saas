@@ -10,6 +10,7 @@ use App\Domain\Platform\Application\Actions\UbahStatusPengguna;
 use App\Domain\Platform\Application\DTO\PenggunaData;
 use App\Domain\Platform\Http\Requests\SimpanPenggunaRequest;
 use App\Domain\Platform\Http\Resources\PenggunaResource;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -37,6 +38,7 @@ final class PenggunaController extends Controller
 
         return Inertia::render('Pengguna/Index', [
             'pengguna' => PenggunaResource::collection($pengguna),
+            'peranTersedia' => Peran::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'cari' => $kataCari,
         ]);
     }
