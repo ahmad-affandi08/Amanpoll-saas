@@ -3,9 +3,12 @@
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PastikanMemilikiIzin;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
+use App\Shared\Domain\Exceptions\PengecualianDomain;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,6 +27,18 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Mapping exception domain/API dapat ditambahkan di sini.
+        $exceptions->render(function (PengecualianDomain $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'pesan' => $e->getMessage(),
+                    'kode_error' => $e->kodeError(),
+                ], $e->kodeStatusHttp());
+            }
+
+            return Inertia::render('Error', [
+                'status' => $e->kodeStatusHttp(),
+                'pesan' => $e->getMessage(),
+            ])->toResponse($request)->setStatusCode($e->kodeStatusHttp());
+        });
     })
     ->create();
