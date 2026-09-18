@@ -105,13 +105,19 @@ batasan yang harus diingat setiap kali domain lain query Pengguna langsung
 (mis. daftar teknisi, penanggung jawab aset) — didokumentasikan di sini
 supaya tidak terulang sebagai bug di fase berikutnya.
 
-Relasi FK ke `Pengguna` (mis. `KunciApi.DibuatOleh`) juga **tidak**
-diperiksa oleh `PemeriksaRelasiOrganisasi` (karena `Pengguna` tidak
-memenuhi cek `Schema::hasColumn` khusus yang relevan — tepatnya karena
-target-nya memang tidak divalidasi silang di sini secara umum; integritas
-"penanggung jawab harus user organisasi yang sama" adalah aturan bisnis
-domain spesifik yang akan divalidasi di use-case terkait saat domain itu
-dibangun, bukan di lapisan tenant-isolation generik ini).
+**Koreksi (ditemukan saat implementasi FASE 03, Kunci API):** klaim di atas
+pada draf awal ADR ini — bahwa relasi FK ke `Pengguna` (mis.
+`KunciApi.DibuatOleh`) tidak diperiksa oleh `PemeriksaRelasiOrganisasi` —
+**salah** dan sudah diperbaiki di sini. Guard tersebut membaca metadata FK
+sungguhan dari database (`Schema::getForeignKeys()`) dan hanya melihat
+apakah tabel **tujuan** punya kolom `OrganisasiId` (`Schema::hasColumn`),
+bukan apakah model tujuan memakai trait `MilikOrganisasi`. Tabel `Pengguna`
+sendiri punya kolom `OrganisasiId` (dipakai manual, hanya modelnya yang
+sengaja tidak memakai trait — lihat alasan circular dependency di atas),
+sehingga FK apa pun yang menunjuk ke `Pengguna` — termasuk
+`KunciApi.DibuatOleh` — **tetap diperiksa dan ditolak** kalau menunjuk ke
+pengguna organisasi lain. Dibuktikan
+`RelasiLintasOrganisasiTest::test_menolak_kunci_api_menunjuk_pembuat_milik_organisasi_lain`.
 
 ## 6. Cakupan Test Gate 02.03
 

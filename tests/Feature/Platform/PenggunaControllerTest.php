@@ -74,6 +74,22 @@ class PenggunaControllerTest extends TestCase
         $response->assertSessionHasErrors('Email');
     }
 
+    public function test_pengguna_tanpa_izin_tidak_dapat_melihat_daftar_pengguna(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $biasa = Pengguna::create([
+            'OrganisasiId' => $organisasi->Id,
+            'Nama' => 'Biasa',
+            'Email' => 'biasa@amanpoll.test',
+            'KataSandi' => 'rahasia',
+            'Status' => 'Aktif',
+        ]);
+
+        $response = $this->actingAs($biasa)->get('/platform/pengguna');
+
+        $response->assertForbidden();
+    }
+
     public function test_pengguna_tanpa_izin_tidak_dapat_membuat_pengguna(): void
     {
         $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);

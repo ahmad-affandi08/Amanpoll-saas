@@ -55,6 +55,22 @@ class PeranControllerTest extends TestCase
         $this->assertDatabaseHas('Peran', ['Kode' => 'TEKNISI', 'OrganisasiId' => $organisasi->Id]);
     }
 
+    public function test_pengguna_tanpa_izin_tidak_dapat_melihat_daftar_peran(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $pengguna = Pengguna::create([
+            'OrganisasiId' => $organisasi->Id,
+            'Nama' => 'Biasa',
+            'Email' => 'biasa@amanpoll.test',
+            'KataSandi' => 'rahasia',
+            'Status' => 'Aktif',
+        ]);
+
+        $response = $this->actingAs($pengguna)->get('/platform/peran');
+
+        $response->assertForbidden();
+    }
+
     public function test_pengguna_tanpa_izin_ditolak_membuat_peran(): void
     {
         $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
