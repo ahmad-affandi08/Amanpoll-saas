@@ -99,10 +99,44 @@ yang ditulis di dalam callback yang melempar exception tidak pernah tersimpan.
   total (Persediaan, Procurement, Anggaran, PerintahKerja) di fase
   berikutnya.
 
-## 6. Yang Sengaja Belum Diputuskan di Fase Ini
+## 6. Strategi Migration dan Test Database (Update)
 
-Strategi database untuk automated test terhadap 136 tabel domain (yang
-schema-nya berbasis SQL mentah, bukan migration) belum ditentukan di FASE 01
-karena belum ada domain nyata yang butuh query lintas tabel dalam test.
-Keputusan ini wajib diambil sebelum FASE 02 (multi-organisasi) karena test
-isolasi tenant membutuhkan baris data sungguhan di tabel domain.
+Keputusan yang sempat ditunda di atas sudah diambil: seluruh 136 tabel
+domain + 4 view dikonversi dari `database/schema/Amanpoll_Database_MySQL.sql`
+menjadi migration Laravel (`database/migrations/2026_01_02_*`) lewat
+`tools/generate-migrations.cjs`. Aturan yang berlaku:
+
+- **Migration adalah cara resmi membangun schema** di semua environment
+  (lokal, test, CI, produksi) lewat `php artisan migrate`. SQL mentah di
+  `database/schema/` tetap disimpan sebagai dokumentasi/rujukan yang mudah
+  dibaca dan untuk import cepat satu kali di shared hosting bila diperlukan
+  (lihat `deploy/niagahoster/DEPLOY.md`), tapi **bukan lagi satu-satunya
+  jalan** membuat schema.
+- Kolom, tipe, default, unique key, index, dan foreign key pada migration
+  hasil generate sudah diverifikasi identik dengan hasil import SQL mentah
+  (dibandingkan lewat `SHOW CREATE TABLE` di MySQL/MariaDB sungguhan; 136
+  tabel, 382 foreign key, dan 4 view cocok persis, kecuali nama constraint
+  FK yang memang tidak dipatok di SQL asli).
+  Perbedaan nama constraint FK ini tidak berdampak fungsional.
+- Foreign key didefinisikan **inline** saat `Schema::create()` masing-masing
+  tabel, dalam urutan topological sort dependency graph (bukan dua fase
+  create-lalu-alter) — tidak ditemukan siklus FK di antara 136 tabel
+  domain saat ini. Bila SQL berubah dan menimbulkan siklus, generator akan
+  otomatis menunda FK yang menyebabkan siklus ke migration terpisah
+  (`..._tambah_foreign_key_siklus.php`).
+- Karena berbasis Schema Builder (bukan raw SQL khusus MySQL), migration
+  ini **database-agnostic** dan terbukti jalan bersih di MySQL/MariaDB
+  maupun SQLite. Ini menyelesaikan kebutuhan test database: `phpunit.xml`
+  tetap memakai SQLite in-memory, dan `RefreshDatabase` di test sekarang
+  bisa membangun seluruh schema domain, bukan cuma tabel infrastruktur.
+  Lihat `tests/Feature/Shared/MigrasiSchemaDomainTest.php`.
+- 4 view operasional memakai sintaks MySQL (`TIMESTAMPDIFF`, `CASE`) yang
+  tidak portable ke SQLite; migration view mendeteksi driver koneksi dan
+  di-skip otomatis di luar MySQL — test yang butuh view tersebut wajib
+  dijalankan terhadap MySQL/MariaDB, bukan SQLite.
+- Data seed platform (`Izin` dasar) dipindah dari `INSERT` di SQL mentah ke
+  `database/seeders/IzinSeeder.php` (idempotent lewat `upsert`), karena
+  data bukan bagian dari struktur schema.
+- Bila `Amanpoll_Database_MySQL.sql` berubah, jalankan ulang
+  `node tools/generate-migrations.cjs` untuk membuat ulang seluruh migration
+  tabel domain, lalu review diff sebelum commit.

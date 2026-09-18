@@ -10,12 +10,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('Pengguna') && !Schema::hasColumn('Pengguna', 'TokenIngat')) {
-            Schema::table('Pengguna', function (Blueprint $table): void {
-                $table->string('TokenIngat', 100)->nullable()->after('KataSandi');
-            });
-        }
-
         if (!Schema::hasTable('TokenResetKataSandi')) {
             Schema::create('TokenResetKataSandi', function (Blueprint $table): void {
                 $table->string('email')->primary();
@@ -70,8 +64,5 @@ return new class extends Migration
         Schema::dropIfExists('KelompokAntrianPekerjaan');
         Schema::dropIfExists('AntrianPekerjaan');
         Schema::dropIfExists('TokenResetKataSandi');
-        if (Schema::hasTable('Pengguna') && Schema::hasColumn('Pengguna', 'TokenIngat')) {
-            Schema::table('Pengguna', fn (Blueprint $table) => $table->dropColumn('TokenIngat'));
-        }
     }
 };

@@ -55,7 +55,11 @@ Jika Composer melalui SSH memakai versi PHP berbeda dari website, panggil binary
 
 ## Database utama
 
-Import `database/schema/Amanpoll_Schema_Hosting.sql` satu kali ke database production (phpMyAdmin atau CLI), kemudian jalankan `php artisan migrate --force` untuk tabel infrastruktur Laravel dan migration berikutnya.
+`php artisan migrate --force` (langkah 7 di atas) sudah membangun seluruh schema Amanpoll — 136 tabel domain, 4 view operasional, dan tabel infrastruktur Laravel — langsung dari migration di `database/migrations/`. Tidak perlu import manual SQL untuk instalasi baru.
+
+`database/schema/Amanpoll_Schema_Hosting.sql` tetap disimpan sebagai dokumentasi/rujukan skema yang mudah dibaca dan sebagai jalur alternatif bila suatu saat `php artisan migrate` tidak dapat dijalankan (mis. akses SSH terbatas), dengan tetap menjalankan `php artisan migrate --force` sesudahnya untuk melengkapi tabel infrastruktur Laravel yang tidak ada di file SQL tersebut.
+
+Jalankan `php artisan db:seed --class=Database\\Seeders\\IzinSeeder --force` satu kali untuk mengisi Izin dasar platform.
 
 ## Cron
 

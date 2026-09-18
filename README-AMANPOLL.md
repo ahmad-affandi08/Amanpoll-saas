@@ -17,6 +17,9 @@ Amanpoll adalah platform CMMS / Asset & Maintenance Management multi-industri.
 ```bash
 composer install
 npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
 npm run dev
 php artisan serve
 php artisan queue:work database
@@ -26,4 +29,4 @@ php artisan queue:work database
 
 Lihat `deploy/niagahoster/DEPLOY.md`. Build Vite dibuat sebelum upload/deploy. Production tidak bergantung pada Redis, Horizon, Reverb, Docker, Supervisor, atau Octane.
 
-Schema utama: `database/schema/Amanpoll_Database_MySQL.sql`.
+Schema dibangun lewat `database/migrations/` (`php artisan migrate`), dikonversi dari `database/schema/Amanpoll_Database_MySQL.sql` — file SQL tersebut tetap menjadi rujukan/dokumentasi schema. Lihat `docs/adr/0001-konvensi-dan-shared-foundation.md` bagian 6 untuk detail.
