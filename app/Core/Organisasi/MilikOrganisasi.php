@@ -13,14 +13,18 @@ trait MilikOrganisasi
         static::addGlobalScope(new ScopeOrganisasi());
 
         static::creating(function (Model $model): void {
-            if (!empty($model->OrganisasiId)) {
-                return;
+            if (empty($model->OrganisasiId)) {
+                $konteks = app(KonteksOrganisasi::class);
+                if ($konteks->ada()) {
+                    $model->OrganisasiId = $konteks->wajibId();
+                }
             }
 
-            $konteks = app(KonteksOrganisasi::class);
-            if ($konteks->ada()) {
-                $model->OrganisasiId = $konteks->wajibId();
-            }
+            PemeriksaRelasiOrganisasi::pastikanSeorganisasi($model);
+        });
+
+        static::updating(function (Model $model): void {
+            PemeriksaRelasiOrganisasi::pastikanSeorganisasi($model);
         });
     }
 }
