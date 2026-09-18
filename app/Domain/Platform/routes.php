@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Domain\Platform\Http\Controllers\IzinController;
+use App\Domain\Platform\Http\Controllers\KunciApiController;
 use App\Domain\Platform\Http\Controllers\PenggunaController;
 use App\Domain\Platform\Http\Controllers\PenggunaPeranController;
 use App\Domain\Platform\Http\Controllers\PeranController;
@@ -32,4 +33,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
         Route::put('/profil/kata-sandi', [ProfilController::class, 'gantiKataSandi'])->name('profil.kata-sandi');
         Route::delete('/profil/perangkat/{perangkat}', [ProfilController::class, 'hapusPerangkat'])->name('profil.perangkat.destroy');
+
+        Route::get('/kunci-api', [KunciApiController::class, 'index'])->name('kunci-api.index');
+        Route::post('/kunci-api', [KunciApiController::class, 'store'])->name('kunci-api.store');
+        Route::delete('/kunci-api/{kunciApi}', [KunciApiController::class, 'destroy'])->name('kunci-api.destroy');
     });

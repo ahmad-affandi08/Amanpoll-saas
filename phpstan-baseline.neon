@@ -7225,12 +7225,6 @@ parameters:
 			path: app/Domain/Platform/Http/Resources/KunciApiResource.php
 
 		-
-			message: '#^Method App\\Domain\\Platform\\Http\\Resources\\KunciApiResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Platform/Http/Resources/KunciApiResource.php
-
-		-
 			message: '#^Method App\\Domain\\Platform\\Http\\Resources\\LokasiResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

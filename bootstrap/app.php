@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AutentikasiKunciApi;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\PastikanCakupanKunciApi;
 use App\Http\Middleware\PastikanMemilikiIzin;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
 use App\Shared\Domain\Exceptions\PengecualianDomain;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'organisasi' => TetapkanKonteksOrganisasi::class,
             'izin' => PastikanMemilikiIzin::class,
             'kunci.api' => AutentikasiKunciApi::class,
+            'cakupan.kunci' => PastikanCakupanKunciApi::class,
         ]);
 
         // Konteks organisasi wajib ditetapkan sebelum route model binding di-resolve,
