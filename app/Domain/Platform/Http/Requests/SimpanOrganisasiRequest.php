@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanOrganisasiRequest extends FormRequest
 {
@@ -13,24 +14,23 @@ final class SimpanOrganisasiRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'NamaLegal' => ['nullable'],
-            'JenisUsaha' => ['nullable'],
-            'NomorIdentitasPajak' => ['nullable'],
-            'Email' => ['nullable'],
-            'Telepon' => ['nullable'],
-            'Alamat' => ['nullable'],
-            'Negara' => ['nullable'],
-            'Provinsi' => ['nullable'],
-            'Kota' => ['nullable'],
-            'ZonaWaktu' => ['sometimes'],
-            'LogoUrl' => ['nullable'],
-            'Status' => ['sometimes'],
+            'Nama' => ['required', 'string', 'max:180'],
+            'NamaLegal' => ['nullable', 'string', 'max:220'],
+            'JenisUsaha' => ['nullable', 'string', 'max:100'],
+            'NomorIdentitasPajak' => ['nullable', 'string', 'max:100'],
+            'Email' => ['nullable', 'email', 'max:180'],
+            'Telepon' => ['nullable', 'string', 'max:50'],
+            'Alamat' => ['nullable', 'string'],
+            'Negara' => ['nullable', 'string', 'max:100'],
+            'Provinsi' => ['nullable', 'string', 'max:120'],
+            'Kota' => ['nullable', 'string', 'max:120'],
+            'ZonaWaktu' => ['required', 'string', Rule::in(timezone_identifiers_list())],
         ];
     }
 }

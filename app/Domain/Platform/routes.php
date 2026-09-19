@@ -2,12 +2,19 @@
 
 declare(strict_types=1);
 
+use App\Domain\Platform\Http\Controllers\HariLiburController;
 use App\Domain\Platform\Http\Controllers\IzinController;
+use App\Domain\Platform\Http\Controllers\KategoriLokasiController;
+use App\Domain\Platform\Http\Controllers\KonfigurasiOrganisasiController;
 use App\Domain\Platform\Http\Controllers\KunciApiController;
+use App\Domain\Platform\Http\Controllers\LokasiController;
+use App\Domain\Platform\Http\Controllers\NomorDokumenController;
+use App\Domain\Platform\Http\Controllers\OrganisasiController;
 use App\Domain\Platform\Http\Controllers\PenggunaController;
 use App\Domain\Platform\Http\Controllers\PenggunaPeranController;
 use App\Domain\Platform\Http\Controllers\PeranController;
 use App\Domain\Platform\Http\Controllers\ProfilController;
+use App\Domain\Platform\Http\Controllers\UnitOrganisasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth', 'organisasi'])
@@ -37,4 +44,36 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::get('/kunci-api', [KunciApiController::class, 'index'])->name('kunci-api.index');
         Route::post('/kunci-api', [KunciApiController::class, 'store'])->name('kunci-api.store');
         Route::delete('/kunci-api/{kunciApi}', [KunciApiController::class, 'destroy'])->name('kunci-api.destroy');
+
+        Route::get('/organisasi', [OrganisasiController::class, 'edit'])->name('organisasi.edit');
+        Route::put('/organisasi', [OrganisasiController::class, 'update'])->name('organisasi.update');
+        Route::post('/organisasi/logo', [OrganisasiController::class, 'unggahLogo'])->name('organisasi.logo');
+
+        Route::get('/unit-organisasi', [UnitOrganisasiController::class, 'index'])->name('unit-organisasi.index');
+        Route::post('/unit-organisasi', [UnitOrganisasiController::class, 'store'])->name('unit-organisasi.store');
+        Route::put('/unit-organisasi/{unit}', [UnitOrganisasiController::class, 'update'])->name('unit-organisasi.update');
+        Route::delete('/unit-organisasi/{unit}', [UnitOrganisasiController::class, 'destroy'])->name('unit-organisasi.destroy');
+
+        Route::get('/kategori-lokasi', [KategoriLokasiController::class, 'index'])->name('kategori-lokasi.index');
+        Route::post('/kategori-lokasi', [KategoriLokasiController::class, 'store'])->name('kategori-lokasi.store');
+        Route::put('/kategori-lokasi/{kategoriLokasi}', [KategoriLokasiController::class, 'update'])->name('kategori-lokasi.update');
+        Route::delete('/kategori-lokasi/{kategoriLokasi}', [KategoriLokasiController::class, 'destroy'])->name('kategori-lokasi.destroy');
+
+        Route::get('/lokasi', [LokasiController::class, 'index'])->name('lokasi.index');
+        Route::post('/lokasi', [LokasiController::class, 'store'])->name('lokasi.store');
+        Route::put('/lokasi/{lokasi}', [LokasiController::class, 'update'])->name('lokasi.update');
+        Route::delete('/lokasi/{lokasi}', [LokasiController::class, 'destroy'])->name('lokasi.destroy');
+
+        Route::get('/konfigurasi', [KonfigurasiOrganisasiController::class, 'index'])->name('konfigurasi.index');
+        Route::put('/konfigurasi/{kunci}', [KonfigurasiOrganisasiController::class, 'update'])->name('konfigurasi.update');
+
+        Route::get('/nomor-dokumen', [NomorDokumenController::class, 'index'])->name('nomor-dokumen.index');
+        Route::post('/nomor-dokumen', [NomorDokumenController::class, 'store'])->name('nomor-dokumen.store');
+        Route::put('/nomor-dokumen/{nomorDokumen}', [NomorDokumenController::class, 'update'])->name('nomor-dokumen.update');
+        Route::delete('/nomor-dokumen/{nomorDokumen}', [NomorDokumenController::class, 'destroy'])->name('nomor-dokumen.destroy');
+
+        Route::get('/hari-libur', [HariLiburController::class, 'index'])->name('hari-libur.index');
+        Route::post('/hari-libur', [HariLiburController::class, 'store'])->name('hari-libur.store');
+        Route::put('/hari-libur/{hariLibur}', [HariLiburController::class, 'update'])->name('hari-libur.update');
+        Route::delete('/hari-libur/{hariLibur}', [HariLiburController::class, 'destroy'])->name('hari-libur.destroy');
     });

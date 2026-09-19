@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanLokasiRequest extends FormRequest
 {
@@ -13,22 +16,32 @@ final class SimpanLokasiRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->id();
+        /** @var Lokasi|null $lokasi */
+        $lokasi = $this->route('lokasi');
+        $lokasiId = $lokasi?->Id;
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'UnitOrganisasiId' => ['nullable'],
-            'KategoriLokasiId' => ['nullable'],
-            'IndukId' => ['nullable'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Alamat' => ['nullable'],
-            'Lantai' => ['nullable'],
-            'Latitude' => ['nullable'],
-            'Longitude' => ['nullable'],
-            'ZonaWaktu' => ['nullable'],
-            'Status' => ['sometimes'],
+            'Kode' => ['required', 'string', 'max:60',
+                Rule::unique('Lokasi', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($lokasiId, 'Id')],
+            'Nama' => ['required', 'string', 'max:180'],
+            'UnitOrganisasiId' => ['nullable', 'string',
+                Rule::exists('UnitOrganisasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
+            'KategoriLokasiId' => ['nullable', 'string',
+                Rule::exists('KategoriLokasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
+            'IndukId' => ['nullable', 'string',
+                Rule::exists('Lokasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
+            'Alamat' => ['nullable', 'string'],
+            'Lantai' => ['nullable', 'string', 'max:30'],
+            'Latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'Longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'ZonaWaktu' => ['nullable', 'string', Rule::in(timezone_identifiers_list())],
+            'Status' => ['required', 'string', Rule::in(['Aktif', 'Nonaktif'])],
         ];
     }
 }

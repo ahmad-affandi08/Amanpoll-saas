@@ -45,21 +45,33 @@ final class Lokasi extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<UnitOrganisasi, $this>
+     */
     public function unitOrganisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<KategoriLokasi, $this>
+     */
     public function kategoriLokasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\KategoriLokasi::class, 'KategoriLokasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Lokasi, $this>
+     */
     public function induk(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'IndukId', 'Id');

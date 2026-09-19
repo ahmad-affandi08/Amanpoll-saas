@@ -27,7 +27,7 @@ final class HariLibur extends ModelDasar
     protected function casts(): array
     {
         return [
-            'Tanggal' => 'date',
+            'Tanggal' => 'date:Y-m-d',
             'BerulangTahunan' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
         ];
