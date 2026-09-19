@@ -205,80 +205,74 @@ parameters:
 			path: app/Domain/Aset/Domain/Repositories/RiwayatPenanggungJawabAsetRepository.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanGaransiAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanGaransiAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/GaransiAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanKategoriAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanKategoriAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/KategoriAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanMerekRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanMerekRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/Merek.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanMeterAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanMeterAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/MeterAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanModelAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanModelAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/ModelAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanNilaiAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanNilaiAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/NilaiAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanPembacaanMeterAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanPembacaanMeterAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/PembacaanMeterAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanRelasiAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanRelasiAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/RelasiAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanRiwayatLokasiAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanRiwayatLokasiAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatLokasiAset.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Requests\\SimpanRiwayatPenanggungJawabAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Domain/Aset/Http/Requests/SimpanRiwayatPenanggungJawabAsetRequest.php
+			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatPenanggungJawabAset.php
 
 		-
 			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\AsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Aset/Http/Resources/AsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\AsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Aset/Http/Resources/AsetResource.php
 
@@ -289,20 +283,8 @@ parameters:
 			path: app/Domain/Aset/Http/Resources/GaransiAsetResource.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\GaransiAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Aset/Http/Resources/GaransiAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\KategoriAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Aset/Http/Resources/KategoriAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\KategoriAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Aset/Http/Resources/KategoriAsetResource.php
 
@@ -313,20 +295,8 @@ parameters:
 			path: app/Domain/Aset/Http/Resources/MerekResource.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\MerekResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Aset/Http/Resources/MerekResource.php
-
-		-
 			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\MeterAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Aset/Http/Resources/MeterAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\MeterAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Aset/Http/Resources/MeterAsetResource.php
 
@@ -337,20 +307,8 @@ parameters:
 			path: app/Domain/Aset/Http/Resources/ModelAsetResource.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\ModelAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Aset/Http/Resources/ModelAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\NilaiAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Aset/Http/Resources/NilaiAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\NilaiAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Aset/Http/Resources/NilaiAsetResource.php
 
@@ -361,20 +319,8 @@ parameters:
 			path: app/Domain/Aset/Http/Resources/PembacaanMeterAsetResource.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\PembacaanMeterAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Aset/Http/Resources/PembacaanMeterAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\RelasiAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Aset/Http/Resources/RelasiAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\RelasiAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Aset/Http/Resources/RelasiAsetResource.php
 
@@ -385,298 +331,10 @@ parameters:
 			path: app/Domain/Aset/Http/Resources/RiwayatLokasiAsetResource.php
 
 		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\RiwayatLokasiAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Aset/Http/Resources/RiwayatLokasiAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\RiwayatPenanggungJawabAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Domain/Aset/Http/Resources/RiwayatPenanggungJawabAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Http\\Resources\\RiwayatPenanggungJawabAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Aset/Http/Resources/RiwayatPenanggungJawabAsetResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Aset\:\:dibuatOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Aset\:\:kategoriAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Aset\:\:lokasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Aset\:\:modelAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Aset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Aset\:\:penyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Aset\:\:unitOrganisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Aset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/GaransiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\GaransiAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/GaransiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\GaransiAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/GaransiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\GaransiAset\:\:penyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/GaransiAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/KategoriAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\KategoriAset\:\:induk\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/KategoriAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\KategoriAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/KategoriAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Merek.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\Merek\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/Merek.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/MeterAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\MeterAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/MeterAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\MeterAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/MeterAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/ModelAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\ModelAset\:\:kategoriAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/ModelAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\ModelAset\:\:merek\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/ModelAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\ModelAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/ModelAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/NilaiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\NilaiAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/NilaiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\NilaiAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/NilaiAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/PembacaanMeterAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\PembacaanMeterAset\:\:dicatatOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/PembacaanMeterAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\PembacaanMeterAset\:\:meterAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/PembacaanMeterAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\PembacaanMeterAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/PembacaanMeterAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RelasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RelasiAset\:\:asetAnak\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RelasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RelasiAset\:\:asetInduk\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RelasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RelasiAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RelasiAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatLokasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatLokasiAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatLokasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatLokasiAset\:\:dipindahkanOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatLokasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatLokasiAset\:\:lokasiAsal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatLokasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatLokasiAset\:\:lokasiTujuan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatLokasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatLokasiAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatLokasiAset.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatPenanggungJawabAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatPenanggungJawabAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatPenanggungJawabAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatPenanggungJawabAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatPenanggungJawabAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatPenanggungJawabAset\:\:pengguna\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatPenanggungJawabAset.php
-
-		-
-			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Models\\RiwayatPenanggungJawabAset\:\:unitOrganisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Aset/Infrastructure/Persistence/Models/RiwayatPenanggungJawabAset.php
 
 		-
 			message: '#^Method App\\Domain\\Aset\\Infrastructure\\Persistence\\Repositories\\EloquentAsetRepository\:\:paginasi\(\) return type with generic interface Illuminate\\Contracts\\Pagination\\LengthAwarePaginator does not specify its types\: TKey, TValue$#'

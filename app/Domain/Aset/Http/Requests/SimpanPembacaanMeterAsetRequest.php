@@ -13,16 +13,15 @@ final class SimpanPembacaanMeterAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'MeterAsetId' => ['sometimes'],
-            'Nilai' => ['sometimes'],
-            'DibacaPada' => ['sometimes'],
-            'Sumber' => ['sometimes'],
-            'DicatatOleh' => ['nullable'],
+            'Nilai' => ['required', 'numeric', 'min:0'],
+            'DibacaPada' => ['required', 'date'],
+            'Sumber' => ['nullable', 'string', 'max:40'],
         ];
     }
 }

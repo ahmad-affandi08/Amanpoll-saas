@@ -1,0 +1,119 @@
+import { FormEvent, useMemo, useState } from 'react';
+import { Head, router, useForm } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
+import AppLayout from '@/layouts/AppLayout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+} from '@/components/ui/dialog';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
+import type { Merek } from '@/features/Aset/types';
+
+interface Props {
+  merek: Merek[];
+}
+
+function DialogFormMerek({ merek }: { merek: Merek | null }) {
+  const [buka, setBuka] = useState(false);
+  const form = useForm(merek
+    ? { Nama: merek.Nama, NegaraAsal: merek.NegaraAsal ?? '', Website: merek.Website ?? '' }
+    : { Nama: '', NegaraAsal: '', Website: '' });
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    const opsi = { onSuccess: () => { setBuka(false); if (!merek) form.reset(); } };
+    if (merek) {
+      router.put(`/aset-master/merek/${merek.Id}`, form.data, opsi);
+    } else {
+      router.post('/aset-master/merek', form.data, opsi);
+    }
+  };
+
+  return (
+    <Dialog open={buka} onOpenChange={setBuka}>
+      <DialogTrigger asChild>
+        <Button variant={merek ? 'outline' : 'default'} size={merek ? 'sm' : 'default'}>{merek ? 'Ubah' : 'Tambah Merek'}</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>{merek ? 'Ubah Merek' : 'Tambah Merek'}</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-2">
+            <Label>Nama</Label>
+            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label>Negara Asal</Label>
+            <Input value={form.data.NegaraAsal} onChange={(e) => form.setData('NegaraAsal', e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label>Website</Label>
+            <Input value={form.data.Website} onChange={(e) => form.setData('Website', e.target.value)} placeholder="https://" />
+            {form.errors.Website && <p className="text-sm text-destructive">{form.errors.Website}</p>}
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={form.processing}>Simpan</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default function MerekIndex({ merek }: Props) {
+  const hapus = (item: Merek) => {
+    if (!confirm(`Hapus merek "${item.Nama}"?`)) return;
+    router.delete(`/aset-master/merek/${item.Id}`, { preserveScroll: true });
+  };
+
+  const columns = useMemo<ColumnDef<Merek>[]>(() => [
+    {
+      accessorKey: 'Nama',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+      meta: { label: 'Nama' },
+    },
+    {
+      id: 'NegaraAsal',
+      accessorFn: (row) => row.NegaraAsal ?? '',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Negara Asal" />,
+      cell: ({ row }) => row.original.NegaraAsal ?? '—',
+      meta: { label: 'Negara Asal' },
+    },
+    {
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-2">
+          <DialogFormMerek merek={row.original} />
+          <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    },
+  ], []);
+
+  return (
+    <AppLayout>
+      <Head title="Merek" />
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Merek</h1>
+          <p className="text-sm text-muted-foreground">Katalog merek/produsen untuk model aset.</p>
+        </div>
+        <DialogFormMerek merek={null} />
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={merek}
+        pencarianPlaceholder="Cari nama merek..."
+        pesanKosong="Belum ada merek."
+      />
+    </AppLayout>
+  );
+}

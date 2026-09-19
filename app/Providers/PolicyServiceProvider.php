@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Aset\Http\Policies\AsetPolicy;
+use App\Domain\Aset\Http\Policies\KategoriAsetPolicy;
+use App\Domain\Aset\Http\Policies\MerekPolicy;
+use App\Domain\Aset\Http\Policies\ModelAsetPolicy;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
+use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Domain\IntegrasiAudit\Http\Policies\CatatanAuditPolicy;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
 use App\Domain\Kolaborasi\Http\Policies\BerkasPolicy;
@@ -75,5 +83,9 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(Penyedia::class, PenyediaPolicy::class);
         Gate::policy(KontakPenyedia::class, KontakPenyediaPolicy::class);
         Gate::policy(PenilaianPenyedia::class, PenilaianPenyediaPolicy::class);
+        Gate::policy(KategoriAset::class, KategoriAsetPolicy::class);
+        Gate::policy(Merek::class, MerekPolicy::class);
+        Gate::policy(ModelAset::class, ModelAsetPolicy::class);
+        Gate::policy(Aset::class, AsetPolicy::class);
     }
 }

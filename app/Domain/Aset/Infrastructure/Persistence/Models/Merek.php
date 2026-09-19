@@ -30,6 +30,9 @@ final class Merek extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');

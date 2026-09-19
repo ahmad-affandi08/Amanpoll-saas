@@ -7,6 +7,7 @@ namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class KategoriAset extends ModelDasar
@@ -44,14 +45,28 @@ final class KategoriAset extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<KategoriAset, $this>
+     */
     public function induk(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset::class, 'IndukId', 'Id');
+    }
+
+    /**
+     * @return HasMany<KategoriAset, $this>
+     */
+    public function anak(): HasMany
+    {
+        return $this->hasMany(KategoriAset::class, 'IndukId', 'Id');
     }
 
 }

@@ -13,17 +13,17 @@ final class SimpanNilaiAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'AsetId' => ['sometimes'],
-            'TanggalNilai' => ['sometimes'],
-            'NilaiBuku' => ['sometimes'],
-            'AkumulasiPenyusutan' => ['sometimes'],
-            'BebanPenyusutanPeriode' => ['sometimes'],
-            'Metode' => ['nullable'],
+            'TanggalNilai' => ['required', 'date'],
+            'NilaiBuku' => ['required', 'numeric', 'min:0'],
+            'AkumulasiPenyusutan' => ['nullable', 'numeric', 'min:0'],
+            'BebanPenyusutanPeriode' => ['nullable', 'numeric', 'min:0'],
+            'Metode' => ['nullable', 'string', 'max:40'],
         ];
     }
 }

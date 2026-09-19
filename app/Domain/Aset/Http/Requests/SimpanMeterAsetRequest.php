@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Http\Requests;
 
+use App\Domain\Aset\Infrastructure\Persistence\Models\MeterAset;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanMeterAsetRequest extends FormRequest
 {
@@ -13,17 +15,17 @@ final class SimpanMeterAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'AsetId' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Satuan' => ['sometimes'],
-            'Jenis' => ['sometimes'],
-            'NilaiAwal' => ['sometimes'],
-            'Aktif' => ['sometimes'],
+            'Nama' => ['required', 'string', 'max:120'],
+            'Satuan' => ['required', 'string', 'max:50'],
+            'Jenis' => ['required', 'string', Rule::in([MeterAset::JENIS_KUMULATIF, MeterAset::JENIS_NON_KUMULATIF])],
+            'NilaiAwal' => ['nullable', 'numeric', 'min:0'],
+            'Aktif' => ['boolean'],
         ];
     }
 }

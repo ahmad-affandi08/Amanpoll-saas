@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Aset\Http\Controllers;
+
+use App\Domain\Aset\Application\Actions\BuatModelAset;
+use App\Domain\Aset\Application\Actions\HapusModelAset;
+use App\Domain\Aset\Application\Actions\UbahModelAset;
+use App\Domain\Aset\Http\Requests\SimpanModelAsetRequest;
+use App\Domain\Aset\Http\Resources\KategoriAsetResource;
+use App\Domain\Aset\Http\Resources\MerekResource;
+use App\Domain\Aset\Http\Resources\ModelAsetResource;
+use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
+use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
+
+final class ModelAsetController extends Controller
+{
+    public function index(): Response
+    {
+        $this->authorize('viewAny', ModelAset::class);
+
+        $modelAset = ModelAset::query()->with(['kategoriAset', 'merek'])->orderBy('Nama')->get();
+
+        return Inertia::render('ModelAset/Index', [
+            'modelAset' => ModelAsetResource::collection($modelAset),
+            'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
+            'merek' => MerekResource::collection(Merek::query()->orderBy('Nama')->get()),
+        ]);
+    }
+
+    public function store(SimpanModelAsetRequest $request, BuatModelAset $aksi): RedirectResponse
+    {
+        $this->authorize('create', ModelAset::class);
+
+        $aksi->jalankan($request->validated());
+
+        return back()->with('sukses', 'Model aset berhasil dibuat.');
+    }
+
+    public function update(SimpanModelAsetRequest $request, ModelAset $modelAset, UbahModelAset $aksi): RedirectResponse
+    {
+        $this->authorize('update', $modelAset);
+
+        $aksi->jalankan($modelAset, $request->validated());
+
+        return back()->with('sukses', 'Model aset berhasil diperbarui.');
+    }
+
+    public function destroy(ModelAset $modelAset, HapusModelAset $aksi): RedirectResponse
+    {
+        $this->authorize('delete', $modelAset);
+
+        $aksi->jalankan($modelAset);
+
+        return back()->with('sukses', 'Model aset berhasil dihapus.');
+    }
+}

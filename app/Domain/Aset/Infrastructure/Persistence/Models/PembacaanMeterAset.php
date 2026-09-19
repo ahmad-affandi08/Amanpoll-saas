@@ -34,16 +34,25 @@ final class PembacaanMeterAset extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<MeterAset, $this>
+     */
     public function meterAset(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\MeterAset::class, 'MeterAsetId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna, $this>
+     */
     public function dicatatOleh(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DicatatOleh', 'Id');
