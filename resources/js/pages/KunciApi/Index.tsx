@@ -218,6 +218,7 @@ export default function KunciApiIndex({ kunciApi }: Props) {
         pencarianPlaceholder="Cari nama atau cakupan..."
         facetedFilters={[{ columnId: 'Status', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Dicabut', value: 'Dicabut' }] }]}
         pesanKosong="Belum ada kunci API."
+        ilustrasiKosong="/assets/3d/integrasi.webp"
       />
     </AppLayout>
   );

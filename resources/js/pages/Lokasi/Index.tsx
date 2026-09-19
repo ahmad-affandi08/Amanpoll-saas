@@ -240,6 +240,7 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: 
         pencarianPlaceholder="Cari nama atau kode lokasi..."
         facetedFilters={[{ columnId: 'Status', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Nonaktif', value: 'Nonaktif' }] }]}
         pesanKosong="Belum ada lokasi."
+        ilustrasiKosong="/assets/3d/lokasi.webp"
       />
     </AppLayout>
   );

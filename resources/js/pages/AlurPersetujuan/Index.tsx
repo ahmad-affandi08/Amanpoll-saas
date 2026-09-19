@@ -302,6 +302,7 @@ export default function AlurPersetujuanIndex({ alurPersetujuan, jenisEntitasTers
         pencarianPlaceholder="Cari nama atau kode alur..."
         facetedFilters={[{ columnId: 'Aktif', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Nonaktif', value: 'Nonaktif' }] }]}
         pesanKosong="Belum ada alur persetujuan."
+        ilustrasiKosong="/assets/3d/persetujuan-kepatuhan.webp"
       />
     </AppLayout>
   );

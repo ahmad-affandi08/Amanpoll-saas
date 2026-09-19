@@ -7,6 +7,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DataTableToolbar, FilterFasetKolom } from '@/components/data-table/DataTableToolbar';
 import { DataTablePagination } from '@/components/data-table/DataTablePagination';
+import { EmptyState } from '@/components/shared/EmptyState';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -15,10 +16,11 @@ interface DataTableProps<TData, TValue> {
   facetedFilters?: FilterFasetKolom[];
   aksi?: ReactNode;
   pesanKosong?: string;
+  ilustrasiKosong?: string;
 }
 
 export function DataTable<TData, TValue>({
-  columns, data, pencarianPlaceholder, facetedFilters, aksi, pesanKosong = 'Tidak ada data.',
+  columns, data, pencarianPlaceholder, facetedFilters, aksi, pesanKosong = 'Tidak ada data.', ilustrasiKosong,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -43,7 +45,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-lg border border-border bg-card">
+    <div className="rounded-[9px] border border-border bg-card">
       <DataTableToolbar table={table} pencarianPlaceholder={pencarianPlaceholder} facetedFilters={facetedFilters} aksi={aksi} />
       <Table>
         <TableHeader>
@@ -68,8 +70,8 @@ export function DataTable<TData, TValue>({
               ))
             : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center text-sm text-muted-foreground">
-                    {pesanKosong}
+                  <TableCell colSpan={columns.length} className="p-0">
+                    <EmptyState ilustrasi={ilustrasiKosong} judul={pesanKosong} />
                   </TableCell>
                 </TableRow>
               )}

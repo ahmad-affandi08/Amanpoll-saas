@@ -142,6 +142,7 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi }: Props) {
         data={templatNotifikasi}
         pencarianPlaceholder="Cari kode templat..."
         pesanKosong="Belum ada templat notifikasi."
+        ilustrasiKosong="/assets/3d/notifikasi.webp"
       />
     </AppLayout>
   );

@@ -191,7 +191,7 @@ export default function PeranIzinIndex({ peran }: Props) {
         {bolehKelola && <DialogFormPeran peran={null} />}
       </div>
 
-      <DataTable columns={columns} data={peran} pencarianPlaceholder="Cari nama atau kode peran..." pesanKosong="Belum ada peran." />
+      <DataTable columns={columns} data={peran} pencarianPlaceholder="Cari nama atau kode peran..." pesanKosong="Belum ada peran." ilustrasiKosong="/assets/3d/peran-izin.webp" />
     </AppLayout>
   );
 }

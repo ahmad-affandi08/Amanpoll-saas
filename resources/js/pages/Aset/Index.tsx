@@ -11,6 +11,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
 import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { formatUang } from '@/lib/uang';
 import type { Paginasi } from '@/types/global';
 import type { Aset, FilterAset } from '@/features/Aset/types';
@@ -176,7 +177,13 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
         </form>
 
         {aset.data.length === 0 && (
-          <div className="rounded-[9px] border border-border bg-card p-6 text-center text-sm text-muted-foreground">Belum ada aset.</div>
+          <div className="rounded-[9px] border border-border bg-card">
+            <EmptyState
+              ilustrasi="/assets/3d/aset-qr.webp"
+              judul="Belum ada aset."
+              deskripsi="Aset yang terdaftar akan muncul di sini lengkap dengan lokasi dan status."
+            />
+          </div>
         )}
 
         {/* Mobile: card list (DESIGN.md 20/33 -- tabel lebar tidak dipaksakan ke layar sempit) */}

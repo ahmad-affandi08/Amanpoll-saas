@@ -467,6 +467,7 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
           { columnId: 'NamaKategoriPenyedia', title: 'Kategori', options: kategoriPenyedia.map((k) => ({ label: k.Nama, value: k.Nama })) },
         ]}
         pesanKosong="Belum ada penyedia."
+        ilustrasiKosong="/assets/3d/penyedia-kontrak.webp"
       />
     </AppLayout>
   );

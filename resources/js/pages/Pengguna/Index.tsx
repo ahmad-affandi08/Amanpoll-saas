@@ -248,6 +248,7 @@ export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
           { columnId: 'JenisPengguna', title: 'Jenis', options: [{ label: 'Internal', value: 'Internal' }, { label: 'Eksternal', value: 'Eksternal' }] },
         ]}
         pesanKosong="Belum ada pengguna."
+        ilustrasiKosong="/assets/3d/pengguna.webp"
       />
     </AppLayout>
   );
