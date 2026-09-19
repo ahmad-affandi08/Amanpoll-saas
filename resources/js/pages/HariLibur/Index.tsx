@@ -1,5 +1,6 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { HariLibur } from '@/features/HariLibur/types';
 
 interface Props {
@@ -67,6 +69,43 @@ export default function HariLiburIndex({ hariLibur }: Props) {
     router.delete(`/platform/hari-libur/${libur.Id}`, { preserveScroll: true });
   };
 
+  const columns = useMemo<ColumnDef<HariLibur>[]>(() => [
+    {
+      accessorKey: 'Tanggal',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Tanggal" />,
+      cell: ({ row }) => <span className="font-mono text-sm">{formatTanggal(row.original.Tanggal)}</span>,
+      meta: { label: 'Tanggal' },
+    },
+    {
+      accessorKey: 'Nama',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+      cell: ({ row }) => <span className="font-medium text-foreground">{row.original.Nama}</span>,
+      meta: { label: 'Nama' },
+    },
+    {
+      id: 'BerulangTahunan',
+      accessorFn: (row) => (row.BerulangTahunan ? 'Setiap Tahun' : 'Sekali'),
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Berulang" />,
+      cell: ({ row }) => (row.original.BerulangTahunan
+        ? <Badge variant="secondary">Setiap Tahun</Badge>
+        : <span className="text-sm text-muted-foreground">Sekali</span>),
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+      meta: { label: 'Berulang' },
+    },
+    {
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }) => (
+        <div className="text-right">
+          <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    },
+  ], []);
+
   return (
     <AppLayout>
       <Head title="Hari Libur" />
@@ -78,30 +117,13 @@ export default function HariLiburIndex({ hariLibur }: Props) {
         <DialogTambahHariLibur />
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tanggal</TableHead>
-              <TableHead>Nama</TableHead>
-              <TableHead>Berulang</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {hariLibur.map((libur) => (
-              <TableRow key={libur.Id}>
-                <TableCell className="font-mono text-sm">{formatTanggal(libur.Tanggal)}</TableCell>
-                <TableCell className="font-medium text-foreground">{libur.Nama}</TableCell>
-                <TableCell>{libur.BerulangTahunan ? <Badge variant="secondary">Setiap Tahun</Badge> : <span className="text-sm text-muted-foreground">Sekali</span>}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" onClick={() => hapus(libur)}>Hapus</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={hariLibur}
+        pencarianPlaceholder="Cari nama hari libur..."
+        facetedFilters={[{ columnId: 'BerulangTahunan', title: 'Berulang', options: [{ label: 'Setiap Tahun', value: 'Setiap Tahun' }, { label: 'Sekali', value: 'Sekali' }] }]}
+        pesanKosong="Belum ada hari libur."
+      />
     </AppLayout>
   );
 }

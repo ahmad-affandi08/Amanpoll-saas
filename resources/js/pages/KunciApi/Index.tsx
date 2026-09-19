@@ -1,5 +1,6 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,14 +11,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
-import type { PageProps, Paginasi } from '@/types/global';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
+import type { PageProps } from '@/types/global';
 import type { KunciApi } from '@/features/KunciApi/types';
 import type { KatalogIzin } from '@/features/PeranIzin/types';
 
 interface Props {
-  kunciApi: Paginasi<KunciApi>;
+  kunciApi: KunciApi[];
 }
 
 function DialogTampilkanToken({ token, onTutup }: { token: string; onTutup: () => void }) {
@@ -139,6 +140,66 @@ export default function KunciApiIndex({ kunciApi }: Props) {
     router.delete(`/platform/kunci-api/${item.Id}`, { preserveScroll: true });
   };
 
+  const columns = useMemo<ColumnDef<KunciApi>[]>(() => [
+    {
+      accessorKey: 'Nama',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+      cell: ({ row }) => <span className="font-medium text-foreground">{row.original.Nama}</span>,
+      meta: { label: 'Nama' },
+    },
+    {
+      accessorKey: 'AwalanKunci',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Awalan" />,
+      cell: ({ row }) => <span className="font-mono text-sm">{row.original.AwalanKunci}</span>,
+      meta: { label: 'Awalan' },
+    },
+    {
+      id: 'Cakupan',
+      header: 'Cakupan',
+      accessorFn: (row) => (row.Cakupan ?? []).join(', '),
+      cell: ({ row }) => (
+        <div className="flex flex-wrap gap-1">
+          {(row.original.Cakupan ?? []).length === 0
+            ? <span className="text-sm text-muted-foreground">Akses Penuh</span>
+            : row.original.Cakupan?.map((c) => <Badge key={c} variant="secondary">{c}</Badge>)}
+        </div>
+      ),
+      enableSorting: false,
+      meta: { label: 'Cakupan' },
+    },
+    {
+      accessorKey: 'Status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+      cell: ({ row }) => <Badge variant={row.original.Status === 'Aktif' ? 'default' : 'outline'}>{row.original.Status}</Badge>,
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+      meta: { label: 'Status' },
+    },
+    {
+      accessorKey: 'TerakhirDipakaiPada',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Terakhir Dipakai" />,
+      cell: ({ row }) => (
+        <span className="text-sm text-muted-foreground">
+          {row.original.TerakhirDipakaiPada ? new Date(row.original.TerakhirDipakaiPada).toLocaleString('id-ID') : 'Belum pernah'}
+        </span>
+      ),
+      meta: { label: 'Terakhir Dipakai' },
+    },
+    {
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }) => (
+        <div className="text-right">
+          {row.original.Status === 'Aktif' && (
+            <Button variant="ghost" size="sm" onClick={() => cabut(row.original)}>Cabut</Button>
+          )}
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    },
+  ], []);
+
   return (
     <AppLayout>
       <Head title="Kunci API" />
@@ -151,47 +212,13 @@ export default function KunciApiIndex({ kunciApi }: Props) {
         <DialogBuatKunci />
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama</TableHead>
-              <TableHead>Awalan</TableHead>
-              <TableHead>Cakupan</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Terakhir Dipakai</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {kunciApi.data.map((item) => (
-              <TableRow key={item.Id}>
-                <TableCell className="font-medium text-foreground">{item.Nama}</TableCell>
-                <TableCell className="font-mono text-sm">{item.AwalanKunci}</TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {(item.Cakupan ?? []).length === 0
-                      ? <span className="text-sm text-muted-foreground">Akses Penuh</span>
-                      : item.Cakupan?.map((c) => <Badge key={c} variant="secondary">{c}</Badge>)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={item.Status === 'Aktif' ? 'default' : 'outline'}>{item.Status}</Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {item.TerakhirDipakaiPada ? new Date(item.TerakhirDipakaiPada).toLocaleString('id-ID') : 'Belum pernah'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {item.Status === 'Aktif' && (
-                    <Button variant="ghost" size="sm" onClick={() => cabut(item)}>Cabut</Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Pagination meta={kunciApi.meta} onNavigasi={(h) => navigasiHalaman(h)} />
-      </div>
+      <DataTable
+        columns={columns}
+        data={kunciApi}
+        pencarianPlaceholder="Cari nama atau cakupan..."
+        facetedFilters={[{ columnId: 'Status', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Dicabut', value: 'Dicabut' }] }]}
+        pesanKosong="Belum ada kunci API."
+      />
     </AppLayout>
   );
 }

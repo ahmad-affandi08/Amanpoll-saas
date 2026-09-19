@@ -1,5 +1,6 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { NomorDokumen } from '@/features/NomorDokumen/types';
 
 interface Props {
@@ -87,6 +89,47 @@ export default function NomorDokumenIndex({ nomorDokumen }: Props) {
     router.delete(`/platform/nomor-dokumen/${pola.Id}`, { preserveScroll: true });
   };
 
+  const columns = useMemo<ColumnDef<NomorDokumen>[]>(() => [
+    {
+      accessorKey: 'JenisDokumen',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Jenis Dokumen" />,
+      cell: ({ row }) => <span className="font-medium text-foreground">{row.original.JenisDokumen}</span>,
+      meta: { label: 'Jenis Dokumen' },
+    },
+    {
+      accessorKey: 'FormatNomor',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Format" />,
+      cell: ({ row }) => <span className="font-mono text-sm">{row.original.FormatNomor}</span>,
+      meta: { label: 'Format' },
+    },
+    {
+      accessorKey: 'Pratinjau',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pratinjau Berikutnya" />,
+      cell: ({ row }) => <span className="font-mono text-sm">{row.original.Pratinjau}</span>,
+      meta: { label: 'Pratinjau Berikutnya' },
+    },
+    {
+      accessorKey: 'ResetPeriode',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Reset" />,
+      cell: ({ row }) => <Badge variant="outline">{row.original.ResetPeriode}</Badge>,
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+      meta: { label: 'Reset' },
+    },
+    {
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-2">
+          <DialogFormPola pola={row.original} />
+          <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    },
+  ], []);
+
   return (
     <AppLayout>
       <Head title="Nomor Dokumen" />
@@ -98,33 +141,13 @@ export default function NomorDokumenIndex({ nomorDokumen }: Props) {
         <DialogFormPola pola={null} />
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Jenis Dokumen</TableHead>
-              <TableHead>Format</TableHead>
-              <TableHead>Pratinjau Berikutnya</TableHead>
-              <TableHead>Reset</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {nomorDokumen.map((pola) => (
-              <TableRow key={pola.Id}>
-                <TableCell className="font-medium text-foreground">{pola.JenisDokumen}</TableCell>
-                <TableCell className="font-mono text-sm">{pola.FormatNomor}</TableCell>
-                <TableCell className="font-mono text-sm">{pola.Pratinjau}</TableCell>
-                <TableCell><Badge variant="outline">{pola.ResetPeriode}</Badge></TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  <DialogFormPola pola={pola} />
-                  <Button variant="ghost" size="sm" onClick={() => hapus(pola)}>Hapus</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={nomorDokumen}
+        pencarianPlaceholder="Cari jenis dokumen atau format..."
+        facetedFilters={[{ columnId: 'ResetPeriode', title: 'Reset', options: [{ label: 'Tahunan', value: 'Tahunan' }, { label: 'Bulanan', value: 'Bulanan' }, { label: 'Tidak Reset', value: 'TidakAda' }] }]}
+        pesanKosong="Belum ada pola nomor dokumen."
+      />
     </AppLayout>
   );
 }

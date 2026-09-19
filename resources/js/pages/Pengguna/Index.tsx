@@ -1,5 +1,6 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,21 +12,19 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { useIzin } from '@/hooks/use-izin';
-import type { Paginasi } from '@/types/global';
 import type { Pengguna, PeranRingkas } from '@/features/Pengguna/types';
 
 interface Props {
-  pengguna: Paginasi<Pengguna>;
+  pengguna: Pengguna[];
   peranTersedia: PeranRingkas[];
-  cari: string;
 }
 
 const kosong = { Nama: '', Email: '', KataSandi: '', Telepon: '', NomorPegawai: '', Jabatan: '', JenisPengguna: 'Internal' as const };
 
-function DialogFormPengguna({ pengguna, onSelesai }: { pengguna: Pengguna | null; onSelesai: () => void }) {
+function DialogFormPengguna({ pengguna }: { pengguna: Pengguna | null }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(pengguna ? {
     Nama: pengguna.Nama, Email: pengguna.Email, KataSandi: '', Telepon: pengguna.Telepon ?? '',
@@ -34,9 +33,7 @@ function DialogFormPengguna({ pengguna, onSelesai }: { pengguna: Pengguna | null
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const opsi = {
-      onSuccess: () => { setBuka(false); form.reset(); onSelesai(); },
-    };
+    const opsi = { onSuccess: () => { setBuka(false); form.reset(); } };
     if (pengguna) {
       form.put(`/platform/pengguna/${pengguna.Id}`, opsi);
     } else {
@@ -158,19 +155,78 @@ function DialogKelolaPeran({ pengguna, peranTersedia }: { pengguna: Pengguna; pe
   );
 }
 
-export default function PenggunaIndex({ pengguna, peranTersedia, cari }: Props) {
+export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
   const { boleh } = useIzin();
-  const [kataCari, setKataCari] = useState(cari);
-
-  const cariSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    router.get('/platform/pengguna', { cari: kataCari }, { preserveState: true });
-  };
+  const bolehKelola = boleh('Pengguna.Kelola');
 
   const ubahStatus = (item: Pengguna) => {
     const statusBaru = item.Status === 'Aktif' ? 'Nonaktif' : 'Aktif';
     router.put(`/platform/pengguna/${item.Id}/status`, { Status: statusBaru }, { preserveScroll: true });
   };
+
+  const columns = useMemo<ColumnDef<Pengguna>[]>(() => [
+    {
+      id: 'Nama',
+      accessorFn: (row) => `${row.Nama} ${row.Email}`,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+      cell: ({ row }) => (
+        <div>
+          <div className="font-medium text-foreground">{row.original.Nama}</div>
+          <div className="text-sm text-muted-foreground">{row.original.Email}</div>
+        </div>
+      ),
+      meta: { label: 'Nama' },
+    },
+    {
+      accessorKey: 'Jabatan',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Jabatan" />,
+      cell: ({ row }) => row.original.Jabatan ?? '—',
+      meta: { label: 'Jabatan' },
+    },
+    {
+      id: 'JenisPengguna',
+      accessorKey: 'JenisPengguna',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Jenis" />,
+      cell: ({ row }) => row.original.JenisPengguna,
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+      meta: { label: 'Jenis' },
+    },
+    {
+      id: 'Peran',
+      header: 'Peran',
+      accessorFn: (row) => row.Peran.map((p) => p.NamaPeran).join(', '),
+      cell: ({ row }) => (
+        <div className="flex flex-wrap gap-1">
+          {row.original.Peran.map((p) => <Badge key={p.Id} variant="secondary">{p.NamaPeran}</Badge>)}
+        </div>
+      ),
+      enableSorting: false,
+      meta: { label: 'Peran' },
+    },
+    {
+      accessorKey: 'Status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+      cell: ({ row }) => <Badge variant={row.original.Status === 'Aktif' ? 'default' : 'outline'}>{row.original.Status}</Badge>,
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+      meta: { label: 'Status' },
+    },
+    ...(bolehKelola ? [{
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }: { row: { original: Pengguna } }) => (
+        <div className="flex justify-end gap-2">
+          <DialogFormPengguna pengguna={row.original} />
+          <DialogKelolaPeran pengguna={row.original} peranTersedia={peranTersedia} />
+          <Button variant="ghost" size="sm" onClick={() => ubahStatus(row.original)}>
+            {row.original.Status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}
+          </Button>
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    } satisfies ColumnDef<Pengguna>] : []),
+  ], [bolehKelola, peranTersedia]);
 
   return (
     <AppLayout>
@@ -180,58 +236,19 @@ export default function PenggunaIndex({ pengguna, peranTersedia, cari }: Props) 
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Pengguna</h1>
           <p className="text-sm text-muted-foreground">Kelola akun pengguna dan penetapan peran.</p>
         </div>
-        {boleh('Pengguna.Kelola') && <DialogFormPengguna pengguna={null} onSelesai={() => {}} />}
+        {bolehKelola && <DialogFormPengguna pengguna={null} />}
       </div>
 
-      <form onSubmit={cariSubmit} className="mb-4 flex gap-2">
-        <Input placeholder="Cari nama atau email..." value={kataCari} onChange={(e) => setKataCari(e.target.value)} className="max-w-sm" />
-        <Button type="submit" variant="outline">Cari</Button>
-      </form>
-
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama</TableHead>
-              <TableHead>Jabatan</TableHead>
-              <TableHead>Peran</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pengguna.data.map((item) => (
-              <TableRow key={item.Id}>
-                <TableCell>
-                  <div className="font-medium text-foreground">{item.Nama}</div>
-                  <div className="text-sm text-muted-foreground">{item.Email}</div>
-                </TableCell>
-                <TableCell>{item.Jabatan ?? '—'}</TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {item.Peran.map((p) => <Badge key={p.Id} variant="secondary">{p.NamaPeran}</Badge>)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={item.Status === 'Aktif' ? 'default' : 'outline'}>{item.Status}</Badge>
-                </TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  {boleh('Pengguna.Kelola') && (
-                    <>
-                      <DialogFormPengguna pengguna={item} onSelesai={() => {}} />
-                      <DialogKelolaPeran pengguna={item} peranTersedia={peranTersedia} />
-                      <Button variant="ghost" size="sm" onClick={() => ubahStatus(item)}>
-                        {item.Status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}
-                      </Button>
-                    </>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Pagination meta={pengguna.meta} onNavigasi={(h) => navigasiHalaman(h, { cari })} />
-      </div>
+      <DataTable
+        columns={columns}
+        data={pengguna}
+        pencarianPlaceholder="Cari nama, email, jabatan..."
+        facetedFilters={[
+          { columnId: 'Status', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Nonaktif', value: 'Nonaktif' }] },
+          { columnId: 'JenisPengguna', title: 'Jenis', options: [{ label: 'Internal', value: 'Internal' }, { label: 'Eksternal', value: 'Eksternal' }] },
+        ]}
+        pesanKosong="Belum ada pengguna."
+      />
     </AppLayout>
   );
 }

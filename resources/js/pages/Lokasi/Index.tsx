@@ -1,5 +1,6 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,18 +12,15 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
-import type { Paginasi } from '@/types/global';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { Lokasi, KategoriLokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 
 interface Props {
-  lokasi: Paginasi<Lokasi>;
+  lokasi: Lokasi[];
   unitOrganisasi: UnitOrganisasi[];
   kategoriLokasi: KategoriLokasi[];
-  cari: string;
-  status: string;
 }
 
 const TANPA = '__tanpa__';
@@ -165,18 +163,60 @@ function DialogFormLokasi({ lokasi, unitOrganisasi, kategoriLokasi }: { lokasi: 
   );
 }
 
-export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, cari, status }: Props) {
-  const [kataCari, setKataCari] = useState(cari);
-
-  const cariSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    router.get('/platform/lokasi', { cari: kataCari, status }, { preserveState: true });
-  };
-
+export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: Props) {
   const hapus = (item: Lokasi) => {
     if (!confirm(`Hapus lokasi "${item.Nama}"?`)) return;
     router.delete(`/platform/lokasi/${item.Id}`, { preserveScroll: true });
   };
+
+  const columns = useMemo<ColumnDef<Lokasi>[]>(() => [
+    {
+      id: 'Nama',
+      accessorFn: (row) => `${row.Nama} ${row.Kode}`,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+      cell: ({ row }) => (
+        <div>
+          <div className="font-medium text-foreground">{row.original.Nama}</div>
+          <div className="font-mono text-xs text-muted-foreground">{row.original.Kode}</div>
+        </div>
+      ),
+      meta: { label: 'Nama' },
+    },
+    {
+      id: 'NamaKategoriLokasi',
+      accessorFn: (row) => row.NamaKategoriLokasi ?? '',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Kategori" />,
+      cell: ({ row }) => row.original.NamaKategoriLokasi ?? '—',
+      meta: { label: 'Kategori' },
+    },
+    {
+      id: 'NamaUnitOrganisasi',
+      accessorFn: (row) => row.NamaUnitOrganisasi ?? '',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Unit" />,
+      cell: ({ row }) => row.original.NamaUnitOrganisasi ?? '—',
+      meta: { label: 'Unit' },
+    },
+    {
+      accessorKey: 'Status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+      cell: ({ row }) => <Badge variant={row.original.Status === 'Aktif' ? 'default' : 'outline'}>{row.original.Status}</Badge>,
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+      meta: { label: 'Status' },
+    },
+    {
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-2">
+          <DialogFormLokasi lokasi={row.original} unitOrganisasi={unitOrganisasi} kategoriLokasi={kategoriLokasi} />
+          <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    },
+  ], [unitOrganisasi, kategoriLokasi]);
 
   return (
     <AppLayout>
@@ -192,42 +232,13 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, ca
         </div>
       </div>
 
-      <form onSubmit={cariSubmit} className="mb-4 flex gap-2">
-        <Input placeholder="Cari nama atau kode..." value={kataCari} onChange={(e) => setKataCari(e.target.value)} className="max-w-sm" />
-        <Button type="submit" variant="outline">Cari</Button>
-      </form>
-
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama</TableHead>
-              <TableHead>Kategori</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {lokasi.data.map((item) => (
-              <TableRow key={item.Id}>
-                <TableCell>
-                  <div className="font-medium text-foreground">{item.Nama}</div>
-                  <div className="font-mono text-xs text-muted-foreground">{item.Kode}</div>
-                </TableCell>
-                <TableCell>{item.NamaKategoriLokasi ?? '—'}</TableCell>
-                <TableCell>{item.NamaUnitOrganisasi ?? '—'}</TableCell>
-                <TableCell><Badge variant={item.Status === 'Aktif' ? 'default' : 'outline'}>{item.Status}</Badge></TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  <DialogFormLokasi lokasi={item} unitOrganisasi={unitOrganisasi} kategoriLokasi={kategoriLokasi} />
-                  <Button variant="ghost" size="sm" onClick={() => hapus(item)}>Hapus</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Pagination meta={lokasi.meta} onNavigasi={(h) => navigasiHalaman(h, { cari, status })} />
-      </div>
+      <DataTable
+        columns={columns}
+        data={lokasi}
+        pencarianPlaceholder="Cari nama atau kode lokasi..."
+        facetedFilters={[{ columnId: 'Status', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Nonaktif', value: 'Nonaktif' }] }]}
+        pesanKosong="Belum ada lokasi."
+      />
     </AppLayout>
   );
 }

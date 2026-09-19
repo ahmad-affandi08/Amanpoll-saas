@@ -12,27 +12,19 @@ use App\Domain\Platform\Http\Resources\UnitOrganisasiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class UnitOrganisasiController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(): Response
     {
         $this->authorize('viewAny', UnitOrganisasi::class);
 
-        $status = $request->string('status')->toString();
-
-        $unit = UnitOrganisasi::query()
-            ->when($status !== '', fn ($query) => $query->where('Status', $status))
-            ->orderBy('Urutan')
-            ->orderBy('Nama')
-            ->get();
+        $unit = UnitOrganisasi::query()->orderBy('Urutan')->orderBy('Nama')->get();
 
         return Inertia::render('UnitOrganisasi/Index', [
             'unitOrganisasi' => UnitOrganisasiResource::collection($unit),
-            'status' => $status,
         ]);
     }
 

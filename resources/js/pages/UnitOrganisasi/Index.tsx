@@ -1,5 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,35 +12,15 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 
 interface Props {
   unitOrganisasi: UnitOrganisasi[];
-  status: string;
 }
 
 const TANPA_INDUK = '__tanpa_induk__';
-
-function urutkanSebagaiPohon(unit: UnitOrganisasi[]): Array<UnitOrganisasi & { kedalaman: number }> {
-  const anakDari = new Map<string | null, UnitOrganisasi[]>();
-  unit.forEach((u) => {
-    const daftar = anakDari.get(u.IndukId) ?? [];
-    daftar.push(u);
-    anakDari.set(u.IndukId, daftar);
-  });
-
-  const hasil: Array<UnitOrganisasi & { kedalaman: number }> = [];
-  const telusuri = (indukId: string | null, kedalaman: number) => {
-    for (const u of anakDari.get(indukId) ?? []) {
-      hasil.push({ ...u, kedalaman });
-      telusuri(u.Id, kedalaman + 1);
-    }
-  };
-  telusuri(null, 0);
-
-  return hasil;
-}
 
 function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semuaUnit: UnitOrganisasi[] }) {
   const [buka, setBuka] = useState(false);
@@ -116,17 +97,61 @@ function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semu
   );
 }
 
-export default function UnitOrganisasiIndex({ unitOrganisasi, status }: Props) {
-  const pohon = useMemo(() => urutkanSebagaiPohon(unitOrganisasi), [unitOrganisasi]);
-
-  const filterStatus = (nilai: string) => {
-    router.get('/platform/unit-organisasi', nilai === '__semua__' ? {} : { status: nilai }, { preserveState: true });
-  };
+export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
+  const namaIndukDari = useMemo(() => {
+    const peta = new Map(unitOrganisasi.map((u) => [u.Id, u.Nama]));
+    return (indukId: string | null) => (indukId ? (peta.get(indukId) ?? '—') : '—');
+  }, [unitOrganisasi]);
 
   const hapus = (unit: UnitOrganisasi) => {
     if (!confirm(`Hapus unit "${unit.Nama}"?`)) return;
     router.delete(`/platform/unit-organisasi/${unit.Id}`, { preserveScroll: true });
   };
+
+  const columns = useMemo<ColumnDef<UnitOrganisasi>[]>(() => [
+    {
+      accessorKey: 'Nama',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+      meta: { label: 'Nama' },
+    },
+    {
+      accessorKey: 'Kode',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Kode" />,
+      cell: ({ row }) => <span className="font-mono text-sm">{row.original.Kode}</span>,
+      meta: { label: 'Kode' },
+    },
+    {
+      accessorKey: 'Jenis',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Jenis" />,
+      meta: { label: 'Jenis' },
+    },
+    {
+      id: 'Induk',
+      accessorFn: (row) => namaIndukDari(row.IndukId),
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Induk" />,
+      meta: { label: 'Induk' },
+    },
+    {
+      accessorKey: 'Status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+      cell: ({ row }) => <Badge variant={row.original.Status === 'Aktif' ? 'default' : 'outline'}>{row.original.Status}</Badge>,
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+      meta: { label: 'Status' },
+    },
+    {
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-2">
+          <DialogFormUnit unit={row.original} semuaUnit={unitOrganisasi} />
+          <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    },
+  ], [unitOrganisasi, namaIndukDari]);
 
   return (
     <AppLayout>
@@ -139,47 +164,13 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, status }: Props) {
         <DialogFormUnit unit={null} semuaUnit={unitOrganisasi} />
       </div>
 
-      <div className="mb-4">
-        <Select value={status || '__semua__'} onValueChange={filterStatus}>
-          <SelectTrigger className="w-48"><SelectValue placeholder="Semua status" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__semua__">Semua Status</SelectItem>
-            <SelectItem value="Aktif">Aktif</SelectItem>
-            <SelectItem value="Nonaktif">Nonaktif</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama</TableHead>
-              <TableHead>Kode</TableHead>
-              <TableHead>Jenis</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pohon.map((unit) => (
-              <TableRow key={unit.Id}>
-                <TableCell style={{ paddingLeft: `${unit.kedalaman * 1.5 + 1}rem` }} className="font-medium text-foreground">
-                  {unit.kedalaman > 0 && <span className="mr-1 text-muted-foreground">└</span>}
-                  {unit.Nama}
-                </TableCell>
-                <TableCell className="font-mono text-sm">{unit.Kode}</TableCell>
-                <TableCell>{unit.Jenis}</TableCell>
-                <TableCell><Badge variant={unit.Status === 'Aktif' ? 'default' : 'outline'}>{unit.Status}</Badge></TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  <DialogFormUnit unit={unit} semuaUnit={unitOrganisasi} />
-                  <Button variant="ghost" size="sm" onClick={() => hapus(unit)}>Hapus</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={unitOrganisasi}
+        pencarianPlaceholder="Cari nama, kode, atau jenis unit..."
+        facetedFilters={[{ columnId: 'Status', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Nonaktif', value: 'Nonaktif' }] }]}
+        pesanKosong="Belum ada unit organisasi."
+      />
     </AppLayout>
   );
 }

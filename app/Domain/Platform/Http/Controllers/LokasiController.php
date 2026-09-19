@@ -16,35 +16,24 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class LokasiController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(): Response
     {
         $this->authorize('viewAny', Lokasi::class);
 
-        $kataCari = $request->string('cari')->toString();
-        $status = $request->string('status')->toString();
-
         $lokasi = Lokasi::query()
             ->with(['kategoriLokasi', 'unitOrganisasi'])
-            ->when($kataCari !== '', fn ($query) => $query->where(function ($query) use ($kataCari): void {
-                $query->where('Nama', 'like', "%{$kataCari}%")->orWhere('Kode', 'like', "%{$kataCari}%");
-            }))
-            ->when($status !== '', fn ($query) => $query->where('Status', $status))
             ->orderBy('Nama')
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         return Inertia::render('Lokasi/Index', [
             'lokasi' => LokasiResource::collection($lokasi),
             'unitOrganisasi' => UnitOrganisasiResource::collection(UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),
             'kategoriLokasi' => KategoriLokasiResource::collection(KategoriLokasi::query()->orderBy('Nama')->get()),
-            'cari' => $kataCari,
-            'status' => $status,
         ]);
     }
 

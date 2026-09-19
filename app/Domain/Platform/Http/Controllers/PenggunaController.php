@@ -21,25 +21,18 @@ use Inertia\Response;
 
 final class PenggunaController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(): Response
     {
         $this->authorize('viewAny', Pengguna::class);
 
-        $kataCari = $request->string('cari')->toString();
-
         $pengguna = Pengguna::query()
             ->with(['penggunaPeran.peran'])
-            ->when($kataCari !== '', fn ($query) => $query->where(function ($query) use ($kataCari): void {
-                $query->where('Nama', 'like', "%{$kataCari}%")->orWhere('Email', 'like', "%{$kataCari}%");
-            }))
             ->orderBy('Nama')
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         return Inertia::render('Pengguna/Index', [
             'pengguna' => PenggunaResource::collection($pengguna),
             'peranTersedia' => Peran::query()->orderBy('Nama')->get(['Id', 'Nama']),
-            'cari' => $kataCari,
         ]);
     }
 

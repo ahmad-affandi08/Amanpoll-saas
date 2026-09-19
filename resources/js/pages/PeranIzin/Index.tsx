@@ -1,5 +1,6 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,15 +11,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { useIzin } from '@/hooks/use-izin';
-import type { Paginasi } from '@/types/global';
 import type { Peran, KatalogIzin } from '@/features/PeranIzin/types';
 
 interface Props {
-  peran: Paginasi<Peran>;
-  cari: string;
+  peran: Peran[];
 }
 
 function DialogFormPeran({ peran }: { peran: Peran | null }) {
@@ -126,19 +125,60 @@ function DialogKelolaIzin({ peran }: { peran: Peran }) {
   );
 }
 
-export default function PeranIzinIndex({ peran, cari }: Props) {
+export default function PeranIzinIndex({ peran }: Props) {
   const { boleh } = useIzin();
-  const [kataCari, setKataCari] = useState(cari);
-
-  const cariSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    router.get('/platform/peran', { cari: kataCari }, { preserveState: true });
-  };
+  const bolehKelola = boleh('Pengguna.Kelola');
 
   const hapus = (item: Peran) => {
     if (!confirm(`Hapus peran "${item.Nama}"?`)) return;
     router.delete(`/platform/peran/${item.Id}`, { preserveScroll: true });
   };
+
+  const columns = useMemo<ColumnDef<Peran>[]>(() => [
+    {
+      accessorKey: 'Kode',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Kode" />,
+      cell: ({ row }) => <span className="font-mono text-sm">{row.original.Kode}</span>,
+      meta: { label: 'Kode' },
+    },
+    {
+      accessorKey: 'Nama',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+      cell: ({ row }) => (
+        <div>
+          <div className="font-medium text-foreground">{row.original.Nama}</div>
+          {row.original.BawaanSistem && <Badge variant="secondary">Bawaan Sistem</Badge>}
+        </div>
+      ),
+      meta: { label: 'Nama' },
+    },
+    {
+      accessorKey: 'JumlahIzin',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Izin" />,
+      meta: { label: 'Izin' },
+    },
+    {
+      accessorKey: 'JumlahPengguna',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pengguna" />,
+      meta: { label: 'Pengguna' },
+    },
+    ...(bolehKelola ? [{
+      id: 'aksi',
+      header: 'Aksi',
+      cell: ({ row }: { row: { original: Peran } }) => (
+        <div className="flex justify-end gap-2">
+          <DialogFormPeran peran={row.original} />
+          <DialogKelolaIzin peran={row.original} />
+          {!row.original.BawaanSistem && (
+            <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
+          )}
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { label: 'Aksi' },
+    } satisfies ColumnDef<Peran>] : []),
+  ], [bolehKelola]);
 
   return (
     <AppLayout>
@@ -148,52 +188,10 @@ export default function PeranIzinIndex({ peran, cari }: Props) {
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Peran & Izin</h1>
           <p className="text-sm text-muted-foreground">Kelola peran dan hak akses per organisasi.</p>
         </div>
-        {boleh('Pengguna.Kelola') && <DialogFormPeran peran={null} />}
+        {bolehKelola && <DialogFormPeran peran={null} />}
       </div>
 
-      <form onSubmit={cariSubmit} className="mb-4 flex gap-2">
-        <Input placeholder="Cari nama peran..." value={kataCari} onChange={(e) => setKataCari(e.target.value)} className="max-w-sm" />
-        <Button type="submit" variant="outline">Cari</Button>
-      </form>
-
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Kode</TableHead>
-              <TableHead>Nama</TableHead>
-              <TableHead>Izin</TableHead>
-              <TableHead>Pengguna</TableHead>
-              <TableHead className="text-right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {peran.data.map((item) => (
-              <TableRow key={item.Id}>
-                <TableCell className="font-mono text-sm">{item.Kode}</TableCell>
-                <TableCell>
-                  <div className="font-medium text-foreground">{item.Nama}</div>
-                  {item.BawaanSistem && <Badge variant="secondary">Bawaan Sistem</Badge>}
-                </TableCell>
-                <TableCell>{item.JumlahIzin}</TableCell>
-                <TableCell>{item.JumlahPengguna}</TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  {boleh('Pengguna.Kelola') && (
-                    <>
-                      <DialogFormPeran peran={item} />
-                      <DialogKelolaIzin peran={item} />
-                      {!item.BawaanSistem && (
-                        <Button variant="ghost" size="sm" onClick={() => hapus(item)}>Hapus</Button>
-                      )}
-                    </>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Pagination meta={peran.meta} onNavigasi={(h) => navigasiHalaman(h, { cari })} />
-      </div>
+      <DataTable columns={columns} data={peran} pencarianPlaceholder="Cari nama atau kode peran..." pesanKosong="Belum ada peran." />
     </AppLayout>
   );
 }

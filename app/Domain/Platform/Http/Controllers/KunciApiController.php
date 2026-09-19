@@ -18,11 +18,11 @@ use Inertia\Response;
 
 final class KunciApiController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(): Response
     {
         $this->authorize('viewAny', KunciApi::class);
 
-        $kunciApi = KunciApi::query()->latest('DibuatPada')->paginate(15);
+        $kunciApi = KunciApi::query()->latest('DibuatPada')->get();
 
         return Inertia::render('KunciApi/Index', [
             'kunciApi' => KunciApiResource::collection($kunciApi),

@@ -20,23 +20,18 @@ use Inertia\Response;
 
 final class PeranController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(): Response
     {
         $this->authorize('viewAny', Peran::class);
-
-        $kataCari = $request->string('cari')->toString();
 
         $peran = Peran::query()
             ->withCount(['penggunaPeran', 'peranIzin'])
             ->with('peranIzin')
-            ->when($kataCari !== '', fn ($query) => $query->where('Nama', 'like', "%{$kataCari}%"))
             ->orderBy('Nama')
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         return Inertia::render('PeranIzin/Index', [
             'peran' => PeranResource::collection($peran),
-            'cari' => $kataCari,
         ]);
     }
 
