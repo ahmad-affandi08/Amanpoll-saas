@@ -23,3 +23,11 @@ Schedule::command('auth:clear-resets')
 Schedule::command('catatan-akses:bersihkan')
     ->dailyAt('03:00')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));
+
+Schedule::command('reservasi-suku-cadang:kedaluwarsakan')
+    ->hourly()
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));
+
+Schedule::command('suku-cadang:peringatan-stok-minimum')
+    ->dailyAt('07:00')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));

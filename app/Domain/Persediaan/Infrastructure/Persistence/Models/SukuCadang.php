@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Domain\Persediaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class SukuCadang extends ModelDasar
 {
     use SoftDeletes, MilikOrganisasi;
+
+    public const STATUS_AKTIF = 'Aktif';
+    public const STATUS_NONAKTIF = 'Nonaktif';
 
     protected $table = 'SukuCadang';
 
@@ -51,14 +56,27 @@ final class SukuCadang extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<KategoriSukuCadang, $this>
+     */
     public function kategoriSukuCadang(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang::class, 'KategoriSukuCadangId', 'Id');
+        return $this->belongsTo(KategoriSukuCadang::class, 'KategoriSukuCadangId', 'Id');
     }
 
+    /**
+     * @return HasMany<KompatibilitasSukuCadang, $this>
+     */
+    public function kompatibilitasSukuCadang(): HasMany
+    {
+        return $this->hasMany(KompatibilitasSukuCadang::class, 'SukuCadangId', 'Id');
+    }
 }

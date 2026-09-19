@@ -28,6 +28,22 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KontakPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\PenilaianPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Persediaan\Http\Policies\GudangPolicy;
+use App\Domain\Persediaan\Http\Policies\KategoriSukuCadangPolicy;
+use App\Domain\Persediaan\Http\Policies\KelompokSukuCadangPolicy;
+use App\Domain\Persediaan\Http\Policies\KompatibilitasSukuCadangPolicy;
+use App\Domain\Persediaan\Http\Policies\MutasiStokPolicy;
+use App\Domain\Persediaan\Http\Policies\ReservasiSukuCadangPolicy;
+use App\Domain\Persediaan\Http\Policies\StokSukuCadangPolicy;
+use App\Domain\Persediaan\Http\Policies\SukuCadangPolicy;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\KelompokSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\KompatibilitasSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Domain\Platform\Http\Policies\HariLiburPolicy;
 use App\Domain\Platform\Http\Policies\KategoriLokasiPolicy;
 use App\Domain\Platform\Http\Policies\KonfigurasiOrganisasiPolicy;
@@ -96,5 +112,13 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(PermintaanMutasiAset::class, PermintaanMutasiAsetPolicy::class);
         Gate::policy(SerahTerimaAset::class, SerahTerimaAsetPolicy::class);
         Gate::policy(PengajuanPenghapusanAset::class, PengajuanPenghapusanAsetPolicy::class);
+        Gate::policy(Gudang::class, GudangPolicy::class);
+        Gate::policy(KategoriSukuCadang::class, KategoriSukuCadangPolicy::class);
+        Gate::policy(SukuCadang::class, SukuCadangPolicy::class);
+        Gate::policy(KelompokSukuCadang::class, KelompokSukuCadangPolicy::class);
+        Gate::policy(KompatibilitasSukuCadang::class, KompatibilitasSukuCadangPolicy::class);
+        Gate::policy(StokSukuCadang::class, StokSukuCadangPolicy::class);
+        Gate::policy(MutasiStok::class, MutasiStokPolicy::class);
+        Gate::policy(ReservasiSukuCadang::class, ReservasiSukuCadangPolicy::class);
     }
 }

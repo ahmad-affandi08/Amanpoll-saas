@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Persediaan\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanSukuCadangRequest extends FormRequest
 {
@@ -13,24 +16,31 @@ final class SimpanSukuCadangRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->id();
+        /** @var SukuCadang|null $sukuCadang */
+        $sukuCadang = $this->route('sukuCadang');
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'KategoriSukuCadangId' => ['nullable'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'NomorBagian' => ['nullable'],
-            'KodeBatang' => ['nullable'],
-            'SatuanDasar' => ['sometimes'],
-            'StokMinimum' => ['sometimes'],
-            'StokMaksimum' => ['nullable'],
-            'TitikPesanUlang' => ['nullable'],
-            'HargaRataRata' => ['sometimes'],
-            'MemakaiBatch' => ['sometimes'],
-            'MemakaiKadaluarsa' => ['sometimes'],
-            'Status' => ['sometimes'],
+            'Kode' => ['required', 'string', 'max:80',
+                Rule::unique('SukuCadang', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($sukuCadang?->Id, 'Id')],
+            'Nama' => ['required', 'string', 'max:200'],
+            'KategoriSukuCadangId' => ['nullable', 'string',
+                Rule::exists('KategoriSukuCadang', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))],
+            'NomorBagian' => ['nullable', 'string', 'max:160'],
+            'KodeBatang' => ['nullable', 'string', 'max:255'],
+            'SatuanDasar' => ['required', 'string', 'max:50'],
+            'StokMinimum' => ['required', 'numeric', 'min:0'],
+            'StokMaksimum' => ['nullable', 'numeric', 'min:0'],
+            'TitikPesanUlang' => ['nullable', 'numeric', 'min:0'],
+            'HargaRataRata' => ['nullable', 'numeric', 'min:0'],
+            'MemakaiBatch' => ['boolean'],
+            'MemakaiKadaluarsa' => ['boolean'],
+            'Status' => ['required', 'string', Rule::in([SukuCadang::STATUS_AKTIF, SukuCadang::STATUS_NONAKTIF])],
         ];
     }
 }

@@ -13,6 +13,7 @@ import {
   LayoutDashboard, Box, FolderTree, Tag, Layers, Truck, FileCheck, Building2, Network,
   MapPin, Settings, Hash, CalendarDays, Tags, Columns3, Workflow, MessageSquareText, Users,
   ShieldCheck, KeyRound, ScrollText, CircleUserRound, BellRing, ArrowLeftRight, Handshake, Trash2,
+  Warehouse, PackageSearch, Boxes, ArrowRightLeft, BookmarkCheck,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -46,6 +47,18 @@ const navAset: GrupNav = {
     { label: 'Kategori Aset', href: '/aset-master/kategori', icon: FolderTree, kodeIzin: 'Aset.Buat' },
     { label: 'Merek', href: '/aset-master/merek', icon: Tag, kodeIzin: 'Aset.Buat' },
     { label: 'Model Aset', href: '/aset-master/model', icon: Layers, kodeIzin: 'Aset.Buat' },
+  ],
+};
+
+const navPersediaan: GrupNav = {
+  label: 'Persediaan',
+  items: [
+    { label: 'Gudang', href: '/gudang', icon: Warehouse, kodeIzin: 'Stok.Kelola' },
+    { label: 'Kategori Suku Cadang', href: '/kategori-suku-cadang', icon: FolderTree, kodeIzin: 'Stok.Kelola' },
+    { label: 'Suku Cadang', href: '/suku-cadang', icon: PackageSearch, kodeIzin: 'Stok.Kelola' },
+    { label: 'Stok', href: '/stok-suku-cadang', icon: Boxes, kodeIzin: 'Stok.Kelola' },
+    { label: 'Mutasi Stok', href: '/mutasi-stok', icon: ArrowRightLeft, kodeIzin: 'Stok.Kelola' },
+    { label: 'Reservasi', href: '/reservasi-suku-cadang', icon: BookmarkCheck, kodeIzin: 'Stok.Kelola' },
   ],
 };
 
@@ -84,7 +97,7 @@ const navAdministrasi: GrupNav = {
   ],
 };
 
-const semuaGrup: GrupNav[] = [navUtama, navAset, navPenyedia, navStruktur, navAdministrasi];
+const semuaGrup: GrupNav[] = [navUtama, navAset, navPersediaan, navPenyedia, navStruktur, navAdministrasi];
 
 function tautanAktif(pathSekarang: string, href: string): boolean {
   if (href === '/') return pathSekarang === '/';

@@ -5419,154 +5419,10 @@ parameters:
 			path: app/Domain/Persediaan/Domain/Repositories/SukuCadangRepository.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanDetailMutasiStokRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanDetailMutasiStokRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanGudangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanGudangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanKategoriSukuCadangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanKategoriSukuCadangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanKelompokSukuCadangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanKelompokSukuCadangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanKompatibilitasSukuCadangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanKompatibilitasSukuCadangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanLokasiGudangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanLokasiGudangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanMutasiStokRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanMutasiStokRequest.php
-
-		-
 			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanPemakaianSukuCadangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Domain/Persediaan/Http/Requests/SimpanPemakaianSukuCadangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanReservasiSukuCadangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanReservasiSukuCadangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanStokSukuCadangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanStokSukuCadangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Requests\\SimpanSukuCadangRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Requests/SimpanSukuCadangRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\DetailMutasiStokResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/DetailMutasiStokResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\DetailMutasiStokResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/DetailMutasiStokResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\GudangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/GudangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\GudangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/GudangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\KategoriSukuCadangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/KategoriSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\KategoriSukuCadangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/KategoriSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\KelompokSukuCadangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/KelompokSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\KelompokSukuCadangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/KelompokSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\KompatibilitasSukuCadangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/KompatibilitasSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\KompatibilitasSukuCadangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/KompatibilitasSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\LokasiGudangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/LokasiGudangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\LokasiGudangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/LokasiGudangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\MutasiStokResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/MutasiStokResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\MutasiStokResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/MutasiStokResource.php
 
 		-
 			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\PemakaianSukuCadangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -5581,104 +5437,14 @@ parameters:
 			path: app/Domain/Persediaan/Http/Resources/PemakaianSukuCadangResource.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\ReservasiSukuCadangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/ReservasiSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\ReservasiSukuCadangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/ReservasiSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\StokSukuCadangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/StokSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\StokSukuCadangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/StokSukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\SukuCadangResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/SukuCadangResource.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Http\\Resources\\SukuCadangResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Persediaan/Http/Resources/SukuCadangResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/DetailMutasiStok.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\DetailMutasiStok\:\:kelompokSukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/DetailMutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\DetailMutasiStok\:\:lokasiGudangAsal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/DetailMutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\DetailMutasiStok\:\:lokasiGudangTujuan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/DetailMutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\DetailMutasiStok\:\:mutasiStok\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/DetailMutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\DetailMutasiStok\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/DetailMutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\DetailMutasiStok\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/DetailMutasiStok.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/Gudang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\Gudang\:\:lokasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/Gudang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\Gudang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/Gudang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\Gudang\:\:penanggungJawab\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/Gudang.php
 
@@ -5689,68 +5455,14 @@ parameters:
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KategoriSukuCadang.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KategoriSukuCadang\:\:induk\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KategoriSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KategoriSukuCadang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KategoriSukuCadang.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KelompokSukuCadang.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KelompokSukuCadang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KelompokSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KelompokSukuCadang\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KelompokSukuCadang.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KompatibilitasSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KompatibilitasSukuCadang\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KompatibilitasSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KompatibilitasSukuCadang\:\:kategoriAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KompatibilitasSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KompatibilitasSukuCadang\:\:modelAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KompatibilitasSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KompatibilitasSukuCadang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KompatibilitasSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\KompatibilitasSukuCadang\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/KompatibilitasSukuCadang.php
 
@@ -5761,50 +5473,8 @@ parameters:
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/LokasiGudang.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\LokasiGudang\:\:gudang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/LokasiGudang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\LokasiGudang\:\:induk\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/LokasiGudang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\LokasiGudang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/LokasiGudang.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/MutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\MutasiStok\:\:dibuatOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/MutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\MutasiStok\:\:gudangAsal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/MutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\MutasiStok\:\:gudangTujuan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/MutasiStok.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\MutasiStok\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/MutasiStok.php
 
@@ -5815,80 +5485,8 @@ parameters:
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\PemakaianSukuCadang\:\:dipakaiOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\PemakaianSukuCadang\:\:gudang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\PemakaianSukuCadang\:\:kelompokSukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\PemakaianSukuCadang\:\:mutasiStok\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\PemakaianSukuCadang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\PemakaianSukuCadang\:\:perintahKerja\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\PemakaianSukuCadang\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/PemakaianSukuCadang.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/ReservasiSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\ReservasiSukuCadang\:\:dibuatOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/ReservasiSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\ReservasiSukuCadang\:\:gudang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/ReservasiSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\ReservasiSukuCadang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/ReservasiSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\ReservasiSukuCadang\:\:perintahKerja\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/ReservasiSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\ReservasiSukuCadang\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/ReservasiSukuCadang.php
 
@@ -5899,50 +5497,8 @@ parameters:
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/StokSukuCadang.php
 
 		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\StokSukuCadang\:\:gudang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/StokSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\StokSukuCadang\:\:kelompokSukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/StokSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\StokSukuCadang\:\:lokasiGudang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/StokSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\StokSukuCadang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/StokSukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\StokSukuCadang\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/StokSukuCadang.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/SukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\SukuCadang\:\:kategoriSukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/SukuCadang.php
-
-		-
-			message: '#^Method App\\Domain\\Persediaan\\Infrastructure\\Persistence\\Models\\SukuCadang\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Persediaan/Infrastructure/Persistence/Models/SukuCadang.php
 
