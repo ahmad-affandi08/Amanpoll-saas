@@ -5,6 +5,7 @@ use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PastikanCakupanKunciApi;
 use App\Http\Middleware\PastikanMemilikiIzin;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
+use App\Http\Middleware\TetapkanKorelasiId;
 use App\Shared\Domain\Exceptions\PengecualianDomain;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [HandleInertiaRequests::class]);
+        $middleware->web(prepend: [TetapkanKorelasiId::class]);
+        $middleware->api(prepend: [TetapkanKorelasiId::class]);
 
         $middleware->alias([
             'organisasi' => TetapkanKonteksOrganisasi::class,

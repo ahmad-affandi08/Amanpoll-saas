@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\IntegrasiAudit\Http\Policies\CatatanAuditPolicy;
+use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
+use App\Domain\Kolaborasi\Http\Policies\BerkasPolicy;
+use App\Domain\Kolaborasi\Http\Policies\TagPolicy;
+use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
+use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Tag;
 use App\Domain\Platform\Http\Policies\HariLiburPolicy;
 use App\Domain\Platform\Http\Policies\KategoriLokasiPolicy;
 use App\Domain\Platform\Http\Policies\KonfigurasiOrganisasiPolicy;
@@ -45,5 +51,8 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(KonfigurasiOrganisasi::class, KonfigurasiOrganisasiPolicy::class);
         Gate::policy(NomorDokumen::class, NomorDokumenPolicy::class);
         Gate::policy(HariLibur::class, HariLiburPolicy::class);
+        Gate::policy(CatatanAudit::class, CatatanAuditPolicy::class);
+        Gate::policy(Berkas::class, BerkasPolicy::class);
+        Gate::policy(Tag::class, TagPolicy::class);
     }
 }

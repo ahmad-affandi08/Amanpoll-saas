@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Application\Actions;
 
+use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KunciApi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -12,7 +13,10 @@ use Illuminate\Support\Str;
 
 final class BuatKunciApi
 {
-    public function __construct(private readonly KonteksOrganisasi $konteks) {}
+    public function __construct(
+        private readonly KonteksOrganisasi $konteks,
+        private readonly LayananAudit $layananAudit,
+    ) {}
 
     /**
      * @param list<string>|null $cakupan
@@ -41,6 +45,13 @@ final class BuatKunciApi
             'Status' => 'Aktif',
             'DibuatOleh' => $pembuat->Id,
         ]);
+
+        $this->layananAudit->catat(
+            aksi: 'KunciApi.Dibuat',
+            jenisEntitas: 'KunciApi',
+            entitasId: $kunciApi->Id,
+            dataSesudah: $kunciApi->only(['Id', 'Nama', 'AwalanKunci', 'Cakupan', 'AlamatIpDiizinkan', 'KadaluarsaPada', 'Status']),
+        );
 
         return ['kunciApi' => $kunciApi, 'tokenMentah' => $tokenMentah];
     }

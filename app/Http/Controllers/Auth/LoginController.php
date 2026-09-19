@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
+use App\Core\Audit\LayananCatatanAkses;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,10 @@ final class LoginController extends Controller
     private const MAKS_PERCOBAAN = 5;
     private const DURASI_KUNCI_DETIK = 60;
 
-    public function __construct(private readonly KonteksOrganisasi $konteks) {}
+    public function __construct(
+        private readonly KonteksOrganisasi $konteks,
+        private readonly LayananCatatanAkses $layananCatatanAkses,
+    ) {}
 
     public function create(): Response
     {
@@ -52,6 +56,7 @@ final class LoginController extends Controller
 
         if (!$organisasi) {
             RateLimiter::hit($kunciBatas, self::DURASI_KUNCI_DETIK);
+            $this->layananCatatanAkses->catat('Login', null, null, false, 'Kode organisasi tidak ditemukan/nonaktif.');
             throw ValidationException::withMessages([
                 'Email' => 'Organisasi, email, atau kata sandi tidak sesuai.',
             ]);
@@ -66,6 +71,7 @@ final class LoginController extends Controller
 
         if (!$berhasil) {
             RateLimiter::hit($kunciBatas, self::DURASI_KUNCI_DETIK);
+            $this->layananCatatanAkses->catat('Login', (string) $organisasi->Id, null, false, 'Email atau kata sandi salah.');
             $this->konteks->bersihkan();
             throw ValidationException::withMessages([
                 'Email' => 'Organisasi, email, atau kata sandi tidak sesuai.',
@@ -75,6 +81,7 @@ final class LoginController extends Controller
         RateLimiter::clear($kunciBatas);
         $request->session()->regenerate();
         DB::table('Pengguna')->where('Id', $request->user()->Id)->update(['TerakhirMasukPada' => now()]);
+        $this->layananCatatanAkses->catat('Login', (string) $organisasi->Id, (string) $request->user()->Id, true);
 
         return redirect()->intended(route('dashboard'));
     }

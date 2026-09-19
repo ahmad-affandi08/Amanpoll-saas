@@ -124,6 +124,11 @@ untuk gap serupa. Titik integrasinya sudah jelas (`BuatKunciApi::jalankan()`
 dan `CabutKunciApi::jalankan()`), tinggal menambah pemanggilan layanan
 audit begitu FASE 05 selesai.
 
+> **Update FASE 05**: `LayananAudit::catat()` sudah dipanggil dari
+> `BuatKunciApi::jalankan()` dan `CabutKunciApi::jalankan()` (lihat ADR
+> 0005). `HashKunci` tidak pernah ditulis ke `DataSesudah` -- hanya field
+> non-rahasia (Nama, AwalanKunci, Cakupan, dll) yang dicatat.
+
 ## 7. Koreksi ADR 0002: Cakupan `PemeriksaRelasiOrganisasi` terhadap `Pengguna`
 
 Lihat ADR 0002 bagian 5 (sudah diperbarui langsung di file itu). Ringkas:

@@ -13,14 +13,15 @@ final class SimpanEntitasTagRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'TagId' => ['sometimes'],
-            'JenisEntitas' => ['sometimes'],
-            'EntitasId' => ['sometimes'],
+            'TagId' => ['required', 'string'],
+            'JenisEntitas' => ['required', 'string'],
+            'EntitasId' => ['required', 'string'],
         ];
     }
 }

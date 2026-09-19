@@ -13,16 +13,16 @@ final class SimpanKomentarEntitasRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'JenisEntitas' => ['sometimes'],
-            'EntitasId' => ['sometimes'],
-            'IndukKomentarId' => ['nullable'],
-            'Isi' => ['sometimes'],
-            'DibuatOleh' => ['sometimes'],
+            'JenisEntitas' => ['required', 'string'],
+            'EntitasId' => ['required', 'string'],
+            'IndukKomentarId' => ['nullable', 'string'],
+            'Isi' => ['required', 'string', 'max:5000'],
         ];
     }
 }

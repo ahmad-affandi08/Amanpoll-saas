@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
+import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import type { Lokasi, KategoriLokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 
@@ -97,7 +98,7 @@ function DialogFormLokasi({ lokasi, unitOrganisasi, kategoriLokasi }: { lokasi: 
       <DialogTrigger asChild>
         <Button variant={lokasi ? 'outline' : 'default'} size={lokasi ? 'sm' : 'default'}>{lokasi ? 'Ubah' : 'Tambah Lokasi'}</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader><DialogTitle>{lokasi ? 'Ubah Lokasi' : 'Tambah Lokasi'}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -158,6 +159,7 @@ function DialogFormLokasi({ lokasi, unitOrganisasi, kategoriLokasi }: { lokasi: 
             <Button type="submit" disabled={form.processing}>Simpan</Button>
           </DialogFooter>
         </form>
+        {lokasi && <PanelKolaborasi jenisEntitas="Lokasi" entitasId={lokasi.Id} />}
       </DialogContent>
     </Dialog>
   );

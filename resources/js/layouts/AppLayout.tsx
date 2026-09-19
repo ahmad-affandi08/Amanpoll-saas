@@ -17,12 +17,15 @@ const menuStruktur: Array<[string, string, string | null]> = [
   ['Konfigurasi', '/platform/konfigurasi', 'Pengaturan.Kelola'],
   ['Nomor Dokumen', '/platform/nomor-dokumen', 'Pengaturan.Kelola'],
   ['Hari Libur', '/platform/hari-libur', 'Pengaturan.Kelola'],
+  ['Tag', '/kolaborasi/tag', 'Pengaturan.Kelola'],
+  ['Kolom Kustom', '/kolaborasi/kolom-kustom', 'Pengaturan.Kelola'],
 ];
 
 const menuAdministrasi: Array<[string, string, string | null]> = [
   ['Pengguna', '/platform/pengguna', 'Pengguna.Kelola'],
   ['Peran & Izin', '/platform/peran', 'Pengguna.Kelola'],
   ['Kunci API', '/platform/kunci-api', 'Integrasi.Kelola'],
+  ['Log Audit', '/integrasi-audit/audit', 'Audit.Lihat'],
   ['Profil', '/platform/profil', null],
 ];
 

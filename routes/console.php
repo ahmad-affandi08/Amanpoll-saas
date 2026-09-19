@@ -19,3 +19,7 @@ Schedule::command('queue:prune-failed --hours=168')
 Schedule::command('auth:clear-resets')
     ->dailyAt('02:30')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));
+
+Schedule::command('catatan-akses:bersihkan')
+    ->dailyAt('03:00')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));

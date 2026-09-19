@@ -13,17 +13,17 @@ final class SimpanLampiranEntitasRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'JenisEntitas' => ['sometimes'],
-            'EntitasId' => ['sometimes'],
-            'BerkasId' => ['sometimes'],
-            'Kategori' => ['nullable'],
-            'Keterangan' => ['nullable'],
-            'DibuatOleh' => ['nullable'],
+            'JenisEntitas' => ['required', 'string'],
+            'EntitasId' => ['required', 'string'],
+            'BerkasId' => ['required', 'string'],
+            'Kategori' => ['nullable', 'string', 'max:80'],
+            'Keterangan' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }
