@@ -13,21 +13,19 @@ final class SimpanPenilaianPenyediaRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PenyediaId' => ['sometimes'],
-            'PeriodeMulai' => ['sometimes'],
-            'PeriodeSelesai' => ['sometimes'],
-            'SkorKualitas' => ['nullable'],
-            'SkorKetepatanWaktu' => ['nullable'],
-            'SkorHarga' => ['nullable'],
-            'SkorLayanan' => ['nullable'],
-            'SkorTotal' => ['nullable'],
-            'Catatan' => ['nullable'],
-            'DinilaiOleh' => ['nullable'],
+            'PeriodeMulai' => ['required', 'date'],
+            'PeriodeSelesai' => ['required', 'date', 'after_or_equal:PeriodeMulai'],
+            'SkorKualitas' => ['nullable', 'numeric', 'between:0,100'],
+            'SkorKetepatanWaktu' => ['nullable', 'numeric', 'between:0,100'],
+            'SkorHarga' => ['nullable', 'numeric', 'between:0,100'],
+            'SkorLayanan' => ['nullable', 'numeric', 'between:0,100'],
+            'Catatan' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

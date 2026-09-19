@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Penyedia\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanPenyediaKategoriRequest extends FormRequest
 {
@@ -13,12 +15,16 @@ final class SimpanPenyediaKategoriRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->id();
+
         return [
-            'PenyediaId' => ['sometimes'],
-            'KategoriPenyediaId' => ['sometimes'],
+            'KategoriPenyediaId' => ['required', 'string',
+                Rule::exists('KategoriPenyedia', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))],
         ];
     }
 }

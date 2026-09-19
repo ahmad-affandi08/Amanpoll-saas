@@ -4111,44 +4111,8 @@ parameters:
 			path: app/Domain/Penyedia/Domain/Repositories/PenyediaRepository.php
 
 		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Requests\\SimpanKategoriPenyediaRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Requests/SimpanKategoriPenyediaRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Requests\\SimpanKontakPenyediaRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Requests/SimpanKontakPenyediaRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Requests\\SimpanPenilaianPenyediaRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Requests/SimpanPenilaianPenyediaRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Requests\\SimpanPenyediaKategoriRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Requests/SimpanPenyediaKategoriRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Requests\\SimpanPenyediaRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Requests/SimpanPenyediaRequest.php
-
-		-
 			message: '#^Method App\\Domain\\Penyedia\\Http\\Resources\\KategoriPenyediaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Resources/KategoriPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Resources\\KategoriPenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Penyedia/Http/Resources/KategoriPenyediaResource.php
 
@@ -4159,20 +4123,8 @@ parameters:
 			path: app/Domain/Penyedia/Http/Resources/KontakPenyediaResource.php
 
 		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Resources\\KontakPenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Penyedia/Http/Resources/KontakPenyediaResource.php
-
-		-
 			message: '#^Method App\\Domain\\Penyedia\\Http\\Resources\\PenilaianPenyediaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Resources/PenilaianPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Resources\\PenilaianPenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Penyedia/Http/Resources/PenilaianPenyediaResource.php
 
@@ -4191,12 +4143,6 @@ parameters:
 		-
 			message: '#^Method App\\Domain\\Penyedia\\Http\\Resources\\PenyediaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Penyedia/Http/Resources/PenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\Penyedia\\Http\\Resources\\PenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/Penyedia/Http/Resources/PenyediaResource.php
 

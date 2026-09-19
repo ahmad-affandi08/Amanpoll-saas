@@ -16,6 +16,7 @@ const menuStruktur: Array<[string, string, string | null]> = [
   ['Organisasi', '/platform/organisasi', 'Pengaturan.Kelola'],
   ['Unit Organisasi', '/platform/unit-organisasi', 'Pengaturan.Kelola'],
   ['Lokasi', '/platform/lokasi', 'Pengaturan.Kelola'],
+  ['Penyedia', '/penyedia', 'Penyedia.Kelola'],
   ['Konfigurasi', '/platform/konfigurasi', 'Pengaturan.Kelola'],
   ['Nomor Dokumen', '/platform/nomor-dokumen', 'Pengaturan.Kelola'],
   ['Hari Libur', '/platform/hari-libur', 'Pengaturan.Kelola'],

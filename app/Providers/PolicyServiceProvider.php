@@ -12,6 +12,14 @@ use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Tag;
 use App\Domain\Notifikasi\Http\Policies\TemplatNotifikasiPolicy;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
+use App\Domain\Penyedia\Http\Policies\KategoriPenyediaPolicy;
+use App\Domain\Penyedia\Http\Policies\KontakPenyediaPolicy;
+use App\Domain\Penyedia\Http\Policies\PenilaianPenyediaPolicy;
+use App\Domain\Penyedia\Http\Policies\PenyediaPolicy;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\KontakPenyedia;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\PenilaianPenyedia;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Http\Policies\HariLiburPolicy;
 use App\Domain\Platform\Http\Policies\KategoriLokasiPolicy;
 use App\Domain\Platform\Http\Policies\KonfigurasiOrganisasiPolicy;
@@ -63,5 +71,9 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(AlurPersetujuan::class, AlurPersetujuanPolicy::class);
         Gate::policy(TahapPersetujuan::class, TahapPersetujuanPolicy::class);
         Gate::policy(TemplatNotifikasi::class, TemplatNotifikasiPolicy::class);
+        Gate::policy(KategoriPenyedia::class, KategoriPenyediaPolicy::class);
+        Gate::policy(Penyedia::class, PenyediaPolicy::class);
+        Gate::policy(KontakPenyedia::class, KontakPenyediaPolicy::class);
+        Gate::policy(PenilaianPenyedia::class, PenilaianPenyediaPolicy::class);
     }
 }

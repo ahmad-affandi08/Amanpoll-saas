@@ -13,17 +13,17 @@ final class SimpanKontakPenyediaRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PenyediaId' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Jabatan' => ['nullable'],
-            'Email' => ['nullable'],
-            'Telepon' => ['nullable'],
-            'Utama' => ['sometimes'],
+            'Nama' => ['required', 'string', 'max:180'],
+            'Jabatan' => ['nullable', 'string', 'max:120'],
+            'Email' => ['nullable', 'email', 'max:180'],
+            'Telepon' => ['nullable', 'string', 'max:60'],
+            'Utama' => ['boolean'],
         ];
     }
 }

@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Core\Audit\KorelasiId;
 use App\Core\Entitas\RegistriEntitas;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use Illuminate\Support\ServiceProvider;
@@ -37,5 +38,6 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri = $this->app->make(RegistriEntitas::class);
         $registri->daftarkan('UnitOrganisasi', UnitOrganisasi::class, 'Pengaturan.Kelola');
         $registri->daftarkan('Lokasi', Lokasi::class, 'Pengaturan.Kelola');
+        $registri->daftarkan('Penyedia', Penyedia::class, 'Penyedia.Kelola');
     }
 }
