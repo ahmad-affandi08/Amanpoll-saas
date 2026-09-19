@@ -8,8 +8,12 @@ use App\Domain\Platform\Application\Actions\BuatLokasi;
 use App\Domain\Platform\Application\Actions\HapusLokasi;
 use App\Domain\Platform\Application\Actions\UbahLokasi;
 use App\Domain\Platform\Http\Requests\SimpanLokasiRequest;
+use App\Domain\Platform\Http\Resources\KategoriLokasiResource;
 use App\Domain\Platform\Http\Resources\LokasiResource;
+use App\Domain\Platform\Http\Resources\UnitOrganisasiResource;
+use App\Domain\Platform\Infrastructure\Persistence\Models\KategoriLokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,6 +41,8 @@ final class LokasiController extends Controller
 
         return Inertia::render('Lokasi/Index', [
             'lokasi' => LokasiResource::collection($lokasi),
+            'unitOrganisasi' => UnitOrganisasiResource::collection(UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),
+            'kategoriLokasi' => KategoriLokasiResource::collection(KategoriLokasi::query()->orderBy('Nama')->get()),
             'cari' => $kataCari,
             'status' => $status,
         ]);

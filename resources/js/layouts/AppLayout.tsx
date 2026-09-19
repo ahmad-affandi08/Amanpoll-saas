@@ -10,6 +10,15 @@ const menu = [
   ['Pengadaan', '/perencanaan-pengadaan'], ['Laporan', '/pelaporan'],
 ];
 
+const menuStruktur: Array<[string, string, string | null]> = [
+  ['Organisasi', '/platform/organisasi', 'Pengaturan.Kelola'],
+  ['Unit Organisasi', '/platform/unit-organisasi', 'Pengaturan.Kelola'],
+  ['Lokasi', '/platform/lokasi', 'Pengaturan.Kelola'],
+  ['Konfigurasi', '/platform/konfigurasi', 'Pengaturan.Kelola'],
+  ['Nomor Dokumen', '/platform/nomor-dokumen', 'Pengaturan.Kelola'],
+  ['Hari Libur', '/platform/hari-libur', 'Pengaturan.Kelola'],
+];
+
 const menuAdministrasi: Array<[string, string, string | null]> = [
   ['Pengguna', '/platform/pengguna', 'Pengguna.Kelola'],
   ['Peran & Izin', '/platform/peran', 'Pengguna.Kelola'],
@@ -34,6 +43,18 @@ export default function AppLayout({ children }: PropsWithChildren) {
               </Link>
             ))}
           </nav>
+          <div className="mt-6 border-t border-border pt-4">
+            <p className="mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">Struktur & Konfigurasi</p>
+            <nav className="space-y-1">
+              {menuStruktur
+                .filter(([, , kodeIzin]) => kodeIzin === null || boleh(kodeIzin))
+                .map(([label, href]) => (
+                  <Link key={href} href={href} className="block rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground">
+                    {label}
+                  </Link>
+                ))}
+            </nav>
+          </div>
           <div className="mt-6 border-t border-border pt-4">
             <p className="mb-1 px-3 text-xs font-semibold uppercase text-muted-foreground">Administrasi</p>
             <nav className="space-y-1">
