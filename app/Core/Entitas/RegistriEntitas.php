@@ -8,6 +8,7 @@ use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Domain\Exceptions\AksesDitolak;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -88,5 +89,20 @@ final class RegistriEntitas
         }
 
         return $entitas;
+    }
+
+    /**
+     * Versi batch dari cariEntitas() untuk menghindari N+1 saat memproses
+     * banyak baris berjenis entitas sama sekaligus (mis. inbox persetujuan).
+     *
+     * @param list<string> $entitasId
+     * @return Collection<string, Model> dikunci berdasarkan Id
+     */
+    public function cariBanyakEntitas(string $jenisEntitas, array $entitasId): Collection
+    {
+        $kelas = $this->peta[$jenisEntitas]['kelas']
+            ?? throw new DataTidakDitemukan("Jenis entitas '{$jenisEntitas}' tidak dikenal.");
+
+        return $kelas::query()->whereIn('Id', $entitasId)->get()->keyBy('Id');
     }
 }

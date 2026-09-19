@@ -7,10 +7,16 @@ namespace App\Domain\Persetujuan\Infrastructure\Persistence\Models;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class PermintaanPersetujuan extends ModelDasar
 {
     use MilikOrganisasi;
+
+    public const STATUS_MENUNGGU = 'Menunggu';
+    public const STATUS_DISETUJUI = 'Disetujui';
+    public const STATUS_DITOLAK = 'Ditolak';
+    public const STATUS_DIBATALKAN = 'Dibatalkan';
 
     protected $table = 'PermintaanPersetujuan';
 
@@ -52,6 +58,14 @@ final class PermintaanPersetujuan extends ModelDasar
     public function dimintaOleh(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DimintaOleh', 'Id');
+    }
+
+    /**
+     * @return HasMany<KeputusanPersetujuan, $this>
+     */
+    public function keputusan(): HasMany
+    {
+        return $this->hasMany(KeputusanPersetujuan::class, 'PermintaanPersetujuanId', 'Id');
     }
 
 }

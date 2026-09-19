@@ -12,6 +12,9 @@ final class KeputusanPersetujuan extends ModelDasar
 {
     use MilikOrganisasi;
 
+    public const KEPUTUSAN_DISETUJUI = 'Disetujui';
+    public const KEPUTUSAN_DITOLAK = 'Ditolak';
+
     protected $table = 'KeputusanPersetujuan';
 
     public $timestamps = false;

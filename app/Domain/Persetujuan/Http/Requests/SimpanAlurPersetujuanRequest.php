@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Persetujuan\Http\Requests;
 
+use App\Core\Entitas\RegistriEntitas;
+use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Persetujuan\Infrastructure\Persistence\Models\AlurPersetujuan;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanAlurPersetujuanRequest extends FormRequest
 {
@@ -13,16 +17,23 @@ final class SimpanAlurPersetujuanRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->id();
+        /** @var AlurPersetujuan|null $alurPersetujuan */
+        $alurPersetujuan = $this->route('alurPersetujuan');
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'JenisEntitas' => ['sometimes'],
-            'KondisiAktivasi' => ['nullable'],
-            'Aktif' => ['sometimes'],
+            'Kode' => [
+                'required', 'string', 'max:80',
+                Rule::unique('AlurPersetujuan', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->ignore($alurPersetujuan?->Id, 'Id'),
+            ],
+            'Nama' => ['required', 'string', 'max:180'],
+            'JenisEntitas' => ['required', 'string', Rule::in(app(RegistriEntitas::class)->jenisDikenal())],
+            'KondisiAktivasi' => ['nullable', 'array'],
         ];
     }
 }

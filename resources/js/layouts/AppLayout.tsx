@@ -3,11 +3,13 @@ import type { PropsWithChildren } from 'react';
 import type { PageProps } from '@/types/global';
 import { useIzin } from '@/hooks/use-izin';
 import { Button } from '@/components/ui/button';
+import { NotificationBell } from '@/components/notifikasi/NotificationBell';
 
 const menu = [
   ['Dashboard', '/'], ['Aset', '/aset'], ['Perintah Kerja', '/pemeliharaan'],
   ['Kalibrasi', '/kalibrasi'], ['Persediaan', '/persediaan'],
   ['Pengadaan', '/perencanaan-pengadaan'], ['Laporan', '/pelaporan'],
+  ['Persetujuan Saya', '/persetujuan/permintaan'],
 ];
 
 const menuStruktur: Array<[string, string, string | null]> = [
@@ -19,6 +21,8 @@ const menuStruktur: Array<[string, string, string | null]> = [
   ['Hari Libur', '/platform/hari-libur', 'Pengaturan.Kelola'],
   ['Tag', '/kolaborasi/tag', 'Pengaturan.Kelola'],
   ['Kolom Kustom', '/kolaborasi/kolom-kustom', 'Pengaturan.Kelola'],
+  ['Alur Persetujuan', '/persetujuan/alur', 'Persetujuan.Kelola'],
+  ['Templat Notifikasi', '/notifikasi/templat', 'Pengaturan.Kelola'],
 ];
 
 const menuAdministrasi: Array<[string, string, string | null]> = [
@@ -27,6 +31,7 @@ const menuAdministrasi: Array<[string, string, string | null]> = [
   ['Kunci API', '/platform/kunci-api', 'Integrasi.Kelola'],
   ['Log Audit', '/integrasi-audit/audit', 'Audit.Lihat'],
   ['Profil', '/platform/profil', null],
+  ['Preferensi Notifikasi', '/notifikasi/preferensi', null],
 ];
 
 export default function AppLayout({ children }: PropsWithChildren) {
@@ -75,6 +80,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
           <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
             <div className="font-medium text-foreground">Asset & Maintenance Management</div>
             <div className="flex items-center gap-3">
+              <NotificationBell />
               <span className="text-sm text-muted-foreground">{auth.pengguna?.Nama ?? ''}</span>
               <Button variant="outline" size="sm" onClick={keluar}>Keluar</Button>
             </div>

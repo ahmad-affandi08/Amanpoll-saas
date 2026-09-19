@@ -12,6 +12,13 @@ final class Notifikasi extends ModelDasar
 {
     use MilikOrganisasi;
 
+    public const STATUS_ANTRI = 'Antri';
+    public const STATUS_TERKIRIM = 'Terkirim';
+    public const STATUS_GAGAL = 'Gagal';
+
+    public const KANAL_IN_APP = 'InApp';
+    public const KANAL_EMAIL = 'Email';
+
     protected $table = 'Notifikasi';
 
     public $timestamps = false;

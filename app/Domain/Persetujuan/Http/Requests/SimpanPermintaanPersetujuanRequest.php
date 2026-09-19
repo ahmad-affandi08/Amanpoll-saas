@@ -13,20 +13,15 @@ final class SimpanPermintaanPersetujuanRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'AlurPersetujuanId' => ['sometimes'],
-            'JenisEntitas' => ['sometimes'],
-            'EntitasId' => ['sometimes'],
-            'TahapSaatIni' => ['sometimes'],
-            'Status' => ['sometimes'],
-            'DimintaOleh' => ['sometimes'],
-            'DimintaPada' => ['sometimes'],
-            'SelesaiPada' => ['nullable'],
-            'DataTambahan' => ['nullable'],
+            'AlurPersetujuanId' => ['required', 'string'],
+            'EntitasId' => ['required', 'string'],
+            'DataTambahan' => ['nullable', 'array'],
         ];
     }
 }
