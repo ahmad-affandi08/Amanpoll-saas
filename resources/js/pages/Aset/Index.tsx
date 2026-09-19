@@ -15,6 +15,7 @@ import { formatUang } from '@/lib/uang';
 import type { Paginasi } from '@/types/global';
 import type { Aset, FilterAset } from '@/features/Aset/types';
 import type { KategoriAset } from '@/features/Aset/types';
+import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 
 interface Props {
@@ -27,8 +28,7 @@ interface Props {
 const SEMUA = '__semua__';
 
 function badgeStatus(status: Aset['Status']) {
-  const varian = status === 'Aktif' ? 'default' : status === 'Rusak' ? 'destructive' : 'outline';
-  return <Badge variant={varian}>{status}</Badge>;
+  return <Badge variant={VARIAN_BADGE_STATUS_ASET[status]}>{status}</Badge>;
 }
 
 function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset[]; lokasi: Lokasi[] }) {
@@ -175,37 +175,66 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
           </div>
         </form>
 
-        <div className="rounded-lg border border-border bg-card">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nama</TableHead>
-                <TableHead>Kategori</TableHead>
-                <TableHead>Lokasi</TableHead>
-                <TableHead>Harga Perolehan</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {aset.data.length === 0 && (
-                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Belum ada aset.</TableCell></TableRow>
-              )}
-              {aset.data.map((a) => (
-                <TableRow key={a.Id} className="cursor-pointer" onClick={() => router.visit(`/aset/${a.Id}`)}>
-                  <TableCell>
-                    <div className="font-medium text-foreground">{a.Nama}</div>
-                    <div className="font-mono text-xs text-muted-foreground">{a.KodeAset}</div>
-                  </TableCell>
-                  <TableCell>{a.NamaKategoriAset ?? '—'}</TableCell>
-                  <TableCell>{a.NamaLokasi ?? '—'}</TableCell>
-                  <TableCell>{a.HargaPerolehan ? formatUang(a.HargaPerolehan, a.MataUang) : '—'}</TableCell>
-                  <TableCell>{badgeStatus(a.Status)}</TableCell>
+        {aset.data.length === 0 && (
+          <div className="rounded-[9px] border border-border bg-card p-6 text-center text-sm text-muted-foreground">Belum ada aset.</div>
+        )}
+
+        {/* Mobile: card list (DESIGN.md 20/33 -- tabel lebar tidak dipaksakan ke layar sempit) */}
+        {aset.data.length > 0 && (
+          <div className="space-y-2 md:hidden">
+            {aset.data.map((a) => (
+              <button
+                key={a.Id}
+                type="button"
+                onClick={() => router.visit(`/aset/${a.Id}`)}
+                className="block w-full rounded-[9px] border border-border bg-card p-4 text-left"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className="font-mono text-xs text-muted-foreground">{a.KodeAset}</span>
+                  {badgeStatus(a.Status)}
+                </div>
+                <div className="mt-0.5 font-medium text-foreground">{a.Nama}</div>
+                <div className="text-sm text-muted-foreground">
+                  {a.NamaLokasi ?? 'Lokasi belum diatur'} · {a.NamaKategoriAset ?? '—'}
+                </div>
+                <div className="mt-1 text-sm text-muted-foreground">Kondisi: {a.Kondisi}</div>
+              </button>
+            ))}
+            <Pagination meta={aset.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)} />
+          </div>
+        )}
+
+        {/* Desktop/tablet: table */}
+        {aset.data.length > 0 && (
+          <div className="hidden rounded-[9px] border border-border bg-card md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nama</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Lokasi</TableHead>
+                  <TableHead>Harga Perolehan</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <Pagination meta={aset.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)} />
-        </div>
+              </TableHeader>
+              <TableBody>
+                {aset.data.map((a) => (
+                  <TableRow key={a.Id} className="cursor-pointer" onClick={() => router.visit(`/aset/${a.Id}`)}>
+                    <TableCell>
+                      <div className="font-medium text-foreground">{a.Nama}</div>
+                      <div className="font-mono text-xs text-muted-foreground">{a.KodeAset}</div>
+                    </TableCell>
+                    <TableCell>{a.NamaKategoriAset ?? '—'}</TableCell>
+                    <TableCell>{a.NamaLokasi ?? '—'}</TableCell>
+                    <TableCell>{a.HargaPerolehan ? formatUang(a.HargaPerolehan, a.MataUang) : '—'}</TableCell>
+                    <TableCell>{badgeStatus(a.Status)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <Pagination meta={aset.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)} />
+          </div>
+        )}
       </div>
     </AppLayout>
   );

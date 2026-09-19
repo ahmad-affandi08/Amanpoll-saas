@@ -3,20 +3,30 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { Slot } from "radix-ui"
 
+/* Badge Amanpoll: kotak lembut radius 5px, background tipis + teks kuat (DESIGN.md 6, 13.3, 18). */
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3",
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-[5px] border px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
-        secondary:
-          "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
-        destructive:
-          "bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
-        outline:
-          "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 [a&]:hover:underline",
+        // Netral/Draf
+        default: "border-garis-300 bg-permukaan-100 text-grafit-700",
+        netral: "border-garis-300 bg-permukaan-100 text-grafit-700",
+        // Informasi
+        info: "border-info-600/25 bg-info-600/10 text-info-600",
+        // Sedang berjalan
+        proses: "border-teknisi-600/25 bg-teknisi-600/10 text-teknisi-700",
+        // Menunggu/Perhatian
+        perhatian: "border-safety-600/30 bg-safety-500/15 text-safety-600",
+        // Selesai/Aktif
+        sukses: "border-sukses-600/25 bg-sukses-600/10 text-sukses-600",
+        // Gagal/Overdue/Destructive
+        destructive: "border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-600",
+        bahaya: "border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-600",
+        // Solid, untuk penekanan terbatas (mis. angka pada tab aktif)
+        solid: "border-transparent bg-primary text-primary-foreground",
+        secondary: "border-garis-300 bg-secondary text-secondary-foreground",
+        outline: "border-border bg-transparent text-foreground",
       },
     },
     defaultVariants: {

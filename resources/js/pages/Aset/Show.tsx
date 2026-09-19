@@ -23,6 +23,7 @@ import type {
 import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
+import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 
 interface Props {
   aset: Aset;
@@ -291,7 +292,7 @@ function TabPenanggungJawab({ aset, unitOrganisasi }: { aset: Aset; unitOrganisa
           <div key={r.Id} className="rounded-md border border-border px-3 py-2 text-sm">
             <div className="flex items-center justify-between">
               <span className="font-medium text-foreground">{r.NamaPengguna ?? r.NamaUnitOrganisasi ?? '—'}</span>
-              {r.SelesaiPada === null && <Badge variant="default">Aktif</Badge>}
+              {r.SelesaiPada === null && <Badge variant="sukses">Aktif</Badge>}
             </div>
             <div className="text-xs text-muted-foreground">
               {new Date(r.MulaiPada).toLocaleString('id-ID')} {r.SelesaiPada && `-- ${new Date(r.SelesaiPada).toLocaleString('id-ID')}`}
@@ -417,8 +418,8 @@ function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
             <div className="flex items-center justify-between">
               <span className="font-medium text-foreground">{g.NamaPenyedia ?? g.NomorGaransi ?? 'Garansi'}</span>
               <div className="flex gap-1">
-                {g.AkanBerakhir && <Badge variant="destructive">Akan berakhir {g.SisaHari} hari</Badge>}
-                {g.SudahBerakhir && <Badge variant="outline">Sudah berakhir</Badge>}
+                {g.AkanBerakhir && <Badge variant="perhatian">Akan berakhir {g.SisaHari} hari</Badge>}
+                {g.SudahBerakhir && <Badge variant="bahaya">Sudah berakhir</Badge>}
                 <Button variant="ghost" size="sm" onClick={() => hapus(g)}>Hapus</Button>
               </div>
             </div>
@@ -630,7 +631,7 @@ export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unit
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">{aset.Nama}</h1>
           <p className="font-mono text-sm text-muted-foreground">{aset.KodeAset}{aset.KodeQr && ` · QR: ${aset.KodeQr}`}</p>
         </div>
-        <Badge variant={aset.Status === 'Aktif' ? 'default' : 'outline'}>{aset.Status}</Badge>
+        <Badge variant={VARIAN_BADGE_STATUS_ASET[aset.Status]}>{aset.Status}</Badge>
       </div>
 
       <Tabs defaultValue="info">

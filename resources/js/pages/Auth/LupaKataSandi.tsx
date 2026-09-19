@@ -1,6 +1,8 @@
 import { FormEvent } from 'react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function LupaKataSandi() {
   const { props } = usePage<{ flash: { sukses?: string | null } }>();
@@ -24,19 +26,17 @@ export default function LupaKataSandi() {
         {props.flash?.sukses && (
           <p className="rounded-md bg-sukses-600/10 p-3 text-sm text-sukses-600">{props.flash.sukses}</p>
         )}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Kode Organisasi</label>
-          <input
-            className="h-10 w-full rounded-md border border-input px-3"
+        <div className="space-y-1.5">
+          <Label>Kode Organisasi</Label>
+          <Input
             value={form.data.KodeOrganisasi}
             onChange={(e) => form.setData('KodeOrganisasi', e.target.value)}
           />
           {form.errors.KodeOrganisasi && <p className="text-sm text-destructive">{form.errors.KodeOrganisasi}</p>}
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Email</label>
-          <input
-            className="h-10 w-full rounded-md border border-input px-3"
+        <div className="space-y-1.5">
+          <Label>Email</Label>
+          <Input
             type="email"
             value={form.data.Email}
             onChange={(e) => form.setData('Email', e.target.value)}

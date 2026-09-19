@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
+import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator,
@@ -39,10 +40,10 @@ export function NotificationBell() {
   return (
     <DropdownMenu open={buka} onOpenChange={(v) => { setBuka(v); if (v) muat(); }}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="relative">
-          Notifikasi
+        <Button variant="ghost" size="icon" className="relative" aria-label="Notifikasi">
+          <Bell size={18} strokeWidth={1.75} />
           {jumlahBelumDibaca > 0 && (
-            <Badge className="absolute -right-2 -top-2 h-5 min-w-5 justify-center px-1" variant="destructive">
+            <Badge className="absolute -right-1 -top-1 h-4 min-w-4 justify-center px-1 py-0 text-[10px]" variant="bahaya">
               {jumlahBelumDibaca}
             </Badge>
           )}

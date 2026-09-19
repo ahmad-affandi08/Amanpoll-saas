@@ -1,6 +1,8 @@
 import { FormEvent } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface ResetKataSandiProps {
   penggunaId: string;
@@ -23,20 +25,18 @@ export default function ResetKataSandi({ penggunaId, token }: ResetKataSandiProp
           <h1 className="text-2xl font-semibold text-foreground">Reset Kata Sandi</h1>
           <p className="text-sm text-muted-foreground">Masukkan kata sandi baru untuk akun Anda.</p>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Kata Sandi Baru</label>
-          <input
-            className="h-10 w-full rounded-md border border-input px-3"
+        <div className="space-y-1.5">
+          <Label>Kata Sandi Baru</Label>
+          <Input
             type="password"
             value={form.data.KataSandiBaru}
             onChange={(e) => form.setData('KataSandiBaru', e.target.value)}
           />
           {form.errors.KataSandiBaru && <p className="text-sm text-destructive">{form.errors.KataSandiBaru}</p>}
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Konfirmasi Kata Sandi Baru</label>
-          <input
-            className="h-10 w-full rounded-md border border-input px-3"
+        <div className="space-y-1.5">
+          <Label>Konfirmasi Kata Sandi Baru</Label>
+          <Input
             type="password"
             value={form.data.KataSandiBaru_confirmation}
             onChange={(e) => form.setData('KataSandiBaru_confirmation', e.target.value)}

@@ -1,6 +1,10 @@
 import { FormEvent } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { LogoMark } from '@/components/shared/LogoMark';
 
 export default function Login() {
   const form = useForm({ KodeOrganisasi: '', Email: '', KataSandi: '', IngatSaya: false });
@@ -10,30 +14,33 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-6">
+    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 p-6">
       <Head title="Masuk" />
-      <form onSubmit={submit} className="w-full max-w-sm space-y-5 rounded-xl border bg-white p-6 shadow-sm">
-        <div>
-          <h1 className="text-2xl font-semibold">Amanpoll</h1>
-          <p className="text-sm text-zinc-500">Masuk ke sistem Asset & Maintenance Management.</p>
+      <form onSubmit={submit} className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]">
+        <div className="flex flex-col items-center gap-3 pb-1 text-center">
+          <LogoMark className="size-10" />
+          <div>
+            <h1 className="text-xl font-semibold text-foreground">Amanpoll</h1>
+            <p className="text-sm text-muted-foreground">Masuk untuk melanjutkan pekerjaan operasional.</p>
+          </div>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Kode Organisasi</label>
-          <input className="h-10 w-full rounded-md border px-3" value={form.data.KodeOrganisasi} onChange={(e) => form.setData('KodeOrganisasi', e.target.value)} autoComplete="organization" />
-          {form.errors.KodeOrganisasi && <p className="text-sm text-red-600">{form.errors.KodeOrganisasi}</p>}
+        <div className="space-y-1.5">
+          <Label>Kode Organisasi</Label>
+          <Input value={form.data.KodeOrganisasi} onChange={(e) => form.setData('KodeOrganisasi', e.target.value)} autoComplete="organization" />
+          {form.errors.KodeOrganisasi && <p className="text-sm text-destructive">{form.errors.KodeOrganisasi}</p>}
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Email</label>
-          <input className="h-10 w-full rounded-md border px-3" type="email" value={form.data.Email} onChange={(e) => form.setData('Email', e.target.value)} />
-          {form.errors.Email && <p className="text-sm text-red-600">{form.errors.Email}</p>}
+        <div className="space-y-1.5">
+          <Label>Email</Label>
+          <Input type="email" value={form.data.Email} onChange={(e) => form.setData('Email', e.target.value)} />
+          {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Kata Sandi</label>
-          <input className="h-10 w-full rounded-md border px-3" type="password" value={form.data.KataSandi} onChange={(e) => form.setData('KataSandi', e.target.value)} />
-          {form.errors.KataSandi && <p className="text-sm text-red-600">{form.errors.KataSandi}</p>}
+        <div className="space-y-1.5">
+          <Label>Kata Sandi</Label>
+          <Input type="password" value={form.data.KataSandi} onChange={(e) => form.setData('KataSandi', e.target.value)} />
+          {form.errors.KataSandi && <p className="text-sm text-destructive">{form.errors.KataSandi}</p>}
         </div>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={form.data.IngatSaya} onChange={(e) => form.setData('IngatSaya', e.target.checked)} />
+        <label className="flex items-center gap-2 text-sm text-foreground">
+          <Checkbox checked={form.data.IngatSaya} onCheckedChange={(v) => form.setData('IngatSaya', v === true)} />
           Ingat saya
         </label>
         <Button className="w-full" disabled={form.processing}>Masuk</Button>
