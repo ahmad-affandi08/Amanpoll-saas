@@ -32,16 +32,25 @@ final class DetailSerahTerimaAset extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<SerahTerimaAset, $this>
+     */
     public function serahTerimaAset(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset::class, 'SerahTerimaAsetId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<\App\Domain\Aset\Infrastructure\Persistence\Models\Aset, $this>
+     */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');

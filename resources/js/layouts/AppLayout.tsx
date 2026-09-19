@@ -12,7 +12,8 @@ import {
 import {
   LayoutDashboard, Box, FolderTree, Tag, Layers, Truck, FileCheck, Building2, Network,
   MapPin, Settings, Hash, CalendarDays, Tags, Columns3, Workflow, MessageSquareText, Users,
-  ShieldCheck, KeyRound, ScrollText, CircleUserRound, BellRing, type LucideIcon,
+  ShieldCheck, KeyRound, ScrollText, CircleUserRound, BellRing, ArrowLeftRight, Handshake, Trash2,
+  type LucideIcon,
 } from 'lucide-react';
 
 interface ItemNav {
@@ -39,6 +40,9 @@ const navAset: GrupNav = {
   label: 'Aset',
   items: [
     { label: 'Daftar Aset', href: '/aset', icon: Box },
+    { label: 'Mutasi Aset', href: '/mutasi-aset', icon: ArrowLeftRight, kodeIzin: 'Aset.Ubah' },
+    { label: 'Serah Terima', href: '/serah-terima-aset', icon: Handshake, kodeIzin: 'Aset.Ubah' },
+    { label: 'Penghapusan', href: '/penghapusan-aset', icon: Trash2, kodeIzin: 'Aset.Hapus' },
     { label: 'Kategori Aset', href: '/aset-master/kategori', icon: FolderTree, kodeIzin: 'Aset.Buat' },
     { label: 'Merek', href: '/aset-master/merek', icon: Tag, kodeIzin: 'Aset.Buat' },
     { label: 'Model Aset', href: '/aset-master/model', icon: Layers, kodeIzin: 'Aset.Buat' },

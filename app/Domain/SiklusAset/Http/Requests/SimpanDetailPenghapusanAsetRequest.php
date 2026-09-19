@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanDetailPenghapusanAsetRequest extends FormRequest
 {
@@ -13,17 +15,19 @@ final class SimpanDetailPenghapusanAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->id();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PengajuanPenghapusanAsetId' => ['sometimes'],
-            'AsetId' => ['sometimes'],
-            'NilaiBukuSaatPenghapusan' => ['nullable'],
-            'HasilPelepasan' => ['nullable'],
-            'Status' => ['sometimes'],
-            'Catatan' => ['nullable'],
+            'AsetId' => ['required', 'string',
+                Rule::exists('Aset', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
+            'NilaiBukuSaatPenghapusan' => ['nullable', 'numeric', 'min:0'],
+            'HasilPelepasan' => ['nullable', 'numeric', 'min:0'],
+            'Catatan' => ['nullable', 'string'],
         ];
     }
 }

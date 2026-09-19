@@ -52,6 +52,12 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use App\Domain\SiklusAset\Http\Policies\PengajuanPenghapusanAsetPolicy;
+use App\Domain\SiklusAset\Http\Policies\PermintaanMutasiAsetPolicy;
+use App\Domain\SiklusAset\Http\Policies\SerahTerimaAsetPolicy;
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -87,5 +93,8 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(Merek::class, MerekPolicy::class);
         Gate::policy(ModelAset::class, ModelAsetPolicy::class);
         Gate::policy(Aset::class, AsetPolicy::class);
+        Gate::policy(PermintaanMutasiAset::class, PermintaanMutasiAsetPolicy::class);
+        Gate::policy(SerahTerimaAset::class, SerahTerimaAsetPolicy::class);
+        Gate::policy(PengajuanPenghapusanAset::class, PengajuanPenghapusanAsetPolicy::class);
     }
 }

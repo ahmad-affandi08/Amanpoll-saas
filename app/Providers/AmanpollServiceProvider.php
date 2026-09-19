@@ -10,8 +10,13 @@ use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use App\Domain\SiklusAset\Infrastructure\Listeners\SinkronkanStatusPersetujuanSiklusAset;
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use Illuminate\Support\ServiceProvider;
 
 final class AmanpollServiceProvider extends ServiceProvider
@@ -43,5 +48,12 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('Penyedia', Penyedia::class, 'Penyedia.Kelola');
         $registri->daftarkan('Aset', Aset::class, 'Aset.Ubah');
         $registri->daftarkan('GaransiAset', GaransiAset::class, 'Aset.Ubah');
+        $registri->daftarkan('PermintaanMutasiAset', PermintaanMutasiAset::class, 'Aset.Ubah');
+        $registri->daftarkan('SerahTerimaAset', SerahTerimaAset::class, 'Aset.Ubah');
+        $registri->daftarkan('PengajuanPenghapusanAset', PengajuanPenghapusanAset::class, 'Aset.Hapus');
+
+        // Mesin Persetujuan (FASE 06) domain-agnostic; SiklusAset menyalin
+        // balik hasil keputusan ke status entitasnya sendiri lewat observer.
+        PermintaanPersetujuan::observe(SinkronkanStatusPersetujuanSiklusAset::class);
     }
 }

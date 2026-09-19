@@ -16,6 +16,7 @@ final class RiwayatLokasiAset extends ModelDasar
 
     public const JENIS_REGISTRASI = 'Registrasi';
     public const JENIS_MANUAL = 'Manual';
+    public const JENIS_MUTASI = 'Mutasi';
 
     public $timestamps = false;
 

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanSerahTerimaAsetRequest extends FormRequest
 {
@@ -13,20 +15,19 @@ final class SimpanSerahTerimaAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->id();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nomor' => ['sometimes'],
-            'PermintaanMutasiAsetId' => ['nullable'],
-            'Jenis' => ['sometimes'],
-            'PihakMenyerahkan' => ['nullable'],
-            'PihakMenerima' => ['nullable'],
-            'DiserahkanPada' => ['nullable'],
-            'DiterimaPada' => ['nullable'],
-            'Status' => ['sometimes'],
-            'Catatan' => ['nullable'],
+            'PermintaanMutasiAsetId' => ['nullable', 'string', Rule::exists('PermintaanMutasiAset', 'Id')->where('OrganisasiId', $organisasiId)],
+            'Jenis' => ['required', 'string', 'max:60'],
+            'PihakMenyerahkan' => ['nullable', 'string', Rule::exists('Pengguna', 'Id')->where('OrganisasiId', $organisasiId)],
+            'PihakMenerima' => ['nullable', 'string', Rule::exists('Pengguna', 'Id')->where('OrganisasiId', $organisasiId)],
+            'Catatan' => ['nullable', 'string'],
         ];
     }
 }

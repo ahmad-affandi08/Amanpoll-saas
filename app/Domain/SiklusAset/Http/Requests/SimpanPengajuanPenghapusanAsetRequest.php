@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Http\Requests;
 
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanPengajuanPenghapusanAsetRequest extends FormRequest
 {
@@ -13,18 +15,20 @@ final class SimpanPengajuanPenghapusanAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nomor' => ['sometimes'],
-            'Alasan' => ['sometimes'],
-            'MetodePenghapusan' => ['nullable'],
-            'Status' => ['sometimes'],
-            'DiajukanOleh' => ['sometimes'],
-            'DiajukanPada' => ['sometimes'],
-            'DiselesaikanPada' => ['nullable'],
+            'Alasan' => ['required', 'string'],
+            'MetodePenghapusan' => ['nullable', 'string', Rule::in([
+                PengajuanPenghapusanAset::METODE_DIJUAL,
+                PengajuanPenghapusanAset::METODE_DIMUSNAHKAN,
+                PengajuanPenghapusanAset::METODE_HIBAH,
+                PengajuanPenghapusanAset::METODE_HILANG,
+                PengajuanPenghapusanAset::METODE_LAINNYA,
+            ])],
         ];
     }
 }

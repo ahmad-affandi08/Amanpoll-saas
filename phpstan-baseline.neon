@@ -7579,50 +7579,8 @@ parameters:
 			path: app/Domain/SiklusAset/Domain/Repositories/SerahTerimaAsetRepository.php
 
 		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Requests\\SimpanDetailMutasiAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Requests/SimpanDetailMutasiAsetRequest.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Requests\\SimpanDetailPenghapusanAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Requests/SimpanDetailPenghapusanAsetRequest.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Requests\\SimpanDetailSerahTerimaAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Requests/SimpanDetailSerahTerimaAsetRequest.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Requests\\SimpanPengajuanPenghapusanAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Requests/SimpanPengajuanPenghapusanAsetRequest.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Requests\\SimpanPermintaanMutasiAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Requests/SimpanPermintaanMutasiAsetRequest.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Requests\\SimpanSerahTerimaAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Requests/SimpanSerahTerimaAsetRequest.php
-
-		-
 			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\DetailMutasiAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Resources/DetailMutasiAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\DetailMutasiAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/SiklusAset/Http/Resources/DetailMutasiAsetResource.php
 
@@ -7633,20 +7591,8 @@ parameters:
 			path: app/Domain/SiklusAset/Http/Resources/DetailPenghapusanAsetResource.php
 
 		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\DetailPenghapusanAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/SiklusAset/Http/Resources/DetailPenghapusanAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\DetailSerahTerimaAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Resources/DetailSerahTerimaAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\DetailSerahTerimaAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/SiklusAset/Http/Resources/DetailSerahTerimaAsetResource.php
 
@@ -7657,20 +7603,8 @@ parameters:
 			path: app/Domain/SiklusAset/Http/Resources/PengajuanPenghapusanAsetResource.php
 
 		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\PengajuanPenghapusanAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/SiklusAset/Http/Resources/PengajuanPenghapusanAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\PermintaanMutasiAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/SiklusAset/Http/Resources/PermintaanMutasiAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\PermintaanMutasiAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Domain/SiklusAset/Http/Resources/PermintaanMutasiAsetResource.php
 
@@ -7681,32 +7615,8 @@ parameters:
 			path: app/Domain/SiklusAset/Http/Resources/SerahTerimaAsetResource.php
 
 		-
-			message: '#^Method App\\Domain\\SiklusAset\\Http\\Resources\\SerahTerimaAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/SiklusAset/Http/Resources/SerahTerimaAsetResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailMutasiAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailMutasiAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailMutasiAset\:\:permintaanMutasiAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailMutasiAset.php
 
@@ -7717,44 +7627,8 @@ parameters:
 			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailPenghapusanAset.php
 
 		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailPenghapusanAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailPenghapusanAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailPenghapusanAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailPenghapusanAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailPenghapusanAset\:\:pengajuanPenghapusanAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailPenghapusanAset.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailSerahTerimaAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailSerahTerimaAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailSerahTerimaAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailSerahTerimaAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailSerahTerimaAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\DetailSerahTerimaAset\:\:serahTerimaAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/DetailSerahTerimaAset.php
 
@@ -7765,86 +7639,14 @@ parameters:
 			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PengajuanPenghapusanAset.php
 
 		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PengajuanPenghapusanAset\:\:diajukanOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PengajuanPenghapusanAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PengajuanPenghapusanAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PengajuanPenghapusanAset.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PermintaanMutasiAset.php
 
 		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PermintaanMutasiAset\:\:dimintaOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PermintaanMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PermintaanMutasiAset\:\:lokasiAsal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PermintaanMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PermintaanMutasiAset\:\:lokasiTujuan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PermintaanMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PermintaanMutasiAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PermintaanMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PermintaanMutasiAset\:\:unitAsal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PermintaanMutasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\PermintaanMutasiAset\:\:unitTujuan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/PermintaanMutasiAset.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/SerahTerimaAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\SerahTerimaAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/SerahTerimaAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\SerahTerimaAset\:\:permintaanMutasiAset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/SerahTerimaAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\SerahTerimaAset\:\:pihakMenerima\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/SerahTerimaAset.php
-
-		-
-			message: '#^Method App\\Domain\\SiklusAset\\Infrastructure\\Persistence\\Models\\SerahTerimaAset\:\:pihakMenyerahkan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/SiklusAset/Infrastructure/Persistence/Models/SerahTerimaAset.php
 
