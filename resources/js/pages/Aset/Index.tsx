@@ -1,5 +1,6 @@
-import { FormEvent, useState } from 'react';
+import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { ListFilter } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatUang } from '@/lib/uang';
@@ -30,6 +32,62 @@ const SEMUA = '__semua__';
 
 function badgeStatus(status: Aset['Status']) {
   return <Badge variant={VARIAN_BADGE_STATUS_ASET[status]}>{status}</Badge>;
+}
+
+function MedanFilterAset({
+  form, setForm, kategoriAset, lokasi,
+}: {
+  form: FilterAset;
+  setForm: Dispatch<SetStateAction<FilterAset>>;
+  kategoriAset: KategoriAset[];
+  lokasi: Lokasi[];
+}) {
+  return (
+    <>
+      <div className="space-y-1.5">
+        <Label>Cari</Label>
+        <Input
+          value={form.cari ?? ''}
+          onChange={(e) => setForm((f) => ({ ...f, cari: e.target.value || undefined }))}
+          placeholder="Nama, kode, atau nomor seri..."
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label>Kategori</Label>
+        <Select value={form.kategoriAsetId ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, kategoriAsetId: v === SEMUA ? undefined : v }))}>
+          <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={SEMUA}>Semua</SelectItem>
+            {kategoriAset.map((k) => <SelectItem key={k.Id} value={k.Id}>{k.Nama}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label>Lokasi</Label>
+        <Select value={form.lokasiId ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, lokasiId: v === SEMUA ? undefined : v }))}>
+          <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={SEMUA}>Semua</SelectItem>
+            {lokasi.map((l) => <SelectItem key={l.Id} value={l.Id}>{l.Nama}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label>Status</Label>
+        <Select value={form.status ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, status: v === SEMUA ? undefined : v }))}>
+          <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={SEMUA}>Semua</SelectItem>
+            {['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+    </>
+  );
+}
+
+function jumlahFilterAktif(filter: FilterAset): number {
+  return [filter.cari, filter.kategoriAsetId, filter.lokasiId, filter.status].filter(Boolean).length;
 }
 
 function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset[]; lokasi: Lokasi[] }) {
@@ -108,16 +166,21 @@ function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset
 
 export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props) {
   const [form, setForm] = useState<FilterAset>(filter);
+  const [sheetFilterBuka, setSheetFilterBuka] = useState(false);
 
-  const terapkanFilter = (e: FormEvent) => {
-    e.preventDefault();
+  const terapkanFilter = (e?: FormEvent) => {
+    e?.preventDefault();
+    setSheetFilterBuka(false);
     router.get('/aset', { ...form }, { preserveState: true, preserveScroll: true });
   };
 
   const resetFilter = () => {
     setForm({});
+    setSheetFilterBuka(false);
     router.get('/aset', {}, { preserveState: true, preserveScroll: true });
   };
+
+  const jumlahAktif = jumlahFilterAktif(filter);
 
   return (
     <AppLayout>
@@ -131,45 +194,37 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
           <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} />
         </div>
 
-        <form onSubmit={terapkanFilter} className="grid grid-cols-1 gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="space-y-1.5 lg:col-span-2">
-            <Label>Cari</Label>
-            <Input
-              value={form.cari ?? ''}
-              onChange={(e) => setForm((f) => ({ ...f, cari: e.target.value || undefined }))}
-              placeholder="Nama, kode, atau nomor seri..."
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Kategori</Label>
-            <Select value={form.kategoriAsetId ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, kategoriAsetId: v === SEMUA ? undefined : v }))}>
-              <SelectTrigger><SelectValue placeholder="Semua" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SEMUA}>Semua</SelectItem>
-                {kategoriAset.map((k) => <SelectItem key={k.Id} value={k.Id}>{k.Nama}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Lokasi</Label>
-            <Select value={form.lokasiId ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, lokasiId: v === SEMUA ? undefined : v }))}>
-              <SelectTrigger><SelectValue placeholder="Semua" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SEMUA}>Semua</SelectItem>
-                {lokasi.map((l) => <SelectItem key={l.Id} value={l.Id}>{l.Nama}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Status</Label>
-            <Select value={form.status ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, status: v === SEMUA ? undefined : v }))}>
-              <SelectTrigger><SelectValue placeholder="Semua" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SEMUA}>Semua</SelectItem>
-                {['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Mobile: filter di Sheet (DESIGN.md 13.8/33), bukan grid yang dipaksakan */}
+        <div className="md:hidden">
+          <Button variant="outline" onClick={() => setSheetFilterBuka(true)} className="relative">
+            <ListFilter size={16} strokeWidth={1.75} />
+            Filter
+            {jumlahAktif > 0 && (
+              <Badge variant="solid" className="ml-1 h-4 min-w-4 justify-center px-1 py-0 text-[10px]">{jumlahAktif}</Badge>
+            )}
+          </Button>
+          <Sheet open={sheetFilterBuka} onOpenChange={setSheetFilterBuka}>
+            <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>Filter Aset</SheetTitle>
+              </SheetHeader>
+              <form onSubmit={terapkanFilter} className="space-y-4 px-4">
+                <MedanFilterAset form={form} setForm={setForm} kategoriAset={kategoriAset} lokasi={lokasi} />
+              </form>
+              <SheetFooter className="flex-row">
+                <Button type="button" variant="outline" className="flex-1" onClick={resetFilter}>Reset</Button>
+                <Button type="button" className="flex-1" onClick={terapkanFilter}>Terapkan</Button>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Desktop/tablet: filter inline */}
+        <form
+          onSubmit={terapkanFilter}
+          className="hidden grid-cols-2 gap-4 rounded-[9px] border border-border bg-card p-4 md:grid lg:grid-cols-5 [&>:first-child]:lg:col-span-2"
+        >
+          <MedanFilterAset form={form} setForm={setForm} kategoriAset={kategoriAset} lokasi={lokasi} />
           <div className="flex items-end gap-2 lg:col-span-5">
             <Button type="submit">Terapkan</Button>
             <Button type="button" variant="outline" onClick={resetFilter}>Reset</Button>
