@@ -3,6 +3,13 @@ export interface PenggunaAuth {
   Nama: string;
   Email: string;
   OrganisasiId: string;
+  AvatarUrl?: string | null;
+  Jabatan?: string | null;
+  organisasi?: {
+    Id: string;
+    Nama: string;
+    Kode: string;
+  } | null;
 }
 
 export interface PageProps {

@@ -22,7 +22,19 @@ final class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'namaAplikasi' => config('app.name'),
             'auth' => [
-                'pengguna' => $pengguna,
+                'pengguna' => $pengguna ? [
+                    'Id' => $pengguna->Id,
+                    'Nama' => $pengguna->Nama,
+                    'Email' => $pengguna->Email,
+                    'OrganisasiId' => $pengguna->OrganisasiId,
+                    'AvatarUrl' => $pengguna->AvatarUrl,
+                    'Jabatan' => $pengguna->Jabatan,
+                    'organisasi' => $pengguna->organisasi ? [
+                        'Id' => $pengguna->organisasi->Id,
+                        'Nama' => $pengguna->organisasi->Nama,
+                        'Kode' => $pengguna->organisasi->Kode,
+                    ] : null,
+                ] : null,
             ],
             'izin' => fn (): array => $pengguna ? $this->pemeriksaIzin->daftarKodeIzin((string) $pengguna->Id) : [],
             'flash' => [
