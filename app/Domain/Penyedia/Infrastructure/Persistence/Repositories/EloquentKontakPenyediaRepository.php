@@ -23,6 +23,7 @@ final class EloquentKontakPenyediaRepository implements KontakPenyediaRepository
     public function simpan(KontakPenyedia $model): KontakPenyedia
     {
         $model->save();
+
         return $model->refresh();
     }
 

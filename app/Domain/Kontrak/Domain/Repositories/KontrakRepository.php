@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KontrakRepository
 {
     public function temukan(string $id): ?Kontrak;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(Kontrak $model): Kontrak;
+
     public function hapus(Kontrak $model): void;
 }

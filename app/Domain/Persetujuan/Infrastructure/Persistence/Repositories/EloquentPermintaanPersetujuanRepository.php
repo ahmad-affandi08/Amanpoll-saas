@@ -23,6 +23,7 @@ final class EloquentPermintaanPersetujuanRepository implements PermintaanPersetu
     public function simpan(PermintaanPersetujuan $model): PermintaanPersetujuan
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -23,6 +23,7 @@ final class EloquentKontrakRepository implements KontrakRepository
     public function simpan(Kontrak $model): Kontrak
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -23,6 +23,7 @@ final class EloquentIzinRepository implements IzinRepository
     public function simpan(Izin $model): Izin
     {
         $model->save();
+
         return $model->refresh();
     }
 

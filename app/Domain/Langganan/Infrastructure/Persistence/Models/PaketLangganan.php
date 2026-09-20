@@ -11,6 +11,7 @@ final class PaketLangganan extends ModelDasar
     protected $table = 'PaketLangganan';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -33,5 +34,4 @@ final class PaketLangganan extends ModelDasar
             'DiperbaruiPada' => 'immutable_datetime',
         ];
     }
-
 }

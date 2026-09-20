@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface HasilTitikUkurKalibrasiRepository
 {
     public function temukan(string $id): ?HasilTitikUkurKalibrasi;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(HasilTitikUkurKalibrasi $model): HasilTitikUkurKalibrasi;
+
     public function hapus(HasilTitikUkurKalibrasi $model): void;
 }

@@ -23,6 +23,7 @@ final class EloquentPaketFiturRepository implements PaketFiturRepository
     public function simpan(PaketFitur $model): PaketFitur
     {
         $model->save();
+
         return $model->refresh();
     }
 

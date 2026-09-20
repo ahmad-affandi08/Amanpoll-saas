@@ -43,7 +43,7 @@ final class NotifikasiController extends Controller
             throw new AksesDitolak('Notifikasi ini bukan milik Anda.');
         }
 
-        if (!$notifikasi->DibacaPada) {
+        if (! $notifikasi->DibacaPada) {
             $notifikasi->DibacaPada = now()->toImmutable();
             $notifikasi->save();
         }

@@ -23,6 +23,7 @@ final class EloquentDetailPesananPembelianRepository implements DetailPesananPem
     public function simpan(DetailPesananPembelian $model): DetailPesananPembelian
     {
         $model->save();
+
         return $model->refresh();
     }
 

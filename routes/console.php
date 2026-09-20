@@ -35,3 +35,8 @@ Schedule::command('suku-cadang:peringatan-stok-minimum')
 Schedule::command('keluhan:proses-eskalasi-sla')
     ->everyFiveMinutes()
     ->withoutOverlapping(5);
+
+Schedule::command('pemeliharaan:jadwalkan-preventif')
+    ->dailyAt('01:00')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();

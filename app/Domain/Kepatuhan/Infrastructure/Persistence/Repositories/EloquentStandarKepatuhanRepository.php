@@ -23,6 +23,7 @@ final class EloquentStandarKepatuhanRepository implements StandarKepatuhanReposi
     public function simpan(StandarKepatuhan $model): StandarKepatuhan
     {
         $model->save();
+
         return $model->refresh();
     }
 

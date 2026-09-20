@@ -23,6 +23,7 @@ final class EloquentPemetaanDataEksternalRepository implements PemetaanDataEkste
     public function simpan(PemetaanDataEksternal $model): PemetaanDataEksternal
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -9,7 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 final class UbahProfilOrganisasi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Organisasi $organisasi, array $data): Organisasi
     {

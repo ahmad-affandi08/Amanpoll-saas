@@ -7,10 +7,11 @@ namespace Tests\Feature\Platform;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
-use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
-use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -175,7 +176,7 @@ class PenggunaControllerTest extends TestCase
 
         $konteks = app(KonteksOrganisasi::class);
         $konteks->tetapkan($organisasiB->Id);
-        $unitB = \App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::create(['Kode' => 'UNIT-B', 'Nama' => 'Unit B']);
+        $unitB = UnitOrganisasi::create(['Kode' => 'UNIT-B', 'Nama' => 'Unit B']);
         $konteks->bersihkan();
 
         $response = $this->actingAs($admin)->post('/platform/pengguna', [

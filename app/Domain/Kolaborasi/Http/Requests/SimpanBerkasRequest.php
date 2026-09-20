@@ -9,6 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 final class SimpanBerkasRequest extends FormRequest
 {
     private const MIME_DIIZINKAN = 'pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx,csv,txt';
+
     private const UKURAN_MAKS_KB = 10240;
 
     public function authorize(): bool

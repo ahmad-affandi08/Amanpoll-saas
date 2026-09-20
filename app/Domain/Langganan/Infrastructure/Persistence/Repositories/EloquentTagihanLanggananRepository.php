@@ -23,6 +23,7 @@ final class EloquentTagihanLanggananRepository implements TagihanLanggananReposi
     public function simpan(TagihanLangganan $model): TagihanLangganan
     {
         $model->save();
+
         return $model->refresh();
     }
 

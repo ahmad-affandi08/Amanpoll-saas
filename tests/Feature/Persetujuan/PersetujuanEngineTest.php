@@ -12,10 +12,11 @@ use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
-use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
-use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -387,7 +388,7 @@ class PersetujuanEngineTest extends TestCase
 
         $konteks = app(KonteksOrganisasi::class);
         $konteks->tetapkan($organisasi->Id);
-        $unit = \App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::create(['Kode' => 'UNIT-1', 'Nama' => 'Unit Satu', 'Jenis' => 'Divisi']);
+        $unit = UnitOrganisasi::create(['Kode' => 'UNIT-1', 'Nama' => 'Unit Satu', 'Jenis' => 'Divisi']);
         $konteks->bersihkan();
 
         $lokasi = $this->buatLokasi($organisasi, $unit->Id);

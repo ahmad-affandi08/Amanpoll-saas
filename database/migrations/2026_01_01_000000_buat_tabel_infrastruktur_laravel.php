@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('TokenResetKataSandi')) {
+        if (! Schema::hasTable('TokenResetKataSandi')) {
             // Keyed oleh PenggunaId (bukan email) karena email hanya unik per
             // organisasi, bukan global -- lihat App\Domain\Platform\Application\Actions\MintaResetKataSandi.
             Schema::create('TokenResetKataSandi', function (Blueprint $table): void {
@@ -20,7 +20,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('AntrianPekerjaan')) {
+        if (! Schema::hasTable('AntrianPekerjaan')) {
             Schema::create('AntrianPekerjaan', function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->string('queue')->index();
@@ -32,7 +32,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('KelompokAntrianPekerjaan')) {
+        if (! Schema::hasTable('KelompokAntrianPekerjaan')) {
             Schema::create('KelompokAntrianPekerjaan', function (Blueprint $table): void {
                 $table->string('id')->primary();
                 $table->string('name');
@@ -47,7 +47,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('PekerjaanGagal')) {
+        if (! Schema::hasTable('PekerjaanGagal')) {
             Schema::create('PekerjaanGagal', function (Blueprint $table): void {
                 $table->id();
                 $table->string('uuid')->unique();

@@ -23,6 +23,7 @@ final class EloquentSertifikasiAsetRepository implements SertifikasiAsetReposito
     public function simpan(SertifikasiAset $model): SertifikasiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

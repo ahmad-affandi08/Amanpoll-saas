@@ -45,10 +45,11 @@ final class EksekusiPenghapusanAset
                 /** @var Aset|null $aset */
                 $aset = $detail->aset;
 
-                if (!$aset) {
+                if (! $aset) {
                     $detail->Status = DetailPenghapusanAset::STATUS_DIBATALKAN;
                     $detail->Catatan = trim(($detail->Catatan ?? '')."\nAset tidak ditemukan saat eksekusi.");
                     $detail->save();
+
                     continue;
                 }
 

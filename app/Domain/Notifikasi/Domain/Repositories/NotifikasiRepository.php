@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface NotifikasiRepository
 {
     public function temukan(string $id): ?Notifikasi;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(Notifikasi $model): Notifikasi;
+
     public function hapus(Notifikasi $model): void;
 }

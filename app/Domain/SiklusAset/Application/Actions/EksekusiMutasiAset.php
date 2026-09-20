@@ -47,10 +47,11 @@ final class EksekusiMutasiAset
                 /** @var Aset|null $aset */
                 $aset = $detail->aset;
 
-                if (!$aset) {
+                if (! $aset) {
                     $detail->Status = DetailMutasiAset::STATUS_DIBATALKAN;
                     $detail->Catatan = trim(($detail->Catatan ?? '')."\nAset tidak ditemukan saat eksekusi.");
                     $detail->save();
+
                     continue;
                 }
 

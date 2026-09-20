@@ -23,6 +23,7 @@ final class EloquentTagihanPenyediaRepository implements TagihanPenyediaReposito
     public function simpan(TagihanPenyedia $model): TagihanPenyedia
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -23,6 +23,7 @@ final class EloquentPenyediaRepository implements PenyediaRepository
     public function simpan(Penyedia $model): Penyedia
     {
         $model->save();
+
         return $model->refresh();
     }
 

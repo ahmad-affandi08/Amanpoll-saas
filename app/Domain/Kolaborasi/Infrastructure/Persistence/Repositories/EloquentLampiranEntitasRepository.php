@@ -23,6 +23,7 @@ final class EloquentLampiranEntitasRepository implements LampiranEntitasReposito
     public function simpan(LampiranEntitas $model): LampiranEntitas
     {
         $model->save();
+
         return $model->refresh();
     }
 

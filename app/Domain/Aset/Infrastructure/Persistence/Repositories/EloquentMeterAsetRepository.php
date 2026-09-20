@@ -23,6 +23,7 @@ final class EloquentMeterAsetRepository implements MeterAsetRepository
     public function simpan(MeterAset $model): MeterAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

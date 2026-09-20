@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface GaransiAsetRepository
 {
     public function temukan(string $id): ?GaransiAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(GaransiAset $model): GaransiAset;
+
     public function hapus(GaransiAset $model): void;
 }

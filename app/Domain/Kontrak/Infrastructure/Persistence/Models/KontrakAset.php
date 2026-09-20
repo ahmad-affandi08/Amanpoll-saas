@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Kontrak\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -36,17 +38,16 @@ final class KontrakAset extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function kontrak(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak::class, 'KontrakId', 'Id');
+        return $this->belongsTo(Kontrak::class, 'KontrakId', 'Id');
     }
 
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
-
 }

@@ -40,7 +40,7 @@ final class LayananSaldoReservasi
 
         $default = $baris->first(fn (StokSukuCadang $b): bool => $b->LokasiGudangId === null && $b->KelompokSukuCadangId === null);
 
-        if (!$default) {
+        if (! $default) {
             $default = StokSukuCadang::create([
                 'OrganisasiId' => $organisasiId,
                 'GudangId' => $gudangId,

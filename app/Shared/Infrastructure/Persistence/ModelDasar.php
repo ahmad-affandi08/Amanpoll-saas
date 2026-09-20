@@ -12,7 +12,9 @@ abstract class ModelDasar extends Model
     use HasUlids;
 
     protected $primaryKey = 'Id';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     public function getRouteKeyName(): string

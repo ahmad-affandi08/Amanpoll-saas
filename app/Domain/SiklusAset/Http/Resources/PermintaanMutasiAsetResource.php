@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Http\Resources;
 
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property \App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset $resource
+ * @property PermintaanMutasiAset $resource
  */
 final class PermintaanMutasiAsetResource extends JsonResource
 {

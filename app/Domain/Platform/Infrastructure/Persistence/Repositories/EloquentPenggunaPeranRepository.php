@@ -23,6 +23,7 @@ final class EloquentPenggunaPeranRepository implements PenggunaPeranRepository
     public function simpan(PenggunaPeran $model): PenggunaPeran
     {
         $model->save();
+
         return $model->refresh();
     }
 

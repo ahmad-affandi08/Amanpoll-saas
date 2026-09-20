@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +17,7 @@ final class Anggaran extends ModelDasar
     protected $table = 'Anggaran';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -40,12 +43,11 @@ final class Anggaran extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function unitOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
-
 }

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 final class BuatRelasiAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): RelasiAset
     {

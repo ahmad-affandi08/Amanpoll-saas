@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -35,11 +37,11 @@ final class PembacaanMeterAset extends ModelDasar
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     * @return BelongsTo<Organisasi, $this>
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -47,15 +49,14 @@ final class PembacaanMeterAset extends ModelDasar
      */
     public function meterAset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\MeterAset::class, 'MeterAsetId', 'Id');
+        return $this->belongsTo(MeterAset::class, 'MeterAsetId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna, $this>
+     * @return BelongsTo<Pengguna, $this>
      */
     public function dicatatOleh(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DicatatOleh', 'Id');
+        return $this->belongsTo(Pengguna::class, 'DicatatOleh', 'Id');
     }
-
 }

@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface CatatanAksesRepository
 {
     public function temukan(string $id): ?CatatanAkses;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(CatatanAkses $model): CatatanAkses;
+
     public function hapus(CatatanAkses $model): void;
 }

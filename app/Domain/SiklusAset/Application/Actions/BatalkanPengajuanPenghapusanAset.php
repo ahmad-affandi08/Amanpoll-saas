@@ -21,7 +21,7 @@ final class BatalkanPengajuanPenghapusanAset
 
     public function jalankan(PengajuanPenghapusanAset $pengajuan): PengajuanPenghapusanAset
     {
-        if (!in_array($pengajuan->Status, [PengajuanPenghapusanAset::STATUS_DRAFT, PengajuanPenghapusanAset::STATUS_MENUNGGU], true)) {
+        if (! in_array($pengajuan->Status, [PengajuanPenghapusanAset::STATUS_DRAFT, PengajuanPenghapusanAset::STATUS_MENUNGGU], true)) {
             throw new AturanBisnisDilanggar('Hanya pengajuan berstatus draft atau menunggu yang dapat dibatalkan.');
         }
 

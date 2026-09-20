@@ -14,9 +14,10 @@ final class ScopeOrganisasi implements Scope
     {
         $konteks = app(KonteksOrganisasi::class);
 
-        if (!$konteks->ada()) {
+        if (! $konteks->ada()) {
             // Fail-closed: query tenant tidak boleh lintas organisasi secara tidak sengaja.
             $builder->whereRaw('1 = 0');
+
             return;
         }
 

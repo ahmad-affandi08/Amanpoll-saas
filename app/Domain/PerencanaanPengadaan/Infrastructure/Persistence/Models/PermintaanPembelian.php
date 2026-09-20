@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +18,7 @@ final class PermintaanPembelian extends ModelDasar
     protected $table = 'PermintaanPembelian';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -45,27 +49,26 @@ final class PermintaanPembelian extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function unitOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
     public function rencanaPengadaan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan::class, 'RencanaPengadaanId', 'Id');
+        return $this->belongsTo(RencanaPengadaan::class, 'RencanaPengadaanId', 'Id');
     }
 
     public function posAnggaran(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran::class, 'PosAnggaranId', 'Id');
+        return $this->belongsTo(PosAnggaran::class, 'PosAnggaranId', 'Id');
     }
 
     public function dimintaOleh(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DimintaOleh', 'Id');
+        return $this->belongsTo(Pengguna::class, 'DimintaOleh', 'Id');
     }
-
 }

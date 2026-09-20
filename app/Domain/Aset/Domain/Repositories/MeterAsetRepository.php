@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface MeterAsetRepository
 {
     public function temukan(string $id): ?MeterAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(MeterAset $model): MeterAset;
+
     public function hapus(MeterAset $model): void;
 }

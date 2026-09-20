@@ -23,6 +23,7 @@ final class EloquentEskalasiTingkatLayananRepository implements EskalasiTingkatL
     public function simpan(EskalasiTingkatLayanan $model): EskalasiTingkatLayanan
     {
         $model->save();
+
         return $model->refresh();
     }
 

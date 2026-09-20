@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface TahapPersetujuanRepository
 {
     public function temukan(string $id): ?TahapPersetujuan;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(TahapPersetujuan $model): TahapPersetujuan;
+
     public function hapus(TahapPersetujuan $model): void;
 }

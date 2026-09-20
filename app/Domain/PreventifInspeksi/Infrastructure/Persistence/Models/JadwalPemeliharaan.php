@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -36,17 +38,16 @@ final class JadwalPemeliharaan extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function rencanaPemeliharaanAset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaanAset::class, 'RencanaPemeliharaanAsetId', 'Id');
+        return $this->belongsTo(RencanaPemeliharaanAset::class, 'RencanaPemeliharaanAsetId', 'Id');
     }
 
     public function perintahKerja(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja::class, 'PerintahKerjaId', 'Id');
+        return $this->belongsTo(PerintahKerja::class, 'PerintahKerjaId', 'Id');
     }
-
 }

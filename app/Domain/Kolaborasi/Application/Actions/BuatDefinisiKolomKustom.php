@@ -12,7 +12,7 @@ final class BuatDefinisiKolomKustom
     public function __construct(private readonly DefinisiKolomKustomRepository $definisiKolomKustomRepository) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): DefinisiKolomKustom
     {

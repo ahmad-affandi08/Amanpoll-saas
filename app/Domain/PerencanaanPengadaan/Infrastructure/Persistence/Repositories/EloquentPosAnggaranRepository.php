@@ -23,6 +23,7 @@ final class EloquentPosAnggaranRepository implements PosAnggaranRepository
     public function simpan(PosAnggaran $model): PosAnggaran
     {
         $model->save();
+
         return $model->refresh();
     }
 

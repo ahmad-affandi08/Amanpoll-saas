@@ -23,6 +23,7 @@ final class EloquentPenilaianPenyediaRepository implements PenilaianPenyediaRepo
     public function simpan(PenilaianPenyedia $model): PenilaianPenyedia
     {
         $model->save();
+
         return $model->refresh();
     }
 

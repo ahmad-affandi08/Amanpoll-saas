@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface TemplatInspeksiRepository
 {
     public function temukan(string $id): ?TemplatInspeksi;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(TemplatInspeksi $model): TemplatInspeksi;
+
     public function hapus(TemplatInspeksi $model): void;
 }

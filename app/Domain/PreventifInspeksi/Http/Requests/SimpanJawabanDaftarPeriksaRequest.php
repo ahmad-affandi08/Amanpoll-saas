@@ -13,21 +13,20 @@ final class SimpanJawabanDaftarPeriksaRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PelaksanaanDaftarPeriksaId' => ['sometimes'],
-            'ButirTemplatDaftarPeriksaId' => ['sometimes'],
-            'NilaiTeks' => ['nullable'],
-            'NilaiAngka' => ['nullable'],
-            'NilaiBoolean' => ['nullable'],
-            'NilaiTanggal' => ['nullable'],
-            'NilaiJson' => ['nullable'],
-            'Sesuai' => ['nullable'],
-            'Catatan' => ['nullable'],
-            'DijawabPada' => ['nullable'],
+            'jawaban' => ['required', 'array', 'min:1'],
+            'jawaban.*.ButirTemplatDaftarPeriksaId' => ['required', 'string', 'size:26'],
+            'jawaban.*.NilaiTeks' => ['nullable', 'string'],
+            'jawaban.*.NilaiAngka' => ['nullable', 'numeric'],
+            'jawaban.*.NilaiBoolean' => ['nullable', 'boolean'],
+            'jawaban.*.NilaiTanggal' => ['nullable', 'date'],
+            'jawaban.*.NilaiJson' => ['nullable', 'array'],
+            'jawaban.*.Catatan' => ['nullable', 'string'],
         ];
     }
 }

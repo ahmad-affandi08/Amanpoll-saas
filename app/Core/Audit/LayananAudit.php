@@ -31,8 +31,8 @@ final class LayananAudit
     ) {}
 
     /**
-     * @param array<string, mixed>|null $dataSebelum
-     * @param array<string, mixed>|null $dataSesudah
+     * @param  array<string, mixed>|null  $dataSebelum
+     * @param  array<string, mixed>|null  $dataSesudah
      */
     public function catat(
         string $aksi,
@@ -41,7 +41,7 @@ final class LayananAudit
         ?array $dataSebelum = null,
         ?array $dataSesudah = null,
     ): void {
-        if (!config('amanpoll.audit_aktif', true)) {
+        if (! config('amanpoll.audit_aktif', true)) {
             return;
         }
 
@@ -60,7 +60,7 @@ final class LayananAudit
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     private function redaksi(array $data): array

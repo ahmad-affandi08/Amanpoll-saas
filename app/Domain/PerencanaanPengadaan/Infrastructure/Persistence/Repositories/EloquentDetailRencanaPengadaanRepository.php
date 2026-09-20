@@ -23,6 +23,7 @@ final class EloquentDetailRencanaPengadaanRepository implements DetailRencanaPen
     public function simpan(DetailRencanaPengadaan $model): DetailRencanaPengadaan
     {
         $model->save();
+
         return $model->refresh();
     }
 

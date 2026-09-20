@@ -23,6 +23,7 @@ final class EloquentTagRepository implements TagRepository
     public function simpan(Tag $model): Tag
     {
         $model->save();
+
         return $model->refresh();
     }
 

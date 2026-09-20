@@ -23,6 +23,7 @@ final class EloquentStokSukuCadangRepository implements StokSukuCadangRepository
     public function simpan(StokSukuCadang $model): StokSukuCadang
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -29,13 +29,13 @@ final class LayananPenyetuju
             'Pengguna' => Pengguna::query()->where('Id', $tahap->PenggunaId)->get(),
             'Peran' => $this->penggunaDenganPeran($tahap->PeranId),
             'Unit' => $this->penggunaDiUnitEntitas($tahap, $entitas),
-            default => new Collection(),
+            default => new Collection,
         };
     }
 
     public function bolehMemutuskan(TahapPersetujuan $tahap, Model $entitas, Pengguna $pengguna, string $dimintaOlehId): bool
     {
-        if (!$tahap->BolehMenyetujuiSendiri && $pengguna->Id === $dimintaOlehId) {
+        if (! $tahap->BolehMenyetujuiSendiri && $pengguna->Id === $dimintaOlehId) {
             return false;
         }
 
@@ -48,7 +48,7 @@ final class LayananPenyetuju
     private function penggunaDenganPeran(?string $peranId): Collection
     {
         if ($peranId === null) {
-            return new Collection();
+            return new Collection;
         }
 
         $penggunaId = DB::table('PenggunaPeran')
@@ -67,7 +67,7 @@ final class LayananPenyetuju
     private function penggunaDiUnitEntitas(TahapPersetujuan $tahap, Model $entitas): Collection
     {
         $unitId = $entitas->getAttribute('UnitOrganisasiId');
-        if (!$unitId) {
+        if (! $unitId) {
             throw new AturanBisnisDilanggar('Tahap persetujuan berbasis unit tidak dapat dievaluasi -- entitas tidak memiliki UnitOrganisasi.');
         }
 

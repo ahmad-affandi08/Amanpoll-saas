@@ -13,18 +13,19 @@ final class SimpanTemplatDaftarPeriksaRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Jenis' => ['sometimes'],
-            'KategoriAsetId' => ['nullable'],
-            'ModelAsetId' => ['nullable'],
-            'VersiTemplat' => ['sometimes'],
-            'Aktif' => ['sometimes'],
+            'Kode' => ['required', 'string', 'max:80'],
+            'Nama' => ['required', 'string', 'max:200'],
+            'Jenis' => ['nullable', 'string', 'max:50'],
+            'KategoriAsetId' => ['nullable', 'string', 'size:26'],
+            'ModelAsetId' => ['nullable', 'string', 'size:26'],
+            'VersiTemplat' => ['nullable', 'integer', 'min:1'],
+            'Aktif' => ['nullable', 'boolean'],
         ];
     }
 }

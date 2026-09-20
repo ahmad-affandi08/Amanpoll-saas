@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Platform;
 
+use App\Core\Izin\PemeriksaIzin;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
-use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
-use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -158,7 +159,7 @@ class RbacAssignmentTest extends TestCase
         $this->assertDatabaseHas('PeranIzin', ['PeranId' => $peranAdmin->Id, 'IzinId' => $izinBaru->Id]);
 
         $konteks->tetapkan($organisasi->Id);
-        $pemeriksaIzin = app(\App\Core\Izin\PemeriksaIzin::class);
+        $pemeriksaIzin = app(PemeriksaIzin::class);
         $this->assertTrue($pemeriksaIzin->boleh($admin->Id, 'Aset.Lihat'));
         $konteks->bersihkan();
     }

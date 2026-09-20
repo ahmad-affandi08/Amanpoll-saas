@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Penyedia\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +16,7 @@ final class KontakPenyedia extends ModelDasar
     protected $table = 'KontakPenyedia';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -38,12 +40,11 @@ final class KontakPenyedia extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function penyedia(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia::class, 'PenyediaId', 'Id');
+        return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
-
 }

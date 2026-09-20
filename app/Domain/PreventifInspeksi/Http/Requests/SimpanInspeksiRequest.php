@@ -13,23 +13,17 @@ final class SimpanInspeksiRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nomor' => ['sometimes'],
-            'TemplatInspeksiId' => ['sometimes'],
-            'AsetId' => ['sometimes'],
-            'PelaksanaanDaftarPeriksaId' => ['nullable'],
-            'DijadwalkanPada' => ['nullable'],
-            'DilaksanakanPada' => ['nullable'],
-            'Status' => ['sometimes'],
-            'Hasil' => ['nullable'],
-            'Temuan' => ['nullable'],
-            'TindakLanjut' => ['nullable'],
-            'PerintahKerjaId' => ['nullable'],
-            'DilaksanakanOleh' => ['nullable'],
+            'Nomor' => ['nullable', 'string', 'max:100'],
+            'TemplatInspeksiId' => ['required', 'string', 'size:26'],
+            'AsetId' => ['required', 'string', 'size:26'],
+            'DijadwalkanPada' => ['required', 'date'],
+            'DilaksanakanOleh' => ['nullable', 'string', 'size:26'],
         ];
     }
 }

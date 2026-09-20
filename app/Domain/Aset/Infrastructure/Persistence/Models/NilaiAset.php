@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -38,11 +39,11 @@ final class NilaiAset extends ModelDasar
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     * @return BelongsTo<Organisasi, $this>
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -50,7 +51,6 @@ final class NilaiAset extends ModelDasar
      */
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
-
 }

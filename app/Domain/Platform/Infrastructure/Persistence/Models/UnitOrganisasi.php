@@ -11,12 +11,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class UnitOrganisasi extends ModelDasar
 {
-    use SoftDeletes, MilikOrganisasi;
+    use MilikOrganisasi, SoftDeletes;
 
     protected $table = 'UnitOrganisasi';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     protected $fillable = [
@@ -43,12 +45,11 @@ final class UnitOrganisasi extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function induk(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'IndukId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'IndukId', 'Id');
     }
-
 }

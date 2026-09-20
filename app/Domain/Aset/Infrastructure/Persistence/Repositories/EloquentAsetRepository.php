@@ -23,6 +23,7 @@ final class EloquentAsetRepository implements AsetRepository
     public function simpan(Aset $model): Aset
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -23,6 +23,7 @@ final class EloquentGudangRepository implements GudangRepository
     public function simpan(Gudang $model): Gudang
     {
         $model->save();
+
         return $model->refresh();
     }
 

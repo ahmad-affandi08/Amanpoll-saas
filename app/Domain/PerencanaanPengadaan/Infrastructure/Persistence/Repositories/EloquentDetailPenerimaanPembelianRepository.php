@@ -23,6 +23,7 @@ final class EloquentDetailPenerimaanPembelianRepository implements DetailPenerim
     public function simpan(DetailPenerimaanPembelian $model): DetailPenerimaanPembelian
     {
         $model->save();
+
         return $model->refresh();
     }
 

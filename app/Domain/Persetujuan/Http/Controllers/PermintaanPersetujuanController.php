@@ -51,7 +51,7 @@ final class PermintaanPersetujuanController extends Controller
         $bolehBatal = $permintaanPersetujuan->DimintaOleh === $request->user()->Id
             || $this->registriEntitas->bolehKelola($request->user(), $permintaanPersetujuan->JenisEntitas);
 
-        if (!$bolehBatal) {
+        if (! $bolehBatal) {
             throw new AksesDitolak('Anda tidak berhak membatalkan permintaan ini.');
         }
 
@@ -114,7 +114,7 @@ final class PermintaanPersetujuanController extends Controller
             $tahap = $tahapPerAlurUrutan->get($permintaan->AlurPersetujuanId.'#'.$permintaan->TahapSaatIni)?->first();
             $entitas = $entitasPerJenis->get($permintaan->JenisEntitas)?->get($permintaan->EntitasId);
 
-            if (!$tahap || !$entitas) {
+            if (! $tahap || ! $entitas) {
                 return false;
             }
 

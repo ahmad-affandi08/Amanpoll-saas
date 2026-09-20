@@ -9,7 +9,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 final class UbahSukuCadang
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(SukuCadang $sukuCadang, array $data): SukuCadang
     {

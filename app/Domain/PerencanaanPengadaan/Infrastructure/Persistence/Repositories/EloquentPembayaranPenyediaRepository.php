@@ -23,6 +23,7 @@ final class EloquentPembayaranPenyediaRepository implements PembayaranPenyediaRe
     public function simpan(PembayaranPenyedia $model): PembayaranPenyedia
     {
         $model->save();
+
         return $model->refresh();
     }
 

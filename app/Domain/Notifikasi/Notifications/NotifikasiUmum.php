@@ -21,7 +21,7 @@ final class NotifikasiUmum extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject($this->judul ?? 'Notifikasi Amanpoll')
             ->line($this->isi);
     }

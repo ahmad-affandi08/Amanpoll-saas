@@ -25,7 +25,7 @@ final class AsetPindaiController extends Controller
             ->orWhere('NfcUid', $kode)
             ->first();
 
-        if (!$aset) {
+        if (! $aset) {
             throw new DataTidakDitemukan("Aset dengan kode '{$kode}' tidak ditemukan.");
         }
 

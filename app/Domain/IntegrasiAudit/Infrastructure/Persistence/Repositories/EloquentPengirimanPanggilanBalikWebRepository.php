@@ -23,6 +23,7 @@ final class EloquentPengirimanPanggilanBalikWebRepository implements PengirimanP
     public function simpan(PengirimanPanggilanBalikWeb $model): PengirimanPanggilanBalikWeb
     {
         $model->save();
+
         return $model->refresh();
     }
 

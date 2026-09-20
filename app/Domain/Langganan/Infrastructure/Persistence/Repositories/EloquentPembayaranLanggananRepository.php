@@ -23,6 +23,7 @@ final class EloquentPembayaranLanggananRepository implements PembayaranLangganan
     public function simpan(PembayaranLangganan $model): PembayaranLangganan
     {
         $model->save();
+
         return $model->refresh();
     }
 

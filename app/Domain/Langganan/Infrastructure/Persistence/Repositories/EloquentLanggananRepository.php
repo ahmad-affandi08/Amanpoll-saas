@@ -23,6 +23,7 @@ final class EloquentLanggananRepository implements LanggananRepository
     public function simpan(Langganan $model): Langganan
     {
         $model->save();
+
         return $model->refresh();
     }
 

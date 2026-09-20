@@ -9,7 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 final class BuatKategoriAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): KategoriAset
     {

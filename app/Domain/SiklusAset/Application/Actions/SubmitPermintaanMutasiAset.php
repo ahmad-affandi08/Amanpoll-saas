@@ -27,7 +27,7 @@ final class SubmitPermintaanMutasiAset
             throw new AturanBisnisDilanggar('Hanya permintaan berstatus draft yang bisa disubmit.');
         }
 
-        if (!$permintaan->detailMutasiAset()->exists()) {
+        if (! $permintaan->detailMutasiAset()->exists()) {
             throw new AturanBisnisDilanggar('Tambahkan minimal satu aset sebelum submit.');
         }
 
@@ -36,7 +36,7 @@ final class SubmitPermintaanMutasiAset
             ->where('Aktif', true)
             ->first();
 
-        if (!$alurPersetujuan) {
+        if (! $alurPersetujuan) {
             throw new AturanBisnisDilanggar('Belum ada alur persetujuan aktif untuk mutasi aset. Hubungi administrator.');
         }
 

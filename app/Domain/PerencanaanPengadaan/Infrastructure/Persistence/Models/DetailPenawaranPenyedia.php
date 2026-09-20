@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -44,17 +45,16 @@ final class DetailPenawaranPenyedia extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function penawaranPenyedia(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia::class, 'PenawaranPenyediaId', 'Id');
+        return $this->belongsTo(PenawaranPenyedia::class, 'PenawaranPenyediaId', 'Id');
     }
 
     public function detailPermintaanPembelian(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPermintaanPembelian::class, 'DetailPermintaanPembelianId', 'Id');
+        return $this->belongsTo(DetailPermintaanPembelian::class, 'DetailPermintaanPembelianId', 'Id');
     }
-
 }

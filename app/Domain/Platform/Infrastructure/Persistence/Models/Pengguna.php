@@ -18,12 +18,17 @@ final class Pengguna extends Authenticatable
     use HasUlids, Notifiable, SoftDeletes;
 
     protected $table = 'Pengguna';
+
     protected $primaryKey = 'Id';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     protected $fillable = [
@@ -85,7 +90,7 @@ final class Pengguna extends Authenticatable
      */
     public function resolveRouteBinding($value, $field = null): ?Model
     {
-        return static::query()
+        return self::query()
             ->where('OrganisasiId', app(KonteksOrganisasi::class)->id())
             ->where($field ?? $this->getRouteKeyName(), $value)
             ->first();
@@ -93,12 +98,12 @@ final class Pengguna extends Authenticatable
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function unitOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
     /**

@@ -9,7 +9,6 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
-use App\Domain\Persediaan\Infrastructure\Persistence\Models\KompatibilitasSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\LokasiGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
@@ -19,10 +18,10 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KonfigurasiOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\NomorDokumen;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
-use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
-use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -36,7 +35,7 @@ class PersediaanTest extends TestCase
     }
 
     /**
-     * @param list<string> $kodeIzin
+     * @param  list<string>  $kodeIzin
      */
     private function buatPengguna(Organisasi $organisasi, array $kodeIzin = []): Pengguna
     {

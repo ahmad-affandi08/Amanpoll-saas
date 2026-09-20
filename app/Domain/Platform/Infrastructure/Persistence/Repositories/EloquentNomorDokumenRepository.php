@@ -23,6 +23,7 @@ final class EloquentNomorDokumenRepository implements NomorDokumenRepository
     public function simpan(NomorDokumen $model): NomorDokumen
     {
         $model->save();
+
         return $model->refresh();
     }
 

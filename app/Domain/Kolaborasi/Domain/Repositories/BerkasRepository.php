@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface BerkasRepository
 {
     public function temukan(string $id): ?Berkas;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(Berkas $model): Berkas;
+
     public function hapus(Berkas $model): void;
 }

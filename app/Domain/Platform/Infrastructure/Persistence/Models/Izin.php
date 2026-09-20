@@ -25,5 +25,4 @@ final class Izin extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
         ];
     }
-
 }

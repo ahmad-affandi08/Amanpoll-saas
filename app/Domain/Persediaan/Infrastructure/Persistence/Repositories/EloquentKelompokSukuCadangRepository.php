@@ -23,6 +23,7 @@ final class EloquentKelompokSukuCadangRepository implements KelompokSukuCadangRe
     public function simpan(KelompokSukuCadang $model): KelompokSukuCadang
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -14,7 +14,9 @@ final class Organisasi extends ModelDasar
     protected $table = 'Organisasi';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     protected $fillable = [
@@ -42,5 +44,4 @@ final class Organisasi extends ModelDasar
             'DihapusPada' => 'immutable_datetime',
         ];
     }
-
 }

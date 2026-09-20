@@ -23,6 +23,7 @@ final class EloquentBerkasRepository implements BerkasRepository
     public function simpan(Berkas $model): Berkas
     {
         $model->save();
+
         return $model->refresh();
     }
 

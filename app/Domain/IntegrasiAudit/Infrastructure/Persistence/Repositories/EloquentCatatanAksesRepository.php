@@ -23,6 +23,7 @@ final class EloquentCatatanAksesRepository implements CatatanAksesRepository
     public function simpan(CatatanAkses $model): CatatanAkses
     {
         $model->save();
+
         return $model->refresh();
     }
 

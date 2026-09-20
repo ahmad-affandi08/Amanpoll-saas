@@ -23,6 +23,7 @@ final class EloquentDetailPermintaanPembelianRepository implements DetailPermint
     public function simpan(DetailPermintaanPembelian $model): DetailPermintaanPembelian
     {
         $model->save();
+
         return $model->refresh();
     }
 

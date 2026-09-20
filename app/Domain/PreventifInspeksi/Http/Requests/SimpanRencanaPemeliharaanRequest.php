@@ -13,24 +13,25 @@ final class SimpanRencanaPemeliharaanRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Jenis' => ['sometimes'],
-            'TemplatDaftarPeriksaId' => ['nullable'],
-            'Prioritas' => ['sometimes'],
-            'StrategiJadwal' => ['sometimes'],
-            'IntervalNilai' => ['nullable'],
-            'IntervalSatuan' => ['nullable'],
-            'BerdasarkanMeter' => ['sometimes'],
-            'AmbangMeter' => ['nullable'],
-            'ToleransiHari' => ['sometimes'],
-            'BuatPerintahKerjaHariSebelum' => ['sometimes'],
-            'Aktif' => ['sometimes'],
+            'Kode' => ['required', 'string', 'max:80'],
+            'Nama' => ['required', 'string', 'max:200'],
+            'Jenis' => ['nullable', 'string', 'max:50'],
+            'TemplatDaftarPeriksaId' => ['nullable', 'string', 'size:26'],
+            'Prioritas' => ['nullable', 'string', 'max:30'],
+            'StrategiJadwal' => ['nullable', 'string', 'in:Interval,PenggunaanMeter,Kombinasi'],
+            'IntervalNilai' => ['required', 'integer', 'min:1'],
+            'IntervalSatuan' => ['required', 'string', 'in:Hari,Minggu,Bulan,Tahun'],
+            'BerdasarkanMeter' => ['nullable', 'boolean'],
+            'AmbangMeter' => ['nullable', 'numeric'],
+            'ToleransiHari' => ['nullable', 'integer', 'min:0'],
+            'BuatPerintahKerjaHariSebelum' => ['nullable', 'integer', 'min:0'],
+            'Aktif' => ['nullable', 'boolean'],
         ];
     }
 }

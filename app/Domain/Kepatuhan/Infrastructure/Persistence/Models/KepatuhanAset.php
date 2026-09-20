@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Kepatuhan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +18,7 @@ final class KepatuhanAset extends ModelDasar
     protected $table = 'KepatuhanAset';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -40,22 +44,21 @@ final class KepatuhanAset extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
     public function persyaratanKepatuhan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PersyaratanKepatuhan::class, 'PersyaratanKepatuhanId', 'Id');
+        return $this->belongsTo(PersyaratanKepatuhan::class, 'PersyaratanKepatuhanId', 'Id');
     }
 
     public function diperiksaOleh(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DiperiksaOleh', 'Id');
+        return $this->belongsTo(Pengguna::class, 'DiperiksaOleh', 'Id');
     }
-
 }

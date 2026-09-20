@@ -23,6 +23,7 @@ final class EloquentMerekRepository implements MerekRepository
     public function simpan(Merek $model): Merek
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -23,6 +23,7 @@ final class EloquentKontrakAsetRepository implements KontrakAsetRepository
     public function simpan(KontrakAset $model): KontrakAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

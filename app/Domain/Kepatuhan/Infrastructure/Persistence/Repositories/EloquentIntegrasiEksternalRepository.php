@@ -23,6 +23,7 @@ final class EloquentIntegrasiEksternalRepository implements IntegrasiEksternalRe
     public function simpan(IntegrasiEksternal $model): IntegrasiEksternal
     {
         $model->save();
+
         return $model->refresh();
     }
 

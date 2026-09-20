@@ -29,7 +29,7 @@ final class RegistriEntitas
     public function __construct(private readonly PemeriksaIzin $pemeriksaIzin) {}
 
     /**
-     * @param class-string<Model> $kelasModel
+     * @param  class-string<Model>  $kelasModel
      */
     public function daftarkan(string $jenisEntitas, string $kelasModel, string $izinKelola): void
     {
@@ -62,7 +62,7 @@ final class RegistriEntitas
      */
     public function pastikanBolehKelola(Pengguna $pengguna, string $jenisEntitas): void
     {
-        if (!$this->bolehKelola($pengguna, $jenisEntitas)) {
+        if (! $this->bolehKelola($pengguna, $jenisEntitas)) {
             throw new AksesDitolak("Anda tidak memiliki izin untuk mengelola {$jenisEntitas}.");
         }
     }
@@ -84,7 +84,7 @@ final class RegistriEntitas
             ?? throw new DataTidakDitemukan("Jenis entitas '{$jenisEntitas}' tidak dikenal.");
 
         $entitas = $kelas::query()->find($entitasId);
-        if (!$entitas) {
+        if (! $entitas) {
             throw new DataTidakDitemukan("Entitas {$jenisEntitas}#{$entitasId} tidak ditemukan.");
         }
 
@@ -95,7 +95,7 @@ final class RegistriEntitas
      * Versi batch dari cariEntitas() untuk menghindari N+1 saat memproses
      * banyak baris berjenis entitas sama sekaligus (mis. inbox persetujuan).
      *
-     * @param list<string> $entitasId
+     * @param  list<string>  $entitasId
      * @return Collection<string, Model> dikunci berdasarkan Id
      */
     public function cariBanyakEntitas(string $jenisEntitas, array $entitasId): Collection

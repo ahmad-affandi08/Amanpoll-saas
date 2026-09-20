@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface DetailMutasiStokRepository
 {
     public function temukan(string $id): ?DetailMutasiStok;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(DetailMutasiStok $model): DetailMutasiStok;
+
     public function hapus(DetailMutasiStok $model): void;
 }

@@ -18,7 +18,7 @@ final class AjukanPermintaanPersetujuan
     ) {}
 
     /**
-     * @param array<string, mixed>|null $dataTambahan
+     * @param  array<string, mixed>|null  $dataTambahan
      */
     public function jalankan(
         AlurPersetujuan $alurPersetujuan,
@@ -26,7 +26,7 @@ final class AjukanPermintaanPersetujuan
         ?array $dataTambahan,
         string $pemintaId,
     ): PermintaanPersetujuan {
-        if (!$alurPersetujuan->Aktif) {
+        if (! $alurPersetujuan->Aktif) {
             throw new AturanBisnisDilanggar('Alur persetujuan tidak aktif.');
         }
 
@@ -44,7 +44,7 @@ final class AjukanPermintaanPersetujuan
         }
 
         $tahapPertama = $alurPersetujuan->tahapPersetujuan()->orderBy('Urutan')->first();
-        if (!$tahapPertama) {
+        if (! $tahapPertama) {
             throw new AturanBisnisDilanggar('Alur persetujuan belum punya tahap.');
         }
 

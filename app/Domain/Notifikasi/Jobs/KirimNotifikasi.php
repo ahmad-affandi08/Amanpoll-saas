@@ -32,7 +32,7 @@ final class KirimNotifikasi implements ShouldQueue
     public function handle(): void
     {
         $notifikasi = Notifikasi::withoutGlobalScope(ScopeOrganisasi::class)->find($this->notifikasiId);
-        if (!$notifikasi || $notifikasi->Status !== Notifikasi::STATUS_ANTRI) {
+        if (! $notifikasi || $notifikasi->Status !== Notifikasi::STATUS_ANTRI) {
             return;
         }
 
@@ -57,7 +57,7 @@ final class KirimNotifikasi implements ShouldQueue
     public function failed(?Throwable $exception): void
     {
         $notifikasi = Notifikasi::withoutGlobalScope(ScopeOrganisasi::class)->find($this->notifikasiId);
-        if (!$notifikasi) {
+        if (! $notifikasi) {
             return;
         }
 
@@ -69,7 +69,7 @@ final class KirimNotifikasi implements ShouldQueue
     private function kirimEmail(Notifikasi $notifikasi): void
     {
         $pengguna = Pengguna::query()->find($notifikasi->PenggunaId);
-        if (!$pengguna) {
+        if (! $pengguna) {
             return;
         }
 

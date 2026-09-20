@@ -23,6 +23,7 @@ final class EloquentPenilaianUsulanAsetRepository implements PenilaianUsulanAset
     public function simpan(PenilaianUsulanAset $model): PenilaianUsulanAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

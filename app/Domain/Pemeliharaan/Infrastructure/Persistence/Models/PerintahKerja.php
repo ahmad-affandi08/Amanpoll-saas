@@ -13,6 +13,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\PelaksanaanDaftarPeriksa;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -179,5 +180,10 @@ final class PerintahKerja extends ModelDasar
     public function pemakaianSukuCadang(): HasMany
     {
         return $this->hasMany(PemakaianSukuCadang::class, 'PerintahKerjaId', 'Id')->latest('DipakaiPada');
+    }
+
+    public function pelaksanaanDaftarPeriksa(): HasMany
+    {
+        return $this->hasMany(PelaksanaanDaftarPeriksa::class, 'PerintahKerjaId', 'Id');
     }
 }

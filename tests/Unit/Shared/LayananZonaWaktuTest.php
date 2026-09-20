@@ -14,7 +14,7 @@ class LayananZonaWaktuTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->layanan = new LayananZonaWaktu();
+        $this->layanan = new LayananZonaWaktu;
     }
 
     public function test_konversi_ke_zona_waktu_lokal_yang_masih_hari_sama(): void

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Application\Actions;
 
 use App\Core\Izin\PemeriksaIzin;
-use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Shared\Domain\Exceptions\KonflikData;
 
 final class TetapkanPeranKePengguna

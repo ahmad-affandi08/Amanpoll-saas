@@ -74,7 +74,7 @@ final class KomentarEntitasController extends Controller
         $penulis = $komentarEntitas->DibuatOleh === $request->user()->Id;
         $pengelola = $this->registriEntitas->bolehKelola($request->user(), $komentarEntitas->JenisEntitas);
 
-        if (!$penulis && !$pengelola) {
+        if (! $penulis && ! $pengelola) {
             throw new AksesDitolak('Anda tidak memiliki izin untuk menghapus komentar ini.');
         }
 

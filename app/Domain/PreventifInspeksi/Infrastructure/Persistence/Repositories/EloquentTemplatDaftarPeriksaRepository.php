@@ -23,6 +23,7 @@ final class EloquentTemplatDaftarPeriksaRepository implements TemplatDaftarPerik
     public function simpan(TemplatDaftarPeriksa $model): TemplatDaftarPeriksa
     {
         $model->save();
+
         return $model->refresh();
     }
 

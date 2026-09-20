@@ -23,6 +23,7 @@ final class EloquentPeranIzinRepository implements PeranIzinRepository
     public function simpan(PeranIzin $model): PeranIzin
     {
         $model->save();
+
         return $model->refresh();
     }
 

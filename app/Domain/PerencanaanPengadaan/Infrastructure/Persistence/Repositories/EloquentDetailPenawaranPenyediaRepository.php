@@ -23,6 +23,7 @@ final class EloquentDetailPenawaranPenyediaRepository implements DetailPenawaran
     public function simpan(DetailPenawaranPenyedia $model): DetailPenawaranPenyedia
     {
         $model->save();
+
         return $model->refresh();
     }
 

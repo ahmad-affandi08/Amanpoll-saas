@@ -17,11 +17,13 @@ final class Gudang extends ModelDasar
     use MilikOrganisasi;
 
     public const STATUS_AKTIF = 'Aktif';
+
     public const STATUS_NONAKTIF = 'Nonaktif';
 
     protected $table = 'Gudang';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [

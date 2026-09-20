@@ -23,6 +23,7 @@ final class EloquentReservasiSukuCadangRepository implements ReservasiSukuCadang
     public function simpan(ReservasiSukuCadang $model): ReservasiSukuCadang
     {
         $model->save();
+
         return $model->refresh();
     }
 

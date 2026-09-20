@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface NilaiKolomKustomRepository
 {
     public function temukan(string $id): ?NilaiKolomKustom;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(NilaiKolomKustom $model): NilaiKolomKustom;
+
     public function hapus(NilaiKolomKustom $model): void;
 }

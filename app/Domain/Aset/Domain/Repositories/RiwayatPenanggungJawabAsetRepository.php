@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface RiwayatPenanggungJawabAsetRepository
 {
     public function temukan(string $id): ?RiwayatPenanggungJawabAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(RiwayatPenanggungJawabAset $model): RiwayatPenanggungJawabAset;
+
     public function hapus(RiwayatPenanggungJawabAset $model): void;
 }

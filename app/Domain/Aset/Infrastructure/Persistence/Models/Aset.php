@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,26 +17,36 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Aset extends ModelDasar
 {
-    use SoftDeletes, MilikOrganisasi;
+    use MilikOrganisasi, SoftDeletes;
 
     protected $table = 'Aset';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     public const STATUS_AKTIF = 'Aktif';
+
     public const STATUS_NONAKTIF = 'Nonaktif';
+
     public const STATUS_DIPINJAM = 'Dipinjam';
+
     public const STATUS_RUSAK = 'Rusak';
+
     public const STATUS_DIARSIPKAN = 'Diarsipkan';
 
     public const KONDISI_BAIK = 'Baik';
+
     public const KONDISI_PERLU_PERHATIAN = 'PerluPerhatian';
+
     public const KONDISI_RUSAK = 'Rusak';
 
     public const KRITIS_NORMAL = 'Normal';
+
     public const KRITIS_TINGGI = 'Tinggi';
+
     public const KRITIS_SANGAT_TINGGI = 'SangatTinggi';
 
     protected $fillable = [
@@ -83,27 +98,27 @@ final class Aset extends ModelDasar
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     * @return BelongsTo<Organisasi, $this>
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi, $this>
+     * @return BelongsTo<UnitOrganisasi, $this>
      */
     public function unitOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi, $this>
+     * @return BelongsTo<Lokasi, $this>
      */
     public function lokasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'LokasiId', 'Id');
+        return $this->belongsTo(Lokasi::class, 'LokasiId', 'Id');
     }
 
     /**
@@ -111,7 +126,7 @@ final class Aset extends ModelDasar
      */
     public function kategoriAset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset::class, 'KategoriAsetId', 'Id');
+        return $this->belongsTo(KategoriAset::class, 'KategoriAsetId', 'Id');
     }
 
     /**
@@ -119,23 +134,23 @@ final class Aset extends ModelDasar
      */
     public function modelAset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset::class, 'ModelAsetId', 'Id');
+        return $this->belongsTo(ModelAset::class, 'ModelAsetId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia, $this>
+     * @return BelongsTo<Penyedia, $this>
      */
     public function penyedia(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia::class, 'PenyediaId', 'Id');
+        return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna, $this>
+     * @return BelongsTo<Pengguna, $this>
      */
     public function dibuatOleh(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DibuatOleh', 'Id');
+        return $this->belongsTo(Pengguna::class, 'DibuatOleh', 'Id');
     }
 
     /**
@@ -193,5 +208,4 @@ final class Aset extends ModelDasar
     {
         return $this->hasMany(MeterAset::class, 'AsetId', 'Id');
     }
-
 }

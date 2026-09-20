@@ -23,6 +23,7 @@ final class EloquentDetailPenghapusanAsetRepository implements DetailPenghapusan
     public function simpan(DetailPenghapusanAset $model): DetailPenghapusanAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

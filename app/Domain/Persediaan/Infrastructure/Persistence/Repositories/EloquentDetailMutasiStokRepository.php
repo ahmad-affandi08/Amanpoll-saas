@@ -23,6 +23,7 @@ final class EloquentDetailMutasiStokRepository implements DetailMutasiStokReposi
     public function simpan(DetailMutasiStok $model): DetailMutasiStok
     {
         $model->save();
+
         return $model->refresh();
     }
 

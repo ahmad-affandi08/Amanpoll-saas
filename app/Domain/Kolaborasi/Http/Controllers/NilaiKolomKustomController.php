@@ -48,7 +48,7 @@ final class NilaiKolomKustomController extends Controller
             ->where('JenisEntitas', $data['JenisEntitas'])
             ->first();
 
-        if (!$definisi) {
+        if (! $definisi) {
             throw new DataTidakDitemukan('Definisi kolom kustom tidak ditemukan.');
         }
 

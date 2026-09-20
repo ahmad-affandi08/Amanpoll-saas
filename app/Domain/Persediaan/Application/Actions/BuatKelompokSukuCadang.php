@@ -9,7 +9,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\KelompokSukuCadang;
 final class BuatKelompokSukuCadang
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): KelompokSukuCadang
     {

@@ -20,6 +20,7 @@ use Inertia\Response;
 final class LoginController extends Controller
 {
     private const MAKS_PERCOBAAN = 5;
+
     private const DURASI_KUNCI_DETIK = 60;
 
     public function __construct(
@@ -54,7 +55,7 @@ final class LoginController extends Controller
             ->where('Status', 'Aktif')
             ->first(['Id']);
 
-        if (!$organisasi) {
+        if (! $organisasi) {
             RateLimiter::hit($kunciBatas, self::DURASI_KUNCI_DETIK);
             $this->layananCatatanAkses->catat('Login', null, null, false, 'Kode organisasi tidak ditemukan/nonaktif.');
             throw ValidationException::withMessages([
@@ -69,7 +70,7 @@ final class LoginController extends Controller
             $request->boolean('IngatSaya'),
         );
 
-        if (!$berhasil) {
+        if (! $berhasil) {
             RateLimiter::hit($kunciBatas, self::DURASI_KUNCI_DETIK);
             $this->layananCatatanAkses->catat('Login', (string) $organisasi->Id, null, false, 'Email atau kata sandi salah.');
             $this->konteks->bersihkan();
@@ -96,6 +97,7 @@ final class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 }

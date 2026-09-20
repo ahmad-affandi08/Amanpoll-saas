@@ -23,6 +23,7 @@ final class EloquentKategoriAsetRepository implements KategoriAsetRepository
     public function simpan(KategoriAset $model): KategoriAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

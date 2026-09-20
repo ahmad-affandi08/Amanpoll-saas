@@ -23,6 +23,7 @@ final class EloquentDetailMutasiAsetRepository implements DetailMutasiAsetReposi
     public function simpan(DetailMutasiAset $model): DetailMutasiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

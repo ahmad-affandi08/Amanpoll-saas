@@ -28,7 +28,7 @@ final class MintaResetKataSandi
             ->select('Pengguna.*')
             ->first();
 
-        if (!$pengguna) {
+        if (! $pengguna) {
             return;
         }
 

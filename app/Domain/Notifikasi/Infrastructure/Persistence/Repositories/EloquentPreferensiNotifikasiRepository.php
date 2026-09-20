@@ -23,6 +23,7 @@ final class EloquentPreferensiNotifikasiRepository implements PreferensiNotifika
     public function simpan(PreferensiNotifikasi $model): PreferensiNotifikasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

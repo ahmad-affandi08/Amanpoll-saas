@@ -18,7 +18,7 @@ final class TerimaSerahTerimaAset
     ) {}
 
     /**
-     * @param array<int, array{AsetId: string, KondisiSaatDiterima: string}> $kondisiPerAset
+     * @param  array<int, array{AsetId: string, KondisiSaatDiterima: string}>  $kondisiPerAset
      */
     public function jalankan(SerahTerimaAset $serahTerima, array $kondisiPerAset): SerahTerimaAset
     {

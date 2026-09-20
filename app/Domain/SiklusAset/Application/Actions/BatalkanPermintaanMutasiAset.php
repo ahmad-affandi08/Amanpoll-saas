@@ -21,7 +21,7 @@ final class BatalkanPermintaanMutasiAset
 
     public function jalankan(PermintaanMutasiAset $permintaan): PermintaanMutasiAset
     {
-        if (!in_array($permintaan->Status, [PermintaanMutasiAset::STATUS_DRAFT, PermintaanMutasiAset::STATUS_MENUNGGU], true)) {
+        if (! in_array($permintaan->Status, [PermintaanMutasiAset::STATUS_DRAFT, PermintaanMutasiAset::STATUS_MENUNGGU], true)) {
             throw new AturanBisnisDilanggar('Hanya permintaan berstatus draft atau menunggu yang dapat dibatalkan.');
         }
 

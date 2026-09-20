@@ -23,6 +23,7 @@ final class EloquentNilaiAsetRepository implements NilaiAsetRepository
     public function simpan(NilaiAset $model): NilaiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

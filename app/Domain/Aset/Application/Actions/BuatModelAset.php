@@ -9,7 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 final class BuatModelAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): ModelAset
     {

@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface NilaiAsetRepository
 {
     public function temukan(string $id): ?NilaiAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(NilaiAset $model): NilaiAset;
+
     public function hapus(NilaiAset $model): void;
 }

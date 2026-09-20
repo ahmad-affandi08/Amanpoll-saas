@@ -23,6 +23,7 @@ final class EloquentKompatibilitasSukuCadangRepository implements Kompatibilitas
     public function simpan(KompatibilitasSukuCadang $model): KompatibilitasSukuCadang
     {
         $model->save();
+
         return $model->refresh();
     }
 

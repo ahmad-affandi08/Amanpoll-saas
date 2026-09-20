@@ -23,6 +23,7 @@ final class EloquentNotifikasiRepository implements NotifikasiRepository
     public function simpan(Notifikasi $model): Notifikasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

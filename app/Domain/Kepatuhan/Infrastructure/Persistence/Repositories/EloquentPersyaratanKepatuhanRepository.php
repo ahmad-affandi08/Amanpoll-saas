@@ -23,6 +23,7 @@ final class EloquentPersyaratanKepatuhanRepository implements PersyaratanKepatuh
     public function simpan(PersyaratanKepatuhan $model): PersyaratanKepatuhan
     {
         $model->save();
+
         return $model->refresh();
     }
 

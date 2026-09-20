@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Notifikasi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -13,10 +15,13 @@ final class Notifikasi extends ModelDasar
     use MilikOrganisasi;
 
     public const STATUS_ANTRI = 'Antri';
+
     public const STATUS_TERKIRIM = 'Terkirim';
+
     public const STATUS_GAGAL = 'Gagal';
 
     public const KANAL_IN_APP = 'InApp';
+
     public const KANAL_EMAIL = 'Email';
 
     protected $table = 'Notifikasi';
@@ -53,12 +58,11 @@ final class Notifikasi extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function pengguna(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PenggunaId', 'Id');
+        return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');
     }
-
 }

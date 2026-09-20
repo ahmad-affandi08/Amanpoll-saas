@@ -23,6 +23,7 @@ final class EloquentButirTemplatDaftarPeriksaRepository implements ButirTemplatD
     public function simpan(ButirTemplatDaftarPeriksa $model): ButirTemplatDaftarPeriksa
     {
         $model->save();
+
         return $model->refresh();
     }
 

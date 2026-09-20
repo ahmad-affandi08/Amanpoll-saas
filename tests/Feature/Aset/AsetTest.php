@@ -17,11 +17,12 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatPenanggungJawabAset
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
-use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
-use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class AsetTest extends TestCase
@@ -93,7 +94,7 @@ class AsetTest extends TestCase
             'Status' => Aset::STATUS_AKTIF,
             'Kondisi' => Aset::KONDISI_BAIK,
             'TingkatKritis' => Aset::KRITIS_NORMAL,
-            'KodeQr' => (string) \Illuminate\Support\Str::ulid(),
+            'KodeQr' => (string) Str::ulid(),
             'DibuatOleh' => $admin->Id,
             'Versi' => 1,
         ], $atribut));

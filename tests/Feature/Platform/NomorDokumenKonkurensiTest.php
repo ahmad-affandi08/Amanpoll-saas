@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Platform;
 
+use App\Domain\Platform\Application\Services\LayananNomorDokumen;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -29,7 +30,7 @@ class NomorDokumenKonkurensiTest extends TestCase
     {
         parent::setUp();
 
-        if (!function_exists('pcntl_fork')) {
+        if (! function_exists('pcntl_fork')) {
             $this->markTestSkipped('Ekstensi pcntl tidak tersedia di lingkungan ini.');
         }
 
@@ -124,7 +125,7 @@ class NomorDokumenKonkurensiTest extends TestCase
             config(['database.default' => 'sqlite_paralel']);
             DB::connection('sqlite_paralel')->statement('PRAGMA busy_timeout = 5000');
 
-            $layanan = app(\App\Domain\Platform\Application\Services\LayananNomorDokumen::class);
+            $layanan = app(LayananNomorDokumen::class);
             $baris = [];
             for ($i = 0; $i < $iterasi; $i++) {
                 $baris[] = $layanan->berikutnya($organisasiId, 'ParalelTest');

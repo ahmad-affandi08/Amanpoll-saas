@@ -23,6 +23,7 @@ final class EloquentOrganisasiRepository implements OrganisasiRepository
     public function simpan(Organisasi $model): Organisasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

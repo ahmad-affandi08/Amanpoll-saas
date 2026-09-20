@@ -13,18 +13,15 @@ final class SimpanRencanaPemeliharaanAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'RencanaPemeliharaanId' => ['sometimes'],
-            'AsetId' => ['sometimes'],
-            'TanggalMulai' => ['sometimes'],
-            'TanggalBerikutnya' => ['nullable'],
-            'NilaiMeterBerikutnya' => ['nullable'],
-            'TerakhirDilaksanakanPada' => ['nullable'],
-            'Aktif' => ['sometimes'],
+            'AsetId' => ['required', 'string', 'size:26'],
+            'TanggalMulai' => ['nullable', 'date'],
+            'TanggalBerikutnya' => ['nullable', 'date'],
         ];
     }
 }

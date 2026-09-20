@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pelaporan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +16,7 @@ final class KomponenDasbor extends ModelDasar
     protected $table = 'KomponenDasbor';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -46,12 +48,11 @@ final class KomponenDasbor extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function dasborTersimpan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Pelaporan\Infrastructure\Persistence\Models\DasborTersimpan::class, 'DasborTersimpanId', 'Id');
+        return $this->belongsTo(DasborTersimpan::class, 'DasborTersimpanId', 'Id');
     }
-
 }

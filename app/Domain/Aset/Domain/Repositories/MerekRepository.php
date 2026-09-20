@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface MerekRepository
 {
     public function temukan(string $id): ?Merek;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(Merek $model): Merek;
+
     public function hapus(Merek $model): void;
 }

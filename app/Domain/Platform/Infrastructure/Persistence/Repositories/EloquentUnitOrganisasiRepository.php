@@ -23,6 +23,7 @@ final class EloquentUnitOrganisasiRepository implements UnitOrganisasiRepository
     public function simpan(UnitOrganisasi $model): UnitOrganisasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

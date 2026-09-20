@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface PemetaanDataEksternalRepository
 {
     public function temukan(string $id): ?PemetaanDataEksternal;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(PemetaanDataEksternal $model): PemetaanDataEksternal;
+
     public function hapus(PemetaanDataEksternal $model): void;
 }

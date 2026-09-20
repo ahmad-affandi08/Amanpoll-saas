@@ -9,7 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\MeterAset;
 final class UbahMeterAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(MeterAset $meterAset, array $data): MeterAset
     {

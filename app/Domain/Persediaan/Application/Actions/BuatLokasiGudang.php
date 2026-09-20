@@ -9,7 +9,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\LokasiGudang;
 final class BuatLokasiGudang
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): LokasiGudang
     {

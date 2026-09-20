@@ -12,7 +12,7 @@ final class UbahKontakPenyedia
     public function __construct(private readonly TransaksiDatabase $transaksi) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(KontakPenyedia $kontakPenyedia, array $data): KontakPenyedia
     {

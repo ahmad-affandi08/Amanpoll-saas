@@ -23,6 +23,7 @@ final class EloquentEntitasTagRepository implements EntitasTagRepository
     public function simpan(EntitasTag $model): EntitasTag
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -10,7 +10,7 @@ use App\Shared\Domain\Services\PemeriksaHierarkiSirkular;
 final class UbahKategoriAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(KategoriAset $kategoriAset, array $data): KategoriAset
     {

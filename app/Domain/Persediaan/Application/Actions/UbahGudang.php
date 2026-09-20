@@ -9,7 +9,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 final class UbahGudang
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Gudang $gudang, array $data): Gudang
     {

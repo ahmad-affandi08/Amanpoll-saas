@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -43,17 +44,16 @@ final class HasilTitikUkurKalibrasi extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function pelaksanaanKalibrasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi::class, 'PelaksanaanKalibrasiId', 'Id');
+        return $this->belongsTo(PelaksanaanKalibrasi::class, 'PelaksanaanKalibrasiId', 'Id');
     }
 
     public function titikUkurKalibrasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Kalibrasi\Infrastructure\Persistence\Models\TitikUkurKalibrasi::class, 'TitikUkurKalibrasiId', 'Id');
+        return $this->belongsTo(TitikUkurKalibrasi::class, 'TitikUkurKalibrasiId', 'Id');
     }
-
 }

@@ -24,7 +24,7 @@ final class UbahPengguna
             'JenisPengguna' => $data->JenisPengguna,
         ]);
 
-        if (!empty($data->KataSandi)) {
+        if (! empty($data->KataSandi)) {
             $pengguna->KataSandi = $data->KataSandi;
         }
 

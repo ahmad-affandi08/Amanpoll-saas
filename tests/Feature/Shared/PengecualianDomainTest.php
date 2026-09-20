@@ -8,8 +8,8 @@ use App\Shared\Domain\Exceptions\AksesDitolak;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use App\Shared\Domain\Exceptions\KonflikData;
-use App\Shared\Domain\Exceptions\VersiDataBerubah;
 use App\Shared\Domain\Exceptions\PengecualianDomain;
+use App\Shared\Domain\Exceptions\VersiDataBerubah;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -31,7 +31,7 @@ class PengecualianDomainTest extends TestCase
     }
 
     /**
-     * @param class-string<PengecualianDomain> $kelasPengecualian
+     * @param  class-string<PengecualianDomain>  $kelasPengecualian
      */
     #[DataProvider('daftarPengecualian')]
     public function test_pengecualian_domain_dipetakan_konsisten_untuk_permintaan_json(

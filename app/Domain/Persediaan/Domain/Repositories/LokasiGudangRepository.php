@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface LokasiGudangRepository
 {
     public function temukan(string $id): ?LokasiGudang;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(LokasiGudang $model): LokasiGudang;
+
     public function hapus(LokasiGudang $model): void;
 }

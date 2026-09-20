@@ -23,7 +23,7 @@ final class SinkronkanIzinPeran
     ) {}
 
     /**
-     * @param list<string> $izinId
+     * @param  list<string>  $izinId
      */
     public function jalankan(Peran $peran, array $izinId): void
     {

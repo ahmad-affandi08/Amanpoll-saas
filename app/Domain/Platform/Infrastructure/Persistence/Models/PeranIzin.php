@@ -27,12 +27,11 @@ final class PeranIzin extends ModelDasar
 
     public function peran(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Peran::class, 'PeranId', 'Id');
+        return $this->belongsTo(Peran::class, 'PeranId', 'Id');
     }
 
     public function izin(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Izin::class, 'IzinId', 'Id');
+        return $this->belongsTo(Izin::class, 'IzinId', 'Id');
     }
-
 }

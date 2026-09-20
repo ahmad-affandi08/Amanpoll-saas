@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -36,11 +39,11 @@ final class RiwayatPenanggungJawabAset extends ModelDasar
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     * @return BelongsTo<Organisasi, $this>
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -48,23 +51,22 @@ final class RiwayatPenanggungJawabAset extends ModelDasar
      */
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna, $this>
+     * @return BelongsTo<Pengguna, $this>
      */
     public function pengguna(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PenggunaId', 'Id');
+        return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi, $this>
+     * @return BelongsTo<UnitOrganisasi, $this>
      */
     public function unitOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
-
 }

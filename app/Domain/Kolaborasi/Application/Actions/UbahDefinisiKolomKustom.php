@@ -12,7 +12,7 @@ final class UbahDefinisiKolomKustom
     public function __construct(private readonly DefinisiKolomKustomRepository $definisiKolomKustomRepository) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(DefinisiKolomKustom $definisiKolomKustom, array $data): DefinisiKolomKustom
     {

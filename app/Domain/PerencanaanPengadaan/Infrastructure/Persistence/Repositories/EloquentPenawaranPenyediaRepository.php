@@ -23,6 +23,7 @@ final class EloquentPenawaranPenyediaRepository implements PenawaranPenyediaRepo
     public function simpan(PenawaranPenyedia $model): PenawaranPenyedia
     {
         $model->save();
+
         return $model->refresh();
     }
 

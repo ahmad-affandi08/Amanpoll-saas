@@ -23,6 +23,7 @@ final class EloquentMutasiStokRepository implements MutasiStokRepository
     public function simpan(MutasiStok $model): MutasiStok
     {
         $model->save();
+
         return $model->refresh();
     }
 

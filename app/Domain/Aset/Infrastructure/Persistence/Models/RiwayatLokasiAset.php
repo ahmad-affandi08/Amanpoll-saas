@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,7 +18,9 @@ final class RiwayatLokasiAset extends ModelDasar
     protected $table = 'RiwayatLokasiAset';
 
     public const JENIS_REGISTRASI = 'Registrasi';
+
     public const JENIS_MANUAL = 'Manual';
+
     public const JENIS_MUTASI = 'Mutasi';
 
     public $timestamps = false;
@@ -42,11 +47,11 @@ final class RiwayatLokasiAset extends ModelDasar
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     * @return BelongsTo<Organisasi, $this>
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -54,31 +59,30 @@ final class RiwayatLokasiAset extends ModelDasar
      */
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi, $this>
+     * @return BelongsTo<Lokasi, $this>
      */
     public function lokasiAsal(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'LokasiAsalId', 'Id');
+        return $this->belongsTo(Lokasi::class, 'LokasiAsalId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi, $this>
+     * @return BelongsTo<Lokasi, $this>
      */
     public function lokasiTujuan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'LokasiTujuanId', 'Id');
+        return $this->belongsTo(Lokasi::class, 'LokasiTujuanId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna, $this>
+     * @return BelongsTo<Pengguna, $this>
      */
     public function dipindahkanOleh(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DipindahkanOleh', 'Id');
+        return $this->belongsTo(Pengguna::class, 'DipindahkanOleh', 'Id');
     }
-
 }

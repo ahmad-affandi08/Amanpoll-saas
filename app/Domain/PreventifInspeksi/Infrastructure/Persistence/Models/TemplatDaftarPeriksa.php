@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
+use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class TemplatDaftarPeriksa extends ModelDasar
 {
@@ -15,6 +19,7 @@ final class TemplatDaftarPeriksa extends ModelDasar
     protected $table = 'TemplatDaftarPeriksa';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -40,17 +45,28 @@ final class TemplatDaftarPeriksa extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function kategoriAset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset::class, 'KategoriAsetId', 'Id');
+        return $this->belongsTo(KategoriAset::class, 'KategoriAsetId', 'Id');
     }
 
     public function modelAset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset::class, 'ModelAsetId', 'Id');
+        return $this->belongsTo(ModelAset::class, 'ModelAsetId', 'Id');
     }
 
+    /** @return HasMany<ButirTemplatDaftarPeriksa, $this> */
+    public function butir(): HasMany
+    {
+        return $this->hasMany(ButirTemplatDaftarPeriksa::class, 'TemplatDaftarPeriksaId', 'Id')->orderBy('Urutan');
+    }
+
+    /** @return HasMany<PelaksanaanDaftarPeriksa, $this> */
+    public function pelaksanaan(): HasMany
+    {
+        return $this->hasMany(PelaksanaanDaftarPeriksa::class, 'TemplatDaftarPeriksaId', 'Id');
+    }
 }

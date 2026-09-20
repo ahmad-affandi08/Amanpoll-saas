@@ -23,6 +23,7 @@ final class EloquentTemplatNotifikasiRepository implements TemplatNotifikasiRepo
     public function simpan(TemplatNotifikasi $model): TemplatNotifikasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

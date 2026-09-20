@@ -12,7 +12,6 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\KunciApi;
 use App\Http\Controllers\Controller;
 use DateTimeImmutable;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 

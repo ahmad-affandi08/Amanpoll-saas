@@ -23,6 +23,7 @@ final class EloquentNilaiKolomKustomRepository implements NilaiKolomKustomReposi
     public function simpan(NilaiKolomKustom $model): NilaiKolomKustom
     {
         $model->save();
+
         return $model->refresh();
     }
 

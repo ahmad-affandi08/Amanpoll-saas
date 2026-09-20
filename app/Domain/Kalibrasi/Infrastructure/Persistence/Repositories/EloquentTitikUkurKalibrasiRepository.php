@@ -23,6 +23,7 @@ final class EloquentTitikUkurKalibrasiRepository implements TitikUkurKalibrasiRe
     public function simpan(TitikUkurKalibrasi $model): TitikUkurKalibrasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

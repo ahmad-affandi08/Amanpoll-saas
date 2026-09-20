@@ -23,6 +23,7 @@ final class EloquentKonfigurasiOrganisasiRepository implements KonfigurasiOrgani
     public function simpan(KonfigurasiOrganisasi $model): KonfigurasiOrganisasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

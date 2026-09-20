@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KomponenDasborRepository
 {
     public function temukan(string $id): ?KomponenDasbor;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(KomponenDasbor $model): KomponenDasbor;
+
     public function hapus(KomponenDasbor $model): void;
 }

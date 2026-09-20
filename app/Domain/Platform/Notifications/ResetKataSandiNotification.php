@@ -30,7 +30,7 @@ final class ResetKataSandiNotification extends Notification
         /** @var Pengguna $notifiable */
         $url = url('/reset-kata-sandi/'.$notifiable->Id.'/'.$this->tokenMentah);
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject('Permintaan Reset Kata Sandi Amanpoll')
             ->line('Kami menerima permintaan reset kata sandi untuk akun Anda.')
             ->action('Reset Kata Sandi', $url)

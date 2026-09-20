@@ -9,7 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 final class BuatLokasi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): Lokasi
     {

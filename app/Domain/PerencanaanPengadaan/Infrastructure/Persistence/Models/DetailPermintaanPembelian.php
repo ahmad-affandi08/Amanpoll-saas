@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -40,22 +43,21 @@ final class DetailPermintaanPembelian extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function permintaanPembelian(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian::class, 'PermintaanPembelianId', 'Id');
+        return $this->belongsTo(PermintaanPembelian::class, 'PermintaanPembelianId', 'Id');
     }
 
     public function asetReferensi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetReferensiId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetReferensiId', 'Id');
     }
 
     public function sukuCadang(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang::class, 'SukuCadangId', 'Id');
+        return $this->belongsTo(SukuCadang::class, 'SukuCadangId', 'Id');
     }
-
 }

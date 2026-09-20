@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KunciIdempotensiRepository
 {
     public function temukan(string $id): ?KunciIdempotensi;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(KunciIdempotensi $model): KunciIdempotensi;
+
     public function hapus(KunciIdempotensi $model): void;
 }

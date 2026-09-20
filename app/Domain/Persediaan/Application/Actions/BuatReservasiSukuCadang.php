@@ -19,7 +19,7 @@ final class BuatReservasiSukuCadang
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data, string $dibuatOleh): ReservasiSukuCadang
     {

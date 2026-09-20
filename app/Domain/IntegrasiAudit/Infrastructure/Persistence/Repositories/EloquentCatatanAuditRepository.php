@@ -23,6 +23,7 @@ final class EloquentCatatanAuditRepository implements CatatanAuditRepository
     public function simpan(CatatanAudit $model): CatatanAudit
     {
         $model->save();
+
         return $model->refresh();
     }
 

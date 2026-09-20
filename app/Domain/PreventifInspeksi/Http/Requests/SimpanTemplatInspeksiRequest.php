@@ -13,17 +13,18 @@ final class SimpanTemplatInspeksiRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'KategoriAsetId' => ['nullable'],
-            'TemplatDaftarPeriksaId' => ['sometimes'],
-            'IntervalHari' => ['nullable'],
-            'Aktif' => ['sometimes'],
+            'Kode' => ['required', 'string', 'max:80'],
+            'Nama' => ['required', 'string', 'max:200'],
+            'KategoriAsetId' => ['nullable', 'string', 'size:26'],
+            'TemplatDaftarPeriksaId' => ['required', 'string', 'size:26'],
+            'IntervalHari' => ['required', 'integer', 'min:1'],
+            'Aktif' => ['nullable', 'boolean'],
         ];
     }
 }

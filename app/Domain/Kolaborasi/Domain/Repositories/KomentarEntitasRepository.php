@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KomentarEntitasRepository
 {
     public function temukan(string $id): ?KomentarEntitas;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(KomentarEntitas $model): KomentarEntitas;
+
     public function hapus(KomentarEntitas $model): void;
 }

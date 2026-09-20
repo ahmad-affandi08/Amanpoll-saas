@@ -23,6 +23,7 @@ final class EloquentRelasiAsetRepository implements RelasiAsetRepository
     public function simpan(RelasiAset $model): RelasiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

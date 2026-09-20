@@ -19,7 +19,7 @@ final class BuatPermintaanMutasiAset
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data, string $dimintaOleh): PermintaanMutasiAset
     {

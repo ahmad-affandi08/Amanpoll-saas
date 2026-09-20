@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface RencanaPemeliharaanRepository
 {
     public function temukan(string $id): ?RencanaPemeliharaan;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(RencanaPemeliharaan $model): RencanaPemeliharaan;
+
     public function hapus(RencanaPemeliharaan $model): void;
 }

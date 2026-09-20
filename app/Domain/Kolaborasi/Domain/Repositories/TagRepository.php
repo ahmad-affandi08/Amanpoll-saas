@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface TagRepository
 {
     public function temukan(string $id): ?Tag;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(Tag $model): Tag;
+
     public function hapus(Tag $model): void;
 }

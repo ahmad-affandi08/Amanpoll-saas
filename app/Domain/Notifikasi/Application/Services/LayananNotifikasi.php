@@ -24,7 +24,7 @@ final class LayananNotifikasi
     public function __construct(private readonly NotifikasiRepository $notifikasiRepository) {}
 
     /**
-     * @param list<string>|null $kanal
+     * @param  list<string>|null  $kanal
      */
     public function kirim(
         string $penggunaId,
@@ -36,7 +36,7 @@ final class LayananNotifikasi
         ?array $kanal = null,
     ): void {
         foreach ($kanal ?? self::KANAL_BAWAAN as $satuKanal) {
-            if (!$this->aktifUntukPengguna($penggunaId, $jenisPeristiwa, $satuKanal)) {
+            if (! $this->aktifUntukPengguna($penggunaId, $jenisPeristiwa, $satuKanal)) {
                 continue;
             }
 

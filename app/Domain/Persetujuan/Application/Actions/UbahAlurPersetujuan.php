@@ -9,7 +9,7 @@ use App\Domain\Persetujuan\Infrastructure\Persistence\Models\AlurPersetujuan;
 final class UbahAlurPersetujuan
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(AlurPersetujuan $alurPersetujuan, array $data): AlurPersetujuan
     {

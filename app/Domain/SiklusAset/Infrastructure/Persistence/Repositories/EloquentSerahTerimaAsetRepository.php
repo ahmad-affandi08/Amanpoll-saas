@@ -23,6 +23,7 @@ final class EloquentSerahTerimaAsetRepository implements SerahTerimaAsetReposito
     public function simpan(SerahTerimaAset $model): SerahTerimaAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

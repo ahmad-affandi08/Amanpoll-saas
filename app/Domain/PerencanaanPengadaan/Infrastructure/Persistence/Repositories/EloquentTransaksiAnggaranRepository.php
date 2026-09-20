@@ -23,6 +23,7 @@ final class EloquentTransaksiAnggaranRepository implements TransaksiAnggaranRepo
     public function simpan(TransaksiAnggaran $model): TransaksiAnggaran
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -18,7 +18,7 @@ final class AssignPenanggungJawabAset
     public function __construct(private readonly TransaksiDatabase $transaksi) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Aset $aset, array $data): RiwayatPenanggungJawabAset
     {

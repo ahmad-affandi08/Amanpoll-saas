@@ -23,6 +23,7 @@ final class EloquentKepatuhanAsetRepository implements KepatuhanAsetRepository
     public function simpan(KepatuhanAset $model): KepatuhanAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

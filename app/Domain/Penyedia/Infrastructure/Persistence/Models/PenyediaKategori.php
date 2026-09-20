@@ -27,12 +27,11 @@ final class PenyediaKategori extends ModelDasar
 
     public function penyedia(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia::class, 'PenyediaId', 'Id');
+        return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
 
     public function kategoriPenyedia(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia::class, 'KategoriPenyediaId', 'Id');
+        return $this->belongsTo(KategoriPenyedia::class, 'KategoriPenyediaId', 'Id');
     }
-
 }

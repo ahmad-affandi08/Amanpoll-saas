@@ -25,5 +25,4 @@ final class FiturPaket extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
         ];
     }
-
 }

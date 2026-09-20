@@ -9,7 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\HariLibur;
 final class UbahHariLibur
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(HariLibur $hariLibur, array $data): HariLibur
     {

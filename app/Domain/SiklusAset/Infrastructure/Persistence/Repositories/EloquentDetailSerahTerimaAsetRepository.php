@@ -23,6 +23,7 @@ final class EloquentDetailSerahTerimaAsetRepository implements DetailSerahTerima
     public function simpan(DetailSerahTerimaAset $model): DetailSerahTerimaAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

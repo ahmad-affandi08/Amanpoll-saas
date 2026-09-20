@@ -23,6 +23,7 @@ final class EloquentLokasiRepository implements LokasiRepository
     public function simpan(Lokasi $model): Lokasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

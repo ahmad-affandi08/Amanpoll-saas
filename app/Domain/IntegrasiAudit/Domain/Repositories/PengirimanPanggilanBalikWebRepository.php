@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface PengirimanPanggilanBalikWebRepository
 {
     public function temukan(string $id): ?PengirimanPanggilanBalikWeb;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(PengirimanPanggilanBalikWeb $model): PengirimanPanggilanBalikWeb;
+
     public function hapus(PengirimanPanggilanBalikWeb $model): void;
 }

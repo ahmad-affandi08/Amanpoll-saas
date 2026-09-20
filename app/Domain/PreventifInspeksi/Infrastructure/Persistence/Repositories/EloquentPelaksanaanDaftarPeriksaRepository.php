@@ -23,6 +23,7 @@ final class EloquentPelaksanaanDaftarPeriksaRepository implements PelaksanaanDaf
     public function simpan(PelaksanaanDaftarPeriksa $model): PelaksanaanDaftarPeriksa
     {
         $model->save();
+
         return $model->refresh();
     }
 

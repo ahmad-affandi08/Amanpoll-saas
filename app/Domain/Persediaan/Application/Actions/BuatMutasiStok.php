@@ -27,7 +27,7 @@ final class BuatMutasiStok
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data, string $dibuatOleh): MutasiStok
     {
@@ -49,7 +49,7 @@ final class BuatMutasiStok
 
     private function pastikanGudangValid(string $jenis, ?string $gudangAsalId, ?string $gudangTujuanId): void
     {
-        if (!in_array($jenis, self::JENIS_VALID, true)) {
+        if (! in_array($jenis, self::JENIS_VALID, true)) {
             throw new AturanBisnisDilanggar('Jenis mutasi stok tidak dikenal.');
         }
 

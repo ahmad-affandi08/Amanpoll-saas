@@ -23,6 +23,7 @@ final class EloquentPermintaanPembelianRepository implements PermintaanPembelian
     public function simpan(PermintaanPembelian $model): PermintaanPembelian
     {
         $model->save();
+
         return $model->refresh();
     }
 

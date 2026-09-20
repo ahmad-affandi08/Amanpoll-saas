@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KompatibilitasSukuCadangRepository
 {
     public function temukan(string $id): ?KompatibilitasSukuCadang;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(KompatibilitasSukuCadang $model): KompatibilitasSukuCadang;
+
     public function hapus(KompatibilitasSukuCadang $model): void;
 }

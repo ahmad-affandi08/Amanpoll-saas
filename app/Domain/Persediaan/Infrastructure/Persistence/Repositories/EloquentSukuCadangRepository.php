@@ -23,6 +23,7 @@ final class EloquentSukuCadangRepository implements SukuCadangRepository
     public function simpan(SukuCadang $model): SukuCadang
     {
         $model->save();
+
         return $model->refresh();
     }
 

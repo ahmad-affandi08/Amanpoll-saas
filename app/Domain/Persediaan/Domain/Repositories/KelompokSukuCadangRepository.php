@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KelompokSukuCadangRepository
 {
     public function temukan(string $id): ?KelompokSukuCadang;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(KelompokSukuCadang $model): KelompokSukuCadang;
+
     public function hapus(KelompokSukuCadang $model): void;
 }

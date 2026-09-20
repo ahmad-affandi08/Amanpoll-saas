@@ -15,6 +15,7 @@ final class PerangkatPengguna extends ModelDasar
     protected $table = 'PerangkatPengguna';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -39,12 +40,11 @@ final class PerangkatPengguna extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function pengguna(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PenggunaId', 'Id');
+        return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');
     }
-
 }

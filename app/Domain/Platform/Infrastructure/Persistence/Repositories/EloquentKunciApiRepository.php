@@ -23,6 +23,7 @@ final class EloquentKunciApiRepository implements KunciApiRepository
     public function simpan(KunciApi $model): KunciApi
     {
         $model->save();
+
         return $model->refresh();
     }
 

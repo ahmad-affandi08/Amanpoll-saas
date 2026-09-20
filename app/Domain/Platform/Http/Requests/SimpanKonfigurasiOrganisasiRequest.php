@@ -22,7 +22,7 @@ final class SimpanKonfigurasiOrganisasiRequest extends FormRequest
     {
         $definisi = DefinisiKonfigurasi::cari((string) $this->route('kunci'));
         if ($definisi === null) {
-            throw new NotFoundHttpException("Kunci konfigurasi tidak dikenal.");
+            throw new NotFoundHttpException('Kunci konfigurasi tidak dikenal.');
         }
 
         $aturanTipe = match ($definisi['Tipe']) {

@@ -23,6 +23,7 @@ final class EloquentPembacaanMeterAsetRepository implements PembacaanMeterAsetRe
     public function simpan(PembacaanMeterAset $model): PembacaanMeterAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

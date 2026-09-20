@@ -23,6 +23,7 @@ final class EloquentUsulanAsetRepository implements UsulanAsetRepository
     public function simpan(UsulanAset $model): UsulanAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

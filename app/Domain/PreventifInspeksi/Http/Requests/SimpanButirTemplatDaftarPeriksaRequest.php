@@ -13,23 +13,23 @@ final class SimpanButirTemplatDaftarPeriksaRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'TemplatDaftarPeriksaId' => ['sometimes'],
-            'Urutan' => ['sometimes'],
-            'Kode' => ['nullable'],
-            'Pertanyaan' => ['sometimes'],
-            'TipeJawaban' => ['sometimes'],
-            'Satuan' => ['nullable'],
-            'Wajib' => ['sometimes'],
-            'NilaiMinimum' => ['nullable'],
-            'NilaiMaksimum' => ['nullable'],
-            'Pilihan' => ['nullable'],
-            'BuktiFotoWajib' => ['sometimes'],
-            'MemicuTemuanJika' => ['nullable'],
+            'Urutan' => ['nullable', 'integer', 'min:0'],
+            'Kode' => ['nullable', 'string', 'max:80'],
+            'Pertanyaan' => ['required', 'string'],
+            'TipeJawaban' => ['required', 'string', 'in:Teks,Angka,Pilihan,YaTidak,Foto'],
+            'Satuan' => ['nullable', 'string', 'max:50'],
+            'Wajib' => ['nullable', 'boolean'],
+            'NilaiMinimum' => ['nullable', 'numeric'],
+            'NilaiMaksimum' => ['nullable', 'numeric'],
+            'Pilihan' => ['nullable', 'array'],
+            'BuktiFotoWajib' => ['nullable', 'boolean'],
+            'MemicuTemuanJika' => ['nullable', 'array'],
         ];
     }
 }

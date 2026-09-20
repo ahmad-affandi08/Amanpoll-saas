@@ -9,7 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\KategoriLokasi;
 final class BuatKategoriLokasi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): KategoriLokasi
     {

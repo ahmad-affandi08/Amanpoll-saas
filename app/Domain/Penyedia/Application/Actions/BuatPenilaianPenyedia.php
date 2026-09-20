@@ -12,7 +12,7 @@ final class BuatPenilaianPenyedia
     private const KOMPONEN_SKOR = ['SkorKualitas', 'SkorKetepatanWaktu', 'SkorHarga', 'SkorLayanan'];
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Penyedia $penyedia, array $data, string $dinilaiOleh): PenilaianPenyedia
     {

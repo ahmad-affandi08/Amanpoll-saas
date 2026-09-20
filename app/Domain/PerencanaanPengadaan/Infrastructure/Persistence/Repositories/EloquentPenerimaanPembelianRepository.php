@@ -23,6 +23,7 @@ final class EloquentPenerimaanPembelianRepository implements PenerimaanPembelian
     public function simpan(PenerimaanPembelian $model): PenerimaanPembelian
     {
         $model->save();
+
         return $model->refresh();
     }
 

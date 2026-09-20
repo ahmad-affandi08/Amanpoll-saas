@@ -23,6 +23,7 @@ final class EloquentTemplatInspeksiRepository implements TemplatInspeksiReposito
     public function simpan(TemplatInspeksi $model): TemplatInspeksi
     {
         $model->save();
+
         return $model->refresh();
     }
 

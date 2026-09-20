@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Penyedia\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,15 +14,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Penyedia extends ModelDasar
 {
-    use SoftDeletes, MilikOrganisasi;
+    use MilikOrganisasi, SoftDeletes;
 
     protected $table = 'Penyedia';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     public const STATUS_AKTIF = 'Aktif';
+
     public const STATUS_NONAKTIF = 'Nonaktif';
 
     protected $fillable = [
@@ -51,7 +55,7 @@ final class Penyedia extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -86,5 +90,4 @@ final class Penyedia extends ModelDasar
         return $this->belongsToMany(KategoriPenyedia::class, 'PenyediaKategori', 'PenyediaId', 'KategoriPenyediaId')
             ->withPivot('Id');
     }
-
 }

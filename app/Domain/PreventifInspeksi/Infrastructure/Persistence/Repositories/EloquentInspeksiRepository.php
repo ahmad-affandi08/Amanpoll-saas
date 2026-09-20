@@ -23,6 +23,7 @@ final class EloquentInspeksiRepository implements InspeksiRepository
     public function simpan(Inspeksi $model): Inspeksi
     {
         $model->save();
+
         return $model->refresh();
     }
 

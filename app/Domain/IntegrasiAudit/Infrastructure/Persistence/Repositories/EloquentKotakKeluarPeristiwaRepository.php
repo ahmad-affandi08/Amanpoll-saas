@@ -23,6 +23,7 @@ final class EloquentKotakKeluarPeristiwaRepository implements KotakKeluarPeristi
     public function simpan(KotakKeluarPeristiwa $model): KotakKeluarPeristiwa
     {
         $model->save();
+
         return $model->refresh();
     }
 

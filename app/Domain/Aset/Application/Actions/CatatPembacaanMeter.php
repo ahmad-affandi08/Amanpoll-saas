@@ -11,7 +11,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 final class CatatPembacaanMeter
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(MeterAset $meterAset, array $data, ?string $dicatatOleh): PembacaanMeterAset
     {

@@ -23,6 +23,7 @@ final class EloquentKomentarEntitasRepository implements KomentarEntitasReposito
     public function simpan(KomentarEntitas $model): KomentarEntitas
     {
         $model->save();
+
         return $model->refresh();
     }
 

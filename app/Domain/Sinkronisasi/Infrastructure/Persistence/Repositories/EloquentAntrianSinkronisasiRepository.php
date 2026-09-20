@@ -23,6 +23,7 @@ final class EloquentAntrianSinkronisasiRepository implements AntrianSinkronisasi
     public function simpan(AntrianSinkronisasi $model): AntrianSinkronisasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

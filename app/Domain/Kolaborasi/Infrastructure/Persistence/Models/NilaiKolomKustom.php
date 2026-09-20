@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kolaborasi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +16,7 @@ final class NilaiKolomKustom extends ModelDasar
     protected $table = 'NilaiKolomKustom';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -36,12 +38,11 @@ final class NilaiKolomKustom extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function definisiKolomKustom(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Kolaborasi\Infrastructure\Persistence\Models\DefinisiKolomKustom::class, 'DefinisiKolomKustomId', 'Id');
+        return $this->belongsTo(DefinisiKolomKustom::class, 'DefinisiKolomKustomId', 'Id');
     }
-
 }

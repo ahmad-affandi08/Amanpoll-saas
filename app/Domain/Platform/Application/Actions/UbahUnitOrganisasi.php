@@ -10,7 +10,7 @@ use App\Shared\Domain\Services\PemeriksaHierarkiSirkular;
 final class UbahUnitOrganisasi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(UnitOrganisasi $unit, array $data): UnitOrganisasi
     {

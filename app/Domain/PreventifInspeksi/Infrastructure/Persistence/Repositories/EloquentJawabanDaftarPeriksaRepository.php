@@ -23,6 +23,7 @@ final class EloquentJawabanDaftarPeriksaRepository implements JawabanDaftarPerik
     public function simpan(JawabanDaftarPeriksa $model): JawabanDaftarPeriksa
     {
         $model->save();
+
         return $model->refresh();
     }
 

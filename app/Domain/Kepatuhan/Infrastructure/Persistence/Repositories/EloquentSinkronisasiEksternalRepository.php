@@ -23,6 +23,7 @@ final class EloquentSinkronisasiEksternalRepository implements SinkronisasiEkste
     public function simpan(SinkronisasiEksternal $model): SinkronisasiEksternal
     {
         $model->save();
+
         return $model->refresh();
     }
 

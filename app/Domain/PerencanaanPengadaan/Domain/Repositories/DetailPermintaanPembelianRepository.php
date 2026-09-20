@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface DetailPermintaanPembelianRepository
 {
     public function temukan(string $id): ?DetailPermintaanPembelian;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(DetailPermintaanPembelian $model): DetailPermintaanPembelian;
+
     public function hapus(DetailPermintaanPembelian $model): void;
 }

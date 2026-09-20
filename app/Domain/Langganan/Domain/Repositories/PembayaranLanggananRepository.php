@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface PembayaranLanggananRepository
 {
     public function temukan(string $id): ?PembayaranLangganan;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(PembayaranLangganan $model): PembayaranLangganan;
+
     public function hapus(PembayaranLangganan $model): void;
 }

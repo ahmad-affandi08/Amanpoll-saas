@@ -23,6 +23,7 @@ final class EloquentRiwayatPenanggungJawabAsetRepository implements RiwayatPenan
     public function simpan(RiwayatPenanggungJawabAset $model): RiwayatPenanggungJawabAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

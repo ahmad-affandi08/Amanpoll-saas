@@ -21,7 +21,7 @@ final class SinkronkanStatusPersetujuanSiklusAset
 {
     public function updated(PermintaanPersetujuan $permintaanPersetujuan): void
     {
-        if (!$permintaanPersetujuan->wasChanged('Status')) {
+        if (! $permintaanPersetujuan->wasChanged('Status')) {
             return;
         }
 
@@ -36,7 +36,7 @@ final class SinkronkanStatusPersetujuanSiklusAset
     {
         /** @var PermintaanMutasiAset|null $permintaan */
         $permintaan = PermintaanMutasiAset::query()->find($permintaanPersetujuan->EntitasId);
-        if (!$permintaan) {
+        if (! $permintaan) {
             return;
         }
 
@@ -51,7 +51,7 @@ final class SinkronkanStatusPersetujuanSiklusAset
     {
         /** @var PengajuanPenghapusanAset|null $pengajuan */
         $pengajuan = PengajuanPenghapusanAset::query()->find($permintaanPersetujuan->EntitasId);
-        if (!$pengajuan) {
+        if (! $pengajuan) {
             return;
         }
 

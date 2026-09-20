@@ -23,6 +23,7 @@ final class EloquentKeputusanPersetujuanRepository implements KeputusanPersetuju
     public function simpan(KeputusanPersetujuan $model): KeputusanPersetujuan
     {
         $model->save();
+
         return $model->refresh();
     }
 

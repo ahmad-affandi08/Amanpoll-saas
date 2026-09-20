@@ -55,6 +55,9 @@ import {
   Gauge,
   Wrench,
   AlertTriangle,
+  CalendarClock,
+  ClipboardCheck,
+  ListChecks,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -130,6 +133,24 @@ const navOperasional: GrupNav = {
       href: '/pemeliharaan/kode-kegagalan',
       icon: AlertTriangle,
       kodeIzin: 'PerintahKerja.Kelola',
+    },
+    {
+      label: 'Rencana Preventif',
+      href: '/preventif-inspeksi/rencana-pemeliharaan',
+      icon: CalendarClock,
+      kodeIzin: 'Pemeliharaan.Kelola',
+    },
+    {
+      label: 'Inspeksi',
+      href: '/preventif-inspeksi/inspeksi',
+      icon: ClipboardCheck,
+      kodeIzin: 'Pemeliharaan.Kelola',
+    },
+    {
+      label: 'Daftar Periksa',
+      href: '/preventif-inspeksi/templat-daftar-periksa',
+      icon: ListChecks,
+      kodeIzin: 'Pemeliharaan.Kelola',
     },
   ],
 };

@@ -23,6 +23,7 @@ final class EloquentRiwayatLokasiAsetRepository implements RiwayatLokasiAsetRepo
     public function simpan(RiwayatLokasiAset $model): RiwayatLokasiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

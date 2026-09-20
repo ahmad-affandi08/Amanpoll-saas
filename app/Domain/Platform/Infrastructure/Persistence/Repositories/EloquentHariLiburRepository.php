@@ -23,6 +23,7 @@ final class EloquentHariLiburRepository implements HariLiburRepository
     public function simpan(HariLibur $model): HariLibur
     {
         $model->save();
+
         return $model->refresh();
     }
 

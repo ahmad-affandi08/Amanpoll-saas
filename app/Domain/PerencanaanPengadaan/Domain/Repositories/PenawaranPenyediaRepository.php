@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface PenawaranPenyediaRepository
 {
     public function temukan(string $id): ?PenawaranPenyedia;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(PenawaranPenyedia $model): PenawaranPenyedia;
+
     public function hapus(PenawaranPenyedia $model): void;
 }

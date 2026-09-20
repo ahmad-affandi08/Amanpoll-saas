@@ -13,15 +13,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class SukuCadang extends ModelDasar
 {
-    use SoftDeletes, MilikOrganisasi;
+    use MilikOrganisasi, SoftDeletes;
 
     public const STATUS_AKTIF = 'Aktif';
+
     public const STATUS_NONAKTIF = 'Nonaktif';
 
     protected $table = 'SukuCadang';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     protected $fillable = [

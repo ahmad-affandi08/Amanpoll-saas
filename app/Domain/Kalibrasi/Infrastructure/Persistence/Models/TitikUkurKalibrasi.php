@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -43,17 +45,16 @@ final class TitikUkurKalibrasi extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function jenisKalibrasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi::class, 'JenisKalibrasiId', 'Id');
+        return $this->belongsTo(JenisKalibrasi::class, 'JenisKalibrasiId', 'Id');
     }
 
     public function kategoriAset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset::class, 'KategoriAsetId', 'Id');
+        return $this->belongsTo(KategoriAset::class, 'KategoriAsetId', 'Id');
     }
-
 }

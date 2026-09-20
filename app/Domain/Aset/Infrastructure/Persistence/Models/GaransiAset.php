@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,10 +17,13 @@ final class GaransiAset extends ModelDasar
     protected $table = 'GaransiAset';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     public const STATUS_AKTIF = 'Aktif';
+
     public const STATUS_BERAKHIR = 'Berakhir';
+
     public const STATUS_DIBATALKAN = 'Dibatalkan';
 
     protected $fillable = [
@@ -44,11 +49,11 @@ final class GaransiAset extends ModelDasar
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi, $this>
+     * @return BelongsTo<Organisasi, $this>
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -56,15 +61,14 @@ final class GaransiAset extends ModelDasar
      */
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
     /**
-     * @return BelongsTo<\App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia, $this>
+     * @return BelongsTo<Penyedia, $this>
      */
     public function penyedia(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia::class, 'PenyediaId', 'Id');
+        return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
-
 }

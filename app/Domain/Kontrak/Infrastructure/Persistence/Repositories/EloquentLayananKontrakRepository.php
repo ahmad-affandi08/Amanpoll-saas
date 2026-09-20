@@ -23,6 +23,7 @@ final class EloquentLayananKontrakRepository implements LayananKontrakRepository
     public function simpan(LayananKontrak $model): LayananKontrak
     {
         $model->save();
+
         return $model->refresh();
     }
 

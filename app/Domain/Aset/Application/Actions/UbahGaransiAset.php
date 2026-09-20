@@ -9,7 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 final class UbahGaransiAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(GaransiAset $garansiAset, array $data): GaransiAset
     {

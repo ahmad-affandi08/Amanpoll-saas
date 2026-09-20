@@ -32,12 +32,11 @@ final class PaketFitur extends ModelDasar
 
     public function paketLangganan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Langganan\Infrastructure\Persistence\Models\PaketLangganan::class, 'PaketLanggananId', 'Id');
+        return $this->belongsTo(PaketLangganan::class, 'PaketLanggananId', 'Id');
     }
 
     public function fiturPaket(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Langganan\Infrastructure\Persistence\Models\FiturPaket::class, 'FiturPaketId', 'Id');
+        return $this->belongsTo(FiturPaket::class, 'FiturPaketId', 'Id');
     }
-
 }

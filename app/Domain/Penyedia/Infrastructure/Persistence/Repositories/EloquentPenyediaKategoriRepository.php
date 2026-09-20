@@ -23,6 +23,7 @@ final class EloquentPenyediaKategoriRepository implements PenyediaKategoriReposi
     public function simpan(PenyediaKategori $model): PenyediaKategori
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -23,6 +23,7 @@ final class EloquentPenandaSinkronisasiRepository implements PenandaSinkronisasi
     public function simpan(PenandaSinkronisasi $model): PenandaSinkronisasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

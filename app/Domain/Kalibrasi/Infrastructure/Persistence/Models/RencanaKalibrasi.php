@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +18,7 @@ final class RencanaKalibrasi extends ModelDasar
     protected $table = 'RencanaKalibrasi';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -44,22 +48,21 @@ final class RencanaKalibrasi extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
     public function jenisKalibrasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi::class, 'JenisKalibrasiId', 'Id');
+        return $this->belongsTo(JenisKalibrasi::class, 'JenisKalibrasiId', 'Id');
     }
 
     public function penyedia(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia::class, 'PenyediaId', 'Id');
+        return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
-
 }

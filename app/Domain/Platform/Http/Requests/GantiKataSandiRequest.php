@@ -30,7 +30,7 @@ final class GantiKataSandiRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator): void {
-            if (!Hash::check((string) $this->input('KataSandiLama'), (string) $this->user()->KataSandi)) {
+            if (! Hash::check((string) $this->input('KataSandiLama'), (string) $this->user()->KataSandi)) {
                 $validator->errors()->add('KataSandiLama', 'Kata sandi lama tidak sesuai.');
             }
         });

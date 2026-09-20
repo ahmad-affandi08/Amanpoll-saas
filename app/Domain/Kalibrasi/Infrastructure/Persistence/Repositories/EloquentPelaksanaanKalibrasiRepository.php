@@ -23,6 +23,7 @@ final class EloquentPelaksanaanKalibrasiRepository implements PelaksanaanKalibra
     public function simpan(PelaksanaanKalibrasi $model): PelaksanaanKalibrasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

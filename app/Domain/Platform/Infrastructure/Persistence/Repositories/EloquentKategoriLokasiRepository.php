@@ -23,6 +23,7 @@ final class EloquentKategoriLokasiRepository implements KategoriLokasiRepository
     public function simpan(KategoriLokasi $model): KategoriLokasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -9,7 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 final class UbahModelAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(ModelAset $modelAset, array $data): ModelAset
     {

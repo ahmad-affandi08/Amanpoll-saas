@@ -16,18 +16,25 @@ final class MutasiStok extends ModelDasar
     use MilikOrganisasi;
 
     public const JENIS_PENERIMAAN = 'Penerimaan';
+
     public const JENIS_PENGELUARAN = 'Pengeluaran';
+
     public const JENIS_TRANSFER = 'Transfer';
+
     public const JENIS_ADJUSTMENT = 'Adjustment';
+
     public const JENIS_RETURN = 'Return';
 
     public const STATUS_DRAFT = 'Draft';
+
     public const STATUS_DIPOSTING = 'Diposting';
+
     public const STATUS_DIBATALKAN = 'Dibatalkan';
 
     protected $table = 'MutasiStok';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [

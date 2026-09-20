@@ -26,6 +26,7 @@ final class EloquentPenggunaRepository implements PenggunaRepository
     public function simpan(Pengguna $model): Pengguna
     {
         $model->save();
+
         return $model->refresh();
     }
 

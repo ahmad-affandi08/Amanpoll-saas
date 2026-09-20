@@ -23,6 +23,7 @@ final class EloquentPeranRepository implements PeranRepository
     public function simpan(Peran $model): Peran
     {
         $model->save();
+
         return $model->refresh();
     }
 

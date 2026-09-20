@@ -9,7 +9,7 @@ use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
 final class BuatTemplatNotifikasi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): TemplatNotifikasi
     {

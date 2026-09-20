@@ -23,6 +23,7 @@ final class EloquentJadwalPemeliharaanRepository implements JadwalPemeliharaanRe
     public function simpan(JadwalPemeliharaan $model): JadwalPemeliharaan
     {
         $model->save();
+
         return $model->refresh();
     }
 

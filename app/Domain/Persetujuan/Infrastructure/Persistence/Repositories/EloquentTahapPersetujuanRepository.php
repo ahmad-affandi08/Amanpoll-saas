@@ -23,6 +23,7 @@ final class EloquentTahapPersetujuanRepository implements TahapPersetujuanReposi
     public function simpan(TahapPersetujuan $model): TahapPersetujuan
     {
         $model->save();
+
         return $model->refresh();
     }
 

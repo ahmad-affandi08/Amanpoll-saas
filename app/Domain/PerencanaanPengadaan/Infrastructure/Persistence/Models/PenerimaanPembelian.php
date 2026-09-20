@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -38,22 +41,21 @@ final class PenerimaanPembelian extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function pesananPembelian(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian::class, 'PesananPembelianId', 'Id');
+        return $this->belongsTo(PesananPembelian::class, 'PesananPembelianId', 'Id');
     }
 
     public function gudang(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang::class, 'GudangId', 'Id');
+        return $this->belongsTo(Gudang::class, 'GudangId', 'Id');
     }
 
     public function diterimaOleh(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'DiterimaOleh', 'Id');
+        return $this->belongsTo(Pengguna::class, 'DiterimaOleh', 'Id');
     }
-
 }

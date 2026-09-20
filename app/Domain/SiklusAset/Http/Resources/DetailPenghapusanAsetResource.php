@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Http\Resources;
 
+use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailPenghapusanAset;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property \App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailPenghapusanAset $resource
+ * @property DetailPenghapusanAset $resource
  */
 final class DetailPenghapusanAsetResource extends JsonResource
 {

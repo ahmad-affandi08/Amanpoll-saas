@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface PosAnggaranRepository
 {
     public function temukan(string $id): ?PosAnggaran;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(PosAnggaran $model): PosAnggaran;
+
     public function hapus(PosAnggaran $model): void;
 }

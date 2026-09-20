@@ -40,7 +40,7 @@ final class PenggunaPeran extends ModelDasar
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -48,7 +48,7 @@ final class PenggunaPeran extends ModelDasar
      */
     public function pengguna(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PenggunaId', 'Id');
+        return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');
     }
 
     /**
@@ -56,7 +56,7 @@ final class PenggunaPeran extends ModelDasar
      */
     public function peran(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Peran::class, 'PeranId', 'Id');
+        return $this->belongsTo(Peran::class, 'PeranId', 'Id');
     }
 
     /**
@@ -64,7 +64,7 @@ final class PenggunaPeran extends ModelDasar
      */
     public function unitOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
     /**
@@ -72,7 +72,6 @@ final class PenggunaPeran extends ModelDasar
      */
     public function lokasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'LokasiId', 'Id');
+        return $this->belongsTo(Lokasi::class, 'LokasiId', 'Id');
     }
-
 }

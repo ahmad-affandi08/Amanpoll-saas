@@ -23,6 +23,7 @@ final class EloquentFiturPaketRepository implements FiturPaketRepository
     public function simpan(FiturPaket $model): FiturPaket
     {
         $model->save();
+
         return $model->refresh();
     }
 

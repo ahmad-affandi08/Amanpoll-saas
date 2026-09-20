@@ -9,7 +9,7 @@ define('LARAVEL_START', microtime(true));
 // domains/domain-anda.tld/
 // ├── amanpoll/       <- seluruh source Laravel
 // └── public_html/    <- HANYA isi folder deploy/niagahoster/public_html
-$amanpollRoot = dirname(__DIR__) . '/amanpoll';
+$amanpollRoot = dirname(__DIR__).'/amanpoll';
 
 if (file_exists($maintenance = $amanpollRoot.'/storage/framework/maintenance.php')) {
     require $maintenance;

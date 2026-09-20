@@ -23,6 +23,7 @@ final class EloquentLaporanTersimpanRepository implements LaporanTersimpanReposi
     public function simpan(LaporanTersimpan $model): LaporanTersimpan
     {
         $model->save();
+
         return $model->refresh();
     }
 

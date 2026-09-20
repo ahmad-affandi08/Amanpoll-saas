@@ -23,6 +23,7 @@ final class EloquentAnggaranRepository implements AnggaranRepository
     public function simpan(Anggaran $model): Anggaran
     {
         $model->save();
+
         return $model->refresh();
     }
 

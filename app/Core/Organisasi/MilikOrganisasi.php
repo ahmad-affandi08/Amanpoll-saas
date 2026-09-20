@@ -10,7 +10,7 @@ trait MilikOrganisasi
 {
     protected static function bootMilikOrganisasi(): void
     {
-        static::addGlobalScope(new ScopeOrganisasi());
+        static::addGlobalScope(new ScopeOrganisasi);
 
         static::creating(function (Model $model): void {
             if (empty($model->OrganisasiId)) {

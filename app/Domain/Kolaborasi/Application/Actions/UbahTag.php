@@ -12,7 +12,7 @@ final class UbahTag
     public function __construct(private readonly TagRepository $tagRepository) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Tag $tag, array $data): Tag
     {

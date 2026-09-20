@@ -66,7 +66,7 @@ final class LayananNilaiKolomKustom
 
     private function pastikan(bool $kondisi, DefinisiKolomKustom $definisi, string $pesan): void
     {
-        if (!$kondisi) {
+        if (! $kondisi) {
             throw new AturanBisnisDilanggar("Kolom '{$definisi->Label}' {$pesan}.");
         }
     }

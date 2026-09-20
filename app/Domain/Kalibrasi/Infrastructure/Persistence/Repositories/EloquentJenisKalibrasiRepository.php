@@ -23,6 +23,7 @@ final class EloquentJenisKalibrasiRepository implements JenisKalibrasiRepository
     public function simpan(JenisKalibrasi $model): JenisKalibrasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

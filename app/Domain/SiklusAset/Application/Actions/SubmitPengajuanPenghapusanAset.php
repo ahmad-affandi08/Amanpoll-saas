@@ -27,7 +27,7 @@ final class SubmitPengajuanPenghapusanAset
             throw new AturanBisnisDilanggar('Hanya pengajuan berstatus draft yang bisa disubmit.');
         }
 
-        if (!$pengajuan->detailPenghapusanAset()->exists()) {
+        if (! $pengajuan->detailPenghapusanAset()->exists()) {
             throw new AturanBisnisDilanggar('Tambahkan minimal satu aset sebelum submit.');
         }
 
@@ -36,7 +36,7 @@ final class SubmitPengajuanPenghapusanAset
             ->where('Aktif', true)
             ->first();
 
-        if (!$alurPersetujuan) {
+        if (! $alurPersetujuan) {
             throw new AturanBisnisDilanggar('Belum ada alur persetujuan aktif untuk penghapusan aset. Hubungi administrator.');
         }
 

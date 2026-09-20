@@ -9,7 +9,7 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 final class UbahKategoriPenyedia
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(KategoriPenyedia $kategoriPenyedia, array $data): KategoriPenyedia
     {

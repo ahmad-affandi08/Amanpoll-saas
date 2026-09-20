@@ -23,6 +23,7 @@ final class EloquentKategoriSukuCadangRepository implements KategoriSukuCadangRe
     public function simpan(KategoriSukuCadang $model): KategoriSukuCadang
     {
         $model->save();
+
         return $model->refresh();
     }
 

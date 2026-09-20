@@ -817,49 +817,49 @@ Flow `Keluhan → PerintahKerja → Teknisi → Sparepart → Selesai → Ditutu
 
 ## 13.01 TemplatDaftarPeriksa
 
-- [ ] CRUD.
-- [ ] Butir.
-- [ ] Urutan.
-- [ ] Jenis jawaban.
-- [ ] Required.
-- [ ] Min/max.
-- [ ] Version strategy.
+- [x] CRUD.
+- [x] Butir.
+- [x] Urutan.
+- [x] Jenis jawaban.
+- [x] Required.
+- [x] Min/max.
+- [x] Version strategy.
 
 ## 13.02 PelaksanaanDaftarPeriksa
 
-- [ ] Snapshot template.
-- [ ] Jawaban.
-- [ ] Foto/catatan.
-- [ ] Validasi required.
-- [ ] Finalisasi.
-- [ ] Lock final result sesuai aturan.
+- [x] Snapshot template.
+- [x] Jawaban.
+- [x] Foto/catatan.
+- [x] Validasi required.
+- [x] Finalisasi.
+- [x] Lock final result sesuai aturan.
 
 ## 13.03 RencanaPemeliharaan
 
-- [ ] Calendar-based.
-- [ ] Meter-based.
-- [ ] Asset assignment.
-- [ ] Interval.
-- [ ] Next due.
-- [ ] Aktif/nonaktif.
+- [x] Calendar-based.
+- [x] Meter-based.
+- [x] Asset assignment.
+- [x] Interval.
+- [x] Next due.
+- [x] Aktif/nonaktif.
 
 ## 13.04 Generator Jadwal
 
-- [ ] Scheduler command.
-- [ ] Idempotent.
-- [ ] Tidak membuat duplicate.
-- [ ] Membuat JadwalPemeliharaan.
-- [ ] Membuat PerintahKerja jika waktunya.
-- [ ] Test cron rerun.
+- [x] Scheduler command.
+- [x] Idempotent.
+- [x] Tidak membuat duplicate.
+- [x] Membuat JadwalPemeliharaan.
+- [x] Membuat PerintahKerja jika waktunya.
+- [x] Test cron rerun.
 
 ## 13.05 Inspeksi
 
-- [ ] Templat.
-- [ ] Pelaksanaan.
-- [ ] Findings.
-- [ ] Pass/fail.
-- [ ] Generate Keluhan/PerintahKerja dari temuan.
-- [ ] Lampiran.
+- [x] Templat.
+- [x] Pelaksanaan.
+- [x] Findings.
+- [x] Pass/fail.
+- [x] Generate Keluhan/PerintahKerja dari temuan.
+- [x] Lampiran.
 
 ### Gate 13
 

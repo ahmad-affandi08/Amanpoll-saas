@@ -23,6 +23,7 @@ final class EloquentPenyediaPermintaanPenawaranRepository implements PenyediaPer
     public function simpan(PenyediaPermintaanPenawaran $model): PenyediaPermintaanPenawaran
     {
         $model->save();
+
         return $model->refresh();
     }
 

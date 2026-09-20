@@ -23,6 +23,7 @@ final class EloquentRencanaPemeliharaanRepository implements RencanaPemeliharaan
     public function simpan(RencanaPemeliharaan $model): RencanaPemeliharaan
     {
         $model->save();
+
         return $model->refresh();
     }
 

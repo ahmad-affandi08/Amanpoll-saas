@@ -45,7 +45,7 @@ final class PemeriksaRelasiOrganisasi
             }
 
             $tabelTujuan = $fk['foreign_table'];
-            if (!Schema::hasColumn($tabelTujuan, 'OrganisasiId')) {
+            if (! Schema::hasColumn($tabelTujuan, 'OrganisasiId')) {
                 continue;
             }
 

@@ -23,6 +23,7 @@ final class EloquentPanggilanBalikWebRepository implements PanggilanBalikWebRepo
     public function simpan(PanggilanBalikWeb $model): PanggilanBalikWeb
     {
         $model->save();
+
         return $model->refresh();
     }
 

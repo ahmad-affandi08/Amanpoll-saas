@@ -11,12 +11,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Lokasi extends ModelDasar
 {
-    use SoftDeletes, MilikOrganisasi;
+    use MilikOrganisasi, SoftDeletes;
 
     protected $table = 'Lokasi';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     protected $fillable = [
@@ -50,7 +52,7 @@ final class Lokasi extends ModelDasar
      */
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     /**
@@ -58,7 +60,7 @@ final class Lokasi extends ModelDasar
      */
     public function unitOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
     /**
@@ -66,7 +68,7 @@ final class Lokasi extends ModelDasar
      */
     public function kategoriLokasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\KategoriLokasi::class, 'KategoriLokasiId', 'Id');
+        return $this->belongsTo(KategoriLokasi::class, 'KategoriLokasiId', 'Id');
     }
 
     /**
@@ -74,7 +76,6 @@ final class Lokasi extends ModelDasar
      */
     public function induk(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'IndukId', 'Id');
+        return $this->belongsTo(Lokasi::class, 'IndukId', 'Id');
     }
-
 }

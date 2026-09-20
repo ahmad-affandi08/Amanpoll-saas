@@ -23,6 +23,7 @@ final class EloquentRencanaPengadaanRepository implements RencanaPengadaanReposi
     public function simpan(RencanaPengadaan $model): RencanaPengadaan
     {
         $model->save();
+
         return $model->refresh();
     }
 

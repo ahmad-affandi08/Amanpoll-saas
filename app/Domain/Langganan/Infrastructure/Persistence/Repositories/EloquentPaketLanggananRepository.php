@@ -23,6 +23,7 @@ final class EloquentPaketLanggananRepository implements PaketLanggananRepository
     public function simpan(PaketLangganan $model): PaketLangganan
     {
         $model->save();
+
         return $model->refresh();
     }
 

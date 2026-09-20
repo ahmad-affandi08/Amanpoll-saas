@@ -11,7 +11,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 final class UbahTahapPersetujuan
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(TahapPersetujuan $tahapPersetujuan, array $data): TahapPersetujuan
     {

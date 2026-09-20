@@ -27,7 +27,7 @@ class TransaksiDatabaseLaravelTest extends TestCase
 
     public function test_perubahan_dibatalkan_saat_callback_melempar_exception(): void
     {
-        $transaksi = new TransaksiDatabaseLaravel();
+        $transaksi = new TransaksiDatabaseLaravel;
 
         try {
             $transaksi->jalankan(function (): void {
@@ -45,7 +45,7 @@ class TransaksiDatabaseLaravelTest extends TestCase
 
     public function test_perubahan_tersimpan_saat_callback_berhasil(): void
     {
-        $transaksi = new TransaksiDatabaseLaravel();
+        $transaksi = new TransaksiDatabaseLaravel;
 
         $transaksi->jalankan(function (): void {
             DB::table('AntrianPekerjaan')->insert($this->baris());

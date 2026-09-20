@@ -15,7 +15,7 @@ final class BuatAset
     public function __construct(private readonly TransaksiDatabase $transaksi) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data, string $dibuatOleh): Aset
     {
@@ -27,7 +27,7 @@ final class BuatAset
                 $data['UmurManfaatBulan'] ??= $kategoriAset->UmurManfaatBulan;
                 $data['MetodePenyusutan'] ??= $kategoriAset->MetodePenyusutanBawaan;
 
-                if (!isset($data['NilaiResidu']) && isset($data['HargaPerolehan']) && $kategoriAset->PersentaseNilaiResidu !== null) {
+                if (! isset($data['NilaiResidu']) && isset($data['HargaPerolehan']) && $kategoriAset->PersentaseNilaiResidu !== null) {
                     $data['NilaiResidu'] = round((float) $data['HargaPerolehan'] * (float) $kategoriAset->PersentaseNilaiResidu / 100, 2);
                 }
             }

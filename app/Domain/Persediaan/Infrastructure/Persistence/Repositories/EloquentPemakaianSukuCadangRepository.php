@@ -23,6 +23,7 @@ final class EloquentPemakaianSukuCadangRepository implements PemakaianSukuCadang
     public function simpan(PemakaianSukuCadang $model): PemakaianSukuCadang
     {
         $model->save();
+
         return $model->refresh();
     }
 

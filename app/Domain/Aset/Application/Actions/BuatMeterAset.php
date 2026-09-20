@@ -10,7 +10,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\MeterAset;
 final class BuatMeterAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Aset $aset, array $data): MeterAset
     {

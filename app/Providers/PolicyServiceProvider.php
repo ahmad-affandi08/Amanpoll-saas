@@ -76,6 +76,16 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use App\Domain\PreventifInspeksi\Http\Policies\InspeksiPolicy;
+use App\Domain\PreventifInspeksi\Http\Policies\PelaksanaanDaftarPeriksaPolicy;
+use App\Domain\PreventifInspeksi\Http\Policies\RencanaPemeliharaanPolicy;
+use App\Domain\PreventifInspeksi\Http\Policies\TemplatDaftarPeriksaPolicy;
+use App\Domain\PreventifInspeksi\Http\Policies\TemplatInspeksiPolicy;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\Inspeksi;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\PelaksanaanDaftarPeriksa;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaan;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftarPeriksa;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatInspeksi;
 use App\Domain\SiklusAset\Http\Policies\PengajuanPenghapusanAsetPolicy;
 use App\Domain\SiklusAset\Http\Policies\PermintaanMutasiAsetPolicy;
 use App\Domain\SiklusAset\Http\Policies\SerahTerimaAsetPolicy;
@@ -132,5 +142,10 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(KategoriKeluhan::class, KategoriKeluhanPolicy::class);
         Gate::policy(Keluhan::class, KeluhanPolicy::class);
         Gate::policy(PerintahKerja::class, PerintahKerjaPolicy::class);
+        Gate::policy(TemplatDaftarPeriksa::class, TemplatDaftarPeriksaPolicy::class);
+        Gate::policy(PelaksanaanDaftarPeriksa::class, PelaksanaanDaftarPeriksaPolicy::class);
+        Gate::policy(RencanaPemeliharaan::class, RencanaPemeliharaanPolicy::class);
+        Gate::policy(TemplatInspeksi::class, TemplatInspeksiPolicy::class);
+        Gate::policy(Inspeksi::class, InspeksiPolicy::class);
     }
 }

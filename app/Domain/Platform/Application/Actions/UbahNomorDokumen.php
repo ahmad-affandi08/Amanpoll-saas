@@ -9,7 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\NomorDokumen;
 final class UbahNomorDokumen
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(NomorDokumen $nomorDokumen, array $data): NomorDokumen
     {

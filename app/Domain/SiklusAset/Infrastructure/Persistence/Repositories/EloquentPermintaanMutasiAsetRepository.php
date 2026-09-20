@@ -23,6 +23,7 @@ final class EloquentPermintaanMutasiAsetRepository implements PermintaanMutasiAs
     public function simpan(PermintaanMutasiAset $model): PermintaanMutasiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

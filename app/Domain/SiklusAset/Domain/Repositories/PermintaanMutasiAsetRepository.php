@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface PermintaanMutasiAsetRepository
 {
     public function temukan(string $id): ?PermintaanMutasiAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(PermintaanMutasiAset $model): PermintaanMutasiAset;
+
     public function hapus(PermintaanMutasiAset $model): void;
 }

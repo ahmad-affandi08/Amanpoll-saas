@@ -23,6 +23,7 @@ final class EloquentPengajuanPenghapusanAsetRepository implements PengajuanPengh
     public function simpan(PengajuanPenghapusanAset $model): PengajuanPenghapusanAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

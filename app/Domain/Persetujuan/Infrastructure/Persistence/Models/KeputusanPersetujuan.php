@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Persetujuan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -13,6 +15,7 @@ final class KeputusanPersetujuan extends ModelDasar
     use MilikOrganisasi;
 
     public const KEPUTUSAN_DISETUJUI = 'Disetujui';
+
     public const KEPUTUSAN_DITOLAK = 'Ditolak';
 
     protected $table = 'KeputusanPersetujuan';
@@ -38,22 +41,21 @@ final class KeputusanPersetujuan extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function permintaanPersetujuan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan::class, 'PermintaanPersetujuanId', 'Id');
+        return $this->belongsTo(PermintaanPersetujuan::class, 'PermintaanPersetujuanId', 'Id');
     }
 
     public function tahapPersetujuan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan::class, 'TahapPersetujuanId', 'Id');
+        return $this->belongsTo(TahapPersetujuan::class, 'TahapPersetujuanId', 'Id');
     }
 
     public function penyetuju(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PenyetujuId', 'Id');
+        return $this->belongsTo(Pengguna::class, 'PenyetujuId', 'Id');
     }
-
 }

@@ -26,7 +26,7 @@ final class PemeriksaIzin
     public function daftarKodeIzin(string $penggunaId): array
     {
         $organisasiId = $this->konteksOrganisasi->id();
-        if (!$organisasiId) {
+        if (! $organisasiId) {
             return [];
         }
 

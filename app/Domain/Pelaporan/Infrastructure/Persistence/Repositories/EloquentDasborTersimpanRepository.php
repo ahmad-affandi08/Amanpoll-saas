@@ -23,6 +23,7 @@ final class EloquentDasborTersimpanRepository implements DasborTersimpanReposito
     public function simpan(DasborTersimpan $model): DasborTersimpan
     {
         $model->save();
+
         return $model->refresh();
     }
 

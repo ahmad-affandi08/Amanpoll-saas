@@ -23,6 +23,7 @@ final class EloquentHasilTitikUkurKalibrasiRepository implements HasilTitikUkurK
     public function simpan(HasilTitikUkurKalibrasi $model): HasilTitikUkurKalibrasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

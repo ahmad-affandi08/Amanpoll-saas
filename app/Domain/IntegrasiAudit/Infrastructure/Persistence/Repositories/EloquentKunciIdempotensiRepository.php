@@ -23,6 +23,7 @@ final class EloquentKunciIdempotensiRepository implements KunciIdempotensiReposi
     public function simpan(KunciIdempotensi $model): KunciIdempotensi
     {
         $model->save();
+
         return $model->refresh();
     }
 

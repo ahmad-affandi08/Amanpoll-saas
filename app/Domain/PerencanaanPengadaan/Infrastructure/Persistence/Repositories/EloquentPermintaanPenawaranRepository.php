@@ -23,6 +23,7 @@ final class EloquentPermintaanPenawaranRepository implements PermintaanPenawaran
     public function simpan(PermintaanPenawaran $model): PermintaanPenawaran
     {
         $model->save();
+
         return $model->refresh();
     }
 

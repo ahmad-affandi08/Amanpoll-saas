@@ -29,7 +29,7 @@ final class LayananNomorDokumen
                 ->lockForUpdate()
                 ->first();
 
-            if (!$baris) {
+            if (! $baris) {
                 throw new DataTidakDitemukan("Pola nomor dokumen untuk '{$jenisDokumen}' belum diatur.");
             }
 
@@ -56,7 +56,7 @@ final class LayananNomorDokumen
             ->where('JenisDokumen', $jenisDokumen)
             ->first();
 
-        if (!$baris) {
+        if (! $baris) {
             throw new DataTidakDitemukan("Pola nomor dokumen untuk '{$jenisDokumen}' belum diatur.");
         }
 

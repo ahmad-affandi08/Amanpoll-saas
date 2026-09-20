@@ -19,8 +19,8 @@ final class BuatKunciApi
     ) {}
 
     /**
-     * @param list<string>|null $cakupan
-     * @param list<string>|null $alamatIpDiizinkan
+     * @param  list<string>|null  $cakupan
+     * @param  list<string>|null  $alamatIpDiizinkan
      * @return array{kunciApi: KunciApi, tokenMentah: string} token mentah hanya tersedia di sini, tidak pernah disimpan.
      */
     public function jalankan(

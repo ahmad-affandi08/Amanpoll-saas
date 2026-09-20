@@ -11,7 +11,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 final class TambahDetailMutasiStok
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(MutasiStok $mutasiStok, array $data): DetailMutasiStok
     {

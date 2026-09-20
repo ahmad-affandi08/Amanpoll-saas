@@ -17,7 +17,7 @@ final class ResetKataSandi
     {
         $baris = DB::table('TokenResetKataSandi')->where('PenggunaId', $penggunaId)->first();
 
-        if (!$baris || !hash_equals($baris->TokenHash, hash('sha256', $tokenMentah))) {
+        if (! $baris || ! hash_equals($baris->TokenHash, hash('sha256', $tokenMentah))) {
             throw new AturanBisnisDilanggar('Tautan reset kata sandi tidak valid.');
         }
 

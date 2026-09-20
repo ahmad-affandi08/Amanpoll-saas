@@ -10,7 +10,7 @@ use App\Shared\Domain\Services\PemeriksaHierarkiSirkular;
 final class UbahLokasi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Lokasi $lokasi, array $data): Lokasi
     {

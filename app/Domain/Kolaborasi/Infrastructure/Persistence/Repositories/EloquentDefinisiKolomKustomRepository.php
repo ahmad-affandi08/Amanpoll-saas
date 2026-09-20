@@ -23,6 +23,7 @@ final class EloquentDefinisiKolomKustomRepository implements DefinisiKolomKustom
     public function simpan(DefinisiKolomKustom $model): DefinisiKolomKustom
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface PemakaianSukuCadangRepository
 {
     public function temukan(string $id): ?PemakaianSukuCadang;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(PemakaianSukuCadang $model): PemakaianSukuCadang;
+
     public function hapus(PemakaianSukuCadang $model): void;
 }

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class RencanaPemeliharaan extends ModelDasar
 {
@@ -15,6 +17,7 @@ final class RencanaPemeliharaan extends ModelDasar
     protected $table = 'RencanaPemeliharaan';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
 
     protected $fillable = [
@@ -50,12 +53,16 @@ final class RencanaPemeliharaan extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function templatDaftarPeriksa(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftarPeriksa::class, 'TemplatDaftarPeriksaId', 'Id');
+        return $this->belongsTo(TemplatDaftarPeriksa::class, 'TemplatDaftarPeriksaId', 'Id');
     }
 
+    public function aset(): HasMany
+    {
+        return $this->hasMany(RencanaPemeliharaanAset::class, 'RencanaPemeliharaanId', 'Id');
+    }
 }

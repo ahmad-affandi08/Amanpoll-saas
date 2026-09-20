@@ -10,7 +10,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 final class BuatGaransiAset
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(Aset $aset, array $data): GaransiAset
     {

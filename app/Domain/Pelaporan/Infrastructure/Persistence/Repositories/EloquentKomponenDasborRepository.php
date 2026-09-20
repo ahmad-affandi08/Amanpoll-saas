@@ -23,6 +23,7 @@ final class EloquentKomponenDasborRepository implements KomponenDasborRepository
     public function simpan(KomponenDasbor $model): KomponenDasbor
     {
         $model->save();
+
         return $model->refresh();
     }
 

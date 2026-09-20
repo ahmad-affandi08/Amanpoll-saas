@@ -47,7 +47,7 @@ final class TolakPermintaanPersetujuan
 
         $entitas = $this->registriEntitas->cariEntitas($permintaan->JenisEntitas, $permintaan->EntitasId);
 
-        if (!$this->layananPenyetuju->bolehMemutuskan($tahap, $entitas, $penyetuju, $permintaan->DimintaOleh)) {
+        if (! $this->layananPenyetuju->bolehMemutuskan($tahap, $entitas, $penyetuju, $permintaan->DimintaOleh)) {
             throw new AksesDitolak('Anda tidak berhak menolak tahap ini.');
         }
 

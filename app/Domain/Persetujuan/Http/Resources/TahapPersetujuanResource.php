@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Persetujuan\Http\Resources;
 
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
-use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

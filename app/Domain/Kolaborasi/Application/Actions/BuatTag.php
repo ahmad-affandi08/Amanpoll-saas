@@ -12,7 +12,7 @@ final class BuatTag
     public function __construct(private readonly TagRepository $tagRepository) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function jalankan(array $data): Tag
     {

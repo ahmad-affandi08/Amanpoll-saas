@@ -23,6 +23,7 @@ final class EloquentModelAsetRepository implements ModelAsetRepository
     public function simpan(ModelAset $model): ModelAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

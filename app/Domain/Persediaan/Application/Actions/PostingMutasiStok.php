@@ -146,7 +146,7 @@ final class PostingMutasiStok
 
         $saldo = (clone $query)->lockForUpdate()->first();
 
-        if (!$saldo) {
+        if (! $saldo) {
             try {
                 $saldo = StokSukuCadang::create([
                     'OrganisasiId' => $organisasiId,
@@ -160,7 +160,7 @@ final class PostingMutasiStok
                 ]);
             } catch (QueryException $kesalahan) {
                 $saldo = (clone $query)->lockForUpdate()->first();
-                if (!$saldo) {
+                if (! $saldo) {
                     throw $kesalahan;
                 }
             }
@@ -168,7 +168,7 @@ final class PostingMutasiStok
 
         $saldoBaru = (float) $saldo->JumlahTersedia + $delta;
 
-        if ($saldoBaru < 0 && !$izinkanNegatif) {
+        if ($saldoBaru < 0 && ! $izinkanNegatif) {
             throw new AturanBisnisDilanggar('Mutasi ini akan membuat stok menjadi negatif. Aktifkan izin penyesuaian stok negatif untuk melanjutkan.');
         }
 
@@ -184,7 +184,7 @@ final class PostingMutasiStok
             ->where('Kunci', self::KUNCI_KONFIGURASI_STOK_NEGATIF)
             ->first();
 
-        if (!$konfigurasi) {
+        if (! $konfigurasi) {
             return false;
         }
 

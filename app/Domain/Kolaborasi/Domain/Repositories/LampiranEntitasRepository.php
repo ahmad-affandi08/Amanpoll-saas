@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface LampiranEntitasRepository
 {
     public function temukan(string $id): ?LampiranEntitas;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(LampiranEntitas $model): LampiranEntitas;
+
     public function hapus(LampiranEntitas $model): void;
 }

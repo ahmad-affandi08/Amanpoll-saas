@@ -23,6 +23,7 @@ final class EloquentPesananPembelianRepository implements PesananPembelianReposi
     public function simpan(PesananPembelian $model): PesananPembelian
     {
         $model->save();
+
         return $model->refresh();
     }
 

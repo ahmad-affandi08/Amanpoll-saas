@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface DetailSerahTerimaAsetRepository
 {
     public function temukan(string $id): ?DetailSerahTerimaAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(DetailSerahTerimaAset $model): DetailSerahTerimaAset;
+
     public function hapus(DetailSerahTerimaAset $model): void;
 }

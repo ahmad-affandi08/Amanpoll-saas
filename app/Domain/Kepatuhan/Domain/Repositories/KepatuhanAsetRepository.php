@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KepatuhanAsetRepository
 {
     public function temukan(string $id): ?KepatuhanAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(KepatuhanAset $model): KepatuhanAset;
+
     public function hapus(KepatuhanAset $model): void;
 }

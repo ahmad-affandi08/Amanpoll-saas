@@ -23,6 +23,7 @@ final class EloquentAlurPersetujuanRepository implements AlurPersetujuanReposito
     public function simpan(AlurPersetujuan $model): AlurPersetujuan
     {
         $model->save();
+
         return $model->refresh();
     }
 

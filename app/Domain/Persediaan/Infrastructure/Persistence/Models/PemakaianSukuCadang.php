@@ -96,5 +96,4 @@ final class PemakaianSukuCadang extends ModelDasar
     {
         return $this->belongsTo(Pengguna::class, 'DipakaiOleh', 'Id');
     }
-
 }

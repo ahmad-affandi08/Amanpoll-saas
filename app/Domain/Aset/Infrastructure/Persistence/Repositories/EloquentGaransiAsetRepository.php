@@ -23,6 +23,7 @@ final class EloquentGaransiAsetRepository implements GaransiAsetRepository
     public function simpan(GaransiAset $model): GaransiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

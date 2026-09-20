@@ -23,6 +23,7 @@ final class EloquentRencanaKalibrasiRepository implements RencanaKalibrasiReposi
     public function simpan(RencanaKalibrasi $model): RencanaKalibrasi
     {
         $model->save();
+
         return $model->refresh();
     }
 

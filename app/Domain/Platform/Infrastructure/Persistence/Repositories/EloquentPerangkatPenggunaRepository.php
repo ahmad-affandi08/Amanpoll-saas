@@ -23,6 +23,7 @@ final class EloquentPerangkatPenggunaRepository implements PerangkatPenggunaRepo
     public function simpan(PerangkatPengguna $model): PerangkatPengguna
     {
         $model->save();
+
         return $model->refresh();
     }
 
