@@ -31,3 +31,7 @@ Schedule::command('reservasi-suku-cadang:kedaluwarsakan')
 Schedule::command('suku-cadang:peringatan-stok-minimum')
     ->dailyAt('07:00')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));
+
+Schedule::command('keluhan:proses-eskalasi-sla')
+    ->everyFiveMinutes()
+    ->withoutOverlapping(5);

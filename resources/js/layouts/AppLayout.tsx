@@ -6,14 +6,53 @@ import { Button } from '@/components/ui/button';
 import { NotificationBell } from '@/components/notifikasi/NotificationBell';
 import { LogoMark } from '@/components/shared/LogoMark';
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
-  SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import {
-  LayoutDashboard, Box, FolderTree, Tag, Layers, Truck, FileCheck, Building2, Network,
-  MapPin, Settings, Hash, CalendarDays, Tags, Columns3, Workflow, MessageSquareText, Users,
-  ShieldCheck, KeyRound, ScrollText, CircleUserRound, BellRing, ArrowLeftRight, Handshake, Trash2,
-  Warehouse, PackageSearch, Boxes, ArrowRightLeft, BookmarkCheck,
+  LayoutDashboard,
+  Box,
+  FolderTree,
+  Tag,
+  Layers,
+  Truck,
+  FileCheck,
+  Building2,
+  Network,
+  MapPin,
+  Settings,
+  Hash,
+  CalendarDays,
+  Tags,
+  Columns3,
+  Workflow,
+  MessageSquareText,
+  Users,
+  ShieldCheck,
+  KeyRound,
+  ScrollText,
+  CircleUserRound,
+  BellRing,
+  ArrowLeftRight,
+  Handshake,
+  Trash2,
+  Warehouse,
+  PackageSearch,
+  Boxes,
+  ArrowRightLeft,
+  BookmarkCheck,
+  ClipboardList,
+  Gauge,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -54,7 +93,12 @@ const navPersediaan: GrupNav = {
   label: 'Persediaan',
   items: [
     { label: 'Gudang', href: '/gudang', icon: Warehouse, kodeIzin: 'Stok.Kelola' },
-    { label: 'Kategori Suku Cadang', href: '/kategori-suku-cadang', icon: FolderTree, kodeIzin: 'Stok.Kelola' },
+    {
+      label: 'Kategori Suku Cadang',
+      href: '/kategori-suku-cadang',
+      icon: FolderTree,
+      kodeIzin: 'Stok.Kelola',
+    },
     { label: 'Suku Cadang', href: '/suku-cadang', icon: PackageSearch, kodeIzin: 'Stok.Kelola' },
     { label: 'Stok', href: '/stok-suku-cadang', icon: Boxes, kodeIzin: 'Stok.Kelola' },
     { label: 'Mutasi Stok', href: '/mutasi-stok', icon: ArrowRightLeft, kodeIzin: 'Stok.Kelola' },
@@ -62,26 +106,58 @@ const navPersediaan: GrupNav = {
   ],
 };
 
+const navOperasional: GrupNav = {
+  label: 'Operasional',
+  items: [
+    { label: 'Keluhan', href: '/pemeliharaan/keluhan', icon: ClipboardList },
+    {
+      label: 'Tingkat Layanan',
+      href: '/pemeliharaan/tingkat-layanan',
+      icon: Gauge,
+      kodeIzin: 'Pemeliharaan.Kelola',
+    },
+    {
+      label: 'Kategori Keluhan',
+      href: '/pemeliharaan/kategori-keluhan',
+      icon: FolderTree,
+      kodeIzin: 'Pemeliharaan.Kelola',
+    },
+  ],
+};
+
 const navPenyedia: GrupNav = {
   label: 'Penyedia & Kontrak',
-  items: [
-    { label: 'Penyedia', href: '/penyedia', icon: Truck, kodeIzin: 'Penyedia.Kelola' },
-  ],
+  items: [{ label: 'Penyedia', href: '/penyedia', icon: Truck, kodeIzin: 'Penyedia.Kelola' }],
 };
 
 const navStruktur: GrupNav = {
   label: 'Struktur & Konfigurasi',
   items: [
     { label: 'Organisasi', href: '/platform/organisasi', icon: Building2, kodeIzin: 'Pengaturan.Kelola' },
-    { label: 'Unit Organisasi', href: '/platform/unit-organisasi', icon: Network, kodeIzin: 'Pengaturan.Kelola' },
+    {
+      label: 'Unit Organisasi',
+      href: '/platform/unit-organisasi',
+      icon: Network,
+      kodeIzin: 'Pengaturan.Kelola',
+    },
     { label: 'Lokasi', href: '/platform/lokasi', icon: MapPin, kodeIzin: 'Pengaturan.Kelola' },
     { label: 'Konfigurasi', href: '/platform/konfigurasi', icon: Settings, kodeIzin: 'Pengaturan.Kelola' },
     { label: 'Nomor Dokumen', href: '/platform/nomor-dokumen', icon: Hash, kodeIzin: 'Pengaturan.Kelola' },
     { label: 'Hari Libur', href: '/platform/hari-libur', icon: CalendarDays, kodeIzin: 'Pengaturan.Kelola' },
     { label: 'Tag', href: '/kolaborasi/tag', icon: Tags, kodeIzin: 'Pengaturan.Kelola' },
-    { label: 'Kolom Kustom', href: '/kolaborasi/kolom-kustom', icon: Columns3, kodeIzin: 'Pengaturan.Kelola' },
+    {
+      label: 'Kolom Kustom',
+      href: '/kolaborasi/kolom-kustom',
+      icon: Columns3,
+      kodeIzin: 'Pengaturan.Kelola',
+    },
     { label: 'Alur Persetujuan', href: '/persetujuan/alur', icon: Workflow, kodeIzin: 'Persetujuan.Kelola' },
-    { label: 'Templat Notifikasi', href: '/notifikasi/templat', icon: MessageSquareText, kodeIzin: 'Pengaturan.Kelola' },
+    {
+      label: 'Templat Notifikasi',
+      href: '/notifikasi/templat',
+      icon: MessageSquareText,
+      kodeIzin: 'Pengaturan.Kelola',
+    },
   ],
 };
 
@@ -97,7 +173,15 @@ const navAdministrasi: GrupNav = {
   ],
 };
 
-const semuaGrup: GrupNav[] = [navUtama, navAset, navPersediaan, navPenyedia, navStruktur, navAdministrasi];
+const semuaGrup: GrupNav[] = [
+  navUtama,
+  navAset,
+  navOperasional,
+  navPersediaan,
+  navPenyedia,
+  navStruktur,
+  navAdministrasi,
+];
 
 function tautanAktif(pathSekarang: string, href: string): boolean {
   if (href === '/') return pathSekarang === '/';
@@ -136,7 +220,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     const Icon = item.icon;
                     return (
                       <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton asChild isActive={tautanAktif(pathSekarang, item.href)} tooltip={item.label}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={tautanAktif(pathSekarang, item.href)}
+                          tooltip={item.label}
+                        >
                           <Link href={item.href}>
                             <Icon size={18} strokeWidth={1.75} />
                             <span>{item.label}</span>
@@ -156,8 +244,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
           <SidebarTrigger />
           <div className="flex items-center gap-3">
             <NotificationBell />
-            <span className="hidden text-sm text-muted-foreground sm:inline">{auth.pengguna?.Nama ?? ''}</span>
-            <Button variant="outline" size="sm" onClick={keluar}>Keluar</Button>
+            <span className="hidden text-sm text-muted-foreground sm:inline">
+              {auth.pengguna?.Nama ?? ''}
+            </span>
+            <Button variant="outline" size="sm" onClick={keluar}>
+              Keluar
+            </Button>
           </div>
         </header>
         <div className="p-4 sm:p-6">{children}</div>

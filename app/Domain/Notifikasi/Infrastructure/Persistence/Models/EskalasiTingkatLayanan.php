@@ -5,12 +5,20 @@ declare(strict_types=1);
 namespace App\Domain\Notifikasi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class EskalasiTingkatLayanan extends ModelDasar
 {
     use MilikOrganisasi;
+
+    public const PEMICU_MENJELANG = 'Menjelang';
+
+    public const PEMICU_TERLEWATI = 'Terlewati';
 
     protected $table = 'EskalasiTingkatLayanan';
 
@@ -20,6 +28,7 @@ final class EskalasiTingkatLayanan extends ModelDasar
         'OrganisasiId',
         'TingkatLayananId',
         'Tahap',
+        'Pemicu',
         'SetelahMenit',
         'PeranId',
         'PenggunaId',
@@ -40,22 +49,21 @@ final class EskalasiTingkatLayanan extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function tingkatLayanan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan::class, 'TingkatLayananId', 'Id');
+        return $this->belongsTo(TingkatLayanan::class, 'TingkatLayananId', 'Id');
     }
 
     public function peran(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Peran::class, 'PeranId', 'Id');
+        return $this->belongsTo(Peran::class, 'PeranId', 'Id');
     }
 
     public function pengguna(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PenggunaId', 'Id');
+        return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');
     }
-
 }

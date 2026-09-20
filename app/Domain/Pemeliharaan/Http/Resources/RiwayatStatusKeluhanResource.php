@@ -11,6 +11,13 @@ final class RiwayatStatusKeluhanResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'Id' => $this->Id,
+            'StatusSebelum' => $this->StatusSebelum,
+            'StatusSesudah' => $this->StatusSesudah,
+            'Catatan' => $this->Catatan,
+            'NamaPengubah' => $this->whenLoaded('diubahOleh', fn () => $this->diubahOleh?->Nama),
+            'DiubahPada' => $this->DiubahPada?->toIso8601String(),
+        ];
     }
 }

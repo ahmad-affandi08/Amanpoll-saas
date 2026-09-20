@@ -5,24 +5,41 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
+use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Keluhan extends ModelDasar
 {
-    use SoftDeletes, MilikOrganisasi;
+    use MilikOrganisasi, SoftDeletes;
+
+    protected $attributes = [
+        'Prioritas' => PrioritasKeluhan::Normal->value,
+        'Status' => StatusKeluhan::Baru->value,
+        'Sumber' => 'Web',
+        'Versi' => 1,
+    ];
 
     protected $table = 'Keluhan';
 
     public const CREATED_AT = 'DibuatPada';
+
     public const UPDATED_AT = 'DiperbaruiPada';
+
     public const DELETED_AT = 'DihapusPada';
 
     protected $fillable = [
         'OrganisasiId',
         'Nomor',
         'KategoriKeluhanId',
+        'TingkatLayananId',
         'AsetId',
         'LokasiId',
         'Judul',
@@ -35,6 +52,9 @@ final class Keluhan extends ModelDasar
         'KontakPelaporEksternal',
         'DilaporkanPada',
         'DiresponsPada',
+        'BatasResponsPada',
+        'BatasPenyelesaianPada',
+        'DiresolusikanPada',
         'DitutupPada',
         'Rating',
         'Ulasan',
@@ -46,6 +66,9 @@ final class Keluhan extends ModelDasar
         return [
             'DilaporkanPada' => 'immutable_datetime',
             'DiresponsPada' => 'immutable_datetime',
+            'BatasResponsPada' => 'immutable_datetime',
+            'BatasPenyelesaianPada' => 'immutable_datetime',
+            'DiresolusikanPada' => 'immutable_datetime',
             'DitutupPada' => 'immutable_datetime',
             'Versi' => 'integer',
             'DibuatPada' => 'immutable_datetime',
@@ -56,27 +79,37 @@ final class Keluhan extends ModelDasar
 
     public function organisasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi::class, 'OrganisasiId', 'Id');
+        return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
     public function kategoriKeluhan(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan::class, 'KategoriKeluhanId', 'Id');
+        return $this->belongsTo(KategoriKeluhan::class, 'KategoriKeluhanId', 'Id');
+    }
+
+    public function tingkatLayanan(): BelongsTo
+    {
+        return $this->belongsTo(TingkatLayanan::class, 'TingkatLayananId', 'Id');
     }
 
     public function aset(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Aset\Infrastructure\Persistence\Models\Aset::class, 'AsetId', 'Id');
+        return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
     public function lokasi(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi::class, 'LokasiId', 'Id');
+        return $this->belongsTo(Lokasi::class, 'LokasiId', 'Id');
     }
 
     public function pelapor(): BelongsTo
     {
-        return $this->belongsTo(\App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna::class, 'PelaporId', 'Id');
+        return $this->belongsTo(Pengguna::class, 'PelaporId', 'Id');
     }
 
+    /** @return HasMany<RiwayatStatusKeluhan, $this> */
+    public function riwayatStatus(): HasMany
+    {
+        return $this->hasMany(RiwayatStatusKeluhan::class, 'KeluhanId', 'Id')->oldest('DiubahPada');
+    }
 }

@@ -16,6 +16,10 @@ return new class extends Migration
             $table->string('Kode', 60);
             $table->string('Nama', 160);
             $table->text('Deskripsi')->nullable();
+            $table->json('HariKerja')->nullable();
+            $table->time('JamKerjaMulai')->default('08:00:00');
+            $table->time('JamKerjaSelesai')->default('17:00:00');
+            $table->boolean('MemperhitungkanHariLibur')->default(true);
             $table->boolean('Aktif')->default(1);
             $table->dateTime('DibuatPada', 6)->useCurrent();
             $table->dateTime('DiperbaruiPada', 6)->useCurrent()->useCurrentOnUpdate();

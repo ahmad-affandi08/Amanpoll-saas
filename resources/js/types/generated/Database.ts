@@ -595,6 +595,10 @@ export interface TingkatLayanan {
   Kode: string;
   Nama: string;
   Deskripsi: string | null;
+  HariKerja: Record<string, unknown> | unknown[] | null;
+  JamKerjaMulai: string;
+  JamKerjaSelesai: string;
+  MemperhitungkanHariLibur: boolean;
   Aktif: boolean;
   DibuatPada: string;
   DiperbaruiPada: string;
@@ -619,6 +623,9 @@ export interface KategoriKeluhan {
   Kode: string;
   Nama: string;
   TingkatLayananId: string | null;
+  PrioritasBawaan: string;
+  AsetWajib: boolean;
+  PeranPenanggungJawabId: string | null;
   Aktif: boolean;
   DibuatPada: string;
 }
@@ -628,6 +635,7 @@ export interface Keluhan {
   OrganisasiId: string;
   Nomor: string;
   KategoriKeluhanId: string | null;
+  TingkatLayananId: string | null;
   AsetId: string | null;
   LokasiId: string | null;
   Judul: string;
@@ -640,6 +648,9 @@ export interface Keluhan {
   KontakPelaporEksternal: string | null;
   DilaporkanPada: string;
   DiresponsPada: string | null;
+  BatasResponsPada: string | null;
+  BatasPenyelesaianPada: string | null;
+  DiresolusikanPada: string | null;
   DitutupPada: string | null;
   Rating: string | null;
   Ulasan: string | null;
@@ -1680,6 +1691,7 @@ export interface EskalasiTingkatLayanan {
   OrganisasiId: string;
   TingkatLayananId: string;
   Tahap: number;
+  Pemicu: string;
   SetelahMenit: number;
   PeranId: string | null;
   PenggunaId: string | null;
@@ -1909,7 +1921,4 @@ export interface PembayaranLangganan {
 }
 
 export type NamaViewAmanpoll =
-  'ViewRingkasanAset'
-  | 'ViewStokSukuCadang'
-  | 'ViewKinerjaPerintahKerja'
-  | 'ViewKepatuhanKalibrasi';
+  'ViewRingkasanAset' | 'ViewStokSukuCadang' | 'ViewKinerjaPerintahKerja' | 'ViewKepatuhanKalibrasi';

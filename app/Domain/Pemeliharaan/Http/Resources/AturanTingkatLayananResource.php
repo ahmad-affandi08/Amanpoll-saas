@@ -11,6 +11,12 @@ final class AturanTingkatLayananResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'Id' => $this->Id,
+            'Prioritas' => $this->Prioritas,
+            'MenitRespons' => $this->MenitRespons,
+            'MenitPenyelesaian' => $this->MenitPenyelesaian,
+            'MenghitungJamKerja' => $this->MenghitungJamKerja,
+        ];
     }
 }

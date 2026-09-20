@@ -17,12 +17,16 @@ return new class extends Migration
             $table->string('Kode', 60);
             $table->string('Nama', 160);
             $table->char('TingkatLayananId', 26)->nullable();
+            $table->string('PrioritasBawaan', 40)->default('Normal');
+            $table->boolean('AsetWajib')->default(false);
+            $table->char('PeranPenanggungJawabId', 26)->nullable();
             $table->boolean('Aktif')->default(1);
             $table->dateTime('DibuatPada', 6)->useCurrent();
             $table->unique(['OrganisasiId', 'Kode'], 'UqKategoriKeluhan');
             $table->foreign('OrganisasiId')->references('Id')->on('Organisasi');
             $table->foreign('IndukId')->references('Id')->on('KategoriKeluhan');
             $table->foreign('TingkatLayananId')->references('Id')->on('TingkatLayanan');
+            $table->foreign('PeranPenanggungJawabId')->references('Id')->on('Peran');
         });
     }
 

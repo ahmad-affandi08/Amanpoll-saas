@@ -9,6 +9,7 @@ use App\Core\Entitas\RegistriEntitas;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -17,18 +18,20 @@ use App\Domain\SiklusAset\Infrastructure\Listeners\SinkronkanStatusPersetujuanSi
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
+use App\Shared\Domain\Contracts\TransaksiDatabase;
+use App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel;
 use Illuminate\Support\ServiceProvider;
 
 final class AmanpollServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->scoped(KonteksOrganisasi::class, fn () => new KonteksOrganisasi());
-        $this->app->scoped(KorelasiId::class, fn () => new KorelasiId());
+        $this->app->scoped(KonteksOrganisasi::class, fn () => new KonteksOrganisasi);
+        $this->app->scoped(KorelasiId::class, fn () => new KorelasiId);
         $this->app->singleton(RegistriEntitas::class);
         $this->app->bind(
-            \App\Shared\Domain\Contracts\TransaksiDatabase::class,
-            \App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel::class,
+            TransaksiDatabase::class,
+            TransaksiDatabaseLaravel::class,
         );
     }
 
@@ -51,6 +54,7 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('PermintaanMutasiAset', PermintaanMutasiAset::class, 'Aset.Ubah');
         $registri->daftarkan('SerahTerimaAset', SerahTerimaAset::class, 'Aset.Ubah');
         $registri->daftarkan('PengajuanPenghapusanAset', PengajuanPenghapusanAset::class, 'Aset.Hapus');
+        $registri->daftarkan('Keluhan', Keluhan::class, 'Keluhan.Kelola');
 
         // Mesin Persetujuan (FASE 06) domain-agnostic; SiklusAset menyalin
         // balik hasil keputusan ke status entitasnya sendiri lewat observer.

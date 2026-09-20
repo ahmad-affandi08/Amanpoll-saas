@@ -15,6 +15,7 @@ return new class extends Migration
             $table->char('OrganisasiId', 26);
             $table->char('TingkatLayananId', 26);
             $table->unsignedInteger('Tahap');
+            $table->string('Pemicu', 30)->default('Terlewati');
             $table->unsignedInteger('SetelahMenit');
             $table->char('PeranId', 26)->nullable();
             $table->char('PenggunaId', 26)->nullable();

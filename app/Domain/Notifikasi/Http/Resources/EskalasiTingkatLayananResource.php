@@ -11,6 +11,17 @@ final class EskalasiTingkatLayananResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'Id' => $this->Id,
+            'Tahap' => $this->Tahap,
+            'Pemicu' => $this->Pemicu,
+            'SetelahMenit' => $this->SetelahMenit,
+            'PeranId' => $this->PeranId,
+            'PenggunaId' => $this->PenggunaId,
+            'Kanal' => $this->Kanal ?? ['InApp'],
+            'Aktif' => $this->Aktif,
+            'NamaPeran' => $this->whenLoaded('peran', fn () => $this->peran?->Nama),
+            'NamaPengguna' => $this->whenLoaded('pengguna', fn () => $this->pengguna?->Nama),
+        ];
     }
 }

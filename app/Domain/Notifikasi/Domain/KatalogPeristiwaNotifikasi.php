@@ -21,6 +21,9 @@ final class KatalogPeristiwaNotifikasi
             'Persetujuan.Disetujui' => 'Permintaan persetujuan Anda disetujui',
             'Persetujuan.Ditolak' => 'Permintaan persetujuan Anda ditolak',
             'Stok.MinimumTercapai' => 'Stok suku cadang mencapai atau di bawah batas minimum',
+            'Keluhan.Baru' => 'Keluhan baru masuk sesuai aturan routing kategori',
+            'Keluhan.Sla.Mendekati' => 'SLA keluhan mendekati batas',
+            'Keluhan.Sla.Terlewati' => 'SLA keluhan telah terlewati',
         ];
     }
 

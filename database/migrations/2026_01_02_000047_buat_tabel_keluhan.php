@@ -15,6 +15,7 @@ return new class extends Migration
             $table->char('OrganisasiId', 26);
             $table->string('Nomor', 100);
             $table->char('KategoriKeluhanId', 26)->nullable();
+            $table->char('TingkatLayananId', 26)->nullable();
             $table->char('AsetId', 26)->nullable();
             $table->char('LokasiId', 26)->nullable();
             $table->string('Judul', 220);
@@ -27,6 +28,9 @@ return new class extends Migration
             $table->string('KontakPelaporEksternal', 180)->nullable();
             $table->dateTime('DilaporkanPada', 6)->useCurrent();
             $table->dateTime('DiresponsPada', 6)->nullable();
+            $table->dateTime('BatasResponsPada', 6)->nullable();
+            $table->dateTime('BatasPenyelesaianPada', 6)->nullable();
+            $table->dateTime('DiresolusikanPada', 6)->nullable();
             $table->dateTime('DitutupPada', 6)->nullable();
             $table->unsignedTinyInteger('Rating')->nullable();
             $table->text('Ulasan')->nullable();
@@ -37,8 +41,11 @@ return new class extends Migration
             $table->unique(['OrganisasiId', 'Nomor'], 'UqKeluhanNomor');
             $table->index(['OrganisasiId', 'Status', 'Prioritas', 'DilaporkanPada'], 'IdxKeluhanStatus');
             $table->index(['AsetId', 'Status'], 'IdxKeluhanAset');
+            $table->index(['OrganisasiId', 'Status', 'BatasResponsPada'], 'IdxKeluhanBatasRespons');
+            $table->index(['OrganisasiId', 'Status', 'BatasPenyelesaianPada'], 'IdxKeluhanBatasPenyelesaian');
             $table->foreign('OrganisasiId')->references('Id')->on('Organisasi');
             $table->foreign('KategoriKeluhanId')->references('Id')->on('KategoriKeluhan');
+            $table->foreign('TingkatLayananId')->references('Id')->on('TingkatLayanan');
             $table->foreign('AsetId')->references('Id')->on('Aset');
             $table->foreign('LokasiId')->references('Id')->on('Lokasi');
             $table->foreign('PelaporId')->references('Id')->on('Pengguna');
