@@ -14,6 +14,14 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Domain\IntegrasiAudit\Http\Policies\CatatanAuditPolicy;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
+use App\Domain\Kalibrasi\Http\Policies\JenisKalibrasiPolicy;
+use App\Domain\Kalibrasi\Http\Policies\PelaksanaanKalibrasiPolicy;
+use App\Domain\Kalibrasi\Http\Policies\RencanaKalibrasiPolicy;
+use App\Domain\Kalibrasi\Http\Policies\TitikUkurKalibrasiPolicy;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\TitikUkurKalibrasi;
 use App\Domain\Kolaborasi\Http\Policies\BerkasPolicy;
 use App\Domain\Kolaborasi\Http\Policies\TagPolicy;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
@@ -147,5 +155,9 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(RencanaPemeliharaan::class, RencanaPemeliharaanPolicy::class);
         Gate::policy(TemplatInspeksi::class, TemplatInspeksiPolicy::class);
         Gate::policy(Inspeksi::class, InspeksiPolicy::class);
+        Gate::policy(JenisKalibrasi::class, JenisKalibrasiPolicy::class);
+        Gate::policy(RencanaKalibrasi::class, RencanaKalibrasiPolicy::class);
+        Gate::policy(PelaksanaanKalibrasi::class, PelaksanaanKalibrasiPolicy::class);
+        Gate::policy(TitikUkurKalibrasi::class, TitikUkurKalibrasiPolicy::class);
     }
 }

@@ -40,3 +40,8 @@ Schedule::command('pemeliharaan:jadwalkan-preventif')
     ->dailyAt('01:00')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
     ->withoutOverlapping();
+
+Schedule::command('kalibrasi:kirim-peringatan-jatuh-tempo')
+    ->dailyAt('06:30')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();

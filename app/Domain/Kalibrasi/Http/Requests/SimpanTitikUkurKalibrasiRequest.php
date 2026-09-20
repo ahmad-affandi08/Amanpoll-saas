@@ -15,18 +15,16 @@ final class SimpanTitikUkurKalibrasiRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'JenisKalibrasiId' => ['nullable'],
-            'KategoriAsetId' => ['nullable'],
-            'Nama' => ['sometimes'],
-            'Satuan' => ['nullable'],
-            'NilaiReferensi' => ['nullable'],
-            'ToleransiMinus' => ['nullable'],
-            'ToleransiPlus' => ['nullable'],
-            'Urutan' => ['sometimes'],
-            'Aktif' => ['sometimes'],
+            'JenisKalibrasiId' => ['nullable', 'string', 'max:26'],
+            'KategoriAsetId' => ['nullable', 'string', 'max:26'],
+            'Nama' => ['required', 'string', 'max:160'],
+            'Satuan' => ['nullable', 'string', 'max:50'],
+            'NilaiReferensi' => ['nullable', 'numeric'],
+            'ToleransiMinus' => ['nullable', 'numeric', 'min:0'],
+            'ToleransiPlus' => ['nullable', 'numeric', 'min:0'],
+            'Urutan' => ['nullable', 'integer'],
+            'Aktif' => ['sometimes', 'boolean'],
         ];
     }
 }

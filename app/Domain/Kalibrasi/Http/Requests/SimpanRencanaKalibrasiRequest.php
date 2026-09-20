@@ -15,17 +15,15 @@ final class SimpanRencanaKalibrasiRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'AsetId' => ['sometimes'],
-            'JenisKalibrasiId' => ['nullable'],
-            'PenyediaId' => ['nullable'],
-            'IntervalHari' => ['sometimes'],
-            'TanggalMulai' => ['sometimes'],
-            'TanggalBerikutnya' => ['sometimes'],
-            'PeringatanHariSebelum' => ['sometimes'],
-            'Aktif' => ['sometimes'],
+            'AsetId' => ['required', 'string', 'max:26'],
+            'JenisKalibrasiId' => ['nullable', 'string', 'max:26'],
+            'PenyediaId' => ['nullable', 'string', 'max:26'],
+            'IntervalHari' => ['required', 'integer', 'min:1'],
+            'TanggalMulai' => ['required', 'date'],
+            'TanggalBerikutnya' => ['nullable', 'date'],
+            'PeringatanHariSebelum' => ['nullable', 'integer', 'min:1'],
+            'Aktif' => ['sometimes', 'boolean'],
         ];
     }
 }

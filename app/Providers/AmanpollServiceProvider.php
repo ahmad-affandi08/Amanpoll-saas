@@ -9,6 +9,9 @@ use App\Core\Entitas\RegistriEntitas;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -57,6 +60,9 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('PengajuanPenghapusanAset', PengajuanPenghapusanAset::class, 'Aset.Hapus');
         $registri->daftarkan('Keluhan', Keluhan::class, 'Keluhan.Kelola');
         $registri->daftarkan('PerintahKerja', PerintahKerja::class, 'PerintahKerja.Kelola');
+        $registri->daftarkan('JenisKalibrasi', JenisKalibrasi::class, 'Kalibrasi.Kelola');
+        $registri->daftarkan('RencanaKalibrasi', RencanaKalibrasi::class, 'Kalibrasi.Kelola');
+        $registri->daftarkan('PelaksanaanKalibrasi', PelaksanaanKalibrasi::class, 'Kalibrasi.Kelola');
 
         // Mesin Persetujuan (FASE 06) domain-agnostic; SiklusAset menyalin
         // balik hasil keputusan ke status entitasnya sendiri lewat observer.

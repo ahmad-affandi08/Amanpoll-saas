@@ -10,6 +10,7 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class RencanaKalibrasi extends ModelDasar
 {
@@ -64,5 +65,10 @@ final class RencanaKalibrasi extends ModelDasar
     public function penyedia(): BelongsTo
     {
         return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
+    }
+
+    public function pelaksanaanKalibrasi(): HasMany
+    {
+        return $this->hasMany(PelaksanaanKalibrasi::class, 'RencanaKalibrasiId', 'Id')->latest('TanggalKalibrasi');
     }
 }

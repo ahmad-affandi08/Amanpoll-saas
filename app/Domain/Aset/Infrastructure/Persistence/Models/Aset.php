@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
@@ -207,5 +209,21 @@ final class Aset extends ModelDasar
     public function meterAset(): HasMany
     {
         return $this->hasMany(MeterAset::class, 'AsetId', 'Id');
+    }
+
+    /**
+     * @return HasMany<RencanaKalibrasi, $this>
+     */
+    public function rencanaKalibrasi(): HasMany
+    {
+        return $this->hasMany(RencanaKalibrasi::class, 'AsetId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PelaksanaanKalibrasi, $this>
+     */
+    public function pelaksanaanKalibrasi(): HasMany
+    {
+        return $this->hasMany(PelaksanaanKalibrasi::class, 'AsetId', 'Id')->latest('TanggalKalibrasi');
     }
 }

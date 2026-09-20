@@ -871,45 +871,45 @@ Menjalankan scheduler dua kali tidak boleh menggandakan preventive work order ya
 
 ## 14.01 JenisKalibrasi
 
-- [ ] CRUD.
-- [ ] Unit/metode metadata.
+- [x] CRUD.
+- [x] Unit/metode metadata.
 
 ## 14.02 RencanaKalibrasi
 
-- [ ] Asset.
-- [ ] Interval.
-- [ ] Penyedia optional.
-- [ ] Reminder window.
-- [ ] Next due.
+- [x] Asset.
+- [x] Interval.
+- [x] Penyedia optional.
+- [x] Reminder window.
+- [x] Next due.
 
 ## 14.03 PelaksanaanKalibrasi
 
-- [ ] Jadwal.
-- [ ] Pelaksana.
-- [ ] Penyedia.
-- [ ] Hasil.
-- [ ] Sertifikat.
-- [ ] Finalisasi.
-- [ ] Next due generation.
+- [x] Jadwal.
+- [x] Pelaksana.
+- [x] Penyedia.
+- [x] Hasil.
+- [x] Sertifikat.
+- [x] Finalisasi.
+- [x] Next due generation.
 
 ## 14.04 TitikUkur
 
-- [ ] Definisi titik.
-- [ ] Expected.
-- [ ] Tolerance.
-- [ ] Actual result.
-- [ ] Pass/fail.
+- [x] Definisi titik.
+- [x] Expected.
+- [x] Tolerance.
+- [x] Actual result.
+- [x] Pass/fail.
 
 ## 14.05 Reminder
 
-- [ ] Due soon.
-- [ ] Overdue.
-- [ ] Prevent duplicate notifications.
-- [ ] Dashboard.
+- [x] Due soon.
+- [x] Overdue.
+- [x] Prevent duplicate notifications.
+- [x] Dashboard.
 
 ### Gate 14
 
-Riwayat kalibrasi lengkap, sertifikat authorized, next due konsisten.
+Riwayat kalibrasi lengkap, sertifikat authorized, next due konsisten (Terpenuhi).
 
 ---
 

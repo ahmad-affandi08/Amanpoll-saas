@@ -12,6 +12,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class PelaksanaanKalibrasi extends ModelDasar
 {
@@ -93,5 +94,10 @@ final class PelaksanaanKalibrasi extends ModelDasar
     public function diverifikasiOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DiverifikasiOleh', 'Id');
+    }
+
+    public function hasilTitikUkur(): HasMany
+    {
+        return $this->hasMany(HasilTitikUkurKalibrasi::class, 'PelaksanaanKalibrasiId', 'Id');
     }
 }

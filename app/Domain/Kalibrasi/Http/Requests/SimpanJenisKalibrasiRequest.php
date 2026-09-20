@@ -15,13 +15,11 @@ final class SimpanJenisKalibrasiRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Deskripsi' => ['nullable'],
-            'Aktif' => ['sometimes'],
+            'Kode' => ['required', 'string', 'max:60'],
+            'Nama' => ['required', 'string', 'max:160'],
+            'Deskripsi' => ['nullable', 'string'],
+            'Aktif' => ['sometimes', 'boolean'],
         ];
     }
 }

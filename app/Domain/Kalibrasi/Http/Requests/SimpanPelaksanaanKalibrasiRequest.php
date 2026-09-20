@@ -15,25 +15,21 @@ final class SimpanPelaksanaanKalibrasiRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nomor' => ['sometimes'],
-            'RencanaKalibrasiId' => ['nullable'],
-            'AsetId' => ['sometimes'],
-            'JenisKalibrasiId' => ['nullable'],
-            'PenyediaId' => ['nullable'],
-            'PerintahKerjaId' => ['nullable'],
-            'TanggalKalibrasi' => ['sometimes'],
-            'TanggalBerlakuSampai' => ['nullable'],
-            'Hasil' => ['sometimes'],
-            'NomorSertifikat' => ['nullable'],
-            'Laboratorium' => ['nullable'],
-            'KondisiLingkungan' => ['nullable'],
-            'Catatan' => ['nullable'],
-            'DilaksanakanOleh' => ['nullable'],
-            'DiverifikasiOleh' => ['nullable'],
-            'DiverifikasiPada' => ['nullable'],
+            'AsetId' => ['required', 'string', 'max:26'],
+            'Nomor' => ['nullable', 'string', 'max:100'],
+            'RencanaKalibrasiId' => ['nullable', 'string', 'max:26'],
+            'JenisKalibrasiId' => ['nullable', 'string', 'max:26'],
+            'PenyediaId' => ['nullable', 'string', 'max:26'],
+            'PerintahKerjaId' => ['nullable', 'string', 'max:26'],
+            'TanggalKalibrasi' => ['required', 'date'],
+            'TanggalBerlakuSampai' => ['nullable', 'date'],
+            'Hasil' => ['nullable', 'string', 'max:40'],
+            'NomorSertifikat' => ['nullable', 'string', 'max:180'],
+            'Laboratorium' => ['nullable', 'string', 'max:200'],
+            'KondisiLingkungan' => ['nullable', 'array'],
+            'Catatan' => ['nullable', 'string'],
+            'DilaksanakanOleh' => ['nullable', 'string', 'max:26'],
         ];
     }
 }

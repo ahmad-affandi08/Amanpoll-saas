@@ -15,19 +15,19 @@ final class SimpanHasilTitikUkurKalibrasiRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PelaksanaanKalibrasiId' => ['sometimes'],
-            'TitikUkurKalibrasiId' => ['nullable'],
-            'NamaTitik' => ['nullable'],
-            'NilaiReferensi' => ['nullable'],
-            'NilaiTerukur' => ['nullable'],
-            'Koreksi' => ['nullable'],
-            'Ketidakpastian' => ['nullable'],
-            'Satuan' => ['nullable'],
-            'Hasil' => ['nullable'],
-            'Catatan' => ['nullable'],
+            'hasil' => ['required', 'array'],
+            'hasil.*.Id' => ['nullable', 'string', 'max:26'],
+            'hasil.*.TitikUkurKalibrasiId' => ['nullable', 'string', 'max:26'],
+            'hasil.*.NamaTitik' => ['required', 'string', 'max:160'],
+            'hasil.*.NilaiReferensi' => ['nullable', 'numeric'],
+            'hasil.*.NilaiTerukur' => ['nullable', 'numeric'],
+            'hasil.*.ToleransiMinus' => ['nullable', 'numeric'],
+            'hasil.*.ToleransiPlus' => ['nullable', 'numeric'],
+            'hasil.*.Ketidakpastian' => ['nullable', 'numeric'],
+            'hasil.*.Satuan' => ['nullable', 'string', 'max:50'],
+            'hasil.*.Hasil' => ['nullable', 'string', 'max:40'],
+            'hasil.*.Catatan' => ['nullable', 'string'],
         ];
     }
 }
