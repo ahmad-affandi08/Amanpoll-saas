@@ -1,8 +1,117 @@
-export default function AuditIndex() {
+import { FormEvent, useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+import AppLayout from '@/layouts/AppLayout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
+import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import type { Paginasi } from '@/types/global';
+import type { CatatanAudit, FilterCatatanAudit } from '@/features/Audit/types';
+
+interface Props {
+  catatan: Paginasi<CatatanAudit>;
+  filter: FilterCatatanAudit;
+  jenisEntitasTersedia: string[];
+}
+
+const SEMUA = '__semua__';
+
+export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Props) {
+  const [form, setForm] = useState<FilterCatatanAudit>(filter);
+
+  const terapkanFilter = (e: FormEvent) => {
+    e.preventDefault();
+    router.get('/integrasi-audit/audit', { ...form }, { preserveState: true, preserveScroll: true });
+  };
+
+  const resetFilter = () => {
+    setForm({});
+    router.get('/integrasi-audit/audit', {}, { preserveState: true, preserveScroll: true });
+  };
+
   return (
-    <section className="space-y-2">
-      <h1 className="text-2xl font-semibold tracking-tight">Audit</h1>
-      <p className="text-sm text-zinc-500">Halaman modul Audit. Implementasikan use-case dan UI di feature ini.</p>
-    </section>
+    <AppLayout>
+      <Head title="Log Audit" />
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Log Audit</h1>
+          <p className="text-sm text-muted-foreground">Riwayat perubahan data lintas modul, tersaring per organisasi.</p>
+        </div>
+
+        <form onSubmit={terapkanFilter} className="grid grid-cols-1 gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-1.5">
+            <Label>Jenis Entitas</Label>
+            <Select
+              value={form.jenisEntitas ?? SEMUA}
+              onValueChange={(v) => setForm((f) => ({ ...f, jenisEntitas: v === SEMUA ? undefined : v }))}
+            >
+              <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={SEMUA}>Semua</SelectItem>
+                {jenisEntitasTersedia.map((jenis) => (
+                  <SelectItem key={jenis} value={jenis}>{jenis}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Aksi</Label>
+            <Input value={form.aksi ?? ''} onChange={(e) => setForm((f) => ({ ...f, aksi: e.target.value || undefined }))} placeholder="mis. dibuat" />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Rentang Tanggal</Label>
+            <DateRangePicker
+              dari={form.dariTanggal}
+              sampai={form.sampaiTanggal}
+              align="end"
+              onChange={({ dari, sampai }) =>
+                setForm((f) => ({
+                  ...f,
+                  dariTanggal: dari || undefined,
+                  sampaiTanggal: sampai || undefined,
+                }))
+              }
+            />
+          </div>
+          <div className="flex items-end gap-2">
+            <Button type="submit">Terapkan</Button>
+            <Button type="button" variant="outline" onClick={resetFilter}>Reset</Button>
+          </div>
+        </form>
+
+        <div className="rounded-lg border border-border bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Waktu</TableHead>
+                <TableHead>Pengguna</TableHead>
+                <TableHead>Aksi</TableHead>
+                <TableHead>Entitas</TableHead>
+                <TableHead>Alamat IP</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {catatan.data.length === 0 && (
+                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Tidak ada catatan audit.</TableCell></TableRow>
+              )}
+              {catatan.data.map((c) => (
+                <TableRow key={c.Id}>
+                  <TableCell className="whitespace-nowrap">{new Date(c.DibuatPada).toLocaleString('id-ID')}</TableCell>
+                  <TableCell>{c.NamaPengguna ?? '-'}</TableCell>
+                  <TableCell><Badge variant="outline">{c.Aksi}</Badge></TableCell>
+                  <TableCell>{c.JenisEntitas}{c.EntitasId ? ` #${c.EntitasId.slice(-8)}` : ''}</TableCell>
+                  <TableCell className="text-muted-foreground">{c.AlamatIp ?? '-'}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Pagination meta={catatan.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)} />
+        </div>
+      </div>
+    </AppLayout>
   );
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Shared\Infrastructure\Inertia\FeaturePageViewFinder;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +13,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind('inertia.view-finder', function ($app) {
+            return new FeaturePageViewFinder(
+                $app['files'],
+                $app['config']->get('inertia.pages.paths'),
+                $app['config']->get('inertia.pages.extensions')
+            );
+        });
     }
 
     /**

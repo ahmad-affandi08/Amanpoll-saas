@@ -7,11 +7,21 @@ import { Toaster } from 'sonner';
 
 createInertiaApp({
   title: (title) => (title ? title + ' - Amanpoll' : 'Amanpoll'),
-  resolve: (name) =>
-    resolvePageComponent(
-      `./pages/${name}.tsx`,
-      import.meta.glob<ComponentType>('./pages/**/*.tsx', { import: 'default' }),
-    ),
+  resolve: (name) => {
+    const pages = import.meta.glob<ComponentType>(
+      './features/*/pages/**/*.tsx',
+      { import: 'default' },
+    );
+
+    const segments = name.split('/');
+    const feature = segments.length > 1 ? segments[0] : 'Shared';
+    const pagePath = segments.length > 1 ? segments.slice(1).join('/') : name;
+
+    return resolvePageComponent(
+      `./features/${feature}/pages/${pagePath}.tsx`,
+      pages,
+    );
+  },
   setup({ el, App, props }) {
     if (!el) return;
     createRoot(el).render(
