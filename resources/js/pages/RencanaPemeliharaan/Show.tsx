@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   ArrowLeft,
   Plus,
@@ -150,23 +151,19 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
 
                     <div className="space-y-1.5">
                       <Label htmlFor="TanggalMulai">Tanggal Mulai Berlaku <span className="text-rose-500">*</span></Label>
-                      <Input
-                        id="TanggalMulai"
-                        type="date"
+                      <DatePicker
                         value={formAset.data.TanggalMulai}
-                        onChange={(e) => formAset.setData('TanggalMulai', e.target.value)}
-                        required
+                        onChange={(val) => formAset.setData('TanggalMulai', val)}
+                        placeholder="Pilih tanggal mulai..."
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <Label htmlFor="TanggalBerikutnya">Tanggal Jatuh Tempo Pertama (Opsional)</Label>
-                      <Input
-                        id="TanggalBerikutnya"
-                        type="date"
-                        placeholder="Otomatis dihitung jika kosong"
+                      <DatePicker
                         value={formAset.data.TanggalBerikutnya}
-                        onChange={(e) => formAset.setData('TanggalBerikutnya', e.target.value)}
+                        onChange={(val) => formAset.setData('TanggalBerikutnya', val)}
+                        placeholder="Otomatis dihitung jika kosong"
                       />
                       <p className="text-[11px] text-permukaan-500">
                         Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai} {rencana.IntervalSatuan}.

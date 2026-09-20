@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import { apiKolaborasi } from '@/features/Kolaborasi/api';
 import type { DefinisiKolomKustom, NilaiKolomKustom } from '@/features/Kolaborasi/types';
 
@@ -20,7 +21,7 @@ function KolomInput({ definisi, nilai, onChange }: { definisi: DefinisiKolomKust
     case 'Angka':
       return <Input type="number" value={nilai === null || nilai === undefined ? '' : String(nilai)} onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))} />;
     case 'Tanggal':
-      return <Input type="date" value={typeof nilai === 'string' ? nilai : ''} onChange={(e) => onChange(e.target.value || null)} />;
+      return <DatePicker value={typeof nilai === 'string' ? nilai : undefined} onChange={(val) => onChange(val || null)} placeholder="Pilih tanggal..." />;
     case 'Boolean':
       return (
         <label className="flex items-center gap-2">

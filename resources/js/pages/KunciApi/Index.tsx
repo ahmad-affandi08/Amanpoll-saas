@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
+import { DatePicker } from '@/components/ui/date-picker';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { PageProps } from '@/types/global';
@@ -97,7 +98,7 @@ function DialogBuatKunci() {
           </div>
           <div className="space-y-2">
             <Label>Kadaluarsa (opsional)</Label>
-            <Input type="date" value={form.data.KadaluarsaPada} onChange={(e) => form.setData('KadaluarsaPada', e.target.value)} />
+            <DatePicker value={form.data.KadaluarsaPada} onChange={(val) => form.setData('KadaluarsaPada', val)} placeholder="Pilih tanggal kadaluarsa" />
           </div>
           <div className="space-y-2">
             <Label>Alamat IP Diizinkan (opsional, pisahkan dengan koma)</Label>

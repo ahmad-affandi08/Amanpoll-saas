@@ -13,6 +13,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
+import { DatePicker } from '@/components/ui/date-picker';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import { apiAset } from '@/features/Aset/api';
 import { formatUang } from '@/lib/uang';
@@ -125,15 +126,15 @@ function TabInfo({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi }: Pr
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label>Tanggal Perolehan</Label>
-          <Input type="date" value={form.data.TanggalPerolehan} onChange={(e) => form.setData('TanggalPerolehan', e.target.value)} />
+          <DatePicker value={form.data.TanggalPerolehan} onChange={(val) => form.setData('TanggalPerolehan', val)} placeholder="Pilih tanggal perolehan" />
         </div>
         <div className="space-y-2">
           <Label>Tanggal Mulai Operasi</Label>
-          <Input type="date" value={form.data.TanggalMulaiOperasi} onChange={(e) => form.setData('TanggalMulaiOperasi', e.target.value)} />
+          <DatePicker value={form.data.TanggalMulaiOperasi} onChange={(val) => form.setData('TanggalMulaiOperasi', val)} placeholder="Pilih tanggal mulai" />
         </div>
         <div className="space-y-2">
           <Label>Tanggal Akhir Operasi</Label>
-          <Input type="date" value={form.data.TanggalAkhirOperasi} onChange={(e) => form.setData('TanggalAkhirOperasi', e.target.value)} />
+          <DatePicker value={form.data.TanggalAkhirOperasi} onChange={(val) => form.setData('TanggalAkhirOperasi', val)} placeholder="Pilih tanggal akhir" />
         </div>
       </div>
       <div className="grid grid-cols-3 gap-4">
@@ -441,11 +442,11 @@ function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <Label className="text-xs">Mulai</Label>
-            <Input type="date" value={form.data.MulaiPada} onChange={(e) => form.setData('MulaiPada', e.target.value)} />
+            <DatePicker value={form.data.MulaiPada} onChange={(val) => form.setData('MulaiPada', val)} placeholder="Pilih tanggal mulai" />
           </div>
           <div className="space-y-1">
             <Label className="text-xs">Berakhir</Label>
-            <Input type="date" value={form.data.BerakhirPada} onChange={(e) => form.setData('BerakhirPada', e.target.value)} />
+            <DatePicker value={form.data.BerakhirPada} onChange={(val) => form.setData('BerakhirPada', val)} placeholder="Pilih tanggal berakhir" />
           </div>
         </div>
         <Button type="submit" disabled={form.processing}>Tambah Garansi</Button>
@@ -500,9 +501,9 @@ function TabNilai({ aset }: { aset: Aset }) {
       </div>
       <form onSubmit={submit} className="space-y-2 border-t border-border pt-4">
         <div className="flex items-end gap-2">
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1">
             <Label className="text-xs">Tanggal Nilai</Label>
-            <Input type="date" value={form.data.TanggalNilai} onChange={(e) => form.setData('TanggalNilai', e.target.value)} />
+            <DatePicker value={form.data.TanggalNilai} onChange={(val) => form.setData('TanggalNilai', val)} placeholder="Pilih tanggal nilai" />
           </div>
           <Button type="button" variant="outline" onClick={hitungPratinjau}>Hitung Otomatis (Garis Lurus)</Button>
         </div>

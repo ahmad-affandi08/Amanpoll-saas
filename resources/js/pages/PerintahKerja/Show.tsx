@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Textarea } from '@/components/ui/textarea';
 import type {
   KodeKegagalan,
@@ -519,10 +520,10 @@ function DialogCatatBiaya({ perintahKerja }: { perintahKerja: PerintahKerja }) {
 
             <div className="space-y-1.5">
               <Label>Tanggal Biaya</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={form.data.TanggalBiaya}
-                onChange={(e) => form.setData('TanggalBiaya', e.target.value)}
+                onChange={(val) => form.setData('TanggalBiaya', val)}
+                placeholder="Pilih tanggal biaya..."
               />
             </div>
           </div>

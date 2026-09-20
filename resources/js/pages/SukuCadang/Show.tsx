@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
 } from '@/components/ui/dialog';
@@ -52,11 +53,11 @@ function DialogTambahKelompok({ sukuCadang }: { sukuCadang: SukuCadang }) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label>Tanggal Produksi</Label>
-              <Input type="date" value={form.data.TanggalProduksi} onChange={(e) => form.setData('TanggalProduksi', e.target.value)} />
+              <DatePicker value={form.data.TanggalProduksi} onChange={(val) => form.setData('TanggalProduksi', val)} placeholder="Pilih tanggal..." />
             </div>
             <div className="space-y-1.5">
               <Label>Tanggal Kadaluarsa</Label>
-              <Input type="date" value={form.data.TanggalKadaluarsa} onChange={(e) => form.setData('TanggalKadaluarsa', e.target.value)} />
+              <DatePicker value={form.data.TanggalKadaluarsa} onChange={(val) => form.setData('TanggalKadaluarsa', val)} placeholder="Pilih tanggal..." />
             </div>
           </div>
           <div className="space-y-1.5">

@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import { EmptyState } from '@/components/shared/EmptyState';
 import {
   ClipboardCheck,
@@ -160,13 +161,14 @@ export default function IndexInspeksi({
 
                   <div className="space-y-1.5">
                     <Label htmlFor="DijadwalkanPada">Tanggal Jadwal Inspeksi <span className="text-rose-500">*</span></Label>
-                    <Input
-                      id="DijadwalkanPada"
-                      type="date"
+                    <DatePicker
                       value={form.data.DijadwalkanPada}
-                      onChange={(e) => form.setData('DijadwalkanPada', e.target.value)}
-                      required
+                      onChange={(val) => form.setData('DijadwalkanPada', val)}
+                      placeholder="Pilih tanggal jadwal..."
                     />
+                    {form.errors.DijadwalkanPada && (
+                      <p className="text-xs text-rose-500">{form.errors.DijadwalkanPada}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">

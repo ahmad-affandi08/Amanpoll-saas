@@ -14,6 +14,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
@@ -310,11 +311,11 @@ function TabPenilaian({ penyedia }: { penyedia: Penyedia }) {
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <Label className="text-xs">Periode Mulai</Label>
-            <Input type="date" value={form.data.PeriodeMulai} onChange={(e) => form.setData('PeriodeMulai', e.target.value)} />
+            <DatePicker value={form.data.PeriodeMulai} onChange={(val) => form.setData('PeriodeMulai', val)} />
           </div>
           <div className="space-y-1">
             <Label className="text-xs">Periode Selesai</Label>
-            <Input type="date" value={form.data.PeriodeSelesai} onChange={(e) => form.setData('PeriodeSelesai', e.target.value)} />
+            <DatePicker value={form.data.PeriodeSelesai} onChange={(val) => form.setData('PeriodeSelesai', val)} />
           </div>
         </div>
         <div className="grid grid-cols-4 gap-2">
