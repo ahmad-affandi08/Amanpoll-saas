@@ -199,17 +199,9 @@ export default function IndexTemplatInspeksi({
 
         {daftarTersaring.length === 0 ? (
           <EmptyState
+            ilustrasi="/assets/3d/berkas-dokumen.webp"
             judul="Belum Ada Templat Inspeksi"
-            deskripsi="Buat templat inspeksi untuk menentukan siklus pemeriksaan fisik dan kepatuhan unit aset."
-            aksi={
-              <Button
-                className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2"
-                onClick={() => setBukaDialog(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Buat Templat Inspeksi
-              </Button>
-            }
+            deskripsi="Templat inspeksi berkala yang dibuat akan muncul di sini untuk menentukan standar pemeriksaan aset."
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

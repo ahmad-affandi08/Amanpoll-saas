@@ -287,17 +287,9 @@ export default function IndexInspeksi({
         {/* Tabel Inspeksi */}
         {daftarTersaring.length === 0 ? (
           <EmptyState
+            ilustrasi="/assets/3d/persetujuan-kepatuhan.webp"
             judul="Belum Ada Catatan Inspeksi"
-            deskripsi="Jadwalkan inspeksi pertama Anda untuk memantau kondisi dan keselamatan aset operasional."
-            aksi={
-              <Button
-                className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2"
-                onClick={() => setBukaDialog(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Jadwalkan Inspeksi
-              </Button>
-            }
+            deskripsi="Riwayat dan jadwal inspeksi kondisi aset operasional akan dicatat di sini."
           />
         ) : (
           <div className="bg-card border border-permukaan-200 rounded-xl overflow-hidden shadow-sm">

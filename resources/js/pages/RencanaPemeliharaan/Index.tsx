@@ -290,17 +290,9 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
         {/* Daftar Kartu Rencana */}
         {daftarTersaring.length === 0 ? (
           <EmptyState
+            ilustrasi="/assets/3d/pemeliharaan-jadwal.webp"
             judul="Belum Ada Rencana Pemeliharaan"
-            deskripsi="Buat rencana preventif untuk mengotomatisasi pembuatan perintah kerja secara berkala."
-            aksi={
-              <Button
-                className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2"
-                onClick={() => setBukaDialog(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Buat Rencana Baru
-              </Button>
-            }
+            deskripsi="Rencana pemeliharaan preventif yang dibuat akan muncul di sini untuk mengotomatisasi perintah kerja berkala."
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

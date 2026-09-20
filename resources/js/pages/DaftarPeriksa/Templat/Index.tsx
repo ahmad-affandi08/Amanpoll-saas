@@ -179,17 +179,9 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
 
         {daftarTersaring.length === 0 ? (
           <EmptyState
+            ilustrasi="/assets/3d/berkas-dokumen.webp"
             judul="Belum Ada Templat Daftar Periksa"
-            deskripsi="Buat templat checklist pertama Anda untuk memudahkan proses inspeksi dan pekerjaan teknisi."
-            aksi={
-              <Button
-                className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2"
-                onClick={() => setBukaDialog(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Buat Templat Baru
-              </Button>
-            }
+            deskripsi="Katalog templat checklist yang dibuat akan muncul di sini untuk digunakan pada pemeliharaan dan inspeksi."
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -211,13 +211,6 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
           {(!rencana.aset || rencana.aset.length === 0) ? (
             <div className="bg-card border border-dashed border-permukaan-300 rounded-xl p-8 text-center">
               <p className="text-permukaan-500 text-sm">Belum ada aset yang didaftarkan pada rencana ini.</p>
-              <Button
-                className="mt-3 cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white text-xs gap-1.5"
-                onClick={() => setBukaDialogAset(true)}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Daftarkan Aset Pertama
-              </Button>
             </div>
           ) : (
             <div className="bg-card border border-permukaan-200 rounded-xl overflow-hidden shadow-sm">
