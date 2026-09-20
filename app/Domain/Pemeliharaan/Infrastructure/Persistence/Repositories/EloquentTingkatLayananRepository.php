@@ -23,6 +23,7 @@ final class EloquentTingkatLayananRepository implements TingkatLayananRepository
     public function simpan(TingkatLayanan $model): TingkatLayanan
     {
         $model->save();
+
         return $model->refresh();
     }
 

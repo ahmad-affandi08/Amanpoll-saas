@@ -23,6 +23,7 @@ final class EloquentKategoriKeluhanRepository implements KategoriKeluhanReposito
     public function simpan(KategoriKeluhan $model): KategoriKeluhan
     {
         $model->save();
+
         return $model->refresh();
     }
 

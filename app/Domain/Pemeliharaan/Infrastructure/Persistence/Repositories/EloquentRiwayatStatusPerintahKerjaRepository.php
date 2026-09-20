@@ -23,6 +23,7 @@ final class EloquentRiwayatStatusPerintahKerjaRepository implements RiwayatStatu
     public function simpan(RiwayatStatusPerintahKerja $model): RiwayatStatusPerintahKerja
     {
         $model->save();
+
         return $model->refresh();
     }
 

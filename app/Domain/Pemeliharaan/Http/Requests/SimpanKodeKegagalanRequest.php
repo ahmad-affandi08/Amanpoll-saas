@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanKodeKegagalanRequest extends FormRequest
 {
@@ -13,17 +15,18 @@ final class SimpanKodeKegagalanRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->wajibId();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'KategoriAsetId' => ['nullable'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Jenis' => ['sometimes'],
-            'Keterangan' => ['nullable'],
-            'Aktif' => ['sometimes'],
+            'KategoriAsetId' => ['nullable', 'string', Rule::exists('KategoriAset', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
+            'Kode' => ['required', 'string', 'max:60', Rule::unique('KodeKegagalan', 'Kode')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))->ignore($this->route('kodeKegagalan'))],
+            'Nama' => ['required', 'string', 'max:180'],
+            'Jenis' => ['required', Rule::in(['Masalah', 'Penyebab', 'Tindakan'])],
+            'Keterangan' => ['nullable', 'string', 'max:2000'],
+            'Aktif' => ['required', 'boolean'],
         ];
     }
 }

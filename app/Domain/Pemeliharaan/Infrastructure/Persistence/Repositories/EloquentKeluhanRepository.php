@@ -23,6 +23,7 @@ final class EloquentKeluhanRepository implements KeluhanRepository
     public function simpan(Keluhan $model): Keluhan
     {
         $model->save();
+
         return $model->refresh();
     }
 

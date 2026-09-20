@@ -23,6 +23,7 @@ final class EloquentBiayaPerintahKerjaRepository implements BiayaPerintahKerjaRe
     public function simpan(BiayaPerintahKerja $model): BiayaPerintahKerja
     {
         $model->save();
+
         return $model->refresh();
     }
 

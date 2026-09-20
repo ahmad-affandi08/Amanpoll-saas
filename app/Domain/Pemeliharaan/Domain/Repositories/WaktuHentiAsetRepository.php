@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface WaktuHentiAsetRepository
 {
     public function temukan(string $id): ?WaktuHentiAset;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(WaktuHentiAset $model): WaktuHentiAset;
+
     public function hapus(WaktuHentiAset $model): void;
 }

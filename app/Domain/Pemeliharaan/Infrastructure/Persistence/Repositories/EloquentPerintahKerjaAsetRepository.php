@@ -23,6 +23,7 @@ final class EloquentPerintahKerjaAsetRepository implements PerintahKerjaAsetRepo
     public function simpan(PerintahKerjaAset $model): PerintahKerjaAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

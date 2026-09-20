@@ -22,9 +22,11 @@ use App\Domain\Notifikasi\Http\Policies\TemplatNotifikasiPolicy;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
 use App\Domain\Pemeliharaan\Http\Policies\KategoriKeluhanPolicy;
 use App\Domain\Pemeliharaan\Http\Policies\KeluhanPolicy;
+use App\Domain\Pemeliharaan\Http\Policies\PerintahKerjaPolicy;
 use App\Domain\Pemeliharaan\Http\Policies\TingkatLayananPolicy;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use App\Domain\Penyedia\Http\Policies\KategoriPenyediaPolicy;
 use App\Domain\Penyedia\Http\Policies\KontakPenyediaPolicy;
@@ -129,5 +131,6 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(TingkatLayanan::class, TingkatLayananPolicy::class);
         Gate::policy(KategoriKeluhan::class, KategoriKeluhanPolicy::class);
         Gate::policy(Keluhan::class, KeluhanPolicy::class);
+        Gate::policy(PerintahKerja::class, PerintahKerjaPolicy::class);
     }
 }

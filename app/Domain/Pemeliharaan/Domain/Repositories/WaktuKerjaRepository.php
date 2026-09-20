@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface WaktuKerjaRepository
 {
     public function temukan(string $id): ?WaktuKerja;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(WaktuKerja $model): WaktuKerja;
+
     public function hapus(WaktuKerja $model): void;
 }

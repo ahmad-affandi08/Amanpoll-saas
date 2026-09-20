@@ -10,6 +10,7 @@ use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -55,6 +56,7 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('SerahTerimaAset', SerahTerimaAset::class, 'Aset.Ubah');
         $registri->daftarkan('PengajuanPenghapusanAset', PengajuanPenghapusanAset::class, 'Aset.Hapus');
         $registri->daftarkan('Keluhan', Keluhan::class, 'Keluhan.Kelola');
+        $registri->daftarkan('PerintahKerja', PerintahKerja::class, 'PerintahKerja.Kelola');
 
         // Mesin Persetujuan (FASE 06) domain-agnostic; SiklusAset menyalin
         // balik hasil keputusan ke status entitasnya sendiri lewat observer.

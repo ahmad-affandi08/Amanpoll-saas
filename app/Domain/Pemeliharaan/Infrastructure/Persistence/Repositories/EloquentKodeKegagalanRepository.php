@@ -23,6 +23,7 @@ final class EloquentKodeKegagalanRepository implements KodeKegagalanRepository
     public function simpan(KodeKegagalan $model): KodeKegagalan
     {
         $model->save();
+
         return $model->refresh();
     }
 

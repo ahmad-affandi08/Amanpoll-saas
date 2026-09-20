@@ -4,6 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -37,7 +38,7 @@ function DialogTambahHariLibur() {
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
             <Label>Tanggal</Label>
-            <Input type="date" value={form.data.Tanggal} onChange={(e) => form.setData('Tanggal', e.target.value)} />
+            <DatePicker value={form.data.Tanggal} onChange={(v) => form.setData('Tanggal', v)} placeholder="Pilih tanggal libur" />
             {form.errors.Tanggal && <p className="text-sm text-destructive">{form.errors.Tanggal}</p>}
           </div>
           <div className="space-y-2">

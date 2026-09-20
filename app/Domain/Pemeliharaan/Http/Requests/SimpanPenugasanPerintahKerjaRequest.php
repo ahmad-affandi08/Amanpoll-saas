@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanPenugasanPerintahKerjaRequest extends FormRequest
 {
@@ -13,19 +15,16 @@ final class SimpanPenugasanPerintahKerjaRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->wajibId();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PerintahKerjaId' => ['sometimes'],
-            'PenggunaId' => ['sometimes'],
-            'PeranTugas' => ['sometimes'],
-            'DitugaskanOleh' => ['nullable'],
-            'DitugaskanPada' => ['sometimes'],
-            'DiterimaPada' => ['nullable'],
-            'SelesaiPada' => ['nullable'],
-            'Status' => ['sometimes'],
+            'PenggunaIds' => ['required', 'array', 'min:1'],
+            'PenggunaIds.*' => ['string', 'distinct', Rule::exists('Pengguna', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId)->where('Status', 'Aktif')->whereNull('DihapusPada'))],
+            'PeranTugas' => ['required', 'string', 'max:60'],
+            'GantiPenugasanAktif' => ['sometimes', 'boolean'],
         ];
     }
 }

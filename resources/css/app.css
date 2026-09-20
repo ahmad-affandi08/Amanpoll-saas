@@ -114,3 +114,89 @@
 /* Amanpoll tidak menyediakan dark mode; tema gelap browser diabaikan secara sengaja. */
 * { border-color: var(--border); }
 body { background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+
+/* Pastikan semua tombol dan elemen interaktif yang bisa diklik menggunakan cursor: pointer */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]):not([disabled]),
+[role="tab"]:not([aria-disabled="true"]):not([disabled]),
+[role="menuitem"]:not([aria-disabled="true"]):not([disabled]),
+[role="option"]:not([aria-disabled="true"]):not([disabled]),
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="reset"]:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+select:not(:disabled),
+a,
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+[role="tab"][aria-disabled="true"],
+[role="menuitem"][aria-disabled="true"],
+[role="option"][aria-disabled="true"],
+[disabled] {
+  cursor: not-allowed;
+}
+
+/* Styling Scrollbar Umum (Light Theme) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-garis-300) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-garis-300);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-grafit-500);
+}
+
+/* Styling Scrollbar Khusus Sidebar (Dark Theme) */
+[data-sidebar="content"],
+[data-slot="sidebar-content"],
+[data-sidebar="sidebar"] * {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar,
+[data-slot="sidebar-content"]::-webkit-scrollbar,
+[data-sidebar="sidebar"] *::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-track,
+[data-slot="sidebar-content"]::-webkit-scrollbar-track,
+[data-sidebar="sidebar"] *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-thumb,
+[data-slot="sidebar-content"]::-webkit-scrollbar-thumb,
+[data-sidebar="sidebar"] *::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.18);
+  border-radius: 9999px;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-thumb:hover,
+[data-slot="sidebar-content"]::-webkit-scrollbar-thumb:hover,
+[data-sidebar="sidebar"] *::-webkit-scrollbar-thumb:hover {
+  background: rgb(255 255 255 / 0.35);
+}
+
+

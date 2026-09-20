@@ -23,6 +23,7 @@ final class EloquentRiwayatStatusKeluhanRepository implements RiwayatStatusKeluh
     public function simpan(RiwayatStatusKeluhan $model): RiwayatStatusKeluhan
     {
         $model->save();
+
         return $model->refresh();
     }
 

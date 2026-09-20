@@ -23,6 +23,7 @@ final class EloquentWaktuKerjaRepository implements WaktuKerjaRepository
     public function simpan(WaktuKerja $model): WaktuKerja
     {
         $model->save();
+
         return $model->refresh();
     }
 

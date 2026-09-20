@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import type { Paginasi } from '@/types/global';
@@ -41,14 +42,14 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
           <p className="text-sm text-muted-foreground">Riwayat perubahan data lintas modul, tersaring per organisasi.</p>
         </div>
 
-        <form onSubmit={terapkanFilter} className="grid grid-cols-1 gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-5">
+        <form onSubmit={terapkanFilter} className="grid grid-cols-1 gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-1.5">
             <Label>Jenis Entitas</Label>
             <Select
               value={form.jenisEntitas ?? SEMUA}
               onValueChange={(v) => setForm((f) => ({ ...f, jenisEntitas: v === SEMUA ? undefined : v }))}
             >
-              <SelectTrigger><SelectValue placeholder="Semua" /></SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value={SEMUA}>Semua</SelectItem>
                 {jenisEntitasTersedia.map((jenis) => (
@@ -62,12 +63,19 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
             <Input value={form.aksi ?? ''} onChange={(e) => setForm((f) => ({ ...f, aksi: e.target.value || undefined }))} placeholder="mis. dibuat" />
           </div>
           <div className="space-y-1.5">
-            <Label>Dari Tanggal</Label>
-            <Input type="date" value={form.dariTanggal ?? ''} onChange={(e) => setForm((f) => ({ ...f, dariTanggal: e.target.value || undefined }))} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Sampai Tanggal</Label>
-            <Input type="date" value={form.sampaiTanggal ?? ''} onChange={(e) => setForm((f) => ({ ...f, sampaiTanggal: e.target.value || undefined }))} />
+            <Label>Rentang Tanggal</Label>
+            <DateRangePicker
+              dari={form.dariTanggal}
+              sampai={form.sampaiTanggal}
+              align="end"
+              onChange={({ dari, sampai }) =>
+                setForm((f) => ({
+                  ...f,
+                  dariTanggal: dari || undefined,
+                  sampaiTanggal: sampai || undefined,
+                }))
+              }
+            />
           </div>
           <div className="flex items-end gap-2">
             <Button type="submit">Terapkan</Button>

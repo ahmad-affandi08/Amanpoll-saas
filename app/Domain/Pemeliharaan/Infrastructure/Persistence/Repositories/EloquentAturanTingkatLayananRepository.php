@@ -23,6 +23,7 @@ final class EloquentAturanTingkatLayananRepository implements AturanTingkatLayan
     public function simpan(AturanTingkatLayanan $model): AturanTingkatLayanan
     {
         $model->save();
+
         return $model->refresh();
     }
 

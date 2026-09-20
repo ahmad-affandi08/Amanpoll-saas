@@ -23,6 +23,7 @@ final class EloquentPerintahKerjaRepository implements PerintahKerjaRepository
     public function simpan(PerintahKerja $model): PerintahKerja
     {
         $model->save();
+
         return $model->refresh();
     }
 

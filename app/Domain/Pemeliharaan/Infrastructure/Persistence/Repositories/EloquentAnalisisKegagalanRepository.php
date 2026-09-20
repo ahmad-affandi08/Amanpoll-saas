@@ -23,6 +23,7 @@ final class EloquentAnalisisKegagalanRepository implements AnalisisKegagalanRepo
     public function simpan(AnalisisKegagalan $model): AnalisisKegagalan
     {
         $model->save();
+
         return $model->refresh();
     }
 

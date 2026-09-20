@@ -23,6 +23,7 @@ final class EloquentPenugasanPerintahKerjaRepository implements PenugasanPerinta
     public function simpan(PenugasanPerintahKerja $model): PenugasanPerintahKerja
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -10,7 +10,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KodeKegagalanRepository
 {
     public function temukan(string $id): ?KodeKegagalan;
+
     public function paginasi(int $perHalaman = 25): LengthAwarePaginator;
+
     public function simpan(KodeKegagalan $model): KodeKegagalan;
+
     public function hapus(KodeKegagalan $model): void;
 }

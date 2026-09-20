@@ -178,6 +178,7 @@ final class KeluhanTest extends TestCase
             ])->assertSessionDoesntHaveErrors();
         }
 
+        $this->tetapkanKonteks($organisasi);
         $keluhan->refresh();
         $this->assertSame('Ditutup', $keluhan->Status);
         $this->assertNotNull($keluhan->DiresponsPada);

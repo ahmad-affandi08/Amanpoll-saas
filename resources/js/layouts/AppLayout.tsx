@@ -53,6 +53,8 @@ import {
   BookmarkCheck,
   ClipboardList,
   Gauge,
+  Wrench,
+  AlertTriangle,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -110,6 +112,7 @@ const navOperasional: GrupNav = {
   label: 'Operasional',
   items: [
     { label: 'Keluhan', href: '/pemeliharaan/keluhan', icon: ClipboardList },
+    { label: 'Perintah Kerja', href: '/pemeliharaan/perintah-kerja', icon: Wrench },
     {
       label: 'Tingkat Layanan',
       href: '/pemeliharaan/tingkat-layanan',
@@ -121,6 +124,12 @@ const navOperasional: GrupNav = {
       href: '/pemeliharaan/kategori-keluhan',
       icon: FolderTree,
       kodeIzin: 'Pemeliharaan.Kelola',
+    },
+    {
+      label: 'Kode Kegagalan',
+      href: '/pemeliharaan/kode-kegagalan',
+      icon: AlertTriangle,
+      kodeIzin: 'PerintahKerja.Kelola',
     },
   ],
 };

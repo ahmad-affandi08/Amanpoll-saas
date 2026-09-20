@@ -23,6 +23,7 @@ final class EloquentWaktuHentiAsetRepository implements WaktuHentiAsetRepository
     public function simpan(WaktuHentiAset $model): WaktuHentiAset
     {
         $model->save();
+
         return $model->refresh();
     }
 

@@ -305,15 +305,92 @@ function SidebarSeparator({ className, ...props }: React.ComponentProps<typeof S
   )
 }
 
-function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
+function SidebarContent({
+  className,
+  onScroll,
+  ref,
+  ...props
+}: React.ComponentProps<"div">) {
+  const containerRef = React.useRef<HTMLDivElement | null>(null)
+
+  const handleRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      containerRef.current = node
+      if (typeof ref === "function") {
+        ref(node)
+      } else if (ref && "current" in ref) {
+        ;(ref as React.MutableRefObject<HTMLDivElement | null>).current = node
+      }
+    },
+    [ref]
+  )
+
+  React.useLayoutEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    try {
+      const saved = sessionStorage.getItem("sidebar_scroll_pos")
+      if (saved !== null) {
+        const parsed = Number(saved)
+        if (!isNaN(parsed) && parsed >= 0) {
+          container.scrollTop = parsed
+        }
+      }
+    } catch {
+      // Abaikan error storage (misal di iframe terisolasi)
+    }
+
+    const frameId = requestAnimationFrame(() => {
+      if (!container) return
+      const active = container.querySelector<HTMLElement>('[data-active="true"]')
+      if (active) {
+        const containerRect = container.getBoundingClientRect()
+        const activeRect = active.getBoundingClientRect()
+
+        if (activeRect.top < containerRect.top) {
+          container.scrollTop = Math.max(
+            0,
+            container.scrollTop - (containerRect.top - activeRect.top + 12)
+          )
+        } else if (activeRect.bottom > containerRect.bottom) {
+          container.scrollTop = Math.min(
+            container.scrollHeight - container.clientHeight,
+            container.scrollTop + (activeRect.bottom - containerRect.bottom + 12)
+          )
+        }
+      }
+    })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      if (container) {
+        try {
+          sessionStorage.setItem("sidebar_scroll_pos", String(container.scrollTop))
+        } catch {
+          // Abaikan error storage
+        }
+      }
+    }
+  }, [])
+
   return (
     <div
+      ref={handleRef}
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
         "flex min-h-0 flex-1 flex-col gap-1 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
+      onScroll={(e) => {
+        try {
+          sessionStorage.setItem("sidebar_scroll_pos", String(e.currentTarget.scrollTop))
+        } catch {
+          // Abaikan error storage
+        }
+        onScroll?.(e)
+      }}
       {...props}
     />
   )
@@ -402,7 +479,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2.5 overflow-hidden rounded-[7px] p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-[18px] [&>svg]:shrink-0",
+  "peer/menu-button flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-[7px] p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-[18px] [&>svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -476,7 +553,7 @@ function SidebarMenuAction({
       data-slot="sidebar-menu-action"
       data-sidebar="menu-action"
       className={cn(
-        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-[6px] p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 cursor-pointer items-center justify-center rounded-[6px] p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         "after:absolute after:-inset-2 md:after:hidden",
         "peer-data-[size=sm]/menu-button:top-1",
         "peer-data-[size=default]/menu-button:top-1.5",
@@ -567,7 +644,7 @@ function SidebarMenuSubButton({
       data-size={size}
       data-active={isActive}
       className={cn(
-        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-[6px] px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px cursor-pointer items-center gap-2 overflow-hidden rounded-[6px] px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
         "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
         size === "sm" && "text-xs",
         size === "md" && "text-sm",

@@ -36,43 +36,43 @@ Tujuan: memastikan generator, schema, dependency, dan environment valid sebelum 
 
 ## 00.01 Repository dan Environment
 
-- [ ] Inisialisasi repository Git Amanpoll.
-- [ ] Tetapkan branch `main` sebagai protected branch bila platform mendukung.
-- [ ] Buat `.env.example` tanpa secret.
-- [ ] Pastikan `.env`, storage private, credential, dan hasil build lokal tidak ter-commit secara tidak sengaja.
-- [ ] Pastikan PHP 8.4+ lokal.
-- [ ] Pastikan Node.js 20+.
-- [ ] Pastikan Composer 2+.
-- [ ] Pastikan MySQL 8+.
-- [ ] Jalankan `composer validate`.
-- [ ] Jalankan `npm install`.
-- [ ] Jalankan build Vite.
-- [ ] Jalankan test Laravel default.
-- [ ] Jalankan PHPStan/Larastan baseline tanpa menutupi error baru.
+- [x] Inisialisasi repository Git Amanpoll.
+- [x] Tetapkan branch `main` sebagai protected branch bila platform mendukung.
+- [x] Buat `.env.example` tanpa secret.
+- [x] Pastikan `.env`, storage private, credential, dan hasil build lokal tidak ter-commit secara tidak sengaja.
+- [x] Pastikan PHP 8.4+ lokal.
+- [x] Pastikan Node.js 20+.
+- [x] Pastikan Composer 2+.
+- [x] Pastikan MySQL 8+.
+- [x] Jalankan `composer validate`.
+- [x] Jalankan `npm install`.
+- [x] Jalankan build Vite.
+- [x] Jalankan test Laravel default.
+- [x] Jalankan PHPStan/Larastan baseline tanpa menutupi error baru.
 
 ## 00.02 Validasi Schema
 
-- [ ] Import schema Amanpoll ke database development kosong.
-- [ ] Pastikan seluruh foreign key berhasil dibuat.
-- [ ] Pastikan charset `utf8mb4`.
-- [ ] Pastikan timezone aplikasi UTC untuk penyimpanan waktu.
-- [ ] Cocokkan tabel dengan domain.
-- [ ] Audit index untuk foreign key dan query utama.
-- [ ] Pastikan tabel tenant memiliki `OrganisasiId` sesuai kebutuhan.
-- [ ] Pastikan tabel histori/transaksi tidak menggunakan hard delete tanpa alasan.
-- [ ] Dokumentasikan perubahan schema sebelum mulai coding fitur.
+- [x] Import schema Amanpoll ke database development kosong.
+- [x] Pastikan seluruh foreign key berhasil dibuat.
+- [x] Pastikan charset `utf8mb4`.
+- [x] Pastikan timezone aplikasi UTC untuk penyimpanan waktu.
+- [x] Cocokkan tabel dengan domain.
+- [x] Audit index untuk foreign key dan query utama.
+- [x] Pastikan tabel tenant memiliki `OrganisasiId` sesuai kebutuhan.
+- [x] Pastikan tabel histori/transaksi tidak menggunakan hard delete tanpa alasan.
+- [x] Dokumentasikan perubahan schema sebelum mulai coding fitur.
 
 ## 00.03 Validasi Generator
 
-- [ ] Jalankan `index.js` pada project kosong.
-- [ ] Pastikan tidak ada syntax error PHP.
-- [ ] Pastikan tidak ada syntax error TypeScript.
-- [ ] Pastikan file generated tidak memiliki namespace salah.
-- [ ] Pastikan Eloquent model mengarah ke table PascalCase yang benar.
-- [ ] Pastikan `HasUlids` hanya digunakan pada entitas yang sesuai.
-- [ ] Pastikan timestamp mapping menggunakan `DibuatPada`, `DiperbaruiPada`, `DihapusPada`.
-- [ ] Hapus scaffold dummy yang tidak akan digunakan.
-- [ ] Jangan menerima generated repository/action kosong sebagai implementasi selesai.
+- [x] Jalankan `index.js` pada project kosong.
+- [x] Pastikan tidak ada syntax error PHP.
+- [x] Pastikan tidak ada syntax error TypeScript.
+- [x] Pastikan file generated tidak memiliki namespace salah.
+- [x] Pastikan Eloquent model mengarah ke table PascalCase yang benar.
+- [x] Pastikan `HasUlids` hanya digunakan pada entitas yang sesuai.
+- [x] Pastikan timestamp mapping menggunakan `DibuatPada`, `DiperbaruiPada`, `DihapusPada`.
+- [x] Hapus scaffold dummy yang tidak akan digunakan.
+- [x] Jangan menerima generated repository/action kosong sebagai implementasi selesai.
 
 ### Gate 00
 
@@ -97,16 +97,16 @@ Tujuan: menetapkan aturan yang akan dipakai semua domain.
 
 ## 01.01 Konvensi Bahasa dan Kode
 
-- [ ] Business class menggunakan Bahasa Indonesia.
-- [ ] Business function menggunakan Bahasa Indonesia.
-- [ ] Variable bisnis menggunakan Bahasa Indonesia.
-- [ ] Status menggunakan Enum, bukan magic string tersebar.
-- [ ] Komentar maksimal satu baris dan menjelaskan alasan.
-- [ ] Controller tidak memuat business logic kompleks.
-- [ ] Action hanya memiliki satu use case utama.
-- [ ] Query kompleks dipisah dari command.
-- [ ] Repository interface hanya dibuat bila memberi boundary yang nyata.
-- [ ] Hindari class `Helper` generik.
+- [x] Business class menggunakan Bahasa Indonesia.
+- [x] Business function menggunakan Bahasa Indonesia.
+- [x] Variable bisnis menggunakan Bahasa Indonesia.
+- [x] Status menggunakan Enum, bukan magic string tersebar.
+- [x] Komentar maksimal satu baris dan menjelaskan alasan.
+- [x] Controller tidak memuat business logic kompleks.
+- [x] Action hanya memiliki satu use case utama.
+- [x] Query kompleks dipisah dari command.
+- [x] Repository interface hanya dibuat bila memberi boundary yang nyata.
+- [x] Hindari class `Helper` generik.
 
 Contoh:
 
@@ -124,36 +124,36 @@ Method `jalankan()` diperbolehkan sebagai convention internal. Method kontrak fr
 
 ## 01.02 Shared Exceptions
 
-- [ ] `AturanBisnisDilanggar`
-- [ ] `AksesDitolak`
-- [ ] `DataTidakDitemukan`
-- [ ] `KonflikData`
-- [ ] `VersiDataBerubah`
-- [ ] Mapping exception ke response web/API konsisten.
-- [ ] Production response tidak menampilkan stack trace.
+- [x] `AturanBisnisDilanggar`
+- [x] `AksesDitolak`
+- [x] `DataTidakDitemukan`
+- [x] `KonflikData`
+- [x] `VersiDataBerubah`
+- [x] Mapping exception ke response web/API konsisten.
+- [x] Production response tidak menampilkan stack trace.
 
 ## 01.03 Transaction Helper
 
-- [ ] Tetapkan policy kapan `DB::transaction()` wajib.
-- [ ] Gunakan transaction pada multi-write.
-- [ ] External HTTP call tidak dilakukan di tengah transaction jika dapat dihindari.
-- [ ] Event eksternal gunakan outbox.
+- [x] Tetapkan policy kapan `DB::transaction()` wajib.
+- [x] Gunakan transaction pada multi-write.
+- [x] External HTTP call tidak dilakukan di tengah transaction jika dapat dihindari.
+- [x] Event eksternal gunakan outbox.
 
 ## 01.04 Time dan Timezone
 
-- [ ] Simpan waktu UTC.
-- [ ] Tampilkan berdasarkan `ZonaWaktu` organisasi/lokasi.
-- [ ] Buat service konversi waktu terpusat.
-- [ ] Jangan memanggil timezone hardcoded di feature.
-- [ ] Test edge case pergantian tanggal lokal.
+- [x] Simpan waktu UTC.
+- [x] Tampilkan berdasarkan `ZonaWaktu` organisasi/lokasi.
+- [x] Buat service konversi waktu terpusat.
+- [x] Jangan memanggil timezone hardcoded di feature.
+- [x] Test edge case pergantian tanggal lokal.
 
 ## 01.05 Uang dan Angka
 
-- [ ] Gunakan `DECIMAL` sesuai schema.
-- [ ] Jangan gunakan float untuk nilai uang.
-- [ ] Buat formatter mata uang di frontend.
-- [ ] Kalkulasi total selalu diverifikasi server.
-- [ ] Tentukan aturan pembulatan.
+- [x] Gunakan `DECIMAL` sesuai schema.
+- [x] Jangan gunakan float untuk nilai uang.
+- [x] Buat formatter mata uang di frontend.
+- [x] Kalkulasi total selalu diverifikasi server.
+- [x] Tentukan aturan pembulatan.
 
 ### Gate 01
 
@@ -167,30 +167,30 @@ Tujuan: membangun boundary keamanan sebelum data bisnis.
 
 ## 02.01 Konteks Organisasi
 
-- [ ] Buat `KonteksOrganisasi`.
-- [ ] Resolve organisasi dari session.
-- [ ] Resolve organisasi dari API key.
-- [ ] Resolve organisasi untuk queue job.
-- [ ] Fail closed bila konteks tenant tidak tersedia pada operasi tenant.
-- [ ] Jangan mengambil `OrganisasiId` mentah dari request untuk menentukan tenant.
+- [x] Buat `KonteksOrganisasi`.
+- [x] Resolve organisasi dari session.
+- [x] Resolve organisasi dari API key.
+- [x] Resolve organisasi untuk queue job.
+- [x] Fail closed bila konteks tenant tidak tersedia pada operasi tenant.
+- [x] Jangan mengambil `OrganisasiId` mentah dari request untuk menentukan tenant.
 
 ## 02.02 Scope Data
 
-- [ ] Global scope atau tenant repository yang konsisten.
-- [ ] Create otomatis mengisi `OrganisasiId`.
-- [ ] Update memverifikasi organisasi.
-- [ ] Delete memverifikasi organisasi.
-- [ ] Route model binding tenant-aware.
-- [ ] Relation lintas tenant ditolak.
+- [x] Global scope atau tenant repository yang konsisten.
+- [x] Create otomatis mengisi `OrganisasiId`.
+- [x] Update memverifikasi organisasi.
+- [x] Delete memverifikasi organisasi.
+- [x] Route model binding tenant-aware.
+- [x] Relation lintas tenant ditolak.
 
 ## 02.03 Test Isolasi
 
-- [ ] Organisasi A tidak dapat membaca data B.
-- [ ] Organisasi A tidak dapat update data B.
-- [ ] Organisasi A tidak dapat delete data B.
-- [ ] Organisasi A tidak dapat attach relation ke data B.
-- [ ] API key A tidak dapat mengakses B.
-- [ ] Background job tidak kehilangan scope tenant.
+- [x] Organisasi A tidak dapat membaca data B.
+- [x] Organisasi A tidak dapat update data B.
+- [x] Organisasi A tidak dapat delete data B.
+- [x] Organisasi A tidak dapat attach relation ke data B.
+- [x] API key A tidak dapat mengakses B.
+- [x] Background job tidak kehilangan scope tenant.
 
 ### Gate 02
 
@@ -202,45 +202,45 @@ Tidak ada domain bisnis berikutnya sebelum tenant isolation test hijau.
 
 ## 03.01 Login
 
-- [ ] Login menggunakan kode organisasi + email + password.
-- [ ] Validasi status organisasi.
-- [ ] Validasi status pengguna.
-- [ ] Regenerate session setelah login.
-- [ ] Logout menghapus session.
-- [ ] Rate limit login.
-- [ ] Generic error untuk credential salah.
+- [x] Login menggunakan kode organisasi + email + password.
+- [x] Validasi status organisasi.
+- [x] Validasi status pengguna.
+- [x] Regenerate session setelah login.
+- [x] Logout menghapus session.
+- [x] Rate limit login.
+- [x] Generic error untuk credential salah.
 
 ## 03.02 Pengguna
 
-- [ ] Daftar pengguna.
-- [ ] Buat pengguna.
-- [ ] Ubah pengguna.
-- [ ] Aktif/nonaktif.
-- [ ] Reset password flow.
-- [ ] Profil pengguna.
-- [ ] Perangkat pengguna.
+- [x] Daftar pengguna.
+- [x] Buat pengguna.
+- [x] Ubah pengguna.
+- [x] Aktif/nonaktif.
+- [x] Reset password flow.
+- [x] Profil pengguna.
+- [x] Perangkat pengguna.
 
 ## 03.03 RBAC
 
-- [ ] CRUD Peran.
-- [ ] CRUD Izin hanya sesuai policy platform.
-- [ ] Assign PenggunaPeran.
-- [ ] Assign PeranIzin.
-- [ ] Middleware izin.
-- [ ] Policy per entity.
-- [ ] Frontend directive/helper untuk visibility action.
-- [ ] Backend tetap menjadi sumber authorization.
+- [x] CRUD Peran.
+- [x] CRUD Izin hanya sesuai policy platform.
+- [x] Assign PenggunaPeran.
+- [x] Assign PeranIzin.
+- [x] Middleware izin.
+- [x] Policy per entity.
+- [x] Frontend directive/helper untuk visibility action.
+- [x] Backend tetap menjadi sumber authorization.
 
 ## 03.04 API Key
 
-- [ ] Generate secret sekali.
-- [ ] Simpan hash.
-- [ ] Prefix untuk lookup.
-- [ ] Scope/permission.
-- [ ] Expiry.
-- [ ] Revoke.
-- [ ] Optional IP allowlist.
-- [ ] Audit create/revoke.
+- [x] Generate secret sekali.
+- [x] Simpan hash.
+- [x] Prefix untuk lookup.
+- [x] Scope/permission.
+- [x] Expiry.
+- [x] Revoke.
+- [x] Optional IP allowlist.
+- [x] Audit create/revoke.
 
 ### Gate 03
 
@@ -252,50 +252,50 @@ Auth web dan API tenant-aware, RBAC aktif, test unauthorized dan cross-tenant lu
 
 ## 04.01 Organisasi
 
-- [ ] Detail organisasi.
-- [ ] Edit profil.
-- [ ] Logo.
-- [ ] Zona waktu.
-- [ ] Status sesuai policy platform.
+- [x] Detail organisasi.
+- [x] Edit profil.
+- [x] Logo.
+- [x] Zona waktu.
+- [x] Status sesuai policy platform.
 
 ## 04.02 UnitOrganisasi
 
-- [ ] CRUD.
-- [ ] Hierarki parent-child.
-- [ ] Cegah circular hierarchy.
-- [ ] Filter unit aktif.
+- [x] CRUD.
+- [x] Hierarki parent-child.
+- [x] Cegah circular hierarchy.
+- [x] Filter unit aktif.
 
 ## 04.03 KategoriLokasi dan Lokasi
 
-- [ ] CRUD kategori.
-- [ ] CRUD lokasi.
-- [ ] Hierarki lokasi.
-- [ ] Cegah circular hierarchy.
-- [ ] Hubungkan unit.
-- [ ] Search lokasi.
-- [ ] Status aktif/nonaktif.
+- [x] CRUD kategori.
+- [x] CRUD lokasi.
+- [x] Hierarki lokasi.
+- [x] Cegah circular hierarchy.
+- [x] Hubungkan unit.
+- [x] Search lokasi.
+- [x] Status aktif/nonaktif.
 
 ## 04.04 KonfigurasiOrganisasi
 
-- [ ] Key-value config yang tervalidasi.
-- [ ] Namespace config per fitur.
-- [ ] Default config.
-- [ ] Cache config dengan invalidation jelas.
+- [x] Key-value config yang tervalidasi.
+- [x] Namespace config per fitur.
+- [x] Default config.
+- [x] Cache config dengan invalidation jelas.
 
 ## 04.05 NomorDokumen
 
-- [ ] Format prefix.
-- [ ] Sequence.
-- [ ] Reset period bila diperlukan.
-- [ ] Lock/concurrency safety.
-- [ ] Preview nomor.
-- [ ] Test request paralel.
+- [x] Format prefix.
+- [x] Sequence.
+- [x] Reset period bila diperlukan.
+- [x] Lock/concurrency safety.
+- [x] Preview nomor.
+- [x] Test request paralel.
 
 ## 04.06 HariLibur
 
-- [ ] CRUD.
-- [ ] Digunakan oleh service kalender kerja.
-- [ ] Scope organisasi.
+- [x] CRUD.
+- [x] Digunakan oleh service kalender kerja.
+- [x] Scope organisasi.
 
 ### Gate 04
 
@@ -309,63 +309,63 @@ Ini dikerjakan sebelum aset karena akan digunakan hampir semua domain.
 
 ## 05.01 CatatanAudit
 
-- [ ] Service audit terpusat.
-- [ ] Actor.
-- [ ] Organisasi.
-- [ ] Entitas.
-- [ ] Aksi.
-- [ ] Before/after.
-- [ ] Request/correlation metadata yang aman.
-- [ ] Filter audit.
-- [ ] Policy read.
+- [x] Service audit terpusat.
+- [x] Actor.
+- [x] Organisasi.
+- [x] Entitas.
+- [x] Aksi.
+- [x] Before/after.
+- [x] Request/correlation metadata yang aman.
+- [x] Filter audit.
+- [x] Policy read.
 
 ## 05.02 CatatanAkses
 
-- [ ] Catat security-sensitive access bila diperlukan.
-- [ ] Hindari logging berlebihan pada setiap GET biasa.
-- [ ] Retention policy.
+- [x] Catat security-sensitive access bila diperlukan.
+- [x] Hindari logging berlebihan pada setiap GET biasa.
+- [x] Retention policy.
 
 ## 05.03 Berkas
 
-- [ ] Upload.
-- [ ] MIME validation.
-- [ ] Size limit.
-- [ ] Storage abstraction.
-- [ ] Download authorized.
-- [ ] Delete sesuai policy.
-- [ ] Filename aman.
-- [ ] Local storage production awal.
-- [ ] Siapkan driver S3-compatible.
+- [x] Upload.
+- [x] MIME validation.
+- [x] Size limit.
+- [x] Storage abstraction.
+- [x] Download authorized.
+- [x] Delete sesuai policy.
+- [x] Filename aman.
+- [x] Local storage production awal.
+- [x] Siapkan driver S3-compatible.
 
 ## 05.04 LampiranEntitas
 
-- [ ] Attach.
-- [ ] Detach.
-- [ ] Authorization berdasarkan entitas induk.
-- [ ] Urutan/jenis lampiran bila tersedia.
+- [x] Attach.
+- [x] Detach.
+- [x] Authorization berdasarkan entitas induk.
+- [x] Urutan/jenis lampiran bila tersedia.
 
 ## 05.05 Tag
 
-- [ ] CRUD tag.
-- [ ] Assign/unassign ke entitas.
-- [ ] Search/filter tag.
+- [x] CRUD tag.
+- [x] Assign/unassign ke entitas.
+- [x] Search/filter tag.
 
 ## 05.06 KolomKustom
 
-- [ ] CRUD definisi.
-- [ ] Tipe input.
-- [ ] Required.
-- [ ] Opsi.
-- [ ] Validation.
-- [ ] Nilai per entitas.
-- [ ] Rendering form dinamis.
+- [x] CRUD definisi.
+- [x] Tipe input.
+- [x] Required.
+- [x] Opsi.
+- [x] Validation.
+- [x] Nilai per entitas.
+- [x] Rendering form dinamis.
 
 ## 05.07 Komentar
 
-- [ ] Tambah komentar.
-- [ ] Edit sesuai aturan.
-- [ ] Hapus/soft delete sesuai aturan.
-- [ ] Audit.
+- [x] Tambah komentar.
+- [x] Edit sesuai aturan.
+- [x] Hapus/soft delete sesuai aturan.
+- [x] Audit.
 
 ### Gate 05
 
@@ -379,47 +379,47 @@ Approval dibangun sebelum transaksi yang membutuhkannya.
 
 ## 06.01 AlurPersetujuan
 
-- [ ] CRUD alur.
-- [ ] Jenis entitas.
-- [ ] Kondisi aktivasi.
-- [ ] Status aktif.
-- [ ] Validasi tidak ada tahap kosong.
+- [x] CRUD alur.
+- [x] Jenis entitas.
+- [x] Kondisi aktivasi.
+- [x] Status aktif.
+- [x] Validasi tidak ada tahap kosong.
 
 ## 06.02 TahapPersetujuan
 
-- [ ] Urutan.
-- [ ] Approver user/role/unit.
-- [ ] Jumlah persetujuan bila dibutuhkan.
-- [ ] Larangan self-approval configurable.
-- [ ] Rejection behavior.
+- [x] Urutan.
+- [x] Approver user/role/unit.
+- [x] Jumlah persetujuan bila dibutuhkan.
+- [x] Larangan self-approval configurable.
+- [x] Rejection behavior.
 
 ## 06.03 PermintaanPersetujuan
 
-- [ ] Buat permintaan.
-- [ ] Snapshot konteks penting.
-- [ ] Status.
-- [ ] Current stage.
-- [ ] Cancel.
-- [ ] Reject.
-- [ ] Complete.
+- [x] Buat permintaan.
+- [x] Snapshot konteks penting.
+- [x] Status.
+- [x] Current stage.
+- [x] Cancel.
+- [x] Reject.
+- [x] Complete.
 
 ## 06.04 KeputusanPersetujuan
 
-- [ ] Approve.
-- [ ] Reject.
-- [ ] Catatan.
-- [ ] Timestamp.
-- [ ] Append-oriented.
-- [ ] Audit.
+- [x] Approve.
+- [x] Reject.
+- [x] Catatan.
+- [x] Timestamp.
+- [x] Append-oriented.
+- [x] Audit.
 
 ## 06.05 Notifikasi Dasar
 
-- [ ] Templat notifikasi.
-- [ ] In-app notification.
-- [ ] Preferensi.
-- [ ] Email adapter optional.
-- [ ] Queue database.
-- [ ] Failure handling.
+- [x] Templat notifikasi.
+- [x] In-app notification.
+- [x] Preferensi.
+- [x] Email adapter optional.
+- [x] Queue database.
+- [x] Failure handling.
 
 ### Gate 06
 
@@ -431,38 +431,38 @@ Buat satu use case test dummy persetujuan end-to-end sebelum approval dipakai do
 
 ## 07.01 KategoriPenyedia
 
-- [ ] CRUD.
-- [ ] Status.
-- [ ] Validasi penggunaan.
+- [x] CRUD.
+- [x] Status.
+- [x] Validasi penggunaan.
 
 ## 07.02 Penyedia
 
-- [ ] CRUD.
-- [ ] Identitas.
-- [ ] Alamat.
-- [ ] Kontak.
-- [ ] Status.
-- [ ] Lampiran.
-- [ ] Tag.
-- [ ] Kolom kustom.
+- [x] CRUD.
+- [x] Identitas.
+- [x] Alamat.
+- [x] Kontak.
+- [x] Status.
+- [x] Lampiran.
+- [x] Tag.
+- [x] Kolom kustom.
 
 ## 07.03 PenyediaKategori
 
-- [ ] Assign multi kategori.
-- [ ] Remove.
-- [ ] Filter.
+- [x] Assign multi kategori.
+- [x] Remove.
+- [x] Filter.
 
 ## 07.04 KontakPenyedia
 
-- [ ] CRUD.
-- [ ] Kontak utama.
-- [ ] Validasi.
+- [x] CRUD.
+- [x] Kontak utama.
+- [x] Validasi.
 
 ## 07.05 PenilaianPenyedia
 
-- [ ] Form penilaian.
-- [ ] Histori.
-- [ ] Rekap.
+- [x] Form penilaian.
+- [x] Histori.
+- [x] Rekap.
 
 ### Gate 07
 
@@ -474,84 +474,84 @@ Penyedia dapat digunakan oleh aset, procurement, kontrak, dan kalibrasi.
 
 ## 08.01 KategoriAset
 
-- [ ] CRUD.
-- [ ] Hierarki.
-- [ ] Cegah circular.
-- [ ] Default property bila relevan.
+- [x] CRUD.
+- [x] Hierarki.
+- [x] Cegah circular.
+- [x] Default property bila relevan.
 
 ## 08.02 Merek
 
-- [ ] CRUD.
-- [ ] Search.
-- [ ] Duplicate prevention yang wajar.
+- [x] CRUD.
+- [x] Search.
+- [x] Duplicate prevention yang wajar.
 
 ## 08.03 ModelAset
 
-- [ ] CRUD.
-- [ ] Hubungkan merek.
-- [ ] Kategori.
-- [ ] Metadata teknis.
+- [x] CRUD.
+- [x] Hubungkan merek.
+- [x] Kategori.
+- [x] Metadata teknis.
 
 ## 08.04 Asset Registry
 
-- [ ] Daftar aset.
-- [ ] Search server-side.
-- [ ] Filter.
-- [ ] Sort.
-- [ ] Pagination.
-- [ ] Buat aset.
-- [ ] Ubah aset.
-- [ ] Detail aset.
-- [ ] Soft delete/archive.
-- [ ] Generate identifier/QR.
-- [ ] Scan resolver.
-- [ ] Lampiran.
-- [ ] Tag.
-- [ ] Field kustom.
+- [x] Daftar aset.
+- [x] Search server-side.
+- [x] Filter.
+- [x] Sort.
+- [x] Pagination.
+- [x] Buat aset.
+- [x] Ubah aset.
+- [x] Detail aset.
+- [x] Soft delete/archive.
+- [x] Generate identifier/QR.
+- [x] Scan resolver.
+- [x] Lampiran.
+- [x] Tag.
+- [x] Field kustom.
 
 ## 08.05 RiwayatLokasiAset
 
-- [ ] Set lokasi awal.
-- [ ] Perubahan lokasi membuat histori.
-- [ ] Cegah edit histori sembarang.
-- [ ] Current location konsisten dengan history.
+- [x] Set lokasi awal.
+- [x] Perubahan lokasi membuat histori.
+- [x] Cegah edit histori sembarang.
+- [x] Current location konsisten dengan history.
 
 ## 08.06 Penanggung Jawab
 
-- [ ] Assign.
-- [ ] Ganti.
-- [ ] Histori.
-- [ ] Validasi user/unit tenant.
+- [x] Assign.
+- [x] Ganti.
+- [x] Histori.
+- [x] Validasi user/unit tenant.
 
 ## 08.07 RelasiAset
 
-- [ ] Parent-child.
-- [ ] Related asset.
-- [ ] Cegah self-reference.
-- [ ] Cegah cycle jika relation bersifat hierarchy.
+- [x] Parent-child.
+- [x] Related asset.
+- [x] Cegah self-reference.
+- [x] Cegah cycle jika relation bersifat hierarchy.
 
 ## 08.08 GaransiAset
 
-- [ ] CRUD.
-- [ ] Penyedia.
-- [ ] Periode.
-- [ ] Dokumen.
-- [ ] Reminder.
+- [x] CRUD.
+- [x] Penyedia.
+- [x] Periode.
+- [x] Dokumen.
+- [x] Reminder.
 
 ## 08.09 NilaiAset
 
-- [ ] Harga perolehan.
-- [ ] Nilai buku bila digunakan.
-- [ ] Histori nilai.
-- [ ] Formatter uang.
+- [x] Harga perolehan.
+- [x] Nilai buku bila digunakan.
+- [x] Histori nilai.
+- [x] Formatter uang.
 
 ## 08.10 Meter
 
-- [ ] Definisi meter per aset.
-- [ ] Unit.
-- [ ] Pembacaan.
-- [ ] Validasi pembacaan mundur bila meter kumulatif.
-- [ ] Histori.
+- [x] Definisi meter per aset.
+- [x] Unit.
+- [x] Pembacaan.
+- [x] Validasi pembacaan mundur bila meter kumulatif.
+- [x] Histori.
 
 ### Gate 08
 
@@ -563,45 +563,45 @@ Detail aset menampilkan identitas dan histori inti secara benar sebelum lifecycl
 
 ## 09.01 PermintaanMutasiAset
 
-- [ ] Buat draft.
-- [ ] Tambah detail aset.
-- [ ] Submit.
-- [ ] Hubungkan approval.
-- [ ] Approve/reject.
-- [ ] Cancel.
-- [ ] Audit.
+- [x] Buat draft.
+- [x] Tambah detail aset.
+- [x] Submit.
+- [x] Hubungkan approval.
+- [x] Approve/reject.
+- [x] Cancel.
+- [x] Audit.
 
 ## 09.02 Eksekusi Mutasi
 
-- [ ] Validasi aset.
-- [ ] Validasi lokasi tujuan.
-- [ ] Update current location hanya setelah syarat terpenuhi.
-- [ ] Tulis RiwayatLokasiAset.
-- [ ] Transaction.
-- [ ] Idempotency internal.
+- [x] Validasi aset.
+- [x] Validasi lokasi tujuan.
+- [x] Update current location hanya setelah syarat terpenuhi.
+- [x] Tulis RiwayatLokasiAset.
+- [x] Transaction.
+- [x] Idempotency internal.
 
 ## 09.03 SerahTerimaAset
 
-- [ ] Buat dokumen.
-- [ ] Detail aset.
-- [ ] Pihak asal.
-- [ ] Pihak tujuan.
-- [ ] Kondisi.
-- [ ] Terima.
-- [ ] Lampiran.
-- [ ] Audit.
+- [x] Buat dokumen.
+- [x] Detail aset.
+- [x] Pihak asal.
+- [x] Pihak tujuan.
+- [x] Kondisi.
+- [x] Terima.
+- [x] Lampiran.
+- [x] Audit.
 
 ## 09.04 PenghapusanAset
 
-- [ ] Draft.
-- [ ] Detail.
-- [ ] Alasan.
-- [ ] Approval.
-- [ ] Eksekusi.
-- [ ] Asset status.
-- [ ] Histori.
-- [ ] Audit.
-- [ ] Larang hard-delete aset historis.
+- [x] Draft.
+- [x] Detail.
+- [x] Alasan.
+- [x] Approval.
+- [x] Eksekusi.
+- [x] Asset status.
+- [x] Histori.
+- [x] Audit.
+- [x] Larang hard-delete aset historis.
 
 ### Gate 09
 
@@ -615,59 +615,59 @@ Dikerjakan sebelum PerintahKerja penuh agar pemakaian suku cadang tidak ditambal
 
 ## 10.01 Gudang
 
-- [ ] CRUD gudang.
-- [ ] Lokasi gudang.
-- [ ] Status.
-- [ ] Scope unit/lokasi.
+- [x] CRUD gudang.
+- [x] Lokasi gudang.
+- [x] Status.
+- [x] Scope unit/lokasi.
 
 ## 10.02 Master SukuCadang
 
-- [ ] Kategori.
-- [ ] Suku cadang.
-- [ ] Unit.
-- [ ] SKU/kode.
-- [ ] Min stock.
-- [ ] Harga.
-- [ ] Status.
+- [x] Kategori.
+- [x] Suku cadang.
+- [x] Unit.
+- [x] SKU/kode.
+- [x] Min stock.
+- [x] Harga.
+- [x] Status.
 
 ## 10.03 Kompatibilitas
 
-- [ ] Suku cadang ↔ model/aset.
-- [ ] Filter compatible part.
+- [x] Suku cadang ↔ model/aset.
+- [x] Filter compatible part.
 
 ## 10.04 StokSukuCadang
 
-- [ ] Saldo per lokasi.
-- [ ] Stok fisik.
-- [ ] Stok reserved.
-- [ ] Stok tersedia.
-- [ ] Lock saat mutasi.
+- [x] Saldo per lokasi.
+- [x] Stok fisik.
+- [x] Stok reserved.
+- [x] Stok tersedia.
+- [x] Lock saat mutasi.
 
 ## 10.05 MutasiStok
 
-- [ ] Penerimaan.
-- [ ] Pengeluaran.
-- [ ] Transfer.
-- [ ] Adjustment.
-- [ ] Return.
-- [ ] Detail.
-- [ ] Nomor dokumen.
-- [ ] Transaction.
-- [ ] Audit.
+- [x] Penerimaan.
+- [x] Pengeluaran.
+- [x] Transfer.
+- [x] Adjustment.
+- [x] Return.
+- [x] Detail.
+- [x] Nomor dokumen.
+- [x] Transaction.
+- [x] Audit.
 
 ## 10.06 Reservasi
 
-- [ ] Reserve.
-- [ ] Release.
-- [ ] Consume.
-- [ ] Expiry bila digunakan.
-- [ ] Cegah over-reservation.
+- [x] Reserve.
+- [x] Release.
+- [x] Consume.
+- [x] Expiry bila digunakan.
+- [x] Cegah over-reservation.
 
 ## 10.07 Stock Alert
 
-- [ ] Minimum stock.
-- [ ] Notifikasi.
-- [ ] Dashboard widget.
+- [x] Minimum stock.
+- [x] Notifikasi.
+- [x] Dashboard widget.
 
 ### Gate 10
 
@@ -679,48 +679,48 @@ Tidak ada endpoint yang mengubah `StokSukuCadang` langsung tanpa transaksi mutas
 
 ## 11.01 TingkatLayanan
 
-- [ ] CRUD.
-- [ ] Aturan response.
-- [ ] Aturan resolution.
-- [ ] Kalender kerja.
-- [ ] Hari libur.
-- [ ] Prioritas/kategori.
+- [x] CRUD.
+- [x] Aturan response.
+- [x] Aturan resolution.
+- [x] Kalender kerja.
+- [x] Hari libur.
+- [x] Prioritas/kategori.
 
 ## 11.02 Service Kalkulasi SLA
 
-- [ ] Hitung deadline response.
-- [ ] Hitung deadline resolution.
-- [ ] Respect jam kerja.
-- [ ] Respect hari libur.
-- [ ] Unit test skenario lintas hari.
+- [x] Hitung deadline response.
+- [x] Hitung deadline resolution.
+- [x] Respect jam kerja.
+- [x] Respect hari libur.
+- [x] Unit test skenario lintas hari.
 
 ## 11.03 KategoriKeluhan
 
-- [ ] CRUD.
-- [ ] Default priority.
-- [ ] Routing rule bila dibutuhkan.
+- [x] CRUD.
+- [x] Default priority.
+- [x] Routing rule bila dibutuhkan.
 
 ## 11.04 Keluhan
 
-- [ ] Buat keluhan.
-- [ ] Detail.
-- [ ] Asset optional sesuai jenis complaint.
-- [ ] Lokasi.
-- [ ] Pelapor.
-- [ ] Lampiran.
-- [ ] Triage.
-- [ ] Ubah prioritas sesuai izin.
-- [ ] Histori status.
-- [ ] Tutup.
-- [ ] Batalkan/tolak sesuai policy.
+- [x] Buat keluhan.
+- [x] Detail.
+- [x] Asset optional sesuai jenis complaint.
+- [x] Lokasi.
+- [x] Pelapor.
+- [x] Lampiran.
+- [x] Triage.
+- [x] Ubah prioritas sesuai izin.
+- [x] Histori status.
+- [x] Tutup.
+- [x] Batalkan/tolak sesuai policy.
 
 ## 11.05 EskalasiTingkatLayanan
 
-- [ ] Due soon.
-- [ ] Breach.
-- [ ] Prevent duplicate escalation.
-- [ ] Queue.
-- [ ] Notification.
+- [x] Due soon.
+- [x] Breach.
+- [x] Prevent duplicate escalation.
+- [x] Queue.
+- [x] Notification.
 
 ### Gate 11
 
@@ -732,80 +732,80 @@ Keluhan memiliki deadline SLA yang dapat diuji dan riwayat status lengkap.
 
 ## 12.01 PerintahKerja Core
 
-- [ ] Buat dari keluhan.
-- [ ] Buat manual sesuai izin.
-- [ ] Nomor dokumen.
-- [ ] Jenis.
-- [ ] Prioritas.
-- [ ] Asset.
-- [ ] Lokasi.
-- [ ] Histori status.
+- [x] Buat dari keluhan.
+- [x] Buat manual sesuai izin.
+- [x] Nomor dokumen.
+- [x] Jenis.
+- [x] Prioritas.
+- [x] Asset.
+- [x] Lokasi.
+- [x] Histori status.
 
 ## 12.02 State Machine
 
-- [ ] Definisikan Enum status.
-- [ ] Definisikan transition yang diperbolehkan.
-- [ ] Tolak transition ilegal.
-- [ ] Semua transition masuk histori.
-- [ ] Audit transition kritis.
+- [x] Definisikan Enum status.
+- [x] Definisikan transition yang diperbolehkan.
+- [x] Tolak transition ilegal.
+- [x] Semua transition masuk histori.
+- [x] Audit transition kritis.
 
 ## 12.03 Penugasan
 
-- [ ] Assign teknisi.
-- [ ] Reassign.
-- [ ] Multiple assignee bila schema mendukung.
-- [ ] Accepted/rejected assignment.
-- [ ] Notification.
-- [ ] Workload indicator.
+- [x] Assign teknisi.
+- [x] Reassign.
+- [x] Multiple assignee bila schema mendukung.
+- [x] Accepted/rejected assignment.
+- [x] Notification.
+- [x] Workload indicator.
 
 ## 12.04 WaktuKerja
 
-- [ ] Mulai.
-- [ ] Pause.
-- [ ] Resume.
-- [ ] Selesai.
-- [ ] Cegah session ganda yang tidak sah.
-- [ ] Hitung durasi server-side.
+- [x] Mulai.
+- [x] Pause.
+- [x] Resume.
+- [x] Selesai.
+- [x] Cegah session ganda yang tidak sah.
+- [x] Hitung durasi server-side.
 
 ## 12.05 WaktuHentiAset
 
-- [ ] Mulai downtime.
-- [ ] Selesai downtime.
-- [ ] Alasan.
-- [ ] Hindari overlap yang tidak valid.
-- [ ] Rekap.
+- [x] Mulai downtime.
+- [x] Selesai downtime.
+- [x] Alasan.
+- [x] Hindari overlap yang tidak valid.
+- [x] Rekap.
 
 ## 12.06 PemakaianSukuCadang
 
-- [ ] Reserve dari pekerjaan.
-- [ ] Consume.
-- [ ] Return unused.
-- [ ] Mutasi stok otomatis.
-- [ ] Biaya sparepart.
-- [ ] Transaction lintas work order + stock.
+- [x] Reserve dari pekerjaan.
+- [x] Consume.
+- [x] Return unused.
+- [x] Mutasi stok otomatis.
+- [x] Biaya sparepart.
+- [x] Transaction lintas work order + stock.
 
 ## 12.07 BiayaPerintahKerja
 
-- [ ] Tenaga kerja bila digunakan.
-- [ ] Sparepart.
-- [ ] Vendor.
-- [ ] Lain-lain.
-- [ ] Total dihitung server-side.
+- [x] Tenaga kerja bila digunakan.
+- [x] Sparepart.
+- [x] Vendor.
+- [x] Lain-lain.
+- [x] Total dihitung server-side.
 
 ## 12.08 Kegagalan
 
-- [ ] Kode kegagalan.
-- [ ] Analisis.
-- [ ] Root cause.
-- [ ] Tindakan perbaikan.
+- [x] Kode kegagalan.
+- [x] Analisis.
+- [x] Root cause.
+- [x] Tindakan perbaikan.
 
 ## 12.09 Penyelesaian
 
-- [ ] Catatan hasil.
-- [ ] Foto.
-- [ ] Verifikasi.
-- [ ] Close.
-- [ ] Reopen sesuai izin dan audit.
+- [x] Catatan hasil.
+- [x] Foto.
+- [x] Verifikasi.
+- [x] Close.
+- [x] Reopen sesuai izin dan audit.
 
 ### Gate 12
 
