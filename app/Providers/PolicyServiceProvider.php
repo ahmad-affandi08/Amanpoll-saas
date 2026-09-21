@@ -124,6 +124,8 @@ use App\Domain\SiklusAset\Http\Policies\SerahTerimaAsetPolicy;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
+use App\Domain\Sinkronisasi\Http\Policies\AntrianSinkronisasiPolicy;
+use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisasi;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -199,5 +201,6 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(PesananPembelian::class, PengadaanPolicy::class);
         Gate::policy(PenerimaanPembelian::class, PengadaanPolicy::class);
         Gate::policy(TagihanPenyedia::class, PengadaanPolicy::class);
+        Gate::policy(AntrianSinkronisasi::class, AntrianSinkronisasiPolicy::class);
     }
 }

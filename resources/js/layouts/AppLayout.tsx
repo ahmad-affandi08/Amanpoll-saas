@@ -2,8 +2,11 @@ import { Link, router, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import type { PageProps } from '@/types/global';
 import { useIzin } from '@/hooks/use-izin';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PenyediaSinkronisasiOffline, useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
 import { cn } from '@/lib/utils';
 import { NotificationBell } from '@/components/notifikasi/NotificationBell';
+import { IndikatorSinkronisasi } from '@/components/shared/IndikatorSinkronisasi';
 import { LogoMark } from '@/components/shared/LogoMark';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -57,6 +60,8 @@ import {
   ClipboardList,
   FileSignature,
   ShoppingCart,
+  RotateCw,
+  SmartphoneNfc,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -84,6 +89,7 @@ const navUtama: GrupNav = {
   items: [
     { label: 'Dashboard', href: '/', icon: LayoutDashboard },
     { label: 'Persetujuan Saya', href: '/persetujuan/permintaan', icon: FileCheck },
+    { label: 'Mode Teknisi (Offline)', href: '/offline/teknisi', icon: SmartphoneNfc },
   ],
 };
 
@@ -587,12 +593,38 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
   );
 }
 
-export default function AppLayout({ children }: PropsWithChildren) {
+function KerangkaAplikasi({ children }: PropsWithChildren) {
   const page = usePage<PageProps>();
   const { auth } = page.props;
   const pathSekarang = page.url.split('?')[0];
   const { boleh } = useIzin();
-  const keluar = () => router.post(ruteAuth.logout);
+  const konfirmasi = useKonfirmasi();
+  const { bersihkanDataLokal, dorong, jumlahBelumTersinkron, adaPembaruanAplikasi, terapkanPembaruanAplikasi } =
+    useSinkronisasiOffline();
+
+  /**
+   * Logout membersihkan data offline milik organisasi ini (FASE 20.02) supaya
+   * perangkat bersama tidak menyimpan jejak tenant sebelumnya. Antrean yang
+   * belum terkirim didorong lebih dulu, dan bila tetap tidak bisa terkirim
+   * pengguna diberi tahu apa yang akan hilang sebelum memutuskan.
+   */
+  const keluar = async () => {
+    await dorong();
+
+    if (jumlahBelumTersinkron > 0) {
+      const lanjut = await konfirmasi({
+        judul: 'Keluar dengan perubahan yang belum tersinkron?',
+        deskripsi: `${jumlahBelumTersinkron} perubahan lapangan masih tersimpan di perangkat ini dan belum diterima server. Keluar sekarang akan menghapus data lokal beserta perubahan tersebut.`,
+        ragam: 'bahaya',
+        labelAksi: 'Tetap keluar',
+      });
+
+      if (!lanjut) return;
+    }
+
+    await bersihkanDataLokal();
+    router.post(ruteAuth.logout);
+  };
 
   const grupTampil = semuaGrup
     .map((grup) => ({
@@ -615,19 +647,39 @@ export default function AppLayout({ children }: PropsWithChildren) {
         pathSekarang={pathSekarang}
         auth={auth}
         boleh={boleh}
-        keluar={keluar}
+        keluar={() => void keluar()}
       />
       <SidebarInset>
-        <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 sm:px-6">
+        <header className="flex h-14 items-center justify-between gap-3 border-b border-border bg-card px-4 sm:px-6">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            {adaPembaruanAplikasi && (
+              <button
+                type="button"
+                onClick={terapkanPembaruanAplikasi}
+                title="Versi baru tersedia. Muat ulang untuk memakainya."
+                className="inline-flex items-center gap-1.5 rounded-[5px] border border-info-600/25 bg-info-600/10 px-2 py-1 text-xs font-medium text-info-600"
+              >
+                <RotateCw className="size-3.5 shrink-0" />
+                <span className="hidden sm:inline">Versi baru tersedia</span>
+              </button>
+            )}
+            <IndikatorSinkronisasi />
             <NotificationBell />
           </div>
         </header>
         <div className="p-4 sm:p-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+export default function AppLayout({ children }: PropsWithChildren) {
+  return (
+    <PenyediaSinkronisasiOffline>
+      <KerangkaAplikasi>{children}</KerangkaAplikasi>
+    </PenyediaSinkronisasiOffline>
   );
 }

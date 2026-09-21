@@ -64,6 +64,10 @@ Schedule::command('panggilan-balik:kirim-ulang')
     ->everyFiveMinutes()
     ->withoutOverlapping(5);
 
+Schedule::command('sinkronisasi:proses-antrian')
+    ->everyMinute()
+    ->withoutOverlapping(2);
+
 Schedule::command('idempotensi:bersihkan')
     ->dailyAt('03:30')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));

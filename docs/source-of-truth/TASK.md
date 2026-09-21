@@ -1170,52 +1170,52 @@ Jangan mulai sebelum flow online stabil.
 
 ## 20.01 Installability
 
-- [ ] Manifest.
-- [ ] Icons.
-- [ ] Service worker.
-- [ ] Offline fallback page.
-- [ ] Update strategy.
+- [x] Manifest.
+- [x] Icons.
+- [x] Service worker.
+- [x] Offline fallback page.
+- [x] Update strategy.
 
 ## 20.02 Cache Strategy
 
-- [ ] App shell.
-- [ ] Jangan cache response sensitif secara sembarang.
-- [ ] Tenant/user cache key.
-- [ ] Clear local data saat logout.
+- [x] App shell.
+- [x] Jangan cache response sensitif secara sembarang.
+- [x] Tenant/user cache key.
+- [x] Clear local data saat logout.
 
 ## 20.03 AntrianSinkronisasi
 
-- [ ] Local mutation ID.
-- [ ] Queue.
-- [ ] Retry.
-- [ ] Status.
+- [x] Local mutation ID.
+- [x] Queue.
+- [x] Retry.
+- [x] Status.
 
 ## 20.04 PenandaSinkronisasi
 
-- [ ] Last sync.
-- [ ] Entity version.
-- [ ] Conflict detection.
+- [x] Last sync.
+- [x] Entity version.
+- [x] Conflict detection.
 
 ## 20.05 Offline Teknisi
 
-- [ ] Assignment list.
-- [ ] Asset summary.
-- [ ] Checklist.
-- [ ] Draft pekerjaan.
-- [ ] Draft catatan.
-- [ ] Queue perubahan.
-- [ ] UX indicator offline/unsynced.
+- [x] Assignment list.
+- [x] Asset summary.
+- [x] Checklist.
+- [x] Draft pekerjaan.
+- [x] Draft catatan.
+- [x] Queue perubahan.
+- [x] UX indicator offline/unsynced.
 
 ## 20.06 Conflict Resolution
 
-- [ ] Server version check.
-- [ ] Tidak overwrite diam-diam.
-- [ ] UI conflict untuk kasus yang perlu user.
-- [ ] Audit resolution.
+- [x] Server version check.
+- [x] Tidak overwrite diam-diam.
+- [x] UI conflict untuk kasus yang perlu user.
+- [x] Audit resolution.
 
 ### Gate 20
 
-Simulasi offline → input → reconnect → sync tidak menggandakan transaksi.
+Simulasi offline → input → reconnect → sync tidak menggandakan transaksi. (Terpenuhi)
 
 ---
 

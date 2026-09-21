@@ -10,6 +10,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuKerja;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use Carbon\CarbonImmutable;
 
 final class KelolaWaktuKerja
 {
@@ -51,7 +52,7 @@ final class KelolaWaktuKerja
                 throw new AturanBisnisDilanggar('Tidak ada sesi waktu kerja aktif untuk pekerjaan ini.');
             }
 
-            $selesaiPada = now();
+            $selesaiPada = CarbonImmutable::now();
             $aktif->SelesaiPada = $selesaiPada;
             $aktif->DurasiMenit = max(0, (int) floor($aktif->MulaiPada->diffInSeconds($selesaiPada) / 60));
             $aktif->Catatan = $catatan ?: $aktif->Catatan;
@@ -62,6 +63,59 @@ final class KelolaWaktuKerja
             ]);
 
             return $aktif;
+        });
+    }
+
+    /**
+     * Mencatat satu sesi waktu kerja yang sudah utuh (mulai dan selesai
+     * diketahui). Dipakai oleh sinkronisasi offline: teknisi menjalankan
+     * timernya di perangkat, lalu sesi lengkapnya dikirim saat kembali online
+     * sehingga waktu yang tercatat adalah waktu kejadian, bukan waktu sinkron.
+     */
+    public function catatSelesai(
+        PerintahKerja $perintahKerja,
+        string $penggunaId,
+        CarbonImmutable $mulaiPada,
+        CarbonImmutable $selesaiPada,
+        ?string $catatan,
+    ): WaktuKerja {
+        return $this->transaksi->jalankan(function () use ($perintahKerja, $penggunaId, $mulaiPada, $selesaiPada, $catatan): WaktuKerja {
+            $status = StatusPerintahKerja::from($perintahKerja->Status);
+            if (! $status->dapatMencatatOperasional()) {
+                throw new AturanBisnisDilanggar('Waktu kerja hanya dapat dicatat pada pekerjaan yang sudah diterima dan belum selesai.');
+            }
+            if ($selesaiPada->lessThanOrEqualTo($mulaiPada)) {
+                throw new AturanBisnisDilanggar('Waktu selesai harus setelah waktu mulai.');
+            }
+            if ($selesaiPada->isFuture()) {
+                throw new AturanBisnisDilanggar('Sesi waktu kerja tidak boleh berakhir di masa depan.');
+            }
+
+            $bertumpuk = WaktuKerja::query()
+                ->where('PenggunaId', $penggunaId)
+                ->where('MulaiPada', '<', $selesaiPada)
+                ->where(fn ($query) => $query->whereNull('SelesaiPada')->orWhere('SelesaiPada', '>', $mulaiPada))
+                ->exists();
+            if ($bertumpuk) {
+                throw new AturanBisnisDilanggar('Sesi waktu kerja ini bertumpuk dengan sesi lain milik teknisi yang sama.');
+            }
+
+            $waktuKerja = WaktuKerja::create([
+                'PerintahKerjaId' => $perintahKerja->Id,
+                'PenggunaId' => $penggunaId,
+                'MulaiPada' => $mulaiPada,
+                'SelesaiPada' => $selesaiPada,
+                'DurasiMenit' => max(0, (int) floor($mulaiPada->diffInSeconds($selesaiPada) / 60)),
+                'JenisWaktu' => 'Kerja',
+                'Catatan' => $catatan,
+            ]);
+
+            $this->audit->catat('WaktuKerja.CatatSelesai', 'PerintahKerja', $perintahKerja->Id, null, [
+                'WaktuKerjaId' => $waktuKerja->Id,
+                'DurasiMenit' => $waktuKerja->DurasiMenit,
+            ]);
+
+            return $waktuKerja;
         });
     }
 }

@@ -37,6 +37,13 @@ use App\Domain\SiklusAset\Infrastructure\Listeners\SinkronkanStatusPersetujuanSi
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
+use App\Domain\Sinkronisasi\Application\Services\RegistriOperasiSinkronisasi;
+use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganCatatWaktuKerja;
+use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganFinalisasiDaftarPeriksa;
+use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganResponsPenugasan;
+use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganSimpanJawabanDaftarPeriksa;
+use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganTambahCatatanPerintahKerja;
+use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganUbahStatusPerintahKerja;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel;
 use Illuminate\Support\ServiceProvider;
@@ -57,6 +64,25 @@ final class AmanpollServiceProvider extends ServiceProvider
         // ke registri ini; sisanya memakai adapter REST bawaan.
         $this->app->bind(AdapterSinkronisasi::class, AdapterSinkronisasiRest::class);
         $this->app->singleton(RegistriAdapterSinkronisasi::class);
+
+        // Daftar putih mutasi yang boleh masuk lewat antrean offline (FASE 20).
+        // Operasi yang tidak terdaftar di sini ditolak server, sehingga antrean
+        // tidak dapat dipakai sebagai jalur pintas ke use-case sembarang.
+        $this->app->singleton(RegistriOperasiSinkronisasi::class, function ($app): RegistriOperasiSinkronisasi {
+            $registri = new RegistriOperasiSinkronisasi;
+            foreach ([
+                PenanganResponsPenugasan::class,
+                PenanganUbahStatusPerintahKerja::class,
+                PenanganCatatWaktuKerja::class,
+                PenanganTambahCatatanPerintahKerja::class,
+                PenanganSimpanJawabanDaftarPeriksa::class,
+                PenanganFinalisasiDaftarPeriksa::class,
+            ] as $penangan) {
+                $registri->daftarkan($app->make($penangan));
+            }
+
+            return $registri;
+        });
     }
 
     public function boot(): void

@@ -1,19 +1,57 @@
 {
-  "name": "Amanpoll",
+  "id": "/",
+  "name": "Amanpoll — Asset & Maintenance Management",
   "short_name": "Amanpoll",
+  "description": "Manajemen aset dan pemeliharaan multi-industri, termasuk ruang kerja teknisi yang dapat dipakai tanpa koneksi.",
+  "lang": "id",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#17324D",
+  "background_color": "#F4F7F8",
+  "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "theme_color": "#17324D",
-  "background_color": "#F4F7F8",
-  "display": "standalone"
+  "shortcuts": [
+    {
+      "name": "Mode Offline Teknisi",
+      "short_name": "Teknisi",
+      "description": "Penugasan, daftar periksa, dan catatan lapangan yang tetap terbuka tanpa sinyal.",
+      "url": "/offline/teknisi",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Perintah Kerja",
+      "short_name": "Pekerjaan",
+      "description": "Daftar perintah kerja.",
+      "url": "/pemeliharaan/perintah-kerja",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
 }

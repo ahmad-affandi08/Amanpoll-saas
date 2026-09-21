@@ -6631,18 +6631,6 @@ parameters:
 			path: app/Domain/Sinkronisasi/Http/Requests/SimpanPenandaSinkronisasiRequest.php
 
 		-
-			message: '#^Method App\\Domain\\Sinkronisasi\\Http\\Resources\\AntrianSinkronisasiResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Sinkronisasi/Http/Resources/AntrianSinkronisasiResource.php
-
-		-
-			message: '#^Method App\\Domain\\Sinkronisasi\\Http\\Resources\\AntrianSinkronisasiResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Sinkronisasi/Http/Resources/AntrianSinkronisasiResource.php
-
-		-
 			message: '#^Method App\\Domain\\Sinkronisasi\\Http\\Resources\\PenandaSinkronisasiResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -6662,12 +6650,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Domain\\Sinkronisasi\\Infrastructure\\Persistence\\Models\\AntrianSinkronisasi\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Sinkronisasi/Infrastructure/Persistence/Models/AntrianSinkronisasi.php
-
-		-
-			message: '#^Method App\\Domain\\Sinkronisasi\\Infrastructure\\Persistence\\Models\\AntrianSinkronisasi\:\:perangkatPengguna\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Sinkronisasi/Infrastructure/Persistence/Models/AntrianSinkronisasi.php

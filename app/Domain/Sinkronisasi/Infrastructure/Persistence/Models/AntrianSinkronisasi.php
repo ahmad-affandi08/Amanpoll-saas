@@ -51,6 +51,7 @@ final class AntrianSinkronisasi extends ModelDasar
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PerangkatPengguna, $this> */
     public function perangkatPengguna(): BelongsTo
     {
         return $this->belongsTo(PerangkatPengguna::class, 'PerangkatPenggunaId', 'Id');

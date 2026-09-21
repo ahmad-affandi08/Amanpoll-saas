@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Domain\IntegrasiAudit\Http\Controllers\PanggilanBalikWebController;
 use App\Domain\Kepatuhan\Http\Controllers\IntegrasiEksternalController;
+use App\Domain\Sinkronisasi\Http\Controllers\AntrianSinkronisasiController;
+use App\Domain\Sinkronisasi\Http\Controllers\OfflineTeknisiController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth', 'organisasi'])
@@ -28,4 +30,23 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::put('/panggilan-balik/{panggilanBalikWeb}', [PanggilanBalikWebController::class, 'update'])->name('panggilan-balik.update');
         Route::delete('/panggilan-balik/{panggilanBalikWeb}', [PanggilanBalikWebController::class, 'destroy'])->name('panggilan-balik.destroy');
         Route::get('/panggilan-balik/{panggilanBalikWeb}/pengiriman', [PanggilanBalikWebController::class, 'riwayat'])->name('panggilan-balik.pengiriman');
+    });
+
+/*
+| Jalur PWA offline teknisi (FASE 20). Semua endpoint memakai sesi web yang
+| sama dengan aplikasi, sehingga tidak ada kredensial tambahan yang perlu
+| disimpan di perangkat lapangan.
+*/
+Route::middleware(['web', 'auth', 'organisasi'])
+    ->prefix('offline')
+    ->name('offline.')
+    ->group(function (): void {
+        Route::get('/teknisi', [OfflineTeknisiController::class, 'index'])->name('teknisi');
+        Route::post('/paket', [OfflineTeknisiController::class, 'paket'])->name('paket');
+        Route::get('/ringkasan', [OfflineTeknisiController::class, 'ringkasan'])->name('ringkasan');
+        Route::post('/perangkat/lepas', [OfflineTeknisiController::class, 'lepaskanPerangkat'])->name('perangkat.lepas');
+
+        Route::post('/antrian', [AntrianSinkronisasiController::class, 'dorong'])->name('antrian.dorong');
+        Route::post('/antrian/status', [AntrianSinkronisasiController::class, 'status'])->name('antrian.status');
+        Route::post('/antrian/{antrianSinkronisasi}/konflik', [AntrianSinkronisasiController::class, 'selesaikanKonflik'])->name('antrian.konflik');
     });
