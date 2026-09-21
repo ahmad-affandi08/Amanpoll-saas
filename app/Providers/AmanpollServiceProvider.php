@@ -17,7 +17,13 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Listeners\SinkronkanStatusPersetujuanPerencanaanPengadaan;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenerimaanPembelian;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPenawaran;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -70,6 +76,12 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('Anggaran', Anggaran::class, 'Pengadaan.Kelola');
         $registri->daftarkan('UsulanAset', UsulanAset::class, 'Pengadaan.Kelola');
         $registri->daftarkan('RencanaPengadaan', RencanaPengadaan::class, 'Pengadaan.Kelola');
+        $registri->daftarkan('PermintaanPembelian', PermintaanPembelian::class, 'Pengadaan.Kelola');
+        $registri->daftarkan('PermintaanPenawaran', PermintaanPenawaran::class, 'Pengadaan.Kelola');
+        $registri->daftarkan('PenawaranPenyedia', PenawaranPenyedia::class, 'Pengadaan.Kelola');
+        $registri->daftarkan('PesananPembelian', PesananPembelian::class, 'Pengadaan.Kelola');
+        $registri->daftarkan('PenerimaanPembelian', PenerimaanPembelian::class, 'Pengadaan.Kelola');
+        $registri->daftarkan('TagihanPenyedia', TagihanPenyedia::class, 'Pengadaan.Kelola');
 
         // Mesin Persetujuan (FASE 06) domain-agnostic; SiklusAset menyalin
         // balik hasil keputusan ke status entitasnya sendiri lewat observer.

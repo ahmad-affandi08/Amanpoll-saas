@@ -15,24 +15,10 @@ final class SimpanPesananPembelianRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nomor' => ['sometimes'],
-            'PenyediaId' => ['sometimes'],
-            'PermintaanPembelianId' => ['nullable'],
-            'PenawaranPenyediaId' => ['nullable'],
-            'PosAnggaranId' => ['nullable'],
-            'TanggalPesanan' => ['sometimes'],
-            'TanggalKirimRencana' => ['nullable'],
-            'MataUang' => ['sometimes'],
-            'Subtotal' => ['sometimes'],
-            'Pajak' => ['sometimes'],
-            'Diskon' => ['sometimes'],
-            'Total' => ['sometimes'],
-            'Status' => ['sometimes'],
-            'Catatan' => ['nullable'],
-            'DibuatOleh' => ['nullable'],
+            'TanggalPesanan' => ['required', 'date'],
+            'TanggalKirimRencana' => ['nullable', 'date', 'after_or_equal:TanggalPesanan'],
+            'Catatan' => ['nullable', 'string', 'max:3000'],
         ];
     }
 }

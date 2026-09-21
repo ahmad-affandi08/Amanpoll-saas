@@ -965,65 +965,65 @@ Sisa anggaran dapat direkonsiliasi dari transaksi, bukan angka edit manual (Terp
 
 ## 16.01 PermintaanPembelian
 
-- [ ] Draft.
-- [ ] Detail item.
-- [ ] Total.
-- [ ] Submit.
-- [ ] Approval.
-- [ ] Budget validation.
+- [x] Draft.
+- [x] Detail item.
+- [x] Total.
+- [x] Submit.
+- [x] Approval.
+- [x] Budget validation.
 
 ## 16.02 PermintaanPenawaran
 
-- [ ] Buat dari request.
-- [ ] Pilih penyedia.
-- [ ] Deadline.
-- [ ] Status.
+- [x] Buat dari request.
+- [x] Pilih penyedia.
+- [x] Deadline.
+- [x] Status.
 
 ## 16.03 PenawaranPenyedia
 
-- [ ] Header.
-- [ ] Detail.
-- [ ] Harga.
-- [ ] Pajak/biaya bila schema mendukung.
-- [ ] Lampiran.
-- [ ] Evaluasi.
+- [x] Header.
+- [x] Detail.
+- [x] Harga.
+- [x] Pajak/biaya bila schema mendukung.
+- [x] Lampiran.
+- [x] Evaluasi.
 
 ## 16.04 PesananPembelian
 
-- [ ] Generate dari hasil.
-- [ ] Nomor.
-- [ ] Detail.
-- [ ] Total.
-- [ ] Approval.
-- [ ] Kirim/status.
+- [x] Generate dari hasil.
+- [x] Nomor.
+- [x] Detail.
+- [x] Total.
+- [x] Approval.
+- [x] Kirim/status.
 
 ## 16.05 PenerimaanPembelian
 
-- [ ] Partial receipt.
-- [ ] Full receipt.
-- [ ] Cegah over-receipt.
-- [ ] Kondisi.
-- [ ] Dokumen.
-- [ ] Integrasi register aset untuk item aset.
-- [ ] Integrasi stok untuk item suku cadang.
+- [x] Partial receipt.
+- [x] Full receipt.
+- [x] Cegah over-receipt.
+- [x] Kondisi.
+- [x] Dokumen.
+- [x] Integrasi register aset untuk item aset.
+- [x] Integrasi stok untuk item suku cadang.
 
 ## 16.06 TagihanPenyedia
 
-- [ ] Invoice.
-- [ ] Matching ke PO/receipt.
-- [ ] Status.
-- [ ] Lampiran.
+- [x] Invoice.
+- [x] Matching ke PO/receipt.
+- [x] Status.
+- [x] Lampiran.
 
 ## 16.07 PembayaranPenyedia
 
-- [ ] Payment record.
-- [ ] Partial/full.
-- [ ] Reference.
-- [ ] Audit.
+- [x] Payment record.
+- [x] Partial/full.
+- [x] Reference.
+- [x] Audit.
 
 ### Gate 16
 
-Flow procurement end-to-end lulus test dan tidak menghasilkan mismatch total/quantity.
+Flow procurement end-to-end lulus test dan tidak menghasilkan mismatch total/quantity (Terpenuhi).
 
 ---
 

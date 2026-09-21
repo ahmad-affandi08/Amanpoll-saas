@@ -3,7 +3,12 @@
 declare(strict_types=1);
 
 use App\Domain\PerencanaanPengadaan\Http\Controllers\AnggaranController;
+use App\Domain\PerencanaanPengadaan\Http\Controllers\PenerimaanPembelianController;
+use App\Domain\PerencanaanPengadaan\Http\Controllers\PermintaanPembelianController;
+use App\Domain\PerencanaanPengadaan\Http\Controllers\PermintaanPenawaranController;
+use App\Domain\PerencanaanPengadaan\Http\Controllers\PesananPembelianController;
 use App\Domain\PerencanaanPengadaan\Http\Controllers\RencanaPengadaanController;
+use App\Domain\PerencanaanPengadaan\Http\Controllers\TagihanPenyediaController;
 use App\Domain\PerencanaanPengadaan\Http\Controllers\UsulanAsetController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,4 +44,31 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/rencana-pengadaan/{rencanaPengadaan}/detail', [RencanaPengadaanController::class, 'storeDetail'])->name('rencana.detail.store');
         Route::delete('/rencana-pengadaan/{rencanaPengadaan}/detail/{detailRencanaPengadaan}', [RencanaPengadaanController::class, 'destroyDetail'])->name('rencana.detail.destroy');
         Route::post('/rencana-pengadaan/{rencanaPengadaan}/finalisasi', [RencanaPengadaanController::class, 'finalisasi'])->name('rencana.finalisasi');
+
+        Route::get('/permintaan-pembelian', [PermintaanPembelianController::class, 'index'])->name('permintaan.index');
+        Route::post('/permintaan-pembelian', [PermintaanPembelianController::class, 'store'])->name('permintaan.store');
+        Route::get('/permintaan-pembelian/{permintaanPembelian}', [PermintaanPembelianController::class, 'show'])->name('permintaan.show');
+        Route::post('/permintaan-pembelian/{permintaanPembelian}/detail', [PermintaanPembelianController::class, 'storeDetail'])->name('permintaan.detail.store');
+        Route::delete('/permintaan-pembelian/{permintaanPembelian}/detail/{detailPermintaanPembelian}', [PermintaanPembelianController::class, 'destroyDetail'])->name('permintaan.detail.destroy');
+        Route::post('/permintaan-pembelian/{permintaanPembelian}/submit', [PermintaanPembelianController::class, 'submit'])->name('permintaan.submit');
+
+        Route::get('/permintaan-penawaran', [PermintaanPenawaranController::class, 'index'])->name('rfq.index');
+        Route::post('/permintaan-penawaran', [PermintaanPenawaranController::class, 'store'])->name('rfq.store');
+        Route::get('/permintaan-penawaran/{permintaanPenawaran}', [PermintaanPenawaranController::class, 'show'])->name('rfq.show');
+        Route::post('/permintaan-penawaran/{permintaanPenawaran}/buka', [PermintaanPenawaranController::class, 'buka'])->name('rfq.buka');
+        Route::post('/permintaan-penawaran/{permintaanPenawaran}/penawaran', [PermintaanPenawaranController::class, 'storePenawaran'])->name('rfq.penawaran.store');
+        Route::post('/permintaan-penawaran/{permintaanPenawaran}/penawaran/{penawaranPenyedia}/pilih', [PermintaanPenawaranController::class, 'pilih'])->name('rfq.penawaran.pilih');
+
+        Route::get('/pesanan-pembelian', [PesananPembelianController::class, 'index'])->name('po.index');
+        Route::post('/penawaran/{penawaranPenyedia}/pesanan-pembelian', [PesananPembelianController::class, 'store'])->name('po.store');
+        Route::get('/pesanan-pembelian/{pesananPembelian}', [PesananPembelianController::class, 'show'])->name('po.show');
+        Route::post('/pesanan-pembelian/{pesananPembelian}/ajukan', [PesananPembelianController::class, 'ajukan'])->name('po.ajukan');
+        Route::post('/pesanan-pembelian/{pesananPembelian}/kirim', [PesananPembelianController::class, 'kirim'])->name('po.kirim');
+        Route::post('/pesanan-pembelian/{pesananPembelian}/penerimaan', [PenerimaanPembelianController::class, 'store'])->name('penerimaan.store');
+        Route::post('/pesanan-pembelian/{pesananPembelian}/tagihan', [TagihanPenyediaController::class, 'store'])->name('tagihan.store');
+
+        Route::get('/penerimaan-pembelian', [PenerimaanPembelianController::class, 'index'])->name('penerimaan.index');
+        Route::get('/tagihan-penyedia', [TagihanPenyediaController::class, 'index'])->name('tagihan.index');
+        Route::get('/tagihan-penyedia/{tagihanPenyedia}', [TagihanPenyediaController::class, 'show'])->name('tagihan.show');
+        Route::post('/tagihan-penyedia/{tagihanPenyedia}/pembayaran', [TagihanPenyediaController::class, 'bayar'])->name('tagihan.bayar');
     });

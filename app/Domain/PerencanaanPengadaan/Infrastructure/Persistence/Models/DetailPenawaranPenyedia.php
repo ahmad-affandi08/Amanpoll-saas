@@ -43,16 +43,25 @@ final class DetailPenawaranPenyedia extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<PenawaranPenyedia, $this>
+     */
     public function penawaranPenyedia(): BelongsTo
     {
         return $this->belongsTo(PenawaranPenyedia::class, 'PenawaranPenyediaId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<DetailPermintaanPembelian, $this>
+     */
     public function detailPermintaanPembelian(): BelongsTo
     {
         return $this->belongsTo(DetailPermintaanPembelian::class, 'DetailPermintaanPembelianId', 'Id');

@@ -45,12 +45,19 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\KontakPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\PenilaianPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\PerencanaanPengadaan\Http\Policies\AnggaranPolicy;
+use App\Domain\PerencanaanPengadaan\Http\Policies\PengadaanPolicy;
 use App\Domain\PerencanaanPengadaan\Http\Policies\PosAnggaranPolicy;
 use App\Domain\PerencanaanPengadaan\Http\Policies\RencanaPengadaanPolicy;
 use App\Domain\PerencanaanPengadaan\Http\Policies\UsulanAsetPolicy;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenerimaanPembelian;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPenawaran;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persediaan\Http\Policies\GudangPolicy;
 use App\Domain\Persediaan\Http\Policies\KategoriSukuCadangPolicy;
@@ -171,5 +178,11 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(PosAnggaran::class, PosAnggaranPolicy::class);
         Gate::policy(UsulanAset::class, UsulanAsetPolicy::class);
         Gate::policy(RencanaPengadaan::class, RencanaPengadaanPolicy::class);
+        Gate::policy(PermintaanPembelian::class, PengadaanPolicy::class);
+        Gate::policy(PermintaanPenawaran::class, PengadaanPolicy::class);
+        Gate::policy(PenawaranPenyedia::class, PengadaanPolicy::class);
+        Gate::policy(PesananPembelian::class, PengadaanPolicy::class);
+        Gate::policy(PenerimaanPembelian::class, PengadaanPolicy::class);
+        Gate::policy(TagihanPenyedia::class, PengadaanPolicy::class);
     }
 }

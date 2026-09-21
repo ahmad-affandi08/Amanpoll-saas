@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanPermintaanPenawaranRequest extends FormRequest
 {
@@ -15,16 +17,14 @@ final class SimpanPermintaanPenawaranRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->wajibId();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nomor' => ['sometimes'],
-            'PermintaanPembelianId' => ['nullable'],
-            'TanggalDibuka' => ['sometimes'],
-            'BatasPenawaran' => ['nullable'],
-            'Status' => ['sometimes'],
-            'Catatan' => ['nullable'],
-            'DibuatOleh' => ['nullable'],
+            'PermintaanPembelianId' => ['required', 'string', Rule::exists('PermintaanPembelian', 'Id')->where('OrganisasiId', $organisasiId)],
+            'BatasPenawaran' => ['required', 'date', 'after:now'],
+            'Catatan' => ['nullable', 'string', 'max:3000'],
+            'PenyediaIds' => ['required', 'array', 'min:1'],
+            'PenyediaIds.*' => ['required', 'string', 'distinct', Rule::exists('Penyedia', 'Id')->where('OrganisasiId', $organisasiId)],
         ];
     }
 }

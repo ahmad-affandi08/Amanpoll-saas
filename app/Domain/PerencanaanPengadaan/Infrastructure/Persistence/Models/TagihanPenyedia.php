@@ -9,6 +9,7 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class TagihanPenyedia extends ModelDasar
 {
@@ -17,6 +18,12 @@ final class TagihanPenyedia extends ModelDasar
     protected $table = 'TagihanPenyedia';
 
     public $timestamps = false;
+
+    public const STATUS_BELUM_DIBAYAR = 'BelumDibayar';
+
+    public const STATUS_DIBAYAR_SEBAGIAN = 'DibayarSebagian';
+
+    public const STATUS_DIBAYAR = 'Dibayar';
 
     protected $fillable = [
         'OrganisasiId',
@@ -45,18 +52,35 @@ final class TagihanPenyedia extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Penyedia, $this>
+     */
     public function penyedia(): BelongsTo
     {
         return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<PesananPembelian, $this>
+     */
     public function pesananPembelian(): BelongsTo
     {
         return $this->belongsTo(PesananPembelian::class, 'PesananPembelianId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PembayaranPenyedia, $this>
+     */
+    public function pembayaran(): HasMany
+    {
+        return $this->hasMany(PembayaranPenyedia::class, 'TagihanPenyediaId', 'Id');
     }
 }

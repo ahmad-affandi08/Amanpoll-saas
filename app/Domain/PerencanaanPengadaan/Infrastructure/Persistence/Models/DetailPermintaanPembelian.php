@@ -41,21 +41,33 @@ final class DetailPermintaanPembelian extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<PermintaanPembelian, $this>
+     */
     public function permintaanPembelian(): BelongsTo
     {
         return $this->belongsTo(PermintaanPembelian::class, 'PermintaanPembelianId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Aset, $this>
+     */
     public function asetReferensi(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetReferensiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<SukuCadang, $this>
+     */
     public function sukuCadang(): BelongsTo
     {
         return $this->belongsTo(SukuCadang::class, 'SukuCadangId', 'Id');

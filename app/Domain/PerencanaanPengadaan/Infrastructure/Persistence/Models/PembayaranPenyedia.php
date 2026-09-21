@@ -38,16 +38,25 @@ final class PembayaranPenyedia extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<TagihanPenyedia, $this>
+     */
     public function tagihanPenyedia(): BelongsTo
     {
         return $this->belongsTo(TagihanPenyedia::class, 'TagihanPenyediaId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Pengguna, $this>
+     */
     public function dibuatOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DibuatOleh', 'Id');

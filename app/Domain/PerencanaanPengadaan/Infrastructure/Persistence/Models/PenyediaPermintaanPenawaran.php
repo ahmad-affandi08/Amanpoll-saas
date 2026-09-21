@@ -35,16 +35,25 @@ final class PenyediaPermintaanPenawaran extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<PermintaanPenawaran, $this>
+     */
     public function permintaanPenawaran(): BelongsTo
     {
         return $this->belongsTo(PermintaanPenawaran::class, 'PermintaanPenawaranId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Penyedia, $this>
+     */
     public function penyedia(): BelongsTo
     {
         return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');

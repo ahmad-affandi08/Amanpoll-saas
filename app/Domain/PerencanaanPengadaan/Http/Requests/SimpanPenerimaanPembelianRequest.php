@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanPenerimaanPembelianRequest extends FormRequest
 {
@@ -15,17 +17,22 @@ final class SimpanPenerimaanPembelianRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->wajibId();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nomor' => ['sometimes'],
-            'PesananPembelianId' => ['sometimes'],
-            'GudangId' => ['nullable'],
-            'TanggalTerima' => ['sometimes'],
-            'NomorSuratJalan' => ['nullable'],
-            'DiterimaOleh' => ['nullable'],
-            'Status' => ['sometimes'],
-            'Catatan' => ['nullable'],
+            'Nomor' => ['nullable', 'string', 'max:100'],
+            'GudangId' => ['nullable', 'string', Rule::exists('Gudang', 'Id')->where('OrganisasiId', $organisasiId)],
+            'TanggalTerima' => ['required', 'date'],
+            'NomorSuratJalan' => ['nullable', 'string', 'max:160'],
+            'Catatan' => ['nullable', 'string', 'max:3000'],
+            'Detail' => ['required', 'array', 'min:1'],
+            'Detail.*.DetailPesananPembelianId' => ['required', 'string', 'distinct', Rule::exists('DetailPesananPembelian', 'Id')->where('OrganisasiId', $organisasiId)],
+            'Detail.*.JumlahDiterima' => ['required', 'numeric', 'decimal:0,4', 'gt:0'],
+            'Detail.*.JumlahDitolak' => ['nullable', 'numeric', 'decimal:0,4', 'min:0'],
+            'Detail.*.Kondisi' => ['required', Rule::in(['Baik', 'RusakRingan', 'Rusak'])],
+            'Detail.*.NomorSeri' => ['nullable', 'array'],
+            'Detail.*.NomorSeri.*' => ['nullable', 'string', 'max:160', 'distinct'],
+            'Detail.*.Catatan' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

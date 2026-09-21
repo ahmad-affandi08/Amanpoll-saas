@@ -1,5 +1,4 @@
-import axios from 'axios';
-
-export const apiPenerimaanPembelian = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const rutePenerimaanPembelian = {
+  index: '/perencanaan-pengadaan/penerimaan-pembelian',
+  simpan: (pesananId: string) => `/perencanaan-pengadaan/pesanan-pembelian/${pesananId}/penerimaan`,
+};

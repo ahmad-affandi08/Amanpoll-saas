@@ -15,19 +15,12 @@ final class SimpanTagihanPenyediaRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PenyediaId' => ['sometimes'],
-            'PesananPembelianId' => ['nullable'],
-            'NomorTagihan' => ['sometimes'],
-            'TanggalTagihan' => ['sometimes'],
-            'JatuhTempo' => ['nullable'],
-            'Subtotal' => ['sometimes'],
-            'Pajak' => ['sometimes'],
-            'Total' => ['sometimes'],
-            'Sisa' => ['sometimes'],
-            'Status' => ['sometimes'],
+            'NomorTagihan' => ['required', 'string', 'max:100'],
+            'TanggalTagihan' => ['required', 'date'],
+            'JatuhTempo' => ['nullable', 'date', 'after_or_equal:TanggalTagihan'],
+            'Subtotal' => ['required', 'numeric', 'decimal:0,2', 'gt:0'],
+            'Pajak' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
         ];
     }
 }

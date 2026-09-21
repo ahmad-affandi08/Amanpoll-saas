@@ -4381,54 +4381,6 @@ parameters:
 			path: app/Domain/PerencanaanPengadaan/Http/Resources/AnggaranResource.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPenawaranPenyediaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPenawaranPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPenawaranPenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPenawaranPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPenerimaanPembelianResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPenerimaanPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPenerimaanPembelianResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPenerimaanPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPermintaanPembelianResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPermintaanPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPermintaanPembelianResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPermintaanPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPesananPembelianResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPesananPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailPesananPembelianResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailPesananPembelianResource.php
-
-		-
 			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\DetailRencanaPengadaanResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -4441,42 +4393,6 @@ parameters:
 			path: app/Domain/PerencanaanPengadaan/Http/Resources/DetailRencanaPengadaanResource.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PembayaranPenyediaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PembayaranPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PembayaranPenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PembayaranPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PenawaranPenyediaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PenawaranPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PenawaranPenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PenawaranPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PenerimaanPembelianResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PenerimaanPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PenerimaanPembelianResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PenerimaanPembelianResource.php
-
-		-
 			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PenilaianUsulanAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -4487,54 +4403,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Http/Resources/PenilaianUsulanAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PenyediaPermintaanPenawaranResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PenyediaPermintaanPenawaranResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PenyediaPermintaanPenawaranResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PenyediaPermintaanPenawaranResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PermintaanPembelianResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PermintaanPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PermintaanPembelianResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PermintaanPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PermintaanPenawaranResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PermintaanPenawaranResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PermintaanPenawaranResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PermintaanPenawaranResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PesananPembelianResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PesananPembelianResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PesananPembelianResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/PesananPembelianResource.php
 
 		-
 			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\PosAnggaranResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -4559,18 +4427,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Http/Resources/RencanaPengadaanResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\TagihanPenyediaResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/TagihanPenyediaResource.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\TagihanPenyediaResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Http/Resources/TagihanPenyediaResource.php
 
 		-
 			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Http\\Resources\\TransaksiAnggaranResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -4621,50 +4477,8 @@ parameters:
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenawaranPenyedia.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPenawaranPenyedia\:\:detailPermintaanPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenawaranPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPenawaranPenyedia\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenawaranPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPenawaranPenyedia\:\:penawaranPenyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenawaranPenyedia.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPenerimaanPembelian\:\:detailPesananPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPenerimaanPembelian\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPenerimaanPembelian\:\:penerimaanPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPenerimaanPembelian\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPenerimaanPembelian.php
 
@@ -4675,50 +4489,8 @@ parameters:
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPermintaanPembelian.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPermintaanPembelian\:\:asetReferensi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPermintaanPembelian\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPermintaanPembelian\:\:permintaanPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPermintaanPembelian\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPermintaanPembelian.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPesananPembelian\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPesananPembelian\:\:pesananPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\DetailPesananPembelian\:\:sukuCadang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/DetailPesananPembelian.php
 
@@ -4759,74 +4531,14 @@ parameters:
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PembayaranPenyedia.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PembayaranPenyedia\:\:dibuatOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PembayaranPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PembayaranPenyedia\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PembayaranPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PembayaranPenyedia\:\:tagihanPenyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PembayaranPenyedia.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenawaranPenyedia.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenawaranPenyedia\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenawaranPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenawaranPenyedia\:\:penyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenawaranPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenawaranPenyedia\:\:permintaanPenawaran\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenawaranPenyedia.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenerimaanPembelian\:\:diterimaOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenerimaanPembelian\:\:gudang\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenerimaanPembelian\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenerimaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenerimaanPembelian\:\:pesananPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenerimaanPembelian.php
 
@@ -4861,56 +4573,8 @@ parameters:
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenyediaPermintaanPenawaran.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenyediaPermintaanPenawaran\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenyediaPermintaanPenawaran.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenyediaPermintaanPenawaran\:\:penyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenyediaPermintaanPenawaran.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PenyediaPermintaanPenawaran\:\:permintaanPenawaran\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PenyediaPermintaanPenawaran.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPembelian\:\:dimintaOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPembelian\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPembelian\:\:posAnggaran\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPembelian\:\:rencanaPengadaan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPembelian\:\:unitOrganisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPembelian.php
 
@@ -4921,62 +4585,8 @@ parameters:
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPenawaran.php
 
 		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPenawaran\:\:dibuatOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPenawaran.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPenawaran\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPenawaran.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PermintaanPenawaran\:\:permintaanPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PermintaanPenawaran.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PesananPembelian\:\:dibuatOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PesananPembelian\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PesananPembelian\:\:penawaranPenyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PesananPembelian\:\:penyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PesananPembelian\:\:permintaanPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PesananPembelian.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\PesananPembelian\:\:posAnggaran\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/PesananPembelian.php
 
@@ -5031,24 +4641,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/TagihanPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\TagihanPenyedia\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/TagihanPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\TagihanPenyedia\:\:penyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/TagihanPenyedia.php
-
-		-
-			message: '#^Method App\\Domain\\PerencanaanPengadaan\\Infrastructure\\Persistence\\Models\\TagihanPenyedia\:\:pesananPembelian\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/PerencanaanPengadaan/Infrastructure/Persistence/Models/TagihanPenyedia.php
 

@@ -15,16 +15,12 @@ final class SimpanPembayaranPenyediaRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'TagihanPenyediaId' => ['sometimes'],
-            'NomorPembayaran' => ['sometimes'],
-            'TanggalBayar' => ['sometimes'],
-            'Jumlah' => ['sometimes'],
-            'Metode' => ['nullable'],
-            'Referensi' => ['nullable'],
-            'DibuatOleh' => ['nullable'],
+            'NomorPembayaran' => ['required', 'string', 'max:100'],
+            'TanggalBayar' => ['required', 'date'],
+            'Jumlah' => ['required', 'numeric', 'decimal:0,2', 'gt:0'],
+            'Metode' => ['required', 'string', 'max:60'],
+            'Referensi' => ['nullable', 'string', 'max:160'],
         ];
     }
 }
