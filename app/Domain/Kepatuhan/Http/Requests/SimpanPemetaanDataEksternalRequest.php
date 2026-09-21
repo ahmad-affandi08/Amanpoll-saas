@@ -13,16 +13,16 @@ final class SimpanPemetaanDataEksternalRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'IntegrasiEksternalId' => ['sometimes'],
-            'JenisEntitas' => ['sometimes'],
-            'EntitasId' => ['sometimes'],
-            'KodeEksternal' => ['sometimes'],
-            'DataTambahan' => ['nullable'],
+            'JenisEntitas' => ['required', 'string', 'max:80'],
+            'EntitasId' => ['required', 'string', 'size:26'],
+            'KodeEksternal' => ['required', 'string', 'max:255'],
+            'DataTambahan' => ['nullable', 'array'],
         ];
     }
 }

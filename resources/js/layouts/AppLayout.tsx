@@ -245,6 +245,7 @@ const navPengaturan: GrupNav = {
         { label: 'Unit Organisasi', href: '/platform/unit-organisasi', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Lokasi', href: '/platform/lokasi', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Konfigurasi Sistem', href: '/platform/konfigurasi', kodeIzin: 'Pengaturan.Kelola' },
+        { label: 'Integrasi', href: '/integrasi', kodeIzin: 'Integrasi.Kelola' },
         { label: 'Nomor Dokumen', href: '/platform/nomor-dokumen', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Hari Libur', href: '/platform/hari-libur', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Tag Kolaborasi', href: '/kolaborasi/tag', kodeIzin: 'Pengaturan.Kelola' },

@@ -1106,61 +1106,61 @@ Tidak ada standard regulator spesifik yang di-hardcode sebagai core Amanpoll (Te
 
 ## 19.01 IntegrasiEksternal
 
-- [ ] CRUD konfigurasi.
-- [ ] Credential encryption.
-- [ ] Test connection.
-- [ ] Status.
-- [ ] Audit.
+- [x] CRUD konfigurasi.
+- [x] Credential encryption.
+- [x] Test connection.
+- [x] Status.
+- [x] Audit.
 
 ## 19.02 PemetaanDataEksternal
 
-- [ ] Internal ↔ external mapping.
-- [ ] Conflict state.
-- [ ] Manual resolve.
+- [x] Internal ↔ external mapping.
+- [x] Conflict state.
+- [x] Manual resolve.
 
 ## 19.03 SinkronisasiEksternal
 
-- [ ] Pull/push abstraction.
-- [ ] Queue.
-- [ ] Status.
-- [ ] Retry.
-- [ ] Error details aman.
+- [x] Pull/push abstraction.
+- [x] Queue.
+- [x] Status.
+- [x] Retry.
+- [x] Error details aman.
 
 ## 19.04 PanggilanBalikWeb
 
-- [ ] Endpoint config.
-- [ ] Secret.
-- [ ] Event subscription.
-- [ ] Disable.
+- [x] Endpoint config.
+- [x] Secret.
+- [x] Event subscription.
+- [x] Disable.
 
 ## 19.05 PengirimanPanggilanBalikWeb
 
-- [ ] Queue.
-- [ ] Signature.
-- [ ] Retry/backoff.
-- [ ] Delivery log.
-- [ ] Final failed state.
+- [x] Queue.
+- [x] Signature.
+- [x] Retry/backoff.
+- [x] Delivery log.
+- [x] Final failed state.
 
 ## 19.06 KotakKeluarPeristiwa
 
-- [ ] Write dalam transaction bisnis.
-- [ ] Worker publish.
-- [ ] Mark processed.
-- [ ] Retry.
-- [ ] Lock concurrency.
+- [x] Write dalam transaction bisnis.
+- [x] Worker publish.
+- [x] Mark processed.
+- [x] Retry.
+- [x] Lock concurrency.
 
 ## 19.07 KunciIdempotensi
 
-- [ ] Middleware/service.
-- [ ] Scope organisasi + endpoint + key.
-- [ ] Request fingerprint.
-- [ ] Cached response bila aman.
-- [ ] Conflict bila key dipakai payload berbeda.
-- [ ] TTL/cleanup.
+- [x] Middleware/service.
+- [x] Scope organisasi + endpoint + key.
+- [x] Request fingerprint.
+- [x] Cached response bila aman.
+- [x] Conflict bila key dipakai payload berbeda.
+- [x] TTL/cleanup.
 
 ### Gate 19
 
-Satu contoh endpoint kritis dan satu event eksternal harus terbukti idempotent.
+Satu contoh endpoint kritis dan satu event eksternal harus terbukti idempotent. (Terpenuhi)
 
 ---
 

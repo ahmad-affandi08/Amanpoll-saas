@@ -6,6 +6,7 @@ namespace App\Domain\Pemeliharaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Core\Peristiwa\LayananKotakKeluar;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use App\Domain\Pemeliharaan\Application\Services\LayananKalkulasiSla;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
@@ -28,6 +29,7 @@ final class BuatKeluhan
         private readonly LayananKalkulasiSla $kalkulasiSla,
         private readonly LayananNotifikasi $notifikasi,
         private readonly LayananAudit $audit,
+        private readonly LayananKotakKeluar $kotakKeluar,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -66,7 +68,7 @@ final class BuatKeluhan
                 'TingkatLayananId' => $kategori->TingkatLayananId,
                 'Prioritas' => $prioritas,
                 'Status' => StatusKeluhan::Baru->value,
-                'Sumber' => 'Web',
+                'Sumber' => $data['Sumber'] ?? 'Web',
                 'PelaporId' => $pelaporId,
                 'DilaporkanPada' => $dilaporkanPada,
                 'BatasResponsPada' => $batas['respons'],
@@ -83,6 +85,17 @@ final class BuatKeluhan
             ]);
 
             $this->audit->catat('Buat', 'Keluhan', $keluhan->Id, null, $keluhan->toArray());
+
+            // Peristiwa ditulis di transaksi yang sama supaya integrasi eksternal
+            // tidak pernah menerima keluhan yang ternyata gagal disimpan (19.06).
+            $this->kotakKeluar->catat('Keluhan.Dibuat', [
+                'KeluhanId' => $keluhan->Id,
+                'Nomor' => $keluhan->Nomor,
+                'Judul' => $keluhan->Judul,
+                'Prioritas' => $keluhan->Prioritas,
+                'Status' => $keluhan->Status,
+                'Sumber' => $keluhan->Sumber,
+            ], 'Keluhan', $keluhan->Id);
 
             return $keluhan;
         });

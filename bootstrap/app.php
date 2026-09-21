@@ -3,6 +3,7 @@
 use App\Http\Middleware\AutentikasiKunciApi;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PastikanCakupanKunciApi;
+use App\Http\Middleware\PastikanIdempoten;
 use App\Http\Middleware\PastikanMemilikiIzin;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
 use App\Http\Middleware\TetapkanKorelasiId;
@@ -31,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'izin' => PastikanMemilikiIzin::class,
             'kunci.api' => AutentikasiKunciApi::class,
             'cakupan.kunci' => PastikanCakupanKunciApi::class,
+            'idempoten' => PastikanIdempoten::class,
         ]);
 
         // Konteks organisasi wajib ditetapkan sebelum route model binding di-resolve,

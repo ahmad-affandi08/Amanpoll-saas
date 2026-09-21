@@ -12,7 +12,10 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
+use App\Domain\Kepatuhan\Application\Services\RegistriAdapterSinkronisasi;
+use App\Domain\Kepatuhan\Domain\Contracts\AdapterSinkronisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
+use App\Domain\Kepatuhan\Infrastructure\Services\AdapterSinkronisasiRest;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
@@ -49,6 +52,11 @@ final class AmanpollServiceProvider extends ServiceProvider
             TransaksiDatabase::class,
             TransaksiDatabaseLaravel::class,
         );
+
+        // Jenis integrasi yang butuh protokol sendiri mendaftarkan adapternya
+        // ke registri ini; sisanya memakai adapter REST bawaan.
+        $this->app->bind(AdapterSinkronisasi::class, AdapterSinkronisasiRest::class);
+        $this->app->singleton(RegistriAdapterSinkronisasi::class);
     }
 
     public function boot(): void

@@ -535,12 +535,6 @@ parameters:
 			path: app/Domain/IntegrasiAudit/Http/Requests/SimpanKunciIdempotensiRequest.php
 
 		-
-			message: '#^Method App\\Domain\\IntegrasiAudit\\Http\\Requests\\SimpanPanggilanBalikWebRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/IntegrasiAudit/Http/Requests/SimpanPanggilanBalikWebRequest.php
-
-		-
 			message: '#^Method App\\Domain\\IntegrasiAudit\\Http\\Requests\\SimpanPengirimanPanggilanBalikWebRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1217,18 +1211,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Kepatuhan/Domain/Repositories/StandarKepatuhanRepository.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanIntegrasiEksternalRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Requests/SimpanIntegrasiEksternalRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanPemetaanDataEksternalRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Requests/SimpanPemetaanDataEksternalRequest.php
 
 		-
 			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanSinkronisasiEksternalRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'

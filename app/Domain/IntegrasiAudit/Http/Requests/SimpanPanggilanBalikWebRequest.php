@@ -13,16 +13,19 @@ final class SimpanPanggilanBalikWebRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Url' => ['sometimes'],
-            'Rahasia' => ['nullable'],
-            'Peristiwa' => ['sometimes'],
-            'Aktif' => ['sometimes'],
+            'Nama' => ['required', 'string', 'max:160'],
+            'Url' => ['required', 'url', 'max:2000'],
+            // Rahasia wajib saat membuat; saat mengubah, kosong berarti tetap memakai yang lama.
+            'Rahasia' => [$this->isMethod('POST') ? 'required' : 'nullable', 'string', 'min:16', 'max:200'],
+            'Peristiwa' => ['required', 'array', 'min:1'],
+            'Peristiwa.*' => ['required', 'string', 'max:120'],
+            'Aktif' => ['required', 'boolean'],
         ];
     }
 }

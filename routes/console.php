@@ -55,3 +55,15 @@ Schedule::command('kepatuhan:kirim-peringatan-kedaluwarsa')
     ->dailyAt('07:15')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
     ->withoutOverlapping();
+
+Schedule::command('outbox:proses')
+    ->everyMinute()
+    ->withoutOverlapping(2);
+
+Schedule::command('panggilan-balik:kirim-ulang')
+    ->everyFiveMinutes()
+    ->withoutOverlapping(5);
+
+Schedule::command('idempotensi:bersihkan')
+    ->dailyAt('03:30')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));
