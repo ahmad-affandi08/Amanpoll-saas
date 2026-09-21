@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
+import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 
 interface Props {
   pelaksanaan: PelaksanaanKalibrasi;
@@ -155,15 +156,15 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
 
   const simpanTitikUkurKeServer = () => {
     router.put(
-      `/kalibrasi/pelaksanaan/${pelaksanaan.Id}/hasil-titik-ukur`,
+      ruteKalibrasi.pelaksanaanHasilTitikUkur(pelaksanaan.Id),
       { hasil: titikRows },
-      { preserveScroll: true }
+      { preserveScroll: true },
     );
   };
 
   const submitFinalisasi = (e: FormEvent) => {
     e.preventDefault();
-    formFinalisasi.post(`/kalibrasi/pelaksanaan/${pelaksanaan.Id}/finalisasi`, {
+    formFinalisasi.post(ruteKalibrasi.pelaksanaanFinalisasi(pelaksanaan.Id), {
       onSuccess: () => {
         setBukaModalFinalisasi(false);
       },
@@ -181,7 +182,7 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <Button asChild variant="outline" size="icon" className="size-8">
-              <Link href="/kalibrasi/pelaksanaan">
+              <Link href={ruteKalibrasi.pelaksanaan}>
                 <ArrowLeft className="size-4" />
               </Link>
             </Button>
@@ -201,7 +202,8 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
                 )}
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Aset: <span className="font-semibold text-foreground">{pelaksanaan.aset?.Nama}</span> (<span className="font-mono">{pelaksanaan.aset?.KodeAset}</span>)
+                Aset: <span className="font-semibold text-foreground">{pelaksanaan.aset?.Nama}</span> (
+                <span className="font-mono">{pelaksanaan.aset?.KodeAset}</span>)
                 {pelaksanaan.rencanaKalibrasi && ` • Terhubung ke Rencana Kalibrasi`}
               </p>
             </div>
@@ -209,10 +211,7 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
 
           <div className="flex items-center gap-2">
             {!sudahVerifikasi && (
-              <Button
-                onClick={() => setBukaModalFinalisasi(true)}
-                size="sm"
-              >
+              <Button onClick={() => setBukaModalFinalisasi(true)} size="sm">
                 <FileBadge className="mr-1.5 size-4" />
                 Finalisasi & Sahkan Sertifikat
               </Button>
@@ -226,12 +225,17 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
             <FileBadge className="size-5 text-sukses-600 mt-0.5 shrink-0" />
             <div className="space-y-1 text-xs">
               <div className="font-semibold text-foreground">
-                Sertifikat Kalibrasi Resmi Terotorisasi: <span className="font-mono">{pelaksanaan.NomorSertifikat}</span>
+                Sertifikat Kalibrasi Resmi Terotorisasi:{' '}
+                <span className="font-mono">{pelaksanaan.NomorSertifikat}</span>
               </div>
               <p className="text-grafit-700">
-                Diverifikasi oleh <span className="font-medium">{pelaksanaan.diverifikasiOleh?.Nama ?? 'Petugas Berwenang'}</span> pada{' '}
-                {pelaksanaan.DiverifikasiPada}. Berlaku sampai dengan{' '}
-                <span className="font-bold font-mono">{pelaksanaan.TanggalBerlakuSampai ?? '—'}</span>. Siklus kalibrasi berikutnya pada instrumen telah otomatis diperbarui.
+                Diverifikasi oleh{' '}
+                <span className="font-medium">
+                  {pelaksanaan.diverifikasiOleh?.Nama ?? 'Petugas Berwenang'}
+                </span>{' '}
+                pada {pelaksanaan.DiverifikasiPada}. Berlaku sampai dengan{' '}
+                <span className="font-bold font-mono">{pelaksanaan.TanggalBerlakuSampai ?? '—'}</span>. Siklus
+                kalibrasi berikutnya pada instrumen telah otomatis diperbarui.
               </p>
             </div>
           </div>
@@ -254,7 +258,9 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Berlaku Sampai:</span>
                 <span className="font-semibold font-mono text-foreground">
-                  {pelaksanaan.TanggalBerlakuSampai || <span className="text-muted-foreground italic">Belum diatur</span>}
+                  {pelaksanaan.TanggalBerlakuSampai || (
+                    <span className="text-muted-foreground italic">Belum diatur</span>
+                  )}
                 </span>
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
@@ -264,7 +270,9 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
               <div className="flex justify-between py-1">
                 <span className="text-muted-foreground">Nomor Sertifikat:</span>
                 <span className="font-mono font-bold text-foreground">
-                  {pelaksanaan.NomorSertifikat || <span className="text-muted-foreground font-normal italic">Belum terbit</span>}
+                  {pelaksanaan.NomorSertifikat || (
+                    <span className="text-muted-foreground font-normal italic">Belum terbit</span>
+                  )}
                 </span>
               </div>
             </CardContent>
@@ -285,19 +293,21 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Penyedia / Mitra:</span>
-                <span className="font-medium text-foreground">{pelaksanaan.penyedia?.Nama ?? 'Internal'}</span>
+                <span className="font-medium text-foreground">
+                  {pelaksanaan.penyedia?.Nama ?? 'Internal'}
+                </span>
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Diverifikasi Oleh:</span>
                 <span className="font-medium text-foreground">
-                  {pelaksanaan.diverifikasiOleh?.Nama ?? <span className="text-muted-foreground italic">Menunggu Finalisasi</span>}
+                  {pelaksanaan.diverifikasiOleh?.Nama ?? (
+                    <span className="text-muted-foreground italic">Menunggu Finalisasi</span>
+                  )}
                 </span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-muted-foreground">Waktu Verifikasi:</span>
-                <span className="text-muted-foreground font-mono">
-                  {pelaksanaan.DiverifikasiPada ?? '—'}
-                </span>
+                <span className="text-muted-foreground font-mono">{pelaksanaan.DiverifikasiPada ?? '—'}</span>
               </div>
             </CardContent>
           </Card>
@@ -346,20 +356,11 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
             <div className="flex items-center gap-2">
               {!sudahVerifikasi && (
                 <>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={tambahBarisBaru}
-                  >
+                  <Button type="button" variant="outline" size="sm" onClick={tambahBarisBaru}>
                     <Plus className="mr-1 size-3.5" />
                     Tambah Titik
                   </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={simpanTitikUkurKeServer}
-                  >
+                  <Button type="button" size="sm" onClick={simpanTitikUkurKeServer}>
                     <Save className="mr-1 size-3.5" />
                     Simpan Titik Ukur
                   </Button>
@@ -466,7 +467,9 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
 
                           <td className="px-3 py-2">
                             {sudahVerifikasi ? (
-                              <span className="font-mono font-bold text-foreground">{row.NilaiTerukur || '—'}</span>
+                              <span className="font-mono font-bold text-foreground">
+                                {row.NilaiTerukur || '—'}
+                              </span>
                             ) : (
                               <Input
                                 type="number"
@@ -483,7 +486,9 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
 
                           <td className="px-3 py-2 font-mono text-foreground">
                             {row.Koreksi !== '' ? (
-                              <span className={Number(row.Koreksi) !== 0 ? 'text-teknisi-700 font-semibold' : ''}>
+                              <span
+                                className={Number(row.Koreksi) !== 0 ? 'text-teknisi-700 font-semibold' : ''}
+                              >
                                 {Number(row.Koreksi) > 0 ? `+${row.Koreksi}` : row.Koreksi}
                               </span>
                             ) : (
@@ -505,17 +510,26 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
 
                           <td className="px-3 py-2 text-center whitespace-nowrap">
                             {isLolos && (
-                              <Badge variant="outline" className="bg-sukses-50 text-sukses-600 border-sukses-200 text-[10px] py-0 px-2 gap-1">
+                              <Badge
+                                variant="outline"
+                                className="bg-sukses-50 text-sukses-600 border-sukses-200 text-[10px] py-0 px-2 gap-1"
+                              >
                                 <Check className="size-3" /> Lolos
                               </Badge>
                             )}
                             {isGagal && (
-                              <Badge variant="outline" className="bg-rose-50 text-bahaya-600 border-rose-200 text-[10px] py-0 px-2 gap-1">
+                              <Badge
+                                variant="outline"
+                                className="bg-rose-50 text-bahaya-600 border-rose-200 text-[10px] py-0 px-2 gap-1"
+                              >
                                 <AlertTriangle className="size-3" /> Gagal
                               </Badge>
                             )}
                             {!isLolos && !isGagal && (
-                              <Badge variant="outline" className="bg-permukaan-100 text-muted-foreground border-garis-300 text-[10px] py-0 px-2">
+                              <Badge
+                                variant="outline"
+                                className="bg-permukaan-100 text-muted-foreground border-garis-300 text-[10px] py-0 px-2"
+                              >
                                 Belum Diuji
                               </Badge>
                             )}
@@ -559,7 +573,9 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
               <div className="p-3 bg-amber-50 border-t border-safety-500/30 text-xs text-safety-600 flex items-center gap-2">
                 <AlertTriangle className="size-4 shrink-0 text-safety-600" />
                 <span>
-                  Perhatian: Terdapat nilai titik ukur di luar batas toleransi yang diizinkan. Pertimbangkan untuk memberi status <strong>Gagal</strong> atau <strong>Lolos dengan Catatan</strong> saat finalisasi.
+                  Perhatian: Terdapat nilai titik ukur di luar batas toleransi yang diizinkan. Pertimbangkan
+                  untuk memberi status <strong>Gagal</strong> atau <strong>Lolos dengan Catatan</strong> saat
+                  finalisasi.
                 </span>
               </div>
             )}
@@ -576,7 +592,8 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
               Finalisasi Kalibrasi & Otorisasi Sertifikat
             </DialogTitle>
             <DialogDescription>
-              Pengesahan hasil pengujian. Jika kalibrasi lolos dan terhubung ke rencana kalibrasi, siklus tanggal kalibrasi berikutnya akan otomatis dimajukan.
+              Pengesahan hasil pengujian. Jika kalibrasi lolos dan terhubung ke rencana kalibrasi, siklus
+              tanggal kalibrasi berikutnya akan otomatis dimajukan.
             </DialogDescription>
           </DialogHeader>
 
@@ -697,17 +714,10 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
             </div>
 
             <DialogFooter className="pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setBukaModalFinalisasi(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setBukaModalFinalisasi(false)}>
                 Batal
               </Button>
-              <Button
-                type="submit"
-                disabled={formFinalisasi.processing}
-              >
+              <Button type="submit" disabled={formFinalisasi.processing}>
                 {formFinalisasi.processing ? 'Menyahkan...' : 'Sahkan Sertifikat'}
               </Button>
             </DialogFooter>

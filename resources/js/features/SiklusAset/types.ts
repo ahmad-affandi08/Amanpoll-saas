@@ -1,4 +1,5 @@
-export type StatusPermintaanMutasiAset = 'Draft' | 'Menunggu' | 'Disetujui' | 'Ditolak' | 'Dibatalkan' | 'Selesai';
+export type StatusPermintaanMutasiAset =
+  'Draft' | 'Menunggu' | 'Disetujui' | 'Ditolak' | 'Dibatalkan' | 'Selesai';
 export type JenisMutasiAset = 'AntarLokasi' | 'AntarUnit' | 'Peminjaman' | 'Pengembalian';
 export type StatusDetailMutasiAset = 'Menunggu' | 'Selesai' | 'Dibatalkan';
 
@@ -66,7 +67,8 @@ export interface SerahTerimaAset {
   DibuatPada: string;
 }
 
-export type StatusPengajuanPenghapusanAset = 'Draft' | 'Menunggu' | 'Disetujui' | 'Ditolak' | 'Dibatalkan' | 'Selesai';
+export type StatusPengajuanPenghapusanAset =
+  'Draft' | 'Menunggu' | 'Disetujui' | 'Ditolak' | 'Dibatalkan' | 'Selesai';
 export type MetodePenghapusanAset = 'Dijual' | 'Dimusnahkan' | 'Hibah' | 'Hilang' | 'Lainnya';
 export type StatusDetailPenghapusanAset = 'Menunggu' | 'Selesai' | 'Dibatalkan';
 

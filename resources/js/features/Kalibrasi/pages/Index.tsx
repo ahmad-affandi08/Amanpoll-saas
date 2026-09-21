@@ -6,14 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/shared/EmptyState';
-import {
-  BellRing,
-  Search,
-  ArrowRight,
-  Calendar,
-} from 'lucide-react';
+import { BellRing, Search, ArrowRight, Calendar } from 'lucide-react';
 import type { PelaksanaanKalibrasi, RencanaKalibrasi, StatistikKepatuhan } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
+import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 
 interface Props {
   statistik: StatistikKepatuhan;
@@ -21,11 +17,7 @@ interface Props {
   pelaksanaanTerbaru: PelaksanaanKalibrasi[];
 }
 
-export default function KalibrasiDashboard({
-  statistik,
-  rencanaKalibrasi,
-  pelaksanaanTerbaru,
-}: Props) {
+export default function KalibrasiDashboard({ statistik, rencanaKalibrasi, pelaksanaanTerbaru }: Props) {
   const [pencarian, setPencarian] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('SEMUA');
   const [sedangMemeriksa, setSedangMemeriksa] = useState(false);
@@ -33,11 +25,11 @@ export default function KalibrasiDashboard({
   const jalankanPengingat = () => {
     setSedangMemeriksa(true);
     router.post(
-      '/kalibrasi/rencana/jalankan-pengingat',
+      ruteKalibrasi.rencanaJalankanPengingat,
       {},
       {
         onFinish: () => setSedangMemeriksa(false),
-      }
+      },
     );
   };
 
@@ -47,8 +39,7 @@ export default function KalibrasiDashboard({
       (rk.aset?.KodeAset ?? '').toLowerCase().includes(pencarian.toLowerCase()) ||
       (rk.jenisKalibrasi?.Nama ?? '').toLowerCase().includes(pencarian.toLowerCase());
 
-    const cocokStatus =
-      filterStatus === 'SEMUA' || rk.StatusKalibrasi === filterStatus;
+    const cocokStatus = filterStatus === 'SEMUA' || rk.StatusKalibrasi === filterStatus;
 
     return cocokTeks && cocokStatus;
   });
@@ -61,20 +52,13 @@ export default function KalibrasiDashboard({
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Dasbor Kalibrasi
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dasbor Kalibrasi</h1>
             <p className="text-sm text-muted-foreground">
               Ringkasan kepatuhan, jadwal jatuh tempo, dan riwayat kalibrasi instrumen.
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={jalankanPengingat}
-              disabled={sedangMemeriksa}
-            >
+            <Button variant="outline" size="sm" onClick={jalankanPengingat} disabled={sedangMemeriksa}>
               <BellRing className="mr-1.5 size-4 text-teknisi-700" />
               {sedangMemeriksa ? 'Memeriksa...' : 'Kirim Pengingat'}
             </Button>
@@ -90,9 +74,7 @@ export default function KalibrasiDashboard({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-semibold tracking-tight text-foreground">
-                {statistik.total}
-              </div>
+              <div className="text-2xl font-semibold tracking-tight text-foreground">{statistik.total}</div>
               <p className="text-xs text-muted-foreground mt-1">Instrumen terdaftar</p>
             </CardContent>
           </Card>
@@ -104,9 +86,7 @@ export default function KalibrasiDashboard({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-semibold tracking-tight text-sukses-600">
-                {statistik.valid}
-              </div>
+              <div className="text-2xl font-semibold tracking-tight text-sukses-600">{statistik.valid}</div>
               <p className="text-xs text-muted-foreground mt-1">Jadwal masih berlaku</p>
             </CardContent>
           </Card>
@@ -224,7 +204,7 @@ export default function KalibrasiDashboard({
                             <tr key={rk.Id} className="hover:bg-permukaan-50 transition-colors">
                               <td className="px-4 py-3 font-medium text-foreground">
                                 <Link
-                                  href={`/kalibrasi/rencana/${rk.Id}`}
+                                  href={ruteKalibrasi.rencanaDetail(rk.Id)}
                                   className="hover:underline font-semibold text-foreground block"
                                 >
                                   {rk.aset?.Nama ?? 'Aset Tidak Dikenal'}
@@ -247,8 +227,8 @@ export default function KalibrasiDashboard({
                                       rk.SisaHari < 0
                                         ? 'text-bahaya-600 font-semibold'
                                         : rk.SisaHari <= rk.PeringatanHariSebelum
-                                        ? 'text-safety-600 font-medium'
-                                        : 'text-muted-foreground'
+                                          ? 'text-safety-600 font-medium'
+                                          : 'text-muted-foreground'
                                     }`}
                                   >
                                     {rk.SisaHari < 0
@@ -264,7 +244,7 @@ export default function KalibrasiDashboard({
                               </td>
                               <td className="px-4 py-3 text-right whitespace-nowrap">
                                 <Button asChild variant="ghost" size="sm" className="h-7 text-xs gap-1">
-                                  <Link href={`/kalibrasi/rencana/${rk.Id}`}>
+                                  <Link href={ruteKalibrasi.rencanaDetail(rk.Id)}>
                                     Detail
                                     <ArrowRight className="size-3" />
                                   </Link>
@@ -289,12 +269,10 @@ export default function KalibrasiDashboard({
                   <CardTitle className="text-base font-semibold text-foreground">
                     Pelaksanaan Terakhir
                   </CardTitle>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    10 kegiatan kalibrasi terkini
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">10 kegiatan kalibrasi terkini</p>
                 </div>
                 <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
-                  <Link href="/kalibrasi/pelaksanaan">Lihat Semua</Link>
+                  <Link href={ruteKalibrasi.pelaksanaan}>Lihat Semua</Link>
                 </Button>
               </CardHeader>
               <CardContent className="p-0 divide-y divide-border">
@@ -313,7 +291,7 @@ export default function KalibrasiDashboard({
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <Link
-                              href={`/kalibrasi/pelaksanaan/${pk.Id}`}
+                              href={ruteKalibrasi.pelaksanaanDetail(pk.Id)}
                               className="font-medium font-mono text-xs text-foreground hover:underline truncate"
                             >
                               {pk.Nomor}
@@ -336,8 +314,13 @@ export default function KalibrasiDashboard({
                             )}
                           </div>
                         </div>
-                        <Button asChild variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
-                          <Link href={`/kalibrasi/pelaksanaan/${pk.Id}`}>
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                        >
+                          <Link href={ruteKalibrasi.pelaksanaanDetail(pk.Id)}>
                             <ArrowRight className="size-3.5" />
                           </Link>
                         </Button>
@@ -353,4 +336,3 @@ export default function KalibrasiDashboard({
     </AppLayout>
   );
 }
-

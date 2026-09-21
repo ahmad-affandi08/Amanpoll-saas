@@ -7,7 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -16,6 +21,7 @@ import type { PermintaanMutasiAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_MUTASI } from '@/features/SiklusAset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
+import { ruteMutasiAset } from '@/features/MutasiAset/api';
 
 interface Props {
   permintaan: Paginasi<PermintaanMutasiAset>;
@@ -28,9 +34,20 @@ const SEMUA = '__semua__';
 const DAFTAR_STATUS = ['Draft', 'Menunggu', 'Disetujui', 'Ditolak', 'Dibatalkan', 'Selesai'];
 const DAFTAR_JENIS = ['AntarLokasi', 'AntarUnit', 'Peminjaman', 'Pengembalian'];
 
-function DialogBuatMutasi({ lokasi, unitOrganisasi }: { lokasi: Lokasi[]; unitOrganisasi: UnitOrganisasi[] }) {
+function DialogBuatMutasi({
+  lokasi,
+  unitOrganisasi,
+}: {
+  lokasi: Lokasi[];
+  unitOrganisasi: UnitOrganisasi[];
+}) {
   const [buka, setBuka] = useState(false);
-  const form = useForm({ JenisMutasi: 'AntarLokasi', LokasiTujuanId: SEMUA, UnitTujuanId: SEMUA, Alasan: '' });
+  const form = useForm({
+    JenisMutasi: 'AntarLokasi',
+    LokasiTujuanId: SEMUA,
+    UnitTujuanId: SEMUA,
+    Alasan: '',
+  });
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -39,7 +56,7 @@ function DialogBuatMutasi({ lokasi, unitOrganisasi }: { lokasi: Lokasi[]; unitOr
       LokasiTujuanId: form.data.LokasiTujuanId === SEMUA ? null : form.data.LokasiTujuanId,
       UnitTujuanId: form.data.UnitTujuanId === SEMUA ? null : form.data.UnitTujuanId,
     };
-    router.post('/mutasi-aset', payload, { onSuccess: () => setBuka(false) });
+    router.post(ruteMutasiAset.index, payload, { onSuccess: () => setBuka(false) });
   };
 
   return (
@@ -48,41 +65,67 @@ function DialogBuatMutasi({ lokasi, unitOrganisasi }: { lokasi: Lokasi[]; unitOr
         <Button>Buat Permintaan Mutasi</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>Buat Permintaan Mutasi</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Buat Permintaan Mutasi</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Jenis Mutasi</Label>
             <Select value={form.data.JenisMutasi} onValueChange={(v) => form.setData('JenisMutasi', v)}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {DAFTAR_JENIS.map((j) => <SelectItem key={j} value={j}>{j}</SelectItem>)}
+                {DAFTAR_JENIS.map((j) => (
+                  <SelectItem key={j} value={j}>
+                    {j}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
             <Label>Lokasi Tujuan</Label>
             <Select value={form.data.LokasiTujuanId} onValueChange={(v) => form.setData('LokasiTujuanId', v)}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
-                {lokasi.map((l) => <SelectItem key={l.Id} value={l.Id}>{l.Nama}</SelectItem>)}
+                {lokasi.map((l) => (
+                  <SelectItem key={l.Id} value={l.Id}>
+                    {l.Nama}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
             <Label>Unit Tujuan</Label>
             <Select value={form.data.UnitTujuanId} onValueChange={(v) => form.setData('UnitTujuanId', v)}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
-                {unitOrganisasi.map((u) => <SelectItem key={u.Id} value={u.Id}>{u.Nama}</SelectItem>)}
+                {unitOrganisasi.map((u) => (
+                  <SelectItem key={u.Id} value={u.Id}>
+                    {u.Nama}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
-          <p className="text-sm text-muted-foreground">Minimal salah satu tujuan (lokasi/unit) harus diisi. Daftar aset dilengkapi setelah draft dibuat.</p>
-          {form.errors.LokasiTujuanId && <p className="text-sm text-destructive">{form.errors.LokasiTujuanId}</p>}
+          <p className="text-sm text-muted-foreground">
+            Minimal salah satu tujuan (lokasi/unit) harus diisi. Daftar aset dilengkapi setelah draft dibuat.
+          </p>
+          {form.errors.LokasiTujuanId && (
+            <p className="text-sm text-destructive">{form.errors.LokasiTujuanId}</p>
+          )}
           <DialogFooter>
-            <Button type="submit" disabled={form.processing}>Buat Draft</Button>
+            <Button type="submit" disabled={form.processing}>
+              Buat Draft
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -95,7 +138,10 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
 
   const terapkanFilter = (v: string) => {
     setStatus(v);
-    router.get('/mutasi-aset', v === SEMUA ? {} : { status: v }, { preserveState: true, preserveScroll: true });
+    router.get(ruteMutasiAset.index, v === SEMUA ? {} : { status: v }, {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   return (
@@ -105,7 +151,9 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Mutasi Aset</h1>
-            <p className="text-sm text-muted-foreground">Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi.</p>
+            <p className="text-sm text-muted-foreground">
+              Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi.
+            </p>
           </div>
           <DialogBuatMutasi lokasi={lokasi} unitOrganisasi={unitOrganisasi} />
         </div>
@@ -113,17 +161,26 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
         <div className="w-56 space-y-1.5">
           <Label>Status</Label>
           <Select value={status} onValueChange={terapkanFilter}>
-            <SelectTrigger><SelectValue placeholder="Semua" /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder="Semua" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value={SEMUA}>Semua</SelectItem>
-              {DAFTAR_STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              {DAFTAR_STATUS.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
         {permintaan.data.length === 0 && (
           <div className="rounded-[9px] border border-border bg-card">
-            <EmptyState judul="Belum ada permintaan mutasi." deskripsi="Permintaan perpindahan aset akan muncul di sini." />
+            <EmptyState
+              judul="Belum ada permintaan mutasi."
+              deskripsi="Permintaan perpindahan aset akan muncul di sini."
+            />
           </div>
         )}
 
@@ -141,17 +198,26 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
               </TableHeader>
               <TableBody>
                 {permintaan.data.map((p) => (
-                  <TableRow key={p.Id} className="cursor-pointer" onClick={() => router.visit(`/mutasi-aset/${p.Id}`)}>
+                  <TableRow
+                    key={p.Id}
+                    className="cursor-pointer"
+                    onClick={() => router.visit(ruteMutasiAset.detail(p.Id))}
+                  >
                     <TableCell className="font-mono text-xs">{p.Nomor}</TableCell>
                     <TableCell>{p.JenisMutasi}</TableCell>
                     <TableCell>{p.NamaLokasiTujuan ?? p.NamaUnitTujuan ?? '—'}</TableCell>
                     <TableCell>{p.NamaDimintaOleh ?? '—'}</TableCell>
-                    <TableCell><Badge variant={VARIAN_BADGE_STATUS_MUTASI[p.Status]}>{p.Status}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant={VARIAN_BADGE_STATUS_MUTASI[p.Status]}>{p.Status}</Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-            <Pagination meta={permintaan.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, filter as Record<string, string>)} />
+            <Pagination
+              meta={permintaan.meta}
+              onNavigasi={(halaman) => navigasiHalaman(halaman, filter as Record<string, string>)}
+            />
           </div>
         )}
       </div>

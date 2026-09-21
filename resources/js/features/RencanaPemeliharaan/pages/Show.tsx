@@ -15,17 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
-import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Calendar,
-  Building,
-  Wrench,
-  Clock,
-  CheckCircle2,
-} from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Calendar, Building, Wrench, Clock, CheckCircle2 } from 'lucide-react';
 import type { RencanaPemeliharaan } from '@/features/PreventifInspeksi/types';
+import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 
 interface Props {
   rencana: RencanaPemeliharaan;
@@ -44,7 +36,7 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
 
   const daftarkanAset = (e: FormEvent) => {
     e.preventDefault();
-    formAset.post(`/preventif-inspeksi/rencana-pemeliharaan/${rencana.Id}/aset`, {
+    formAset.post(ruteRencanaPemeliharaan.aset(rencana.Id), {
       onSuccess: () => {
         setBukaDialogAset(false);
         formAset.reset();
@@ -54,7 +46,7 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
 
   const lepasAset = (asetId: string, namaAset: string) => {
     if (confirm(`Apakah Anda yakin ingin melepas aset "${namaAset}" dari rencana pemeliharaan ini?`)) {
-      router.delete(`/preventif-inspeksi/rencana-pemeliharaan/${rencana.Id}/aset/${asetId}`);
+      router.delete(ruteRencanaPemeliharaan.asetDetail(rencana.Id, asetId));
     }
   };
 
@@ -70,7 +62,7 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-permukaan-500">
           <Link
-            href="/preventif-inspeksi/rencana-pemeliharaan"
+            href={ruteRencanaPemeliharaan.index}
             className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -86,12 +78,13 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
                 <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700 border border-permukaan-300">
                   {rencana.Kode}
                 </span>
-                <Badge variant={rencana.Aktif ? 'default' : 'secondary'} className={rencana.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}>
+                <Badge
+                  variant={rencana.Aktif ? 'default' : 'secondary'}
+                  className={rencana.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                >
                   {rencana.Aktif ? 'Aktif' : 'Nonaktif'}
                 </Badge>
-                <Badge variant="outline">
-                  Prioritas: {rencana.Prioritas}
-                </Badge>
+                <Badge variant="outline">Prioritas: {rencana.Prioritas}</Badge>
               </div>
 
               <h1 className="text-xl font-bold text-permukaan-900">{rencana.Nama}</h1>
@@ -99,16 +92,25 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-permukaan-600">
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-4 w-4 text-permukaan-400" />
-                  <span>Interval: <strong>Setiap {rencana.IntervalNilai} {rencana.IntervalSatuan}</strong></span>
+                  <span>
+                    Interval:{' '}
+                    <strong>
+                      Setiap {rencana.IntervalNilai} {rencana.IntervalSatuan}
+                    </strong>
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Calendar className="h-4 w-4 text-permukaan-400" />
-                  <span>Horizon WO: <strong>{rencana.BuatPerintahKerjaHariSebelum} Hari Sebelum</strong></span>
+                  <span>
+                    Horizon WO: <strong>{rencana.BuatPerintahKerjaHariSebelum} Hari Sebelum</strong>
+                  </span>
                 </div>
                 {rencana.templatDaftarPeriksa && (
                   <div className="flex items-center gap-1.5">
                     <Wrench className="h-4 w-4 text-permukaan-400" />
-                    <span>Checklist: <strong>{rencana.templatDaftarPeriksa.Kode}</strong></span>
+                    <span>
+                      Checklist: <strong>{rencana.templatDaftarPeriksa.Kode}</strong>
+                    </span>
                   </div>
                 )}
               </div>
@@ -129,7 +131,9 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
 
                   <div className="grid gap-4 py-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="AsetId">Pilih Aset <span className="text-rose-500">*</span></Label>
+                      <Label htmlFor="AsetId">
+                        Pilih Aset <span className="text-rose-500">*</span>
+                      </Label>
                       <Select
                         value={formAset.data.AsetId}
                         onValueChange={(val) => formAset.setData('AsetId', val)}
@@ -146,11 +150,15 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
                           ))}
                         </SelectContent>
                       </Select>
-                      {formAset.errors.AsetId && <p className="text-xs text-rose-500">{formAset.errors.AsetId}</p>}
+                      {formAset.errors.AsetId && (
+                        <p className="text-xs text-rose-500">{formAset.errors.AsetId}</p>
+                      )}
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="TanggalMulai">Tanggal Mulai Berlaku <span className="text-rose-500">*</span></Label>
+                      <Label htmlFor="TanggalMulai">
+                        Tanggal Mulai Berlaku <span className="text-rose-500">*</span>
+                      </Label>
                       <DatePicker
                         value={formAset.data.TanggalMulai}
                         onChange={(val) => formAset.setData('TanggalMulai', val)}
@@ -166,7 +174,8 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
                         placeholder="Otomatis dihitung jika kosong"
                       />
                       <p className="text-[11px] text-permukaan-500">
-                        Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai} {rencana.IntervalSatuan}.
+                        Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai}{' '}
+                        {rencana.IntervalSatuan}.
                       </p>
                     </div>
                   </div>
@@ -205,7 +214,7 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
             </span>
           </div>
 
-          {(!rencana.aset || rencana.aset.length === 0) ? (
+          {!rencana.aset || rencana.aset.length === 0 ? (
             <div className="bg-card border border-dashed border-permukaan-300 rounded-xl p-8 text-center">
               <p className="text-permukaan-500 text-sm">Belum ada aset yang didaftarkan pada rencana ini.</p>
             </div>
@@ -231,17 +240,13 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
                             <span className="font-mono text-xs font-semibold text-permukaan-500">
                               {item.aset?.KodeAset}
                             </span>
-                            <div className="font-semibold text-permukaan-800">
-                              {item.aset?.Nama}
-                            </div>
+                            <div className="font-semibold text-permukaan-800">{item.aset?.Nama}</div>
                           </div>
                         </td>
                         <td className="px-5 py-4 text-permukaan-600 text-xs">
                           {item.aset?.lokasi?.Nama ?? '-'}
                         </td>
-                        <td className="px-5 py-4 text-permukaan-600 text-xs">
-                          {item.TanggalMulai}
-                        </td>
+                        <td className="px-5 py-4 text-permukaan-600 text-xs">{item.TanggalMulai}</td>
                         <td className="px-5 py-4">
                           <span className="inline-flex items-center gap-1.5 font-semibold text-xs px-2.5 py-1 rounded-full bg-teknisi-50 text-teknisi-700 border border-teknisi-200">
                             <Calendar className="h-3.5 w-3.5" />

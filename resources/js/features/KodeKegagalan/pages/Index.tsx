@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -69,12 +70,12 @@ function DialogFormKodeKegagalan({
     }));
 
     if (sedangEdit && itemEdit) {
-      form.put(`/pemeliharaan/kode-kegagalan/${itemEdit.Id}`, {
+      form.put(ruteKodeKegagalan.detail(itemEdit.Id), {
         preserveScroll: true,
         onSuccess: () => setBuka(false),
       });
     } else {
-      form.post('/pemeliharaan/kode-kegagalan', {
+      form.post(ruteKodeKegagalan.index, {
         preserveScroll: true,
         onSuccess: () => {
           setBuka(false);
@@ -87,26 +88,18 @@ function DialogFormKodeKegagalan({
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
       <DialogTrigger asChild>
-        {pemicu ? (
-          pemicu
-        ) : (
-          <Button className="cursor-pointer">Tambah Kode Kegagalan</Button>
-        )}
+        {pemicu ? pemicu : <Button className="cursor-pointer">Tambah Kode Kegagalan</Button>}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {sedangEdit ? 'Edit Kode Kegagalan' : 'Tambah Kode Kegagalan'}
-          </DialogTitle>
+          <DialogTitle>{sedangEdit ? 'Edit Kode Kegagalan' : 'Tambah Kode Kegagalan'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Jenis Taksonomi</Label>
             <Select
               value={form.data.Jenis}
-              onValueChange={(val) =>
-                form.setData('Jenis', val as 'Masalah' | 'Penyebab' | 'Tindakan')
-              }
+              onValueChange={(val) => form.setData('Jenis', val as 'Masalah' | 'Penyebab' | 'Tindakan')}
             >
               <SelectTrigger className="w-full cursor-pointer">
                 <SelectValue />
@@ -178,9 +171,7 @@ function DialogFormKodeKegagalan({
               onChange={(e) => form.setData('Keterangan', e.target.value)}
               placeholder="Penjelasan konteks atau panduan diagnosa..."
             />
-            {form.errors.Keterangan && (
-              <p className="text-sm text-destructive">{form.errors.Keterangan}</p>
-            )}
+            {form.errors.Keterangan && <p className="text-sm text-destructive">{form.errors.Keterangan}</p>}
           </div>
 
           <div className="flex items-center gap-2 pt-1">
@@ -238,17 +229,13 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
         {(['Semua', 'Masalah', 'Penyebab', 'Tindakan'] as const).map((jenis) => {
           const aktif = tabJenis === jenis;
           const hitung =
-            jenis === 'Semua'
-              ? kodeKegagalan.length
-              : kodeKegagalan.filter((k) => k.Jenis === jenis).length;
+            jenis === 'Semua' ? kodeKegagalan.length : kodeKegagalan.filter((k) => k.Jenis === jenis).length;
           return (
             <button
               key={jenis}
               onClick={() => setTabJenis(jenis)}
               className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors ${
-                aktif
-                  ? 'bg-teknisi-700 text-white'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                aktif ? 'bg-teknisi-700 text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
               <span>{jenis}</span>
@@ -286,9 +273,7 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
             <tbody className="divide-y divide-border">
               {daftarTersaring.map((item) => (
                 <tr key={item.Id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs font-semibold text-foreground">
-                    {item.Kode}
-                  </td>
+                  <td className="px-4 py-3 font-mono text-xs font-semibold text-foreground">{item.Kode}</td>
                   <td className="px-4 py-3 font-medium text-foreground">{item.Nama}</td>
                   <td className="px-4 py-3">
                     <Badge variant={varianJenis[item.Jenis]}>{item.Jenis}</Badge>
@@ -309,11 +294,7 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
                       kategoriAset={kategoriAset}
                       itemEdit={item}
                       pemicu={
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="cursor-pointer h-7 text-xs"
-                        >
+                        <Button size="sm" variant="outline" className="cursor-pointer h-7 text-xs">
                           Edit
                         </Button>
                       }

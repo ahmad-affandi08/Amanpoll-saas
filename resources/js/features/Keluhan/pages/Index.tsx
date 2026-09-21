@@ -16,8 +16,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyState } from '@/components/shared/EmptyState';
-import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan';
+import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
+import { ruteKeluhan } from '@/features/Keluhan/api';
 
 interface KategoriRingkas {
   Id: string;
@@ -70,7 +71,7 @@ function DialogBuatKeluhan({
       AsetId: data.AsetId === TANPA ? null : data.AsetId,
       Prioritas: data.Prioritas === TANPA ? null : data.Prioritas,
     }));
-    form.post('/pemeliharaan/keluhan', { onSuccess: () => setBuka(false) });
+    form.post(ruteKeluhan.index, { onSuccess: () => setBuka(false) });
   };
 
   return (
@@ -219,7 +220,7 @@ function labelSla(item: Keluhan): string {
 export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, dapatMengelola }: Props) {
   const filterData = (kunci: 'status' | 'prioritas', nilai: string) =>
     router.get(
-      '/pemeliharaan/keluhan',
+      ruteKeluhan.index,
       { ...filter, [kunci]: nilai === TANPA ? undefined : nilai },
       { preserveState: true, replace: true },
     );
@@ -287,7 +288,7 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
           {keluhan.map((item) => (
             <Link
               key={item.Id}
-              href={`/pemeliharaan/keluhan/${item.Id}`}
+              href={ruteKeluhan.detail(item.Id)}
               className="block rounded-[9px] border border-border bg-card p-4 transition-colors hover:border-teknisi-600/40"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

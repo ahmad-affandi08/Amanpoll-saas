@@ -28,10 +28,8 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import type { Inspeksi } from '@/features/PreventifInspeksi/types';
-import {
-  statusInspeksiBadge,
-  hasilInspeksiBadge,
-} from '@/features/PreventifInspeksi/status';
+import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
+import { ruteInspeksi } from '@/features/Inspeksi/api';
 
 interface Props {
   inspeksi: Inspeksi;
@@ -56,7 +54,7 @@ export default function ShowInspeksi({ inspeksi }: Props) {
 
   const simpanHasil = (e: FormEvent) => {
     e.preventDefault();
-    formHasil.post(`/preventif-inspeksi/inspeksi/${inspeksi.Id}/laksanakan`, {
+    formHasil.post(ruteInspeksi.laksanakan(inspeksi.Id), {
       onSuccess: () => {
         setBukaDialogHasil(false);
       },
@@ -65,7 +63,7 @@ export default function ShowInspeksi({ inspeksi }: Props) {
 
   const buatPerintahKerjaKorektif = (e: FormEvent) => {
     e.preventDefault();
-    formPK.post(`/preventif-inspeksi/inspeksi/${inspeksi.Id}/buat-perintah-kerja`, {
+    formPK.post(ruteInspeksi.buatPerintahKerja(inspeksi.Id), {
       onSuccess: () => {
         setBukaDialogPK(false);
       },
@@ -83,7 +81,7 @@ export default function ShowInspeksi({ inspeksi }: Props) {
         {/* Navigasi Balik */}
         <div className="flex items-center gap-2 text-sm text-permukaan-500">
           <Link
-            href="/preventif-inspeksi/inspeksi"
+            href={ruteInspeksi.index}
             className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -96,9 +94,7 @@ export default function ShowInspeksi({ inspeksi }: Props) {
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm font-bold text-permukaan-900">
-                  {inspeksi.Nomor}
-                </span>
+                <span className="font-mono text-sm font-bold text-permukaan-900">{inspeksi.Nomor}</span>
                 <Badge variant="outline" className={statusBadge.kelas}>
                   {statusBadge.label}
                 </Badge>
@@ -116,11 +112,18 @@ export default function ShowInspeksi({ inspeksi }: Props) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-permukaan-600 pt-2">
                 <div className="flex items-center gap-1.5">
                   <Building className="h-3.5 w-3.5 text-permukaan-400" />
-                  <span>Aset: <strong>{inspeksi.aset?.KodeAset} - {inspeksi.aset?.Nama}</strong></span>
+                  <span>
+                    Aset:{' '}
+                    <strong>
+                      {inspeksi.aset?.KodeAset} - {inspeksi.aset?.Nama}
+                    </strong>
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5 text-permukaan-400" />
-                  <span>Jadwal: <strong>{inspeksi.DijadwalkanPada?.substring(0, 10) ?? '-'}</strong></span>
+                  <span>
+                    Jadwal: <strong>{inspeksi.DijadwalkanPada?.substring(0, 10) ?? '-'}</strong>
+                  </span>
                 </div>
               </div>
             </div>
@@ -145,7 +148,9 @@ export default function ShowInspeksi({ inspeksi }: Props) {
                   Buka WO ({inspeksi.perintahKerja?.Nomor ?? 'Tindak Lanjut'})
                 </Link>
               ) : (
-                (inspeksi.Hasil === 'Gagal' || inspeksi.Hasil === 'PerluPerhatian' || Boolean(inspeksi.Temuan)) && (
+                (inspeksi.Hasil === 'Gagal' ||
+                  inspeksi.Hasil === 'PerluPerhatian' ||
+                  Boolean(inspeksi.Temuan)) && (
                   <Button
                     className="cursor-pointer bg-rose-600 hover:bg-rose-700 text-white gap-1.5 text-xs"
                     onClick={() => setBukaDialogPK(true)}
@@ -184,9 +189,7 @@ export default function ShowInspeksi({ inspeksi }: Props) {
 
         {/* Rincian Hasil & Temuan */}
         <div className="bg-card border border-permukaan-200 rounded-xl p-6 space-y-4">
-          <h2 className="text-base font-semibold text-permukaan-900">
-            Hasil & Catatan Temuan Lapangan
-          </h2>
+          <h2 className="text-base font-semibold text-permukaan-900">Hasil & Catatan Temuan Lapangan</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 bg-permukaan-50 rounded-lg space-y-1">
@@ -207,7 +210,8 @@ export default function ShowInspeksi({ inspeksi }: Props) {
               <div className="text-xs font-semibold text-permukaan-800 pt-1">
                 {inspeksi.DilaksanakanPada ? (
                   <span>
-                    Dilaksanakan pada {inspeksi.DilaksanakanPada.substring(0, 10)} oleh {inspeksi.dilaksanakanOleh?.Nama ?? 'Petugas'}
+                    Dilaksanakan pada {inspeksi.DilaksanakanPada.substring(0, 10)} oleh{' '}
+                    {inspeksi.dilaksanakanOleh?.Nama ?? 'Petugas'}
                   </span>
                 ) : (
                   <span className="text-permukaan-400 font-normal">Belum dilaksanakan</span>
@@ -226,7 +230,9 @@ export default function ShowInspeksi({ inspeksi }: Props) {
           <div className="space-y-1.5">
             <Label className="text-xs text-permukaan-500 font-medium">Rekomendasi Tindak Lanjut</Label>
             <div className="p-3 bg-white border border-permukaan-200 rounded-lg text-sm text-permukaan-800 min-h-[60px] whitespace-pre-wrap">
-              {inspeksi.TindakLanjut || <span className="text-permukaan-400 italic">Belum ada rekomendasi tindak lanjut.</span>}
+              {inspeksi.TindakLanjut || (
+                <span className="text-permukaan-400 italic">Belum ada rekomendasi tindak lanjut.</span>
+              )}
             </div>
           </div>
         </div>
@@ -242,10 +248,14 @@ export default function ShowInspeksi({ inspeksi }: Props) {
 
             <div className="grid gap-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="Hasil">Hasil Evaluasi <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="Hasil">
+                  Hasil Evaluasi <span className="text-rose-500">*</span>
+                </Label>
                 <Select
                   value={formHasil.data.Hasil}
-                  onValueChange={(val) => formHasil.setData('Hasil', val as 'Lolos' | 'PerluPerhatian' | 'Gagal')}
+                  onValueChange={(val) =>
+                    formHasil.setData('Hasil', val as 'Lolos' | 'PerluPerhatian' | 'Gagal')
+                  }
                 >
                   <SelectTrigger id="Hasil" className="cursor-pointer">
                     <SelectValue />
@@ -312,7 +322,9 @@ export default function ShowInspeksi({ inspeksi }: Props) {
 
             <div className="grid gap-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="Judul">Judul Pekerjaan <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="Judul">
+                  Judul Pekerjaan <span className="text-rose-500">*</span>
+                </Label>
                 <Input
                   id="Judul"
                   value={formPK.data.Judul}

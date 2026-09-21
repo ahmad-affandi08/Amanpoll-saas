@@ -16,13 +16,7 @@ export type StatusPerintahKerja =
 
 export type PrioritasPerintahKerja = 'Rendah' | 'Normal' | 'Tinggi' | 'Kritis';
 
-export type JenisPerintahKerja =
-  | 'Korektif'
-  | 'Preventif'
-  | 'Inspeksi'
-  | 'Kalibrasi'
-  | 'Umum'
-  | 'Vendor';
+export type JenisPerintahKerja = 'Korektif' | 'Preventif' | 'Inspeksi' | 'Kalibrasi' | 'Umum' | 'Vendor';
 
 export interface AsetPerintahKerja {
   Id: string;

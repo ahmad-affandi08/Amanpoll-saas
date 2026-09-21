@@ -24,10 +24,18 @@ export function PanelKolaborasi({ jenisEntitas, entitasId }: Props) {
           <TabsTrigger value="kolom-kustom">Kolom Kustom</TabsTrigger>
           <TabsTrigger value="komentar">Komentar</TabsTrigger>
         </TabsList>
-        <TabsContent value="lampiran"><LampiranTab jenisEntitas={jenisEntitas} entitasId={entitasId} /></TabsContent>
-        <TabsContent value="tag"><TagTab jenisEntitas={jenisEntitas} entitasId={entitasId} /></TabsContent>
-        <TabsContent value="kolom-kustom"><KolomKustomTab jenisEntitas={jenisEntitas} entitasId={entitasId} /></TabsContent>
-        <TabsContent value="komentar"><KomentarTab jenisEntitas={jenisEntitas} entitasId={entitasId} /></TabsContent>
+        <TabsContent value="lampiran">
+          <LampiranTab jenisEntitas={jenisEntitas} entitasId={entitasId} />
+        </TabsContent>
+        <TabsContent value="tag">
+          <TagTab jenisEntitas={jenisEntitas} entitasId={entitasId} />
+        </TabsContent>
+        <TabsContent value="kolom-kustom">
+          <KolomKustomTab jenisEntitas={jenisEntitas} entitasId={entitasId} />
+        </TabsContent>
+        <TabsContent value="komentar">
+          <KomentarTab jenisEntitas={jenisEntitas} entitasId={entitasId} />
+        </TabsContent>
       </Tabs>
     </div>
   );

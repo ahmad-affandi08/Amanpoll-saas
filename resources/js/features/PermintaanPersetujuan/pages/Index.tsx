@@ -6,28 +6,50 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
-import { apiPersetujuan } from '@/features/Persetujuan/api';
+import { http } from '@/lib/http';
 import type { PermintaanPersetujuan, StatusPermintaanPersetujuan } from '@/features/Persetujuan/types';
+import { rutePermintaanPersetujuan } from '@/features/PermintaanPersetujuan/api';
 
 function badgeStatus(status: StatusPermintaanPersetujuan) {
   const varian = status === 'Disetujui' ? 'default' : status === 'Menunggu' ? 'secondary' : 'outline';
   return <Badge variant={varian}>{status}</Badge>;
 }
 
-function DialogKeputusan({ permintaan, tindakan, onSelesai }: { permintaan: PermintaanPersetujuan; tindakan: 'setujui' | 'tolak'; onSelesai: () => void }) {
+function DialogKeputusan({
+  permintaan,
+  tindakan,
+  onSelesai,
+}: {
+  permintaan: PermintaanPersetujuan;
+  tindakan: 'setujui' | 'tolak';
+  onSelesai: () => void;
+}) {
   const [buka, setBuka] = useState(false);
   const [catatan, setCatatan] = useState('');
   const [memproses, setMemproses] = useState(false);
 
   const kirim = () => {
     setMemproses(true);
-    router.post(`/persetujuan/permintaan/${permintaan.Id}/${tindakan}`, { Catatan: catatan || null }, {
-      preserveScroll: true,
-      onSuccess: () => { setBuka(false); setCatatan(''); onSelesai(); },
-      onFinish: () => setMemproses(false),
-    });
+    router.post(
+      rutePermintaanPersetujuan.detail2(permintaan.Id, tindakan),
+      { Catatan: catatan || null },
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          setBuka(false);
+          setCatatan('');
+          onSelesai();
+        },
+        onFinish: () => setMemproses(false),
+      },
+    );
   };
 
   return (
@@ -38,12 +60,23 @@ function DialogKeputusan({ permintaan, tindakan, onSelesai }: { permintaan: Perm
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>{tindakan === 'setujui' ? 'Setujui Permintaan' : 'Tolak Permintaan'}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{tindakan === 'setujui' ? 'Setujui Permintaan' : 'Tolak Permintaan'}</DialogTitle>
+        </DialogHeader>
         <div className="space-y-2">
-          <Textarea placeholder="Catatan (opsional)" value={catatan} onChange={(e) => setCatatan(e.target.value)} rows={3} />
+          <Textarea
+            placeholder="Catatan (opsional)"
+            value={catatan}
+            onChange={(e) => setCatatan(e.target.value)}
+            rows={3}
+          />
         </div>
         <DialogFooter>
-          <Button onClick={kirim} disabled={memproses} variant={tindakan === 'setujui' ? 'default' : 'destructive'}>
+          <Button
+            onClick={kirim}
+            disabled={memproses}
+            variant={tindakan === 'setujui' ? 'default' : 'destructive'}
+          >
             {tindakan === 'setujui' ? 'Setujui' : 'Tolak'}
           </Button>
         </DialogFooter>
@@ -58,21 +91,33 @@ function InboxTab() {
 
   const muat = () => {
     setMemuat(true);
-    apiPersetujuan.get('/persetujuan/permintaan/inbox').then((res) => setData(res.data)).finally(() => setMemuat(false));
+    http
+      .get(rutePermintaanPersetujuan.inbox)
+      .then((res) => setData(res.data))
+      .finally(() => setMemuat(false));
   };
 
   useEffect(muat, []);
 
   if (memuat) return <p className="text-sm text-muted-foreground">Memuat...</p>;
-  if (data.length === 0) return <p className="text-sm text-muted-foreground">Tidak ada permintaan yang perlu tindakan Anda.</p>;
+  if (data.length === 0)
+    return <p className="text-sm text-muted-foreground">Tidak ada permintaan yang perlu tindakan Anda.</p>;
 
   return (
     <div className="space-y-3">
       {data.map((permintaan) => (
-        <div key={permintaan.Id} className="flex items-center justify-between rounded-md border border-border p-3">
+        <div
+          key={permintaan.Id}
+          className="flex items-center justify-between rounded-md border border-border p-3"
+        >
           <div>
-            <div className="font-medium text-foreground">{permintaan.NamaAlur} -- {permintaan.JenisEntitas}</div>
-            <div className="text-sm text-muted-foreground">Diminta oleh {permintaan.NamaPeminta} pada {new Date(permintaan.DimintaPada).toLocaleString('id-ID')}</div>
+            <div className="font-medium text-foreground">
+              {permintaan.NamaAlur} -- {permintaan.JenisEntitas}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Diminta oleh {permintaan.NamaPeminta} pada{' '}
+              {new Date(permintaan.DimintaPada).toLocaleString('id-ID')}
+            </div>
           </div>
           <div className="flex gap-2">
             <DialogKeputusan permintaan={permintaan} tindakan="setujui" onSelesai={muat} />
@@ -90,43 +135,54 @@ function MilikSayaTab() {
 
   const muat = () => {
     setMemuat(true);
-    apiPersetujuan.get('/persetujuan/permintaan/milik-saya').then((res) => setData(res.data)).finally(() => setMemuat(false));
+    http
+      .get(rutePermintaanPersetujuan.milikSaya)
+      .then((res) => setData(res.data))
+      .finally(() => setMemuat(false));
   };
 
   useEffect(muat, []);
 
   const batalkan = (permintaan: PermintaanPersetujuan) => {
     if (!confirm('Batalkan permintaan ini?')) return;
-    router.delete(`/persetujuan/permintaan/${permintaan.Id}`, { preserveScroll: true, onSuccess: muat });
+    router.delete(rutePermintaanPersetujuan.detail(permintaan.Id), { preserveScroll: true, onSuccess: muat });
   };
 
   if (memuat) return <p className="text-sm text-muted-foreground">Memuat...</p>;
-  if (data.length === 0) return <p className="text-sm text-muted-foreground">Anda belum mengajukan permintaan persetujuan.</p>;
+  if (data.length === 0)
+    return <p className="text-sm text-muted-foreground">Anda belum mengajukan permintaan persetujuan.</p>;
 
   return (
     <div className="space-y-3">
       {data.map((permintaan) => (
         <div key={permintaan.Id} className="rounded-md border border-border p-3">
           <div className="flex items-center justify-between">
-            <div className="font-medium text-foreground">{permintaan.NamaAlur} -- {permintaan.JenisEntitas}</div>
+            <div className="font-medium text-foreground">
+              {permintaan.NamaAlur} -- {permintaan.JenisEntitas}
+            </div>
             {badgeStatus(permintaan.Status)}
           </div>
           <div className="mt-1 text-sm text-muted-foreground">
             Diajukan {new Date(permintaan.DimintaPada).toLocaleString('id-ID')}
-            {permintaan.Status !== 'Menunggu' && permintaan.SelesaiPada && ` -- selesai ${new Date(permintaan.SelesaiPada).toLocaleString('id-ID')}`}
+            {permintaan.Status !== 'Menunggu' &&
+              permintaan.SelesaiPada &&
+              ` -- selesai ${new Date(permintaan.SelesaiPada).toLocaleString('id-ID')}`}
           </div>
           {permintaan.Keputusan.length > 0 && (
             <div className="mt-2 space-y-1 border-t border-border pt-2">
               {permintaan.Keputusan.map((k) => (
                 <div key={k.Id} className="text-xs text-muted-foreground">
-                  {k.NamaPenyetuju}: <span className="font-medium">{k.Keputusan}</span>{k.Catatan && ` -- "${k.Catatan}"`}
+                  {k.NamaPenyetuju}: <span className="font-medium">{k.Keputusan}</span>
+                  {k.Catatan && ` -- "${k.Catatan}"`}
                 </div>
               ))}
             </div>
           )}
           {permintaan.Status === 'Menunggu' && (
             <div className="mt-2 flex justify-end">
-              <Button size="sm" variant="ghost" onClick={() => batalkan(permintaan)}>Batalkan</Button>
+              <Button size="sm" variant="ghost" onClick={() => batalkan(permintaan)}>
+                Batalkan
+              </Button>
             </div>
           )}
         </div>
@@ -141,7 +197,9 @@ export default function PermintaanPersetujuanIndex() {
       <Head title="Persetujuan Saya" />
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Persetujuan Saya</h1>
-        <p className="text-sm text-muted-foreground">Kelola permintaan persetujuan yang Anda ajukan atau yang perlu tindakan Anda.</p>
+        <p className="text-sm text-muted-foreground">
+          Kelola permintaan persetujuan yang Anda ajukan atau yang perlu tindakan Anda.
+        </p>
       </div>
 
       <Tabs defaultValue="inbox">
@@ -149,8 +207,12 @@ export default function PermintaanPersetujuanIndex() {
           <TabsTrigger value="inbox">Perlu Tindakan Saya</TabsTrigger>
           <TabsTrigger value="milik-saya">Permintaan Saya</TabsTrigger>
         </TabsList>
-        <TabsContent value="inbox"><InboxTab /></TabsContent>
-        <TabsContent value="milik-saya"><MilikSayaTab /></TabsContent>
+        <TabsContent value="inbox">
+          <InboxTab />
+        </TabsContent>
+        <TabsContent value="milik-saya">
+          <MilikSayaTab />
+        </TabsContent>
       </Tabs>
     </AppLayout>
   );

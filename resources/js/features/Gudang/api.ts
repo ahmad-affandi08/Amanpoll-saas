@@ -1,5 +1,5 @@
-import axios from 'axios';
-
-export const apiGudang = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteGudang = {
+  index: '/gudang',
+  detail: (id: string) => `/gudang/${id}`,
+  lokasi: (id: string) => `/gudang/${id}/lokasi`,
+};

@@ -19,7 +19,12 @@ interface DataTableToolbarProps<TData> {
   aksi?: ReactNode;
 }
 
-export function DataTableToolbar<TData>({ table, pencarianPlaceholder, facetedFilters, aksi }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({
+  table,
+  pencarianPlaceholder,
+  facetedFilters,
+  aksi,
+}: DataTableToolbarProps<TData>) {
   const adaFilterAktif = table.getState().columnFilters.length > 0 || !!table.getState().globalFilter;
 
   return (
@@ -44,7 +49,10 @@ export function DataTableToolbar<TData>({ table, pencarianPlaceholder, facetedFi
             variant="ghost"
             size="sm"
             className="h-8 px-2"
-            onClick={() => { table.resetColumnFilters(); table.setGlobalFilter(''); }}
+            onClick={() => {
+              table.resetColumnFilters();
+              table.setGlobalFilter('');
+            }}
           >
             Atur Ulang <X className="ml-1 size-3.5" />
           </Button>

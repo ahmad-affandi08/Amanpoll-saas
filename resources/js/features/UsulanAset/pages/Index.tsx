@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Paginasi } from '@/types/global';
 import type { PrioritasUsulanAset, StatusUsulanAset, UsulanAset } from '@/features/UsulanAset/types';
 import { formatUang } from '@/lib/uang';
+import { ruteUsulanAset } from '@/features/UsulanAset/api';
 
 interface Referensi {
   Id: string;
@@ -76,7 +77,7 @@ function DialogBuatUsulan({
       EstimasiHargaSatuan: data.EstimasiHargaSatuan || null,
       JenisKebutuhan: data.JenisKebutuhan || null,
     }));
-    form.post('/perencanaan-pengadaan/usulan-aset', { onSuccess: () => setBuka(false) });
+    form.post(ruteUsulanAset.index, { onSuccess: () => setBuka(false) });
   }
 
   return (
@@ -252,7 +253,7 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
   function terapkanFilter(event: FormEvent): void {
     event.preventDefault();
     router.get(
-      '/perencanaan-pengadaan/usulan-aset',
+      ruteUsulanAset.index,
       {
         cari: cari || undefined,
         status: status === SEMUA ? undefined : status,
@@ -347,7 +348,7 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
                     <tr key={item.Id} className="hover:bg-muted/30">
                       <td className="px-4 py-3">
                         <Link
-                          href={`/perencanaan-pengadaan/usulan-aset/${item.Id}`}
+                          href={ruteUsulanAset.detail(item.Id)}
                           className="font-medium hover:text-primary"
                         >
                           {item.NamaKebutuhan}
@@ -379,7 +380,7 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
               {usulan.data.map((item) => (
                 <Link
                   key={item.Id}
-                  href={`/perencanaan-pengadaan/usulan-aset/${item.Id}`}
+                  href={ruteUsulanAset.detail(item.Id)}
                   className="flex min-h-24 items-center gap-3 p-4"
                 >
                   <ClipboardPlus className="size-5 shrink-0 text-primary" />

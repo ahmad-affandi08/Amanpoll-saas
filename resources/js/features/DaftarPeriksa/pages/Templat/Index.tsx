@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ClipboardCheck, Plus, Search, Layers, ArrowRight } from 'lucide-react';
 import type { TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
+import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 
 interface Props {
   templat: TemplatDaftarPeriksa[];
@@ -37,14 +38,15 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
     Aktif: true,
   });
 
-  const daftarTersaring = templat.filter((t) =>
-    t.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
-    t.Kode.toLowerCase().includes(pencarian.toLowerCase())
+  const daftarTersaring = templat.filter(
+    (t) =>
+      t.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
+      t.Kode.toLowerCase().includes(pencarian.toLowerCase()),
   );
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/preventif-inspeksi/templat-daftar-periksa', {
+    form.post(ruteDaftarPeriksa.index, {
       onSuccess: () => {
         setBukaDialog(false);
         form.reset();
@@ -80,7 +82,9 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
 
                 <div className="grid gap-4 py-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="Kode">Kode Templat <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="Kode">
+                      Kode Templat <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="Kode"
                       placeholder="Misal: CK-POMPA-01"
@@ -92,7 +96,9 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="Nama">Nama Templat <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="Nama">
+                      Nama Templat <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="Nama"
                       placeholder="Misal: Checklist Servis Rutin Pompa Sentrifugal"
@@ -105,10 +111,7 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
 
                   <div className="space-y-1.5">
                     <Label htmlFor="Jenis">Jenis Operasi</Label>
-                    <Select
-                      value={form.data.Jenis}
-                      onValueChange={(val) => form.setData('Jenis', val)}
-                    >
+                    <Select value={form.data.Jenis} onValueChange={(val) => form.setData('Jenis', val)}>
                       <SelectTrigger id="Jenis" className="cursor-pointer">
                         <SelectValue placeholder="Pilih Jenis" />
                       </SelectTrigger>
@@ -195,7 +198,10 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
                     <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700">
                       {t.Kode}
                     </span>
-                    <Badge variant={t.Aktif ? 'default' : 'secondary'} className={t.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}>
+                    <Badge
+                      variant={t.Aktif ? 'default' : 'secondary'}
+                      className={t.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                    >
                       {t.Aktif ? 'Aktif' : 'Nonaktif'}
                     </Badge>
                   </div>
@@ -219,7 +225,7 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
 
                 <div className="pt-4 mt-4 border-t border-permukaan-100">
                   <Link
-                    href={`/preventif-inspeksi/templat-daftar-periksa/${t.Id}`}
+                    href={ruteDaftarPeriksa.detail(t.Id)}
                     className="inline-flex items-center justify-between w-full text-xs font-medium text-teknisi-600 hover:text-teknisi-700 cursor-pointer"
                   >
                     <span>Buka Builder Pertanyaan</span>

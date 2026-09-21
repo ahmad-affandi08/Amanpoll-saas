@@ -4,15 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/shared/EmptyState';
-import {
-  ArrowLeft,
-  Sliders,
-  Clock,
-  Building2,
-  Plus,
-} from 'lucide-react';
+import { ArrowLeft, Sliders, Clock, Building2, Plus } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
+import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 
 interface Props {
   rencana: RencanaKalibrasi;
@@ -32,7 +27,7 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <Button asChild variant="outline" size="icon" className="size-8">
-              <Link href="/kalibrasi/rencana">
+              <Link href={ruteKalibrasi.rencana}>
                 <ArrowLeft className="size-4" />
               </Link>
             </Button>
@@ -46,7 +41,8 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Kode Aset: <span className="font-mono">{rencana.aset?.KodeAset}</span> • Interval: Setiap {rencana.IntervalHari} hari
+                Kode Aset: <span className="font-mono">{rencana.aset?.KodeAset}</span> • Interval: Setiap{' '}
+                {rencana.IntervalHari} hari
               </p>
             </div>
           </div>
@@ -84,13 +80,15 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Sisa Waktu:</span>
-                <span className={`font-semibold ${
-                  (rencana.SisaHari ?? 0) < 0
-                    ? 'text-bahaya-600'
-                    : (rencana.SisaHari ?? 0) <= rencana.PeringatanHariSebelum
-                    ? 'text-safety-600'
-                    : 'text-sukses-600'
-                }`}>
+                <span
+                  className={`font-semibold ${
+                    (rencana.SisaHari ?? 0) < 0
+                      ? 'text-bahaya-600'
+                      : (rencana.SisaHari ?? 0) <= rencana.PeringatanHariSebelum
+                        ? 'text-safety-600'
+                        : 'text-sukses-600'
+                  }`}
+                >
                   {(rencana.SisaHari ?? 0) < 0
                     ? `Terlambat ${Math.abs(rencana.SisaHari ?? 0)} hari`
                     : `${rencana.SisaHari} hari lagi`}
@@ -98,7 +96,9 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-muted-foreground">Batas Pengingat Dini:</span>
-                <span className="font-medium text-foreground">{rencana.PeringatanHariSebelum} hari sebelumnya</span>
+                <span className="font-medium text-foreground">
+                  {rencana.PeringatanHariSebelum} hari sebelumnya
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -174,7 +174,7 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
           </CardHeader>
 
           <CardContent className="p-0">
-            {(!rencana.pelaksanaanKalibrasi || rencana.pelaksanaanKalibrasi.length === 0) ? (
+            {!rencana.pelaksanaanKalibrasi || rencana.pelaksanaanKalibrasi.length === 0 ? (
               <div className="py-12">
                 <EmptyState
                   judul="Belum ada riwayat pelaksanaan."
@@ -200,14 +200,12 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
                       const badge = hasilKalibrasiBadge(pk.Hasil);
                       return (
                         <tr key={pk.Id} className="hover:bg-permukaan-50 transition-colors">
-                          <td className="px-4 py-3 font-semibold font-mono text-foreground">
-                            {pk.Nomor}
-                          </td>
-                          <td className="px-4 py-3 text-muted-foreground font-mono">
-                            {pk.TanggalKalibrasi}
-                          </td>
+                          <td className="px-4 py-3 font-semibold font-mono text-foreground">{pk.Nomor}</td>
+                          <td className="px-4 py-3 text-muted-foreground font-mono">{pk.TanggalKalibrasi}</td>
                           <td className="px-4 py-3 font-medium font-mono text-foreground">
-                            {pk.NomorSertifikat || <span className="text-muted-foreground italic">Belum Ada</span>}
+                            {pk.NomorSertifikat || (
+                              <span className="text-muted-foreground italic">Belum Ada</span>
+                            )}
                           </td>
                           <td className="px-3 py-3">
                             <Badge variant="outline" className={badge.className}>
@@ -218,13 +216,13 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
                             {pk.TanggalBerlakuSampai || '—'}
                           </td>
                           <td className="px-3 py-3 text-muted-foreground">
-                            {pk.diverifikasiOleh?.Nama ?? <span className="text-muted-foreground italic">Belum diverifikasi</span>}
+                            {pk.diverifikasiOleh?.Nama ?? (
+                              <span className="text-muted-foreground italic">Belum diverifikasi</span>
+                            )}
                           </td>
                           <td className="px-4 py-3 text-right">
                             <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                              <Link href={`/kalibrasi/pelaksanaan/${pk.Id}`}>
-                                Detail
-                              </Link>
+                              <Link href={ruteKalibrasi.pelaksanaanDetail(pk.Id)}>Detail</Link>
                             </Button>
                           </td>
                         </tr>

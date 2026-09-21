@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Paginasi } from '@/types/global';
 import type { Anggaran, StatusAnggaran } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
+import { ruteAnggaran } from '@/features/Anggaran/api';
 
 interface Ringkas {
   Id: string;
@@ -60,7 +61,7 @@ function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
       ...data,
       UnitOrganisasiId: data.UnitOrganisasiId === TANPA ? null : data.UnitOrganisasiId,
     }));
-    form.post('/perencanaan-pengadaan/anggaran', { onSuccess: () => setBuka(false) });
+    form.post(ruteAnggaran.index, { onSuccess: () => setBuka(false) });
   }
 
   return (
@@ -170,7 +171,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
   function terapkanFilter(event: FormEvent): void {
     event.preventDefault();
     router.get(
-      '/perencanaan-pengadaan/anggaran',
+      ruteAnggaran.index,
       { cari: cari || undefined, status: status === SEMUA ? undefined : status },
       { preserveState: true },
     );
@@ -246,7 +247,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
                       <td className="px-4 py-3">
                         <Link
                           className="font-medium text-foreground hover:text-primary"
-                          href={`/perencanaan-pengadaan/anggaran/${item.Id}`}
+                          href={ruteAnggaran.detail(item.Id)}
                         >
                           {item.Nama}
                         </Link>
@@ -275,7 +276,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
               {anggaran.data.map((item) => (
                 <Link
                   key={item.Id}
-                  href={`/perencanaan-pengadaan/anggaran/${item.Id}`}
+                  href={ruteAnggaran.detail(item.Id)}
                   className="flex min-h-24 items-center gap-3 p-4"
                 >
                   <WalletCards className="size-5 shrink-0 text-primary" />

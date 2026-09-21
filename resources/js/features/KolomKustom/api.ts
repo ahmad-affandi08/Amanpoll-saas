@@ -1,5 +1,4 @@
-import axios from 'axios';
-
-export const apiKolomKustom = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteKolomKustom = {
+  index: '/kolaborasi/definisi-kolom-kustom',
+  detail: (id: string) => `/kolaborasi/definisi-kolom-kustom/${id}`,
+};

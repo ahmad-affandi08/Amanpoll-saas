@@ -4,9 +4,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface Opsi {
   label: string;
@@ -19,7 +17,11 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   options: Opsi[];
 }
 
-export function DataTableFacetedFilter<TData, TValue>({ column, title, options }: DataTableFacetedFilterProps<TData, TValue>) {
+export function DataTableFacetedFilter<TData, TValue>({
+  column,
+  title,
+  options,
+}: DataTableFacetedFilterProps<TData, TValue>) {
   const nilaiTerpilih = new Set(column?.getFilterValue() as string[] | undefined);
 
   const toggle = (value: string) => {
@@ -42,13 +44,23 @@ export function DataTableFacetedFilter<TData, TValue>({ column, title, options }
           {nilaiTerpilih.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge variant="secondary" className="rounded-sm px-1 font-normal lg:hidden">{nilaiTerpilih.size}</Badge>
+              <Badge variant="secondary" className="rounded-sm px-1 font-normal lg:hidden">
+                {nilaiTerpilih.size}
+              </Badge>
               <div className="hidden gap-1 lg:flex">
-                {nilaiTerpilih.size > 2
-                  ? <Badge variant="secondary" className="rounded-sm px-1 font-normal">{nilaiTerpilih.size} dipilih</Badge>
-                  : options.filter((o) => nilaiTerpilih.has(o.value)).map((o) => (
-                      <Badge key={o.value} variant="secondary" className="rounded-sm px-1 font-normal">{o.label}</Badge>
-                    ))}
+                {nilaiTerpilih.size > 2 ? (
+                  <Badge variant="secondary" className="rounded-sm px-1 font-normal">
+                    {nilaiTerpilih.size} dipilih
+                  </Badge>
+                ) : (
+                  options
+                    .filter((o) => nilaiTerpilih.has(o.value))
+                    .map((o) => (
+                      <Badge key={o.value} variant="secondary" className="rounded-sm px-1 font-normal">
+                        {o.label}
+                      </Badge>
+                    ))
+                )}
               </div>
             </>
           )}
@@ -64,10 +76,12 @@ export function DataTableFacetedFilter<TData, TValue>({ column, title, options }
               onClick={() => toggle(opsi.value)}
               className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
             >
-              <span className={cn(
-                'flex size-4 items-center justify-center rounded-sm border border-primary',
-                dipilih ? 'bg-primary text-primary-foreground' : 'opacity-50',
-              )}>
+              <span
+                className={cn(
+                  'flex size-4 items-center justify-center rounded-sm border border-primary',
+                  dipilih ? 'bg-primary text-primary-foreground' : 'opacity-50',
+                )}
+              >
                 {dipilih && <CheckIcon className="size-3" />}
               </span>
               {opsi.label}

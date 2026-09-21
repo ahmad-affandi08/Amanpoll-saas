@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import type { PelaksanaanDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { statusPelaksanaanBadge } from '@/features/PreventifInspeksi/status';
+import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 
 interface Props {
   pelaksanaan: PelaksanaanDaftarPeriksa;
@@ -29,12 +30,15 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
   const butirList = pelaksanaan.templatDaftarPeriksa?.butir ?? [];
 
   // Inisialisasi state jawaban dari data tersimpan
-  const jawabanAwal: Record<string, {
-    NilaiTeks: string;
-    NilaiAngka: string;
-    NilaiBoolean: boolean | null;
-    Catatan: string;
-  }> = {};
+  const jawabanAwal: Record<
+    string,
+    {
+      NilaiTeks: string;
+      NilaiAngka: string;
+      NilaiBoolean: boolean | null;
+      Catatan: string;
+    }
+  > = {};
 
   pelaksanaan.jawaban?.forEach((j) => {
     jawabanAwal[j.ButirTemplatDaftarPeriksaId] = {
@@ -75,12 +79,16 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
       { jawaban: daftar },
       {
         onFinish: () => setSedangMenyimpan(false),
-      }
+      },
     );
   };
 
   const finalisasi = () => {
-    if (confirm('Apakah Anda yakin ingin menyelesaikan checklist ini? Setelah selesai, checklist akan terkunci dan skor akan dihitung.')) {
+    if (
+      confirm(
+        'Apakah Anda yakin ingin menyelesaikan checklist ini? Setelah selesai, checklist akan terkunci dan skor akan dihitung.',
+      )
+    ) {
       setSedangMenyimpan(true);
       // Simpan jawaban terlebih dahulu lalu finalisasi
       const daftar = Object.entries(jawabanState).map(([butirId, val]) => ({
@@ -101,7 +109,7 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
             });
           },
           onFinish: () => setSedangMenyimpan(false),
-        }
+        },
       );
     }
   };
@@ -125,7 +133,7 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
             </Link>
           ) : (
             <Link
-              href="/preventif-inspeksi/templat-daftar-periksa"
+              href={ruteDaftarPeriksa.index}
               className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -160,19 +168,28 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
                 {pelaksanaan.aset && (
                   <div className="flex items-center gap-1.5">
                     <Building className="h-3.5 w-3.5 text-permukaan-400" />
-                    <span>Aset: <strong>{pelaksanaan.aset.KodeAset} - {pelaksanaan.aset.Nama}</strong></span>
+                    <span>
+                      Aset:{' '}
+                      <strong>
+                        {pelaksanaan.aset.KodeAset} - {pelaksanaan.aset.Nama}
+                      </strong>
+                    </span>
                   </div>
                 )}
                 {pelaksanaan.perintahKerja && (
                   <div className="flex items-center gap-1.5">
                     <Wrench className="h-3.5 w-3.5 text-permukaan-400" />
-                    <span>Perintah Kerja: <strong>{pelaksanaan.perintahKerja.Nomor}</strong></span>
+                    <span>
+                      Perintah Kerja: <strong>{pelaksanaan.perintahKerja.Nomor}</strong>
+                    </span>
                   </div>
                 )}
                 {pelaksanaan.dilaksanakanOleh && (
                   <div className="flex items-center gap-1.5">
                     <User className="h-3.5 w-3.5 text-permukaan-400" />
-                    <span>Pelaksana: <strong>{pelaksanaan.dilaksanakanOleh.Nama}</strong></span>
+                    <span>
+                      Pelaksana: <strong>{pelaksanaan.dilaksanakanOleh.Nama}</strong>
+                    </span>
                   </div>
                 )}
               </div>
@@ -182,9 +199,7 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
             {pelaksanaan.Skor !== null && pelaksanaan.Skor !== undefined && (
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center self-start sm:self-auto min-w-[140px]">
                 <span className="text-xs font-medium text-emerald-800">Skor Kepatuhan</span>
-                <div className="text-3xl font-black text-emerald-700 mt-0.5">
-                  {pelaksanaan.Skor}%
-                </div>
+                <div className="text-3xl font-black text-emerald-700 mt-0.5">{pelaksanaan.Skor}%</div>
               </div>
             )}
           </div>
@@ -193,9 +208,7 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
         {/* Form Interaktif Butir Pertanyaan */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-permukaan-900">
-              Daftar Pemeriksaan Lapangan
-            </h2>
+            <h2 className="text-lg font-semibold text-permukaan-900">Daftar Pemeriksaan Lapangan</h2>
             {!terkunci && (
               <span className="text-xs text-permukaan-500">
                 Lengkapi seluruh butir wajib sebelum melakukan finalisasi.
@@ -228,9 +241,7 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
                 <div
                   key={b.Id}
                   className={`bg-card border rounded-xl p-4 transition-all ${
-                    outOfRange
-                      ? 'border-rose-300 bg-rose-50/30'
-                      : 'border-permukaan-200'
+                    outOfRange ? 'border-rose-300 bg-rose-50/30' : 'border-permukaan-200'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -241,18 +252,10 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
                     <div className="space-y-3 flex-1">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-medium text-permukaan-900 text-sm">
-                            {b.Pertanyaan}
-                          </span>
-                          {b.Wajib && (
-                            <span className="text-xs text-rose-500 font-semibold">*Wajib</span>
-                          )}
+                          <span className="font-medium text-permukaan-900 text-sm">{b.Pertanyaan}</span>
+                          {b.Wajib && <span className="text-xs text-rose-500 font-semibold">*Wajib</span>}
                         </div>
-                        {b.Satuan && (
-                          <span className="text-xs text-permukaan-500">
-                            Satuan: {b.Satuan}
-                          </span>
-                        )}
+                        {b.Satuan && <span className="text-xs text-permukaan-500">Satuan: {b.Satuan}</span>}
                       </div>
 
                       {/* Input Sesuai Tipe */}
@@ -319,7 +322,9 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
                             >
                               <option value="">-- Pilih Opsi --</option>
                               {b.Pilihan.map((p) => (
-                                <option key={p} value={p}>{p}</option>
+                                <option key={p} value={p}>
+                                  {p}
+                                </option>
                               ))}
                             </select>
                           </div>

@@ -25,6 +25,7 @@ import type {
   TransaksiAnggaran,
 } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
+import { ruteAnggaran } from '@/features/Anggaran/api';
 
 interface Props {
   anggaran: Anggaran;
@@ -62,8 +63,8 @@ function DialogPos({
     event.preventDefault();
     form.transform((data) => ({ ...data, IndukId: data.IndukId === TANPA ? null : data.IndukId }));
     const opsi = { preserveScroll: true, onSuccess: () => setBuka(false) };
-    if (pos) form.put(`/perencanaan-pengadaan/pos-anggaran/${pos.Id}`, opsi);
-    else form.post(`/perencanaan-pengadaan/anggaran/${anggaran.Id}/pos`, opsi);
+    if (pos) form.put(ruteAnggaran.posDetail(pos.Id), opsi);
+    else form.post(ruteAnggaran.pos(anggaran.Id), opsi);
   }
 
   return (
@@ -173,7 +174,7 @@ function DialogTransaksi({ pos, dapatMenyesuaikan }: { pos: PosAnggaran; dapatMe
       ReferensiId: data.ReferensiId || null,
       Keterangan: data.Keterangan || null,
     }));
-    form.post(`/perencanaan-pengadaan/pos-anggaran/${pos.Id}/transaksi`, {
+    form.post(ruteAnggaran.posTransaksi(pos.Id), {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -293,7 +294,7 @@ function DialogUbahAnggaran({ anggaran }: { anggaran: Anggaran }) {
   });
   function submit(event: FormEvent): void {
     event.preventDefault();
-    form.put(`/perencanaan-pengadaan/anggaran/${anggaran.Id}`, {
+    form.put(ruteAnggaran.detail(anggaran.Id), {
       preserveScroll: true,
       onSuccess: () => setBuka(false),
     });
@@ -377,11 +378,11 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
 
   function ajukan(): void {
     if (confirm(`Ajukan anggaran ${anggaran.Kode}? Struktur pos tidak dapat diubah setelah diajukan.`))
-      router.post(`/perencanaan-pengadaan/anggaran/${anggaran.Id}/ajukan`);
+      router.post(ruteAnggaran.ajukan(anggaran.Id));
   }
   function hapusAnggaran(): void {
     if (confirm(`Hapus draft anggaran ${anggaran.Kode}? Tindakan ini hanya berhasil bila belum ada pos.`))
-      router.delete(`/perencanaan-pengadaan/anggaran/${anggaran.Id}`);
+      router.delete(ruteAnggaran.detail(anggaran.Id));
   }
   function hapusPos(pos: PosAnggaran): void {
     if (
@@ -389,7 +390,7 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
         `Hapus pos ${pos.Kode} — ${pos.Nama}? Pos yang memiliki anak atau transaksi tidak dapat dihapus.`,
       )
     )
-      router.delete(`/perencanaan-pengadaan/pos-anggaran/${pos.Id}`, { preserveScroll: true });
+      router.delete(ruteAnggaran.posDetail(pos.Id), { preserveScroll: true });
   }
 
   return (
@@ -397,7 +398,7 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
       <Head title={`${anggaran.Kode} — Anggaran`} />
       <div className="space-y-6">
         <Link
-          href="/perencanaan-pengadaan/anggaran"
+          href={ruteAnggaran.index}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" /> Kembali ke Anggaran

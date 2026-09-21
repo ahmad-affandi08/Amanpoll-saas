@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { statusKalibrasiBadge } from '@/features/Kalibrasi/status';
+import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 
 interface Props {
   rencanaKalibrasi: RencanaKalibrasi[];
@@ -112,14 +113,14 @@ export default function RencanaKalibrasiIndex({
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (rencanaDiedit) {
-      form.put(`/kalibrasi/rencana/${rencanaDiedit.Id}`, {
+      form.put(ruteKalibrasi.rencanaDetail(rencanaDiedit.Id), {
         onSuccess: () => {
           setBukaDialog(false);
           form.reset();
         },
       });
     } else {
-      form.post('/kalibrasi/rencana', {
+      form.post(ruteKalibrasi.rencana, {
         onSuccess: () => {
           setBukaDialog(false);
           form.reset();
@@ -130,18 +131,18 @@ export default function RencanaKalibrasiIndex({
 
   const hapusRencana = (rk: RencanaKalibrasi) => {
     if (confirm(`Apakah Anda yakin ingin menghapus rencana kalibrasi untuk aset "${rk.aset?.Nama}"?`)) {
-      form.delete(`/kalibrasi/rencana/${rk.Id}`);
+      form.delete(ruteKalibrasi.rencanaDetail(rk.Id));
     }
   };
 
   const terapkanFilter = (field: string, value: string) => {
     router.get(
-      '/kalibrasi/rencana',
+      ruteKalibrasi.rencana,
       {
         ...filter,
         [field]: value === '__all__' ? undefined : value,
       },
-      { preserveState: true }
+      { preserveState: true },
     );
   };
 
@@ -161,11 +162,10 @@ export default function RencanaKalibrasiIndex({
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Rencana Kalibrasi
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Rencana Kalibrasi</h1>
             <p className="text-sm text-muted-foreground">
-              Atur siklus interval, tanggal jatuh tempo, dan mitra kalibrasi untuk setiap instrumen operasional.
+              Atur siklus interval, tanggal jatuh tempo, dan mitra kalibrasi untuk setiap instrumen
+              operasional.
             </p>
           </div>
           <Button onClick={bukaModalTambah} size="sm">
@@ -275,7 +275,7 @@ export default function RencanaKalibrasiIndex({
                         <tr key={rk.Id} className="hover:bg-permukaan-50 transition-colors">
                           <td className="px-4 py-3 font-medium text-foreground">
                             <Link
-                              href={`/kalibrasi/rencana/${rk.Id}`}
+                              href={ruteKalibrasi.rencanaDetail(rk.Id)}
                               className="font-semibold text-foreground hover:underline block"
                             >
                               {rk.aset?.Nama ?? 'Aset'}
@@ -305,8 +305,8 @@ export default function RencanaKalibrasiIndex({
                                   rk.SisaHari < 0
                                     ? 'text-bahaya-600 font-semibold'
                                     : rk.SisaHari <= rk.PeringatanHariSebelum
-                                    ? 'text-safety-600 font-medium'
-                                    : 'text-muted-foreground'
+                                      ? 'text-safety-600 font-medium'
+                                      : 'text-muted-foreground'
                                 }`}
                               >
                                 {rk.SisaHari < 0
@@ -323,7 +323,7 @@ export default function RencanaKalibrasiIndex({
                           <td className="px-4 py-3 text-right whitespace-nowrap">
                             <div className="flex items-center justify-end gap-1">
                               <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
-                                <Link href={`/kalibrasi/rencana/${rk.Id}`}>
+                                <Link href={ruteKalibrasi.rencanaDetail(rk.Id)}>
                                   Detail
                                   <ArrowRight className="size-3 ml-1" />
                                 </Link>
@@ -372,11 +372,7 @@ export default function RencanaKalibrasiIndex({
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="AsetId">Pilih Aset / Instrumen *</Label>
-              <Select
-                value={form.data.AsetId}
-                onValueChange={(val) => form.setData('AsetId', val)}
-                required
-              >
+              <Select value={form.data.AsetId} onValueChange={(val) => form.setData('AsetId', val)} required>
                 <SelectTrigger className="h-9 text-xs">
                   <SelectValue placeholder="Pilih Aset" />
                 </SelectTrigger>
@@ -388,9 +384,7 @@ export default function RencanaKalibrasiIndex({
                   ))}
                 </SelectContent>
               </Select>
-              {form.errors.AsetId && (
-                <p className="text-xs text-rose-600">{form.errors.AsetId}</p>
-              )}
+              {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -499,14 +493,17 @@ export default function RencanaKalibrasiIndex({
                 className="h-9 text-xs"
               />
               <p className="text-[11px] text-zinc-500">
-                Sistem akan memicu status "Segera Jatuh Tempo" dan mengirim notifikasi saat waktu tersisa mencapai nilai ini.
+                Sistem akan memicu status "Segera Jatuh Tempo" dan mengirim notifikasi saat waktu tersisa
+                mencapai nilai ini.
               </p>
             </div>
 
             <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
               <div className="space-y-0.5">
                 <Label htmlFor="AktifRencana">Status Aktif</Label>
-                <p className="text-xs text-zinc-500">Rencana aktif diperhitungkan dalam kepatuhan dan notifikasi.</p>
+                <p className="text-xs text-zinc-500">
+                  Rencana aktif diperhitungkan dalam kepatuhan dan notifikasi.
+                </p>
               </div>
               <Switch
                 id="AktifRencana"
@@ -516,11 +513,7 @@ export default function RencanaKalibrasiIndex({
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setBukaDialog(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setBukaDialog(false)}>
                 Batal
               </Button>
               <Button type="submit" disabled={form.processing}>

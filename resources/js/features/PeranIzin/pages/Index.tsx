@@ -9,12 +9,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { useIzin } from '@/hooks/use-izin';
 import type { Peran, KatalogIzin } from '@/features/PeranIzin/types';
+import { rutePeranIzin } from '@/features/PeranIzin/api';
+import { http } from '@/lib/http';
 
 interface Props {
   peran: Peran[];
@@ -22,17 +29,24 @@ interface Props {
 
 function DialogFormPeran({ peran }: { peran: Peran | null }) {
   const [buka, setBuka] = useState(false);
-  const form = useForm(peran
-    ? { Kode: peran.Kode, Nama: peran.Nama, Keterangan: peran.Keterangan ?? '' }
-    : { Kode: '', Nama: '', Keterangan: '' });
+  const form = useForm(
+    peran
+      ? { Kode: peran.Kode, Nama: peran.Nama, Keterangan: peran.Keterangan ?? '' }
+      : { Kode: '', Nama: '', Keterangan: '' },
+  );
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const opsi = { onSuccess: () => { setBuka(false); form.reset(); } };
+    const opsi = {
+      onSuccess: () => {
+        setBuka(false);
+        form.reset();
+      },
+    };
     if (peran) {
-      form.put(`/platform/peran/${peran.Id}`, opsi);
+      form.put(rutePeranIzin.detail(peran.Id), opsi);
     } else {
-      form.post('/platform/peran', opsi);
+      form.post(rutePeranIzin.index, opsi);
     }
   };
 
@@ -44,11 +58,17 @@ function DialogFormPeran({ peran }: { peran: Peran | null }) {
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>{peran ? 'Ubah Peran' : 'Tambah Peran'}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{peran ? 'Ubah Peran' : 'Tambah Peran'}</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
             <Label>Kode</Label>
-            <Input value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} className="font-mono" />
+            <Input
+              value={form.data.Kode}
+              onChange={(e) => form.setData('Kode', e.target.value)}
+              className="font-mono"
+            />
             {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
           </div>
           <div className="space-y-2">
@@ -58,10 +78,15 @@ function DialogFormPeran({ peran }: { peran: Peran | null }) {
           </div>
           <div className="space-y-2">
             <Label>Keterangan</Label>
-            <Textarea value={form.data.Keterangan} onChange={(e) => form.setData('Keterangan', e.target.value)} />
+            <Textarea
+              value={form.data.Keterangan}
+              onChange={(e) => form.setData('Keterangan', e.target.value)}
+            />
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={form.processing}>Simpan</Button>
+            <Button type="submit" disabled={form.processing}>
+              Simpan
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -77,9 +102,7 @@ function DialogKelolaIzin({ peran }: { peran: Peran }) {
 
   useEffect(() => {
     if (buka && !katalog) {
-      fetch('/platform/izin', { headers: { Accept: 'application/json' } })
-        .then((r) => r.json())
-        .then((json) => setKatalog(json.data));
+      http.get(rutePeranIzin.daftarIzin).then((res) => setKatalog(res.data.data));
     }
   }, [buka, katalog]);
 
@@ -89,36 +112,47 @@ function DialogKelolaIzin({ peran }: { peran: Peran }) {
 
   const simpan = () => {
     setMenyimpan(true);
-    router.put(`/platform/peran/${peran.Id}/izin`, { IzinId: terpilih }, {
-      preserveScroll: true,
-      onSuccess: () => setBuka(false),
-      onFinish: () => setMenyimpan(false),
-    });
+    router.put(
+      rutePeranIzin.izin(peran.Id),
+      { IzinId: terpilih },
+      {
+        preserveScroll: true,
+        onSuccess: () => setBuka(false),
+        onFinish: () => setMenyimpan(false),
+      },
+    );
   };
 
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">Kelola Izin</Button>
+        <Button variant="outline" size="sm">
+          Kelola Izin
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader><DialogTitle>Izin untuk {peran.Nama}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Izin untuk {peran.Nama}</DialogTitle>
+        </DialogHeader>
         {!katalog && <p className="text-sm text-muted-foreground">Memuat katalog izin...</p>}
-        {katalog && Object.entries(katalog).map(([modul, daftar]) => (
-          <div key={modul} className="mb-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">{modul}</h3>
-            <div className="space-y-2">
-              {daftar.map((izin) => (
-                <label key={izin.Id} className="flex items-center gap-2 text-sm">
-                  <Checkbox checked={terpilih.includes(izin.Id)} onCheckedChange={() => toggle(izin.Id)} />
-                  {izin.Nama}
-                </label>
-              ))}
+        {katalog &&
+          Object.entries(katalog).map(([modul, daftar]) => (
+            <div key={modul} className="mb-4">
+              <h3 className="mb-2 text-sm font-semibold text-foreground">{modul}</h3>
+              <div className="space-y-2">
+                {daftar.map((izin) => (
+                  <label key={izin.Id} className="flex items-center gap-2 text-sm">
+                    <Checkbox checked={terpilih.includes(izin.Id)} onCheckedChange={() => toggle(izin.Id)} />
+                    {izin.Nama}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <DialogFooter>
-          <Button onClick={simpan} disabled={menyimpan || !katalog}>Simpan Izin</Button>
+          <Button onClick={simpan} disabled={menyimpan || !katalog}>
+            Simpan Izin
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -131,54 +165,63 @@ export default function PeranIzinIndex({ peran }: Props) {
 
   const hapus = (item: Peran) => {
     if (!confirm(`Hapus peran "${item.Nama}"?`)) return;
-    router.delete(`/platform/peran/${item.Id}`, { preserveScroll: true });
+    router.delete(rutePeranIzin.detail(item.Id), { preserveScroll: true });
   };
 
-  const columns = useMemo<ColumnDef<Peran>[]>(() => [
-    {
-      accessorKey: 'Kode',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Kode" />,
-      cell: ({ row }) => <span className="font-mono text-sm">{row.original.Kode}</span>,
-      meta: { label: 'Kode' },
-    },
-    {
-      accessorKey: 'Nama',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
-      cell: ({ row }) => (
-        <div>
-          <div className="font-medium text-foreground">{row.original.Nama}</div>
-          {row.original.BawaanSistem && <Badge variant="secondary">Bawaan Sistem</Badge>}
-        </div>
-      ),
-      meta: { label: 'Nama' },
-    },
-    {
-      accessorKey: 'JumlahIzin',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Izin" />,
-      meta: { label: 'Izin' },
-    },
-    {
-      accessorKey: 'JumlahPengguna',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Pengguna" />,
-      meta: { label: 'Pengguna' },
-    },
-    ...(bolehKelola ? [{
-      id: 'aksi',
-      header: 'Aksi',
-      cell: ({ row }: { row: { original: Peran } }) => (
-        <div className="flex justify-end gap-2">
-          <DialogFormPeran peran={row.original} />
-          <DialogKelolaIzin peran={row.original} />
-          {!row.original.BawaanSistem && (
-            <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
-          )}
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      meta: { label: 'Aksi' },
-    } satisfies ColumnDef<Peran>] : []),
-  ], [bolehKelola]);
+  const columns = useMemo<ColumnDef<Peran>[]>(
+    () => [
+      {
+        accessorKey: 'Kode',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Kode" />,
+        cell: ({ row }) => <span className="font-mono text-sm">{row.original.Kode}</span>,
+        meta: { label: 'Kode' },
+      },
+      {
+        accessorKey: 'Nama',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+        cell: ({ row }) => (
+          <div>
+            <div className="font-medium text-foreground">{row.original.Nama}</div>
+            {row.original.BawaanSistem && <Badge variant="secondary">Bawaan Sistem</Badge>}
+          </div>
+        ),
+        meta: { label: 'Nama' },
+      },
+      {
+        accessorKey: 'JumlahIzin',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Izin" />,
+        meta: { label: 'Izin' },
+      },
+      {
+        accessorKey: 'JumlahPengguna',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Pengguna" />,
+        meta: { label: 'Pengguna' },
+      },
+      ...(bolehKelola
+        ? [
+            {
+              id: 'aksi',
+              header: 'Aksi',
+              cell: ({ row }: { row: { original: Peran } }) => (
+                <div className="flex justify-end gap-2">
+                  <DialogFormPeran peran={row.original} />
+                  <DialogKelolaIzin peran={row.original} />
+                  {!row.original.BawaanSistem && (
+                    <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
+                      Hapus
+                    </Button>
+                  )}
+                </div>
+              ),
+              enableSorting: false,
+              enableHiding: false,
+              meta: { label: 'Aksi' },
+            } satisfies ColumnDef<Peran>,
+          ]
+        : []),
+    ],
+    [bolehKelola],
+  );
 
   return (
     <AppLayout>
@@ -191,7 +234,13 @@ export default function PeranIzinIndex({ peran }: Props) {
         {bolehKelola && <DialogFormPeran peran={null} />}
       </div>
 
-      <DataTable columns={columns} data={peran} pencarianPlaceholder="Cari nama atau kode peran..." pesanKosong="Belum ada peran." ilustrasiKosong="/assets/3d/peran-izin.webp" />
+      <DataTable
+        columns={columns}
+        data={peran}
+        pencarianPlaceholder="Cari nama atau kode peran..."
+        pesanKosong="Belum ada peran."
+        ilustrasiKosong="/assets/3d/peran-izin.webp"
+      />
     </AppLayout>
   );
 }

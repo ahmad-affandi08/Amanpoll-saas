@@ -18,7 +18,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import type { KategoriKeluhan, PrioritasKeluhan } from '@/features/Keluhan';
+import type { KategoriKeluhan, PrioritasKeluhan } from '@/features/Keluhan/types';
+import { ruteKategoriKeluhan } from '@/features/KategoriKeluhan/api';
 
 interface Ringkas {
   Id: string;
@@ -64,9 +65,7 @@ function DialogKategori({
       TingkatLayananId: data.TingkatLayananId === TANPA ? null : data.TingkatLayananId,
       PeranPenanggungJawabId: data.PeranPenanggungJawabId === TANPA ? null : data.PeranPenanggungJawabId,
     }));
-    item
-      ? form.put(`/pemeliharaan/kategori-keluhan/${item.Id}`, opsi)
-      : form.post('/pemeliharaan/kategori-keluhan', opsi);
+    item ? form.put(ruteKategoriKeluhan.detail(item.Id), opsi) : form.post(ruteKategoriKeluhan.index, opsi);
   };
 
   return (
@@ -253,7 +252,7 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
               size="sm"
               onClick={() =>
                 confirm(`Hapus kategori ${row.original.Nama}?`) &&
-                router.delete(`/pemeliharaan/kategori-keluhan/${row.original.Id}`)
+                router.delete(ruteKategoriKeluhan.detail(row.original.Id))
               }
             >
               Hapus

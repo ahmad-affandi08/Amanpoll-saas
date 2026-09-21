@@ -33,6 +33,7 @@ import type {
   TemplatDaftarPeriksa,
   TipeJawabanDaftarPeriksa,
 } from '@/features/PreventifInspeksi/types';
+import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 
 interface Props {
   templat: TemplatDaftarPeriksa;
@@ -110,7 +111,9 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
     }
 
     if (formButir.data.TipeJawaban === 'Pilihan' && formButir.data.PilihanTeks) {
-      payload.Pilihan = formButir.data.PilihanTeks.split(',').map((s) => s.trim()).filter(Boolean);
+      payload.Pilihan = formButir.data.PilihanTeks.split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
     }
 
     if (formButir.data.PemicuNilai) {
@@ -118,33 +121,25 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
     }
 
     if (butirDiedit) {
-      router.put(
-        `/preventif-inspeksi/templat-daftar-periksa/${templat.Id}/butir/${butirDiedit.Id}`,
-        payload,
-        {
-          onSuccess: () => setBukaDialogButir(false),
-        }
-      );
+      router.put(ruteDaftarPeriksa.butirDetail(templat.Id, butirDiedit.Id), payload, {
+        onSuccess: () => setBukaDialogButir(false),
+      });
     } else {
-      router.post(
-        `/preventif-inspeksi/templat-daftar-periksa/${templat.Id}/butir`,
-        payload,
-        {
-          onSuccess: () => setBukaDialogButir(false),
-        }
-      );
+      router.post(ruteDaftarPeriksa.butir(templat.Id), payload, {
+        onSuccess: () => setBukaDialogButir(false),
+      });
     }
   };
 
   const hapusButir = (butirId: string) => {
     if (confirm('Apakah Anda yakin ingin menghapus butir pertanyaan ini?')) {
-      router.delete(`/preventif-inspeksi/templat-daftar-periksa/${templat.Id}/butir/${butirId}`);
+      router.delete(ruteDaftarPeriksa.butirDetail(templat.Id, butirId));
     }
   };
 
   const buatVersiBaru = () => {
     if (confirm(`Buat versi baru dari templat "${templat.Nama}"? Versi saat ini akan diarsipkan.`)) {
-      router.post(`/preventif-inspeksi/templat-daftar-periksa/${templat.Id}/versi-baru`);
+      router.post(ruteDaftarPeriksa.versiBaru(templat.Id));
     }
   };
 
@@ -156,7 +151,7 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
         {/* Breadcrumb & Navigation */}
         <div className="flex items-center gap-2 text-sm text-permukaan-500">
           <Link
-            href="/preventif-inspeksi/templat-daftar-periksa"
+            href={ruteDaftarPeriksa.index}
             className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -175,7 +170,10 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
                 <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200">
                   Versi {templat.VersiTemplat}
                 </Badge>
-                <Badge variant={templat.Aktif ? 'default' : 'secondary'} className={templat.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}>
+                <Badge
+                  variant={templat.Aktif ? 'default' : 'secondary'}
+                  className={templat.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                >
                   {templat.Aktif ? 'Aktif' : 'Nonaktif'}
                 </Badge>
               </div>
@@ -187,11 +185,7 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                className="cursor-pointer gap-1.5"
-                onClick={buatVersiBaru}
-              >
+              <Button variant="outline" className="cursor-pointer gap-1.5" onClick={buatVersiBaru}>
                 <Copy className="h-4 w-4" />
                 Buat Versi Baru
               </Button>
@@ -217,7 +211,7 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
             </span>
           </div>
 
-          {(!templat.butir || templat.butir.length === 0) ? (
+          {!templat.butir || templat.butir.length === 0 ? (
             <div className="bg-card border border-dashed border-permukaan-300 rounded-xl p-8 text-center">
               <p className="text-permukaan-500 text-sm">Belum ada butir pertanyaan pada templat ini.</p>
               <Button
@@ -243,20 +237,22 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         {b.Kode && (
-                          <span className="font-mono text-xs font-medium text-permukaan-500">
-                            [{b.Kode}]
-                          </span>
+                          <span className="font-mono text-xs font-medium text-permukaan-500">[{b.Kode}]</span>
                         )}
-                        <span className="font-medium text-permukaan-900 text-sm">
-                          {b.Pertanyaan}
-                        </span>
+                        <span className="font-medium text-permukaan-900 text-sm">{b.Pertanyaan}</span>
                         {b.Wajib && (
-                          <Badge variant="destructive" className="text-[10px] px-1.5 py-0 bg-rose-50 text-rose-600 border border-rose-200">
+                          <Badge
+                            variant="destructive"
+                            className="text-[10px] px-1.5 py-0 bg-rose-50 text-rose-600 border border-rose-200"
+                          >
                             Wajib
                           </Badge>
                         )}
                         {b.BuktiFotoWajib && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-purple-50 text-purple-700 border-purple-200 gap-1">
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] px-1.5 py-0 bg-purple-50 text-purple-700 border-purple-200 gap-1"
+                          >
                             <Camera className="h-2.5 w-2.5" /> Foto Wajib
                           </Badge>
                         )}
@@ -265,7 +261,9 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
                       <div className="flex items-center gap-3 text-xs text-permukaan-500 flex-wrap">
                         <span className="inline-flex items-center gap-1">
                           {b.TipeJawaban === 'Angka' && <Hash className="h-3.5 w-3.5 text-blue-500" />}
-                          {b.TipeJawaban === 'YaTidak' && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />}
+                          {b.TipeJawaban === 'YaTidak' && (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                          )}
                           {b.TipeJawaban === 'Pilihan' && <List className="h-3.5 w-3.5 text-amber-500" />}
                           {b.TipeJawaban === 'Teks' && <Type className="h-3.5 w-3.5 text-permukaan-500" />}
                           Tipe: <strong className="text-permukaan-700">{b.TipeJawaban}</strong>
@@ -273,14 +271,13 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
 
                         {b.TipeJawaban === 'Angka' && (
                           <span>
-                            Rentang: <strong>{b.NilaiMinimum ?? '∞'}</strong> s/d <strong>{b.NilaiMaksimum ?? '∞'}</strong> {b.Satuan || ''}
+                            Rentang: <strong>{b.NilaiMinimum ?? '∞'}</strong> s/d{' '}
+                            <strong>{b.NilaiMaksimum ?? '∞'}</strong> {b.Satuan || ''}
                           </span>
                         )}
 
                         {b.TipeJawaban === 'Pilihan' && b.Pilihan && (
-                          <span>
-                            Pilihan: {b.Pilihan.join(' | ')}
-                          </span>
+                          <span>Pilihan: {b.Pilihan.join(' | ')}</span>
                         )}
 
                         {b.MemicuTemuanJika?.nilai !== undefined && (
@@ -323,14 +320,14 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
         <DialogContent className="sm:max-w-lg">
           <form onSubmit={simpanButir}>
             <DialogHeader>
-              <DialogTitle>
-                {butirDiedit ? 'Edit Butir Pertanyaan' : 'Tambah Butir Pertanyaan'}
-              </DialogTitle>
+              <DialogTitle>{butirDiedit ? 'Edit Butir Pertanyaan' : 'Tambah Butir Pertanyaan'}</DialogTitle>
             </DialogHeader>
 
             <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-1">
               <div className="space-y-1.5">
-                <Label htmlFor="Pertanyaan">Pertanyaan / Parameter Pemeriksaan <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="Pertanyaan">
+                  Pertanyaan / Parameter Pemeriksaan <span className="text-rose-500">*</span>
+                </Label>
                 <Textarea
                   id="Pertanyaan"
                   placeholder="Misal: Periksa kebocoran oli pada seal motor"

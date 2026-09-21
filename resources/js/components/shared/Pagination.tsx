@@ -38,5 +38,9 @@ export function Pagination({ meta, onNavigasi }: PaginationProps) {
 }
 
 export function navigasiHalaman(halaman: number, paramLain: Record<string, string> = {}) {
-  router.get(window.location.pathname, { ...paramLain, page: halaman }, { preserveState: true, preserveScroll: true });
+  router.get(
+    window.location.pathname,
+    { ...paramLain, page: halaman },
+    { preserveState: true, preserveScroll: true },
+  );
 }

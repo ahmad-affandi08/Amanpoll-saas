@@ -1,1 +1,0 @@
-export type IdStok = string;

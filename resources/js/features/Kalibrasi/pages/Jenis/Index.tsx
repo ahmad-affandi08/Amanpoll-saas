@@ -29,6 +29,7 @@ import {
   ListOrdered,
 } from 'lucide-react';
 import type { JenisKalibrasi, TitikUkurKalibrasi } from '@/features/Kalibrasi/types';
+import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 
 interface Props {
   jenisKalibrasi: JenisKalibrasi[];
@@ -89,14 +90,14 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
   const simpanJenis = (e: FormEvent) => {
     e.preventDefault();
     if (jenisDiedit) {
-      formJenis.put(`/kalibrasi/jenis/${jenisDiedit.Id}`, {
+      formJenis.put(ruteKalibrasi.jenisDetail(jenisDiedit.Id), {
         onSuccess: () => {
           setBukaDialogJenis(false);
           formJenis.reset();
         },
       });
     } else {
-      formJenis.post('/kalibrasi/jenis', {
+      formJenis.post(ruteKalibrasi.jenis, {
         onSuccess: () => {
           setBukaDialogJenis(false);
           formJenis.reset();
@@ -107,7 +108,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
 
   const hapusJenis = (jenis: JenisKalibrasi) => {
     if (confirm(`Apakah Anda yakin ingin menghapus jenis kalibrasi "${jenis.Nama}"?`)) {
-      formJenis.delete(`/kalibrasi/jenis/${jenis.Id}`);
+      formJenis.delete(ruteKalibrasi.jenisDetail(jenis.Id));
     }
   };
 
@@ -146,14 +147,14 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
     if (!jenisAktifTitik) return;
 
     if (titikDiedit) {
-      formTitik.put(`/kalibrasi/titik-ukur/${titikDiedit.Id}`, {
+      formTitik.put(ruteKalibrasi.titikUkurDetail(titikDiedit.Id), {
         onSuccess: () => {
           setTitikDiedit(null);
           formTitik.reset();
         },
       });
     } else {
-      formTitik.post(`/kalibrasi/jenis/${jenisAktifTitik.Id}/titik-ukur`, {
+      formTitik.post(ruteKalibrasi.jenisTitikUkur(jenisAktifTitik.Id), {
         onSuccess: () => {
           formTitik.reset();
           formTitik.setData({
@@ -172,14 +173,15 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
 
   const hapusTitik = (titik: TitikUkurKalibrasi) => {
     if (confirm(`Hapus titik ukur standar "${titik.Nama}"?`)) {
-      formTitik.delete(`/kalibrasi/titik-ukur/${titik.Id}`);
+      formTitik.delete(ruteKalibrasi.titikUkurDetail(titik.Id));
     }
   };
 
-  const filteredJenis = jenisKalibrasi.filter((jk) =>
-    jk.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
-    jk.Kode.toLowerCase().includes(pencarian.toLowerCase()) ||
-    (jk.Deskripsi ?? '').toLowerCase().includes(pencarian.toLowerCase())
+  const filteredJenis = jenisKalibrasi.filter(
+    (jk) =>
+      jk.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
+      jk.Kode.toLowerCase().includes(pencarian.toLowerCase()) ||
+      (jk.Deskripsi ?? '').toLowerCase().includes(pencarian.toLowerCase()),
   );
 
   return (
@@ -190,9 +192,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Jenis Kalibrasi
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Jenis Kalibrasi</h1>
             <p className="text-sm text-muted-foreground">
               Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji.
             </p>
@@ -215,9 +215,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                 className="pl-8 h-9 text-xs"
               />
             </div>
-            <span className="text-xs text-muted-foreground">
-              Menampilkan {filteredJenis.length} jenis
-            </span>
+            <span className="text-xs text-muted-foreground">Menampilkan {filteredJenis.length} jenis</span>
           </CardHeader>
 
           <CardContent className="p-0">
@@ -249,11 +247,11 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                           <td className="px-4 py-3 font-mono font-semibold text-foreground whitespace-nowrap">
                             {jk.Kode}
                           </td>
-                          <td className="px-4 py-3 font-medium text-foreground">
-                            {jk.Nama}
-                          </td>
+                          <td className="px-4 py-3 font-medium text-foreground">{jk.Nama}</td>
                           <td className="px-4 py-3 text-muted-foreground max-w-xs truncate">
-                            {jk.Deskripsi || <span className="text-muted-foreground italic">Tidak ada deskripsi</span>}
+                            {jk.Deskripsi || (
+                              <span className="text-muted-foreground italic">Tidak ada deskripsi</span>
+                            )}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             <Button
@@ -268,7 +266,10 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {jk.Aktif ? (
-                              <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                              <Badge
+                                variant="outline"
+                                className="bg-emerald-50 text-emerald-700 border-emerald-200"
+                              >
                                 Aktif
                               </Badge>
                             ) : (
@@ -312,9 +313,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
       <Dialog open={bukaDialogJenis} onOpenChange={setBukaDialogJenis}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {jenisDiedit ? 'Edit Jenis Kalibrasi' : 'Tambah Jenis Kalibrasi'}
-            </DialogTitle>
+            <DialogTitle>{jenisDiedit ? 'Edit Jenis Kalibrasi' : 'Tambah Jenis Kalibrasi'}</DialogTitle>
             <DialogDescription>
               Tentukan kode unik, nama klasifikasi kalibrasi, dan metode atau unit pengukuran acuan.
             </DialogDescription>
@@ -330,9 +329,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                 onChange={(e) => formJenis.setData('Kode', e.target.value)}
                 required
               />
-              {formJenis.errors.Kode && (
-                <p className="text-xs text-rose-600">{formJenis.errors.Kode}</p>
-              )}
+              {formJenis.errors.Kode && <p className="text-xs text-rose-600">{formJenis.errors.Kode}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -344,9 +341,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                 onChange={(e) => formJenis.setData('Nama', e.target.value)}
                 required
               />
-              {formJenis.errors.Nama && (
-                <p className="text-xs text-rose-600">{formJenis.errors.Nama}</p>
-              )}
+              {formJenis.errors.Nama && <p className="text-xs text-rose-600">{formJenis.errors.Nama}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -363,7 +358,9 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
             <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
               <div className="space-y-0.5">
                 <Label htmlFor="Aktif">Status Aktif</Label>
-                <p className="text-xs text-zinc-500">Jenis ini dapat dipilih saat membuat rencana kalibrasi baru.</p>
+                <p className="text-xs text-zinc-500">
+                  Jenis ini dapat dipilih saat membuat rencana kalibrasi baru.
+                </p>
               </div>
               <Switch
                 id="Aktif"
@@ -373,11 +370,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setBukaDialogJenis(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setBukaDialogJenis(false)}>
                 Batal
               </Button>
               <Button type="submit" disabled={formJenis.processing}>
@@ -397,13 +390,17 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
               Titik Ukur Standar: {jenisAktifTitik?.Nama}
             </DialogTitle>
             <DialogDescription>
-              Definisikan titik uji acuan, toleransi deviasi plus/minus, dan satuan yang akan otomatis disalin saat kalibrasi dijadwalkan.
+              Definisikan titik uji acuan, toleransi deviasi plus/minus, dan satuan yang akan otomatis disalin
+              saat kalibrasi dijadwalkan.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 pt-2">
             {/* Form Input Titik Ukur */}
-            <form onSubmit={simpanTitik} className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-border space-y-3">
+            <form
+              onSubmit={simpanTitik}
+              className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-border space-y-3"
+            >
               <div className="font-semibold text-xs text-zinc-900 dark:text-zinc-100 flex items-center justify-between">
                 <span>{titikDiedit ? 'Edit Titik Ukur' : 'Tambah Titik Ukur Baru'}</span>
                 {titikDiedit && (
@@ -424,7 +421,9 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label htmlFor="TitikNama" className="text-xs">Nama Titik Uji *</Label>
+                  <Label htmlFor="TitikNama" className="text-xs">
+                    Nama Titik Uji *
+                  </Label>
                   <Input
                     id="TitikNama"
                     placeholder="mis. Suhu Titik Didih Air"
@@ -435,7 +434,9 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="TitikSatuan" className="text-xs">Satuan</Label>
+                  <Label htmlFor="TitikSatuan" className="text-xs">
+                    Satuan
+                  </Label>
                   <Input
                     id="TitikSatuan"
                     placeholder="mis. °C, bar, psi, mm, V"
@@ -448,7 +449,9 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
 
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div className="space-y-1">
-                  <Label htmlFor="NilaiReferensi" className="text-xs">Nilai Referensi</Label>
+                  <Label htmlFor="NilaiReferensi" className="text-xs">
+                    Nilai Referensi
+                  </Label>
                   <Input
                     id="NilaiReferensi"
                     type="number"
@@ -460,7 +463,9 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="ToleransiMinus" className="text-xs">Toleransi (-) *</Label>
+                  <Label htmlFor="ToleransiMinus" className="text-xs">
+                    Toleransi (-) *
+                  </Label>
                   <Input
                     id="ToleransiMinus"
                     type="number"
@@ -472,7 +477,9 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="ToleransiPlus" className="text-xs">Toleransi (+) *</Label>
+                  <Label htmlFor="ToleransiPlus" className="text-xs">
+                    Toleransi (+) *
+                  </Label>
                   <Input
                     id="ToleransiPlus"
                     type="number"
@@ -484,7 +491,9 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="TitikUrutan" className="text-xs">Urutan</Label>
+                  <Label htmlFor="TitikUrutan" className="text-xs">
+                    Urutan
+                  </Label>
                   <Input
                     id="TitikUrutan"
                     type="number"
@@ -541,9 +550,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
                           <td className="px-3 py-2 font-mono text-[11px] text-zinc-600 dark:text-zinc-400">
                             -{tu.ToleransiMinus ?? 0} / +{tu.ToleransiPlus ?? 0}
                           </td>
-                          <td className="px-3 py-2 text-zinc-600 dark:text-zinc-400">
-                            {tu.Satuan ?? '-'}
-                          </td>
+                          <td className="px-3 py-2 text-zinc-600 dark:text-zinc-400">{tu.Satuan ?? '-'}</td>
                           <td className="px-3 py-2 text-right">
                             <div className="flex items-center justify-end gap-1">
                               <Button

@@ -23,7 +23,8 @@ import type {
   PemicuEskalasi,
   PrioritasKeluhan,
   TingkatLayanan,
-} from '@/features/Keluhan';
+} from '@/features/Keluhan/types';
+import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
 
 interface Ringkas {
   Id: string;
@@ -105,9 +106,7 @@ function DialogTingkatLayanan({
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const opsi = { preserveScroll: true, onSuccess: () => setBuka(false) };
-    item
-      ? form.put(`/pemeliharaan/tingkat-layanan/${item.Id}`, opsi)
-      : form.post('/pemeliharaan/tingkat-layanan', opsi);
+    item ? form.put(ruteTingkatLayanan.detail(item.Id), opsi) : form.post(ruteTingkatLayanan.index, opsi);
   };
 
   return (
@@ -434,7 +433,7 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }:
                     size="sm"
                     onClick={() =>
                       confirm(`Hapus tingkat layanan ${sla.Nama}?`) &&
-                      router.delete(`/pemeliharaan/tingkat-layanan/${sla.Id}`)
+                      router.delete(ruteTingkatLayanan.detail(sla.Id))
                     }
                   >
                     Hapus

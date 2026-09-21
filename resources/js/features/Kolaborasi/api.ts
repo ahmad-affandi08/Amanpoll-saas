@@ -1,5 +1,16 @@
-import axios from 'axios';
-
-export const apiKolaborasi = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteKolaborasi = {
+  berkas: '/kolaborasi/berkas',
+  berkasDetail: (id: string) => `/kolaborasi/berkas/${id}`,
+  berkasUnduh: (id: string) => `/kolaborasi/berkas/${id}/unduh`,
+  lampiran: '/kolaborasi/lampiran',
+  lampiranDetail: (id: string) => `/kolaborasi/lampiran/${id}`,
+  tag: '/kolaborasi/tag',
+  tagDetail: (id: string) => `/kolaborasi/tag/${id}`,
+  entitasTag: '/kolaborasi/entitas-tag',
+  entitasTagDetail: (id: string) => `/kolaborasi/entitas-tag/${id}`,
+  definisiKolomKustom: '/kolaborasi/definisi-kolom-kustom',
+  definisiKolomKustomDetail: (id: string) => `/kolaborasi/definisi-kolom-kustom/${id}`,
+  nilaiKolomKustom: '/kolaborasi/nilai-kolom-kustom',
+  komentar: '/kolaborasi/komentar',
+  komentarDetail: (id: string) => `/kolaborasi/komentar/${id}`,
+};

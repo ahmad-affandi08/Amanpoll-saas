@@ -32,13 +32,20 @@ import {
 } from 'lucide-react';
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
+import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 
 interface Props {
   pelaksanaanKalibrasi: PelaksanaanKalibrasi[];
   aset: { Id: string; KodeAset: string; Nama: string }[];
   jenisKalibrasi: { Id: string; Kode: string; Nama: string }[];
   penyedia: { Id: string; Kode: string; Nama: string }[];
-  rencanaKalibrasi: { Id: string; AsetId: string; JenisKalibrasiId?: string | null; IntervalHari: number; TanggalBerikutnya: string }[];
+  rencanaKalibrasi: {
+    Id: string;
+    AsetId: string;
+    JenisKalibrasiId?: string | null;
+    IntervalHari: number;
+    TanggalBerikutnya: string;
+  }[];
   teknisi: { Id: string; Nama: string }[];
   filter: {
     hasil?: string;
@@ -98,7 +105,7 @@ export default function PelaksanaanKalibrasiIndex({
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/kalibrasi/pelaksanaan', {
+    form.post(ruteKalibrasi.pelaksanaan, {
       onSuccess: () => {
         setBukaDialog(false);
         form.reset();
@@ -108,12 +115,12 @@ export default function PelaksanaanKalibrasiIndex({
 
   const terapkanFilter = (field: string, value: string) => {
     router.get(
-      '/kalibrasi/pelaksanaan',
+      ruteKalibrasi.pelaksanaan,
       {
         ...filter,
         [field]: value === '__all__' ? undefined : value,
       },
-      { preserveState: true }
+      { preserveState: true },
     );
   };
 
@@ -134,11 +141,10 @@ export default function PelaksanaanKalibrasiIndex({
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Pelaksanaan Kalibrasi
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Pelaksanaan Kalibrasi</h1>
             <p className="text-sm text-muted-foreground">
-              Catat hasil pengujian titik ukur, verifikasi sertifikat lab, dan pantau pengesahan kalibrasi instrumen.
+              Catat hasil pengujian titik ukur, verifikasi sertifikat lab, dan pantau pengesahan kalibrasi
+              instrumen.
             </p>
           </div>
           <Button onClick={() => setBukaDialog(true)} size="sm">
@@ -229,13 +235,15 @@ export default function PelaksanaanKalibrasiIndex({
                       return (
                         <tr key={pk.Id} className="hover:bg-permukaan-50 transition-colors">
                           <td className="px-4 py-3 font-mono font-semibold text-foreground whitespace-nowrap">
-                            <Link href={`/kalibrasi/pelaksanaan/${pk.Id}`} className="hover:underline">
+                            <Link href={ruteKalibrasi.pelaksanaanDetail(pk.Id)} className="hover:underline">
                               {pk.Nomor}
                             </Link>
                           </td>
                           <td className="px-4 py-3 font-medium text-foreground">
                             <div className="font-semibold">{pk.aset?.Nama ?? 'Aset'}</div>
-                            <div className="font-mono text-[11px] text-muted-foreground">{pk.aset?.KodeAset}</div>
+                            <div className="font-mono text-[11px] text-muted-foreground">
+                              {pk.aset?.KodeAset}
+                            </div>
                           </td>
                           <td className="px-3 py-3 text-muted-foreground whitespace-nowrap font-mono">
                             {pk.TanggalKalibrasi}
@@ -249,13 +257,17 @@ export default function PelaksanaanKalibrasiIndex({
                             {pk.NomorSertifikat ? (
                               <div className="flex items-center gap-1.5">
                                 <FileBadge className="size-3.5 text-sukses-600 shrink-0" />
-                                <span className="font-medium font-mono text-foreground">{pk.NomorSertifikat}</span>
+                                <span className="font-medium font-mono text-foreground">
+                                  {pk.NomorSertifikat}
+                                </span>
                               </div>
                             ) : (
                               <span className="text-muted-foreground italic">Belum terbit</span>
                             )}
                             {pk.Laboratorium && (
-                              <div className="text-[11px] text-muted-foreground mt-0.5">{pk.Laboratorium}</div>
+                              <div className="text-[11px] text-muted-foreground mt-0.5">
+                                {pk.Laboratorium}
+                              </div>
                             )}
                           </td>
                           <td className="px-3 py-3 text-muted-foreground whitespace-nowrap font-mono">
@@ -266,7 +278,7 @@ export default function PelaksanaanKalibrasiIndex({
                           </td>
                           <td className="px-4 py-3 text-right whitespace-nowrap">
                             <Button asChild variant="outline" size="sm" className="h-7 text-xs gap-1">
-                              <Link href={`/kalibrasi/pelaksanaan/${pk.Id}`}>
+                              <Link href={ruteKalibrasi.pelaksanaanDetail(pk.Id)}>
                                 Detail
                                 <ArrowRight className="size-3" />
                               </Link>
@@ -289,18 +301,15 @@ export default function PelaksanaanKalibrasiIndex({
           <DialogHeader>
             <DialogTitle>Jadwalkan Pelaksanaan Kalibrasi</DialogTitle>
             <DialogDescription>
-              Buat agenda kalibrasi baru. Titik ukur standar akan otomatis diinisialisasi jika jenis kalibrasi memiliki template.
+              Buat agenda kalibrasi baru. Titik ukur standar akan otomatis diinisialisasi jika jenis kalibrasi
+              memiliki template.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="AsetId">Pilih Aset / Instrumen *</Label>
-              <Select
-                value={form.data.AsetId}
-                onValueChange={onAsetChange}
-                required
-              >
+              <Select value={form.data.AsetId} onValueChange={onAsetChange} required>
                 <SelectTrigger className="h-9 text-xs">
                   <SelectValue placeholder="Pilih Aset" />
                 </SelectTrigger>
@@ -312,9 +321,7 @@ export default function PelaksanaanKalibrasiIndex({
                   ))}
                 </SelectContent>
               </Select>
-              {form.errors.AsetId && (
-                <p className="text-xs text-rose-600">{form.errors.AsetId}</p>
-              )}
+              {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -415,11 +422,7 @@ export default function PelaksanaanKalibrasiIndex({
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setBukaDialog(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setBukaDialog(false)}>
                 Batal
               </Button>
               <Button type="submit" disabled={form.processing}>

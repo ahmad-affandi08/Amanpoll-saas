@@ -1,5 +1,4 @@
-import axios from 'axios';
-
-export const apiTag = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteTag = {
+  index: '/kolaborasi/tag',
+  detail: (id: string) => `/kolaborasi/tag/${id}`,
+};

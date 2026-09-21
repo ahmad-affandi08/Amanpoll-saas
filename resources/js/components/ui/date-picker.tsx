@@ -111,12 +111,13 @@ export function DatePicker({
         >
           <div className="flex items-center gap-2 truncate">
             <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
-            <span className={cn('truncate font-medium', parsedValue ? 'text-foreground' : 'text-muted-foreground')}>
-              {parsedValue ? (
-                format(parsedValue, 'd MMMM yyyy', { locale: id })
-              ) : (
-                placeholder
+            <span
+              className={cn(
+                'truncate font-medium',
+                parsedValue ? 'text-foreground' : 'text-muted-foreground',
               )}
+            >
+              {parsedValue ? format(parsedValue, 'd MMMM yyyy', { locale: id }) : placeholder}
             </span>
           </div>
           {parsedValue && !disabled ? (
@@ -218,7 +219,10 @@ export function DatePicker({
           {/* Header Nama Hari */}
           <div className="grid grid-cols-7 text-center mb-1.5 select-none">
             {weekDays.map((hari) => (
-              <div key={hari} className="h-6 flex items-center justify-center text-[11px] font-semibold text-permukaan-400 uppercase tracking-wider">
+              <div
+                key={hari}
+                className="h-6 flex items-center justify-center text-[11px] font-semibold text-permukaan-400 uppercase tracking-wider"
+              >
                 {hari}
               </div>
             ))}

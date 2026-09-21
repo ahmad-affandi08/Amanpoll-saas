@@ -1,4 +1,8 @@
-import type { StatusPengajuanPenghapusanAset, StatusPermintaanMutasiAset, StatusSerahTerimaAset } from './types';
+import type {
+  StatusPengajuanPenghapusanAset,
+  StatusPermintaanMutasiAset,
+  StatusSerahTerimaAset,
+} from './types';
 
 type VarianBadge = 'sukses' | 'info' | 'netral' | 'bahaya' | 'perhatian' | 'proses';
 

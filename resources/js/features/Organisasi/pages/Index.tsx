@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Organisasi } from '@/features/Organisasi/types';
+import { ruteOrganisasi } from '@/features/Organisasi/api';
 
 interface Props {
   organisasi: Organisasi;
@@ -21,22 +22,40 @@ function FormLogo({ organisasi }: { organisasi: Organisasi }) {
   const pilihBerkas = (e: ChangeEvent<HTMLInputElement>) => {
     const berkas = e.target.files?.[0];
     if (!berkas) return;
-    router.post('/platform/organisasi/logo', { Logo: berkas }, {
-      forceFormData: true,
-      preserveScroll: true,
-      onFinish: () => { if (inputRef.current) inputRef.current.value = ''; },
-    });
+    router.post(
+      ruteOrganisasi.logo,
+      { Logo: berkas },
+      {
+        forceFormData: true,
+        preserveScroll: true,
+        onFinish: () => {
+          if (inputRef.current) inputRef.current.value = '';
+        },
+      },
+    );
   };
 
   return (
     <Card>
-      <CardHeader><CardTitle>Logo</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Logo</CardTitle>
+      </CardHeader>
       <CardContent className="flex items-center gap-4">
-        {organisasi.LogoUrl
-          ? <img src={organisasi.LogoUrl} alt="Logo organisasi" className="h-16 w-16 rounded-md border border-border object-contain" />
-          : <div className="flex h-16 w-16 items-center justify-center rounded-md border border-dashed border-border text-xs text-muted-foreground">Tidak ada</div>}
+        {organisasi.LogoUrl ? (
+          <img
+            src={organisasi.LogoUrl}
+            alt="Logo organisasi"
+            className="h-16 w-16 rounded-md border border-border object-contain"
+          />
+        ) : (
+          <div className="flex h-16 w-16 items-center justify-center rounded-md border border-dashed border-border text-xs text-muted-foreground">
+            Tidak ada
+          </div>
+        )}
         <div>
-          <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()}>Ganti Logo</Button>
+          <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()}>
+            Ganti Logo
+          </Button>
           <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={pilihBerkas} />
         </div>
       </CardContent>
@@ -61,7 +80,7 @@ export default function OrganisasiIndex({ organisasi }: Props) {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.put('/platform/organisasi');
+    form.put(ruteOrganisasi.index);
   };
 
   return (
@@ -70,7 +89,10 @@ export default function OrganisasiIndex({ organisasi }: Props) {
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Organisasi</h1>
         <p className="text-sm text-muted-foreground">
-          Kode: <span className="font-mono">{organisasi.Kode}</span> <Badge variant="outline" className="ml-2">{organisasi.Status}</Badge>
+          Kode: <span className="font-mono">{organisasi.Kode}</span>{' '}
+          <Badge variant="outline" className="ml-2">
+            {organisasi.Status}
+          </Badge>
         </p>
       </div>
 
@@ -80,7 +102,9 @@ export default function OrganisasiIndex({ organisasi }: Props) {
         </div>
         <div className="md:col-span-2">
           <Card>
-            <CardHeader><CardTitle>Profil Organisasi</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Profil Organisasi</CardTitle>
+            </CardHeader>
             <CardContent>
               <form onSubmit={submit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -91,42 +115,67 @@ export default function OrganisasiIndex({ organisasi }: Props) {
                   </div>
                   <div className="space-y-2">
                     <Label>Nama Legal</Label>
-                    <Input value={form.data.NamaLegal} onChange={(e) => form.setData('NamaLegal', e.target.value)} />
+                    <Input
+                      value={form.data.NamaLegal}
+                      onChange={(e) => form.setData('NamaLegal', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Jenis Usaha</Label>
-                    <Input value={form.data.JenisUsaha} onChange={(e) => form.setData('JenisUsaha', e.target.value)} />
+                    <Input
+                      value={form.data.JenisUsaha}
+                      onChange={(e) => form.setData('JenisUsaha', e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>NPWP</Label>
-                    <Input value={form.data.NomorIdentitasPajak} onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)} />
+                    <Input
+                      value={form.data.NomorIdentitasPajak}
+                      onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Email</Label>
-                    <Input type="email" value={form.data.Email} onChange={(e) => form.setData('Email', e.target.value)} />
+                    <Input
+                      type="email"
+                      value={form.data.Email}
+                      onChange={(e) => form.setData('Email', e.target.value)}
+                    />
                     {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label>Telepon</Label>
-                    <Input value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
+                    <Input
+                      value={form.data.Telepon}
+                      onChange={(e) => form.setData('Telepon', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Alamat</Label>
-                  <Textarea value={form.data.Alamat} onChange={(e) => form.setData('Alamat', e.target.value)} />
+                  <Textarea
+                    value={form.data.Alamat}
+                    onChange={(e) => form.setData('Alamat', e.target.value)}
+                  />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Negara</Label>
-                    <Input value={form.data.Negara} onChange={(e) => form.setData('Negara', e.target.value)} />
+                    <Input
+                      value={form.data.Negara}
+                      onChange={(e) => form.setData('Negara', e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Provinsi</Label>
-                    <Input value={form.data.Provinsi} onChange={(e) => form.setData('Provinsi', e.target.value)} />
+                    <Input
+                      value={form.data.Provinsi}
+                      onChange={(e) => form.setData('Provinsi', e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Kota</Label>
@@ -140,11 +189,19 @@ export default function OrganisasiIndex({ organisasi }: Props) {
                     value={form.data.ZonaWaktu}
                     onChange={(e) => form.setData('ZonaWaktu', e.target.value)}
                   >
-                    {ZONA_WAKTU.map((zona) => <option key={zona} value={zona}>{zona}</option>)}
+                    {ZONA_WAKTU.map((zona) => (
+                      <option key={zona} value={zona}>
+                        {zona}
+                      </option>
+                    ))}
                   </select>
-                  {form.errors.ZonaWaktu && <p className="text-sm text-destructive">{form.errors.ZonaWaktu}</p>}
+                  {form.errors.ZonaWaktu && (
+                    <p className="text-sm text-destructive">{form.errors.ZonaWaktu}</p>
+                  )}
                 </div>
-                <Button type="submit" disabled={form.processing}>Simpan Perubahan</Button>
+                <Button type="submit" disabled={form.processing}>
+                  Simpan Perubahan
+                </Button>
               </form>
             </CardContent>
           </Card>

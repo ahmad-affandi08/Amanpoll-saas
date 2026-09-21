@@ -1308,15 +1308,33 @@ Ketika pindah ke VPS, queue dapat dipindah ke Redis/Horizon tanpa mengubah busin
 
 - React menggunakan TypeScript.
 - Component presentational tidak melakukan request tersembunyi.
-- Feature memiliki `api.ts`, `schema.ts`, `types.ts`, dan komponen sesuai kebutuhan.
-- Form menggunakan pola konsisten.
-- Zod boleh digunakan untuk UX validation, tetapi backend tetap sumber kebenaran.
+- Form menggunakan pola konsisten: `useForm` Inertia, error ditampilkan dari `form.errors` milik server.
+- Zod hanya dipakai bila klien harus memvalidasi tanpa server (mis. draft offline). Backend tetap sumber kebenaran, jadi aturan Zod tidak boleh menduplikasi `FormRequest` secara manual.
 - State global hanya untuk state yang benar-benar lintas halaman.
 - Hindari prop drilling berlebihan.
 - Jangan membuat komponen generik sebelum ada minimal dua kebutuhan nyata.
 - Data table memiliki standard component, tetapi kolom bisnis tetap didefinisikan per feature.
 - Semua label UI Bahasa Indonesia.
 - Tidak ada dark mode.
+
+### 14.1 Struktur Feature
+
+Satu folder per feature di `resources/js/features/NamaFitur/`. Berkas dibuat saat ada isinya, bukan sebagai kerangka kosong:
+
+| Berkas | Dibuat bila | Isi |
+|---|---|---|
+| `pages/` | selalu | Halaman Inertia; nama halaman = `NamaFitur/Index`, `NamaFitur/Show`. |
+| `api.ts` | feature punya endpoint sendiri | Satu objek `ruteNamaFitur` berisi seluruh URL feature. URL tidak boleh ditulis langsung di halaman. |
+| `types.ts` | feature pemilik entitas | Tipe payload yang dikirim Resource backend. Satu entitas hanya boleh dideklarasikan di satu feature; feature lain mengimpornya. |
+| `status.ts` | ada peta status/varian badge | Konstanta pemetaan status ke varian tampilan. |
+| `components/` | ada komponen khusus feature | Komponen yang hanya dipakai feature ini. |
+| `hooks/` | ada hook khusus feature | Hook yang hanya dipakai feature ini. |
+
+Aturan tambahan:
+
+- Tidak ada file barrel `index.ts` per feature; impor memakai jalur eksplisit (`@/features/NamaFitur/types`).
+- Request non-Inertia memakai klien bersama `@/lib/http`, bukan instance HTTP per feature.
+- Tipe `Props` halaman dan tipe tampilan yang hanya dipakai satu halaman tetap ditulis di halaman itu.
 
 ---
 

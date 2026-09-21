@@ -8,13 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import { EmptyState } from '@/components/shared/EmptyState';
 import type { Paginasi } from '@/types/global';
 import type { SerahTerimaAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
+import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
 
 interface Props {
   serahTerima: Paginasi<SerahTerimaAset>;
@@ -30,7 +36,7 @@ function DialogBuatSerahTerima() {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    router.post('/serah-terima-aset', form.data, { onSuccess: () => setBuka(false) });
+    router.post(ruteSerahTerimaAset.index, form.data, { onSuccess: () => setBuka(false) });
   };
 
   return (
@@ -39,16 +45,26 @@ function DialogBuatSerahTerima() {
         <Button>Buat Dokumen Serah Terima</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>Buat Dokumen Serah Terima</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Buat Dokumen Serah Terima</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Jenis</Label>
-            <Input value={form.data.Jenis} onChange={(e) => form.setData('Jenis', e.target.value)} placeholder="Peminjaman, Pengembalian, dst." />
+            <Input
+              value={form.data.Jenis}
+              onChange={(e) => form.setData('Jenis', e.target.value)}
+              placeholder="Peminjaman, Pengembalian, dst."
+            />
             {form.errors.Jenis && <p className="text-sm text-destructive">{form.errors.Jenis}</p>}
           </div>
-          <p className="text-sm text-muted-foreground">Daftar aset dan kondisi dilengkapi setelah dokumen dibuat.</p>
+          <p className="text-sm text-muted-foreground">
+            Daftar aset dan kondisi dilengkapi setelah dokumen dibuat.
+          </p>
           <DialogFooter>
-            <Button type="submit" disabled={form.processing}>Buat</Button>
+            <Button type="submit" disabled={form.processing}>
+              Buat
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -61,7 +77,10 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
 
   const terapkanFilter = (v: string) => {
     setStatus(v);
-    router.get('/serah-terima-aset', v === SEMUA ? {} : { status: v }, { preserveState: true, preserveScroll: true });
+    router.get(ruteSerahTerimaAset.index, v === SEMUA ? {} : { status: v }, {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   return (
@@ -71,7 +90,9 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Serah Terima Aset</h1>
-            <p className="text-sm text-muted-foreground">Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi.</p>
+            <p className="text-sm text-muted-foreground">
+              Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi.
+            </p>
           </div>
           <DialogBuatSerahTerima />
         </div>
@@ -79,17 +100,26 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
         <div className="w-56 space-y-1.5">
           <Label>Status</Label>
           <Select value={status} onValueChange={terapkanFilter}>
-            <SelectTrigger><SelectValue placeholder="Semua" /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder="Semua" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value={SEMUA}>Semua</SelectItem>
-              {DAFTAR_STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              {DAFTAR_STATUS.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
         {serahTerima.data.length === 0 && (
           <div className="rounded-[9px] border border-border bg-card">
-            <EmptyState judul="Belum ada dokumen serah terima." deskripsi="Dokumen serah terima aset akan muncul di sini." />
+            <EmptyState
+              judul="Belum ada dokumen serah terima."
+              deskripsi="Dokumen serah terima aset akan muncul di sini."
+            />
           </div>
         )}
 
@@ -107,17 +137,26 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
               </TableHeader>
               <TableBody>
                 {serahTerima.data.map((s) => (
-                  <TableRow key={s.Id} className="cursor-pointer" onClick={() => router.visit(`/serah-terima-aset/${s.Id}`)}>
+                  <TableRow
+                    key={s.Id}
+                    className="cursor-pointer"
+                    onClick={() => router.visit(ruteSerahTerimaAset.detail(s.Id))}
+                  >
                     <TableCell className="font-mono text-xs">{s.Nomor}</TableCell>
                     <TableCell>{s.Jenis}</TableCell>
                     <TableCell>{s.NamaPihakMenyerahkan ?? '—'}</TableCell>
                     <TableCell>{s.NamaPihakMenerima ?? '—'}</TableCell>
-                    <TableCell><Badge variant={VARIAN_BADGE_STATUS_SERAH_TERIMA[s.Status]}>{s.Status}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant={VARIAN_BADGE_STATUS_SERAH_TERIMA[s.Status]}>{s.Status}</Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-            <Pagination meta={serahTerima.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, filter as Record<string, string>)} />
+            <Pagination
+              meta={serahTerima.meta}
+              onNavigasi={(halaman) => navigasiHalaman(halaman, filter as Record<string, string>)}
+            />
           </div>
         )}
       </div>

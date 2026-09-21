@@ -2,8 +2,12 @@ import { Table } from '@tanstack/react-table';
 import { SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
 interface DataTableViewOptionsProps<TData> {
@@ -22,7 +26,8 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel>Tampilkan Kolom</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {table.getAllColumns()
+        {table
+          .getAllColumns()
           .filter((column) => column.getCanHide())
           .map((column) => (
             <DropdownMenuCheckboxItem

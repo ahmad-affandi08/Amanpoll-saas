@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/AppLayout';
 import { Switch } from '@/components/ui/switch';
-import { apiNotifikasi } from '@/features/Notifikasi/api';
+import { http } from '@/lib/http';
 import type { PreferensiBaris } from '@/features/Notifikasi/types';
+import { rutePreferensiNotifikasi } from '@/features/PreferensiNotifikasi/api';
 
 export default function PreferensiNotifikasiIndex() {
   const [data, setData] = useState<PreferensiBaris[]>([]);
@@ -11,18 +12,29 @@ export default function PreferensiNotifikasiIndex() {
 
   const muat = () => {
     setMemuat(true);
-    apiNotifikasi.get('/notifikasi/preferensi/data').then((res) => setData(res.data.data)).finally(() => setMemuat(false));
+    http
+      .get(rutePreferensiNotifikasi.data)
+      .then((res) => setData(res.data.data))
+      .finally(() => setMemuat(false));
   };
 
   useEffect(muat, []);
 
   const ubah = (baris: PreferensiBaris, aktif: boolean) => {
-    setData((prev) => prev.map((b) => (b.JenisPeristiwa === baris.JenisPeristiwa && b.Kanal === baris.Kanal ? { ...b, Aktif: aktif } : b)));
-    router.post('/notifikasi/preferensi', {
-      JenisPeristiwa: baris.JenisPeristiwa,
-      Kanal: baris.Kanal,
-      Aktif: aktif,
-    }, { preserveScroll: true, preserveState: true });
+    setData((prev) =>
+      prev.map((b) =>
+        b.JenisPeristiwa === baris.JenisPeristiwa && b.Kanal === baris.Kanal ? { ...b, Aktif: aktif } : b,
+      ),
+    );
+    router.post(
+      rutePreferensiNotifikasi.index,
+      {
+        JenisPeristiwa: baris.JenisPeristiwa,
+        Kanal: baris.Kanal,
+        Aktif: aktif,
+      },
+      { preserveScroll: true, preserveState: true },
+    );
   };
 
   const peristiwaUnik = Array.from(new Set(data.map((b) => b.JenisPeristiwa)));
@@ -32,7 +44,9 @@ export default function PreferensiNotifikasiIndex() {
       <Head title="Preferensi Notifikasi" />
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Preferensi Notifikasi</h1>
-        <p className="text-sm text-muted-foreground">Atur peristiwa mana yang ingin Anda terima melalui tiap kanal notifikasi.</p>
+        <p className="text-sm text-muted-foreground">
+          Atur peristiwa mana yang ingin Anda terima melalui tiap kanal notifikasi.
+        </p>
       </div>
 
       {memuat && <p className="text-sm text-muted-foreground">Memuat...</p>}
@@ -49,11 +63,17 @@ export default function PreferensiNotifikasiIndex() {
             </thead>
             <tbody>
               {peristiwaUnik.map((jenisPeristiwa) => {
-                const barisInApp = data.find((b) => b.JenisPeristiwa === jenisPeristiwa && b.Kanal === 'InApp');
-                const barisEmail = data.find((b) => b.JenisPeristiwa === jenisPeristiwa && b.Kanal === 'Email');
+                const barisInApp = data.find(
+                  (b) => b.JenisPeristiwa === jenisPeristiwa && b.Kanal === 'InApp',
+                );
+                const barisEmail = data.find(
+                  (b) => b.JenisPeristiwa === jenisPeristiwa && b.Kanal === 'Email',
+                );
                 return (
                   <tr key={jenisPeristiwa} className="border-t border-border">
-                    <td className="px-4 py-3 text-foreground">{barisInApp?.Label ?? barisEmail?.Label ?? jenisPeristiwa}</td>
+                    <td className="px-4 py-3 text-foreground">
+                      {barisInApp?.Label ?? barisEmail?.Label ?? jenisPeristiwa}
+                    </td>
                     <td className="px-4 py-3 text-center">
                       {barisInApp && (
                         <Switch checked={barisInApp.Aktif} onCheckedChange={(v) => ubah(barisInApp, v)} />

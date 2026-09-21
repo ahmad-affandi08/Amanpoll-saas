@@ -8,11 +8,17 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
-import { apiKolaborasi } from '@/features/Kolaborasi/api';
+import { http } from '@/lib/http';
 import type { DefinisiKolomKustom, TipeDataKolomKustom } from '@/features/Kolaborasi/types';
+import { ruteKolomKustom } from '@/features/KolomKustom/api';
 
 interface Props {
   jenisEntitasTersedia: string[];
@@ -20,13 +26,21 @@ interface Props {
 
 const TIPE_DATA: TipeDataKolomKustom[] = ['Teks', 'Angka', 'Tanggal', 'Boolean', 'Pilihan', 'PilihanGanda'];
 
-function DialogFormDefinisi({ jenisEntitas, definisi, onSelesai }: { jenisEntitas: string; definisi: DefinisiKolomKustom | null; onSelesai: () => void }) {
+function DialogFormDefinisi({
+  jenisEntitas,
+  definisi,
+  onSelesai,
+}: {
+  jenisEntitas: string;
+  definisi: DefinisiKolomKustom | null;
+  onSelesai: () => void;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     JenisEntitas: jenisEntitas,
     Kode: definisi?.Kode ?? '',
     Label: definisi?.Label ?? '',
-    TipeData: definisi?.TipeData ?? 'Teks' as TipeDataKolomKustom,
+    TipeData: definisi?.TipeData ?? ('Teks' as TipeDataKolomKustom),
     Wajib: definisi?.Wajib ?? false,
     Pilihan: (definisi?.Pilihan ?? []).join(', '),
     Urutan: definisi?.Urutan ?? 0,
@@ -38,28 +52,46 @@ function DialogFormDefinisi({ jenisEntitas, definisi, onSelesai }: { jenisEntita
     e.preventDefault();
     const payload = {
       ...form.data,
-      Pilihan: perluPilihan ? form.data.Pilihan.split(',').map((s) => s.trim()).filter(Boolean) : null,
+      Pilihan: perluPilihan
+        ? form.data.Pilihan.split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : null,
     };
-    const opsi = { onSuccess: () => { setBuka(false); onSelesai(); } };
+    const opsi = {
+      onSuccess: () => {
+        setBuka(false);
+        onSelesai();
+      },
+    };
     if (definisi) {
-      router.put(`/kolaborasi/definisi-kolom-kustom/${definisi.Id}`, payload, opsi);
+      router.put(ruteKolomKustom.detail(definisi.Id), payload, opsi);
     } else {
-      router.post('/kolaborasi/definisi-kolom-kustom', payload, opsi);
+      router.post(ruteKolomKustom.index, payload, opsi);
     }
   };
 
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
       <DialogTrigger asChild>
-        <Button variant={definisi ? 'outline' : 'default'} size={definisi ? 'sm' : 'default'}>{definisi ? 'Ubah' : 'Tambah Kolom'}</Button>
+        <Button variant={definisi ? 'outline' : 'default'} size={definisi ? 'sm' : 'default'}>
+          {definisi ? 'Ubah' : 'Tambah Kolom'}
+        </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>{definisi ? 'Ubah Kolom Kustom' : 'Tambah Kolom Kustom'}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{definisi ? 'Ubah Kolom Kustom' : 'Tambah Kolom Kustom'}</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Kode</Label>
-              <Input value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} className="font-mono" disabled={!!definisi} />
+              <Input
+                value={form.data.Kode}
+                onChange={(e) => form.setData('Kode', e.target.value)}
+                className="font-mono"
+                disabled={!!definisi}
+              />
               {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
             </div>
             <div className="space-y-2">
@@ -70,17 +102,30 @@ function DialogFormDefinisi({ jenisEntitas, definisi, onSelesai }: { jenisEntita
           </div>
           <div className="space-y-2">
             <Label>Tipe Data</Label>
-            <Select value={form.data.TipeData} onValueChange={(v) => form.setData('TipeData', v as TipeDataKolomKustom)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.data.TipeData}
+              onValueChange={(v) => form.setData('TipeData', v as TipeDataKolomKustom)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {TIPE_DATA.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                {TIPE_DATA.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           {perluPilihan && (
             <div className="space-y-2">
               <Label>Opsi (pisahkan dengan koma)</Label>
-              <Input value={form.data.Pilihan} onChange={(e) => form.setData('Pilihan', e.target.value)} placeholder="Baik, Rusak, Perlu Servis" />
+              <Input
+                value={form.data.Pilihan}
+                onChange={(e) => form.setData('Pilihan', e.target.value)}
+                placeholder="Baik, Rusak, Perlu Servis"
+              />
               {form.errors.Pilihan && <p className="text-sm text-destructive">{form.errors.Pilihan}</p>}
             </div>
           )}
@@ -89,7 +134,9 @@ function DialogFormDefinisi({ jenisEntitas, definisi, onSelesai }: { jenisEntita
             Wajib diisi
           </label>
           <DialogFooter>
-            <Button type="submit" disabled={form.processing}>Simpan</Button>
+            <Button type="submit" disabled={form.processing}>
+              Simpan
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -105,8 +152,8 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
   const muat = () => {
     if (!jenisEntitas) return;
     setMemuat(true);
-    apiKolaborasi
-      .get('/kolaborasi/definisi-kolom-kustom', { params: { jenisEntitas } })
+    http
+      .get(ruteKolomKustom.index, { params: { jenisEntitas } })
       .then((res) => setDefinisi(res.data.data ?? res.data))
       .finally(() => setMemuat(false));
   };
@@ -115,7 +162,7 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
 
   const hapus = (item: DefinisiKolomKustom) => {
     if (!confirm(`Hapus kolom kustom "${item.Label}"?`)) return;
-    router.delete(`/kolaborasi/definisi-kolom-kustom/${item.Id}`, { preserveScroll: true, onSuccess: muat });
+    router.delete(ruteKolomKustom.detail(item.Id), { preserveScroll: true, onSuccess: muat });
   };
 
   return (
@@ -124,7 +171,9 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Kolom Kustom</h1>
-          <p className="text-sm text-muted-foreground">Tambahkan field tambahan khusus organisasi Anda untuk setiap jenis data.</p>
+          <p className="text-sm text-muted-foreground">
+            Tambahkan field tambahan khusus organisasi Anda untuk setiap jenis data.
+          </p>
         </div>
         {jenisEntitas && <DialogFormDefinisi jenisEntitas={jenisEntitas} definisi={null} onSelesai={muat} />}
       </div>
@@ -132,9 +181,15 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
       <div className="mb-4 w-64 space-y-2">
         <Label>Jenis Entitas</Label>
         <Select value={jenisEntitas} onValueChange={setJenisEntitas}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
-            {jenisEntitasTersedia.map((j) => <SelectItem key={j} value={j}>{j}</SelectItem>)}
+            {jenisEntitasTersedia.map((j) => (
+              <SelectItem key={j} value={j}>
+                {j}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -152,17 +207,25 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
           </TableHeader>
           <TableBody>
             {!memuat && definisi.length === 0 && (
-              <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Belum ada kolom kustom.</TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  Belum ada kolom kustom.
+                </TableCell>
+              </TableRow>
             )}
             {definisi.map((item) => (
               <TableRow key={item.Id}>
                 <TableCell className="font-medium text-foreground">{item.Label}</TableCell>
                 <TableCell className="font-mono text-xs text-muted-foreground">{item.Kode}</TableCell>
-                <TableCell><Badge variant="outline">{item.TipeData}</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="outline">{item.TipeData}</Badge>
+                </TableCell>
                 <TableCell>{item.Wajib ? 'Ya' : '-'}</TableCell>
                 <TableCell className="flex justify-end gap-2">
                   <DialogFormDefinisi jenisEntitas={jenisEntitas} definisi={item} onSelesai={muat} />
-                  <Button variant="ghost" size="sm" onClick={() => hapus(item)}>Hapus</Button>
+                  <Button variant="ghost" size="sm" onClick={() => hapus(item)}>
+                    Hapus
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

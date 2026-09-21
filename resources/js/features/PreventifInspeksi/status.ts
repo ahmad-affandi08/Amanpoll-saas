@@ -1,6 +1,9 @@
 export const statusPelaksanaanBadge: Record<string, { label: string; kelas: string }> = {
   Draft: { label: 'Draf', kelas: 'bg-permukaan-200 text-permukaan-700 border-permukaan-300' },
-  SedangDikerjakan: { label: 'Sedang Dikerjakan', kelas: 'bg-teknisi-50 text-teknisi-700 border-teknisi-200' },
+  SedangDikerjakan: {
+    label: 'Sedang Dikerjakan',
+    kelas: 'bg-teknisi-50 text-teknisi-700 border-teknisi-200',
+  },
   Selesai: { label: 'Selesai', kelas: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   Dibatalkan: { label: 'Dibatalkan', kelas: 'bg-rose-50 text-rose-700 border-rose-200' },
 };

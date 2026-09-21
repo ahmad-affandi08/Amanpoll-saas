@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { KonfigurasiOrganisasi } from '@/features/Konfigurasi/types';
+import { ruteKonfigurasiOrganisasi } from '@/features/KonfigurasiOrganisasi/api';
 
 interface Props {
   konfigurasi: KonfigurasiOrganisasi[];
@@ -18,10 +19,14 @@ function BarisKonfigurasi({ item }: { item: KonfigurasiOrganisasi }) {
 
   const simpan = (nilaiBaru: boolean | number | string) => {
     setMenyimpan(true);
-    router.put(`/platform/konfigurasi/${item.Kunci}`, { Nilai: nilaiBaru }, {
-      preserveScroll: true,
-      onFinish: () => setMenyimpan(false),
-    });
+    router.put(
+      ruteKonfigurasiOrganisasi.detail(item.Kunci),
+      { Nilai: nilaiBaru },
+      {
+        preserveScroll: true,
+        onFinish: () => setMenyimpan(false),
+      },
+    );
   };
 
   return (
@@ -82,7 +87,9 @@ export default function KonfigurasiOrganisasiIndex({ konfigurasi }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {daftar.map((item) => <BarisKonfigurasi key={item.Kunci} item={item} />)}
+              {daftar.map((item) => (
+                <BarisKonfigurasi key={item.Kunci} item={item} />
+              ))}
             </CardContent>
           </Card>
         ))}

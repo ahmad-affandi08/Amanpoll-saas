@@ -21,11 +21,12 @@ import type {
   PerintahKerja,
   PrioritasPerintahKerja,
   StatusPerintahKerja,
-} from '@/features/PerintahKerja';
+} from '@/features/PerintahKerja/types';
 import {
   VARIAN_PRIORITAS_PERINTAH_KERJA,
   VARIAN_STATUS_PERINTAH_KERJA,
 } from '@/features/PerintahKerja/status';
+import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 
 interface KeluhanRingkas {
   Id: string;
@@ -85,11 +86,7 @@ const DAFTAR_JENIS: JenisPerintahKerja[] = [
   'Vendor',
 ];
 
-function DialogBuatPerintahKerja({
-  keluhan,
-  aset,
-  lokasi,
-}: Pick<Props, 'keluhan' | 'aset' | 'lokasi'>) {
+function DialogBuatPerintahKerja({ keluhan, aset, lokasi }: Pick<Props, 'keluhan' | 'aset' | 'lokasi'>) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     KeluhanId: TANPA,
@@ -136,7 +133,7 @@ function DialogBuatPerintahKerja({
       DijadwalkanMulaiPada: data.DijadwalkanMulaiPada || null,
       DijadwalkanSelesaiPada: data.DijadwalkanSelesaiPada || null,
     }));
-    form.post('/pemeliharaan/perintah-kerja', {
+    form.post(rutePerintahKerja.index, {
       onSuccess: () => {
         setBuka(false);
         form.reset();
@@ -149,7 +146,7 @@ function DialogBuatPerintahKerja({
     if (ada) {
       form.setData(
         'AsetIds',
-        form.data.AsetIds.filter((id) => id !== idAset)
+        form.data.AsetIds.filter((id) => id !== idAset),
       );
     } else {
       form.setData('AsetIds', [...form.data.AsetIds, idAset]);
@@ -184,9 +181,7 @@ function DialogBuatPerintahKerja({
                   ))}
                 </SelectContent>
               </Select>
-              {form.errors.KeluhanId && (
-                <p className="text-sm text-destructive">{form.errors.KeluhanId}</p>
-              )}
+              {form.errors.KeluhanId && <p className="text-sm text-destructive">{form.errors.KeluhanId}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -238,17 +233,12 @@ function DialogBuatPerintahKerja({
                   ))}
                 </SelectContent>
               </Select>
-              {form.errors.Prioritas && (
-                <p className="text-sm text-destructive">{form.errors.Prioritas}</p>
-              )}
+              {form.errors.Prioritas && <p className="text-sm text-destructive">{form.errors.Prioritas}</p>}
             </div>
 
             <div className="space-y-1.5">
               <Label>Lokasi</Label>
-              <Select
-                value={form.data.LokasiId}
-                onValueChange={(val) => form.setData('LokasiId', val)}
-              >
+              <Select value={form.data.LokasiId} onValueChange={(val) => form.setData('LokasiId', val)}>
                 <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue placeholder="Pilih lokasi kerja" />
                 </SelectTrigger>
@@ -260,9 +250,7 @@ function DialogBuatPerintahKerja({
                   ))}
                 </SelectContent>
               </Select>
-              {form.errors.LokasiId && (
-                <p className="text-sm text-destructive">{form.errors.LokasiId}</p>
-              )}
+              {form.errors.LokasiId && <p className="text-sm text-destructive">{form.errors.LokasiId}</p>}
             </div>
           </div>
 
@@ -299,9 +287,7 @@ function DialogBuatPerintahKerja({
               onChange={(e) => form.setData('Deskripsi', e.target.value)}
               placeholder="Jelaskan detail perbaikan, gejala, atau langkah awal yang diharapkan..."
             />
-            {form.errors.Deskripsi && (
-              <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>
-            )}
+            {form.errors.Deskripsi && <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -356,9 +342,7 @@ function DialogBuatPerintahKerja({
 }
 
 function formatTanggal(nilai: string | null): string {
-  return nilai
-    ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
-    : '—';
+  return nilai ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
 }
 
 function formatRupiah(nilai: number): string {
@@ -379,9 +363,9 @@ export default function PerintahKerjaIndex({
 }: Props) {
   const filterData = (kunci: 'status' | 'prioritas', nilai: string) => {
     router.get(
-      '/pemeliharaan/perintah-kerja',
+      rutePerintahKerja.index,
       { ...filter, [kunci]: nilai === TANPA ? undefined : nilai },
-      { preserveState: true, replace: true }
+      { preserveState: true, replace: true },
     );
   };
 
@@ -397,16 +381,11 @@ export default function PerintahKerjaIndex({
               : 'Daftar penugasan perintah kerja dan pencatatan operasional Anda.'}
           </p>
         </div>
-        {dapatMengelola && (
-          <DialogBuatPerintahKerja keluhan={keluhan} aset={aset} lokasi={lokasi} />
-        )}
+        {dapatMengelola && <DialogBuatPerintahKerja keluhan={keluhan} aset={aset} lokasi={lokasi} />}
       </div>
 
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
-        <Select
-          value={filter.status ?? TANPA}
-          onValueChange={(val) => filterData('status', val)}
-        >
+        <Select value={filter.status ?? TANPA} onValueChange={(val) => filterData('status', val)}>
           <SelectTrigger className="w-full cursor-pointer">
             <SelectValue placeholder="Semua status" />
           </SelectTrigger>
@@ -422,10 +401,7 @@ export default function PerintahKerjaIndex({
           </SelectContent>
         </Select>
 
-        <Select
-          value={filter.prioritas ?? TANPA}
-          onValueChange={(val) => filterData('prioritas', val)}
-        >
+        <Select value={filter.prioritas ?? TANPA} onValueChange={(val) => filterData('prioritas', val)}>
           <SelectTrigger className="w-full cursor-pointer">
             <SelectValue placeholder="Semua prioritas" />
           </SelectTrigger>
@@ -470,7 +446,7 @@ export default function PerintahKerjaIndex({
                   <tr key={item.Id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs font-medium">
                       <Link
-                        href={`/pemeliharaan/perintah-kerja/${item.Id}`}
+                        href={rutePerintahKerja.detail(item.Id)}
                         className="text-teknisi-700 hover:underline cursor-pointer"
                       >
                         {item.Nomor}
@@ -497,20 +473,14 @@ export default function PerintahKerjaIndex({
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>
-                        {item.Status}
-                      </Badge>
+                      <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
                     </td>
                     <td className="px-4 py-3">
                       {item.Penugasan && item.Penugasan.length > 0 ? (
                         <div className="text-xs">
-                          <span className="font-medium">
-                            {item.Penugasan[0].NamaPengguna ?? 'Teknisi'}
-                          </span>
+                          <span className="font-medium">{item.Penugasan[0].NamaPengguna ?? 'Teknisi'}</span>
                           {item.Penugasan.length > 1 && (
-                            <span className="text-muted-foreground ml-1">
-                              (+{item.Penugasan.length - 1})
-                            </span>
+                            <span className="text-muted-foreground ml-1">(+{item.Penugasan.length - 1})</span>
                           )}
                         </div>
                       ) : (
@@ -519,16 +489,12 @@ export default function PerintahKerjaIndex({
                     </td>
                     <td className="px-4 py-3 text-xs">
                       <div>Kerja: {item.TotalWaktuKerjaMenit ?? 0}m</div>
-                      <div className="text-muted-foreground">
-                        Henti: {item.TotalDowntimeMenit ?? 0}m
-                      </div>
+                      <div className="text-muted-foreground">Henti: {item.TotalDowntimeMenit ?? 0}m</div>
                     </td>
-                    <td className="px-4 py-3 text-xs font-medium">
-                      {formatRupiah(item.TotalBiaya ?? 0)}
-                    </td>
+                    <td className="px-4 py-3 text-xs font-medium">{formatRupiah(item.TotalBiaya ?? 0)}</td>
                     <td className="px-4 py-3 text-right">
                       <Button asChild size="sm" variant="outline" className="cursor-pointer">
-                        <Link href={`/pemeliharaan/perintah-kerja/${item.Id}`}>Buka</Link>
+                        <Link href={rutePerintahKerja.detail(item.Id)}>Buka</Link>
                       </Button>
                     </td>
                   </tr>

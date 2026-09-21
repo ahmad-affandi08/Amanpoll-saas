@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { DetailRencanaPengadaan, RencanaPengadaan } from '@/features/RencanaPengadaan/types';
 import { formatUang } from '@/lib/uang';
+import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 
 interface PosRingkas {
   Id: string;
@@ -71,7 +72,7 @@ function DialogUbahRencana({ rencana, posAnggaran }: Pick<Props, 'rencana' | 'po
       ...data,
       PosAnggaranId: data.PosAnggaranId === TANPA ? null : data.PosAnggaranId,
     }));
-    form.put(`/perencanaan-pengadaan/rencana-pengadaan/${rencana.Id}`, {
+    form.put(ruteRencanaPengadaan.detail(rencana.Id), {
       preserveScroll: true,
       onSuccess: () => setBuka(false),
     });
@@ -159,7 +160,7 @@ function DialogTambahDetail({
       HargaEstimasi: data.HargaEstimasi || null,
       BulanRencana: data.BulanRencana === TANPA ? null : data.BulanRencana,
     }));
-    form.post(`/perencanaan-pengadaan/rencana-pengadaan/${rencana.Id}/detail`, {
+    form.post(ruteRencanaPengadaan.detail2(rencana.Id), {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -299,24 +300,24 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
   const draft = rencana.Status === 'Draft';
   function hapusDetail(item: DetailRencanaPengadaan): void {
     if (confirm(`Hapus detail ${item.Deskripsi}? Total estimasi akan dihitung ulang.`))
-      router.delete(`/perencanaan-pengadaan/rencana-pengadaan/${rencana.Id}/detail/${item.Id}`, {
+      router.delete(ruteRencanaPengadaan.detailDetail(rencana.Id, item.Id), {
         preserveScroll: true,
       });
   }
   function finalisasi(): void {
     if (confirm(`Finalisasi ${rencana.Nomor}? Rencana tidak dapat diubah lagi.`))
-      router.post(`/perencanaan-pengadaan/rencana-pengadaan/${rencana.Id}/finalisasi`);
+      router.post(ruteRencanaPengadaan.finalisasi(rencana.Id));
   }
   function hapus(): void {
     if (confirm(`Hapus draft rencana ${rencana.Nomor} beserta seluruh detailnya?`))
-      router.delete(`/perencanaan-pengadaan/rencana-pengadaan/${rencana.Id}`);
+      router.delete(ruteRencanaPengadaan.detail(rencana.Id));
   }
   return (
     <AppLayout>
       <Head title={`${rencana.Nomor} — Rencana Pengadaan`} />
       <div className="space-y-6">
         <Link
-          href="/perencanaan-pengadaan/rencana-pengadaan"
+          href={ruteRencanaPengadaan.index}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" /> Kembali ke Rencana Pengadaan

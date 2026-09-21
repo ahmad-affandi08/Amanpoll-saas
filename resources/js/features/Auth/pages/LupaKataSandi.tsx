@@ -3,6 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ruteAuth } from '@/features/Auth/api';
 
 export default function LupaKataSandi() {
   const { props } = usePage<{ flash: { sukses?: string | null } }>();
@@ -10,13 +11,16 @@ export default function LupaKataSandi() {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/lupa-kata-sandi');
+    form.post(ruteAuth.lupaKataSandi);
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
       <Head title="Lupa Kata Sandi" />
-      <form onSubmit={submit} className="w-full max-w-sm space-y-5 rounded-lg border border-border bg-card p-6 shadow-sm">
+      <form
+        onSubmit={submit}
+        className="w-full max-w-sm space-y-5 rounded-lg border border-border bg-card p-6 shadow-sm"
+      >
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Lupa Kata Sandi</h1>
           <p className="text-sm text-muted-foreground">
@@ -32,7 +36,9 @@ export default function LupaKataSandi() {
             value={form.data.KodeOrganisasi}
             onChange={(e) => form.setData('KodeOrganisasi', e.target.value)}
           />
-          {form.errors.KodeOrganisasi && <p className="text-sm text-destructive">{form.errors.KodeOrganisasi}</p>}
+          {form.errors.KodeOrganisasi && (
+            <p className="text-sm text-destructive">{form.errors.KodeOrganisasi}</p>
+          )}
         </div>
         <div className="space-y-1.5">
           <Label>Email</Label>
@@ -46,7 +52,10 @@ export default function LupaKataSandi() {
         <Button className="w-full" disabled={form.processing}>
           Kirim Tautan Reset
         </Button>
-        <a href="/login" className="block text-center text-sm text-muted-foreground hover:text-foreground">
+        <a
+          href={ruteAuth.login}
+          className="block text-center text-sm text-muted-foreground hover:text-foreground"
+        >
           Kembali ke halaman masuk
         </a>
       </form>

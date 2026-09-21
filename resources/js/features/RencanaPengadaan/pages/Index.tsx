@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Paginasi } from '@/types/global';
 import type { RencanaPengadaan, StatusRencanaPengadaan } from '@/features/RencanaPengadaan/types';
 import { formatUang } from '@/lib/uang';
+import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 
 interface PosRingkas {
   Id: string;
@@ -66,7 +67,7 @@ function DialogBuatRencana({ posAnggaran, usulanDisetujui }: Pick<Props, 'posAng
       ...data,
       PosAnggaranId: data.PosAnggaranId === TANPA ? null : data.PosAnggaranId,
     }));
-    form.post('/perencanaan-pengadaan/rencana-pengadaan', { onSuccess: () => setBuka(false) });
+    form.post(ruteRencanaPengadaan.index, { onSuccess: () => setBuka(false) });
   }
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
@@ -168,7 +169,7 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
   function terapkanFilter(event: FormEvent): void {
     event.preventDefault();
     router.get(
-      '/perencanaan-pengadaan/rencana-pengadaan',
+      ruteRencanaPengadaan.index,
       { cari: cari || undefined, tahun: tahun || undefined, status: status === SEMUA ? undefined : status },
       { preserveState: true },
     );
@@ -248,7 +249,7 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
                       <td className="px-4 py-3">
                         <Link
                           className="font-medium hover:text-primary"
-                          href={`/perencanaan-pengadaan/rencana-pengadaan/${item.Id}`}
+                          href={ruteRencanaPengadaan.detail(item.Id)}
                         >
                           {item.Nama}
                         </Link>
@@ -275,7 +276,7 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
               {rencana.data.map((item) => (
                 <Link
                   key={item.Id}
-                  href={`/perencanaan-pengadaan/rencana-pengadaan/${item.Id}`}
+                  href={ruteRencanaPengadaan.detail(item.Id)}
                   className="flex min-h-24 items-center gap-3 p-4"
                 >
                   <ListChecks className="size-5 shrink-0 text-primary" />

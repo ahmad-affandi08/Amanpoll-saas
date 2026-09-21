@@ -1731,12 +1731,10 @@ export default function Login() {
 }
 `);
 
+  // PRD 14.1: berkas feature dibuat saat ada isinya. Generator hanya menyiapkan
+  // halaman; api.ts/types.ts/status.ts/components/hooks menyusul saat feature digarap.
   for (const feature of FRONTEND_FEATURES) {
-    ['components', 'hooks', 'pages'].forEach((sub) => touchKeep(`resources/js/features/${feature}/${sub}`));
-    write(`resources/js/features/${feature}/api.ts`, `import axios from 'axios';\n\nexport const api${feature} = axios.create({\n  headers: { Accept: 'application/json' },\n});\n`);
-    write(`resources/js/features/${feature}/types.ts`, `export type Id${feature} = string;\n`);
-    write(`resources/js/features/${feature}/schema.ts`, `import { z } from 'zod';\n\nexport const schema${feature} = z.object({});\n`);
-    write(`resources/js/features/${feature}/index.ts`, `export * from './types';\nexport * from './schema';\n`);
+    touchKeep(`resources/js/features/${feature}/pages`);
     write(`resources/js/features/${feature}/pages/Index.tsx`, `export default function ${feature}Index() {\n  return (\n    <section className=\"space-y-2\">\n      <h1 className=\"text-2xl font-semibold tracking-tight\">${feature}</h1>\n      <p className=\"text-sm text-zinc-500\">Halaman modul ${feature}. Implementasikan use-case dan UI di feature ini.</p>\n    </section>\n  );\n}\n`);
   }
 }

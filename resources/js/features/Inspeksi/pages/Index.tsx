@@ -28,10 +28,8 @@ import {
   Calendar,
 } from 'lucide-react';
 import type { Inspeksi } from '@/features/PreventifInspeksi/types';
-import {
-  statusInspeksiBadge,
-  hasilInspeksiBadge,
-} from '@/features/PreventifInspeksi/status';
+import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
+import { ruteInspeksi } from '@/features/Inspeksi/api';
 
 interface Props {
   inspeksi: Inspeksi[];
@@ -41,13 +39,7 @@ interface Props {
   filter: { status?: string; hasil?: string };
 }
 
-export default function IndexInspeksi({
-  inspeksi,
-  templatInspeksi,
-  aset,
-  inspektor,
-  filter,
-}: Props) {
+export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspektor, filter }: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
 
@@ -60,7 +52,7 @@ export default function IndexInspeksi({
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/preventif-inspeksi/inspeksi', {
+    form.post(ruteInspeksi.index, {
       onSuccess: () => {
         setBukaDialog(false);
         form.reset();
@@ -70,19 +62,20 @@ export default function IndexInspeksi({
 
   const terapkanFilter = (field: string, value: string) => {
     router.get(
-      '/preventif-inspeksi/inspeksi',
+      ruteInspeksi.index,
       {
         ...filter,
         [field]: value === '__all__' ? undefined : value,
       },
-      { preserveState: true }
+      { preserveState: true },
     );
   };
 
-  const daftarTersaring = inspeksi.filter((i) =>
-    i.Nomor.toLowerCase().includes(pencarian.toLowerCase()) ||
-    (i.aset?.Nama || '').toLowerCase().includes(pencarian.toLowerCase()) ||
-    (i.templatInspeksi?.Nama || '').toLowerCase().includes(pencarian.toLowerCase())
+  const daftarTersaring = inspeksi.filter(
+    (i) =>
+      i.Nomor.toLowerCase().includes(pencarian.toLowerCase()) ||
+      (i.aset?.Nama || '').toLowerCase().includes(pencarian.toLowerCase()) ||
+      (i.templatInspeksi?.Nama || '').toLowerCase().includes(pencarian.toLowerCase()),
   );
 
   const lolosCount = inspeksi.filter((i) => i.Hasil === 'Lolos').length;
@@ -97,9 +90,7 @@ export default function IndexInspeksi({
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-permukaan-900">
-              Inspeksi Aset Berkala
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight text-permukaan-900">Inspeksi Aset Berkala</h1>
             <p className="text-sm text-permukaan-500">
               Pemeriksaan fisik, pemantauan kondisi aset, dan pencatatan temuan operasional.
             </p>
@@ -120,7 +111,9 @@ export default function IndexInspeksi({
 
                 <div className="grid gap-4 py-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="TemplatInspeksiId">Templat Inspeksi <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="TemplatInspeksiId">
+                      Templat Inspeksi <span className="text-rose-500">*</span>
+                    </Label>
                     <Select
                       value={form.data.TemplatInspeksiId}
                       onValueChange={(val) => form.setData('TemplatInspeksiId', val)}
@@ -140,7 +133,9 @@ export default function IndexInspeksi({
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="AsetId">Unit Aset yang Diinspeksi <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="AsetId">
+                      Unit Aset yang Diinspeksi <span className="text-rose-500">*</span>
+                    </Label>
                     <Select
                       value={form.data.AsetId}
                       onValueChange={(val) => form.setData('AsetId', val)}
@@ -160,7 +155,9 @@ export default function IndexInspeksi({
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="DijadwalkanPada">Tanggal Jadwal Inspeksi <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="DijadwalkanPada">
+                      Tanggal Jadwal Inspeksi <span className="text-rose-500">*</span>
+                    </Label>
                     <DatePicker
                       value={form.data.DijadwalkanPada}
                       onChange={(val) => form.setData('DijadwalkanPada', val)}
@@ -254,10 +251,7 @@ export default function IndexInspeksi({
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Select
-              value={filter.status || '__all__'}
-              onValueChange={(val) => terapkanFilter('status', val)}
-            >
+            <Select value={filter.status || '__all__'} onValueChange={(val) => terapkanFilter('status', val)}>
               <SelectTrigger className="cursor-pointer w-36 text-xs h-9">
                 <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
@@ -269,10 +263,7 @@ export default function IndexInspeksi({
               </SelectContent>
             </Select>
 
-            <Select
-              value={filter.hasil || '__all__'}
-              onValueChange={(val) => terapkanFilter('hasil', val)}
-            >
+            <Select value={filter.hasil || '__all__'} onValueChange={(val) => terapkanFilter('hasil', val)}>
               <SelectTrigger className="cursor-pointer w-40 text-xs h-9">
                 <SelectValue placeholder="Semua Hasil" />
               </SelectTrigger>
@@ -319,9 +310,7 @@ export default function IndexInspeksi({
                           {item.Nomor}
                         </td>
                         <td className="px-5 py-4 text-xs font-medium text-permukaan-900">
-                          <div className="font-semibold text-permukaan-800">
-                            {item.aset?.Nama}
-                          </div>
+                          <div className="font-semibold text-permukaan-800">{item.aset?.Nama}</div>
                           <span className="text-permukaan-500 font-mono">
                             {item.aset?.KodeAset} • {item.aset?.lokasi?.Nama ?? '-'}
                           </span>
@@ -351,7 +340,7 @@ export default function IndexInspeksi({
                         </td>
                         <td className="px-5 py-4 text-right">
                           <Link
-                            href={`/preventif-inspeksi/inspeksi/${item.Id}`}
+                            href={ruteInspeksi.detail(item.Id)}
                             className="inline-flex items-center gap-1 text-xs font-medium text-teknisi-600 hover:text-teknisi-700 cursor-pointer"
                           >
                             <span>Detail</span>

@@ -16,8 +16,9 @@ import {
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan';
+import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
+import { ruteKeluhan } from '@/features/Keluhan/api';
 
 interface Props {
   keluhan: Keluhan;
@@ -33,7 +34,7 @@ function DialogStatus({ keluhan, transisi }: { keluhan: Keluhan; transisi: Statu
   const form = useForm({ Status: transisi[0] ?? keluhan.Status, Catatan: '', Versi: keluhan.Versi });
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    form.put(`/pemeliharaan/keluhan/${keluhan.Id}/status`, {
+    form.put(ruteKeluhan.status(keluhan.Id), {
       preserveScroll: true,
       onSuccess: () => setBuka(false),
     });
@@ -93,7 +94,7 @@ function DialogPrioritas({ keluhan }: { keluhan: Keluhan }) {
   const form = useForm({ Prioritas: keluhan.Prioritas, Alasan: '', Versi: keluhan.Versi });
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    form.put(`/pemeliharaan/keluhan/${keluhan.Id}/prioritas`, {
+    form.put(ruteKeluhan.prioritas(keluhan.Id), {
       preserveScroll: true,
       onSuccess: () => setBuka(false),
     });
@@ -147,7 +148,7 @@ export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan
     <AppLayout>
       <Head title={keluhan.Nomor} />
       <div className="mb-5">
-        <Link href="/pemeliharaan/keluhan" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link href={ruteKeluhan.index} className="text-sm text-muted-foreground hover:text-foreground">
           ← Kembali ke Keluhan
         </Link>
       </div>

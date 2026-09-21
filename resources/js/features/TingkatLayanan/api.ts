@@ -1,5 +1,4 @@
-import axios from 'axios';
-
-export const apiTingkatLayanan = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteTingkatLayanan = {
+  index: '/pemeliharaan/tingkat-layanan',
+  detail: (id: string) => `/pemeliharaan/tingkat-layanan/${id}`,
+};

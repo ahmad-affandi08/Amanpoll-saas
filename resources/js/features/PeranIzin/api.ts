@@ -1,5 +1,6 @@
-import axios from 'axios';
-
-export const apiPeranIzin = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const rutePeranIzin = {
+  index: '/platform/peran',
+  daftarIzin: '/platform/izin',
+  detail: (id: string) => `/platform/peran/${id}`,
+  izin: (id: string) => `/platform/peran/${id}/izin`,
+};

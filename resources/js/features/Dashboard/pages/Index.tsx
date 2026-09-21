@@ -3,7 +3,10 @@ import AppLayout from '@/layouts/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ringkasan = [
-  ['Total Aset', '—'], ['Work Order Aktif', '—'], ['PM Jatuh Tempo', '—'], ['Kalibrasi Jatuh Tempo', '—'],
+  ['Total Aset', '—'],
+  ['Work Order Aktif', '—'],
+  ['PM Jatuh Tempo', '—'],
+  ['Kalibrasi Jatuh Tempo', '—'],
 ];
 
 export default function Dashboard() {
@@ -17,8 +20,12 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {ringkasan.map(([label, value]) => (
           <Card key={label}>
-            <CardHeader><CardTitle className="text-sm font-medium text-zinc-500">{label}</CardTitle></CardHeader>
-            <CardContent><div className="text-3xl font-semibold">{value}</div></CardContent>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-zinc-500">{label}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-semibold">{value}</div>
+            </CardContent>
           </Card>
         ))}
       </div>

@@ -23,11 +23,12 @@ import type {
   PenugasanPerintahKerjaItem,
   PerintahKerja,
   StatusPerintahKerja,
-} from '@/features/PerintahKerja';
+} from '@/features/PerintahKerja/types';
 import {
   VARIAN_PRIORITAS_PERINTAH_KERJA,
   VARIAN_STATUS_PERINTAH_KERJA,
 } from '@/features/PerintahKerja/status';
+import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 
 interface TeknisiOpsi {
   Id: string;
@@ -69,9 +70,7 @@ interface Props {
 }
 
 function formatTanggal(nilai: string | null): string {
-  return nilai
-    ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
-    : '—';
+  return nilai ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
 }
 
 function formatRupiah(nilai: number): string {
@@ -100,7 +99,7 @@ function DialogUbahStatus({
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    form.put(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/status`, {
+    form.put(rutePerintahKerja.status(perintahKerja.Id), {
       preserveScroll: true,
       onSuccess: () => setBuka(false),
     });
@@ -196,7 +195,7 @@ function DialogTugaskanTeknisi({
     if (form.data.PenggunaIds.includes(id)) {
       form.setData(
         'PenggunaIds',
-        form.data.PenggunaIds.filter((item) => item !== id)
+        form.data.PenggunaIds.filter((item) => item !== id),
       );
     } else {
       form.setData('PenggunaIds', [...form.data.PenggunaIds, id]);
@@ -205,7 +204,7 @@ function DialogTugaskanTeknisi({
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    form.post(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/penugasan`, {
+    form.post(rutePerintahKerja.penugasan(perintahKerja.Id), {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -228,10 +227,7 @@ function DialogTugaskanTeknisi({
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Peran Tugas</Label>
-            <Select
-              value={form.data.PeranTugas}
-              onValueChange={(val) => form.setData('PeranTugas', val)}
-            >
+            <Select value={form.data.PeranTugas} onValueChange={(val) => form.setData('PeranTugas', val)}>
               <SelectTrigger className="w-full cursor-pointer">
                 <SelectValue />
               </SelectTrigger>
@@ -267,9 +263,7 @@ function DialogTugaskanTeknisi({
                         className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
                       />
                       <span className="font-medium">{t.Nama}</span>
-                      {t.Jabatan && (
-                        <span className="text-xs text-muted-foreground">({t.Jabatan})</span>
-                      )}
+                      {t.Jabatan && <span className="text-xs text-muted-foreground">({t.Jabatan})</span>}
                     </div>
                     <Badge variant={t.BebanAktif > 2 ? 'perhatian' : 'netral'}>
                       {t.BebanAktif} tugas aktif
@@ -278,9 +272,7 @@ function DialogTugaskanTeknisi({
                 );
               })}
             </div>
-            {form.errors.PenggunaIds && (
-              <p className="text-sm text-destructive">{form.errors.PenggunaIds}</p>
-            )}
+            {form.errors.PenggunaIds && <p className="text-sm text-destructive">{form.errors.PenggunaIds}</p>}
           </div>
 
           <label className="flex items-center gap-2 text-sm cursor-pointer pt-1">
@@ -336,12 +328,12 @@ function DialogReservasiSukuCadang({
   };
 
   const stokTerpilih = stok.find(
-    (s) => s.GudangId === form.data.GudangId && s.SukuCadangId === form.data.SukuCadangId
+    (s) => s.GudangId === form.data.GudangId && s.SukuCadangId === form.data.SukuCadangId,
   );
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    form.post(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/reservasi-suku-cadang`, {
+    form.post(rutePerintahKerja.reservasiSukuCadang(perintahKerja.Id), {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -400,9 +392,7 @@ function DialogReservasiSukuCadang({
                 Tersedia bersih di gudang: {stokTerpilih.TersediaBersih} unit
               </p>
             )}
-            {form.errors.Jumlah && (
-              <p className="text-sm text-destructive">{form.errors.Jumlah}</p>
-            )}
+            {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
           </div>
 
           <div className="space-y-1.5">
@@ -442,7 +432,7 @@ function DialogCatatBiaya({ perintahKerja }: { perintahKerja: PerintahKerja }) {
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    form.post(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/biaya`, {
+    form.post(rutePerintahKerja.biaya(perintahKerja.Id), {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -465,10 +455,7 @@ function DialogCatatBiaya({ perintahKerja }: { perintahKerja: PerintahKerja }) {
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Jenis Biaya</Label>
-            <Select
-              value={form.data.JenisBiaya}
-              onValueChange={(val) => form.setData('JenisBiaya', val)}
-            >
+            <Select value={form.data.JenisBiaya} onValueChange={(val) => form.setData('JenisBiaya', val)}>
               <SelectTrigger className="w-full cursor-pointer">
                 <SelectValue />
               </SelectTrigger>
@@ -487,9 +474,7 @@ function DialogCatatBiaya({ perintahKerja }: { perintahKerja: PerintahKerja }) {
                 </SelectItem>
               </SelectContent>
             </Select>
-            {form.errors.JenisBiaya && (
-              <p className="text-sm text-destructive">{form.errors.JenisBiaya}</p>
-            )}
+            {form.errors.JenisBiaya && <p className="text-sm text-destructive">{form.errors.JenisBiaya}</p>}
           </div>
 
           <div className="space-y-1.5">
@@ -499,9 +484,7 @@ function DialogCatatBiaya({ perintahKerja }: { perintahKerja: PerintahKerja }) {
               onChange={(e) => form.setData('Deskripsi', e.target.value)}
               placeholder="Contoh: Jasa teknisi rewinding motor dinamo"
             />
-            {form.errors.Deskripsi && (
-              <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>
-            )}
+            {form.errors.Deskripsi && <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -513,9 +496,7 @@ function DialogCatatBiaya({ perintahKerja }: { perintahKerja: PerintahKerja }) {
                 value={form.data.Jumlah}
                 onChange={(e) => form.setData('Jumlah', Number(e.target.value))}
               />
-              {form.errors.Jumlah && (
-                <p className="text-sm text-destructive">{form.errors.Jumlah}</p>
-              )}
+              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -575,7 +556,7 @@ function DialogAnalisisKegagalan({
       KodePenyebabId: data.KodePenyebabId || null,
       KodeTindakanId: data.KodeTindakanId || null,
     }));
-    form.put(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/analisis-kegagalan`, {
+    form.put(rutePerintahKerja.analisisKegagalan(perintahKerja.Id), {
       preserveScroll: true,
       onSuccess: () => setBuka(false),
     });
@@ -705,7 +686,7 @@ function DialogDowntimeAset({ perintahKerja }: { perintahKerja: PerintahKerja })
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    form.post(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/waktu-henti`, {
+    form.post(rutePerintahKerja.waktuHenti(perintahKerja.Id), {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -765,10 +746,7 @@ function DialogDowntimeAset({ perintahKerja }: { perintahKerja: PerintahKerja })
           {form.data.Aksi === 'Mulai' && (
             <div className="space-y-1.5">
               <Label>Jenis Downtime</Label>
-              <Select
-                value={form.data.Jenis}
-                onValueChange={(val) => form.setData('Jenis', val)}
-              >
+              <Select value={form.data.Jenis} onValueChange={(val) => form.setData('Jenis', val)}>
                 <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue />
                 </SelectTrigger>
@@ -791,9 +769,7 @@ function DialogDowntimeAset({ perintahKerja }: { perintahKerja: PerintahKerja })
               onChange={(e) => form.setData('Alasan', e.target.value)}
               placeholder="Contoh: Bearing macet, overheat, perbaikan elektrikal..."
             />
-            {form.errors.Alasan && (
-              <p className="text-sm text-destructive">{form.errors.Alasan}</p>
-            )}
+            {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
           </div>
 
           <DialogFooter>
@@ -827,10 +803,9 @@ export default function PerintahKerjaShow({
   const tanganiResponsPenugasan = (respons: 'Terima' | 'Tolak') => {
     if (!penugasanSaya) return;
     formResponsPenugasan.setData('Respons', respons);
-    formResponsPenugasan.post(
-      `/pemeliharaan/perintah-kerja/${perintahKerja.Id}/penugasan/${penugasanSaya.Id}/respons`,
-      { preserveScroll: true }
-    );
+    formResponsPenugasan.post(rutePerintahKerja.penugasanRespons(perintahKerja.Id, penugasanSaya.Id), {
+      preserveScroll: true,
+    });
   };
 
   // Aksi waktu kerja
@@ -841,7 +816,7 @@ export default function PerintahKerjaShow({
 
   const tanganiWaktuKerja = (aksi: 'Mulai' | 'Jeda' | 'Lanjut' | 'Selesai') => {
     formWaktuKerja.setData('Aksi', aksi);
-    formWaktuKerja.post(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/waktu-kerja`, {
+    formWaktuKerja.post(rutePerintahKerja.waktuKerja(perintahKerja.Id), {
       preserveScroll: true,
     });
   };
@@ -857,7 +832,7 @@ export default function PerintahKerjaShow({
       ReservasiSukuCadangId: reservasiId,
       Aksi: aksi,
     });
-    formSukuCadang.post(`/pemeliharaan/perintah-kerja/${perintahKerja.Id}/suku-cadang`, {
+    formSukuCadang.post(rutePerintahKerja.sukuCadang(perintahKerja.Id), {
       preserveScroll: true,
     });
   };
@@ -872,7 +847,7 @@ export default function PerintahKerjaShow({
 
       <div className="mb-5">
         <Link
-          href="/pemeliharaan/perintah-kerja"
+          href={rutePerintahKerja.index}
           className="text-sm text-muted-foreground hover:text-foreground cursor-pointer"
         >
           ← Kembali ke Daftar Perintah Kerja
@@ -890,9 +865,7 @@ export default function PerintahKerjaShow({
             <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[perintahKerja.Prioritas]}>
               {perintahKerja.Prioritas}
             </Badge>
-            <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[perintahKerja.Status]}>
-              {perintahKerja.Status}
-            </Badge>
+            <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[perintahKerja.Status]}>{perintahKerja.Status}</Badge>
             {perintahKerja.NomorKeluhan && (
               <Badge variant="info">Keluhan: {perintahKerja.NomorKeluhan}</Badge>
             )}
@@ -901,8 +874,7 @@ export default function PerintahKerjaShow({
             {perintahKerja.Judul}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Lokasi: {perintahKerja.NamaLokasi ?? '—'} · Persentase Selesai:{' '}
-            {perintahKerja.PersentaseSelesai}%
+            Lokasi: {perintahKerja.NamaLokasi ?? '—'} · Persentase Selesai: {perintahKerja.PersentaseSelesai}%
           </p>
         </div>
 
@@ -941,8 +913,7 @@ export default function PerintahKerjaShow({
               <div>
                 <span className="font-semibold text-teknisi-700">Sesi Kerja Berjalan: </span>
                 <span>
-                  {sesiKerjaAktif.NamaPengguna ?? 'Teknisi'} sejak{' '}
-                  {formatTanggal(sesiKerjaAktif.MulaiPada)}
+                  {sesiKerjaAktif.NamaPengguna ?? 'Teknisi'} sejak {formatTanggal(sesiKerjaAktif.MulaiPada)}
                 </span>
               </div>
               {dapatMengoperasikan && (
@@ -999,24 +970,18 @@ export default function PerintahKerjaShow({
                   <div className="text-xs font-semibold text-sukses-600 uppercase tracking-wider">
                     Ringkasan Penyelesaian
                   </div>
-                  <p className="mt-1 text-sm text-foreground">
-                    {perintahKerja.RingkasanPenyelesaian}
-                  </p>
+                  <p className="mt-1 text-sm text-foreground">{perintahKerja.RingkasanPenyelesaian}</p>
                 </div>
               )}
 
               <div className="grid gap-4 border-t border-border pt-4 text-sm sm:grid-cols-2">
                 <div>
                   <span className="text-muted-foreground block text-xs">Jadwal Mulai</span>
-                  <span className="font-medium">
-                    {formatTanggal(perintahKerja.DijadwalkanMulaiPada)}
-                  </span>
+                  <span className="font-medium">{formatTanggal(perintahKerja.DijadwalkanMulaiPada)}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground block text-xs">Jadwal Selesai</span>
-                  <span className="font-medium">
-                    {formatTanggal(perintahKerja.DijadwalkanSelesaiPada)}
-                  </span>
+                  <span className="font-medium">{formatTanggal(perintahKerja.DijadwalkanSelesaiPada)}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground block text-xs">Downtime Mesin</span>
@@ -1052,8 +1017,7 @@ export default function PerintahKerjaShow({
                         {aset.Utama && <Badge variant="secondary">Aset Utama</Badge>}
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
-                        Kondisi Awal: {aset.KondisiAwal ?? '—'} · Kondisi Akhir:{' '}
-                        {aset.KondisiAkhir ?? '—'}
+                        Kondisi Awal: {aset.KondisiAwal ?? '—'} · Kondisi Akhir: {aset.KondisiAkhir ?? '—'}
                       </div>
                     </div>
                   </div>
@@ -1071,9 +1035,7 @@ export default function PerintahKerjaShow({
                   Reservasi suku cadang dari gudang dan catat pemakaian aktualnya.
                 </p>
               </div>
-              {dapatMengoperasikan && (
-                <DialogReservasiSukuCadang perintahKerja={perintahKerja} stok={stok} />
-              )}
+              {dapatMengoperasikan && <DialogReservasiSukuCadang perintahKerja={perintahKerja} stok={stok} />}
             </CardHeader>
             <CardContent className="space-y-4">
               {/* TABEL RESERVASI */}
@@ -1097,9 +1059,7 @@ export default function PerintahKerjaShow({
                         {perintahKerja.ReservasiSukuCadang.map((res) => (
                           <tr key={res.Id}>
                             <td className="px-3 py-2 font-medium">{res.NamaSukuCadang ?? '—'}</td>
-                            <td className="px-3 py-2 text-muted-foreground">
-                              {res.NamaGudang ?? '—'}
-                            </td>
+                            <td className="px-3 py-2 text-muted-foreground">{res.NamaGudang ?? '—'}</td>
                             <td className="px-3 py-2">{res.Jumlah} unit</td>
                             <td className="px-3 py-2">
                               <Badge variant={res.Status === 'Disetujui' ? 'sukses' : 'perhatian'}>
@@ -1182,27 +1142,20 @@ export default function PerintahKerjaShow({
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <div>
-                <CardTitle className="text-base font-semibold">
-                  Analisis Kegagalan & Akar Masalah
-                </CardTitle>
+                <CardTitle className="text-base font-semibold">Analisis Kegagalan & Akar Masalah</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Standar taksonomi Problem-Cause-Remedy untuk evaluasi keandalan aset.
                 </p>
               </div>
               {dapatMengoperasikan && (
-                <DialogAnalisisKegagalan
-                  perintahKerja={perintahKerja}
-                  kodeKegagalan={kodeKegagalan}
-                />
+                <DialogAnalisisKegagalan perintahKerja={perintahKerja} kodeKegagalan={kodeKegagalan} />
               )}
             </CardHeader>
             <CardContent>
               {perintahKerja.AnalisisKegagalan ? (
                 <dl className="grid gap-3 text-sm sm:grid-cols-3">
                   <div className="rounded-md border border-border p-3 bg-muted/20">
-                    <dt className="text-xs font-semibold text-muted-foreground uppercase">
-                      Akar Masalah
-                    </dt>
+                    <dt className="text-xs font-semibold text-muted-foreground uppercase">Akar Masalah</dt>
                     <dd className="mt-1 text-sm font-medium">
                       {perintahKerja.AnalisisKegagalan.AkarMasalah || '—'}
                     </dd>
@@ -1242,9 +1195,7 @@ export default function PerintahKerjaShow({
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-base font-semibold">Penugasan Teknisi</CardTitle>
-              {dapatMengelola && (
-                <DialogTugaskanTeknisi perintahKerja={perintahKerja} teknisi={teknisi} />
-              )}
+              {dapatMengelola && <DialogTugaskanTeknisi perintahKerja={perintahKerja} teknisi={teknisi} />}
             </CardHeader>
             <CardContent>
               {perintahKerja.Penugasan && perintahKerja.Penugasan.length > 0 ? (
@@ -1262,8 +1213,8 @@ export default function PerintahKerjaShow({
                           t.Status === 'Diterima'
                             ? 'sukses'
                             : t.Status === 'Ditolak'
-                            ? 'destructive'
-                            : 'perhatian'
+                              ? 'destructive'
+                              : 'perhatian'
                         }
                       >
                         {t.Status}
@@ -1307,7 +1258,8 @@ export default function PerintahKerjaShow({
                       <div>
                         <span className="font-medium block">{w.NamaPengguna ?? 'Teknisi'}</span>
                         <span className="text-muted-foreground">
-                          {formatTanggal(w.MulaiPada)} → {w.SelesaiPada ? formatTanggal(w.SelesaiPada) : 'Berjalan'}
+                          {formatTanggal(w.MulaiPada)} →{' '}
+                          {w.SelesaiPada ? formatTanggal(w.SelesaiPada) : 'Berjalan'}
                         </span>
                       </div>
                       <span className="font-mono font-medium">
@@ -1398,9 +1350,7 @@ export default function PerintahKerjaShow({
               <ol className="space-y-4">
                 {perintahKerja.RiwayatStatus?.map((riwayat) => (
                   <li key={riwayat.Id} className="relative border-l-2 border-border pl-4">
-                    <div className="font-medium text-sm text-foreground">
-                      {riwayat.StatusSesudah}
-                    </div>
+                    <div className="font-medium text-sm text-foreground">{riwayat.StatusSesudah}</div>
                     <div className="text-xs text-muted-foreground">
                       {formatTanggal(riwayat.DiubahPada)} · {riwayat.NamaPengubah ?? 'Sistem'}
                     </div>

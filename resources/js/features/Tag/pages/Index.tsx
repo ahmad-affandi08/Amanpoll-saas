@@ -7,11 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { Tag } from '@/features/Kolaborasi/types';
+import { ruteTag } from '@/features/Tag/api';
 
 interface Props {
   tag: Tag[];
@@ -25,21 +31,30 @@ function DialogFormTag({ tag }: { tag: Tag | null }) {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const opsi = { onSuccess: () => { setBuka(false); if (!tag) form.reset(); } };
+    const opsi = {
+      onSuccess: () => {
+        setBuka(false);
+        if (!tag) form.reset();
+      },
+    };
     if (tag) {
-      router.put(`/kolaborasi/tag/${tag.Id}`, form.data, opsi);
+      router.put(ruteTag.detail(tag.Id), form.data, opsi);
     } else {
-      router.post('/kolaborasi/tag', form.data, opsi);
+      router.post(ruteTag.index, form.data, opsi);
     }
   };
 
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
       <DialogTrigger asChild>
-        <Button variant={tag ? 'outline' : 'default'} size={tag ? 'sm' : 'default'}>{tag ? 'Ubah' : 'Tambah Tag'}</Button>
+        <Button variant={tag ? 'outline' : 'default'} size={tag ? 'sm' : 'default'}>
+          {tag ? 'Ubah' : 'Tambah Tag'}
+        </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>{tag ? 'Ubah Tag' : 'Tambah Tag'}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{tag ? 'Ubah Tag' : 'Tambah Tag'}</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
             <Label>Nama</Label>
@@ -55,11 +70,17 @@ function DialogFormTag({ tag }: { tag: Tag | null }) {
                 onChange={(e) => form.setData('Warna', e.target.value)}
                 className="h-10 w-14 rounded-md border border-input"
               />
-              <Input value={form.data.Warna} onChange={(e) => form.setData('Warna', e.target.value)} className="font-mono" />
+              <Input
+                value={form.data.Warna}
+                onChange={(e) => form.setData('Warna', e.target.value)}
+                className="font-mono"
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={form.processing}>Simpan</Button>
+            <Button type="submit" disabled={form.processing}>
+              Simpan
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -70,34 +91,42 @@ function DialogFormTag({ tag }: { tag: Tag | null }) {
 export default function TagIndex({ tag }: Props) {
   const hapus = (item: Tag) => {
     if (!confirm(`Hapus tag "${item.Nama}"? Semua penandaan pada entitas lain akan ikut terhapus.`)) return;
-    router.delete(`/kolaborasi/tag/${item.Id}`, { preserveScroll: true });
+    router.delete(ruteTag.detail(item.Id), { preserveScroll: true });
   };
 
-  const columns = useMemo<ColumnDef<Tag>[]>(() => [
-    {
-      accessorKey: 'Nama',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
-      cell: ({ row }) => (
-        <Badge style={{ backgroundColor: row.original.Warna ?? undefined, color: '#fff' }} variant={row.original.Warna ? undefined : 'secondary'}>
-          {row.original.Nama}
-        </Badge>
-      ),
-      meta: { label: 'Nama' },
-    },
-    {
-      id: 'aksi',
-      header: 'Aksi',
-      cell: ({ row }) => (
-        <div className="flex justify-end gap-2">
-          <DialogFormTag tag={row.original} />
-          <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      meta: { label: 'Aksi' },
-    },
-  ], []);
+  const columns = useMemo<ColumnDef<Tag>[]>(
+    () => [
+      {
+        accessorKey: 'Nama',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+        cell: ({ row }) => (
+          <Badge
+            style={{ backgroundColor: row.original.Warna ?? undefined, color: '#fff' }}
+            variant={row.original.Warna ? undefined : 'secondary'}
+          >
+            {row.original.Nama}
+          </Badge>
+        ),
+        meta: { label: 'Nama' },
+      },
+      {
+        id: 'aksi',
+        header: 'Aksi',
+        cell: ({ row }) => (
+          <div className="flex justify-end gap-2">
+            <DialogFormTag tag={row.original} />
+            <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
+              Hapus
+            </Button>
+          </div>
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        meta: { label: 'Aksi' },
+      },
+    ],
+    [],
+  );
 
   return (
     <AppLayout>
@@ -105,7 +134,9 @@ export default function TagIndex({ tag }: Props) {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tag</h1>
-          <p className="text-sm text-muted-foreground">Label bebas untuk menandai dan menyaring data lintas modul.</p>
+          <p className="text-sm text-muted-foreground">
+            Label bebas untuk menandai dan menyaring data lintas modul.
+          </p>
         </div>
         <DialogFormTag tag={null} />
       </div>

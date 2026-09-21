@@ -1,5 +1,3 @@
-import axios from 'axios';
-
-export const apiAudit = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteAudit = {
+  index: '/integrasi-audit/audit',
+};

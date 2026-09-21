@@ -8,6 +8,7 @@ import { LogoMark } from '@/components/shared/LogoMark';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ruteAuth } from '@/features/Auth/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,6 +55,7 @@ import {
   ChevronsUpDown,
   LogOut,
   ClipboardList,
+  ShoppingCart,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -161,6 +163,37 @@ const navRantaiPasok: GrupNav = {
         {
           label: 'Rencana Pengadaan',
           href: '/perencanaan-pengadaan/rencana-pengadaan',
+          kodeIzin: 'Pengadaan.Kelola',
+        },
+      ],
+    },
+    {
+      label: 'Pengadaan',
+      icon: ShoppingCart,
+      subItems: [
+        {
+          label: 'Permintaan Pembelian',
+          href: '/perencanaan-pengadaan/permintaan-pembelian',
+          kodeIzin: 'Pengadaan.Kelola',
+        },
+        {
+          label: 'Permintaan Penawaran',
+          href: '/perencanaan-pengadaan/permintaan-penawaran',
+          kodeIzin: 'Pengadaan.Kelola',
+        },
+        {
+          label: 'Pesanan Pembelian',
+          href: '/perencanaan-pengadaan/pesanan-pembelian',
+          kodeIzin: 'Pengadaan.Kelola',
+        },
+        {
+          label: 'Penerimaan Pembelian',
+          href: '/perencanaan-pengadaan/penerimaan-pembelian',
+          kodeIzin: 'Pengadaan.Kelola',
+        },
+        {
+          label: 'Tagihan Penyedia',
+          href: '/perencanaan-pengadaan/tagihan-penyedia',
           kodeIzin: 'Pengadaan.Kelola',
         },
       ],
@@ -543,7 +576,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
   const { auth } = page.props;
   const pathSekarang = page.url.split('?')[0];
   const { boleh } = useIzin();
-  const keluar = () => router.post('/logout');
+  const keluar = () => router.post(ruteAuth.logout);
 
   const grupTampil = semuaGrup
     .map((grup) => ({

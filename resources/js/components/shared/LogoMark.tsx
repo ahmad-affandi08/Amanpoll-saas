@@ -7,14 +7,7 @@ interface LogoProps {
  * LogoMark resmi Amanpoll (ikon perisai dengan peralatan teknisi).
  */
 export function LogoMark({ className = 'size-8', alt = 'Amanpoll' }: LogoProps) {
-  return (
-    <img
-      src="/images/branding/amanpoll-icon.png"
-      alt={alt}
-      className={className}
-      loading="eager"
-    />
-  );
+  return <img src="/images/branding/amanpoll-icon.png" alt={alt} className={className} loading="eager" />;
 }
 
 /**
@@ -38,12 +31,6 @@ export function LogoHorizontal({ className = 'h-8 w-auto', alt = 'Amanpoll' }: L
  */
 export function LogoVertical({ className = 'h-24 w-auto', alt = 'Amanpoll' }: LogoProps) {
   return (
-    <img
-      src="/images/branding/amanpoll-logo-vertical.png"
-      alt={alt}
-      className={className}
-      loading="eager"
-    />
+    <img src="/images/branding/amanpoll-logo-vertical.png" alt={alt} className={className} loading="eager" />
   );
 }
-

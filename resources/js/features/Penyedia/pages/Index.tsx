@@ -9,20 +9,28 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
-import { apiPenyedia } from '@/features/Penyedia/api';
+import { http } from '@/lib/http';
 import type {
-  Penyedia, KategoriPenyedia, KontakPenyedia, PenilaianPenyedia, RekapPenilaianPenyedia,
+  Penyedia,
+  KategoriPenyedia,
+  KontakPenyedia,
+  PenilaianPenyedia,
+  RekapPenilaianPenyedia,
 } from '@/features/Penyedia/types';
+import { rutePenyedia } from '@/features/Penyedia/api';
 
 interface Props {
   penyedia: Penyedia[];
@@ -35,12 +43,12 @@ function DialogKelolaKategori({ kategoriPenyedia }: { kategoriPenyedia: Kategori
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/penyedia/kategori', { onSuccess: () => form.reset(), preserveScroll: true });
+    form.post(rutePenyedia.kategori, { onSuccess: () => form.reset(), preserveScroll: true });
   };
 
   const hapus = (kategori: KategoriPenyedia) => {
     if (!confirm(`Hapus kategori "${kategori.Nama}"?`)) return;
-    router.delete(`/penyedia/kategori/${kategori.Id}`, { preserveScroll: true });
+    router.delete(rutePenyedia.kategoriDetail(kategori.Id), { preserveScroll: true });
   };
 
   return (
@@ -49,23 +57,44 @@ function DialogKelolaKategori({ kategoriPenyedia }: { kategoriPenyedia: Kategori
         <Button variant="outline">Kelola Kategori</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>Kategori Penyedia</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Kategori Penyedia</DialogTitle>
+        </DialogHeader>
         <div className="space-y-2">
           {kategoriPenyedia.map((k) => (
-            <div key={k.Id} className="flex items-center justify-between rounded-md border border-border px-3 py-2">
+            <div
+              key={k.Id}
+              className="flex items-center justify-between rounded-md border border-border px-3 py-2"
+            >
               <div>
                 <span className="text-sm font-medium text-foreground">{k.Nama}</span>
                 <span className="ml-2 font-mono text-xs text-muted-foreground">{k.Kode}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => hapus(k)}>Hapus</Button>
+              <Button variant="ghost" size="sm" onClick={() => hapus(k)}>
+                Hapus
+              </Button>
             </div>
           ))}
-          {kategoriPenyedia.length === 0 && <p className="text-sm text-muted-foreground">Belum ada kategori.</p>}
+          {kategoriPenyedia.length === 0 && (
+            <p className="text-sm text-muted-foreground">Belum ada kategori.</p>
+          )}
         </div>
         <form onSubmit={submit} className="flex gap-2 border-t border-border pt-4">
-          <Input placeholder="Kode" value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} className="w-28 font-mono" />
-          <Input placeholder="Nama kategori" value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} className="flex-1" />
-          <Button type="submit" disabled={form.processing}>Tambah</Button>
+          <Input
+            placeholder="Kode"
+            value={form.data.Kode}
+            onChange={(e) => form.setData('Kode', e.target.value)}
+            className="w-28 font-mono"
+          />
+          <Input
+            placeholder="Nama kategori"
+            value={form.data.Nama}
+            onChange={(e) => form.setData('Nama', e.target.value)}
+            className="flex-1"
+          />
+          <Button type="submit" disabled={form.processing}>
+            Tambah
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
@@ -73,26 +102,50 @@ function DialogKelolaKategori({ kategoriPenyedia }: { kategoriPenyedia: Kategori
 }
 
 function FormInfoPenyedia({ penyedia, onSukses }: { penyedia: Penyedia | null; onSukses?: () => void }) {
-  const form = useForm(penyedia
-    ? {
-        Kode: penyedia.Kode, Nama: penyedia.Nama, NamaLegal: penyedia.NamaLegal ?? '',
-        NomorIdentitasPajak: penyedia.NomorIdentitasPajak ?? '', Email: penyedia.Email ?? '',
-        Telepon: penyedia.Telepon ?? '', Website: penyedia.Website ?? '', Alamat: penyedia.Alamat ?? '',
-        Kota: penyedia.Kota ?? '', Provinsi: penyedia.Provinsi ?? '', Negara: penyedia.Negara ?? '',
-        Status: penyedia.Status,
-      }
-    : {
-        Kode: '', Nama: '', NamaLegal: '', NomorIdentitasPajak: '', Email: '', Telepon: '', Website: '',
-        Alamat: '', Kota: '', Provinsi: '', Negara: '', Status: 'Aktif' as const,
-      });
+  const form = useForm(
+    penyedia
+      ? {
+          Kode: penyedia.Kode,
+          Nama: penyedia.Nama,
+          NamaLegal: penyedia.NamaLegal ?? '',
+          NomorIdentitasPajak: penyedia.NomorIdentitasPajak ?? '',
+          Email: penyedia.Email ?? '',
+          Telepon: penyedia.Telepon ?? '',
+          Website: penyedia.Website ?? '',
+          Alamat: penyedia.Alamat ?? '',
+          Kota: penyedia.Kota ?? '',
+          Provinsi: penyedia.Provinsi ?? '',
+          Negara: penyedia.Negara ?? '',
+          Status: penyedia.Status,
+        }
+      : {
+          Kode: '',
+          Nama: '',
+          NamaLegal: '',
+          NomorIdentitasPajak: '',
+          Email: '',
+          Telepon: '',
+          Website: '',
+          Alamat: '',
+          Kota: '',
+          Provinsi: '',
+          Negara: '',
+          Status: 'Aktif' as const,
+        },
+  );
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const opsi = { onSuccess: () => { if (!penyedia) form.reset(); onSukses?.(); } };
+    const opsi = {
+      onSuccess: () => {
+        if (!penyedia) form.reset();
+        onSukses?.();
+      },
+    };
     if (penyedia) {
-      router.put(`/penyedia/${penyedia.Id}`, form.data, opsi);
+      router.put(rutePenyedia.detail(penyedia.Id), form.data, opsi);
     } else {
-      router.post('/penyedia', form.data, opsi);
+      router.post(rutePenyedia.index, form.data, opsi);
     }
   };
 
@@ -101,7 +154,11 @@ function FormInfoPenyedia({ penyedia, onSukses }: { penyedia: Penyedia | null; o
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Kode</Label>
-          <Input value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} className="font-mono" />
+          <Input
+            value={form.data.Kode}
+            onChange={(e) => form.setData('Kode', e.target.value)}
+            className="font-mono"
+          />
           {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
         </div>
         <div className="space-y-2">
@@ -117,13 +174,20 @@ function FormInfoPenyedia({ penyedia, onSukses }: { penyedia: Penyedia | null; o
         </div>
         <div className="space-y-2">
           <Label>NPWP</Label>
-          <Input value={form.data.NomorIdentitasPajak} onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)} />
+          <Input
+            value={form.data.NomorIdentitasPajak}
+            onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)}
+          />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input type="email" value={form.data.Email} onChange={(e) => form.setData('Email', e.target.value)} />
+          <Input
+            type="email"
+            value={form.data.Email}
+            onChange={(e) => form.setData('Email', e.target.value)}
+          />
           {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
         </div>
         <div className="space-y-2">
@@ -133,12 +197,20 @@ function FormInfoPenyedia({ penyedia, onSukses }: { penyedia: Penyedia | null; o
       </div>
       <div className="space-y-2">
         <Label>Website</Label>
-        <Input value={form.data.Website} onChange={(e) => form.setData('Website', e.target.value)} placeholder="https://" />
+        <Input
+          value={form.data.Website}
+          onChange={(e) => form.setData('Website', e.target.value)}
+          placeholder="https://"
+        />
         {form.errors.Website && <p className="text-sm text-destructive">{form.errors.Website}</p>}
       </div>
       <div className="space-y-2">
         <Label>Alamat</Label>
-        <Textarea value={form.data.Alamat} onChange={(e) => form.setData('Alamat', e.target.value)} rows={2} />
+        <Textarea
+          value={form.data.Alamat}
+          onChange={(e) => form.setData('Alamat', e.target.value)}
+          rows={2}
+        />
       </div>
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
@@ -156,8 +228,13 @@ function FormInfoPenyedia({ penyedia, onSukses }: { penyedia: Penyedia | null; o
       </div>
       <div className="space-y-2">
         <Label>Status</Label>
-        <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+        <Select
+          value={form.data.Status}
+          onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}
+        >
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="Aktif">Aktif</SelectItem>
             <SelectItem value="Nonaktif">Nonaktif</SelectItem>
@@ -165,23 +242,39 @@ function FormInfoPenyedia({ penyedia, onSukses }: { penyedia: Penyedia | null; o
         </Select>
       </div>
       <DialogFooter>
-        <Button type="submit" disabled={form.processing}>Simpan</Button>
+        <Button type="submit" disabled={form.processing}>
+          Simpan
+        </Button>
       </DialogFooter>
     </form>
   );
 }
 
-function TabKategori({ penyedia, kategoriPenyedia }: { penyedia: Penyedia; kategoriPenyedia: KategoriPenyedia[] }) {
+function TabKategori({
+  penyedia,
+  kategoriPenyedia,
+}: {
+  penyedia: Penyedia;
+  kategoriPenyedia: KategoriPenyedia[];
+}) {
   const toggle = (kategori: KategoriPenyedia, dicentang: boolean) => {
     if (dicentang) {
-      router.post(`/penyedia/${penyedia.Id}/kategori`, { KategoriPenyediaId: kategori.Id }, { preserveScroll: true });
+      router.post(
+        rutePenyedia.kategori2(penyedia.Id),
+        { KategoriPenyediaId: kategori.Id },
+        { preserveScroll: true },
+      );
     } else {
-      router.delete(`/penyedia/${penyedia.Id}/kategori/${kategori.Id}`, { preserveScroll: true });
+      router.delete(rutePenyedia.kategoriDetail2(penyedia.Id, kategori.Id), { preserveScroll: true });
     }
   };
 
   if (kategoriPenyedia.length === 0) {
-    return <p className="text-sm text-muted-foreground">Belum ada kategori penyedia. Buat lewat "Kelola Kategori".</p>;
+    return (
+      <p className="text-sm text-muted-foreground">
+        Belum ada kategori penyedia. Buat lewat "Kelola Kategori".
+      </p>
+    );
   }
 
   return (
@@ -207,19 +300,28 @@ function TabKontak({ penyedia }: { penyedia: Penyedia }) {
 
   const muat = () => {
     setMemuat(true);
-    apiPenyedia.get(`/penyedia/${penyedia.Id}/kontak`).then((res) => setData(res.data)).finally(() => setMemuat(false));
+    http
+      .get(rutePenyedia.kontak(penyedia.Id))
+      .then((res) => setData(res.data))
+      .finally(() => setMemuat(false));
   };
 
   useEffect(muat, [penyedia.Id]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    router.post(`/penyedia/${penyedia.Id}/kontak`, form.data, { preserveScroll: true, onSuccess: () => { form.reset(); muat(); } });
+    router.post(rutePenyedia.kontak(penyedia.Id), form.data, {
+      preserveScroll: true,
+      onSuccess: () => {
+        form.reset();
+        muat();
+      },
+    });
   };
 
   const hapus = (kontak: KontakPenyedia) => {
     if (!confirm(`Hapus kontak "${kontak.Nama}"?`)) return;
-    router.delete(`/penyedia/kontak/${kontak.Id}`, { preserveScroll: true, onSuccess: muat });
+    router.delete(rutePenyedia.kontakDetail(kontak.Id), { preserveScroll: true, onSuccess: muat });
   };
 
   return (
@@ -228,32 +330,57 @@ function TabKontak({ penyedia }: { penyedia: Penyedia }) {
       {!memuat && data.length === 0 && <p className="text-sm text-muted-foreground">Belum ada kontak.</p>}
       <div className="space-y-2">
         {data.map((k) => (
-          <div key={k.Id} className="flex items-center justify-between rounded-md border border-border px-3 py-2">
+          <div
+            key={k.Id}
+            className="flex items-center justify-between rounded-md border border-border px-3 py-2"
+          >
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">{k.Nama}</span>
                 {k.Utama && <Badge variant="default">Utama</Badge>}
               </div>
-              <div className="text-xs text-muted-foreground">{[k.Jabatan, k.Email, k.Telepon].filter(Boolean).join(' · ')}</div>
+              <div className="text-xs text-muted-foreground">
+                {[k.Jabatan, k.Email, k.Telepon].filter(Boolean).join(' · ')}
+              </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => hapus(k)}>Hapus</Button>
+            <Button variant="ghost" size="sm" onClick={() => hapus(k)}>
+              Hapus
+            </Button>
           </div>
         ))}
       </div>
       <form onSubmit={submit} className="space-y-2 border-t border-border pt-4">
         <div className="grid grid-cols-2 gap-2">
-          <Input placeholder="Nama" value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-          <Input placeholder="Jabatan" value={form.data.Jabatan} onChange={(e) => form.setData('Jabatan', e.target.value)} />
+          <Input
+            placeholder="Nama"
+            value={form.data.Nama}
+            onChange={(e) => form.setData('Nama', e.target.value)}
+          />
+          <Input
+            placeholder="Jabatan"
+            value={form.data.Jabatan}
+            onChange={(e) => form.setData('Jabatan', e.target.value)}
+          />
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <Input placeholder="Email" value={form.data.Email} onChange={(e) => form.setData('Email', e.target.value)} />
-          <Input placeholder="Telepon" value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
+          <Input
+            placeholder="Email"
+            value={form.data.Email}
+            onChange={(e) => form.setData('Email', e.target.value)}
+          />
+          <Input
+            placeholder="Telepon"
+            value={form.data.Telepon}
+            onChange={(e) => form.setData('Telepon', e.target.value)}
+          />
         </div>
         <label className="flex items-center gap-2 text-sm">
           <Checkbox checked={form.data.Utama} onCheckedChange={(v) => form.setData('Utama', v === true)} />
           Jadikan kontak utama
         </label>
-        <Button type="submit" disabled={form.processing}>Tambah Kontak</Button>
+        <Button type="submit" disabled={form.processing}>
+          Tambah Kontak
+        </Button>
       </form>
     </div>
   );
@@ -264,46 +391,69 @@ function TabPenilaian({ penyedia }: { penyedia: Penyedia }) {
   const [rekap, setRekap] = useState<RekapPenilaianPenyedia | null>(null);
   const [memuat, setMemuat] = useState(true);
   const form = useForm({
-    PeriodeMulai: '', PeriodeSelesai: '', SkorKualitas: '', SkorKetepatanWaktu: '', SkorHarga: '', SkorLayanan: '', Catatan: '',
+    PeriodeMulai: '',
+    PeriodeSelesai: '',
+    SkorKualitas: '',
+    SkorKetepatanWaktu: '',
+    SkorHarga: '',
+    SkorLayanan: '',
+    Catatan: '',
   });
 
   const muat = () => {
     setMemuat(true);
-    apiPenyedia.get(`/penyedia/${penyedia.Id}/penilaian`).then((res) => {
-      setHistori(res.data.histori);
-      setRekap(res.data.rekap);
-    }).finally(() => setMemuat(false));
+    http
+      .get(rutePenyedia.penilaian(penyedia.Id))
+      .then((res) => {
+        setHistori(res.data.histori);
+        setRekap(res.data.rekap);
+      })
+      .finally(() => setMemuat(false));
   };
 
   useEffect(muat, [penyedia.Id]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    router.post(`/penyedia/${penyedia.Id}/penilaian`, form.data, { preserveScroll: true, onSuccess: () => { form.reset(); muat(); } });
+    router.post(rutePenyedia.penilaian(penyedia.Id), form.data, {
+      preserveScroll: true,
+      onSuccess: () => {
+        form.reset();
+        muat();
+      },
+    });
   };
 
   return (
     <div className="space-y-4">
       {rekap && rekap.JumlahPenilaian > 0 && (
         <div className="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">
-          Skor total rata-rata: <span className="font-semibold text-foreground">{rekap.SkorTotalRataRata}</span>{' '}
-          dari {rekap.JumlahPenilaian} penilaian.
+          Skor total rata-rata:{' '}
+          <span className="font-semibold text-foreground">{rekap.SkorTotalRataRata}</span> dari{' '}
+          {rekap.JumlahPenilaian} penilaian.
         </div>
       )}
       {memuat && <p className="text-sm text-muted-foreground">Memuat...</p>}
-      {!memuat && histori.length === 0 && <p className="text-sm text-muted-foreground">Belum ada penilaian.</p>}
+      {!memuat && histori.length === 0 && (
+        <p className="text-sm text-muted-foreground">Belum ada penilaian.</p>
+      )}
       <div className="space-y-2">
         {histori.map((p) => (
           <div key={p.Id} className="rounded-md border border-border px-3 py-2 text-sm">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-foreground">{p.PeriodeMulai} s/d {p.PeriodeSelesai}</span>
+              <span className="font-medium text-foreground">
+                {p.PeriodeMulai} s/d {p.PeriodeSelesai}
+              </span>
               {p.SkorTotal && <Badge variant="default">Total {p.SkorTotal}</Badge>}
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              Kualitas {p.SkorKualitas ?? '-'} · Ketepatan {p.SkorKetepatanWaktu ?? '-'} · Harga {p.SkorHarga ?? '-'} · Layanan {p.SkorLayanan ?? '-'}
+              Kualitas {p.SkorKualitas ?? '-'} · Ketepatan {p.SkorKetepatanWaktu ?? '-'} · Harga{' '}
+              {p.SkorHarga ?? '-'} · Layanan {p.SkorLayanan ?? '-'}
             </div>
             {p.Catatan && <div className="mt-1 text-xs text-muted-foreground">"{p.Catatan}"</div>}
-            {p.NamaPenilai && <div className="mt-1 text-xs text-muted-foreground">Dinilai oleh {p.NamaPenilai}</div>}
+            {p.NamaPenilai && (
+              <div className="mt-1 text-xs text-muted-foreground">Dinilai oleh {p.NamaPenilai}</div>
+            )}
           </div>
         ))}
       </div>
@@ -311,36 +461,87 @@ function TabPenilaian({ penyedia }: { penyedia: Penyedia }) {
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <Label className="text-xs">Periode Mulai</Label>
-            <DatePicker value={form.data.PeriodeMulai} onChange={(val) => form.setData('PeriodeMulai', val)} />
+            <DatePicker
+              value={form.data.PeriodeMulai}
+              onChange={(val) => form.setData('PeriodeMulai', val)}
+            />
           </div>
           <div className="space-y-1">
             <Label className="text-xs">Periode Selesai</Label>
-            <DatePicker value={form.data.PeriodeSelesai} onChange={(val) => form.setData('PeriodeSelesai', val)} />
+            <DatePicker
+              value={form.data.PeriodeSelesai}
+              onChange={(val) => form.setData('PeriodeSelesai', val)}
+            />
           </div>
         </div>
         <div className="grid grid-cols-4 gap-2">
-          <Input placeholder="Kualitas" type="number" min={0} max={100} value={form.data.SkorKualitas} onChange={(e) => form.setData('SkorKualitas', e.target.value)} />
-          <Input placeholder="Ketepatan" type="number" min={0} max={100} value={form.data.SkorKetepatanWaktu} onChange={(e) => form.setData('SkorKetepatanWaktu', e.target.value)} />
-          <Input placeholder="Harga" type="number" min={0} max={100} value={form.data.SkorHarga} onChange={(e) => form.setData('SkorHarga', e.target.value)} />
-          <Input placeholder="Layanan" type="number" min={0} max={100} value={form.data.SkorLayanan} onChange={(e) => form.setData('SkorLayanan', e.target.value)} />
+          <Input
+            placeholder="Kualitas"
+            type="number"
+            min={0}
+            max={100}
+            value={form.data.SkorKualitas}
+            onChange={(e) => form.setData('SkorKualitas', e.target.value)}
+          />
+          <Input
+            placeholder="Ketepatan"
+            type="number"
+            min={0}
+            max={100}
+            value={form.data.SkorKetepatanWaktu}
+            onChange={(e) => form.setData('SkorKetepatanWaktu', e.target.value)}
+          />
+          <Input
+            placeholder="Harga"
+            type="number"
+            min={0}
+            max={100}
+            value={form.data.SkorHarga}
+            onChange={(e) => form.setData('SkorHarga', e.target.value)}
+          />
+          <Input
+            placeholder="Layanan"
+            type="number"
+            min={0}
+            max={100}
+            value={form.data.SkorLayanan}
+            onChange={(e) => form.setData('SkorLayanan', e.target.value)}
+          />
         </div>
-        <Textarea placeholder="Catatan (opsional)" value={form.data.Catatan} onChange={(e) => form.setData('Catatan', e.target.value)} rows={2} />
-        <Button type="submit" disabled={form.processing}>Simpan Penilaian</Button>
+        <Textarea
+          placeholder="Catatan (opsional)"
+          value={form.data.Catatan}
+          onChange={(e) => form.setData('Catatan', e.target.value)}
+          rows={2}
+        />
+        <Button type="submit" disabled={form.processing}>
+          Simpan Penilaian
+        </Button>
       </form>
     </div>
   );
 }
 
-function DialogKelolaPenyedia({ penyedia, kategoriPenyedia }: { penyedia: Penyedia; kategoriPenyedia: KategoriPenyedia[] }) {
+function DialogKelolaPenyedia({
+  penyedia,
+  kategoriPenyedia,
+}: {
+  penyedia: Penyedia;
+  kategoriPenyedia: KategoriPenyedia[];
+}) {
   const [buka, setBuka] = useState(false);
 
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">Kelola</Button>
+        <Button variant="outline" size="sm">
+          Kelola
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader><DialogTitle>{penyedia.Nama}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{penyedia.Nama}</DialogTitle>
+        </DialogHeader>
         <Tabs defaultValue="info">
           <TabsList>
             <TabsTrigger value="info">Info</TabsTrigger>
@@ -349,11 +550,21 @@ function DialogKelolaPenyedia({ penyedia, kategoriPenyedia }: { penyedia: Penyed
             <TabsTrigger value="penilaian">Penilaian</TabsTrigger>
             <TabsTrigger value="kolaborasi">Kolaborasi</TabsTrigger>
           </TabsList>
-          <TabsContent value="info"><FormInfoPenyedia penyedia={penyedia} /></TabsContent>
-          <TabsContent value="kategori"><TabKategori penyedia={penyedia} kategoriPenyedia={kategoriPenyedia} /></TabsContent>
-          <TabsContent value="kontak"><TabKontak penyedia={penyedia} /></TabsContent>
-          <TabsContent value="penilaian"><TabPenilaian penyedia={penyedia} /></TabsContent>
-          <TabsContent value="kolaborasi"><PanelKolaborasi jenisEntitas="Penyedia" entitasId={penyedia.Id} /></TabsContent>
+          <TabsContent value="info">
+            <FormInfoPenyedia penyedia={penyedia} />
+          </TabsContent>
+          <TabsContent value="kategori">
+            <TabKategori penyedia={penyedia} kategoriPenyedia={kategoriPenyedia} />
+          </TabsContent>
+          <TabsContent value="kontak">
+            <TabKontak penyedia={penyedia} />
+          </TabsContent>
+          <TabsContent value="penilaian">
+            <TabPenilaian penyedia={penyedia} />
+          </TabsContent>
+          <TabsContent value="kolaborasi">
+            <PanelKolaborasi jenisEntitas="Penyedia" entitasId={penyedia.Id} />
+          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
@@ -369,7 +580,9 @@ function DialogTambahPenyedia() {
         <Button>Tambah Penyedia</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
-        <DialogHeader><DialogTitle>Tambah Penyedia</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Tambah Penyedia</DialogTitle>
+        </DialogHeader>
         <FormInfoPenyedia penyedia={null} onSukses={() => setBuka(false)} />
       </DialogContent>
     </Dialog>
@@ -379,71 +592,84 @@ function DialogTambahPenyedia() {
 export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
   const hapus = (item: Penyedia) => {
     if (!confirm(`Hapus penyedia "${item.Nama}"?`)) return;
-    router.delete(`/penyedia/${item.Id}`, { preserveScroll: true });
+    router.delete(rutePenyedia.detail(item.Id), { preserveScroll: true });
   };
 
-  const columns = useMemo<ColumnDef<Penyedia>[]>(() => [
-    {
-      id: 'Nama',
-      accessorFn: (row) => `${row.Nama} ${row.Kode}`,
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
-      cell: ({ row }) => (
-        <div>
-          <div className="font-medium text-foreground">{row.original.Nama}</div>
-          <div className="font-mono text-xs text-muted-foreground">{row.original.Kode}</div>
-        </div>
-      ),
-      meta: { label: 'Nama' },
-    },
-    {
-      id: 'NamaKategoriPenyedia',
-      accessorFn: (row) => row.NamaKategoriPenyedia,
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Kategori" />,
-      cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-          {row.original.NamaKategoriPenyedia.length === 0 && '—'}
-          {row.original.NamaKategoriPenyedia.map((nama) => <Badge key={nama} variant="secondary">{nama}</Badge>)}
-        </div>
-      ),
-      filterFn: (row, id, value: string[]) => {
-        const idsTerpilih = kategoriPenyedia.filter((k) => value.includes(k.Nama)).map((k) => k.Id);
-        return row.original.KategoriPenyediaId.some((kid) => idsTerpilih.includes(kid));
+  const columns = useMemo<ColumnDef<Penyedia>[]>(
+    () => [
+      {
+        id: 'Nama',
+        accessorFn: (row) => `${row.Nama} ${row.Kode}`,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+        cell: ({ row }) => (
+          <div>
+            <div className="font-medium text-foreground">{row.original.Nama}</div>
+            <div className="font-mono text-xs text-muted-foreground">{row.original.Kode}</div>
+          </div>
+        ),
+        meta: { label: 'Nama' },
       },
-      meta: { label: 'Kategori' },
-    },
-    {
-      id: 'Kontak',
-      accessorFn: (row) => `${row.Email ?? ''} ${row.Telepon ?? ''}`,
-      header: 'Kontak',
-      cell: ({ row }) => (
-        <div className="text-sm">
-          <div>{row.original.Email ?? '—'}</div>
-          <div className="text-xs text-muted-foreground">{row.original.Telepon ?? '—'}</div>
-        </div>
-      ),
-      meta: { label: 'Kontak' },
-    },
-    {
-      accessorKey: 'Status',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-      cell: ({ row }) => <Badge variant={row.original.Status === 'Aktif' ? 'default' : 'outline'}>{row.original.Status}</Badge>,
-      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
-      meta: { label: 'Status' },
-    },
-    {
-      id: 'aksi',
-      header: 'Aksi',
-      cell: ({ row }) => (
-        <div className="flex justify-end gap-2">
-          <DialogKelolaPenyedia penyedia={row.original} kategoriPenyedia={kategoriPenyedia} />
-          <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>Hapus</Button>
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      meta: { label: 'Aksi' },
-    },
-  ], [kategoriPenyedia]);
+      {
+        id: 'NamaKategoriPenyedia',
+        accessorFn: (row) => row.NamaKategoriPenyedia,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Kategori" />,
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            {row.original.NamaKategoriPenyedia.length === 0 && '—'}
+            {row.original.NamaKategoriPenyedia.map((nama) => (
+              <Badge key={nama} variant="secondary">
+                {nama}
+              </Badge>
+            ))}
+          </div>
+        ),
+        filterFn: (row, id, value: string[]) => {
+          const idsTerpilih = kategoriPenyedia.filter((k) => value.includes(k.Nama)).map((k) => k.Id);
+          return row.original.KategoriPenyediaId.some((kid) => idsTerpilih.includes(kid));
+        },
+        meta: { label: 'Kategori' },
+      },
+      {
+        id: 'Kontak',
+        accessorFn: (row) => `${row.Email ?? ''} ${row.Telepon ?? ''}`,
+        header: 'Kontak',
+        cell: ({ row }) => (
+          <div className="text-sm">
+            <div>{row.original.Email ?? '—'}</div>
+            <div className="text-xs text-muted-foreground">{row.original.Telepon ?? '—'}</div>
+          </div>
+        ),
+        meta: { label: 'Kontak' },
+      },
+      {
+        accessorKey: 'Status',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+        cell: ({ row }) => (
+          <Badge variant={row.original.Status === 'Aktif' ? 'default' : 'outline'}>
+            {row.original.Status}
+          </Badge>
+        ),
+        filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+        meta: { label: 'Status' },
+      },
+      {
+        id: 'aksi',
+        header: 'Aksi',
+        cell: ({ row }) => (
+          <div className="flex justify-end gap-2">
+            <DialogKelolaPenyedia penyedia={row.original} kategoriPenyedia={kategoriPenyedia} />
+            <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
+              Hapus
+            </Button>
+          </div>
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        meta: { label: 'Aksi' },
+      },
+    ],
+    [kategoriPenyedia],
+  );
 
   return (
     <AppLayout>
@@ -451,7 +677,9 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Penyedia</h1>
-          <p className="text-sm text-muted-foreground">Kelola data vendor/supplier untuk pengadaan, kontrak, dan kalibrasi.</p>
+          <p className="text-sm text-muted-foreground">
+            Kelola data vendor/supplier untuk pengadaan, kontrak, dan kalibrasi.
+          </p>
         </div>
         <div className="flex gap-2">
           <DialogKelolaKategori kategoriPenyedia={kategoriPenyedia} />
@@ -464,8 +692,19 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
         data={penyedia}
         pencarianPlaceholder="Cari nama atau kode penyedia..."
         facetedFilters={[
-          { columnId: 'Status', title: 'Status', options: [{ label: 'Aktif', value: 'Aktif' }, { label: 'Nonaktif', value: 'Nonaktif' }] },
-          { columnId: 'NamaKategoriPenyedia', title: 'Kategori', options: kategoriPenyedia.map((k) => ({ label: k.Nama, value: k.Nama })) },
+          {
+            columnId: 'Status',
+            title: 'Status',
+            options: [
+              { label: 'Aktif', value: 'Aktif' },
+              { label: 'Nonaktif', value: 'Nonaktif' },
+            ],
+          },
+          {
+            columnId: 'NamaKategoriPenyedia',
+            title: 'Kategori',
+            options: kategoriPenyedia.map((k) => ({ label: k.Nama, value: k.Nama })),
+          },
         ]}
         pesanKosong="Belum ada penyedia."
         ilustrasiKosong="/assets/3d/penyedia-kontrak.webp"

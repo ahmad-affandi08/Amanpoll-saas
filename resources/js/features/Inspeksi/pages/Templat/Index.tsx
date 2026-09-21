@@ -24,11 +24,7 @@ interface Props {
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
 }
 
-export default function IndexTemplatInspeksi({
-  templat,
-  kategoriAset,
-  templatDaftarPeriksa,
-}: Props) {
+export default function IndexTemplatInspeksi({ templat, kategoriAset, templatDaftarPeriksa }: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
 
@@ -51,9 +47,10 @@ export default function IndexTemplatInspeksi({
     });
   };
 
-  const daftarTersaring = templat.filter((t) =>
-    t.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
-    t.Kode.toLowerCase().includes(pencarian.toLowerCase())
+  const daftarTersaring = templat.filter(
+    (t) =>
+      t.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
+      t.Kode.toLowerCase().includes(pencarian.toLowerCase()),
   );
 
   return (
@@ -63,9 +60,7 @@ export default function IndexTemplatInspeksi({
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-permukaan-900">
-              Templat Inspeksi Aset
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight text-permukaan-900">Templat Inspeksi Aset</h1>
             <p className="text-sm text-permukaan-500">
               Konfigurasi siklus inspeksi rutin dan lembar periksa per kategori aset.
             </p>
@@ -86,7 +81,9 @@ export default function IndexTemplatInspeksi({
 
                 <div className="grid gap-4 py-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="Kode">Kode Templat <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="Kode">
+                      Kode Templat <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="Kode"
                       placeholder="Misal: INSP-HVAC-BULANAN"
@@ -98,7 +95,9 @@ export default function IndexTemplatInspeksi({
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="Nama">Nama Templat <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="Nama">
+                      Nama Templat <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="Nama"
                       placeholder="Misal: Inspeksi Visual & Kelistrikan HVAC"
@@ -133,7 +132,9 @@ export default function IndexTemplatInspeksi({
                     <Label htmlFor="TemplatDaftarPeriksaId">Hubungkan Checklist Lapangan</Label>
                     <Select
                       value={form.data.TemplatDaftarPeriksaId || '__none__'}
-                      onValueChange={(val) => form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)}
+                      onValueChange={(val) =>
+                        form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
+                      }
                     >
                       <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
                         <SelectValue placeholder="Pilih Checklist..." />
@@ -150,7 +151,9 @@ export default function IndexTemplatInspeksi({
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="IntervalHari">Interval Siklus (Hari) <span className="text-rose-500">*</span></Label>
+                    <Label htmlFor="IntervalHari">
+                      Interval Siklus (Hari) <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="IntervalHari"
                       type="number"
@@ -215,7 +218,10 @@ export default function IndexTemplatInspeksi({
                     <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700">
                       {t.Kode}
                     </span>
-                    <Badge variant={t.Aktif ? 'default' : 'secondary'} className={t.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}>
+                    <Badge
+                      variant={t.Aktif ? 'default' : 'secondary'}
+                      className={t.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                    >
                       {t.Aktif ? 'Aktif' : 'Nonaktif'}
                     </Badge>
                   </div>

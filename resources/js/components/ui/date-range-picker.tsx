@@ -216,11 +216,7 @@ export function DateRangePicker({
   }, [parsedDari, parsedSampai, placeholder]);
 
   // Helper render satu bulan kalender
-  const renderMonthCalendar = (
-    monthDate: Date,
-    onPrev: () => void,
-    onNext: () => void,
-  ) => {
+  const renderMonthCalendar = (monthDate: Date, onPrev: () => void, onNext: () => void) => {
     const monthStart = startOfMonth(monthDate);
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
@@ -230,8 +226,18 @@ export function DateRangePicker({
 
     const effectiveStart = tempDari;
     const effectiveEnd = tempSampai ?? (tempDari ? hoverDate : null);
-    const rangeStart = effectiveStart && effectiveEnd ? (effectiveStart <= effectiveEnd ? effectiveStart : effectiveEnd) : effectiveStart;
-    const rangeEnd = effectiveStart && effectiveEnd ? (effectiveStart <= effectiveEnd ? effectiveEnd : effectiveStart) : effectiveStart;
+    const rangeStart =
+      effectiveStart && effectiveEnd
+        ? effectiveStart <= effectiveEnd
+          ? effectiveStart
+          : effectiveEnd
+        : effectiveStart;
+    const rangeEnd =
+      effectiveStart && effectiveEnd
+        ? effectiveStart <= effectiveEnd
+          ? effectiveEnd
+          : effectiveStart
+        : effectiveStart;
     const hasValidRange = rangeStart && rangeEnd && !isSameDay(rangeStart, rangeEnd) && rangeStart < rangeEnd;
 
     return (
@@ -268,7 +274,10 @@ export function DateRangePicker({
         {/* Header Nama Hari */}
         <div className="grid grid-cols-7 text-center mb-1.5 select-none">
           {weekDays.map((hari) => (
-            <div key={hari} className="h-6 flex items-center justify-center text-[11px] font-semibold text-permukaan-400 uppercase tracking-wider">
+            <div
+              key={hari}
+              className="h-6 flex items-center justify-center text-[11px] font-semibold text-permukaan-400 uppercase tracking-wider"
+            >
               {hari}
             </div>
           ))}
@@ -314,7 +323,11 @@ export function DateRangePicker({
                     // Warna teks bulan aktif vs luar bulan
                     isCurrentMonth ? 'text-permukaan-800' : 'text-permukaan-300 hover:text-permukaan-500',
                     // Hari ini
-                    isDayToday && !isStart && !isEnd && !inRange && 'border border-teknisi-600 font-bold text-teknisi-700',
+                    isDayToday &&
+                      !isStart &&
+                      !isEnd &&
+                      !inRange &&
+                      'border border-teknisi-600 font-bold text-teknisi-700',
                     // Titik awal & akhir terpilih
                     (isStart || isEnd) &&
                       'bg-teknisi-700 text-white font-bold shadow-sm hover:bg-teknisi-800 hover:text-white',
@@ -348,7 +361,9 @@ export function DateRangePicker({
         >
           <div className="flex items-center gap-2 truncate">
             <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
-            <span className={cn('truncate font-medium', parsedDari ? 'text-foreground' : 'text-muted-foreground')}>
+            <span
+              className={cn('truncate font-medium', parsedDari ? 'text-foreground' : 'text-muted-foreground')}
+            >
               {labelTampilan}
             </span>
           </div>
@@ -477,7 +492,8 @@ export function DateRangePicker({
               <div className="flex items-center gap-2 flex-wrap">
                 <CalendarIcon className="size-4 text-teknisi-700 shrink-0" />
                 <span className="font-semibold text-permukaan-900">
-                  {format(tempDari, 'd MMM yyyy', { locale: id })} – {format(tempSampai, 'd MMM yyyy', { locale: id })}
+                  {format(tempDari, 'd MMM yyyy', { locale: id })} –{' '}
+                  {format(tempSampai, 'd MMM yyyy', { locale: id })}
                 </span>
                 <span className="text-[11px] font-bold bg-teknisi-100 text-teknisi-800 px-2 py-0.5 rounded-full border border-teknisi-200">
                   {differenceInCalendarDays(tempSampai, tempDari) + 1} hari
@@ -487,7 +503,8 @@ export function DateRangePicker({
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-safety-500 animate-pulse shrink-0" />
                 <span className="text-permukaan-700">
-                  Mulai: <strong>{format(tempDari, 'd MMM yyyy', { locale: id })}</strong> — Silakan pilih tanggal akhir
+                  Mulai: <strong>{format(tempDari, 'd MMM yyyy', { locale: id })}</strong> — Silakan pilih
+                  tanggal akhir
                 </span>
               </div>
             ) : (

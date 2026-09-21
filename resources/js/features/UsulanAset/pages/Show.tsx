@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { PrioritasUsulanAset, UsulanAset } from '@/features/UsulanAset/types';
 import { formatUang } from '@/lib/uang';
+import { ruteUsulanAset } from '@/features/UsulanAset/api';
 
 interface Referensi {
   Id: string;
@@ -92,7 +93,7 @@ function DialogUbahUsulan({
       JenisKebutuhan: data.JenisKebutuhan || null,
       TahunKebutuhan: data.TahunKebutuhan || null,
     }));
-    form.put(`/perencanaan-pengadaan/usulan-aset/${usulan.Id}`, {
+    form.put(ruteUsulanAset.detail(usulan.Id), {
       preserveScroll: true,
       onSuccess: () => setBuka(false),
     });
@@ -256,7 +257,7 @@ function DialogPenilaian({ usulan }: { usulan: UsulanAset }) {
   const form = useForm({ Kriteria: '', Bobot: '1', Nilai: '', Prioritas: usulan.Prioritas });
   function submit(event: FormEvent): void {
     event.preventDefault();
-    form.post(`/perencanaan-pengadaan/usulan-aset/${usulan.Id}/penilaian`, {
+    form.post(ruteUsulanAset.penilaian(usulan.Id), {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -351,23 +352,21 @@ export default function UsulanAsetShow({
   const dapatUbah = usulan.Status === 'Draft' || usulan.Status === 'Ditolak';
   const dapatNilai = usulan.Status === 'Diajukan';
   function submitUsulan(): void {
-    if (confirm(`Submit ${usulan.Nomor} untuk penilaian?`))
-      router.post(`/perencanaan-pengadaan/usulan-aset/${usulan.Id}/submit`);
+    if (confirm(`Submit ${usulan.Nomor} untuk penilaian?`)) router.post(ruteUsulanAset.submit(usulan.Id));
   }
   function ajukanPersetujuan(): void {
     if (confirm(`Ajukan ${usulan.Nomor} ke alur persetujuan aktif?`))
-      router.post(`/perencanaan-pengadaan/usulan-aset/${usulan.Id}/ajukan-persetujuan`);
+      router.post(ruteUsulanAset.ajukanPersetujuan(usulan.Id));
   }
   function hapus(): void {
-    if (confirm(`Hapus usulan ${usulan.Nomor}?`))
-      router.delete(`/perencanaan-pengadaan/usulan-aset/${usulan.Id}`);
+    if (confirm(`Hapus usulan ${usulan.Nomor}?`)) router.delete(ruteUsulanAset.detail(usulan.Id));
   }
   return (
     <AppLayout>
       <Head title={`${usulan.Nomor} — Usulan Aset`} />
       <div className="space-y-6">
         <Link
-          href="/perencanaan-pengadaan/usulan-aset"
+          href={ruteUsulanAset.index}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" /> Kembali ke Usulan Aset

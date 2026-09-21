@@ -9,7 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
@@ -20,6 +25,7 @@ import type { Aset, FilterAset } from '@/features/Aset/types';
 import type { KategoriAset } from '@/features/Aset/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
+import { ruteAset } from '@/features/Aset/api';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -35,7 +41,10 @@ function badgeStatus(status: Aset['Status']) {
 }
 
 function MedanFilterAset({
-  form, setForm, kategoriAset, lokasi,
+  form,
+  setForm,
+  kategoriAset,
+  lokasi,
 }: {
   form: FilterAset;
   setForm: Dispatch<SetStateAction<FilterAset>>;
@@ -54,31 +63,58 @@ function MedanFilterAset({
       </div>
       <div className="space-y-1.5">
         <Label>Kategori</Label>
-        <Select value={form.kategoriAsetId ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, kategoriAsetId: v === SEMUA ? undefined : v }))}>
-          <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
+        <Select
+          value={form.kategoriAsetId ?? SEMUA}
+          onValueChange={(v) => setForm((f) => ({ ...f, kategoriAsetId: v === SEMUA ? undefined : v }))}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Semua" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value={SEMUA}>Semua</SelectItem>
-            {kategoriAset.map((k) => <SelectItem key={k.Id} value={k.Id}>{k.Nama}</SelectItem>)}
+            {kategoriAset.map((k) => (
+              <SelectItem key={k.Id} value={k.Id}>
+                {k.Nama}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
       <div className="space-y-1.5">
         <Label>Lokasi</Label>
-        <Select value={form.lokasiId ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, lokasiId: v === SEMUA ? undefined : v }))}>
-          <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
+        <Select
+          value={form.lokasiId ?? SEMUA}
+          onValueChange={(v) => setForm((f) => ({ ...f, lokasiId: v === SEMUA ? undefined : v }))}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Semua" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value={SEMUA}>Semua</SelectItem>
-            {lokasi.map((l) => <SelectItem key={l.Id} value={l.Id}>{l.Nama}</SelectItem>)}
+            {lokasi.map((l) => (
+              <SelectItem key={l.Id} value={l.Id}>
+                {l.Nama}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
       <div className="space-y-1.5">
         <Label>Status</Label>
-        <Select value={form.status ?? SEMUA} onValueChange={(v) => setForm((f) => ({ ...f, status: v === SEMUA ? undefined : v }))}>
-          <SelectTrigger className="w-full"><SelectValue placeholder="Semua" /></SelectTrigger>
+        <Select
+          value={form.status ?? SEMUA}
+          onValueChange={(v) => setForm((f) => ({ ...f, status: v === SEMUA ? undefined : v }))}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Semua" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value={SEMUA}>Semua</SelectItem>
-            {['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            {['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -93,14 +129,21 @@ function jumlahFilterAktif(filter: FilterAset): number {
 function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset[]; lokasi: Lokasi[] }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
-    KategoriAsetId: kategoriAset[0]?.Id ?? '', LokasiId: SEMUA, KodeAset: '', Nama: '', NomorSeri: '',
-    HargaPerolehan: '', Status: 'Aktif', Kondisi: 'Baik', TingkatKritis: 'Normal',
+    KategoriAsetId: kategoriAset[0]?.Id ?? '',
+    LokasiId: SEMUA,
+    KodeAset: '',
+    Nama: '',
+    NomorSeri: '',
+    HargaPerolehan: '',
+    Status: 'Aktif',
+    Kondisi: 'Baik',
+    TingkatKritis: 'Normal',
   });
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const payload = { ...form.data, LokasiId: form.data.LokasiId === SEMUA ? null : form.data.LokasiId };
-    router.post('/aset', payload, { onSuccess: () => setBuka(false) });
+    router.post(ruteAset.index, payload, { onSuccess: () => setBuka(false) });
   };
 
   return (
@@ -109,12 +152,18 @@ function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset
         <Button>Daftarkan Aset</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
-        <DialogHeader><DialogTitle>Daftarkan Aset</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Daftarkan Aset</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Kode Aset</Label>
-              <Input value={form.data.KodeAset} onChange={(e) => form.setData('KodeAset', e.target.value)} className="font-mono" />
+              <Input
+                value={form.data.KodeAset}
+                onChange={(e) => form.setData('KodeAset', e.target.value)}
+                className="font-mono"
+              />
               {form.errors.KodeAset && <p className="text-sm text-destructive">{form.errors.KodeAset}</p>}
             </div>
             <div className="space-y-2">
@@ -126,21 +175,38 @@ function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Kategori</Label>
-              <Select value={form.data.KategoriAsetId} onValueChange={(v) => form.setData('KategoriAsetId', v)}>
-                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <Select
+                value={form.data.KategoriAsetId}
+                onValueChange={(v) => form.setData('KategoriAsetId', v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {kategoriAset.map((k) => <SelectItem key={k.Id} value={k.Id}>{k.Nama}</SelectItem>)}
+                  {kategoriAset.map((k) => (
+                    <SelectItem key={k.Id} value={k.Id}>
+                      {k.Nama}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              {form.errors.KategoriAsetId && <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>}
+              {form.errors.KategoriAsetId && (
+                <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Lokasi Awal</Label>
               <Select value={form.data.LokasiId} onValueChange={(v) => form.setData('LokasiId', v)}>
-                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={SEMUA}>Belum ditentukan</SelectItem>
-                  {lokasi.map((l) => <SelectItem key={l.Id} value={l.Id}>{l.Nama}</SelectItem>)}
+                  {lokasi.map((l) => (
+                    <SelectItem key={l.Id} value={l.Id}>
+                      {l.Nama}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -148,15 +214,25 @@ function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Nomor Seri</Label>
-              <Input value={form.data.NomorSeri} onChange={(e) => form.setData('NomorSeri', e.target.value)} />
+              <Input
+                value={form.data.NomorSeri}
+                onChange={(e) => form.setData('NomorSeri', e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label>Harga Perolehan</Label>
-              <Input type="number" min={0} value={form.data.HargaPerolehan} onChange={(e) => form.setData('HargaPerolehan', e.target.value)} />
+              <Input
+                type="number"
+                min={0}
+                value={form.data.HargaPerolehan}
+                onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={form.processing}>Simpan</Button>
+            <Button type="submit" disabled={form.processing}>
+              Simpan
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -171,13 +247,13 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
   const terapkanFilter = (e?: FormEvent) => {
     e?.preventDefault();
     setSheetFilterBuka(false);
-    router.get('/aset', { ...form }, { preserveState: true, preserveScroll: true });
+    router.get(ruteAset.index, { ...form }, { preserveState: true, preserveScroll: true });
   };
 
   const resetFilter = () => {
     setForm({});
     setSheetFilterBuka(false);
-    router.get('/aset', {}, { preserveState: true, preserveScroll: true });
+    router.get(ruteAset.index, {}, { preserveState: true, preserveScroll: true });
   };
 
   const jumlahAktif = jumlahFilterAktif(filter);
@@ -189,7 +265,9 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Aset</h1>
-            <p className="text-sm text-muted-foreground">Daftar induk aset organisasi -- identitas, lokasi, dan status.</p>
+            <p className="text-sm text-muted-foreground">
+              Daftar induk aset organisasi -- identitas, lokasi, dan status.
+            </p>
           </div>
           <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} />
         </div>
@@ -200,7 +278,9 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
             <ListFilter size={16} strokeWidth={1.75} />
             Filter
             {jumlahAktif > 0 && (
-              <Badge variant="solid" className="ml-1 h-4 min-w-4 justify-center px-1 py-0 text-[10px]">{jumlahAktif}</Badge>
+              <Badge variant="solid" className="ml-1 h-4 min-w-4 justify-center px-1 py-0 text-[10px]">
+                {jumlahAktif}
+              </Badge>
             )}
           </Button>
           <Sheet open={sheetFilterBuka} onOpenChange={setSheetFilterBuka}>
@@ -212,8 +292,12 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
                 <MedanFilterAset form={form} setForm={setForm} kategoriAset={kategoriAset} lokasi={lokasi} />
               </form>
               <SheetFooter className="flex-row">
-                <Button type="button" variant="outline" className="flex-1" onClick={resetFilter}>Reset</Button>
-                <Button type="button" className="flex-1" onClick={terapkanFilter}>Terapkan</Button>
+                <Button type="button" variant="outline" className="flex-1" onClick={resetFilter}>
+                  Reset
+                </Button>
+                <Button type="button" className="flex-1" onClick={terapkanFilter}>
+                  Terapkan
+                </Button>
               </SheetFooter>
             </SheetContent>
           </Sheet>
@@ -227,7 +311,9 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
           <MedanFilterAset form={form} setForm={setForm} kategoriAset={kategoriAset} lokasi={lokasi} />
           <div className="flex items-end gap-2 lg:col-span-5">
             <Button type="submit">Terapkan</Button>
-            <Button type="button" variant="outline" onClick={resetFilter}>Reset</Button>
+            <Button type="button" variant="outline" onClick={resetFilter}>
+              Reset
+            </Button>
           </div>
         </form>
 
@@ -248,7 +334,7 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
               <button
                 key={a.Id}
                 type="button"
-                onClick={() => router.visit(`/aset/${a.Id}`)}
+                onClick={() => router.visit(ruteAset.detail(a.Id))}
                 className="block w-full rounded-[9px] border border-border bg-card p-4 text-left"
               >
                 <div className="flex items-start justify-between gap-2">
@@ -262,7 +348,10 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
                 <div className="mt-1 text-sm text-muted-foreground">Kondisi: {a.Kondisi}</div>
               </button>
             ))}
-            <Pagination meta={aset.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)} />
+            <Pagination
+              meta={aset.meta}
+              onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)}
+            />
           </div>
         )}
 
@@ -281,7 +370,11 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
               </TableHeader>
               <TableBody>
                 {aset.data.map((a) => (
-                  <TableRow key={a.Id} className="cursor-pointer" onClick={() => router.visit(`/aset/${a.Id}`)}>
+                  <TableRow
+                    key={a.Id}
+                    className="cursor-pointer"
+                    onClick={() => router.visit(ruteAset.detail(a.Id))}
+                  >
                     <TableCell>
                       <div className="font-medium text-foreground">{a.Nama}</div>
                       <div className="font-mono text-xs text-muted-foreground">{a.KodeAset}</div>
@@ -294,7 +387,10 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
                 ))}
               </TableBody>
             </Table>
-            <Pagination meta={aset.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)} />
+            <Pagination
+              meta={aset.meta}
+              onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)}
+            />
           </div>
         )}
       </div>

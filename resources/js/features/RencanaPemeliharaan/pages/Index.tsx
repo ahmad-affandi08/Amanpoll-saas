@@ -15,16 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EmptyState } from '@/components/shared/EmptyState';
-import {
-  CalendarClock,
-  Plus,
-  Search,
-  Play,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-} from 'lucide-react';
+import { CalendarClock, Plus, Search, Play, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import type { RencanaPemeliharaan, TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
+import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
@@ -49,14 +42,15 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
     Aktif: true,
   });
 
-  const daftarTersaring = rencana.filter((r) =>
-    r.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
-    r.Kode.toLowerCase().includes(pencarian.toLowerCase())
+  const daftarTersaring = rencana.filter(
+    (r) =>
+      r.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
+      r.Kode.toLowerCase().includes(pencarian.toLowerCase()),
   );
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/preventif-inspeksi/rencana-pemeliharaan', {
+    form.post(ruteRencanaPemeliharaan.index, {
       onSuccess: () => {
         setBukaDialog(false);
         form.reset();
@@ -65,19 +59,26 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
   };
 
   const jalankanScheduler = () => {
-    if (confirm('Jalankan pemeriksaan penjadwalan preventif sekarang? Perintah kerja akan otomatis dibuat untuk aset yang jatuh tempo dalam horizon waktu.')) {
+    if (
+      confirm(
+        'Jalankan pemeriksaan penjadwalan preventif sekarang? Perintah kerja akan otomatis dibuat untuk aset yang jatuh tempo dalam horizon waktu.',
+      )
+    ) {
       setMenjalankanScheduler(true);
       router.post(
-        '/preventif-inspeksi/rencana-pemeliharaan/jalankan-scheduler',
+        ruteRencanaPemeliharaan.jalankanScheduler,
         {},
         {
           onFinish: () => setMenjalankanScheduler(false),
-        }
+        },
       );
     }
   };
 
-  const totalAsetTerdaftar = rencana.reduce((acc, curr) => acc + (curr.aset_count ?? curr.aset?.length ?? 0), 0);
+  const totalAsetTerdaftar = rencana.reduce(
+    (acc, curr) => acc + (curr.aset_count ?? curr.aset?.length ?? 0),
+    0,
+  );
 
   return (
     <AppLayout>
@@ -121,7 +122,9 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
 
                   <div className="grid gap-4 py-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="Kode">Kode Rencana <span className="text-rose-500">*</span></Label>
+                      <Label htmlFor="Kode">
+                        Kode Rencana <span className="text-rose-500">*</span>
+                      </Label>
                       <Input
                         id="Kode"
                         placeholder="Misal: PM-CHILLER-BULANAN"
@@ -133,7 +136,9 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="Nama">Nama Rencana <span className="text-rose-500">*</span></Label>
+                      <Label htmlFor="Nama">
+                        Nama Rencana <span className="text-rose-500">*</span>
+                      </Label>
                       <Input
                         id="Nama"
                         placeholder="Misal: Servis Rutin Bulanan Chiller Utama"
@@ -146,7 +151,9 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label htmlFor="IntervalNilai">Interval <span className="text-rose-500">*</span></Label>
+                        <Label htmlFor="IntervalNilai">
+                          Interval <span className="text-rose-500">*</span>
+                        </Label>
                         <Input
                           id="IntervalNilai"
                           type="number"
@@ -179,7 +186,9 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
                       <Label htmlFor="TemplatDaftarPeriksaId">Hubungkan Templat Checklist (Opsional)</Label>
                       <Select
                         value={form.data.TemplatDaftarPeriksaId || '__none__'}
-                        onValueChange={(val) => form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)}
+                        onValueChange={(val) =>
+                          form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
+                        }
                       >
                         <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
                           <SelectValue placeholder="Pilih Templat Checklist" />
@@ -221,7 +230,9 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
                           type="number"
                           min={0}
                           value={form.data.BuatPerintahKerjaHariSebelum}
-                          onChange={(e) => form.setData('BuatPerintahKerjaHariSebelum', Number(e.target.value))}
+                          onChange={(e) =>
+                            form.setData('BuatPerintahKerjaHariSebelum', Number(e.target.value))
+                          }
                         />
                       </div>
                     </div>
@@ -260,9 +271,7 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
           </div>
           <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-permukaan-500 font-medium">Total Aset Terjadwal</span>
-            <div className="text-2xl font-bold text-teknisi-700 mt-1">
-              {totalAsetTerdaftar} Unit
-            </div>
+            <div className="text-2xl font-bold text-teknisi-700 mt-1">{totalAsetTerdaftar} Unit</div>
           </div>
           <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-permukaan-500 font-medium">Siklus Penjadwalan</span>
@@ -306,16 +315,17 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
                     <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700">
                       {r.Kode}
                     </span>
-                    <Badge variant={r.Aktif ? 'default' : 'secondary'} className={r.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}>
+                    <Badge
+                      variant={r.Aktif ? 'default' : 'secondary'}
+                      className={r.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                    >
                       {r.Aktif ? 'Aktif' : 'Nonaktif'}
                     </Badge>
                   </div>
 
                   <div>
                     <h3 className="font-semibold text-permukaan-900 text-base">{r.Nama}</h3>
-                    <p className="text-xs text-permukaan-500 mt-0.5">
-                      Prioritas: {r.Prioritas}
-                    </p>
+                    <p className="text-xs text-permukaan-500 mt-0.5">Prioritas: {r.Prioritas}</p>
                   </div>
 
                   <div className="space-y-1.5 pt-2 border-t border-permukaan-100 text-xs text-permukaan-600">
@@ -334,7 +344,10 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
                     {r.templatDaftarPeriksa && (
                       <div className="flex items-center justify-between pt-1">
                         <span className="text-permukaan-500">Checklist:</span>
-                        <span className="text-permukaan-700 truncate max-w-[160px]" title={r.templatDaftarPeriksa.Nama}>
+                        <span
+                          className="text-permukaan-700 truncate max-w-[160px]"
+                          title={r.templatDaftarPeriksa.Nama}
+                        >
                           {r.templatDaftarPeriksa.Kode}
                         </span>
                       </div>
@@ -344,7 +357,7 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
 
                 <div className="pt-4 mt-4 border-t border-permukaan-100">
                   <Link
-                    href={`/preventif-inspeksi/rencana-pemeliharaan/${r.Id}`}
+                    href={ruteRencanaPemeliharaan.detail(r.Id)}
                     className="inline-flex items-center justify-between w-full text-xs font-medium text-teknisi-600 hover:text-teknisi-700 cursor-pointer"
                   >
                     <span>Kelola Aset & Jadwal</span>

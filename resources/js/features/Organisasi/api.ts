@@ -1,5 +1,4 @@
-import axios from 'axios';
-
-export const apiOrganisasi = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteOrganisasi = {
+  index: '/platform/organisasi',
+  logo: '/platform/organisasi/logo',
+};
