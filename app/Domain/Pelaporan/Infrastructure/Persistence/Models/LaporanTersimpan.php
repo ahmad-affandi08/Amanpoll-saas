@@ -44,8 +44,17 @@ final class LaporanTersimpan extends ModelDasar
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function pemilik(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'PemilikId', 'Id');
+    }
+
+    /** Nama pemilik bila relasinya sudah dimuat; null untuk laporan tanpa pemilik. */
+    public function namaPemilik(): ?string
+    {
+        $pemilik = $this->pemilik;
+
+        return $pemilik instanceof Pengguna ? $pemilik->Nama : null;
     }
 }

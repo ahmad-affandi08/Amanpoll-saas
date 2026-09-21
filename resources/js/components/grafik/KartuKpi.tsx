@@ -1,0 +1,93 @@
+import { Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { GrafikKpi } from '@/components/grafik/GrafikKpi';
+import { formatNilaiKpi } from '@/features/Pelaporan/format';
+import type { BentukKomponen, MetrikKpi } from '@/features/Pelaporan/types';
+
+/**
+ * Kartu satu komponen dasbor.
+ *
+ * Rumus KPI selalu dapat dibuka dari ikon di samping judul. Itu bagian dari
+ * Gate 21: angka di dasbor tidak boleh menjadi sesuatu yang harus dipercaya
+ * begitu saja — pembacanya dapat melihat dari mana angkanya berasal tanpa
+ * meninggalkan halaman.
+ */
+export function KartuKpi({
+  kpi,
+  bentuk,
+  judul,
+  lebar,
+}: {
+  kpi: MetrikKpi;
+  bentuk: BentukKomponen;
+  judul: string | null;
+  lebar: number;
+}) {
+  const kolom =
+    {
+      1: 'md:col-span-1',
+      2: 'md:col-span-2',
+      3: 'md:col-span-3',
+      4: 'md:col-span-4',
+    }[Math.min(4, Math.max(1, lebar))] ?? 'md:col-span-1';
+
+  const tanpaData = kpi.Konteks.AdaData === false;
+
+  return (
+    <Card className={cn('col-span-1', kolom)}>
+      <CardContent className="space-y-3 p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-sm text-muted-foreground">{judul ?? kpi.Nama}</p>
+            <p className="text-xs text-muted-foreground/80">{kpi.LabelKelompok}</p>
+          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label={`Rumus ${kpi.Nama}`}
+                className="shrink-0 rounded-[5px] p-1 text-muted-foreground hover:bg-permukaan-100 hover:text-foreground"
+              >
+                <Info className="size-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs text-xs leading-relaxed">
+              <p className="mb-1 font-semibold">{kpi.Nama}</p>
+              <p>{kpi.Formula}</p>
+              <p className="mt-1 text-muted-foreground">Sumber: {kpi.Sumber}</p>
+              {kpi.Konteks.FilterDimensiBerlaku === false && (
+                <p className="mt-1 text-safety-600">
+                  Filter unit dan lokasi tidak berlaku untuk KPI ini.
+                </p>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        {bentuk === 'Angka' ? (
+          <div>
+            {/* Figur proporsional, bukan tabular: angka besar berdigit sama
+                lebar terlihat renggang pada ukuran ini. */}
+            <p className="text-3xl font-semibold tracking-tight">
+              {tanpaData ? '—' : formatNilaiKpi(kpi, true)}
+            </p>
+            {tanpaData ? (
+              <p className="text-xs text-muted-foreground">Belum ada data pada rentang ini.</p>
+            ) : (
+              kpi.Konteks.Penyebut !== undefined && (
+                <p className="text-xs text-muted-foreground">
+                  {kpi.Konteks.Pembilang?.toLocaleString('id-ID')} dari{' '}
+                  {kpi.Konteks.Penyebut.toLocaleString('id-ID')}
+                </p>
+              )
+            )}
+          </div>
+        ) : (
+          <GrafikKpi kpi={kpi} bentuk={bentuk} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}

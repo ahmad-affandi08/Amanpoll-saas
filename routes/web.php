@@ -1,9 +1,9 @@
 <?php
 
+use App\Domain\Pelaporan\Http\Controllers\DasborController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LupaKataSandiController;
 use App\Http\Controllers\Auth\ResetKataSandiController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function (): void {
@@ -18,6 +18,6 @@ Route::middleware('guest')->group(function (): void {
 });
 
 Route::middleware(['auth', 'organisasi'])->group(function (): void {
-    Route::get('/', DashboardController::class)->name('dashboard');
+    Route::get('/', DasborController::class)->name('dashboard');
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 });

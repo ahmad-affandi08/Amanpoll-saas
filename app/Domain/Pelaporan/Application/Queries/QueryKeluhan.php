@@ -1,0 +1,135 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Pelaporan\Application\Queries;
+
+use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
+use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
+use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
+use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
+use App\Shared\Domain\Exceptions\DataTidakDitemukan;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * KPI keluhan (21.01: complaint).
+ *
+ * Keluhan tidak memiliki kolom unit organisasi sendiri, jadi filter unit
+ * dijangkau lewat aset yang dikeluhkan; keluhan tanpa aset otomatis keluar dari
+ * hasil ketika filter unit dipakai, dan itu memang benar — ia tidak dapat
+ * dipastikan milik unit tersebut.
+ */
+final class QueryKeluhan implements PenyediaKpi
+{
+    use MenyaringLingkup;
+
+    /**
+     * Status keluhan yang dianggap belum tuntas: semua yang belum final dan
+     * belum Selesai. Diturunkan dari enum supaya penambahan status baru tidak
+     * diam-diam hilang dari hitungan.
+     *
+     * @return list<string>
+     */
+    private function statusTerbuka(): array
+    {
+        return array_values(array_map(
+            fn (StatusKeluhan $status): string => $status->value,
+            array_filter(
+                StatusKeluhan::cases(),
+                fn (StatusKeluhan $status): bool => ! $status->final() && $status !== StatusKeluhan::Selesai,
+            ),
+        ));
+    }
+
+    public function kunciDilayani(): array
+    {
+        return ['keluhan.terbuka', 'keluhan.masuk', 'keluhan.waktu_respons'];
+    }
+
+    public function hitung(string $kunci, FilterMetrik $filter): HasilKpi
+    {
+        return match ($kunci) {
+            'keluhan.terbuka' => $this->terbuka($filter),
+            'keluhan.masuk' => $this->masuk($filter),
+            'keluhan.waktu_respons' => $this->waktuRespons($filter),
+            default => throw new DataTidakDitemukan("KPI {$kunci} bukan milik QueryKeluhan."),
+        };
+    }
+
+    private function terbuka(FilterMetrik $filter): HasilKpi
+    {
+        $perStatus = $this->lingkup($filter)
+            ->whereIn('Status', $this->statusTerbuka())
+            ->selectRaw('Status, COUNT(*) as Jumlah')
+            ->groupBy('Status')
+            ->pluck('Jumlah', 'Status');
+
+        return new HasilKpi(
+            (float) $perStatus->sum(),
+            $perStatus->map(fn (int|string $jumlah, string $status): array => [
+                'Label' => $status,
+                'Nilai' => (float) $jumlah,
+            ])->values()->all(),
+        );
+    }
+
+    private function masuk(FilterMetrik $filter): HasilKpi
+    {
+        $perHari = $this->lingkup($filter)
+            ->whereBetween('DilaporkanPada', [$filter->dari, $filter->sampai])
+            ->selectRaw('DATE(DilaporkanPada) as Tanggal, COUNT(*) as Jumlah')
+            ->groupBy('Tanggal')
+            ->pluck('Jumlah', 'Tanggal')
+            ->all();
+
+        $perPrioritas = $this->lingkup($filter)
+            ->whereBetween('DilaporkanPada', [$filter->dari, $filter->sampai])
+            ->selectRaw('Prioritas, COUNT(*) as Jumlah')
+            ->groupBy('Prioritas')
+            ->pluck('Jumlah', 'Prioritas');
+
+        return new HasilKpi(
+            (float) array_sum($perHari),
+            $this->deretHarian($filter, $perHari),
+            ['PerPrioritas' => $perPrioritas->all()],
+        );
+    }
+
+    private function waktuRespons(FilterMetrik $filter): HasilKpi
+    {
+        $sudahDirespons = $this->lingkup($filter)
+            ->whereNotNull('DiresponsPada')
+            ->whereBetween('DilaporkanPada', [$filter->dari, $filter->sampai])
+            ->get(['DilaporkanPada', 'DiresponsPada']);
+
+        if ($sudahDirespons->isEmpty()) {
+            return new HasilKpi(0.0, [], ['AdaData' => false, 'Penyebut' => 0]);
+        }
+
+        $totalMenit = $sudahDirespons->sum(
+            fn (Keluhan $keluhan): int => max(0, (int) $keluhan->DilaporkanPada->diffInMinutes($keluhan->DiresponsPada)),
+        );
+
+        return new HasilKpi(
+            round($totalMenit / $sudahDirespons->count(), 0),
+            [],
+            ['AdaData' => true, 'Penyebut' => $sudahDirespons->count(), 'TotalMenit' => $totalMenit],
+        );
+    }
+
+    /** @return Builder<Keluhan> */
+    private function lingkup(FilterMetrik $filter): Builder
+    {
+        $query = Keluhan::query();
+
+        if ($filter->adaFilterLokasi()) {
+            $query->whereIn('LokasiId', $filter->lokasiId);
+        }
+        if ($filter->adaFilterUnit()) {
+            $query->whereIn('AsetId', $this->asetDalamLingkup($filter));
+        }
+
+        return $query;
+    }
+}

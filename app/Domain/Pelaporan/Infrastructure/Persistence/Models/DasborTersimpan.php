@@ -9,6 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class DasborTersimpan extends ModelDasar
 {
@@ -46,5 +47,11 @@ final class DasborTersimpan extends ModelDasar
     public function pemilik(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'PemilikId', 'Id');
+    }
+
+    /** @return HasMany<KomponenDasbor, $this> */
+    public function komponen(): HasMany
+    {
+        return $this->hasMany(KomponenDasbor::class, 'DasborTersimpanId', 'Id')->orderBy('Urutan');
     }
 }

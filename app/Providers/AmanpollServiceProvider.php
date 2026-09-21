@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Core\Audit\KorelasiId;
+use App\Core\Audit\LayananAudit;
 use App\Core\Entitas\RegistriEntitas;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
@@ -17,6 +18,26 @@ use App\Domain\Kepatuhan\Domain\Contracts\AdapterSinkronisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Services\AdapterSinkronisasiRest;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
+use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
+use App\Domain\Pelaporan\Application\Queries\QueryAnggaran;
+use App\Domain\Pelaporan\Application\Queries\QueryAset;
+use App\Domain\Pelaporan\Application\Queries\QueryBiaya;
+use App\Domain\Pelaporan\Application\Queries\QueryKalibrasi;
+use App\Domain\Pelaporan\Application\Queries\QueryKeandalan;
+use App\Domain\Pelaporan\Application\Queries\QueryKeluhan;
+use App\Domain\Pelaporan\Application\Queries\QueryKepatuhan;
+use App\Domain\Pelaporan\Application\Queries\QueryKontrak;
+use App\Domain\Pelaporan\Application\Queries\QueryPengadaan;
+use App\Domain\Pelaporan\Application\Queries\QueryPerintahKerja;
+use App\Domain\Pelaporan\Application\Queries\QueryPreventif;
+use App\Domain\Pelaporan\Application\Queries\QueryStok;
+use App\Domain\Pelaporan\Application\Queries\QueryTingkatLayanan;
+use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
+use App\Domain\Pelaporan\Application\Services\PenyusunBarisLaporan;
+use App\Domain\Pelaporan\Application\Services\RegistriKpi;
+use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
+use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporPdf;
+use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -82,6 +103,44 @@ final class AmanpollServiceProvider extends ServiceProvider
             }
 
             return $registri;
+        });
+
+        // Setiap kelompok KPI (FASE 21.01) punya tepat satu penyedia; registri
+        // menolak pendaftaran ganda supaya satu angka tidak punya dua rumus.
+        $this->app->singleton(RegistriKpi::class, function ($app): RegistriKpi {
+            $registri = new RegistriKpi;
+            foreach ([
+                QueryAset::class,
+                QueryKeluhan::class,
+                QueryPerintahKerja::class,
+                QueryTingkatLayanan::class,
+                QueryKeandalan::class,
+                QueryBiaya::class,
+                QueryStok::class,
+                QueryKalibrasi::class,
+                QueryPreventif::class,
+                QueryPengadaan::class,
+                QueryAnggaran::class,
+                QueryKontrak::class,
+                QueryKepatuhan::class,
+            ] as $penyedia) {
+                $registri->daftarkan($app->make($penyedia));
+            }
+
+            return $registri;
+        });
+
+        $this->app->singleton(LayananEksporLaporan::class, function ($app): LayananEksporLaporan {
+            $layanan = new LayananEksporLaporan(
+                $app->make(PenyusunBarisLaporan::class),
+                $app->make(LayananNotifikasi::class),
+                $app->make(LayananAudit::class),
+            );
+            foreach ([PenulisEksporCsv::class, PenulisEksporXlsx::class, PenulisEksporPdf::class] as $penulis) {
+                $layanan->daftarkanPenulis($app->make($penulis));
+            }
+
+            return $layanan;
         });
     }
 

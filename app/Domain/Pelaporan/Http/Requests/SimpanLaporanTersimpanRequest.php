@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Http\Requests;
 
+use App\Domain\Pelaporan\Domain\KatalogKpi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanLaporanTersimpanRequest extends FormRequest
 {
@@ -13,16 +15,23 @@ final class SimpanLaporanTersimpanRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Jenis' => ['sometimes'],
-            'Konfigurasi' => ['sometimes'],
-            'Pribadi' => ['sometimes'],
-            'PemilikId' => ['nullable'],
+            'Nama' => ['required', 'string', 'max:180'],
+            'Jenis' => ['nullable', 'string', 'max:80'],
+            'Pribadi' => ['required', 'boolean'],
+            'Konfigurasi' => ['required', 'array'],
+            'Konfigurasi.KunciKpi' => ['required', 'array', 'min:1', 'max:30'],
+            'Konfigurasi.KunciKpi.*' => ['required', 'string', Rule::in(KatalogKpi::kunci())],
+            'Konfigurasi.Filter' => ['nullable', 'array'],
+            'Konfigurasi.Filter.Dari' => ['nullable', 'date'],
+            'Konfigurasi.Filter.Sampai' => ['nullable', 'date'],
+            'Konfigurasi.Filter.UnitOrganisasiId' => ['nullable', 'array'],
+            'Konfigurasi.Filter.UnitOrganisasiId.*' => ['string', 'max:26'],
+            'Konfigurasi.Filter.LokasiId' => ['nullable', 'array'],
+            'Konfigurasi.Filter.LokasiId.*' => ['string', 'max:26'],
         ];
     }
 }

@@ -37,6 +37,10 @@ use App\Domain\Kontrak\Http\Policies\KontrakPolicy;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Notifikasi\Http\Policies\TemplatNotifikasiPolicy;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
+use App\Domain\Pelaporan\Http\Policies\DasborTersimpanPolicy;
+use App\Domain\Pelaporan\Http\Policies\LaporanTersimpanPolicy;
+use App\Domain\Pelaporan\Infrastructure\Persistence\Models\DasborTersimpan;
+use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
 use App\Domain\Pemeliharaan\Http\Policies\KategoriKeluhanPolicy;
 use App\Domain\Pemeliharaan\Http\Policies\KeluhanPolicy;
 use App\Domain\Pemeliharaan\Http\Policies\PerintahKerjaPolicy;
@@ -202,5 +206,7 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(PenerimaanPembelian::class, PengadaanPolicy::class);
         Gate::policy(TagihanPenyedia::class, PengadaanPolicy::class);
         Gate::policy(AntrianSinkronisasi::class, AntrianSinkronisasiPolicy::class);
+        Gate::policy(LaporanTersimpan::class, LaporanTersimpanPolicy::class);
+        Gate::policy(DasborTersimpan::class, DasborTersimpanPolicy::class);
     }
 }

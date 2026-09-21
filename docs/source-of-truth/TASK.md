@@ -1225,56 +1225,56 @@ Dikerjakan setelah sumber transaksi stabil agar dashboard tidak dibangun di atas
 
 ## 21.01 Query Metrics
 
-- [ ] Asset counts.
-- [ ] Asset condition.
-- [ ] Complaint.
-- [ ] Work order.
-- [ ] SLA.
-- [ ] Downtime.
-- [ ] MTTR.
-- [ ] MTBF.
-- [ ] Cost.
-- [ ] Stock.
-- [ ] Calibration.
-- [ ] Preventive.
-- [ ] Procurement.
-- [ ] Budget.
-- [ ] Contract.
-- [ ] Compliance.
+- [x] Asset counts.
+- [x] Asset condition.
+- [x] Complaint.
+- [x] Work order.
+- [x] SLA.
+- [x] Downtime.
+- [x] MTTR.
+- [x] MTBF.
+- [x] Cost.
+- [x] Stock.
+- [x] Calibration.
+- [x] Preventive.
+- [x] Procurement.
+- [x] Budget.
+- [x] Contract.
+- [x] Compliance.
 
 ## 21.02 Dashboard
 
-- [ ] Role-aware.
-- [ ] Date filter.
-- [ ] Unit/location filter.
-- [ ] Responsive.
-- [ ] Empty states.
-- [ ] No fake chart.
+- [x] Role-aware.
+- [x] Date filter.
+- [x] Unit/location filter.
+- [x] Responsive.
+- [x] Empty states.
+- [x] No fake chart.
 
 ## 21.03 LaporanTersimpan
 
-- [ ] Save filter.
-- [ ] Ownership.
-- [ ] Shared scope sesuai izin.
-- [ ] Delete.
+- [x] Save filter.
+- [x] Ownership.
+- [x] Shared scope sesuai izin.
+- [x] Delete.
 
 ## 21.04 DasborTersimpan
 
-- [ ] Layout.
-- [ ] Komponen.
-- [ ] Preference.
-- [ ] Validation.
+- [x] Layout.
+- [x] Komponen.
+- [x] Preference.
+- [x] Validation.
 
 ## 21.05 Export
 
-- [ ] CSV/XLSX/PDF hanya bila benar-benar diperlukan.
-- [ ] Queue untuk export besar.
-- [ ] Notification saat selesai.
-- [ ] Authorization saat download.
+- [x] CSV/XLSX/PDF hanya bila benar-benar diperlukan.
+- [x] Queue untuk export besar.
+- [x] Notification saat selesai.
+- [x] Authorization saat download.
 
 ### Gate 21
 
-Setiap KPI utama memiliki definisi formula yang terdokumentasi dan query test.
+Setiap KPI utama memiliki definisi formula yang terdokumentasi dan query test. (Terpenuhi)
 
 ---
 

@@ -2341,24 +2341,6 @@ parameters:
 			path: app/Domain/Pelaporan/Domain/Repositories/LaporanTersimpanRepository.php
 
 		-
-			message: '#^Method App\\Domain\\Pelaporan\\Http\\Requests\\SimpanDasborTersimpanRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Pelaporan/Http/Requests/SimpanDasborTersimpanRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Pelaporan\\Http\\Requests\\SimpanKomponenDasborRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Pelaporan/Http/Requests/SimpanKomponenDasborRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Pelaporan\\Http\\Requests\\SimpanLaporanTersimpanRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Pelaporan/Http/Requests/SimpanLaporanTersimpanRequest.php
-
-		-
 			message: '#^Method App\\Domain\\Pelaporan\\Http\\Resources\\DasborTersimpanResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2438,12 +2420,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Domain\\Pelaporan\\Infrastructure\\Persistence\\Models\\LaporanTersimpan\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Pelaporan/Infrastructure/Persistence/Models/LaporanTersimpan.php
-
-		-
-			message: '#^Method App\\Domain\\Pelaporan\\Infrastructure\\Persistence\\Models\\LaporanTersimpan\:\:pemilik\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Pelaporan/Infrastructure/Persistence/Models/LaporanTersimpan.php

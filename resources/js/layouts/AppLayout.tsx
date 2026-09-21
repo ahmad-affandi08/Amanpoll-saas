@@ -57,6 +57,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   LogOut,
+  ChartColumn,
   ClipboardList,
   FileSignature,
   ShoppingCart,
@@ -90,6 +91,14 @@ const navUtama: GrupNav = {
     { label: 'Dashboard', href: '/', icon: LayoutDashboard },
     { label: 'Persetujuan Saya', href: '/persetujuan/permintaan', icon: FileCheck },
     { label: 'Mode Teknisi (Offline)', href: '/offline/teknisi', icon: SmartphoneNfc },
+    {
+      label: 'Laporan & Dasbor',
+      icon: ChartColumn,
+      subItems: [
+        { label: 'Laporan Tersimpan', href: '/pelaporan/laporan' },
+        { label: 'Dasbor Kustom', href: '/pelaporan/dasbor' },
+      ],
+    },
   ],
 };
 
