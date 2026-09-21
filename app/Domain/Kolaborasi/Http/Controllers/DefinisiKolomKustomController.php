@@ -32,7 +32,7 @@ final class DefinisiKolomKustomController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $data = $request->validate(['jenisEntitas' => ['required', 'string']]);
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['jenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
 
         $definisi = DefinisiKolomKustom::query()
             ->where('JenisEntitas', $data['jenisEntitas'])
@@ -46,7 +46,7 @@ final class DefinisiKolomKustomController extends Controller
     public function store(SimpanDefinisiKolomKustomRequest $request, BuatDefinisiKolomKustom $aksi): RedirectResponse
     {
         $data = $request->validated();
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['JenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
 
         $aksi->jalankan($data);
 
@@ -55,7 +55,7 @@ final class DefinisiKolomKustomController extends Controller
 
     public function update(SimpanDefinisiKolomKustomRequest $request, DefinisiKolomKustom $definisiKolomKustom, UbahDefinisiKolomKustom $aksi): RedirectResponse
     {
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $definisiKolomKustom->JenisEntitas);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $definisiKolomKustom->JenisEntitas);
 
         $aksi->jalankan($definisiKolomKustom, $request->validated());
 
@@ -64,7 +64,7 @@ final class DefinisiKolomKustomController extends Controller
 
     public function destroy(DefinisiKolomKustom $definisiKolomKustom, HapusDefinisiKolomKustom $aksi, Request $request): RedirectResponse
     {
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $definisiKolomKustom->JenisEntitas);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $definisiKolomKustom->JenisEntitas);
 
         $aksi->jalankan($definisiKolomKustom);
 

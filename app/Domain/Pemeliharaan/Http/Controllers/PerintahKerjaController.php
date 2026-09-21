@@ -41,14 +41,14 @@ final class PerintahKerjaController extends Controller
             'status' => ['nullable', Rule::enum(StatusPerintahKerja::class)],
             'prioritas' => ['nullable', Rule::enum(PrioritasKeluhan::class)],
         ]);
-        $dapatMengelola = $this->izin->boleh($request->user()->Id, 'PerintahKerja.Kelola');
+        $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola');
 
         $daftar = PerintahKerja::query()
             ->with(['keluhan', 'lokasi', 'aset', 'penugasan.pengguna'])
             ->withSum('waktuKerja as TotalWaktuKerjaMenit', 'DurasiMenit')
             ->withSum('waktuHenti as TotalDowntimeMenit', 'DurasiMenit')
             ->withSum('biaya as TotalBiaya', 'Jumlah')
-            ->when(! $dapatMengelola, fn ($query) => $query->whereHas('penugasan', fn ($penugasan) => $penugasan->where('PenggunaId', $request->user()->Id)->whereIn('Status', ['Ditugaskan', 'Diterima'])))
+            ->when(! $dapatMengelola, fn ($query) => $query->whereHas('penugasan', fn ($penugasan) => $penugasan->where('PenggunaId', $request->user('web')->Id)->whereIn('Status', ['Ditugaskan', 'Diterima'])))
             ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
             ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
             ->latest('DibuatPada')
@@ -67,7 +67,7 @@ final class PerintahKerjaController extends Controller
     public function store(SimpanPerintahKerjaRequest $request, BuatPerintahKerja $aksi): RedirectResponse
     {
         $this->authorize('create', PerintahKerja::class);
-        $perintahKerja = $aksi->jalankan($request->validated(), $request->user()->Id);
+        $perintahKerja = $aksi->jalankan($request->validated(), $request->user('web')->Id);
 
         return redirect()->route('pemeliharaan.perintah-kerja.show', $perintahKerja)->with('sukses', 'Perintah kerja berhasil dibuat.');
     }
@@ -84,13 +84,13 @@ final class PerintahKerjaController extends Controller
             ->loadSum('waktuHenti as TotalDowntimeMenit', 'DurasiMenit')
             ->loadSum('biaya as TotalBiaya', 'Jumlah');
 
-        $dapatMengelola = $this->izin->boleh($request->user()->Id, 'PerintahKerja.Kelola');
+        $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola');
         $beban = PenugasanPerintahKerja::query()
             ->whereIn('Status', ['Ditugaskan', 'Diterima'])
             ->selectRaw('PenggunaId, COUNT(*) as jumlah')
             ->groupBy('PenggunaId')
             ->pluck('jumlah', 'PenggunaId');
-        $teknisi = Pengguna::query()->where('OrganisasiId', $request->user()->OrganisasiId)->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama', 'Jabatan'])
+        $teknisi = Pengguna::query()->where('OrganisasiId', $request->user('web')->OrganisasiId)->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama', 'Jabatan'])
             ->map(fn (Pengguna $pengguna) => [
                 'Id' => $pengguna->Id,
                 'Nama' => $pengguna->Nama,
@@ -118,7 +118,7 @@ final class PerintahKerjaController extends Controller
             'transisiDiizinkan' => collect(StatusPerintahKerja::from($perintahKerja->Status)->tujuanYangDiizinkan())
                 ->filter(fn (StatusPerintahKerja $status): bool => Gate::allows('ubahStatus', [$perintahKerja, $status->value]))
                 ->map(fn (StatusPerintahKerja $status): string => $status->value)->values(),
-            'penugasanSaya' => $perintahKerja->penugasan->firstWhere('PenggunaId', $request->user()->Id),
+            'penugasanSaya' => $perintahKerja->penugasan->firstWhere('PenggunaId', $request->user('web')->Id),
             'teknisi' => $teknisi,
             'stok' => $stok,
             'gudang' => Gudang::query()->orderBy('Nama')->get(['Id', 'Nama']),
@@ -136,7 +136,7 @@ final class PerintahKerjaController extends Controller
             $request->validated('Catatan'),
             $request->validated('RingkasanPenyelesaian'),
             $request->integer('Versi'),
-            $request->user()->Id,
+            $request->user('web')->Id,
         );
 
         return back()->with('sukses', 'Status perintah kerja berhasil diperbarui.');

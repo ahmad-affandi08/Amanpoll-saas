@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Platform\Infrastructure\Persistence\Models\AdminPlatform;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
 return [
@@ -13,12 +14,24 @@ return [
             'driver' => 'session',
             'provider' => 'pengguna',
         ],
+
+        // Admin platform memakai guard sesi tersendiri sehingga sesi tenant dan
+        // sesi platform tidak pernah saling menggantikan (22.02).
+        'platform' => [
+            'driver' => 'session',
+            'provider' => 'admin_platform',
+        ],
     ],
 
     'providers' => [
         'pengguna' => [
             'driver' => 'eloquent',
             'model' => Pengguna::class,
+        ],
+
+        'admin_platform' => [
+            'driver' => 'eloquent',
+            'model' => AdminPlatform::class,
         ],
     ],
 

@@ -8,7 +8,7 @@ use App\Domain\Kalibrasi\Http\Controllers\PelaksanaanKalibrasiController;
 use App\Domain\Kalibrasi\Http\Controllers\RencanaKalibrasiController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth', 'organisasi'])
+Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.kalibrasi'])
     ->prefix('kalibrasi')
     ->name('kalibrasi.')
     ->group(function (): void {

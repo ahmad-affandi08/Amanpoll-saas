@@ -28,7 +28,7 @@ final class NilaiKolomKustomController extends Controller
         ]);
 
         $this->registriEntitas->cariEntitas($data['jenisEntitas'], $data['entitasId']);
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['jenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
 
         $nilai = NilaiKolomKustom::query()
             ->with('definisiKolomKustom')
@@ -53,7 +53,7 @@ final class NilaiKolomKustomController extends Controller
         }
 
         $this->registriEntitas->cariEntitas($data['JenisEntitas'], $data['EntitasId']);
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['JenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
 
         $layanan->simpan($definisi, $data['EntitasId'], $data['Nilai'] ?? null);
 

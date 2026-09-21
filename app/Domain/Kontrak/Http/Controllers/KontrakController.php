@@ -54,7 +54,7 @@ final class KontrakController extends Controller
             'kontrak' => KontrakResource::collection($kontrak),
             'penyedia' => Penyedia::query()->where('Status', Penyedia::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
             'tingkatLayanan' => TingkatLayanan::query()->orderBy('Nama')->get(['Id', 'Nama']),
-            'ringkasan' => $peringatan->ringkasan($request->user()->OrganisasiId),
+            'ringkasan' => $peringatan->ringkasan($request->user('web')->OrganisasiId),
             'filter' => $filter,
         ]);
     }

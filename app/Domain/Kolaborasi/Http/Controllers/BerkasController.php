@@ -27,10 +27,10 @@ final class BerkasController extends Controller
         $data = $request->validated();
 
         if (isset($data['JenisEntitas'])) {
-            $this->registriEntitas->pastikanBolehKelola($request->user(), $data['JenisEntitas']);
+            $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
         }
 
-        $berkas = $aksi->jalankan($request->file('Berkas'), $request->user()->Id);
+        $berkas = $aksi->jalankan($request->file('Berkas'), $request->user('web')->Id);
 
         if (isset($data['JenisEntitas'], $data['EntitasId'])) {
             $aksiLampirkan->jalankan(
@@ -39,7 +39,7 @@ final class BerkasController extends Controller
                 $berkas->Id,
                 $data['Kategori'] ?? null,
                 $data['Keterangan'] ?? null,
-                $request->user()->Id,
+                $request->user('web')->Id,
             );
         }
 

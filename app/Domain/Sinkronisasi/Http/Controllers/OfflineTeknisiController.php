@@ -41,7 +41,7 @@ final class OfflineTeknisiController extends Controller
         LayananPaketOffline $paketOffline,
         LayananPenandaSinkronisasi $penanda,
     ): JsonResponse {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
         $perangkat = $daftarkan->jalankan($pengguna, $request->validated());
         $paket = $paketOffline->bangun($pengguna);
 
@@ -72,7 +72,7 @@ final class OfflineTeknisiController extends Controller
         DaftarkanPerangkatRequest $request,
         DaftarkanPerangkatPengguna $daftarkan,
     ): JsonResponse {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
         $perangkat = $daftarkan->jalankan($pengguna, $request->validated());
         $daftarkan->lepaskan($perangkat);
 
@@ -82,7 +82,7 @@ final class OfflineTeknisiController extends Controller
     /** Ringkasan singkat untuk indikator sinkronisasi di topbar. */
     public function ringkasan(Request $request): JsonResponse
     {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
 
         $antrean = AntrianSinkronisasi::query()
             ->whereIn('PerangkatPenggunaId', PerangkatPengguna::query()

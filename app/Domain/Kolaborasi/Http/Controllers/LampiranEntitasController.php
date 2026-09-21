@@ -27,7 +27,7 @@ final class LampiranEntitasController extends Controller
         ]);
 
         $this->registriEntitas->cariEntitas($data['jenisEntitas'], $data['entitasId']);
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['jenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
 
         $lampiran = LampiranEntitas::query()
             ->with('berkas')
@@ -42,7 +42,7 @@ final class LampiranEntitasController extends Controller
     public function store(SimpanLampiranEntitasRequest $request, LampirkanBerkas $aksi): RedirectResponse
     {
         $data = $request->validated();
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['JenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
 
         $aksi->jalankan(
             $data['JenisEntitas'],
@@ -50,7 +50,7 @@ final class LampiranEntitasController extends Controller
             $data['BerkasId'],
             $data['Kategori'] ?? null,
             $data['Keterangan'] ?? null,
-            $request->user()->Id,
+            $request->user('web')->Id,
         );
 
         return back()->with('sukses', 'Lampiran berhasil ditambahkan.');
@@ -58,7 +58,7 @@ final class LampiranEntitasController extends Controller
 
     public function destroy(LampiranEntitas $lampiranEntitas, LepaskanLampiran $aksi, Request $request): RedirectResponse
     {
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $lampiranEntitas->JenisEntitas);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $lampiranEntitas->JenisEntitas);
 
         $aksi->jalankan($lampiranEntitas);
 

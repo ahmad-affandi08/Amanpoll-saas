@@ -30,7 +30,7 @@ final class TingkatLayananController extends Controller
                     ->get(),
             ),
             'peran' => Peran::query()->orderBy('Nama')->get(['Id', 'Nama']),
-            'pengguna' => Pengguna::query()->where('OrganisasiId', auth()->user()->OrganisasiId)->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
+            'pengguna' => Pengguna::query()->where('OrganisasiId', auth('web')->user()->OrganisasiId)->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }
 

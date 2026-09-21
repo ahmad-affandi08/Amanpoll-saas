@@ -16,7 +16,18 @@ export interface PageProps {
   namaAplikasi: string;
   auth: { pengguna: PenggunaAuth | null };
   izin: string[];
-  flash: { sukses?: string | null; gagal?: string | null; tokenKunciApi?: string | null };
+  flash: {
+    sukses?: string | null;
+    gagal?: string | null;
+    tokenKunciApi?: string | null;
+    instruksiPembayaran?: unknown;
+  };
+  entitlement: {
+    Fitur?: Record<string, boolean>;
+    Batas?: Record<string, number | null>;
+    AksesPenuh?: boolean;
+    [kunci: string]: unknown;
+  };
   [key: string]: unknown;
 }
 

@@ -7,12 +7,17 @@ namespace App\Domain\Aset\Application\Actions;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatLokasiAset;
+use App\Domain\Langganan\Application\Services\PenjagaBatasLangganan;
+use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use Illuminate\Support\Str;
 
 final class BuatAset
 {
-    public function __construct(private readonly TransaksiDatabase $transaksi) {}
+    public function __construct(
+        private readonly TransaksiDatabase $transaksi,
+        private readonly PenjagaBatasLangganan $penjagaBatas,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data
@@ -20,6 +25,10 @@ final class BuatAset
     public function jalankan(array $data, string $dibuatOleh): Aset
     {
         return $this->transaksi->jalankan(function () use ($data, $dibuatOleh): Aset {
+            // Batas paket ditegakkan di dalam use-case, bukan di rute, supaya
+            // jalur API dan impor massal ikut terjaga (22.05, Gate 22).
+            $this->penjagaBatas->pastikanMasihMuat(KatalogFitur::BATAS_ASET);
+
             /** @var KategoriAset|null $kategoriAset */
             $kategoriAset = KategoriAset::query()->find($data['KategoriAsetId']);
 

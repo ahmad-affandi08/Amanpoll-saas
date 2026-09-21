@@ -3,7 +3,9 @@
 use App\Http\Middleware\AutentikasiKunciApi;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PastikanCakupanKunciApi;
+use App\Http\Middleware\PastikanFiturPaketAktif;
 use App\Http\Middleware\PastikanIdempoten;
+use App\Http\Middleware\PastikanLanggananMengizinkanTulis;
 use App\Http\Middleware\PastikanMemilikiIzin;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
 use App\Http\Middleware\TetapkanKorelasiId;
@@ -27,8 +29,29 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(prepend: [TetapkanKorelasiId::class]);
         $middleware->api(prepend: [TetapkanKorelasiId::class]);
 
+        // Penjaga langganan dipasang pada grup, bukan per rute, supaya tidak ada
+        // rute yang dapat lupa dijaga — termasuk rute API yang ditembak langsung
+        // tanpa melewati UI (Gate 22).
+        $middleware->web(append: [PastikanLanggananMengizinkanTulis::class]);
+        $middleware->api(append: [PastikanLanggananMengizinkanTulis::class]);
+
+        // Konsol platform punya halaman masuk sendiri. Tanpa ini, admin platform
+        // yang sesinya habis akan dilempar ke halaman masuk tenant, yang meminta
+        // kode organisasi — kredensial yang memang tidak ia miliki.
+        $middleware->redirectGuestsTo(
+            fn (Request $request): string => $request->is('admin-platform', 'admin-platform/*')
+                ? route('adminPlatform.login')
+                : route('login'),
+        );
+        $middleware->redirectUsersTo(
+            fn (Request $request): string => $request->is('admin-platform', 'admin-platform/*')
+                ? route('adminPlatform.paket.index')
+                : route('dashboard'),
+        );
+
         $middleware->alias([
             'organisasi' => TetapkanKonteksOrganisasi::class,
+            'fitur' => PastikanFiturPaketAktif::class,
             'izin' => PastikanMemilikiIzin::class,
             'kunci.api' => AutentikasiKunciApi::class,
             'cakupan.kunci' => PastikanCakupanKunciApi::class,
@@ -45,6 +68,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToPriorityList(
             before: SubstituteBindings::class,
             prepend: AutentikasiKunciApi::class,
+        );
+
+        // Penjaga langganan harus berjalan setelah konteks organisasi ada dan
+        // setelah route model binding, karena ia membaca nama rute untuk
+        // mengecualikan jalur pembayaran.
+        $middleware->appendToPriorityList(
+            after: SubstituteBindings::class,
+            append: PastikanLanggananMengizinkanTulis::class,
+        );
+        $middleware->appendToPriorityList(
+            after: PastikanLanggananMengizinkanTulis::class,
+            append: PastikanFiturPaketAktif::class,
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {

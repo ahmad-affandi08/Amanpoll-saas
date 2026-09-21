@@ -39,17 +39,17 @@ final class PermintaanPersetujuanController extends Controller
 
         /** @var AlurPersetujuan $alurPersetujuan */
         $alurPersetujuan = AlurPersetujuan::query()->findOrFail($data['AlurPersetujuanId']);
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $alurPersetujuan->JenisEntitas);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $alurPersetujuan->JenisEntitas);
 
-        $aksi->jalankan($alurPersetujuan, $data['EntitasId'], $data['DataTambahan'] ?? null, $request->user()->Id);
+        $aksi->jalankan($alurPersetujuan, $data['EntitasId'], $data['DataTambahan'] ?? null, $request->user('web')->Id);
 
         return back()->with('sukses', 'Permintaan persetujuan berhasil diajukan.');
     }
 
     public function destroy(PermintaanPersetujuan $permintaanPersetujuan, BatalkanPermintaanPersetujuan $aksi, Request $request): RedirectResponse
     {
-        $bolehBatal = $permintaanPersetujuan->DimintaOleh === $request->user()->Id
-            || $this->registriEntitas->bolehKelola($request->user(), $permintaanPersetujuan->JenisEntitas);
+        $bolehBatal = $permintaanPersetujuan->DimintaOleh === $request->user('web')->Id
+            || $this->registriEntitas->bolehKelola($request->user('web'), $permintaanPersetujuan->JenisEntitas);
 
         if (! $bolehBatal) {
             throw new AksesDitolak('Anda tidak berhak membatalkan permintaan ini.');
@@ -62,14 +62,14 @@ final class PermintaanPersetujuanController extends Controller
 
     public function setujui(SimpanKeputusanPersetujuanRequest $request, PermintaanPersetujuan $permintaanPersetujuan, SetujuiPermintaanPersetujuan $aksi): RedirectResponse
     {
-        $aksi->jalankan($permintaanPersetujuan, $request->user(), $request->validated()['Catatan'] ?? null);
+        $aksi->jalankan($permintaanPersetujuan, $request->user('web'), $request->validated()['Catatan'] ?? null);
 
         return back()->with('sukses', 'Permintaan berhasil disetujui.');
     }
 
     public function tolak(SimpanKeputusanPersetujuanRequest $request, PermintaanPersetujuan $permintaanPersetujuan, TolakPermintaanPersetujuan $aksi): RedirectResponse
     {
-        $aksi->jalankan($permintaanPersetujuan, $request->user(), $request->validated()['Catatan'] ?? null);
+        $aksi->jalankan($permintaanPersetujuan, $request->user('web'), $request->validated()['Catatan'] ?? null);
 
         return back()->with('sukses', 'Permintaan berhasil ditolak.');
     }
@@ -78,7 +78,7 @@ final class PermintaanPersetujuanController extends Controller
     {
         $permintaan = PermintaanPersetujuan::query()
             ->with(['alurPersetujuan', 'dimintaOleh', 'keputusan.penyetuju'])
-            ->where('DimintaOleh', $request->user()->Id)
+            ->where('DimintaOleh', $request->user('web')->Id)
             ->latest('DimintaPada')
             ->get();
 
@@ -87,7 +87,7 @@ final class PermintaanPersetujuanController extends Controller
 
     public function inbox(Request $request, LayananPenyetuju $layananPenyetuju): AnonymousResourceCollection
     {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
 
         $menunggu = PermintaanPersetujuan::query()
             ->with(['alurPersetujuan', 'dimintaOleh'])

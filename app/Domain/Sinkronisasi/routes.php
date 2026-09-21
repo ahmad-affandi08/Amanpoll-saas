@@ -8,7 +8,7 @@ use App\Domain\Sinkronisasi\Http\Controllers\AntrianSinkronisasiController;
 use App\Domain\Sinkronisasi\Http\Controllers\OfflineTeknisiController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth', 'organisasi'])
+Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.integrasi'])
     ->prefix('integrasi')
     ->name('integrasi.')
     ->group(function (): void {

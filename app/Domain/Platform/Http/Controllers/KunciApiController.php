@@ -35,7 +35,7 @@ final class KunciApiController extends Controller
         $data = $request->validated();
 
         $hasil = $aksi->jalankan(
-            $request->user(),
+            $request->user('web'),
             $data['Nama'],
             $data['Cakupan'] ?? null,
             isset($data['KadaluarsaPada']) ? new DateTimeImmutable($data['KadaluarsaPada']) : null,

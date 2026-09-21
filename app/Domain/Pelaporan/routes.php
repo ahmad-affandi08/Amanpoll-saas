@@ -7,7 +7,7 @@ use App\Domain\Pelaporan\Http\Controllers\EksporLaporanController;
 use App\Domain\Pelaporan\Http\Controllers\LaporanTersimpanController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth', 'organisasi'])
+Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.pelaporan_lanjutan'])
     ->prefix('pelaporan')
     ->name('pelaporan.')
     ->group(function (): void {

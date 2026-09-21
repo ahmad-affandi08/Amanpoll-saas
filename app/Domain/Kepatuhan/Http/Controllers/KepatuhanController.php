@@ -56,7 +56,7 @@ final class KepatuhanController extends Controller
                 StandarKepatuhan::query()->withCount('persyaratan')->orderBy('Kode')->get()
             ),
             'aset' => Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
-            'ringkasan' => $layanan->ringkasan($request->user()->OrganisasiId),
+            'ringkasan' => $layanan->ringkasan($request->user('web')->OrganisasiId),
             'filter' => $filter,
         ]);
     }
@@ -127,7 +127,7 @@ final class KepatuhanController extends Controller
     public function catatPemeriksaan(SimpanKepatuhanAsetRequest $request, KepatuhanAset $kepatuhanAset, KelolaKepatuhanAset $aksi): RedirectResponse
     {
         $this->authorize('update', $kepatuhanAset);
-        $aksi->catatPemeriksaan($kepatuhanAset, $request->validated(), $request->user()->Id);
+        $aksi->catatPemeriksaan($kepatuhanAset, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Hasil pemeriksaan kepatuhan dicatat.');
     }

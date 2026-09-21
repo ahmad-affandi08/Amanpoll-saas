@@ -62,7 +62,7 @@ final class PenggunaController extends Controller
             'Status' => ['required', Rule::in(['Aktif', 'Nonaktif'])],
         ]);
 
-        $aksi->jalankan($request->user(), $pengguna, $data['Status']);
+        $aksi->jalankan($request->user('web'), $pengguna, $data['Status']);
 
         return back()->with('sukses', 'Status pengguna berhasil diperbarui.');
     }

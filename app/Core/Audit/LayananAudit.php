@@ -47,7 +47,11 @@ final class LayananAudit
 
         $this->catatanAuditRepository->simpan(new CatatanAudit([
             'OrganisasiId' => $this->konteksOrganisasi->id(),
-            'PenggunaId' => Auth::id(),
+            // Guard disebut eksplisit: Auth::id() memakai guard bawaan, yang
+            // dapat berpindah ke 'platform' dan menulis identitas non-tenant ke
+            // kolom yang ber-foreign key ke tabel Pengguna.
+            'PenggunaId' => Auth::guard('web')->id(),
+            'AktorPlatformId' => Auth::guard('platform')->id(),
             'Aksi' => $aksi,
             'JenisEntitas' => $jenisEntitas,
             'EntitasId' => $entitasId,

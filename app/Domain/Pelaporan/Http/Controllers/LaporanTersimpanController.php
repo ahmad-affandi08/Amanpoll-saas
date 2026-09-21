@@ -30,7 +30,7 @@ final class LaporanTersimpanController extends Controller
     {
         $this->authorize('viewAny', LaporanTersimpan::class);
 
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
         $filter = FilterMetrik::dariArray($request->all());
 
         $laporan = LaporanTersimpan::query()
@@ -38,7 +38,7 @@ final class LaporanTersimpanController extends Controller
             ->where(fn ($query) => $query->where('PemilikId', $pengguna->Id)->orWhere('Pribadi', false))
             ->orderBy('Nama')
             ->get()
-            ->filter(fn (LaporanTersimpan $satu): bool => $request->user()->can('view', $satu))
+            ->filter(fn (LaporanTersimpan $satu): bool => $request->user('web')->can('view', $satu))
             ->values();
 
         $dibuka = $this->laporanDibuka($request, $laporan);
@@ -68,7 +68,7 @@ final class LaporanTersimpanController extends Controller
     public function store(SimpanLaporanTersimpanRequest $request, KelolaLaporanTersimpan $aksi): RedirectResponse
     {
         $this->authorize('create', LaporanTersimpan::class);
-        $laporan = $aksi->simpan($request->user(), $request->validated());
+        $laporan = $aksi->simpan($request->user('web'), $request->validated());
 
         return redirect()
             ->route('pelaporan.laporan.index', ['laporan' => $laporan->Id])
@@ -81,7 +81,7 @@ final class LaporanTersimpanController extends Controller
         KelolaLaporanTersimpan $aksi,
     ): RedirectResponse {
         $this->authorize('update', $laporanTersimpan);
-        $aksi->simpan($request->user(), $request->validated(), $laporanTersimpan);
+        $aksi->simpan($request->user('web'), $request->validated(), $laporanTersimpan);
 
         return back()->with('sukses', 'Laporan tersimpan diperbarui.');
     }

@@ -51,7 +51,7 @@ final class RencanaPemeliharaanController extends Controller
 
         $rencana = $this->kelolaRencana->buat(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()->route('preventifInspeksi.rencana-pemeliharaan.show', $rencana->Id)
@@ -93,7 +93,7 @@ final class RencanaPemeliharaanController extends Controller
         $this->kelolaRencana->perbarui(
             $rencanaPemeliharaan,
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Rencana pemeliharaan berhasil diperbarui.');
@@ -132,8 +132,8 @@ final class RencanaPemeliharaanController extends Controller
         $this->authorize('create', RencanaPemeliharaan::class);
 
         $hasil = $this->penjadwalPreventif->jalankan(
-            organisasiId: $request->user()->OrganisasiId,
-            penggunaId: $request->user()->Id
+            organisasiId: $request->user('web')->OrganisasiId,
+            penggunaId: $request->user('web')->Id
         );
 
         return back()->with('sukses', "Penjadwalan selesai. Jadwal dibuat: {$hasil['jadwalDibuat']}, Perintah Kerja dibuat: {$hasil['perintahKerjaDibuat']}, Dilewati: {$hasil['dilewati']}.");

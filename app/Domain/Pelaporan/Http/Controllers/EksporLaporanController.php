@@ -27,7 +27,7 @@ final class EksporLaporanController extends Controller
         MintaEksporLaporanRequest $request,
         LayananMetrik $layananMetrik,
     ): RedirectResponse {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
         $data = $request->validated();
 
         // Kunci disaring di sini juga, bukan hanya di job: permintaan yang
@@ -69,7 +69,7 @@ final class EksporLaporanController extends Controller
             throw new AksesDitolak('Berkas ini bukan hasil ekspor laporan.');
         }
 
-        if ($berkas->DiunggahOleh !== $request->user()->Id) {
+        if ($berkas->DiunggahOleh !== $request->user('web')->Id) {
             throw new AksesDitolak('Ekspor hanya dapat diunduh oleh pemesannya.');
         }
 

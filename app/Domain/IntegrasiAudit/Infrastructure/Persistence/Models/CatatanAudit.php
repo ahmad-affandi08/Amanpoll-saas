@@ -21,6 +21,7 @@ final class CatatanAudit extends ModelDasar
     protected $fillable = [
         'OrganisasiId',
         'PenggunaId',
+        'AktorPlatformId',
         'Aksi',
         'JenisEntitas',
         'EntitasId',

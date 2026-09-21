@@ -31,7 +31,7 @@ final class AntrianSinkronisasiController extends Controller
         DaftarkanPerangkatPengguna $daftarkan,
         LayananAntrianSinkronisasi $layanan,
     ): JsonResponse {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
         $data = $request->validated();
         $perangkat = $daftarkan->jalankan($pengguna, $data);
 
@@ -53,7 +53,7 @@ final class AntrianSinkronisasiController extends Controller
 
     public function status(DaftarkanPerangkatRequest $request, DaftarkanPerangkatPengguna $daftarkan): JsonResponse
     {
-        $perangkat = $daftarkan->jalankan($request->user(), $request->validated());
+        $perangkat = $daftarkan->jalankan($request->user('web'), $request->validated());
 
         return response()->json([
             'Antrean' => AntrianSinkronisasiResource::collection(
@@ -79,7 +79,7 @@ final class AntrianSinkronisasiController extends Controller
         $hasil = $layanan->selesaikanKonflik(
             $antrianSinkronisasi,
             KeputusanKonflikSinkronisasi::from($data['Keputusan']),
-            $request->user(),
+            $request->user('web'),
         );
 
         return response()->json(['Mutasi' => (new AntrianSinkronisasiResource($hasil))->resolve()]);

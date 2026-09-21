@@ -1975,62 +1975,14 @@ parameters:
 			path: app/Domain/Langganan/Infrastructure/Persistence/Models/Langganan.php
 
 		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\Langganan\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/Langganan.php
-
-		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\Langganan\:\:paketLangganan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/Langganan.php
-
-		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\PaketFitur\:\:fiturPaket\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/PaketFitur.php
-
-		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\PaketFitur\:\:paketLangganan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/PaketFitur.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domain/Langganan/Infrastructure/Persistence/Models/PembayaranLangganan.php
 
 		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\PembayaranLangganan\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/PembayaranLangganan.php
-
-		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\PembayaranLangganan\:\:tagihanLangganan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/PembayaranLangganan.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/TagihanLangganan.php
-
-		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\TagihanLangganan\:\:langganan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Langganan/Infrastructure/Persistence/Models/TagihanLangganan.php
-
-		-
-			message: '#^Method App\\Domain\\Langganan\\Infrastructure\\Persistence\\Models\\TagihanLangganan\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Langganan/Infrastructure/Persistence/Models/TagihanLangganan.php
 
@@ -5567,18 +5519,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Platform/Infrastructure/Persistence/Models/NomorDokumen.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Infrastructure\\Persistence\\Models\\Pengguna\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Platform/Infrastructure/Persistence/Models/Pengguna.php
-
-		-
-			message: '#^Method App\\Domain\\Platform\\Infrastructure\\Persistence\\Models\\Pengguna\:\:unitOrganisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Platform/Infrastructure/Persistence/Models/Pengguna.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'

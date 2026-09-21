@@ -15,7 +15,7 @@ final class TetapkanKonteksOrganisasi
 
     public function handle(Request $request, Closure $next): Response
     {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
 
         if ($pengguna?->OrganisasiId) {
             $this->konteks->tetapkan((string) $pengguna->OrganisasiId);

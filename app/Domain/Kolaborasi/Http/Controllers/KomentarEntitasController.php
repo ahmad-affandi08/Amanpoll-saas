@@ -30,7 +30,7 @@ final class KomentarEntitasController extends Controller
         ]);
 
         $this->registriEntitas->cariEntitas($data['jenisEntitas'], $data['entitasId']);
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['jenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
 
         $komentar = KomentarEntitas::query()
             ->with('dibuatOleh')
@@ -45,14 +45,14 @@ final class KomentarEntitasController extends Controller
     public function store(SimpanKomentarEntitasRequest $request, TambahKomentar $aksi): RedirectResponse
     {
         $data = $request->validated();
-        $this->registriEntitas->pastikanBolehKelola($request->user(), $data['JenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
 
         $aksi->jalankan(
             $data['JenisEntitas'],
             $data['EntitasId'],
             $data['Isi'],
             $data['IndukKomentarId'] ?? null,
-            $request->user()->Id,
+            $request->user('web')->Id,
         );
 
         return back()->with('sukses', 'Komentar berhasil ditambahkan.');
@@ -60,7 +60,7 @@ final class KomentarEntitasController extends Controller
 
     public function update(UbahKomentarEntitasRequest $request, KomentarEntitas $komentarEntitas, UbahKomentar $aksi): RedirectResponse
     {
-        if ($komentarEntitas->DibuatOleh !== $request->user()->Id) {
+        if ($komentarEntitas->DibuatOleh !== $request->user('web')->Id) {
             throw new AksesDitolak('Hanya penulis komentar yang dapat mengubahnya.');
         }
 
@@ -71,8 +71,8 @@ final class KomentarEntitasController extends Controller
 
     public function destroy(KomentarEntitas $komentarEntitas, HapusKomentar $aksi, Request $request): RedirectResponse
     {
-        $penulis = $komentarEntitas->DibuatOleh === $request->user()->Id;
-        $pengelola = $this->registriEntitas->bolehKelola($request->user(), $komentarEntitas->JenisEntitas);
+        $penulis = $komentarEntitas->DibuatOleh === $request->user('web')->Id;
+        $pengelola = $this->registriEntitas->bolehKelola($request->user('web'), $komentarEntitas->JenisEntitas);
 
         if (! $penulis && ! $pengelola) {
             throw new AksesDitolak('Anda tidak memiliki izin untuk menghapus komentar ini.');

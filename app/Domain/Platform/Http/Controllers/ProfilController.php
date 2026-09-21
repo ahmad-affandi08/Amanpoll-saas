@@ -22,28 +22,28 @@ final class ProfilController extends Controller
     public function edit(Request $request): Response
     {
         return Inertia::render('Profil/Index', [
-            'pengguna' => new PenggunaResource($request->user()->load('perangkat')),
+            'pengguna' => new PenggunaResource($request->user('web')->load('perangkat')),
         ]);
     }
 
     public function update(UbahProfilRequest $request, UbahProfilSendiri $aksi): RedirectResponse
     {
         $data = $request->validated();
-        $aksi->jalankan($request->user(), $data['Nama'], $data['Email'], $data['Telepon'] ?? null);
+        $aksi->jalankan($request->user('web'), $data['Nama'], $data['Email'], $data['Telepon'] ?? null);
 
         return back()->with('sukses', 'Profil berhasil diperbarui.');
     }
 
     public function gantiKataSandi(GantiKataSandiRequest $request, GantiKataSandiSendiri $aksi): RedirectResponse
     {
-        $aksi->jalankan($request->user(), $request->validated()['KataSandiBaru']);
+        $aksi->jalankan($request->user('web'), $request->validated()['KataSandiBaru']);
 
         return back()->with('sukses', 'Kata sandi berhasil diganti.');
     }
 
     public function hapusPerangkat(Request $request, PerangkatPengguna $perangkat, HapusPerangkatSendiri $aksi): RedirectResponse
     {
-        $aksi->jalankan($request->user(), $perangkat);
+        $aksi->jalankan($request->user('web'), $perangkat);
 
         return back()->with('sukses', 'Perangkat berhasil dihapus.');
     }

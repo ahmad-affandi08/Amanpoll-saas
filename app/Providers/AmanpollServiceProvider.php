@@ -18,6 +18,8 @@ use App\Domain\Kepatuhan\Domain\Contracts\AdapterSinkronisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Services\AdapterSinkronisasiRest;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
+use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTransferManual;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use App\Domain\Pelaporan\Application\Queries\QueryAnggaran;
 use App\Domain\Pelaporan\Application\Queries\QueryAset;
@@ -142,6 +144,18 @@ final class AmanpollServiceProvider extends ServiceProvider
 
             return $layanan;
         });
+
+        $this->app->singleton(
+            RegistriPenyediaPembayaran::class,
+            function ($app): RegistriPenyediaPembayaran {
+                $registri = new RegistriPenyediaPembayaran;
+                foreach ([PenyediaPembayaranTransferManual::class] as $penyedia) {
+                    $registri->daftarkan($app->make($penyedia));
+                }
+
+                return $registri;
+            },
+        );
     }
 
     public function boot(): void

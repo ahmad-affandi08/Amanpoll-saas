@@ -22,6 +22,7 @@ final class PembayaranLangganan extends ModelDasar
         'TagihanLanggananId',
         'PenyediaPembayaran',
         'ReferensiEksternal',
+        'IdPeristiwaPenyedia',
         'Metode',
         'Jumlah',
         'Status',
@@ -39,11 +40,13 @@ final class PembayaranLangganan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<TagihanLangganan, $this> */
     public function tagihanLangganan(): BelongsTo
     {
         return $this->belongsTo(TagihanLangganan::class, 'TagihanLanggananId', 'Id');

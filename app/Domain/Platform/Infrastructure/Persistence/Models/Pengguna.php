@@ -96,11 +96,13 @@ final class Pengguna extends Authenticatable
             ->first();
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<UnitOrganisasi, $this> */
     public function unitOrganisasi(): BelongsTo
     {
         return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');

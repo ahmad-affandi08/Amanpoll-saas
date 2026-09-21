@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Domain\Kepatuhan\Http\Controllers\KepatuhanController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth', 'organisasi'])
+Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.kepatuhan'])
     ->prefix('kepatuhan')
     ->name('kepatuhan.')
     ->group(function (): void {

@@ -27,7 +27,7 @@ final class DasborTersimpanController extends Controller
     {
         $this->authorize('viewAny', DasborTersimpan::class);
 
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
 
         return Inertia::render('DashboardKustom/Index', [
             'dasbor' => $layananDasbor->dasborUntuk($pengguna)
@@ -59,7 +59,7 @@ final class DasborTersimpanController extends Controller
     public function store(SimpanDasborTersimpanRequest $request, KelolaDasborTersimpan $aksi): RedirectResponse
     {
         $this->authorize('create', DasborTersimpan::class);
-        $aksi->simpan($request->user(), $request->validated());
+        $aksi->simpan($request->user('web'), $request->validated());
 
         return back()->with('sukses', 'Dasbor kustom dibuat.');
     }
@@ -70,7 +70,7 @@ final class DasborTersimpanController extends Controller
         KelolaDasborTersimpan $aksi,
     ): RedirectResponse {
         $this->authorize('update', $dasborTersimpan);
-        $aksi->simpan($request->user(), $request->validated(), $dasborTersimpan);
+        $aksi->simpan($request->user('web'), $request->validated(), $dasborTersimpan);
 
         return back()->with('sukses', 'Dasbor kustom diperbarui.');
     }

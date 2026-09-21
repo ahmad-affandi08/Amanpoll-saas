@@ -29,7 +29,7 @@ final class RencanaKalibrasiController extends Controller
     {
         $this->authorize('viewAny', RencanaKalibrasi::class);
 
-        $organisasiId = $request->user()->OrganisasiId;
+        $organisasiId = $request->user('web')->OrganisasiId;
         $hariIni = Carbon::today();
 
         $daftarRencana = RencanaKalibrasi::query()
@@ -103,7 +103,7 @@ final class RencanaKalibrasiController extends Controller
 
         $this->kelolaRencana->buat(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Rencana kalibrasi berhasil dibuat.');
@@ -156,7 +156,7 @@ final class RencanaKalibrasiController extends Controller
         $this->kelolaRencana->perbarui(
             $rencanaKalibrasi,
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Rencana kalibrasi berhasil diperbarui.');
@@ -168,7 +168,7 @@ final class RencanaKalibrasiController extends Controller
 
         $this->kelolaRencana->hapus(
             $rencanaKalibrasi,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()->route('kalibrasi.rencana.index')->with('sukses', 'Rencana kalibrasi berhasil dihapus.');
@@ -178,7 +178,7 @@ final class RencanaKalibrasiController extends Controller
     {
         $this->authorize('create', RencanaKalibrasi::class);
 
-        $hasil = $this->layananPeringatan->kirimPeringatan($request->user()->OrganisasiId);
+        $hasil = $this->layananPeringatan->kirimPeringatan($request->user('web')->OrganisasiId);
 
         return back()->with('sukses', "Pengingat kalibrasi selesai diperiksa. Segera jatuh tempo: {$hasil['segeraJatuhTempo']}, Terlambat: {$hasil['terlambat']}, Dilewati (sudah dikirim hari ini): {$hasil['dilewati']}.");
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Langganan\Infrastructure\Persistence\Models;
 
 use App\Shared\Infrastructure\Persistence\ModelDasar;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class PaketLangganan extends ModelDasar
 {
@@ -33,5 +34,17 @@ final class PaketLangganan extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    /** @return HasMany<PaketFitur, $this> */
+    public function fitur(): HasMany
+    {
+        return $this->hasMany(PaketFitur::class, 'PaketLanggananId', 'Id');
+    }
+
+    /** @return HasMany<Langganan, $this> */
+    public function langganan(): HasMany
+    {
+        return $this->hasMany(Langganan::class, 'PaketLanggananId', 'Id');
     }
 }

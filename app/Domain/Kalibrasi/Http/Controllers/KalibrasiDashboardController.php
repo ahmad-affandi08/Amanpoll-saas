@@ -21,7 +21,7 @@ final class KalibrasiDashboardController extends Controller
 
     public function index(Request $request): Response
     {
-        $organisasiId = $request->user()->OrganisasiId;
+        $organisasiId = $request->user('web')->OrganisasiId;
 
         $kepatuhan = $this->layananPeringatan->hitungKepatuhan($organisasiId);
 

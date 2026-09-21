@@ -1,6 +1,7 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import type { PageProps } from '@/types/global';
+import { useEntitlement } from '@/hooks/use-entitlement';
 import { useIzin } from '@/hooks/use-izin';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { PenyediaSinkronisasiOffline, useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
@@ -70,6 +71,8 @@ interface SubItemNav {
   label: string;
   href: string;
   kodeIzin?: string | null;
+  /** Kode fitur paket; menu disembunyikan saat paket tidak memuatnya. */
+  kodeFitur?: string | null;
 }
 
 interface ItemNav {
@@ -77,6 +80,7 @@ interface ItemNav {
   href?: string;
   icon: LucideIcon;
   kodeIzin?: string | null;
+  kodeFitur?: string | null;
   subItems?: SubItemNav[];
 }
 
@@ -94,6 +98,7 @@ const navUtama: GrupNav = {
     {
       label: 'Laporan & Dasbor',
       icon: ChartColumn,
+      kodeFitur: 'modul.pelaporan_lanjutan',
       subItems: [
         { label: 'Laporan Tersimpan', href: '/pelaporan/laporan' },
         { label: 'Dasbor Kustom', href: '/pelaporan/dasbor' },
@@ -260,7 +265,7 @@ const navPengaturan: GrupNav = {
         { label: 'Unit Organisasi', href: '/platform/unit-organisasi', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Lokasi', href: '/platform/lokasi', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Konfigurasi Sistem', href: '/platform/konfigurasi', kodeIzin: 'Pengaturan.Kelola' },
-        { label: 'Integrasi', href: '/integrasi', kodeIzin: 'Integrasi.Kelola' },
+        { label: 'Integrasi', href: '/integrasi', kodeIzin: 'Integrasi.Kelola', kodeFitur: 'modul.integrasi' },
         { label: 'Nomor Dokumen', href: '/platform/nomor-dokumen', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Hari Libur', href: '/platform/hari-libur', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Tag Kolaborasi', href: '/kolaborasi/tag', kodeIzin: 'Pengaturan.Kelola' },
@@ -275,8 +280,9 @@ const navPengaturan: GrupNav = {
       subItems: [
         { label: 'Pengguna', href: '/platform/pengguna', kodeIzin: 'Pengguna.Kelola' },
         { label: 'Peran & Izin', href: '/platform/peran', kodeIzin: 'Pengguna.Kelola' },
-        { label: 'Kunci API', href: '/platform/kunci-api', kodeIzin: 'Integrasi.Kelola' },
+        { label: 'Kunci API', href: '/platform/kunci-api', kodeIzin: 'Integrasi.Kelola', kodeFitur: 'modul.integrasi' },
         { label: 'Log Audit', href: '/integrasi-audit/audit', kodeIzin: 'Audit.Lihat' },
+        { label: 'Langganan', href: '/langganan' },
       ],
     },
   ],
@@ -607,6 +613,7 @@ function KerangkaAplikasi({ children }: PropsWithChildren) {
   const { auth } = page.props;
   const pathSekarang = page.url.split('?')[0];
   const { boleh } = useIzin();
+  const { bolehFitur } = useEntitlement();
   const konfirmasi = useKonfirmasi();
   const { bersihkanDataLokal, dorong, jumlahBelumTersinkron, adaPembaruanAplikasi, terapkanPembaruanAplikasi } =
     useSinkronisasiOffline();
@@ -639,10 +646,14 @@ function KerangkaAplikasi({ children }: PropsWithChildren) {
     .map((grup) => ({
       ...grup,
       items: grup.items
-        .filter((item) => !item.kodeIzin || boleh(item.kodeIzin))
+        // Menu disaring oleh izin peran DAN oleh isi paket. Keduanya hanya
+        // menyembunyikan; rutenya sendiri tetap dijaga di backend.
+        .filter((item) => (!item.kodeIzin || boleh(item.kodeIzin)) && (!item.kodeFitur || bolehFitur(item.kodeFitur)))
         .map((item) => {
           if (!item.subItems) return item;
-          const subTersaring = item.subItems.filter((sub) => !sub.kodeIzin || boleh(sub.kodeIzin));
+          const subTersaring = item.subItems.filter(
+            (sub) => (!sub.kodeIzin || boleh(sub.kodeIzin)) && (!sub.kodeFitur || bolehFitur(sub.kodeFitur)),
+          );
           return { ...item, subItems: subTersaring };
         })
         .filter((item) => !item.subItems || item.subItems.length > 0),

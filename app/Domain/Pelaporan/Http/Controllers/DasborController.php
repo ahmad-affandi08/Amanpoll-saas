@@ -33,7 +33,7 @@ final class DasborController extends Controller
         LayananDasbor $layananDasbor,
         LayananMetrik $layananMetrik,
     ): Response {
-        $pengguna = $request->user();
+        $pengguna = $request->user('web');
         $filter = FilterMetrik::dariArray($request->all());
 
         $tersimpan = $layananDasbor->dasborUntuk($pengguna);

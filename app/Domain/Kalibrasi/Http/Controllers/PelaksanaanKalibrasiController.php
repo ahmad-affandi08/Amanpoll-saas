@@ -29,7 +29,7 @@ final class PelaksanaanKalibrasiController extends Controller
     {
         $this->authorize('viewAny', PelaksanaanKalibrasi::class);
 
-        $organisasiId = $request->user()->OrganisasiId;
+        $organisasiId = $request->user('web')->OrganisasiId;
 
         $daftarPelaksanaan = PelaksanaanKalibrasi::query()
             ->with(['aset', 'jenisKalibrasi', 'penyedia', 'dilaksanakanOleh', 'diverifikasiOleh'])
@@ -90,7 +90,7 @@ final class PelaksanaanKalibrasiController extends Controller
 
         $pelaksanaan = $this->kelolaPelaksanaan->jadwalkan(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()
@@ -140,7 +140,7 @@ final class PelaksanaanKalibrasiController extends Controller
         $this->kelolaPelaksanaan->simpanHasilTitikUkur(
             $pelaksanaanKalibrasi,
             $request->validated()['hasil'],
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Hasil pengukuran titik ukur berhasil disimpan.');
@@ -163,7 +163,7 @@ final class PelaksanaanKalibrasiController extends Controller
         $this->kelolaPelaksanaan->finalisasi(
             $pelaksanaanKalibrasi,
             $validated,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Pelaksanaan kalibrasi berhasil diverifikasi dan difinalisasi.');
@@ -175,7 +175,7 @@ final class PelaksanaanKalibrasiController extends Controller
 
         $this->kelolaPelaksanaan->hapus(
             $pelaksanaanKalibrasi,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Langganan\Infrastructure\Persistence\Models;
 
 use App\Shared\Infrastructure\Persistence\ModelDasar;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class FiturPaket extends ModelDasar
 {
@@ -24,5 +25,11 @@ final class FiturPaket extends ModelDasar
         return [
             'DibuatPada' => 'immutable_datetime',
         ];
+    }
+
+    /** @return HasMany<PaketFitur, $this> */
+    public function paketFitur(): HasMany
+    {
+        return $this->hasMany(PaketFitur::class, 'FiturPaketId', 'Id');
     }
 }
