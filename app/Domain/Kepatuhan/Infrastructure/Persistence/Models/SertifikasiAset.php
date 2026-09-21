@@ -19,6 +19,15 @@ final class SertifikasiAset extends ModelDasar
 
     public $timestamps = false;
 
+    public const STATUS_AKTIF = 'Aktif';
+
+    public const STATUS_KEDALUWARSA = 'Kedaluwarsa';
+
+    public const STATUS_DICABUT = 'Dicabut';
+
+    /** @var list<string> */
+    public const DAFTAR_STATUS = [self::STATUS_AKTIF, self::STATUS_KEDALUWARSA, self::STATUS_DICABUT];
+
     protected $fillable = [
         'OrganisasiId',
         'AsetId',
@@ -40,16 +49,25 @@ final class SertifikasiAset extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Aset, $this>
+     */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Berkas, $this>
+     */
     public function berkas(): BelongsTo
     {
         return $this->belongsTo(Berkas::class, 'BerkasId', 'Id');

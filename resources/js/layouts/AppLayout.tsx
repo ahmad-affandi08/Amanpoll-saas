@@ -223,6 +223,14 @@ const navRantaiPasok: GrupNav = {
       icon: FileSignature,
       kodeIzin: 'Kontrak.Kelola',
     },
+    {
+      label: 'Kepatuhan',
+      icon: ShieldCheck,
+      subItems: [
+        { label: 'Kepatuhan Aset', href: '/kepatuhan', kodeIzin: 'Kepatuhan.Kelola' },
+        { label: 'Sertifikasi Aset', href: '/kepatuhan/sertifikasi', kodeIzin: 'Kepatuhan.Kelola' },
+      ],
+    },
   ],
 };
 

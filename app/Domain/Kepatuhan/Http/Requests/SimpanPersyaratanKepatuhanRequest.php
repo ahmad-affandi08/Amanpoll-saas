@@ -13,17 +13,17 @@ final class SimpanPersyaratanKepatuhanRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['nullable'],
-            'StandarKepatuhanId' => ['sometimes'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Deskripsi' => ['nullable'],
-            'BuktiYangDiperlukan' => ['nullable'],
-            'IntervalHari' => ['nullable'],
+            'Kode' => ['required', 'string', 'max:100'],
+            'Nama' => ['required', 'string', 'max:220'],
+            'Deskripsi' => ['nullable', 'string', 'max:5000'],
+            'BuktiYangDiperlukan' => ['nullable', 'string', 'max:2000'],
+            'IntervalHari' => ['nullable', 'integer', 'min:1', 'max:3650'],
         ];
     }
 }

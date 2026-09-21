@@ -1225,40 +1225,16 @@ parameters:
 			path: app/Domain/Kepatuhan/Http/Requests/SimpanIntegrasiEksternalRequest.php
 
 		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanKepatuhanAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Requests/SimpanKepatuhanAsetRequest.php
-
-		-
 			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanPemetaanDataEksternalRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Domain/Kepatuhan/Http/Requests/SimpanPemetaanDataEksternalRequest.php
 
 		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanPersyaratanKepatuhanRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Requests/SimpanPersyaratanKepatuhanRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanSertifikasiAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Requests/SimpanSertifikasiAsetRequest.php
-
-		-
 			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanSinkronisasiEksternalRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Domain/Kepatuhan/Http/Requests/SimpanSinkronisasiEksternalRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanStandarKepatuhanRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Requests/SimpanStandarKepatuhanRequest.php
 
 		-
 			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\IntegrasiEksternalResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -1273,18 +1249,6 @@ parameters:
 			path: app/Domain/Kepatuhan/Http/Resources/IntegrasiEksternalResource.php
 
 		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\KepatuhanAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/KepatuhanAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\KepatuhanAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/KepatuhanAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\PemetaanDataEksternalResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1297,30 +1261,6 @@ parameters:
 			path: app/Domain/Kepatuhan/Http/Resources/PemetaanDataEksternalResource.php
 
 		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\PersyaratanKepatuhanResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/PersyaratanKepatuhanResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\PersyaratanKepatuhanResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/PersyaratanKepatuhanResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\SertifikasiAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/SertifikasiAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\SertifikasiAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/SertifikasiAsetResource.php
-
-		-
 			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\SinkronisasiEksternalResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1331,18 +1271,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: app/Domain/Kepatuhan/Http/Resources/SinkronisasiEksternalResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\StandarKepatuhanResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/StandarKepatuhanResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Resources\\StandarKepatuhanResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Kepatuhan/Http/Resources/StandarKepatuhanResource.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
@@ -1359,30 +1287,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/KepatuhanAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\KepatuhanAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/KepatuhanAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\KepatuhanAset\:\:diperiksaOleh\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/KepatuhanAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\KepatuhanAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/KepatuhanAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\KepatuhanAset\:\:persyaratanKepatuhan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/KepatuhanAset.php
 
@@ -1411,38 +1315,8 @@ parameters:
 			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/PersyaratanKepatuhan.php
 
 		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\PersyaratanKepatuhan\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/PersyaratanKepatuhan.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\PersyaratanKepatuhan\:\:standarKepatuhan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/PersyaratanKepatuhan.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/SertifikasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\SertifikasiAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/SertifikasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\SertifikasiAset\:\:berkas\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/SertifikasiAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\SertifikasiAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/SertifikasiAset.php
 
@@ -1467,12 +1341,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/StandarKepatuhan.php
-
-		-
-			message: '#^Method App\\Domain\\Kepatuhan\\Infrastructure\\Persistence\\Models\\StandarKepatuhan\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Kepatuhan/Infrastructure/Persistence/Models/StandarKepatuhan.php
 

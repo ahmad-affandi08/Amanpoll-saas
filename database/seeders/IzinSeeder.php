@@ -36,6 +36,7 @@ final class IzinSeeder extends Seeder
                 ['Id' => '01JAMANPOLL000000000000018', 'Kode' => 'Integrasi.Kelola', 'Nama' => 'Kelola Integrasi', 'Modul' => 'Integrasi'],
                 ['Id' => '01JAMANPOLL000000000000019', 'Kode' => 'Stok.Override', 'Nama' => 'Izinkan Penyesuaian Stok Negatif', 'Modul' => 'Persediaan'],
                 ['Id' => '01JAMANPOLL000000000000020', 'Kode' => 'Anggaran.Sesuaikan', 'Nama' => 'Lakukan Penyesuaian Anggaran', 'Modul' => 'Pengadaan'],
+                ['Id' => '01JAMANPOLL000000000000021', 'Kode' => 'Kepatuhan.Kelola', 'Nama' => 'Kelola Kepatuhan dan Sertifikasi', 'Modul' => 'Kepatuhan'],
             ],
             uniqueBy: ['Id'],
             update: ['Kode', 'Nama', 'Modul'],

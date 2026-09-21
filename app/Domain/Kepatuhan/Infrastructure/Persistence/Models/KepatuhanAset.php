@@ -21,6 +21,22 @@ final class KepatuhanAset extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
+    public const STATUS_BELUM_DIPERIKSA = 'BelumDiperiksa';
+
+    public const STATUS_PATUH = 'Patuh';
+
+    public const STATUS_TIDAK_PATUH = 'TidakPatuh';
+
+    public const STATUS_KEDALUWARSA = 'Kedaluwarsa';
+
+    /** @var list<string> */
+    public const DAFTAR_STATUS = [
+        self::STATUS_BELUM_DIPERIKSA,
+        self::STATUS_PATUH,
+        self::STATUS_TIDAK_PATUH,
+        self::STATUS_KEDALUWARSA,
+    ];
+
     protected $fillable = [
         'OrganisasiId',
         'AsetId',
@@ -42,21 +58,33 @@ final class KepatuhanAset extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Aset, $this>
+     */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<PersyaratanKepatuhan, $this>
+     */
     public function persyaratanKepatuhan(): BelongsTo
     {
         return $this->belongsTo(PersyaratanKepatuhan::class, 'PersyaratanKepatuhanId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Pengguna, $this>
+     */
     public function diperiksaOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DiperiksaOleh', 'Id');

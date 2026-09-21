@@ -1068,37 +1068,37 @@ Pekerjaan vendor dapat ditelusuri ke penyedia dan kontrak aktif (Terpenuhi).
 
 ## 18.01 StandarKepatuhan
 
-- [ ] CRUD.
-- [ ] Scope.
-- [ ] Version metadata.
-- [ ] Status.
+- [x] CRUD.
+- [x] Scope.
+- [x] Version metadata.
+- [x] Status.
 
 ## 18.02 PersyaratanKepatuhan
 
-- [ ] Requirement.
-- [ ] Evidence type.
-- [ ] Frequency bila ada.
+- [x] Requirement.
+- [x] Evidence type.
+- [x] Frequency bila ada.
 
 ## 18.03 KepatuhanAset
 
-- [ ] Assign standard.
-- [ ] Status.
-- [ ] Evidence.
-- [ ] Review.
-- [ ] Expiry.
+- [x] Assign standard.
+- [x] Status.
+- [x] Evidence.
+- [x] Review.
+- [x] Expiry.
 
 ## 18.04 SertifikasiAset
 
-- [ ] Nomor.
-- [ ] Penerbit.
-- [ ] Periode.
-- [ ] File.
-- [ ] Status.
-- [ ] Reminder.
+- [x] Nomor.
+- [x] Penerbit.
+- [x] Periode.
+- [x] File.
+- [x] Status.
+- [x] Reminder.
 
 ### Gate 18
 
-Tidak ada standard regulator spesifik yang di-hardcode sebagai core Amanpoll.
+Tidak ada standard regulator spesifik yang di-hardcode sebagai core Amanpoll (Terpenuhi).
 
 ---
 

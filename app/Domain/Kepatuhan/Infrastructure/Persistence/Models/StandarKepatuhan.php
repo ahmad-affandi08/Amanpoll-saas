@@ -8,6 +8,7 @@ use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class StandarKepatuhan extends ModelDasar
 {
@@ -36,8 +37,19 @@ final class StandarKepatuhan extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PersyaratanKepatuhan, $this>
+     */
+    public function persyaratan(): HasMany
+    {
+        return $this->hasMany(PersyaratanKepatuhan::class, 'StandarKepatuhanId', 'Id');
     }
 }

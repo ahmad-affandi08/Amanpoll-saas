@@ -50,3 +50,8 @@ Schedule::command('kontrak:kirim-peringatan-berakhir')
     ->dailyAt('06:45')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
     ->withoutOverlapping();
+
+Schedule::command('kepatuhan:kirim-peringatan-kedaluwarsa')
+    ->dailyAt('07:15')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();
