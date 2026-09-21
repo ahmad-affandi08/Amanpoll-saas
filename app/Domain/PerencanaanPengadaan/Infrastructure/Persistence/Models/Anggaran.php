@@ -15,16 +15,6 @@ final class Anggaran extends ModelDasar
 {
     use MilikOrganisasi;
 
-    public const STATUS_DRAFT = 'Draft';
-
-    public const STATUS_MENUNGGU_PERSETUJUAN = 'MenungguPersetujuan';
-
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_DITOLAK = 'Ditolak';
-
-    public const STATUS_DITUTUP = 'Ditutup';
-
     protected $table = 'Anggaran';
 
     public const CREATED_AT = 'DibuatPada';

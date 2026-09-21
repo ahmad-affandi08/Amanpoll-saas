@@ -6,6 +6,7 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -112,7 +113,7 @@ final class KelolaPosAnggaran
 
     private function pastikanDapatDiubah(Anggaran $anggaran): void
     {
-        if (! in_array($anggaran->Status, [Anggaran::STATUS_DRAFT, Anggaran::STATUS_DITOLAK], true)) {
+        if (! in_array($anggaran->Status, [StatusAnggaran::Draft->value, StatusAnggaran::Ditolak->value], true)) {
             throw new AturanBisnisDilanggar('Struktur pos hanya dapat diubah saat anggaran masih draft atau ditolak.');
         }
     }

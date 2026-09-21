@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Application\Actions;
 
+use App\Domain\Aset\Domain\Enums\JenisMeterAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\MeterAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\PembacaanMeterAset;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -15,7 +16,7 @@ final class CatatPembacaanMeter
      */
     public function jalankan(MeterAset $meterAset, array $data, ?string $dicatatOleh): PembacaanMeterAset
     {
-        if ($meterAset->Jenis === MeterAset::JENIS_KUMULATIF) {
+        if ($meterAset->Jenis === JenisMeterAset::Kumulatif->value) {
             $pembacaanTerakhir = $meterAset->pembacaan()->orderByDesc('DibacaPada')->first();
             $nilaiTerakhir = $pembacaanTerakhir === null ? $meterAset->NilaiAwal : $pembacaanTerakhir->Nilai;
 

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaRencanaPengadaan;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusRencanaPengadaan;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusUsulanAset;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanDetailRencanaPengadaanRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanRencanaPengadaanRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\RencanaPengadaanResource;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailRencanaPengadaan;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan;
@@ -30,11 +32,7 @@ final class RencanaPengadaanController extends Controller
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:100'],
             'tahun' => ['nullable', 'integer', 'between:2000,2100'],
-            'status' => ['nullable', 'string', Rule::in([
-                RencanaPengadaan::STATUS_DRAFT,
-                RencanaPengadaan::STATUS_DIRENCANAKAN,
-                RencanaPengadaan::STATUS_DIBATALKAN,
-            ])],
+            'status' => ['nullable', 'string', Rule::enum(StatusRencanaPengadaan::class)],
         ]);
 
         $rencana = RencanaPengadaan::query()
@@ -53,7 +51,7 @@ final class RencanaPengadaanController extends Controller
             'rencana' => RencanaPengadaanResource::collection($rencana),
             'posAnggaran' => $this->daftarPosAktif(),
             'usulanDisetujui' => UsulanAset::query()
-                ->where('Status', UsulanAset::STATUS_DISETUJUI)
+                ->where('Status', StatusUsulanAset::Disetujui->value)
                 ->whereDoesntHave('detailRencanaPengadaan')
                 ->orderBy('Nomor')
                 ->get(['Id', 'Nomor', 'NamaKebutuhan', 'Jumlah', 'EstimasiHargaSatuan']),
@@ -70,7 +68,7 @@ final class RencanaPengadaanController extends Controller
             'rencana' => new RencanaPengadaanResource($rencanaPengadaan),
             'posAnggaran' => $this->daftarPosAktif(),
             'usulanDisetujui' => UsulanAset::query()
-                ->where('Status', UsulanAset::STATUS_DISETUJUI)
+                ->where('Status', StatusUsulanAset::Disetujui->value)
                 ->whereDoesntHave('detailRencanaPengadaan')
                 ->orderBy('Nomor')
                 ->get(['Id', 'Nomor', 'NamaKebutuhan', 'Jumlah', 'EstimasiHargaSatuan']),
@@ -141,7 +139,7 @@ final class RencanaPengadaanController extends Controller
     private function daftarPosAktif(): Collection
     {
         return PosAnggaran::query()
-            ->whereHas('anggaran', fn ($query) => $query->where('Status', Anggaran::STATUS_AKTIF))
+            ->whereHas('anggaran', fn ($query) => $query->where('Status', StatusAnggaran::Aktif->value))
             ->with('anggaran')
             ->orderBy('Kode')
             ->get()

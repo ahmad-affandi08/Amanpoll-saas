@@ -11,10 +11,13 @@ use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPosAnggaran;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaRencanaPengadaan;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaUsulanAset;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananSaldoAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\JenisTransaksiAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\PrioritasUsulanAset;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusRencanaPengadaan;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusUsulanAset;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TransaksiAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persetujuan\Application\Actions\SetujuiPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\AlurPersetujuan;
@@ -60,8 +63,8 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         );
 
         $diajukan = $kelolaAnggaran->ajukan($anggaran, $pengguna->Id);
-        $this->assertSame(Anggaran::STATUS_AKTIF, $diajukan->Status);
-        $this->assertDatabaseHas('Anggaran', ['OrganisasiId' => $organisasi->Id, 'Id' => $anggaran->Id, 'Status' => Anggaran::STATUS_AKTIF]);
+        $this->assertSame(StatusAnggaran::Aktif->value, $diajukan->Status);
+        $this->assertDatabaseHas('Anggaran', ['OrganisasiId' => $organisasi->Id, 'Id' => $anggaran->Id, 'Status' => StatusAnggaran::Aktif->value]);
 
         $penyetuju = $this->buatPengguna($organisasi, []);
         $alur = $this->buatAlurPersetujuan($organisasi, 'Anggaran', $penyetuju);
@@ -73,11 +76,11 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         ]);
         $kelolaPos->buat($anggaranDenganApproval, ['Kode' => 'OPS', 'Nama' => 'Operasional', 'Jumlah' => '500000.00']);
         $menunggu = $kelolaAnggaran->ajukan($anggaranDenganApproval, $pengguna->Id);
-        $this->assertSame(Anggaran::STATUS_MENUNGGU_PERSETUJUAN, $menunggu->Status);
+        $this->assertSame(StatusAnggaran::MenungguPersetujuan->value, $menunggu->Status);
 
         $permintaan = PermintaanPersetujuan::query()->where('AlurPersetujuanId', $alur->Id)->where('EntitasId', $anggaranDenganApproval->Id)->firstOrFail();
         app(SetujuiPermintaanPersetujuan::class)->jalankan($permintaan, $penyetuju, null);
-        $this->assertSame(Anggaran::STATUS_AKTIF, $anggaranDenganApproval->refresh()->Status);
+        $this->assertSame(StatusAnggaran::Aktif->value, $anggaranDenganApproval->refresh()->Status);
     }
 
     public function test_15_03_ledger_merekonsiliasi_komitmen_realisasi_pelepasan_dan_penyesuaian(): void
@@ -87,10 +90,10 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         [$anggaran, $pos] = $this->buatAnggaranAktif($pengguna, '1000.00');
         $catat = app(CatatTransaksiAnggaran::class);
 
-        $catat->jalankan($pos, $this->dataTransaksi(TransaksiAnggaran::JENIS_KOMITMEN, '600.00'));
-        $catat->jalankan($pos, $this->dataTransaksi(TransaksiAnggaran::JENIS_REALISASI, '400.00'));
-        $catat->jalankan($pos, $this->dataTransaksi(TransaksiAnggaran::JENIS_PELEPASAN_KOMITMEN, '100.00'));
-        $catat->jalankan($pos, $this->dataTransaksi(TransaksiAnggaran::JENIS_PENYESUAIAN, '50.00', 'Koreksi pembulatan invoice'));
+        $catat->jalankan($pos, $this->dataTransaksi(JenisTransaksiAnggaran::Komitmen->value, '600.00'));
+        $catat->jalankan($pos, $this->dataTransaksi(JenisTransaksiAnggaran::Realisasi->value, '400.00'));
+        $catat->jalankan($pos, $this->dataTransaksi(JenisTransaksiAnggaran::PelepasanKomitmen->value, '100.00'));
+        $catat->jalankan($pos, $this->dataTransaksi(JenisTransaksiAnggaran::Penyesuaian->value, '50.00', 'Koreksi pembulatan invoice'));
 
         $pos->refresh();
         $saldo = app(LayananSaldoAnggaran::class)->hitung($pos);
@@ -98,7 +101,7 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         $this->assertSame('100.00', $pos->Ditahan);
         $this->assertSame(['jumlah' => '1000.00', 'terpakai' => '450.00', 'ditahan' => '100.00', 'sisa' => '450.00'], $saldo);
         $this->assertSame(5, $pos->transaksi()->count());
-        $this->assertSame(Anggaran::STATUS_AKTIF, $anggaran->Status);
+        $this->assertSame(StatusAnggaran::Aktif->value, $anggaran->Status);
     }
 
     public function test_15_03_transaksi_melebihi_saldo_ditolak_tanpa_mengubah_ledger(): void
@@ -107,10 +110,10 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         $this->actingAs($pengguna);
         [, $pos] = $this->buatAnggaranAktif($pengguna, '1000.00');
         $catat = app(CatatTransaksiAnggaran::class);
-        $catat->jalankan($pos, $this->dataTransaksi(TransaksiAnggaran::JENIS_KOMITMEN, '800.00'));
+        $catat->jalankan($pos, $this->dataTransaksi(JenisTransaksiAnggaran::Komitmen->value, '800.00'));
 
         try {
-            $catat->jalankan($pos, $this->dataTransaksi(TransaksiAnggaran::JENIS_KOMITMEN, '200.01'));
+            $catat->jalankan($pos, $this->dataTransaksi(JenisTransaksiAnggaran::Komitmen->value, '200.01'));
             $this->fail('Komitmen yang melebihi sisa anggaran seharusnya ditolak.');
         } catch (AturanBisnisDilanggar) {
             $this->assertSame(1, $pos->transaksi()->count());
@@ -134,21 +137,21 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
             'EstimasiHargaSatuan' => '250000.00',
             'Alasan' => 'Kapasitas komputasi produksi telah mencapai batas aman.',
             'TahunKebutuhan' => 2026,
-            'Prioritas' => UsulanAset::PRIORITAS_NORMAL,
+            'Prioritas' => PrioritasUsulanAset::Normal->value,
         ], $pengaju->Id);
         $aksi->submit($usulan);
-        $penilaian = $aksi->nilai($usulan, ['Kriteria' => 'Dampak operasional', 'Bobot' => '2.5000', 'Nilai' => '80.0000', 'Prioritas' => UsulanAset::PRIORITAS_TINGGI], $pengaju->Id);
+        $penilaian = $aksi->nilai($usulan, ['Kriteria' => 'Dampak operasional', 'Bobot' => '2.5000', 'Nilai' => '80.0000', 'Prioritas' => PrioritasUsulanAset::Tinggi->value], $pengaju->Id);
 
         $this->assertSame('200.0000', $penilaian->Skor);
         $menunggu = $aksi->ajukanPersetujuan($usulan, $pengaju->Id);
-        $this->assertSame(UsulanAset::STATUS_MENUNGGU_PERSETUJUAN, $menunggu->Status);
+        $this->assertSame(StatusUsulanAset::MenungguPersetujuan->value, $menunggu->Status);
 
         $permintaan = PermintaanPersetujuan::query()->where('AlurPersetujuanId', $alur->Id)->where('EntitasId', $usulan->Id)->firstOrFail();
         $hasil = app(SetujuiPermintaanPersetujuan::class)->jalankan($permintaan, $penyetuju, 'Layak dan mendesak.');
 
         $this->assertTrue($hasil['selesai']);
-        $this->assertSame(UsulanAset::STATUS_DISETUJUI, $usulan->refresh()->Status);
-        $this->assertSame(UsulanAset::PRIORITAS_TINGGI, $usulan->Prioritas);
+        $this->assertSame(StatusUsulanAset::Disetujui->value, $usulan->refresh()->Status);
+        $this->assertSame(PrioritasUsulanAset::Tinggi->value, $usulan->Prioritas);
     }
 
     public function test_15_05_rencana_dibuat_dari_usulan_dan_total_dihitung_server_side(): void
@@ -177,7 +180,7 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         $this->assertSame('475000.00', $rencana->refresh()->TotalEstimasi);
 
         $final = $aksi->finalisasi($rencana);
-        $this->assertSame(RencanaPengadaan::STATUS_DIRENCANAKAN, $final->Status);
+        $this->assertSame(StatusRencanaPengadaan::Direncanakan->value, $final->Status);
         $this->assertSame(2, $final->detail()->count());
     }
 
@@ -187,19 +190,19 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         $this->actingAs($pengguna);
         [, $pos] = $this->buatAnggaranAktif($pengguna, '1000.00');
 
-        $this->post(route('perencanaanPengadaan.pos.transaksi.store', $pos), $this->dataTransaksi(TransaksiAnggaran::JENIS_PENYESUAIAN, '10.00', 'Koreksi'))
+        $this->post(route('perencanaanPengadaan.pos.transaksi.store', $pos), $this->dataTransaksi(JenisTransaksiAnggaran::Penyesuaian->value, '10.00', 'Koreksi'))
             ->assertForbidden();
         $this->assertSame(0, $pos->transaksi()->count());
 
         $penggunaPenyesuai = $this->buatPengguna($organisasi, ['Pengadaan.Kelola', 'Anggaran.Sesuaikan']);
         $this->actingAs($penggunaPenyesuai)
-            ->post(route('perencanaanPengadaan.pos.transaksi.store', $pos), $this->dataTransaksi(TransaksiAnggaran::JENIS_PENYESUAIAN, '10.00', 'Koreksi'))
+            ->post(route('perencanaanPengadaan.pos.transaksi.store', $pos), $this->dataTransaksi(JenisTransaksiAnggaran::Penyesuaian->value, '10.00', 'Koreksi'))
             ->assertRedirect();
-        $this->assertDatabaseHas('TransaksiAnggaran', ['PosAnggaranId' => $pos->Id, 'Jenis' => TransaksiAnggaran::JENIS_PENYESUAIAN, 'Jumlah' => '10.00']);
+        $this->assertDatabaseHas('TransaksiAnggaran', ['PosAnggaranId' => $pos->Id, 'Jenis' => JenisTransaksiAnggaran::Penyesuaian->value, 'Jumlah' => '10.00']);
 
         $organisasiLain = $this->buatOrganisasi('LAIN');
         app(KonteksOrganisasi::class)->tetapkan($organisasiLain->Id);
-        $anggaranLain = Anggaran::create(['Kode' => 'LAIN-2026', 'Nama' => 'Anggaran Tenant Lain', 'Tahun' => 2026, 'MataUang' => 'IDR', 'Jumlah' => '1000.00', 'Status' => Anggaran::STATUS_DRAFT]);
+        $anggaranLain = Anggaran::create(['Kode' => 'LAIN-2026', 'Nama' => 'Anggaran Tenant Lain', 'Tahun' => 2026, 'MataUang' => 'IDR', 'Jumlah' => '1000.00', 'Status' => StatusAnggaran::Draft->value]);
 
         app(KonteksOrganisasi::class)->tetapkan($organisasi->Id);
         $this->get(route('perencanaanPengadaan.anggaran.show', $anggaranLain->Id))->assertNotFound();
@@ -337,8 +340,8 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
             'Jumlah' => $jumlah,
             'EstimasiHargaSatuan' => $harga,
             'Alasan' => 'Kebutuhan pengujian rencana.',
-            'Prioritas' => UsulanAset::PRIORITAS_TINGGI,
-            'Status' => UsulanAset::STATUS_DISETUJUI,
+            'Prioritas' => PrioritasUsulanAset::Tinggi->value,
+            'Status' => StatusUsulanAset::Disetujui->value,
             'DiajukanOleh' => $pengguna->Id,
             'DiajukanPada' => now(),
         ]);

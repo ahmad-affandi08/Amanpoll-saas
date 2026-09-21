@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Kepatuhan\Application\Services;
 
 use App\Core\Konfigurasi\LayananKonfigurasi;
+use App\Domain\Kepatuhan\Domain\Enums\StatusKepatuhanAset;
+use App\Domain\Kepatuhan\Domain\Enums\StatusSertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
@@ -53,9 +55,9 @@ final class LayananKepatuhan
         foreach ($kewajiban as $baris) {
             $status = $this->statusEfektif($baris, $hariIni);
             match ($status) {
-                KepatuhanAset::STATUS_PATUH => $patuh++,
-                KepatuhanAset::STATUS_TIDAK_PATUH => $tidakPatuh++,
-                KepatuhanAset::STATUS_KEDALUWARSA => $kedaluwarsa++,
+                StatusKepatuhanAset::Patuh->value => $patuh++,
+                StatusKepatuhanAset::TidakPatuh->value => $tidakPatuh++,
+                StatusKepatuhanAset::Kedaluwarsa->value => $kedaluwarsa++,
                 default => $belum++,
             };
         }
@@ -67,7 +69,7 @@ final class LayananKepatuhan
         $sertifikatAktif = 0;
 
         foreach ($sertifikat as $baris) {
-            if ($baris->Status === SertifikasiAset::STATUS_DICABUT) {
+            if ($baris->Status === StatusSertifikasiAset::Dicabut->value) {
                 continue;
             }
             $sisa = $this->sisaHari($baris->BerlakuSampai, $hariIni);
@@ -108,8 +110,8 @@ final class LayananKepatuhan
         $hariIni ??= CarbonImmutable::today();
         $sisa = $this->sisaHari($kepatuhan->BerlakuSampai, $hariIni);
 
-        if ($kepatuhan->Status === KepatuhanAset::STATUS_PATUH && $sisa !== null && $sisa < 0) {
-            return KepatuhanAset::STATUS_KEDALUWARSA;
+        if ($kepatuhan->Status === StatusKepatuhanAset::Patuh->value && $sisa !== null && $sisa < 0) {
+            return StatusKepatuhanAset::Kedaluwarsa->value;
         }
 
         return $kepatuhan->Status;
@@ -142,8 +144,8 @@ final class LayananKepatuhan
             $label = "{$persyaratan?->Kode} — {$persyaratan?->Nama} pada aset {$aset?->KodeAset}";
 
             if ($sisa < 0) {
-                if ($kepatuhan->Status !== KepatuhanAset::STATUS_KEDALUWARSA) {
-                    $kepatuhan->Status = KepatuhanAset::STATUS_KEDALUWARSA;
+                if ($kepatuhan->Status !== StatusKepatuhanAset::Kedaluwarsa->value) {
+                    $kepatuhan->Status = StatusKepatuhanAset::Kedaluwarsa->value;
                     $kepatuhan->save();
                 }
 
@@ -188,8 +190,8 @@ final class LayananKepatuhan
             $label = "{$sertifikat->JenisSertifikasi} ({$sertifikat->NomorSertifikat}) pada aset {$sertifikat->aset?->KodeAset}";
 
             if ($sisa < 0) {
-                if ($sertifikat->Status !== SertifikasiAset::STATUS_KEDALUWARSA) {
-                    $sertifikat->Status = SertifikasiAset::STATUS_KEDALUWARSA;
+                if ($sertifikat->Status !== StatusSertifikasiAset::Kedaluwarsa->value) {
+                    $sertifikat->Status = StatusSertifikasiAset::Kedaluwarsa->value;
                     $sertifikat->save();
                 }
 
@@ -238,7 +240,7 @@ final class LayananKepatuhan
             ->with(['aset', 'persyaratanKepatuhan'])
             ->where('OrganisasiId', $organisasiId)
             ->whereNotNull('BerlakuSampai')
-            ->whereIn('Status', [KepatuhanAset::STATUS_PATUH, KepatuhanAset::STATUS_KEDALUWARSA])
+            ->whereIn('Status', [StatusKepatuhanAset::Patuh->value, StatusKepatuhanAset::Kedaluwarsa->value])
             ->get();
     }
 
@@ -251,7 +253,7 @@ final class LayananKepatuhan
             ->with('aset')
             ->where('OrganisasiId', $organisasiId)
             ->whereNotNull('BerlakuSampai')
-            ->whereIn('Status', [SertifikasiAset::STATUS_AKTIF, SertifikasiAset::STATUS_KEDALUWARSA])
+            ->whereIn('Status', [StatusSertifikasiAset::Aktif->value, StatusSertifikasiAset::Kedaluwarsa->value])
             ->get();
     }
 

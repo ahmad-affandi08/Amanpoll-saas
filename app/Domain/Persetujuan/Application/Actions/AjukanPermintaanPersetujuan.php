@@ -6,6 +6,7 @@ namespace App\Domain\Persetujuan\Application\Actions;
 
 use App\Core\Entitas\RegistriEntitas;
 use App\Domain\Persetujuan\Application\Services\LayananNotifikasiPersetujuan;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\AlurPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -36,7 +37,7 @@ final class AjukanPermintaanPersetujuan
         $sudahMenunggu = PermintaanPersetujuan::query()
             ->where('JenisEntitas', $alurPersetujuan->JenisEntitas)
             ->where('EntitasId', $entitasId)
-            ->where('Status', PermintaanPersetujuan::STATUS_MENUNGGU)
+            ->where('Status', StatusPermintaanPersetujuan::Menunggu->value)
             ->exists();
 
         if ($sudahMenunggu) {
@@ -53,7 +54,7 @@ final class AjukanPermintaanPersetujuan
             'JenisEntitas' => $alurPersetujuan->JenisEntitas,
             'EntitasId' => $entitasId,
             'TahapSaatIni' => $tahapPertama->Urutan,
-            'Status' => PermintaanPersetujuan::STATUS_MENUNGGU,
+            'Status' => StatusPermintaanPersetujuan::Menunggu->value,
             'DimintaOleh' => $pemintaId,
             'DimintaPada' => now(),
             'DataTambahan' => $dataTambahan,

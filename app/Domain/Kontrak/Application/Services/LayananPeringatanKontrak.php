@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kontrak\Application\Services;
 
 use App\Core\Konfigurasi\LayananKonfigurasi;
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use Carbon\CarbonImmutable;
@@ -38,7 +39,7 @@ final class LayananPeringatanKontrak
         $aktif = 0;
 
         foreach ($daftar as $kontrak) {
-            if ($kontrak->Status !== Kontrak::STATUS_AKTIF) {
+            if ($kontrak->Status !== StatusKontrak::Aktif->value) {
                 continue;
             }
             $aktif++;
@@ -75,7 +76,7 @@ final class LayananPeringatanKontrak
         $daftar = Kontrak::query()
             ->with('penyedia')
             ->where('OrganisasiId', $organisasiId)
-            ->where('Status', Kontrak::STATUS_AKTIF)
+            ->where('Status', StatusKontrak::Aktif->value)
             ->get();
 
         foreach ($daftar as $kontrak) {
@@ -83,7 +84,7 @@ final class LayananPeringatanKontrak
             $namaPenyedia = $kontrak->PenyediaId === null ? 'tanpa penyedia' : (string) $kontrak->penyedia?->Nama;
 
             if ($sisa < 0) {
-                $kontrak->Status = Kontrak::STATUS_BERAKHIR;
+                $kontrak->Status = StatusKontrak::Berakhir->value;
                 $kontrak->save();
                 $hasil['ditutup']++;
 

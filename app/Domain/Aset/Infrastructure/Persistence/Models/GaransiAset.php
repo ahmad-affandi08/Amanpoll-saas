@@ -20,12 +20,6 @@ final class GaransiAset extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_BERAKHIR = 'Berakhir';
-
-    public const STATUS_DIBATALKAN = 'Dibatalkan';
-
     protected $fillable = [
         'OrganisasiId',
         'AsetId',

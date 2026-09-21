@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\JenisTransaksiAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusTagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PembayaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TransaksiAnggaran;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use App\Shared\Domain\ValueObjects\Uang;
@@ -45,8 +46,8 @@ final class CatatPembayaranPenyedia
             $sisaBaru = $sisa->kurang($jumlah);
             $terkunci->Sisa = $sisaBaru->keString();
             $terkunci->Status = $sisaBaru->nilaiMinor() === 0
-                ? TagihanPenyedia::STATUS_DIBAYAR
-                : TagihanPenyedia::STATUS_DIBAYAR_SEBAGIAN;
+                ? StatusTagihanPenyedia::Dibayar->value
+                : StatusTagihanPenyedia::DibayarSebagian->value;
             $terkunci->save();
             $this->catatRealisasiAnggaran($terkunci, $pembayaran);
             $this->audit->catat('PembayaranPenyedia.Dicatat', 'PembayaranPenyedia', $pembayaran->Id, dataSesudah: array_merge($pembayaran->toArray(), ['SisaTagihan' => $sisaBaru->keString()]));
@@ -64,7 +65,7 @@ final class CatatPembayaranPenyedia
         }
 
         $this->catatTransaksiAnggaran->jalankan($pesanan->posAnggaran()->firstOrFail(), [
-            'Jenis' => TransaksiAnggaran::JENIS_REALISASI,
+            'Jenis' => JenisTransaksiAnggaran::Realisasi->value,
             'Jumlah' => $pembayaran->Jumlah,
             'Tanggal' => $pembayaran->TanggalBayar->toDateString(),
             'ReferensiJenis' => 'PembayaranPenyedia',

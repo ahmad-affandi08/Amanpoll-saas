@@ -6,6 +6,7 @@ namespace App\Domain\Kepatuhan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Kepatuhan\Domain\Enums\StatusKepatuhanAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\StandarKepatuhan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -57,7 +58,7 @@ final class KelolaKepatuhanAset
                     'OrganisasiId' => $aset->OrganisasiId,
                     'AsetId' => $aset->Id,
                     'PersyaratanKepatuhanId' => $satuPersyaratan->Id,
-                    'Status' => KepatuhanAset::STATUS_BELUM_DIPERIKSA,
+                    'Status' => StatusKepatuhanAset::BelumDiperiksa->value,
                 ]);
                 $ditambahkan++;
             }
@@ -81,7 +82,7 @@ final class KelolaKepatuhanAset
     public function catatPemeriksaan(KepatuhanAset $kepatuhan, array $data, string $penggunaId): KepatuhanAset
     {
         $status = (string) $data['Status'];
-        if (! in_array($status, [KepatuhanAset::STATUS_PATUH, KepatuhanAset::STATUS_TIDAK_PATUH], true)) {
+        if (! in_array($status, [StatusKepatuhanAset::Patuh->value, StatusKepatuhanAset::TidakPatuh->value], true)) {
             throw new AturanBisnisDilanggar('Hasil pemeriksaan hanya boleh Patuh atau TidakPatuh.');
         }
 

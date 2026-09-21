@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace App\Domain\Notifikasi\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
-use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
+use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 final class SimpanTemplatNotifikasiRequest extends FormRequest
 {
-    public const KANAL_DIIZINKAN = [Notifikasi::KANAL_IN_APP, Notifikasi::KANAL_EMAIL];
-
     public function authorize(): bool
     {
         return $this->user() !== null;
@@ -35,7 +33,7 @@ final class SimpanTemplatNotifikasiRequest extends FormRequest
                     ->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->where('Kanal', $this->input('Kanal')))
                     ->ignore($templatNotifikasi?->Id, 'Id'),
             ],
-            'Kanal' => ['required', Rule::in(self::KANAL_DIIZINKAN)],
+            'Kanal' => ['required', Rule::enum(KanalNotifikasi::class)],
             'JudulTemplat' => ['nullable', 'string', 'max:255'],
             'IsiTemplat' => ['required', 'string'],
             'Variabel' => ['nullable', 'array'],

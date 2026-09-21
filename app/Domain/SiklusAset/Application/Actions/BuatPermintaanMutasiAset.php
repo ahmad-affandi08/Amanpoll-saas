@@ -6,6 +6,7 @@ namespace App\Domain\SiklusAset\Application\Actions;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Application\Services\LayananNomorDokumen;
+use App\Domain\SiklusAset\Domain\Enums\StatusPermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
@@ -30,7 +31,7 @@ final class BuatPermintaanMutasiAset
         $data['Nomor'] = $this->layananNomorDokumen->berikutnya($this->konteksOrganisasi->wajibId(), self::JENIS_DOKUMEN);
         $data['DimintaOleh'] = $dimintaOleh;
         $data['DimintaPada'] = now();
-        $data['Status'] = PermintaanMutasiAset::STATUS_DRAFT;
+        $data['Status'] = StatusPermintaanMutasiAset::Draft->value;
 
         /** @var PermintaanMutasiAset $permintaan */
         $permintaan = PermintaanMutasiAset::create($data);

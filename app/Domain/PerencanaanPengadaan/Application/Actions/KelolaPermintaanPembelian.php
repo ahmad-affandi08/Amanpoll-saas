@@ -8,7 +8,8 @@ use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananKalkulasiPengadaan;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananSaldoAnggaran;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
@@ -53,7 +54,7 @@ final class KelolaPermintaanPembelian
                 'TanggalPermintaan' => $data['TanggalPermintaan'] ?? now()->toDateString(),
                 'TanggalDibutuhkan' => $data['TanggalDibutuhkan'] ?? null,
                 'Prioritas' => $data['Prioritas'] ?? 'Normal',
-                'Status' => PermintaanPembelian::STATUS_DRAFT,
+                'Status' => StatusPermintaanPembelian::Draft->value,
                 'Alasan' => $data['Alasan'] ?? null,
                 'DimintaOleh' => $penggunaId,
                 'TotalEstimasi' => '0.00',
@@ -128,7 +129,7 @@ final class KelolaPermintaanPembelian
             }
 
             $pos = PosAnggaran::query()->lockForUpdate()->findOrFail($terkunci->PosAnggaranId);
-            if ($pos->anggaran()->value('Status') !== Anggaran::STATUS_AKTIF) {
+            if ($pos->anggaran()->value('Status') !== StatusAnggaran::Aktif->value) {
                 throw new AturanBisnisDilanggar('Pos anggaran harus berasal dari anggaran aktif.');
             }
             $saldo = $this->saldoAnggaran->hitung($pos);
@@ -142,7 +143,7 @@ final class KelolaPermintaanPembelian
             }
 
             $this->ajukanPersetujuan->jalankan($alur, $terkunci->Id, ['Total' => $terkunci->TotalEstimasi], $penggunaId);
-            $terkunci->Status = PermintaanPembelian::STATUS_MENUNGGU_PERSETUJUAN;
+            $terkunci->Status = StatusPermintaanPembelian::MenungguPersetujuan->value;
             $terkunci->save();
             $this->audit->catat('PermintaanPembelian.Disubmit', 'PermintaanPembelian', $terkunci->Id, dataSesudah: ['Status' => $terkunci->Status, 'TotalEstimasi' => $terkunci->TotalEstimasi]);
 
@@ -162,7 +163,7 @@ final class KelolaPermintaanPembelian
 
     private function pastikanDraft(PermintaanPembelian $permintaan): void
     {
-        if ($permintaan->Status !== PermintaanPembelian::STATUS_DRAFT) {
+        if ($permintaan->Status !== StatusPermintaanPembelian::Draft->value) {
             throw new AturanBisnisDilanggar('Hanya permintaan pembelian draft yang dapat diubah.');
         }
     }

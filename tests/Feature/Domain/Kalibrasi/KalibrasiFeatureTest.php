@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Kalibrasi;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Kalibrasi\Application\Actions\KelolaJenisKalibrasi;
@@ -415,7 +416,7 @@ final class KalibrasiFeatureTest extends TestCase
             'KategoriAsetId' => $kategori->Id,
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Aset Uji',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
         ], $atribut));
     }
 }

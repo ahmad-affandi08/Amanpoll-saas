@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Penyedia\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -39,7 +40,7 @@ final class SimpanPenyediaRequest extends FormRequest
             'Kota' => ['nullable', 'string', 'max:120'],
             'Provinsi' => ['nullable', 'string', 'max:120'],
             'Negara' => ['nullable', 'string', 'max:100'],
-            'Status' => ['required', 'string', Rule::in([Penyedia::STATUS_AKTIF, Penyedia::STATUS_NONAKTIF])],
+            'Status' => ['required', 'string', Rule::enum(StatusPenyedia::class)],
         ];
     }
 }

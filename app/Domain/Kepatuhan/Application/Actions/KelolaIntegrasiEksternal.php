@@ -6,6 +6,7 @@ namespace App\Domain\Kepatuhan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Kepatuhan\Domain\Enums\StatusIntegrasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -34,7 +35,7 @@ final class KelolaIntegrasiEksternal
                 'UrlDasar' => $data['UrlDasar'] ?? null,
                 'MetodeAutentikasi' => $data['MetodeAutentikasi'] ?? null,
                 'KonfigurasiTerenkripsi' => $data['Konfigurasi'] ?? null,
-                'Status' => IntegrasiEksternal::STATUS_AKTIF,
+                'Status' => StatusIntegrasiEksternal::Aktif->value,
             ]);
 
             // Audit sengaja tidak memuat kredensial, hanya nama kuncinya.
@@ -80,7 +81,7 @@ final class KelolaIntegrasiEksternal
 
     public function ubahStatus(IntegrasiEksternal $integrasi, string $status): IntegrasiEksternal
     {
-        if (! in_array($status, IntegrasiEksternal::DAFTAR_STATUS, true)) {
+        if (StatusIntegrasiEksternal::tryFrom($status) === null) {
             throw new AturanBisnisDilanggar('Status integrasi tidak dikenal.');
         }
 

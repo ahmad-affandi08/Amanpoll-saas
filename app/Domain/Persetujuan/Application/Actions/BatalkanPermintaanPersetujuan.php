@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Persetujuan\Application\Actions;
 
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
@@ -11,11 +12,11 @@ final class BatalkanPermintaanPersetujuan
 {
     public function jalankan(PermintaanPersetujuan $permintaanPersetujuan): PermintaanPersetujuan
     {
-        if ($permintaanPersetujuan->Status !== PermintaanPersetujuan::STATUS_MENUNGGU) {
+        if ($permintaanPersetujuan->Status !== StatusPermintaanPersetujuan::Menunggu->value) {
             throw new AturanBisnisDilanggar('Hanya permintaan yang masih menunggu yang dapat dibatalkan.');
         }
 
-        $permintaanPersetujuan->Status = PermintaanPersetujuan::STATUS_DIBATALKAN;
+        $permintaanPersetujuan->Status = StatusPermintaanPersetujuan::Dibatalkan->value;
         $permintaanPersetujuan->SelesaiPada = now()->toImmutable();
         $permintaanPersetujuan->save();
 

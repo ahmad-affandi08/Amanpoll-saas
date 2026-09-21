@@ -6,6 +6,8 @@ namespace App\Domain\Persediaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Izin\PemeriksaIzin;
+use App\Domain\Persediaan\Domain\Enums\JenisMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\StatusMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\DetailMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
@@ -33,11 +35,11 @@ final class PostingMutasiStok
 
     public function jalankan(MutasiStok $mutasiStok, string $dipostingOleh): MutasiStok
     {
-        if ($mutasiStok->Status === MutasiStok::STATUS_DIPOSTING) {
+        if ($mutasiStok->Status === StatusMutasiStok::Diposting->value) {
             return $mutasiStok;
         }
 
-        if ($mutasiStok->Status !== MutasiStok::STATUS_DRAFT) {
+        if ($mutasiStok->Status !== StatusMutasiStok::Draft->value) {
             throw new AturanBisnisDilanggar('Hanya mutasi berstatus draft yang bisa diposting.');
         }
 
@@ -55,7 +57,7 @@ final class PostingMutasiStok
                 $this->terapkanBaris($mutasiStok, $baris, $izinkanNegatif);
             }
 
-            $mutasiStok->Status = MutasiStok::STATUS_DIPOSTING;
+            $mutasiStok->Status = StatusMutasiStok::Diposting->value;
             $mutasiStok->save();
         });
 
@@ -74,7 +76,7 @@ final class PostingMutasiStok
         $jumlah = (float) $baris->Jumlah;
 
         match ($mutasiStok->Jenis) {
-            MutasiStok::JENIS_PENERIMAAN, MutasiStok::JENIS_RETURN => $this->ubahSaldo(
+            JenisMutasiStok::Penerimaan->value, JenisMutasiStok::Return->value => $this->ubahSaldo(
                 $mutasiStok->OrganisasiId,
                 (string) $mutasiStok->GudangTujuanId,
                 $baris->LokasiGudangTujuanId,
@@ -83,7 +85,7 @@ final class PostingMutasiStok
                 $jumlah,
                 $izinkanNegatif,
             ),
-            MutasiStok::JENIS_PENGELUARAN => $this->ubahSaldo(
+            JenisMutasiStok::Pengeluaran->value => $this->ubahSaldo(
                 $mutasiStok->OrganisasiId,
                 (string) $mutasiStok->GudangAsalId,
                 $baris->LokasiGudangAsalId,
@@ -92,7 +94,7 @@ final class PostingMutasiStok
                 -1 * $jumlah,
                 $izinkanNegatif,
             ),
-            MutasiStok::JENIS_ADJUSTMENT => $this->ubahSaldo(
+            JenisMutasiStok::Adjustment->value => $this->ubahSaldo(
                 $mutasiStok->OrganisasiId,
                 (string) $mutasiStok->GudangAsalId,
                 $baris->LokasiGudangAsalId,
@@ -101,7 +103,7 @@ final class PostingMutasiStok
                 $jumlah,
                 $izinkanNegatif,
             ),
-            MutasiStok::JENIS_TRANSFER => $this->transfer($mutasiStok, $baris, $jumlah, $izinkanNegatif),
+            JenisMutasiStok::Transfer->value => $this->transfer($mutasiStok, $baris, $jumlah, $izinkanNegatif),
             default => throw new AturanBisnisDilanggar('Jenis mutasi stok tidak dikenal.'),
         };
     }

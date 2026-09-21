@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
-use App\Domain\Notifikasi\Infrastructure\Persistence\Models\EskalasiTingkatLayanan;
+use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\PemicuEskalasiTingkatLayanan;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,12 +43,12 @@ final class SimpanTingkatLayananRequest extends FormRequest
             'Aturan.*.MenghitungJamKerja' => ['required', 'boolean'],
             'Eskalasi' => ['sometimes', 'array'],
             'Eskalasi.*.Tahap' => ['required', 'integer', 'min:1', 'distinct'],
-            'Eskalasi.*.Pemicu' => ['required', Rule::in([EskalasiTingkatLayanan::PEMICU_MENJELANG, EskalasiTingkatLayanan::PEMICU_TERLEWATI])],
+            'Eskalasi.*.Pemicu' => ['required', Rule::enum(PemicuEskalasiTingkatLayanan::class)],
             'Eskalasi.*.SetelahMenit' => ['required', 'integer', 'min:0', 'max:525600'],
             'Eskalasi.*.PeranId' => ['nullable', 'string', Rule::exists('Peran', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))],
             'Eskalasi.*.PenggunaId' => ['nullable', 'string', Rule::exists('Pengguna', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))],
             'Eskalasi.*.Kanal' => ['required', 'array', 'min:1'],
-            'Eskalasi.*.Kanal.*' => ['required', Rule::in(['InApp', 'Email']), 'distinct'],
+            'Eskalasi.*.Kanal.*' => ['required', Rule::enum(KanalNotifikasi::class), 'distinct'],
             'Eskalasi.*.Aktif' => ['required', 'boolean'],
         ];
     }

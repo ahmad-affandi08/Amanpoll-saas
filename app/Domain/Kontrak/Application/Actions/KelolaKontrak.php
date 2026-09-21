@@ -6,6 +6,7 @@ namespace App\Domain\Kontrak\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -37,7 +38,7 @@ final class KelolaKontrak
                 'MataUang' => $data['MataUang'] ?? 'IDR',
                 'TingkatLayananId' => $data['TingkatLayananId'] ?? null,
                 'PeringatanHariSebelum' => $data['PeringatanHariSebelum'] ?? 30,
-                'Status' => Kontrak::STATUS_AKTIF,
+                'Status' => StatusKontrak::Aktif->value,
                 'Catatan' => $data['Catatan'] ?? null,
             ]);
             $this->audit->catat('Kontrak.Dibuat', 'Kontrak', $kontrak->Id, dataSesudah: $kontrak->toArray());
@@ -49,7 +50,7 @@ final class KelolaKontrak
     /** @param array<string, mixed> $data */
     public function ubah(Kontrak $kontrak, array $data): Kontrak
     {
-        if ($kontrak->Status === Kontrak::STATUS_DIBATALKAN) {
+        if ($kontrak->Status === StatusKontrak::Dibatalkan->value) {
             throw new AturanBisnisDilanggar('Kontrak yang dibatalkan tidak dapat diubah.');
         }
         $this->pastikanPeriodeValid($data['MulaiPada'], $data['BerakhirPada']);
@@ -80,11 +81,11 @@ final class KelolaKontrak
     /** Membatalkan kontrak; riwayat cakupan aset sengaja dipertahankan. */
     public function batalkan(Kontrak $kontrak, string $alasan): Kontrak
     {
-        if ($kontrak->Status !== Kontrak::STATUS_AKTIF) {
+        if ($kontrak->Status !== StatusKontrak::Aktif->value) {
             throw new AturanBisnisDilanggar('Hanya kontrak aktif yang dapat dibatalkan.');
         }
 
-        $kontrak->Status = Kontrak::STATUS_DIBATALKAN;
+        $kontrak->Status = StatusKontrak::Dibatalkan->value;
         $kontrak->Catatan = trim(($kontrak->Catatan ?? '')."\nDibatalkan: ".$alasan);
         $kontrak->save();
         $this->audit->catat('Kontrak.Dibatalkan', 'Kontrak', $kontrak->Id, dataSesudah: ['Status' => $kontrak->Status, 'Alasan' => $alasan]);

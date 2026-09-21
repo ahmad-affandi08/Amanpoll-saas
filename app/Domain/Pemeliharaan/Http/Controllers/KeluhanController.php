@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Http\Controllers;
 
 use App\Core\Izin\PemeriksaIzin;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kolaborasi\Application\Actions\LampirkanBerkas;
 use App\Domain\Kolaborasi\Application\Actions\UnggahBerkas;
@@ -51,7 +52,7 @@ final class KeluhanController extends Controller
         return Inertia::render('Keluhan/Index', [
             'keluhan' => KeluhanResource::collection($keluhan),
             'kategori' => KategoriKeluhan::query()->where('Aktif', true)->orderBy('Nama')->get(['Id', 'Nama', 'PrioritasBawaan', 'AsetWajib']),
-            'aset' => Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']),
+            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']),
             'lokasi' => Lokasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
             'filter' => $filter,
             'dapatMengelola' => $dapatMengelola,

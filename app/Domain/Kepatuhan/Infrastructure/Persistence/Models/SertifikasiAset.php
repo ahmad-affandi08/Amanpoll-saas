@@ -19,15 +19,6 @@ final class SertifikasiAset extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_KEDALUWARSA = 'Kedaluwarsa';
-
-    public const STATUS_DICABUT = 'Dicabut';
-
-    /** @var list<string> */
-    public const DAFTAR_STATUS = [self::STATUS_AKTIF, self::STATUS_KEDALUWARSA, self::STATUS_DICABUT];
-
     protected $fillable = [
         'OrganisasiId',
         'AsetId',

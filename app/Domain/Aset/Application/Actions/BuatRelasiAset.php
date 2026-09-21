@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Application\Actions;
 
+use App\Domain\Aset\Domain\Enums\JenisRelasiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RelasiAset;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,7 @@ final class BuatRelasiAset
             throw new AturanBisnisDilanggar('Aset tidak boleh direlasikan dengan dirinya sendiri.');
         }
 
-        if (($data['JenisRelasi'] ?? RelasiAset::JENIS_KOMPONEN) === RelasiAset::JENIS_KOMPONEN) {
+        if (($data['JenisRelasi'] ?? JenisRelasiAset::Komponen->value) === JenisRelasiAset::Komponen->value) {
             $this->pastikanTidakSirkular($data['AsetIndukId'], $data['AsetAnakId']);
         }
 
@@ -52,7 +53,7 @@ final class BuatRelasiAset
 
             $anak = DB::table('RelasiAset')
                 ->where('AsetIndukId', $sekarang)
-                ->where('JenisRelasi', RelasiAset::JENIS_KOMPONEN)
+                ->where('JenisRelasi', JenisRelasiAset::Komponen->value)
                 ->pluck('AsetAnakId');
 
             foreach ($anak as $a) {

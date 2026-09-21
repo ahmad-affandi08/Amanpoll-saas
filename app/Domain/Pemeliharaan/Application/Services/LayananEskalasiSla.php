@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Application\Services;
 
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\PemicuEskalasiTingkatLayanan;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\EskalasiTingkatLayanan;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
@@ -45,18 +47,18 @@ final class LayananEskalasiSla
 
     private function prosesBatas(Keluhan $keluhan, EskalasiTingkatLayanan $aturan, string $jenisBatas, CarbonInterface $batas): int
     {
-        $waktuPemicu = $aturan->Pemicu === EskalasiTingkatLayanan::PEMICU_MENJELANG
+        $waktuPemicu = $aturan->Pemicu === PemicuEskalasiTingkatLayanan::Menjelang->value
             ? $batas->subMinutes($aturan->SetelahMenit)
             : $batas->addMinutes($aturan->SetelahMenit);
 
         if (now()->lessThan($waktuPemicu)) {
             return 0;
         }
-        if ($aturan->Pemicu === EskalasiTingkatLayanan::PEMICU_MENJELANG && now()->greaterThanOrEqualTo($batas)) {
+        if ($aturan->Pemicu === PemicuEskalasiTingkatLayanan::Menjelang->value && now()->greaterThanOrEqualTo($batas)) {
             return 0;
         }
 
-        $jenisPeristiwa = $aturan->Pemicu === EskalasiTingkatLayanan::PEMICU_MENJELANG
+        $jenisPeristiwa = $aturan->Pemicu === PemicuEskalasiTingkatLayanan::Menjelang->value
             ? 'Keluhan.Sla.Mendekati'
             : 'Keluhan.Sla.Terlewati';
         $judul = "SLA {$jenisBatas} {$keluhan->Nomor} - Tahap {$aturan->Tahap}";
@@ -81,7 +83,7 @@ final class LayananEskalasiSla
                 judul: $judul,
                 jenisEntitas: 'Keluhan',
                 entitasId: $keluhan->Id,
-                kanal: $aturan->Kanal ?: [Notifikasi::KANAL_IN_APP],
+                kanal: $aturan->Kanal ?: [KanalNotifikasi::InApp->value],
             );
             $jumlah++;
         }
@@ -109,7 +111,7 @@ final class LayananEskalasiSla
 
     private function labelPemicu(EskalasiTingkatLayanan $aturan): string
     {
-        return $aturan->Pemicu === EskalasiTingkatLayanan::PEMICU_MENJELANG
+        return $aturan->Pemicu === PemicuEskalasiTingkatLayanan::Menjelang->value
             ? "akan jatuh tempo dalam {$aturan->SetelahMenit} menit"
             : "telah terlewati {$aturan->SetelahMenit} menit";
     }

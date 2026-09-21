@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Pemeliharaan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
@@ -120,7 +121,7 @@ final class PreventifInspeksiTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-PMP-'.uniqid(),
             'Nama' => 'Pompa Sirkulasi',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
         ]);
 
         $kelolaTemplat = app(KelolaTemplatDaftarPeriksa::class);
@@ -263,7 +264,7 @@ final class PreventifInspeksiTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-GEN-01',
             'Nama' => 'Genset Utama',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
             'LokasiId' => $lokasi->Id,
         ]);
 
@@ -362,7 +363,7 @@ final class PreventifInspeksiTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-TRF-01',
             'Nama' => 'Trafo Distribusi Utama',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
         ]);
 
         $kelolaInspeksi = app(KelolaInspeksi::class);
@@ -432,7 +433,7 @@ final class PreventifInspeksiTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-WEB-01',
             'Nama' => 'Motor Listrik Web',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
         ]);
 
         // 1. GET Templat Index

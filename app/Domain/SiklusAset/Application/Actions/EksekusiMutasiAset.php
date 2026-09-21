@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\SiklusAset\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Aset\Domain\Enums\JenisRiwayatLokasiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatLokasiAset;
-use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailMutasiAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusDetailMutasiAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusPermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -28,15 +30,15 @@ final class EksekusiMutasiAset
 
     public function jalankan(PermintaanMutasiAset $permintaan, string $dieksekusiOleh): PermintaanMutasiAset
     {
-        if ($permintaan->Status === PermintaanMutasiAset::STATUS_SELESAI) {
+        if ($permintaan->Status === StatusPermintaanMutasiAset::Selesai->value) {
             return $permintaan;
         }
 
-        if ($permintaan->Status !== PermintaanMutasiAset::STATUS_DISETUJUI) {
+        if ($permintaan->Status !== StatusPermintaanMutasiAset::Disetujui->value) {
             throw new AturanBisnisDilanggar('Mutasi hanya bisa dieksekusi setelah disetujui.');
         }
 
-        $detailMenunggu = $permintaan->detailMutasiAset()->where('Status', DetailMutasiAset::STATUS_MENUNGGU)->with('aset')->get();
+        $detailMenunggu = $permintaan->detailMutasiAset()->where('Status', StatusDetailMutasiAset::Menunggu->value)->with('aset')->get();
 
         if ($detailMenunggu->isEmpty()) {
             throw new AturanBisnisDilanggar('Tidak ada aset yang perlu dieksekusi.');
@@ -48,7 +50,7 @@ final class EksekusiMutasiAset
                 $aset = $detail->aset;
 
                 if (! $aset) {
-                    $detail->Status = DetailMutasiAset::STATUS_DIBATALKAN;
+                    $detail->Status = StatusDetailMutasiAset::Dibatalkan->value;
                     $detail->Catatan = trim(($detail->Catatan ?? '')."\nAset tidak ditemukan saat eksekusi.");
                     $detail->save();
 
@@ -61,7 +63,7 @@ final class EksekusiMutasiAset
                     'AsetId' => $aset->Id,
                     'LokasiAsalId' => $lokasiAsalId,
                     'LokasiTujuanId' => $permintaan->LokasiTujuanId,
-                    'JenisPerpindahan' => RiwayatLokasiAset::JENIS_MUTASI,
+                    'JenisPerpindahan' => JenisRiwayatLokasiAset::Mutasi->value,
                     'Alasan' => $permintaan->Alasan,
                     'DipindahkanOleh' => $dieksekusiOleh,
                     'DipindahkanPada' => now(),
@@ -73,11 +75,11 @@ final class EksekusiMutasiAset
                 }
                 $aset->save();
 
-                $detail->Status = DetailMutasiAset::STATUS_SELESAI;
+                $detail->Status = StatusDetailMutasiAset::Selesai->value;
                 $detail->save();
             }
 
-            $permintaan->Status = PermintaanMutasiAset::STATUS_SELESAI;
+            $permintaan->Status = StatusPermintaanMutasiAset::Selesai->value;
             $permintaan->SelesaiPada = now()->toImmutable();
             $permintaan->save();
         });

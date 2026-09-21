@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Pemeliharaan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Notifikasi\Domain\Enums\PemicuEskalasiTingkatLayanan;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\EskalasiTingkatLayanan;
 use App\Domain\Pemeliharaan\Application\Services\LayananEskalasiSla;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
@@ -67,7 +68,7 @@ final class EskalasiSlaTest extends TestCase
         EskalasiTingkatLayanan::create([
             'TingkatLayananId' => $tingkatLayanan->Id,
             'Tahap' => 1,
-            'Pemicu' => EskalasiTingkatLayanan::PEMICU_MENJELANG,
+            'Pemicu' => PemicuEskalasiTingkatLayanan::Menjelang->value,
             'SetelahMenit' => 60,
             'PenggunaId' => $penerima->Id,
             'Kanal' => ['InApp'],
@@ -76,7 +77,7 @@ final class EskalasiSlaTest extends TestCase
         EskalasiTingkatLayanan::create([
             'TingkatLayananId' => $tingkatLayanan->Id,
             'Tahap' => 2,
-            'Pemicu' => EskalasiTingkatLayanan::PEMICU_TERLEWATI,
+            'Pemicu' => PemicuEskalasiTingkatLayanan::Terlewati->value,
             'SetelahMenit' => 0,
             'PenggunaId' => $penerima->Id,
             'Kanal' => ['InApp'],

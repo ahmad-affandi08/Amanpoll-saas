@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Domain\Kepatuhan\Http\Controllers;
 
+use App\Domain\IntegrasiAudit\Domain\Enums\StatusKotakKeluarPeristiwa;
+use App\Domain\IntegrasiAudit\Domain\Enums\StatusPengirimanPanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\KotakKeluarPeristiwa;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
 use App\Domain\Kepatuhan\Application\Actions\KelolaIntegrasiEksternal;
 use App\Domain\Kepatuhan\Application\Actions\KelolaPemetaanDataEksternal;
 use App\Domain\Kepatuhan\Application\Services\LayananSinkronisasiEksternal;
+use App\Domain\Kepatuhan\Domain\Enums\ArahSinkronisasiEksternal;
+use App\Domain\Kepatuhan\Domain\Enums\StatusIntegrasiEksternal;
 use App\Domain\Kepatuhan\Http\Requests\SimpanIntegrasiEksternalRequest;
 use App\Domain\Kepatuhan\Http\Requests\SimpanPemetaanDataEksternalRequest;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PemetaanDataEksternal;
-use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SinkronisasiEksternal;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,12 +52,12 @@ final class IntegrasiEksternalController extends Controller
                 ])
                 ->all(),
             'antrianPeristiwa' => [
-                'menunggu' => KotakKeluarPeristiwa::query()->where('Status', KotakKeluarPeristiwa::STATUS_MENUNGGU)->count(),
-                'gagal' => KotakKeluarPeristiwa::query()->where('Status', KotakKeluarPeristiwa::STATUS_GAGAL)->count(),
+                'menunggu' => KotakKeluarPeristiwa::query()->where('Status', StatusKotakKeluarPeristiwa::Menunggu->value)->count(),
+                'gagal' => KotakKeluarPeristiwa::query()->where('Status', StatusKotakKeluarPeristiwa::Gagal->value)->count(),
                 'pengirimanGagal' => PengirimanPanggilanBalikWeb::query()
                     ->whereIn('Status', [
-                        PengirimanPanggilanBalikWeb::STATUS_GAGAL,
-                        PengirimanPanggilanBalikWeb::STATUS_GAGAL_PERMANEN,
+                        StatusPengirimanPanggilanBalikWeb::Gagal->value,
+                        StatusPengirimanPanggilanBalikWeb::GagalPermanen->value,
                     ])
                     ->count(),
             ],
@@ -115,7 +118,7 @@ final class IntegrasiEksternalController extends Controller
     public function ubahStatus(Request $request, IntegrasiEksternal $integrasi, KelolaIntegrasiEksternal $aksi): RedirectResponse
     {
         $this->authorize('update', $integrasi);
-        $data = $request->validate(['Status' => ['required', Rule::in(IntegrasiEksternal::DAFTAR_STATUS)]]);
+        $data = $request->validate(['Status' => ['required', Rule::enum(StatusIntegrasiEksternal::class)]]);
         $aksi->ubahStatus($integrasi, $data['Status']);
 
         return back()->with('sukses', 'Status integrasi diperbarui.');
@@ -142,7 +145,7 @@ final class IntegrasiEksternalController extends Controller
         $this->authorize('update', $integrasi);
         $data = $request->validate([
             'JenisProses' => ['required', 'string', 'max:80'],
-            'Arah' => ['required', Rule::in([SinkronisasiEksternal::ARAH_TARIK, SinkronisasiEksternal::ARAH_DORONG])],
+            'Arah' => ['required', Rule::enum(ArahSinkronisasiEksternal::class)],
         ]);
 
         $layanan->antrikan($integrasi, $data['JenisProses'], $data['Arah']);

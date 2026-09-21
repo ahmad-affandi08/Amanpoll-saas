@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Persediaan\Application\Actions;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Persediaan\Domain\Enums\JenisMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\StatusMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Platform\Application\Services\LayananNomorDokumen;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -14,11 +16,11 @@ final class BuatMutasiStok
     private const JENIS_DOKUMEN = 'MutasiStok';
 
     private const JENIS_VALID = [
-        MutasiStok::JENIS_PENERIMAAN,
-        MutasiStok::JENIS_PENGELUARAN,
-        MutasiStok::JENIS_TRANSFER,
-        MutasiStok::JENIS_ADJUSTMENT,
-        MutasiStok::JENIS_RETURN,
+        JenisMutasiStok::Penerimaan->value,
+        JenisMutasiStok::Pengeluaran->value,
+        JenisMutasiStok::Transfer->value,
+        JenisMutasiStok::Adjustment->value,
+        JenisMutasiStok::Return->value,
     ];
 
     public function __construct(
@@ -35,14 +37,14 @@ final class BuatMutasiStok
 
         $this->pastikanGudangValid($jenis, $data['GudangAsalId'] ?? null, $data['GudangTujuanId'] ?? null);
 
-        if ($jenis === MutasiStok::JENIS_ADJUSTMENT && trim((string) ($data['Catatan'] ?? '')) === '') {
+        if ($jenis === JenisMutasiStok::Adjustment->value && trim((string) ($data['Catatan'] ?? '')) === '') {
             throw new AturanBisnisDilanggar('Penyesuaian stok harus menyertakan alasan pada kolom Catatan.');
         }
 
         $data['Nomor'] = $this->layananNomorDokumen->berikutnya($this->konteksOrganisasi->wajibId(), self::JENIS_DOKUMEN);
         $data['DibuatOleh'] = $dibuatOleh;
         $data['Tanggal'] = $data['Tanggal'] ?? now();
-        $data['Status'] = MutasiStok::STATUS_DRAFT;
+        $data['Status'] = StatusMutasiStok::Draft->value;
 
         return MutasiStok::create($data);
     }
@@ -56,11 +58,11 @@ final class BuatMutasiStok
         $pesan = 'Kombinasi gudang asal/tujuan tidak sesuai untuk jenis mutasi ini.';
 
         match ($jenis) {
-            MutasiStok::JENIS_PENERIMAAN, MutasiStok::JENIS_RETURN => $gudangTujuanId === null
+            JenisMutasiStok::Penerimaan->value, JenisMutasiStok::Return->value => $gudangTujuanId === null
                 ? throw new AturanBisnisDilanggar($pesan) : null,
-            MutasiStok::JENIS_PENGELUARAN, MutasiStok::JENIS_ADJUSTMENT => $gudangAsalId === null
+            JenisMutasiStok::Pengeluaran->value, JenisMutasiStok::Adjustment->value => $gudangAsalId === null
                 ? throw new AturanBisnisDilanggar($pesan) : null,
-            MutasiStok::JENIS_TRANSFER => ($gudangAsalId === null || $gudangTujuanId === null)
+            JenisMutasiStok::Transfer->value => ($gudangAsalId === null || $gudangTujuanId === null)
                 ? throw new AturanBisnisDilanggar($pesan) : null,
         };
     }

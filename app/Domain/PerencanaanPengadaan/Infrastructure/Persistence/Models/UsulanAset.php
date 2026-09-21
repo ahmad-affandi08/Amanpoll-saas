@@ -18,31 +18,6 @@ final class UsulanAset extends ModelDasar
 {
     use MilikOrganisasi;
 
-    public const STATUS_DRAFT = 'Draft';
-
-    public const STATUS_DIAJUKAN = 'Diajukan';
-
-    public const STATUS_MENUNGGU_PERSETUJUAN = 'MenungguPersetujuan';
-
-    public const STATUS_DISETUJUI = 'Disetujui';
-
-    public const STATUS_DITOLAK = 'Ditolak';
-
-    public const PRIORITAS_RENDAH = 'Rendah';
-
-    public const PRIORITAS_NORMAL = 'Normal';
-
-    public const PRIORITAS_TINGGI = 'Tinggi';
-
-    public const PRIORITAS_KRITIS = 'Kritis';
-
-    public const DAFTAR_PRIORITAS = [
-        self::PRIORITAS_RENDAH,
-        self::PRIORITAS_NORMAL,
-        self::PRIORITAS_TINGGI,
-        self::PRIORITAS_KRITIS,
-    ];
-
     protected $table = 'UsulanAset';
 
     public const CREATED_AT = 'DibuatPada';

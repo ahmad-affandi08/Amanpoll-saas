@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kontrak\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\LayananKontrak;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -20,7 +21,7 @@ final class KelolaLayananKontrak
     /** @param array<string, mixed> $data */
     public function tambah(Kontrak $kontrak, array $data): LayananKontrak
     {
-        if ($kontrak->Status !== Kontrak::STATUS_AKTIF) {
+        if ($kontrak->Status !== StatusKontrak::Aktif->value) {
             throw new AturanBisnisDilanggar('Layanan hanya dapat ditambahkan pada kontrak berstatus aktif.');
         }
 

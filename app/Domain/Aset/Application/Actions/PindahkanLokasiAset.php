@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Application\Actions;
 
+use App\Domain\Aset\Domain\Enums\JenisRiwayatLokasiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatLokasiAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -27,7 +28,7 @@ final class PindahkanLokasiAset
                 'AsetId' => $aset->Id,
                 'LokasiAsalId' => $lokasiAsalId,
                 'LokasiTujuanId' => $lokasiTujuanId,
-                'JenisPerpindahan' => RiwayatLokasiAset::JENIS_MANUAL,
+                'JenisPerpindahan' => JenisRiwayatLokasiAset::Manual->value,
                 'Alasan' => $alasan,
                 'DipindahkanOleh' => $dipindahkanOleh,
                 'DipindahkanPada' => now(),

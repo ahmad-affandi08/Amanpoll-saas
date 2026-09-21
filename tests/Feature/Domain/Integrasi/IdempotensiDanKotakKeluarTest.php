@@ -7,6 +7,7 @@ namespace Tests\Feature\Domain\Integrasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Core\Peristiwa\LayananKotakKeluar;
 use App\Domain\IntegrasiAudit\Application\Services\LayananPanggilanBalikWeb;
+use App\Domain\IntegrasiAudit\Domain\Enums\StatusKotakKeluarPeristiwa;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\KotakKeluarPeristiwa;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
@@ -142,7 +143,7 @@ final class IdempotensiDanKotakKeluarTest extends TestCase
             ->withoutGlobalScopes()
             ->where('OrganisasiId', $konteks['organisasi']->Id)
             ->firstOrFail();
-        $this->assertSame(KotakKeluarPeristiwa::STATUS_SELESAI, $peristiwa->Status);
+        $this->assertSame(StatusKotakKeluarPeristiwa::Selesai->value, $peristiwa->Status);
         $this->assertNotNull($peristiwa->DiprosesPada);
 
         // Menjalankan worker lagi tidak membuat pengiriman kedua.

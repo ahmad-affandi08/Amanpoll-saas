@@ -6,6 +6,7 @@ namespace App\Domain\Persediaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Persediaan\Application\Services\LayananSaldoReservasi;
+use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -37,7 +38,7 @@ final class BuatReservasiSukuCadang
             }
 
             $data['DibuatOleh'] = $dibuatOleh;
-            $data['Status'] = ReservasiSukuCadang::STATUS_AKTIF;
+            $data['Status'] = StatusReservasiSukuCadang::Aktif->value;
 
             /** @var ReservasiSukuCadang $reservasi */
             $reservasi = ReservasiSukuCadang::create($data);

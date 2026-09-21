@@ -17,15 +17,6 @@ final class PengirimanPanggilanBalikWeb extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_ANTRI = 'Antri';
-
-    public const STATUS_BERHASIL = 'Berhasil';
-
-    public const STATUS_GAGAL = 'Gagal';
-
-    /** Status akhir setelah seluruh percobaan ulang habis. */
-    public const STATUS_GAGAL_PERMANEN = 'GagalPermanen';
-
     public const BATAS_PERCOBAAN = 5;
 
     protected $fillable = [

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Kontrak;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Kontrak\Application\Actions\KelolaCakupanAsetKontrak;
@@ -12,7 +15,9 @@ use App\Domain\Kontrak\Application\Actions\KelolaKontrak;
 use App\Domain\Kontrak\Application\Actions\KelolaLayananKontrak;
 use App\Domain\Kontrak\Application\Services\LayananCakupanKontrak;
 use App\Domain\Kontrak\Application\Services\LayananPeringatanKontrak;
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
+use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
@@ -39,7 +44,7 @@ final class KontrakFeatureTest extends TestCase
         $aksi = app(KelolaKontrak::class);
 
         $kontrak = $aksi->buat($this->dataKontrak($konteks));
-        $this->assertSame(Kontrak::STATUS_AKTIF, $kontrak->Status);
+        $this->assertSame(StatusKontrak::Aktif->value, $kontrak->Status);
         $this->assertSame('120000000.00', $kontrak->Nilai);
 
         $diubah = $aksi->ubah($kontrak, array_merge($this->dataKontrak($konteks), ['Nama' => 'Kontrak Pemeliharaan Revisi']));
@@ -63,7 +68,7 @@ final class KontrakFeatureTest extends TestCase
         $kontrak = $aksi->buat($this->dataKontrak($konteks));
 
         $dibatalkan = $aksi->batalkan($kontrak, 'Penyedia mengundurkan diri.');
-        $this->assertSame(Kontrak::STATUS_DIBATALKAN, $dibatalkan->Status);
+        $this->assertSame(StatusKontrak::Dibatalkan->value, $dibatalkan->Status);
         $this->assertStringContainsString('Penyedia mengundurkan diri.', (string) $dibatalkan->Catatan);
 
         $this->assertThrows(
@@ -118,9 +123,9 @@ final class KontrakFeatureTest extends TestCase
             'KategoriAsetId' => KategoriAset::create(['Kode' => 'KAT-'.uniqid(), 'Nama' => 'Kategori Lain'])->Id,
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Aset Tenant Lain',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
 
         app(KonteksOrganisasi::class)->tetapkan($konteks['organisasi']->Id);
@@ -214,7 +219,7 @@ final class KontrakFeatureTest extends TestCase
         // H-30 memakai ambang berbeda sehingga notifikasinya terpisah.
         $layanan->kirimPeringatan($konteks['organisasi']->Id, CarbonImmutable::parse('2026-03-02'));
         $this->assertSame(1, $this->jumlahNotifikasi($konteks, 'Kontrak.AkanBerakhir.H30'));
-        $this->assertSame(Kontrak::STATUS_AKTIF, $kontrak->refresh()->Status);
+        $this->assertSame(StatusKontrak::Aktif->value, $kontrak->refresh()->Status);
     }
 
     public function test_17_04_kontrak_lewat_masa_berlaku_ditutup_otomatis(): void
@@ -230,7 +235,7 @@ final class KontrakFeatureTest extends TestCase
 
         $this->assertSame(1, $hasil['ditutup']);
         $this->assertSame(1, $hasil['kedaluwarsa']);
-        $this->assertSame(Kontrak::STATUS_BERAKHIR, $kontrak->refresh()->Status);
+        $this->assertSame(StatusKontrak::Berakhir->value, $kontrak->refresh()->Status);
         $this->assertSame(1, $this->jumlahNotifikasi($konteks, 'Kontrak.Kedaluwarsa'));
     }
 
@@ -276,7 +281,7 @@ final class KontrakFeatureTest extends TestCase
             'BerakhirPada' => '2026-12-31',
             'MataUang' => 'IDR',
             'PeringatanHariSebelum' => 30,
-            'Status' => Kontrak::STATUS_AKTIF,
+            'Status' => StatusKontrak::Aktif->value,
         ]);
 
         app(KonteksOrganisasi::class)->tetapkan($konteks['organisasi']->Id);
@@ -349,9 +354,9 @@ final class KontrakFeatureTest extends TestCase
             'KategoriAsetId' => $kategori->Id,
             'KodeAset' => $prefiks.'-'.uniqid(),
             'Nama' => 'Genset '.uniqid(),
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
     }
 
@@ -383,7 +388,7 @@ final class KontrakFeatureTest extends TestCase
         return Penyedia::create([
             'Kode' => 'PNY-'.uniqid(),
             'Nama' => 'Penyedia '.uniqid(),
-            'Status' => Penyedia::STATUS_AKTIF,
+            'Status' => StatusPenyedia::Aktif->value,
         ]);
     }
 

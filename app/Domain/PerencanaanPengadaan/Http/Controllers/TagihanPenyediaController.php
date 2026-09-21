@@ -6,6 +6,7 @@ namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 
 use App\Domain\PerencanaanPengadaan\Application\Actions\CatatPembayaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaTagihanPenyedia;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusTagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPembayaranPenyediaRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanTagihanPenyediaRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\TagihanPenyediaResource;
@@ -25,11 +26,7 @@ final class TagihanPenyediaController extends Controller
         $this->authorize('viewAny', TagihanPenyedia::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:100'],
-            'status' => ['nullable', 'string', Rule::in([
-                TagihanPenyedia::STATUS_BELUM_DIBAYAR,
-                TagihanPenyedia::STATUS_DIBAYAR_SEBAGIAN,
-                TagihanPenyedia::STATUS_DIBAYAR,
-            ])],
+            'status' => ['nullable', 'string', Rule::enum(StatusTagihanPenyedia::class)],
         ]);
 
         $tagihan = TagihanPenyedia::query()

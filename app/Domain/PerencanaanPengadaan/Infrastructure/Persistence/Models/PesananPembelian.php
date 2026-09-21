@@ -22,20 +22,6 @@ final class PesananPembelian extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
-    public const STATUS_DRAFT = 'Draft';
-
-    public const STATUS_MENUNGGU_PERSETUJUAN = 'MenungguPersetujuan';
-
-    public const STATUS_DISETUJUI = 'Disetujui';
-
-    public const STATUS_DITOLAK = 'Ditolak';
-
-    public const STATUS_DIKIRIM = 'Dikirim';
-
-    public const STATUS_DITERIMA_SEBAGIAN = 'DiterimaSebagian';
-
-    public const STATUS_DITERIMA_PENUH = 'DiterimaPenuh';
-
     protected $fillable = [
         'OrganisasiId',
         'Nomor',

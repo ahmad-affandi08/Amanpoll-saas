@@ -6,6 +6,7 @@ namespace Tests\Feature\Notifikasi;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\StatusNotifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\PreferensiNotifikasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
@@ -88,7 +89,7 @@ class NotifikasiTest extends TestCase
         $konteks->bersihkan();
 
         $this->assertNotNull($notifikasi);
-        $this->assertSame(Notifikasi::STATUS_TERKIRIM, $notifikasi->Status);
+        $this->assertSame(StatusNotifikasi::Terkirim->value, $notifikasi->Status);
         $this->assertNotNull($notifikasi->DikirimPada);
     }
 

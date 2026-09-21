@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Pemeliharaan\Application\Actions\BuatKeluhan;
+use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ final class KeluhanApiController extends Controller
             'AsetId' => ['nullable', 'string', Rule::exists('Aset', 'Id')->where('OrganisasiId', $organisasiId)],
             'LokasiId' => ['nullable', 'string', Rule::exists('Lokasi', 'Id')->where('OrganisasiId', $organisasiId)],
             'PelaporId' => ['nullable', 'string', Rule::exists('Pengguna', 'Id')->where('OrganisasiId', $organisasiId)],
-            'Prioritas' => ['nullable', Rule::in(['Rendah', 'Normal', 'Tinggi', 'Kritis'])],
+            'Prioritas' => ['nullable', Rule::enum(PrioritasKeluhan::class)],
         ]);
 
         $pelaporId = $data['PelaporId'] ?? $this->pemilikKunciApi($request);

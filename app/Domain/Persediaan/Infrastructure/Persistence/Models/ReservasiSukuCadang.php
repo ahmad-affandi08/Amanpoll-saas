@@ -15,14 +15,6 @@ final class ReservasiSukuCadang extends ModelDasar
 {
     use MilikOrganisasi;
 
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_DILEPAS = 'Dilepas';
-
-    public const STATUS_DIPAKAI = 'Dipakai';
-
-    public const STATUS_KADALUARSA = 'Kadaluarsa';
-
     protected $table = 'ReservasiSukuCadang';
 
     public $timestamps = false;

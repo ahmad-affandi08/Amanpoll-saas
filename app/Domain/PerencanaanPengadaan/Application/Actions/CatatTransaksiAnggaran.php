@@ -6,7 +6,8 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananSaldoAnggaran;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\JenisTransaksiAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TransaksiAnggaran;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -30,7 +31,7 @@ final class CatatTransaksiAnggaran
             $pos = PosAnggaran::query()->lockForUpdate()->findOrFail($posAnggaran->Id);
             $anggaran = $pos->anggaran()->firstOrFail();
 
-            if ($anggaran->Status !== Anggaran::STATUS_AKTIF) {
+            if ($anggaran->Status !== StatusAnggaran::Aktif->value) {
                 throw new AturanBisnisDilanggar('Transaksi hanya dapat dicatat pada anggaran aktif.');
             }
 
@@ -45,11 +46,11 @@ final class CatatTransaksiAnggaran
 
             $transaksi = $this->buatTransaksi($pos, $jenis, $jumlah->keString(), $data);
 
-            if ($jenis === TransaksiAnggaran::JENIS_REALISASI && $ditahan->nilaiMinor() > 0) {
+            if ($jenis === JenisTransaksiAnggaran::Realisasi->value && $ditahan->nilaiMinor() > 0) {
                 $jumlahPelepasanMinor = min($jumlah->nilaiMinor(), $ditahan->nilaiMinor());
                 $this->buatTransaksi(
                     $pos,
-                    TransaksiAnggaran::JENIS_PELEPASAN_KOMITMEN,
+                    JenisTransaksiAnggaran::PelepasanKomitmen->value,
                     Uang::dariMinor($jumlahPelepasanMinor)->keString(),
                     array_merge($data, ['Keterangan' => 'Pelepasan otomatis saat realisasi.']),
                 );
@@ -69,30 +70,30 @@ final class CatatTransaksiAnggaran
 
     private function pastikanValid(string $jenis, Uang $jumlah, Uang $sisa, Uang $ditahan, Uang $terpakai, string $keterangan): void
     {
-        if (! in_array($jenis, TransaksiAnggaran::DAFTAR_JENIS, true)) {
+        if (JenisTransaksiAnggaran::tryFrom($jenis) === null) {
             throw new AturanBisnisDilanggar('Jenis transaksi anggaran tidak dikenal.');
         }
 
-        if ($jumlah->nilaiMinor() === 0 || ($jenis !== TransaksiAnggaran::JENIS_PENYESUAIAN && $jumlah->nilaiMinor() < 0)) {
+        if ($jumlah->nilaiMinor() === 0 || ($jenis !== JenisTransaksiAnggaran::Penyesuaian->value && $jumlah->nilaiMinor() < 0)) {
             throw new AturanBisnisDilanggar('Jumlah transaksi harus lebih besar dari nol.');
         }
 
-        if ($jenis === TransaksiAnggaran::JENIS_KOMITMEN && $jumlah->lebihBesarDari($sisa)) {
+        if ($jenis === JenisTransaksiAnggaran::Komitmen->value && $jumlah->lebihBesarDari($sisa)) {
             throw new AturanBisnisDilanggar('Komitmen melebihi sisa anggaran yang tersedia.');
         }
 
-        if ($jenis === TransaksiAnggaran::JENIS_PELEPASAN_KOMITMEN && $jumlah->lebihBesarDari($ditahan)) {
+        if ($jenis === JenisTransaksiAnggaran::PelepasanKomitmen->value && $jumlah->lebihBesarDari($ditahan)) {
             throw new AturanBisnisDilanggar('Pelepasan melebihi komitmen yang masih ditahan.');
         }
 
-        if ($jenis === TransaksiAnggaran::JENIS_REALISASI) {
+        if ($jenis === JenisTransaksiAnggaran::Realisasi->value) {
             $bagianTanpaKomitmen = max(0, $jumlah->nilaiMinor() - $ditahan->nilaiMinor());
             if ($bagianTanpaKomitmen > $sisa->nilaiMinor()) {
                 throw new AturanBisnisDilanggar('Realisasi melebihi sisa anggaran yang tersedia.');
             }
         }
 
-        if ($jenis === TransaksiAnggaran::JENIS_PENYESUAIAN) {
+        if ($jenis === JenisTransaksiAnggaran::Penyesuaian->value) {
             if (trim($keterangan) === '') {
                 throw new AturanBisnisDilanggar('Alasan penyesuaian anggaran wajib diisi.');
             }

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Infrastructure\Listeners;
 
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
+use App\Domain\SiklusAset\Domain\Enums\StatusPengajuanPenghapusanAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusPermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 
@@ -41,8 +44,8 @@ final class SinkronkanStatusPersetujuanSiklusAset
         }
 
         match ($permintaanPersetujuan->Status) {
-            PermintaanPersetujuan::STATUS_DISETUJUI => $this->terapkan($permintaan, PermintaanMutasiAset::STATUS_DISETUJUI, true),
-            PermintaanPersetujuan::STATUS_DITOLAK => $this->terapkan($permintaan, PermintaanMutasiAset::STATUS_DITOLAK, false),
+            StatusPermintaanPersetujuan::Disetujui->value => $this->terapkan($permintaan, StatusPermintaanMutasiAset::Disetujui->value, true),
+            StatusPermintaanPersetujuan::Ditolak->value => $this->terapkan($permintaan, StatusPermintaanMutasiAset::Ditolak->value, false),
             default => null,
         };
     }
@@ -56,8 +59,8 @@ final class SinkronkanStatusPersetujuanSiklusAset
         }
 
         match ($permintaanPersetujuan->Status) {
-            PermintaanPersetujuan::STATUS_DISETUJUI => $this->terapkan($pengajuan, PengajuanPenghapusanAset::STATUS_DISETUJUI, true),
-            PermintaanPersetujuan::STATUS_DITOLAK => $this->terapkan($pengajuan, PengajuanPenghapusanAset::STATUS_DITOLAK, false),
+            StatusPermintaanPersetujuan::Disetujui->value => $this->terapkan($pengajuan, StatusPengajuanPenghapusanAset::Disetujui->value, true),
+            StatusPermintaanPersetujuan::Ditolak->value => $this->terapkan($pengajuan, StatusPengajuanPenghapusanAset::Ditolak->value, false),
             default => null,
         };
     }

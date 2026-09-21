@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
-use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
+use App\Domain\Aset\Domain\Enums\StatusGaransiAset;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,9 +31,7 @@ final class SimpanGaransiAsetRequest extends FormRequest
             'MulaiPada' => ['required', 'date'],
             'BerakhirPada' => ['required', 'date', 'after_or_equal:MulaiPada'],
             'Cakupan' => ['nullable', 'string'],
-            'Status' => ['required', 'string', Rule::in([
-                GaransiAset::STATUS_AKTIF, GaransiAset::STATUS_BERAKHIR, GaransiAset::STATUS_DIBATALKAN,
-            ])],
+            'Status' => ['required', 'string', Rule::enum(StatusGaransiAset::class)],
         ];
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Http\Resources;
 
+use App\Domain\Aset\Domain\Enums\StatusGaransiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -30,8 +31,8 @@ final class GaransiAsetResource extends JsonResource
             'Cakupan' => $garansi->Cakupan,
             'Status' => $garansi->Status,
             'SisaHari' => $sisaHari,
-            'AkanBerakhir' => $garansi->Status === GaransiAset::STATUS_AKTIF && $sisaHari >= 0 && $sisaHari <= self::AMBANG_PENGINGAT_HARI,
-            'SudahBerakhir' => $garansi->Status === GaransiAset::STATUS_AKTIF && $sisaHari < 0,
+            'AkanBerakhir' => $garansi->Status === StatusGaransiAset::Aktif->value && $sisaHari >= 0 && $sisaHari <= self::AMBANG_PENGINGAT_HARI,
+            'SudahBerakhir' => $garansi->Status === StatusGaransiAset::Aktif->value && $sisaHari < 0,
             'DibuatPada' => $garansi->DibuatPada->toIso8601String(),
         ];
     }

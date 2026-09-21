@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Peristiwa;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\IntegrasiAudit\Domain\Enums\StatusKotakKeluarPeristiwa;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\KotakKeluarPeristiwa;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +35,7 @@ final class LayananKotakKeluar
             'JenisAgregat' => $jenisAgregat,
             'AgregatId' => $agregatId,
             'MuatanData' => $muatan,
-            'Status' => KotakKeluarPeristiwa::STATUS_MENUNGGU,
+            'Status' => StatusKotakKeluarPeristiwa::Menunggu->value,
             'TersediaPada' => now(),
         ]);
     }
@@ -51,7 +52,7 @@ final class LayananKotakKeluar
         return DB::transaction(function () use ($batas): Collection {
             $peristiwa = KotakKeluarPeristiwa::query()
                 ->withoutGlobalScopes()
-                ->where('Status', KotakKeluarPeristiwa::STATUS_MENUNGGU)
+                ->where('Status', StatusKotakKeluarPeristiwa::Menunggu->value)
                 ->where('TersediaPada', '<=', now())
                 ->orderBy('TersediaPada')
                 ->limit($batas)
@@ -65,7 +66,7 @@ final class LayananKotakKeluar
             KotakKeluarPeristiwa::query()
                 ->withoutGlobalScopes()
                 ->whereIn('Id', $peristiwa->pluck('Id'))
-                ->update(['Status' => KotakKeluarPeristiwa::STATUS_DIPROSES]);
+                ->update(['Status' => StatusKotakKeluarPeristiwa::Diproses->value]);
 
             return $peristiwa;
         });
@@ -73,7 +74,7 @@ final class LayananKotakKeluar
 
     public function tandaiSelesai(KotakKeluarPeristiwa $peristiwa): void
     {
-        $peristiwa->Status = KotakKeluarPeristiwa::STATUS_SELESAI;
+        $peristiwa->Status = StatusKotakKeluarPeristiwa::Selesai->value;
         $peristiwa->DiprosesPada = now()->toImmutable();
         $peristiwa->KesalahanTerakhir = null;
         $peristiwa->save();
@@ -90,10 +91,10 @@ final class LayananKotakKeluar
         $peristiwa->KesalahanTerakhir = mb_substr($kesalahan, 0, 1000);
 
         if ($percobaan >= KotakKeluarPeristiwa::BATAS_PERCOBAAN) {
-            $peristiwa->Status = KotakKeluarPeristiwa::STATUS_GAGAL;
+            $peristiwa->Status = StatusKotakKeluarPeristiwa::Gagal->value;
             $peristiwa->DiprosesPada = now()->toImmutable();
         } else {
-            $peristiwa->Status = KotakKeluarPeristiwa::STATUS_MENUNGGU;
+            $peristiwa->Status = StatusKotakKeluarPeristiwa::Menunggu->value;
             $peristiwa->TersediaPada = now()->addSeconds($this->jedaDetik($percobaan))->toImmutable();
         }
 

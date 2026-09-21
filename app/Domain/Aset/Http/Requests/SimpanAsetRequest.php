@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -52,11 +55,9 @@ final class SimpanAsetRequest extends FormRequest
             'SumberDana' => ['nullable', 'string', 'max:120'],
             'MetodePenyusutan' => ['nullable', 'string', 'max:40'],
             'UmurManfaatBulan' => ['nullable', 'integer', 'min:1'],
-            'Status' => ['required', 'string', Rule::in([
-                Aset::STATUS_AKTIF, Aset::STATUS_NONAKTIF, Aset::STATUS_DIPINJAM, Aset::STATUS_RUSAK, Aset::STATUS_DIARSIPKAN,
-            ])],
-            'Kondisi' => ['required', 'string', Rule::in([Aset::KONDISI_BAIK, Aset::KONDISI_PERLU_PERHATIAN, Aset::KONDISI_RUSAK])],
-            'TingkatKritis' => ['required', 'string', Rule::in([Aset::KRITIS_NORMAL, Aset::KRITIS_TINGGI, Aset::KRITIS_SANGAT_TINGGI])],
+            'Status' => ['required', 'string', Rule::enum(StatusAset::class)],
+            'Kondisi' => ['required', 'string', Rule::enum(KondisiAset::class)],
+            'TingkatKritis' => ['required', 'string', Rule::enum(TingkatKritisAset::class)],
             'NfcUid' => ['nullable', 'string', 'max:255'],
             'KodeBatang' => ['nullable', 'string', 'max:255'],
             'Catatan' => ['nullable', 'string'],

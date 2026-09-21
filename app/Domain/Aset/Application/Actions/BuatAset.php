@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Application\Actions;
 
+use App\Domain\Aset\Domain\Enums\JenisRiwayatLokasiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatLokasiAset;
@@ -52,7 +53,7 @@ final class BuatAset
                     'AsetId' => $aset->Id,
                     'LokasiAsalId' => null,
                     'LokasiTujuanId' => $aset->LokasiId,
-                    'JenisPerpindahan' => RiwayatLokasiAset::JENIS_REGISTRASI,
+                    'JenisPerpindahan' => JenisRiwayatLokasiAset::Registrasi->value,
                     'DipindahkanOleh' => $dibuatOleh,
                     'DipindahkanPada' => now(),
                 ]);

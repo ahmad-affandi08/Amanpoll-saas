@@ -9,6 +9,7 @@ use App\Domain\Persediaan\Application\Actions\BuatMutasiStok;
 use App\Domain\Persediaan\Application\Actions\HapusDetailMutasiStok;
 use App\Domain\Persediaan\Application\Actions\PostingMutasiStok;
 use App\Domain\Persediaan\Application\Actions\TambahDetailMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanDetailMutasiStokRequest;
 use App\Domain\Persediaan\Http\Requests\SimpanMutasiStokRequest;
 use App\Domain\Persediaan\Http\Resources\MutasiStokResource;
@@ -52,7 +53,7 @@ final class MutasiStokController extends Controller
 
         return Inertia::render('MutasiStok/Show', [
             'mutasiStok' => new MutasiStokResource($mutasiStok),
-            'sukuCadang' => SukuCadang::query()->where('Status', SukuCadang::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']),
+            'sukuCadang' => SukuCadang::query()->where('Status', StatusSukuCadang::Aktif->value)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']),
         ]);
     }
 

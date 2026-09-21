@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Notifikasi\Jobs;
 
 use App\Core\Organisasi\ScopeOrganisasi;
+use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\StatusNotifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Domain\Notifikasi\Notifications\NotifikasiUmum;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -32,18 +34,18 @@ final class KirimNotifikasi implements ShouldQueue
     public function handle(): void
     {
         $notifikasi = Notifikasi::withoutGlobalScope(ScopeOrganisasi::class)->find($this->notifikasiId);
-        if (! $notifikasi || $notifikasi->Status !== Notifikasi::STATUS_ANTRI) {
+        if (! $notifikasi || $notifikasi->Status !== StatusNotifikasi::Antri->value) {
             return;
         }
 
         $notifikasi->Percobaan++;
 
         try {
-            if ($notifikasi->Kanal === Notifikasi::KANAL_EMAIL) {
+            if ($notifikasi->Kanal === KanalNotifikasi::Email->value) {
                 $this->kirimEmail($notifikasi);
             }
 
-            $notifikasi->Status = Notifikasi::STATUS_TERKIRIM;
+            $notifikasi->Status = StatusNotifikasi::Terkirim->value;
             $notifikasi->DikirimPada = now()->toImmutable();
             $notifikasi->save();
         } catch (Throwable $e) {
@@ -61,7 +63,7 @@ final class KirimNotifikasi implements ShouldQueue
             return;
         }
 
-        $notifikasi->Status = Notifikasi::STATUS_GAGAL;
+        $notifikasi->Status = StatusNotifikasi::Gagal->value;
         $notifikasi->KesalahanTerakhir = $exception?->getMessage();
         $notifikasi->save();
     }

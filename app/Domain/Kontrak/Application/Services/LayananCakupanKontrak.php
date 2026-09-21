@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kontrak\Application\Services;
 
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\KontrakAset;
 use Carbon\CarbonImmutable;
@@ -26,7 +27,7 @@ final class LayananCakupanKontrak
 
         return Kontrak::query()
             ->with(['penyedia', 'tingkatLayanan'])
-            ->where('Status', Kontrak::STATUS_AKTIF)
+            ->where('Status', StatusKontrak::Aktif->value)
             ->where('MulaiPada', '<=', $pada)
             ->where('BerakhirPada', '>=', $pada)
             ->when($penyediaId !== null, fn ($query) => $query->where('PenyediaId', $penyediaId))

@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\SiklusAset;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\JenisRiwayatLokasiAset;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatLokasiAset;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\AlurPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
@@ -19,6 +24,12 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
+use App\Domain\SiklusAset\Domain\Enums\JenisPermintaanMutasiAset;
+use App\Domain\SiklusAset\Domain\Enums\MetodePengajuanPenghapusanAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusDetailPenghapusanAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusPengajuanPenghapusanAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusPermintaanMutasiAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusSerahTerimaAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
@@ -110,9 +121,9 @@ class SiklusAsetTest extends TestCase
             'LokasiId' => $lokasi->Id,
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Aset '.uniqid(),
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ], $atribut));
     }
 
@@ -125,7 +136,7 @@ class SiklusAsetTest extends TestCase
         $lokasiTujuan = Lokasi::create(['OrganisasiId' => $organisasi->Id, 'Nama' => 'B', 'Kode' => 'B-'.uniqid()]);
 
         $response = $this->actingAs($pengguna)->post('/mutasi-aset', [
-            'JenisMutasi' => PermintaanMutasiAset::JENIS_ANTAR_LOKASI,
+            'JenisMutasi' => JenisPermintaanMutasiAset::AntarLokasi->value,
             'LokasiAsalId' => $lokasiAsal->Id,
             'LokasiTujuanId' => $lokasiTujuan->Id,
         ]);
@@ -147,7 +158,7 @@ class SiklusAsetTest extends TestCase
 
         // Buat draft
         $responseBuat = $this->actingAs($peminta)->post('/mutasi-aset', [
-            'JenisMutasi' => PermintaanMutasiAset::JENIS_ANTAR_LOKASI,
+            'JenisMutasi' => JenisPermintaanMutasiAset::AntarLokasi->value,
             'LokasiAsalId' => $lokasiAsal->Id,
             'LokasiTujuanId' => $lokasiTujuan->Id,
         ]);
@@ -155,7 +166,7 @@ class SiklusAsetTest extends TestCase
 
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan = PermintaanMutasiAset::query()->firstOrFail();
-        $this->assertSame(PermintaanMutasiAset::STATUS_DRAFT, $permintaan->Status);
+        $this->assertSame(StatusPermintaanMutasiAset::Draft->value, $permintaan->Status);
         $this->assertNotEmpty($permintaan->Nomor);
 
         // Submit tanpa detail ditolak
@@ -173,15 +184,15 @@ class SiklusAsetTest extends TestCase
         $this->actingAs($peminta)->post("/mutasi-aset/{$permintaan->Id}/submit")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan->refresh();
-        $this->assertSame(PermintaanMutasiAset::STATUS_MENUNGGU, $permintaan->Status);
+        $this->assertSame(StatusPermintaanMutasiAset::Menunggu->value, $permintaan->Status);
         $permintaanPersetujuan = PermintaanPersetujuan::query()->where('EntitasId', $permintaan->Id)->firstOrFail();
-        $this->assertSame(PermintaanPersetujuan::STATUS_MENUNGGU, $permintaanPersetujuan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Menunggu->value, $permintaanPersetujuan->Status);
 
         // Approve via mesin Persetujuan generik
         $this->actingAs($penyetuju)->post("/persetujuan/permintaan/{$permintaanPersetujuan->Id}/setujui")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan->refresh();
-        $this->assertSame(PermintaanMutasiAset::STATUS_DISETUJUI, $permintaan->Status);
+        $this->assertSame(StatusPermintaanMutasiAset::Disetujui->value, $permintaan->Status);
         $this->assertNotNull($permintaan->DisetujuiPada);
 
         // Eksekusi memindahkan aset + menulis riwayat
@@ -189,9 +200,9 @@ class SiklusAsetTest extends TestCase
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan->refresh();
         $aset->refresh();
-        $this->assertSame(PermintaanMutasiAset::STATUS_SELESAI, $permintaan->Status);
+        $this->assertSame(StatusPermintaanMutasiAset::Selesai->value, $permintaan->Status);
         $this->assertSame($lokasiTujuan->Id, $aset->LokasiId);
-        $riwayat = RiwayatLokasiAset::query()->where('AsetId', $aset->Id)->where('JenisPerpindahan', RiwayatLokasiAset::JENIS_MUTASI)->first();
+        $riwayat = RiwayatLokasiAset::query()->where('AsetId', $aset->Id)->where('JenisPerpindahan', JenisRiwayatLokasiAset::Mutasi->value)->first();
         $this->assertNotNull($riwayat);
         $this->assertSame($lokasiAsal->Id, $riwayat->LokasiAsalId);
         $this->assertSame($lokasiTujuan->Id, $riwayat->LokasiTujuanId);
@@ -199,7 +210,7 @@ class SiklusAsetTest extends TestCase
         // Idempotency: eksekusi kedua kali tidak error dan tidak mengubah apa pun
         $this->actingAs($peminta)->post("/mutasi-aset/{$permintaan->Id}/eksekusi")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
-        $this->assertSame(1, RiwayatLokasiAset::query()->where('AsetId', $aset->Id)->where('JenisPerpindahan', RiwayatLokasiAset::JENIS_MUTASI)->count());
+        $this->assertSame(1, RiwayatLokasiAset::query()->where('AsetId', $aset->Id)->where('JenisPerpindahan', JenisRiwayatLokasiAset::Mutasi->value)->count());
     }
 
     public function test_mutasi_aset_ditolak_menyinkronkan_status(): void
@@ -215,7 +226,7 @@ class SiklusAsetTest extends TestCase
         $this->buatAlur($organisasi, 'PermintaanMutasiAset', $penyetuju);
 
         $this->actingAs($peminta)->post('/mutasi-aset', [
-            'JenisMutasi' => PermintaanMutasiAset::JENIS_ANTAR_LOKASI,
+            'JenisMutasi' => JenisPermintaanMutasiAset::AntarLokasi->value,
             'LokasiTujuanId' => $lokasiTujuan->Id,
         ]);
         $this->konteks()->tetapkan($organisasi->Id);
@@ -229,7 +240,7 @@ class SiklusAsetTest extends TestCase
 
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan->refresh();
-        $this->assertSame(PermintaanMutasiAset::STATUS_DITOLAK, $permintaan->Status);
+        $this->assertSame(StatusPermintaanMutasiAset::Ditolak->value, $permintaan->Status);
 
         // Eksekusi ditolak karena status bukan Disetujui
         $this->actingAs($peminta)->post("/mutasi-aset/{$permintaan->Id}/eksekusi")->assertStatus(422);
@@ -247,7 +258,7 @@ class SiklusAsetTest extends TestCase
         $this->buatNomorDokumen($organisasi, 'PermintaanMutasiAset');
         $this->buatAlur($organisasi, 'PermintaanMutasiAset', $penyetuju);
 
-        $this->actingAs($peminta)->post('/mutasi-aset', ['JenisMutasi' => PermintaanMutasiAset::JENIS_ANTAR_LOKASI, 'LokasiTujuanId' => $lokasiTujuan->Id]);
+        $this->actingAs($peminta)->post('/mutasi-aset', ['JenisMutasi' => JenisPermintaanMutasiAset::AntarLokasi->value, 'LokasiTujuanId' => $lokasiTujuan->Id]);
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan = PermintaanMutasiAset::query()->firstOrFail();
 
@@ -255,21 +266,21 @@ class SiklusAsetTest extends TestCase
         $this->actingAs($peminta)->post("/mutasi-aset/{$permintaan->Id}/batalkan")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan->refresh();
-        $this->assertSame(PermintaanMutasiAset::STATUS_DIBATALKAN, $permintaan->Status);
+        $this->assertSame(StatusPermintaanMutasiAset::Dibatalkan->value, $permintaan->Status);
 
         // Skenario kedua: batalkan setelah submit ikut membatalkan PermintaanPersetujuan
-        $this->actingAs($peminta)->post('/mutasi-aset', ['JenisMutasi' => PermintaanMutasiAset::JENIS_ANTAR_LOKASI, 'LokasiTujuanId' => $lokasiTujuan->Id]);
+        $this->actingAs($peminta)->post('/mutasi-aset', ['JenisMutasi' => JenisPermintaanMutasiAset::AntarLokasi->value, 'LokasiTujuanId' => $lokasiTujuan->Id]);
         $this->konteks()->tetapkan($organisasi->Id);
-        $permintaan2 = PermintaanMutasiAset::query()->where('Status', PermintaanMutasiAset::STATUS_DRAFT)->firstOrFail();
+        $permintaan2 = PermintaanMutasiAset::query()->where('Status', StatusPermintaanMutasiAset::Draft->value)->firstOrFail();
         $this->actingAs($peminta)->post("/mutasi-aset/{$permintaan2->Id}/detail", ['AsetId' => $aset->Id]);
         $this->actingAs($peminta)->post("/mutasi-aset/{$permintaan2->Id}/submit");
         $this->actingAs($peminta)->post("/mutasi-aset/{$permintaan2->Id}/batalkan")->assertRedirect();
 
         $this->konteks()->tetapkan($organisasi->Id);
         $permintaan2->refresh();
-        $this->assertSame(PermintaanMutasiAset::STATUS_DIBATALKAN, $permintaan2->Status);
+        $this->assertSame(StatusPermintaanMutasiAset::Dibatalkan->value, $permintaan2->Status);
         $permintaanPersetujuan = PermintaanPersetujuan::query()->where('EntitasId', $permintaan2->Id)->firstOrFail();
-        $this->assertSame(PermintaanPersetujuan::STATUS_DIBATALKAN, $permintaanPersetujuan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Dibatalkan->value, $permintaanPersetujuan->Status);
     }
 
     public function test_serah_terima_aset_diserahkan_lalu_diterima_memperbarui_kondisi_aset(): void
@@ -278,40 +289,40 @@ class SiklusAsetTest extends TestCase
         $pengguna = $this->buatPengguna($organisasi, self::IZIN_PENUH);
         $this->konteks()->tetapkan($organisasi->Id);
         $lokasi = Lokasi::create(['OrganisasiId' => $organisasi->Id, 'Nama' => 'A', 'Kode' => 'A-'.uniqid()]);
-        $aset = $this->buatAset($organisasi, $lokasi, ['Kondisi' => Aset::KONDISI_BAIK]);
+        $aset = $this->buatAset($organisasi, $lokasi, ['Kondisi' => KondisiAset::Baik->value]);
         $this->buatNomorDokumen($organisasi, 'SerahTerimaAset');
 
         $response = $this->actingAs($pengguna)->post('/serah-terima-aset', ['Jenis' => 'Peminjaman']);
         $response->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $serahTerima = SerahTerimaAset::query()->firstOrFail();
-        $this->assertSame(SerahTerimaAset::STATUS_DISERAHKAN, $serahTerima->Status);
+        $this->assertSame(StatusSerahTerimaAset::Diserahkan->value, $serahTerima->Status);
         $this->assertNotNull($serahTerima->DiserahkanPada);
 
         // Terima tanpa detail ditolak
         $this->actingAs($pengguna)->post("/serah-terima-aset/{$serahTerima->Id}/terima", [
-            'Detail' => [['AsetId' => $aset->Id, 'KondisiSaatDiterima' => Aset::KONDISI_RUSAK]],
+            'Detail' => [['AsetId' => $aset->Id, 'KondisiSaatDiterima' => KondisiAset::Rusak->value]],
         ])->assertStatus(422);
 
         $this->actingAs($pengguna)->post("/serah-terima-aset/{$serahTerima->Id}/detail", [
             'AsetId' => $aset->Id,
-            'KondisiSaatDiserahkan' => Aset::KONDISI_BAIK,
+            'KondisiSaatDiserahkan' => KondisiAset::Baik->value,
         ])->assertRedirect();
 
         $this->actingAs($pengguna)->post("/serah-terima-aset/{$serahTerima->Id}/terima", [
-            'Detail' => [['AsetId' => $aset->Id, 'KondisiSaatDiterima' => Aset::KONDISI_RUSAK]],
+            'Detail' => [['AsetId' => $aset->Id, 'KondisiSaatDiterima' => KondisiAset::Rusak->value]],
         ])->assertRedirect();
 
         $this->konteks()->tetapkan($organisasi->Id);
         $serahTerima->refresh();
         $aset->refresh();
-        $this->assertSame(SerahTerimaAset::STATUS_DITERIMA, $serahTerima->Status);
+        $this->assertSame(StatusSerahTerimaAset::Diterima->value, $serahTerima->Status);
         $this->assertNotNull($serahTerima->DiterimaPada);
-        $this->assertSame(Aset::KONDISI_RUSAK, $aset->Kondisi);
+        $this->assertSame(KondisiAset::Rusak->value, $aset->Kondisi);
 
         // Tidak bisa diterima dua kali
         $this->actingAs($pengguna)->post("/serah-terima-aset/{$serahTerima->Id}/terima", [
-            'Detail' => [['AsetId' => $aset->Id, 'KondisiSaatDiterima' => Aset::KONDISI_BAIK]],
+            'Detail' => [['AsetId' => $aset->Id, 'KondisiSaatDiterima' => KondisiAset::Baik->value]],
         ])->assertStatus(422);
     }
 
@@ -328,12 +339,12 @@ class SiklusAsetTest extends TestCase
 
         $response = $this->actingAs($pengaju)->post('/penghapusan-aset', [
             'Alasan' => 'Rusak berat, tidak ekonomis diperbaiki.',
-            'MetodePenghapusan' => PengajuanPenghapusanAset::METODE_DIMUSNAHKAN,
+            'MetodePenghapusan' => MetodePengajuanPenghapusanAset::Dimusnahkan->value,
         ]);
         $response->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $pengajuan = PengajuanPenghapusanAset::query()->firstOrFail();
-        $this->assertSame(PengajuanPenghapusanAset::STATUS_DRAFT, $pengajuan->Status);
+        $this->assertSame(StatusPengajuanPenghapusanAset::Draft->value, $pengajuan->Status);
 
         $this->actingAs($pengaju)->post("/penghapusan-aset/{$pengajuan->Id}/detail", ['AsetId' => $aset->Id])->assertRedirect();
         $this->actingAs($pengaju)->post("/penghapusan-aset/{$pengajuan->Id}/submit")->assertRedirect();
@@ -344,22 +355,22 @@ class SiklusAsetTest extends TestCase
 
         $this->konteks()->tetapkan($organisasi->Id);
         $pengajuan->refresh();
-        $this->assertSame(PengajuanPenghapusanAset::STATUS_DISETUJUI, $pengajuan->Status);
+        $this->assertSame(StatusPengajuanPenghapusanAset::Disetujui->value, $pengajuan->Status);
 
         $this->actingAs($pengaju)->post("/penghapusan-aset/{$pengajuan->Id}/eksekusi")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $pengajuan->refresh();
-        $this->assertSame(PengajuanPenghapusanAset::STATUS_SELESAI, $pengajuan->Status);
+        $this->assertSame(StatusPengajuanPenghapusanAset::Selesai->value, $pengajuan->Status);
         $this->assertNotNull($pengajuan->DiselesaikanPada);
 
         $detail = DetailPenghapusanAset::query()->where('PengajuanPenghapusanAsetId', $pengajuan->Id)->firstOrFail();
-        $this->assertSame(DetailPenghapusanAset::STATUS_SELESAI, $detail->Status);
+        $this->assertSame(StatusDetailPenghapusanAset::Selesai->value, $detail->Status);
 
         // Aset diarsipkan, soft-deleted, TIDAK hard-deleted (masih ada lewat withTrashed)
         $this->assertNull(Aset::query()->find($aset->Id));
         $asetTerhapus = Aset::withTrashed()->find($aset->Id);
         $this->assertNotNull($asetTerhapus);
-        $this->assertSame(Aset::STATUS_DIARSIPKAN, $asetTerhapus->Status);
+        $this->assertSame(StatusAset::Diarsipkan->value, $asetTerhapus->Status);
         $this->assertNotNull($asetTerhapus->DihapusPada);
     }
 
@@ -373,7 +384,7 @@ class SiklusAsetTest extends TestCase
         $lokasiTujuan = Lokasi::create(['OrganisasiId' => $organisasiA->Id, 'Nama' => 'B', 'Kode' => 'B-'.uniqid()]);
         $this->buatNomorDokumen($organisasiA, 'PermintaanMutasiAset');
 
-        $this->actingAs($penggunaA)->post('/mutasi-aset', ['JenisMutasi' => PermintaanMutasiAset::JENIS_ANTAR_LOKASI, 'LokasiTujuanId' => $lokasiTujuan->Id]);
+        $this->actingAs($penggunaA)->post('/mutasi-aset', ['JenisMutasi' => JenisPermintaanMutasiAset::AntarLokasi->value, 'LokasiTujuanId' => $lokasiTujuan->Id]);
         $this->konteks()->tetapkan($organisasiA->Id);
         $permintaan = PermintaanMutasiAset::query()->firstOrFail();
 

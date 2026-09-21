@@ -7,6 +7,7 @@ namespace App\Domain\Persediaan\Http\Controllers;
 use App\Domain\Persediaan\Application\Actions\BuatReservasiSukuCadang;
 use App\Domain\Persediaan\Application\Actions\KonsumsiReservasiSukuCadang;
 use App\Domain\Persediaan\Application\Actions\LepaskanReservasiSukuCadang;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanReservasiSukuCadangRequest;
 use App\Domain\Persediaan\Http\Resources\ReservasiSukuCadangResource;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
@@ -35,7 +36,7 @@ final class ReservasiSukuCadangController extends Controller
         return Inertia::render('ReservasiSukuCadang/Index', [
             'reservasi' => ReservasiSukuCadangResource::collection($reservasi),
             'gudang' => Gudang::query()->orderBy('Nama')->get(['Id', 'Nama']),
-            'sukuCadang' => SukuCadang::query()->where('Status', SukuCadang::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']),
+            'sukuCadang' => SukuCadang::query()->where('Status', StatusSukuCadang::Aktif->value)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']),
             'filter' => $filter,
         ]);
     }

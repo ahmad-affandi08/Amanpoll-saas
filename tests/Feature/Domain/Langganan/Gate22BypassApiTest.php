@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Langganan;
 
 use App\Domain\Aset\Application\Actions\BuatAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Langganan\Domain\Enums\StatusLangganan;
@@ -99,7 +100,7 @@ final class Gate22BypassApiTest extends KasusLangganan
             'KategoriAsetId' => $this->kategoriAsetId(),
             'KodeAset' => 'AST-LEBIH-'.uniqid(),
             'Nama' => 'Aset melebihi kuota',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
         ], (string) $this->buatPengguna()->Id);
     }
 
@@ -237,7 +238,7 @@ final class Gate22BypassApiTest extends KasusLangganan
             'KategoriAsetId' => $this->kategoriAsetId(),
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Aset uji',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
         ]);
     }
 

@@ -19,12 +19,6 @@ final class TagihanPenyedia extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_BELUM_DIBAYAR = 'BelumDibayar';
-
-    public const STATUS_DIBAYAR_SEBAGIAN = 'DibayarSebagian';
-
-    public const STATUS_DIBAYAR = 'Dibayar';
-
     protected $fillable = [
         'OrganisasiId',
         'PenyediaId',

@@ -16,10 +16,6 @@ final class MeterAset extends ModelDasar
 
     protected $table = 'MeterAset';
 
-    public const JENIS_KUMULATIF = 'Kumulatif';
-
-    public const JENIS_NON_KUMULATIF = 'NonKumulatif';
-
     public $timestamps = false;
 
     protected $fillable = [

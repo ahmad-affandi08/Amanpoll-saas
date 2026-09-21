@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Kepatuhan\Application\Services;
 
+use App\Domain\Kepatuhan\Domain\Enums\ArahSinkronisasiEksternal;
+use App\Domain\Kepatuhan\Domain\Enums\StatusIntegrasiEksternal;
+use App\Domain\Kepatuhan\Domain\Enums\StatusSinkronisasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SinkronisasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Services\PenyusunHeaderIntegrasi;
@@ -48,7 +51,7 @@ final class LayananSinkronisasiEksternal
             ->firstOrFail();
 
         $adapter = $this->registri->untuk($integrasi);
-        $hasil = $sinkronisasi->Arah === SinkronisasiEksternal::ARAH_TARIK
+        $hasil = $sinkronisasi->Arah === ArahSinkronisasiEksternal::Tarik->value
             ? $adapter->tarik($integrasi, $sinkronisasi->JenisProses)
             : $adapter->dorong($integrasi, $sinkronisasi->JenisProses);
 
@@ -65,10 +68,10 @@ final class LayananSinkronisasiEksternal
 
     public function mulai(IntegrasiEksternal $integrasi, string $jenisProses, string $arah): SinkronisasiEksternal
     {
-        if ($integrasi->Status !== IntegrasiEksternal::STATUS_AKTIF) {
+        if ($integrasi->Status !== StatusIntegrasiEksternal::Aktif->value) {
             throw new AturanBisnisDilanggar('Sinkronisasi hanya dapat dijalankan pada integrasi aktif.');
         }
-        if (! in_array($arah, [SinkronisasiEksternal::ARAH_TARIK, SinkronisasiEksternal::ARAH_DORONG], true)) {
+        if (! in_array($arah, [ArahSinkronisasiEksternal::Tarik->value, ArahSinkronisasiEksternal::Dorong->value], true)) {
             throw new AturanBisnisDilanggar('Arah sinkronisasi tidak dikenal.');
         }
 
@@ -77,7 +80,7 @@ final class LayananSinkronisasiEksternal
             'IntegrasiEksternalId' => $integrasi->Id,
             'JenisProses' => $jenisProses,
             'Arah' => $arah,
-            'Status' => SinkronisasiEksternal::STATUS_DIPROSES,
+            'Status' => StatusSinkronisasiEksternal::Diproses->value,
             'MulaiPada' => now(),
         ]);
     }
@@ -94,9 +97,9 @@ final class LayananSinkronisasiEksternal
         $sinkronisasi->SelesaiPada = now()->toImmutable();
         $sinkronisasi->PesanKesalahan = $pesanKesalahan === null ? null : $this->pesanAman($pesanKesalahan);
         $sinkronisasi->Status = match (true) {
-            $gagal === 0 && $pesanKesalahan === null => SinkronisasiEksternal::STATUS_BERHASIL,
-            $berhasil === 0 => SinkronisasiEksternal::STATUS_GAGAL,
-            default => SinkronisasiEksternal::STATUS_SEBAGIAN,
+            $gagal === 0 && $pesanKesalahan === null => StatusSinkronisasiEksternal::Berhasil->value,
+            $berhasil === 0 => StatusSinkronisasiEksternal::Gagal->value,
+            default => StatusSinkronisasiEksternal::Sebagian->value,
         };
         $sinkronisasi->save();
 
@@ -121,7 +124,7 @@ final class LayananSinkronisasiEksternal
                 ->get((string) $integrasi->UrlDasar);
 
             $berhasil = $respons->successful();
-            $integrasi->Status = $berhasil ? IntegrasiEksternal::STATUS_AKTIF : IntegrasiEksternal::STATUS_BERMASALAH;
+            $integrasi->Status = $berhasil ? StatusIntegrasiEksternal::Aktif->value : StatusIntegrasiEksternal::Bermasalah->value;
             $integrasi->save();
 
             return [
@@ -130,7 +133,7 @@ final class LayananSinkronisasiEksternal
                 'pesan' => $berhasil ? 'Koneksi berhasil.' : "Sistem tujuan membalas status {$respons->status()}.",
             ];
         } catch (Throwable $e) {
-            $integrasi->Status = IntegrasiEksternal::STATUS_BERMASALAH;
+            $integrasi->Status = StatusIntegrasiEksternal::Bermasalah->value;
             $integrasi->save();
 
             return ['berhasil' => false, 'status' => null, 'pesan' => $this->pesanAman($e->getMessage())];

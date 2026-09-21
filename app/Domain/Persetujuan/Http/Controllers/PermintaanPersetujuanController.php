@@ -10,6 +10,7 @@ use App\Domain\Persetujuan\Application\Actions\BatalkanPermintaanPersetujuan;
 use App\Domain\Persetujuan\Application\Actions\SetujuiPermintaanPersetujuan;
 use App\Domain\Persetujuan\Application\Actions\TolakPermintaanPersetujuan;
 use App\Domain\Persetujuan\Application\Services\LayananPenyetuju;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Http\Requests\SimpanKeputusanPersetujuanRequest;
 use App\Domain\Persetujuan\Http\Requests\SimpanPermintaanPersetujuanRequest;
 use App\Domain\Persetujuan\Http\Resources\PermintaanPersetujuanResource;
@@ -91,7 +92,7 @@ final class PermintaanPersetujuanController extends Controller
 
         $menunggu = PermintaanPersetujuan::query()
             ->with(['alurPersetujuan', 'dimintaOleh'])
-            ->where('Status', PermintaanPersetujuan::STATUS_MENUNGGU)
+            ->where('Status', StatusPermintaanPersetujuan::Menunggu->value)
             ->get();
 
         if ($menunggu->isEmpty()) {

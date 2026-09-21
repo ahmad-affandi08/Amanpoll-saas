@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Penyedia;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KontakPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\PenilaianPenyedia;
@@ -52,7 +53,7 @@ class PenyediaTest extends TestCase
         $penyedia = Penyedia::create([
             'Kode' => 'PYD-'.uniqid(),
             'Nama' => 'Penyedia Uji',
-            'Status' => Penyedia::STATUS_AKTIF,
+            'Status' => StatusPenyedia::Aktif->value,
         ]);
         $konteks->bersihkan();
 

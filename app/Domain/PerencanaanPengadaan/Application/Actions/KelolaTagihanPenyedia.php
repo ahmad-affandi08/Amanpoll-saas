@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusTagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPenerimaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
@@ -23,7 +25,7 @@ final class KelolaTagihanPenyedia
     /** @param array<string, mixed> $data */
     public function buat(PesananPembelian $po, array $data): TagihanPenyedia
     {
-        if (! in_array($po->Status, [PesananPembelian::STATUS_DITERIMA_SEBAGIAN, PesananPembelian::STATUS_DITERIMA_PENUH], true)) {
+        if (! in_array($po->Status, [StatusPesananPembelian::DiterimaSebagian->value, StatusPesananPembelian::DiterimaPenuh->value], true)) {
             throw new AturanBisnisDilanggar('Tagihan hanya dapat dicatat setelah ada penerimaan barang.');
         }
 
@@ -49,7 +51,7 @@ final class KelolaTagihanPenyedia
                 'Pajak' => $pajak->keString(),
                 'Total' => $total->keString(),
                 'Sisa' => $total->keString(),
-                'Status' => TagihanPenyedia::STATUS_BELUM_DIBAYAR,
+                'Status' => StatusTagihanPenyedia::BelumDibayar->value,
             ]);
             $this->audit->catat('TagihanPenyedia.Dicatat', 'TagihanPenyedia', $tagihan->Id, dataSesudah: array_merge($tagihan->toArray(), ['NilaiDiterima' => $batasDiterima->keString()]));
 

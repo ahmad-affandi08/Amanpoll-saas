@@ -6,6 +6,8 @@ namespace App\Domain\Persediaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Persediaan\Application\Services\LayananSaldoReservasi;
+use App\Domain\Persediaan\Domain\Enums\JenisMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -30,13 +32,13 @@ final class KonsumsiReservasiSukuCadang
 
     public function jalankan(ReservasiSukuCadang $reservasi, string $dipakaiOleh): ReservasiSukuCadang
     {
-        if ($reservasi->Status !== ReservasiSukuCadang::STATUS_AKTIF) {
+        if ($reservasi->Status !== StatusReservasiSukuCadang::Aktif->value) {
             throw new AturanBisnisDilanggar('Hanya reservasi aktif yang bisa dipakai.');
         }
 
         $this->transaksi->jalankan(function () use ($reservasi, $dipakaiOleh): void {
             $mutasiStok = $this->buatMutasiStok->jalankan([
-                'Jenis' => MutasiStok::JENIS_PENGELUARAN,
+                'Jenis' => JenisMutasiStok::Pengeluaran->value,
                 'GudangAsalId' => $reservasi->GudangId,
                 'GudangTujuanId' => null,
                 'ReferensiJenis' => 'ReservasiSukuCadang',
@@ -58,7 +60,7 @@ final class KonsumsiReservasiSukuCadang
                 -1 * (float) $reservasi->Jumlah,
             );
 
-            $reservasi->Status = ReservasiSukuCadang::STATUS_DIPAKAI;
+            $reservasi->Status = StatusReservasiSukuCadang::Dipakai->value;
             $reservasi->save();
         });
 

@@ -7,6 +7,7 @@ namespace App\Domain\SiklusAset\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Application\Services\LayananNomorDokumen;
+use App\Domain\SiklusAset\Domain\Enums\StatusPengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 
 final class BuatPengajuanPenghapusanAset
@@ -27,7 +28,7 @@ final class BuatPengajuanPenghapusanAset
         $data['Nomor'] = $this->layananNomorDokumen->berikutnya($this->konteksOrganisasi->wajibId(), self::JENIS_DOKUMEN);
         $data['DiajukanOleh'] = $diajukanOleh;
         $data['DiajukanPada'] = now();
-        $data['Status'] = PengajuanPenghapusanAset::STATUS_DRAFT;
+        $data['Status'] = StatusPengajuanPenghapusanAset::Draft->value;
 
         /** @var PengajuanPenghapusanAset $pengajuan */
         $pengajuan = PengajuanPenghapusanAset::create($data);

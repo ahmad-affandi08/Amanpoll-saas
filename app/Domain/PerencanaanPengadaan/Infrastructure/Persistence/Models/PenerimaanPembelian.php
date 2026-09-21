@@ -20,8 +20,6 @@ final class PenerimaanPembelian extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_DITERIMA = 'Diterima';
-
     protected $fillable = [
         'OrganisasiId',
         'Nomor',

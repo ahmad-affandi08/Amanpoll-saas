@@ -20,12 +20,6 @@ final class PenawaranPenyedia extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_DIAJUKAN = 'Diajukan';
-
-    public const STATUS_TERPILIH = 'Terpilih';
-
-    public const STATUS_DITOLAK = 'Ditolak';
-
     protected $fillable = [
         'OrganisasiId',
         'PermintaanPenawaranId',

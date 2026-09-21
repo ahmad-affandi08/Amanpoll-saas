@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Domain\IntegrasiAudit\Application\Services\LayananPanggilanBalikWeb;
+use App\Domain\IntegrasiAudit\Domain\Enums\StatusPengirimanPanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
 use Illuminate\Console\Command;
 
@@ -22,7 +23,7 @@ final class KirimUlangPanggilanBalikWeb extends Command
     {
         $daftar = PengirimanPanggilanBalikWeb::query()
             ->withoutGlobalScopes()
-            ->where('Status', PengirimanPanggilanBalikWeb::STATUS_GAGAL)
+            ->where('Status', StatusPengirimanPanggilanBalikWeb::Gagal->value)
             ->whereNotNull('JadwalCobaLagiPada')
             ->where('JadwalCobaLagiPada', '<=', now())
             ->orderBy('JadwalCobaLagiPada')

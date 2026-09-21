@@ -5,8 +5,16 @@ declare(strict_types=1);
 namespace Tests\Feature\Persediaan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
+use App\Domain\Persediaan\Domain\Enums\JenisMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\StatusGudang;
+use App\Domain\Persediaan\Domain\Enums\StatusMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\LokasiGudang;
@@ -81,7 +89,7 @@ class PersediaanTest extends TestCase
         return Gudang::create(array_merge([
             'Kode' => 'GDG-'.uniqid(),
             'Nama' => 'Gudang '.uniqid(),
-            'Status' => Gudang::STATUS_AKTIF,
+            'Status' => StatusGudang::Aktif->value,
         ], $atribut));
     }
 
@@ -94,7 +102,7 @@ class PersediaanTest extends TestCase
             'Nama' => 'Suku Cadang '.uniqid(),
             'SatuanDasar' => 'Pcs',
             'StokMinimum' => 0,
-            'Status' => SukuCadang::STATUS_AKTIF,
+            'Status' => StatusSukuCadang::Aktif->value,
         ], $atribut));
     }
 
@@ -104,7 +112,7 @@ class PersediaanTest extends TestCase
         $pengguna = $this->buatPengguna($organisasi, ['Stok.Kelola']);
         $this->konteks()->tetapkan($organisasi->Id);
 
-        $this->actingAs($pengguna)->post('/gudang', ['Kode' => 'GDG-01', 'Nama' => 'Gudang Utama', 'Status' => Gudang::STATUS_AKTIF])->assertRedirect();
+        $this->actingAs($pengguna)->post('/gudang', ['Kode' => 'GDG-01', 'Nama' => 'Gudang Utama', 'Status' => StatusGudang::Aktif->value])->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $gudang = Gudang::query()->firstOrFail();
 
@@ -137,7 +145,7 @@ class PersediaanTest extends TestCase
 
         $this->actingAs($pengguna)->post('/suku-cadang', [
             'Kode' => 'SC-01', 'Nama' => 'Filter Oli', 'KategoriSukuCadangId' => $kategori->Id,
-            'SatuanDasar' => 'Pcs', 'StokMinimum' => 5, 'Status' => SukuCadang::STATUS_AKTIF,
+            'SatuanDasar' => 'Pcs', 'StokMinimum' => 5, 'Status' => StatusSukuCadang::Aktif->value,
         ])->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $sukuCadang = SukuCadang::query()->firstOrFail();
@@ -155,7 +163,7 @@ class PersediaanTest extends TestCase
         $kategoriAset = KategoriAset::create(['Nama' => 'Pompa', 'Kode' => 'KAT-'.uniqid()]);
         $aset = Aset::create([
             'KategoriAsetId' => $kategoriAset->Id, 'KodeAset' => 'AST-'.uniqid(), 'Nama' => 'Pompa 1',
-            'Status' => Aset::STATUS_AKTIF, 'Kondisi' => Aset::KONDISI_BAIK, 'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value, 'Kondisi' => KondisiAset::Baik->value, 'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
         $sukuCadang = $this->buatSukuCadang($organisasi);
 
@@ -182,11 +190,11 @@ class PersediaanTest extends TestCase
         $sukuCadang = $this->buatSukuCadang($organisasi);
 
         $this->actingAs($pengguna)->post('/mutasi-stok', [
-            'Jenis' => MutasiStok::JENIS_PENERIMAAN, 'GudangTujuanId' => $gudang->Id,
+            'Jenis' => JenisMutasiStok::Penerimaan->value, 'GudangTujuanId' => $gudang->Id,
         ])->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $mutasi = MutasiStok::query()->firstOrFail();
-        $this->assertSame(MutasiStok::STATUS_DRAFT, $mutasi->Status);
+        $this->assertSame(StatusMutasiStok::Draft->value, $mutasi->Status);
 
         // Posting tanpa detail ditolak.
         $this->actingAs($pengguna)->post("/mutasi-stok/{$mutasi->Id}/posting")->assertStatus(422);
@@ -198,7 +206,7 @@ class PersediaanTest extends TestCase
         $this->actingAs($pengguna)->post("/mutasi-stok/{$mutasi->Id}/posting")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $mutasi->refresh();
-        $this->assertSame(MutasiStok::STATUS_DIPOSTING, $mutasi->Status);
+        $this->assertSame(StatusMutasiStok::Diposting->value, $mutasi->Status);
 
         $stok = StokSukuCadang::query()->where('GudangId', $gudang->Id)->where('SukuCadangId', $sukuCadang->Id)->firstOrFail();
         $this->assertSame('10.0000', $stok->JumlahTersedia);
@@ -219,7 +227,7 @@ class PersediaanTest extends TestCase
         $gudang = $this->buatGudang($organisasi);
         $sukuCadang = $this->buatSukuCadang($organisasi);
 
-        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => MutasiStok::JENIS_PENGELUARAN, 'GudangAsalId' => $gudang->Id])->assertRedirect();
+        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => JenisMutasiStok::Pengeluaran->value, 'GudangAsalId' => $gudang->Id])->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $mutasi = MutasiStok::query()->firstOrFail();
         $this->actingAs($pengguna)->post("/mutasi-stok/{$mutasi->Id}/detail", ['SukuCadangId' => $sukuCadang->Id, 'Jumlah' => 5])->assertRedirect();
@@ -228,7 +236,7 @@ class PersediaanTest extends TestCase
         $this->actingAs($pengguna)->post("/mutasi-stok/{$mutasi->Id}/posting")->assertStatus(422);
         $this->konteks()->tetapkan($organisasi->Id);
         $mutasi->refresh();
-        $this->assertSame(MutasiStok::STATUS_DRAFT, $mutasi->Status);
+        $this->assertSame(StatusMutasiStok::Draft->value, $mutasi->Status);
 
         // Aktifkan override di level organisasi + pengguna dengan izin Stok.Override.
         $this->konteks()->tetapkan($organisasi->Id);
@@ -237,7 +245,7 @@ class PersediaanTest extends TestCase
         $this->actingAs($penggunaOverride)->post("/mutasi-stok/{$mutasi->Id}/posting")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $mutasi->refresh();
-        $this->assertSame(MutasiStok::STATUS_DIPOSTING, $mutasi->Status);
+        $this->assertSame(StatusMutasiStok::Diposting->value, $mutasi->Status);
 
         $stok = StokSukuCadang::query()->where('GudangId', $gudang->Id)->where('SukuCadangId', $sukuCadang->Id)->firstOrFail();
         $this->assertSame('-5.0000', $stok->JumlahTersedia);
@@ -253,18 +261,18 @@ class PersediaanTest extends TestCase
         $sukuCadang = $this->buatSukuCadang($organisasi);
 
         // Isi stok awal di gudang asal lewat Penerimaan.
-        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => MutasiStok::JENIS_PENERIMAAN, 'GudangTujuanId' => $gudangAsal->Id]);
+        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => JenisMutasiStok::Penerimaan->value, 'GudangTujuanId' => $gudangAsal->Id]);
         $this->konteks()->tetapkan($organisasi->Id);
-        $penerimaan = MutasiStok::query()->where('Jenis', MutasiStok::JENIS_PENERIMAAN)->firstOrFail();
+        $penerimaan = MutasiStok::query()->where('Jenis', JenisMutasiStok::Penerimaan->value)->firstOrFail();
         $this->actingAs($pengguna)->post("/mutasi-stok/{$penerimaan->Id}/detail", ['SukuCadangId' => $sukuCadang->Id, 'Jumlah' => 20]);
         $this->actingAs($pengguna)->post("/mutasi-stok/{$penerimaan->Id}/posting");
 
         // Transfer 8 unit ke gudang tujuan.
         $this->actingAs($pengguna)->post('/mutasi-stok', [
-            'Jenis' => MutasiStok::JENIS_TRANSFER, 'GudangAsalId' => $gudangAsal->Id, 'GudangTujuanId' => $gudangTujuan->Id,
+            'Jenis' => JenisMutasiStok::Transfer->value, 'GudangAsalId' => $gudangAsal->Id, 'GudangTujuanId' => $gudangTujuan->Id,
         ]);
         $this->konteks()->tetapkan($organisasi->Id);
-        $transfer = MutasiStok::query()->where('Jenis', MutasiStok::JENIS_TRANSFER)->firstOrFail();
+        $transfer = MutasiStok::query()->where('Jenis', JenisMutasiStok::Transfer->value)->firstOrFail();
         $this->actingAs($pengguna)->post("/mutasi-stok/{$transfer->Id}/detail", ['SukuCadangId' => $sukuCadang->Id, 'Jumlah' => 8]);
         $this->actingAs($pengguna)->post("/mutasi-stok/{$transfer->Id}/posting")->assertRedirect();
 
@@ -283,11 +291,11 @@ class PersediaanTest extends TestCase
         $gudang = $this->buatGudang($organisasi);
 
         $this->actingAs($pengguna)->post('/mutasi-stok', [
-            'Jenis' => MutasiStok::JENIS_ADJUSTMENT, 'GudangAsalId' => $gudang->Id,
+            'Jenis' => JenisMutasiStok::Adjustment->value, 'GudangAsalId' => $gudang->Id,
         ])->assertStatus(422);
 
         $this->actingAs($pengguna)->post('/mutasi-stok', [
-            'Jenis' => MutasiStok::JENIS_ADJUSTMENT, 'GudangAsalId' => $gudang->Id, 'Catatan' => 'Stok opname: selisih ditemukan.',
+            'Jenis' => JenisMutasiStok::Adjustment->value, 'GudangAsalId' => $gudang->Id, 'Catatan' => 'Stok opname: selisih ditemukan.',
         ])->assertRedirect();
     }
 
@@ -299,7 +307,7 @@ class PersediaanTest extends TestCase
         $gudang = $this->buatGudang($organisasi);
         $sukuCadang = $this->buatSukuCadang($organisasi);
 
-        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => MutasiStok::JENIS_PENERIMAAN, 'GudangTujuanId' => $gudang->Id]);
+        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => JenisMutasiStok::Penerimaan->value, 'GudangTujuanId' => $gudang->Id]);
         $this->konteks()->tetapkan($organisasi->Id);
         $penerimaan = MutasiStok::query()->firstOrFail();
         $this->actingAs($pengguna)->post("/mutasi-stok/{$penerimaan->Id}/detail", ['SukuCadangId' => $sukuCadang->Id, 'Jumlah' => 10]);
@@ -315,7 +323,7 @@ class PersediaanTest extends TestCase
         ])->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $reservasi = ReservasiSukuCadang::query()->firstOrFail();
-        $this->assertSame(ReservasiSukuCadang::STATUS_AKTIF, $reservasi->Status);
+        $this->assertSame(StatusReservasiSukuCadang::Aktif->value, $reservasi->Status);
 
         // Reservasi kedua yang akan membuat total hold melebihi stok tersedia ditolak (cegah over-reservation).
         $this->actingAs($pengguna)->post('/reservasi-suku-cadang', [
@@ -326,15 +334,15 @@ class PersediaanTest extends TestCase
         $this->actingAs($pengguna)->post("/reservasi-suku-cadang/{$reservasi->Id}/konsumsi")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $reservasi->refresh();
-        $this->assertSame(ReservasiSukuCadang::STATUS_DIPAKAI, $reservasi->Status);
+        $this->assertSame(StatusReservasiSukuCadang::Dipakai->value, $reservasi->Status);
 
         $stok = StokSukuCadang::query()->where('GudangId', $gudang->Id)->where('SukuCadangId', $sukuCadang->Id)->firstOrFail();
         $this->assertSame('4.0000', $stok->JumlahTersedia);
         $this->assertSame('0.0000', $stok->JumlahDitahan);
 
-        $mutasiPengeluaran = MutasiStok::query()->where('Jenis', MutasiStok::JENIS_PENGELUARAN)->first();
+        $mutasiPengeluaran = MutasiStok::query()->where('Jenis', JenisMutasiStok::Pengeluaran->value)->first();
         $this->assertNotNull($mutasiPengeluaran);
-        $this->assertSame(MutasiStok::STATUS_DIPOSTING, $mutasiPengeluaran->Status);
+        $this->assertSame(StatusMutasiStok::Diposting->value, $mutasiPengeluaran->Status);
     }
 
     public function test_reservasi_lepaskan_mengembalikan_hold(): void
@@ -345,7 +353,7 @@ class PersediaanTest extends TestCase
         $gudang = $this->buatGudang($organisasi);
         $sukuCadang = $this->buatSukuCadang($organisasi);
 
-        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => MutasiStok::JENIS_PENERIMAAN, 'GudangTujuanId' => $gudang->Id]);
+        $this->actingAs($pengguna)->post('/mutasi-stok', ['Jenis' => JenisMutasiStok::Penerimaan->value, 'GudangTujuanId' => $gudang->Id]);
         $this->konteks()->tetapkan($organisasi->Id);
         $penerimaan = MutasiStok::query()->firstOrFail();
         $this->actingAs($pengguna)->post("/mutasi-stok/{$penerimaan->Id}/detail", ['SukuCadangId' => $sukuCadang->Id, 'Jumlah' => 10]);
@@ -358,7 +366,7 @@ class PersediaanTest extends TestCase
         $this->actingAs($pengguna)->post("/reservasi-suku-cadang/{$reservasi->Id}/lepaskan")->assertRedirect();
         $this->konteks()->tetapkan($organisasi->Id);
         $reservasi->refresh();
-        $this->assertSame(ReservasiSukuCadang::STATUS_DILEPAS, $reservasi->Status);
+        $this->assertSame(StatusReservasiSukuCadang::Dilepas->value, $reservasi->Status);
 
         $stok = StokSukuCadang::query()->where('GudangId', $gudang->Id)->where('SukuCadangId', $sukuCadang->Id)->firstOrFail();
         $this->assertSame('0.0000', $stok->JumlahDitahan);

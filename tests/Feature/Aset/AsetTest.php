@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature\Aset;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\JenisMeterAset;
+use App\Domain\Aset\Domain\Enums\JenisRelasiAset;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
@@ -91,9 +96,9 @@ class AsetTest extends TestCase
             'KategoriAsetId' => $kategori->Id,
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Aset Uji',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
             'KodeQr' => (string) Str::ulid(),
             'DibuatOleh' => $admin->Id,
             'Versi' => 1,
@@ -340,7 +345,7 @@ class AsetTest extends TestCase
 
         $konteks = app(KonteksOrganisasi::class);
         $konteks->tetapkan($organisasi->Id);
-        RelasiAset::create(['AsetIndukId' => $asetA->Id, 'AsetAnakId' => $asetB->Id, 'JenisRelasi' => RelasiAset::JENIS_KOMPONEN]);
+        RelasiAset::create(['AsetIndukId' => $asetA->Id, 'AsetAnakId' => $asetB->Id, 'JenisRelasi' => JenisRelasiAset::Komponen->value]);
         $konteks->bersihkan();
 
         $this->actingAs($pengguna)->post("/aset/{$asetB->Id}/relasi", [
@@ -413,7 +418,7 @@ class AsetTest extends TestCase
         $konteks = app(KonteksOrganisasi::class);
         $konteks->tetapkan($organisasi->Id);
         $meter = MeterAset::create([
-            'AsetId' => $aset->Id, 'Nama' => 'Jam Operasi', 'Satuan' => 'Jam', 'Jenis' => MeterAset::JENIS_KUMULATIF, 'NilaiAwal' => 0,
+            'AsetId' => $aset->Id, 'Nama' => 'Jam Operasi', 'Satuan' => 'Jam', 'Jenis' => JenisMeterAset::Kumulatif->value, 'NilaiAwal' => 0,
         ]);
         $konteks->bersihkan();
 
@@ -440,7 +445,7 @@ class AsetTest extends TestCase
         $konteks = app(KonteksOrganisasi::class);
         $konteks->tetapkan($organisasi->Id);
         $meter = MeterAset::create([
-            'AsetId' => $aset->Id, 'Nama' => 'Suhu', 'Satuan' => 'Celcius', 'Jenis' => MeterAset::JENIS_NON_KUMULATIF, 'NilaiAwal' => 0,
+            'AsetId' => $aset->Id, 'Nama' => 'Suhu', 'Satuan' => 'Celcius', 'Jenis' => JenisMeterAset::NonKumulatif->value, 'NilaiAwal' => 0,
         ]);
         $konteks->bersihkan();
 

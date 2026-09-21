@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Listeners;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusUsulanAset;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 
 final class SinkronkanStatusPersetujuanPerencanaanPengadaan
@@ -38,8 +43,8 @@ final class SinkronkanStatusPersetujuanPerencanaanPengadaan
         }
 
         $status = match ($permintaan->Status) {
-            PermintaanPersetujuan::STATUS_DISETUJUI => Anggaran::STATUS_AKTIF,
-            PermintaanPersetujuan::STATUS_DITOLAK => Anggaran::STATUS_DITOLAK,
+            StatusPermintaanPersetujuan::Disetujui->value => StatusAnggaran::Aktif->value,
+            StatusPermintaanPersetujuan::Ditolak->value => StatusAnggaran::Ditolak->value,
             default => null,
         };
 
@@ -58,8 +63,8 @@ final class SinkronkanStatusPersetujuanPerencanaanPengadaan
         }
 
         $status = match ($permintaan->Status) {
-            PermintaanPersetujuan::STATUS_DISETUJUI => UsulanAset::STATUS_DISETUJUI,
-            PermintaanPersetujuan::STATUS_DITOLAK => UsulanAset::STATUS_DITOLAK,
+            StatusPermintaanPersetujuan::Disetujui->value => StatusUsulanAset::Disetujui->value,
+            StatusPermintaanPersetujuan::Ditolak->value => StatusUsulanAset::Ditolak->value,
             default => null,
         };
 
@@ -77,8 +82,8 @@ final class SinkronkanStatusPersetujuanPerencanaanPengadaan
             return;
         }
         $status = match ($permintaan->Status) {
-            PermintaanPersetujuan::STATUS_DISETUJUI => PermintaanPembelian::STATUS_DISETUJUI,
-            PermintaanPersetujuan::STATUS_DITOLAK => PermintaanPembelian::STATUS_DITOLAK,
+            StatusPermintaanPersetujuan::Disetujui->value => StatusPermintaanPembelian::Disetujui->value,
+            StatusPermintaanPersetujuan::Ditolak->value => StatusPermintaanPembelian::Ditolak->value,
             default => null,
         };
         if ($status !== null) {
@@ -95,8 +100,8 @@ final class SinkronkanStatusPersetujuanPerencanaanPengadaan
             return;
         }
         $status = match ($permintaan->Status) {
-            PermintaanPersetujuan::STATUS_DISETUJUI => PesananPembelian::STATUS_DISETUJUI,
-            PermintaanPersetujuan::STATUS_DITOLAK => PesananPembelian::STATUS_DITOLAK,
+            StatusPermintaanPersetujuan::Disetujui->value => StatusPesananPembelian::Disetujui->value,
+            StatusPermintaanPersetujuan::Ditolak->value => StatusPesananPembelian::Ditolak->value,
             default => null,
         };
         if ($status !== null) {

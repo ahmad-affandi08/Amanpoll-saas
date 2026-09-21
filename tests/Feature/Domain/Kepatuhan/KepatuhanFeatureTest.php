@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Kepatuhan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Kepatuhan\Application\Actions\KelolaKepatuhanAset;
 use App\Domain\Kepatuhan\Application\Actions\KelolaSertifikasiAset;
 use App\Domain\Kepatuhan\Application\Actions\KelolaStandarKepatuhan;
 use App\Domain\Kepatuhan\Application\Services\LayananKepatuhan;
+use App\Domain\Kepatuhan\Domain\Enums\StatusKepatuhanAset;
+use App\Domain\Kepatuhan\Domain\Enums\StatusSertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
-use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\StandarKepatuhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
@@ -129,19 +133,19 @@ final class KepatuhanFeatureTest extends TestCase
         $aksi = app(KelolaKepatuhanAset::class);
 
         $hasil = $aksi->catatPemeriksaan($kepatuhan, [
-            'Status' => KepatuhanAset::STATUS_PATUH,
+            'Status' => StatusKepatuhanAset::Patuh->value,
             'TanggalPemeriksaan' => '2026-01-10',
             'Catatan' => 'Hasil uji memenuhi ambang.',
         ], $konteks['pengguna']->Id);
 
-        $this->assertSame(KepatuhanAset::STATUS_PATUH, $hasil->Status);
+        $this->assertSame(StatusKepatuhanAset::Patuh->value, $hasil->Status);
         $this->assertSame('2027-01-10', $hasil->BerlakuSampai?->toDateString());
         $this->assertSame($konteks['pengguna']->Id, $hasil->DiperiksaOleh);
 
         // Masa berlaku manual tidak boleh mendahului tanggal pemeriksaan.
         $this->assertThrows(
             fn () => $aksi->catatPemeriksaan($hasil->refresh(), [
-                'Status' => KepatuhanAset::STATUS_PATUH,
+                'Status' => StatusKepatuhanAset::Patuh->value,
                 'TanggalPemeriksaan' => '2026-02-01',
                 'BerlakuSampai' => '2026-01-01',
             ], $konteks['pengguna']->Id),
@@ -151,7 +155,7 @@ final class KepatuhanFeatureTest extends TestCase
         // Pemeriksaan bertanggal masa depan ditolak.
         $this->assertThrows(
             fn () => $aksi->catatPemeriksaan($hasil->refresh(), [
-                'Status' => KepatuhanAset::STATUS_PATUH,
+                'Status' => StatusKepatuhanAset::Patuh->value,
                 'TanggalPemeriksaan' => CarbonImmutable::today()->addDay()->toDateString(),
             ], $konteks['pengguna']->Id),
             AturanBisnisDilanggar::class,
@@ -164,12 +168,12 @@ final class KepatuhanFeatureTest extends TestCase
         $kepatuhan = $this->buatKewajiban($konteks, intervalHari: null);
 
         $hasil = app(KelolaKepatuhanAset::class)->catatPemeriksaan($kepatuhan, [
-            'Status' => KepatuhanAset::STATUS_PATUH,
+            'Status' => StatusKepatuhanAset::Patuh->value,
             'TanggalPemeriksaan' => '2026-01-10',
         ], $konteks['pengguna']->Id);
 
         $this->assertNull($hasil->BerlakuSampai);
-        $this->assertSame(KepatuhanAset::STATUS_PATUH, app(LayananKepatuhan::class)->statusEfektif($hasil));
+        $this->assertSame(StatusKepatuhanAset::Patuh->value, app(LayananKepatuhan::class)->statusEfektif($hasil));
     }
 
     public function test_18_04_sertifikat_diterbitkan_diperpanjang_dan_dicabut(): void
@@ -184,7 +188,7 @@ final class KepatuhanFeatureTest extends TestCase
             'TerbitPada' => '2026-01-01',
             'BerlakuSampai' => '2026-12-31',
         ]);
-        $this->assertSame(SertifikasiAset::STATUS_AKTIF, $sertifikat->Status);
+        $this->assertSame(StatusSertifikasiAset::Aktif->value, $sertifikat->Status);
 
         // Masa berlaku mendahului tanggal terbit ditolak.
         $this->assertThrows(
@@ -197,7 +201,7 @@ final class KepatuhanFeatureTest extends TestCase
         );
 
         $dicabut = $aksi->cabut($sertifikat, 'Ditemukan ketidaksesuaian data uji.');
-        $this->assertSame(SertifikasiAset::STATUS_DICABUT, $dicabut->Status);
+        $this->assertSame(StatusSertifikasiAset::Dicabut->value, $dicabut->Status);
         $this->assertThrows(
             fn () => $aksi->ubah($dicabut->refresh(), ['JenisSertifikasi' => 'Coba ubah']),
             AturanBisnisDilanggar::class,
@@ -218,7 +222,7 @@ final class KepatuhanFeatureTest extends TestCase
             ->kirimPeringatan($konteks['organisasi']->Id, CarbonImmutable::parse('2026-04-02'));
 
         $this->assertSame(1, $hasil['sertifikatKedaluwarsa']);
-        $this->assertSame(SertifikasiAset::STATUS_KEDALUWARSA, $sertifikat->refresh()->Status);
+        $this->assertSame(StatusSertifikasiAset::Kedaluwarsa->value, $sertifikat->refresh()->Status);
         $this->assertSame(1, $this->jumlahNotifikasi($konteks, 'SertifikasiAset', 'Sertifikasi.Kedaluwarsa'));
 
         $diperpanjang = app(KelolaSertifikasiAset::class)->ubah($sertifikat->refresh(), [
@@ -227,7 +231,7 @@ final class KepatuhanFeatureTest extends TestCase
             'TerbitPada' => '2026-01-01',
             'BerlakuSampai' => CarbonImmutable::today()->addYear()->toDateString(),
         ]);
-        $this->assertSame(SertifikasiAset::STATUS_AKTIF, $diperpanjang->Status);
+        $this->assertSame(StatusSertifikasiAset::Aktif->value, $diperpanjang->Status);
     }
 
     public function test_18_04_peringatan_dikirim_pada_ambang_dan_tidak_digandakan(): void
@@ -235,7 +239,7 @@ final class KepatuhanFeatureTest extends TestCase
         $konteks = $this->siapkanKonteks();
         $kepatuhan = $this->buatKewajiban($konteks, intervalHari: 90);
         app(KelolaKepatuhanAset::class)->catatPemeriksaan($kepatuhan, [
-            'Status' => KepatuhanAset::STATUS_PATUH,
+            'Status' => StatusKepatuhanAset::Patuh->value,
             'TanggalPemeriksaan' => '2026-01-01',
             'BerlakuSampai' => '2026-04-01',
         ], $konteks['pengguna']->Id);
@@ -258,7 +262,7 @@ final class KepatuhanFeatureTest extends TestCase
 
         // Setelah lewat, status kewajiban ditandai kedaluwarsa.
         $layanan->kirimPeringatan($konteks['organisasi']->Id, CarbonImmutable::parse('2026-04-05'));
-        $this->assertSame(KepatuhanAset::STATUS_KEDALUWARSA, $kepatuhan->refresh()->Status);
+        $this->assertSame(StatusKepatuhanAset::Kedaluwarsa->value, $kepatuhan->refresh()->Status);
     }
 
     public function test_18_04_ringkasan_dasbor_menghitung_kepatuhan_dan_sertifikat(): void
@@ -266,7 +270,7 @@ final class KepatuhanFeatureTest extends TestCase
         $konteks = $this->siapkanKonteks();
         $kepatuhan = $this->buatKewajiban($konteks, intervalHari: 365);
         app(KelolaKepatuhanAset::class)->catatPemeriksaan($kepatuhan, [
-            'Status' => KepatuhanAset::STATUS_PATUH,
+            'Status' => StatusKepatuhanAset::Patuh->value,
             'TanggalPemeriksaan' => CarbonImmutable::today()->toDateString(),
         ], $konteks['pengguna']->Id);
 
@@ -336,9 +340,9 @@ final class KepatuhanFeatureTest extends TestCase
             'KategoriAsetId' => $kategori->Id,
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Panel Utama',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
 
         return ['organisasi' => $organisasi, 'pengguna' => $pengguna, 'aset' => $aset];

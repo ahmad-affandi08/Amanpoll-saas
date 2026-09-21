@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Application\Actions;
 
+use App\Domain\SiklusAset\Domain\Enums\StatusDetailMutasiAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusPermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -13,7 +15,7 @@ final class TambahDetailMutasiAset
 {
     public function jalankan(PermintaanMutasiAset $permintaan, string $asetId, ?string $catatan): DetailMutasiAset
     {
-        if ($permintaan->Status !== PermintaanMutasiAset::STATUS_DRAFT) {
+        if ($permintaan->Status !== StatusPermintaanMutasiAset::Draft->value) {
             throw new AturanBisnisDilanggar('Detail aset hanya boleh ditambahkan selagi permintaan masih berupa draft.');
         }
 
@@ -25,7 +27,7 @@ final class TambahDetailMutasiAset
             'OrganisasiId' => $permintaan->OrganisasiId,
             'PermintaanMutasiAsetId' => $permintaan->Id,
             'AsetId' => $asetId,
-            'Status' => DetailMutasiAset::STATUS_MENUNGGU,
+            'Status' => StatusDetailMutasiAset::Menunggu->value,
             'Catatan' => $catatan,
         ]);
     }

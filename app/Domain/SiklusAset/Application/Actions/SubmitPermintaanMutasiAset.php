@@ -7,6 +7,7 @@ namespace App\Domain\SiklusAset\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Domain\Persetujuan\Application\Actions\AjukanPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\AlurPersetujuan;
+use App\Domain\SiklusAset\Domain\Enums\StatusPermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -23,7 +24,7 @@ final class SubmitPermintaanMutasiAset
 
     public function jalankan(PermintaanMutasiAset $permintaan, string $dimintaOleh): PermintaanMutasiAset
     {
-        if ($permintaan->Status !== PermintaanMutasiAset::STATUS_DRAFT) {
+        if ($permintaan->Status !== StatusPermintaanMutasiAset::Draft->value) {
             throw new AturanBisnisDilanggar('Hanya permintaan berstatus draft yang bisa disubmit.');
         }
 
@@ -43,7 +44,7 @@ final class SubmitPermintaanMutasiAset
         $this->transaksi->jalankan(function () use ($permintaan, $alurPersetujuan, $dimintaOleh): void {
             $this->ajukanPermintaanPersetujuan->jalankan($alurPersetujuan, $permintaan->Id, null, $dimintaOleh);
 
-            $permintaan->Status = PermintaanMutasiAset::STATUS_MENUNGGU;
+            $permintaan->Status = StatusPermintaanMutasiAset::Menunggu->value;
             $permintaan->save();
         });
 

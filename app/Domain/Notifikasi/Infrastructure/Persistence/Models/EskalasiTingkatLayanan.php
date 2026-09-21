@@ -16,10 +16,6 @@ final class EskalasiTingkatLayanan extends ModelDasar
 {
     use MilikOrganisasi;
 
-    public const PEMICU_MENJELANG = 'Menjelang';
-
-    public const PEMICU_TERLEWATI = 'Terlewati';
-
     protected $table = 'EskalasiTingkatLayanan';
 
     public $timestamps = false;

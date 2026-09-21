@@ -17,12 +17,6 @@ final class RiwayatLokasiAset extends ModelDasar
 
     protected $table = 'RiwayatLokasiAset';
 
-    public const JENIS_REGISTRASI = 'Registrasi';
-
-    public const JENIS_MANUAL = 'Manual';
-
-    public const JENIS_MUTASI = 'Mutasi';
-
     public $timestamps = false;
 
     protected $fillable = [

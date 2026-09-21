@@ -24,10 +24,6 @@ final class Penyedia extends ModelDasar
 
     public const DELETED_AT = 'DihapusPada';
 
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_NONAKTIF = 'Nonaktif';
-
     protected $fillable = [
         'OrganisasiId',
         'Kode',

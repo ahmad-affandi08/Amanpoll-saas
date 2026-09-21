@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Persediaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Persediaan\Domain\Enums\StatusMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
@@ -14,11 +15,11 @@ final class BatalkanMutasiStok
 
     public function jalankan(MutasiStok $mutasiStok): MutasiStok
     {
-        if ($mutasiStok->Status !== MutasiStok::STATUS_DRAFT) {
+        if ($mutasiStok->Status !== StatusMutasiStok::Draft->value) {
             throw new AturanBisnisDilanggar('Hanya mutasi berstatus draft yang bisa dibatalkan. Mutasi yang sudah diposting mengubah saldo stok dan tidak dapat dibatalkan begitu saja.');
         }
 
-        $mutasiStok->Status = MutasiStok::STATUS_DIBATALKAN;
+        $mutasiStok->Status = StatusMutasiStok::Dibatalkan->value;
         $mutasiStok->save();
 
         $this->layananAudit->catat(

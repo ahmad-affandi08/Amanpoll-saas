@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Http\Requests;
 
-use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
+use App\Domain\SiklusAset\Domain\Enums\MetodePengajuanPenghapusanAset;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,13 +22,7 @@ final class SimpanPengajuanPenghapusanAsetRequest extends FormRequest
     {
         return [
             'Alasan' => ['required', 'string'],
-            'MetodePenghapusan' => ['nullable', 'string', Rule::in([
-                PengajuanPenghapusanAset::METODE_DIJUAL,
-                PengajuanPenghapusanAset::METODE_DIMUSNAHKAN,
-                PengajuanPenghapusanAset::METODE_HIBAH,
-                PengajuanPenghapusanAset::METODE_HILANG,
-                PengajuanPenghapusanAset::METODE_LAINNYA,
-            ])],
+            'MetodePenghapusan' => ['nullable', 'string', Rule::enum(MetodePengajuanPenghapusanAset::class)],
         ];
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\PrioritasUsulanAset;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,7 +32,7 @@ final class SimpanUsulanAsetRequest extends FormRequest
             'Alasan' => [$wajib, 'string', 'max:5000'],
             'JenisKebutuhan' => ['nullable', 'string', 'max:60'],
             'TahunKebutuhan' => ['nullable', 'integer', 'between:2000,2100'],
-            'Prioritas' => ['sometimes', 'string', Rule::in(UsulanAset::DAFTAR_PRIORITAS)],
+            'Prioritas' => ['sometimes', 'string', Rule::enum(PrioritasUsulanAset::class)],
         ];
     }
 }

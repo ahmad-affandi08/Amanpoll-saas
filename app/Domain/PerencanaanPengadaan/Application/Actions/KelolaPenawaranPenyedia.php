@@ -6,6 +6,8 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananKalkulasiPengadaan;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPenawaranPenyedia;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPenawaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPenawaran;
@@ -23,7 +25,7 @@ final class KelolaPenawaranPenyedia
     /** @param array<string, mixed> $data */
     public function catat(PermintaanPenawaran $rfq, array $data): PenawaranPenyedia
     {
-        if ($rfq->Status !== PermintaanPenawaran::STATUS_DIBUKA) {
+        if ($rfq->Status !== StatusPermintaanPenawaran::Dibuka->value) {
             throw new AturanBisnisDilanggar('Penawaran hanya dapat dicatat pada RFQ yang sedang dibuka.');
         }
         if ($rfq->BatasPenawaran !== null && now()->isAfter($rfq->BatasPenawaran)) {
@@ -46,7 +48,7 @@ final class KelolaPenawaranPenyedia
                 'Pajak' => '0.00',
                 'Diskon' => '0.00',
                 'Total' => '0.00',
-                'Status' => PenawaranPenyedia::STATUS_DIAJUKAN,
+                'Status' => StatusPenawaranPenyedia::Diajukan->value,
                 'Catatan' => $data['Catatan'] ?? null,
             ]);
 
@@ -84,14 +86,14 @@ final class KelolaPenawaranPenyedia
         return $this->transaksi->jalankan(function () use ($penawaran): PenawaranPenyedia {
             $terkunci = PenawaranPenyedia::query()->lockForUpdate()->findOrFail($penawaran->Id);
             $rfq = PermintaanPenawaran::query()->lockForUpdate()->findOrFail($terkunci->PermintaanPenawaranId);
-            if ($rfq->Status !== PermintaanPenawaran::STATUS_DIBUKA || $terkunci->Status !== PenawaranPenyedia::STATUS_DIAJUKAN) {
+            if ($rfq->Status !== StatusPermintaanPenawaran::Dibuka->value || $terkunci->Status !== StatusPenawaranPenyedia::Diajukan->value) {
                 throw new AturanBisnisDilanggar('Hanya penawaran aktif pada RFQ terbuka yang dapat dipilih.');
             }
 
-            PenawaranPenyedia::query()->where('PermintaanPenawaranId', $rfq->Id)->whereKeyNot($terkunci->Id)->update(['Status' => PenawaranPenyedia::STATUS_DITOLAK]);
-            $terkunci->Status = PenawaranPenyedia::STATUS_TERPILIH;
+            PenawaranPenyedia::query()->where('PermintaanPenawaranId', $rfq->Id)->whereKeyNot($terkunci->Id)->update(['Status' => StatusPenawaranPenyedia::Ditolak->value]);
+            $terkunci->Status = StatusPenawaranPenyedia::Terpilih->value;
             $terkunci->save();
-            $rfq->Status = PermintaanPenawaran::STATUS_DITUTUP;
+            $rfq->Status = StatusPermintaanPenawaran::Ditutup->value;
             $rfq->save();
             $this->audit->catat('PenawaranPenyedia.Dipilih', 'PenawaranPenyedia', $terkunci->Id, dataSesudah: ['Status' => $terkunci->Status, 'Total' => $terkunci->Total]);
 

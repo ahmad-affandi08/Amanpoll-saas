@@ -6,6 +6,8 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\PrioritasUsulanAset;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusUsulanAset;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenilaianUsulanAset;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persetujuan\Application\Actions\AjukanPermintaanPersetujuan;
@@ -54,8 +56,8 @@ final class KelolaUsulanAset
                 'Alasan' => $data['Alasan'],
                 'JenisKebutuhan' => $data['JenisKebutuhan'] ?? null,
                 'TahunKebutuhan' => $data['TahunKebutuhan'] ?? null,
-                'Prioritas' => $data['Prioritas'] ?? UsulanAset::PRIORITAS_NORMAL,
-                'Status' => UsulanAset::STATUS_DRAFT,
+                'Prioritas' => $data['Prioritas'] ?? PrioritasUsulanAset::Normal->value,
+                'Status' => StatusUsulanAset::Draft->value,
                 'DiajukanOleh' => $penggunaId,
             ]);
 
@@ -70,7 +72,7 @@ final class KelolaUsulanAset
      */
     public function perbarui(UsulanAset $usulan, array $data): UsulanAset
     {
-        if (! in_array($usulan->Status, [UsulanAset::STATUS_DRAFT, UsulanAset::STATUS_DITOLAK], true)) {
+        if (! in_array($usulan->Status, [StatusUsulanAset::Draft->value, StatusUsulanAset::Ditolak->value], true)) {
             throw new AturanBisnisDilanggar('Hanya usulan draft atau ditolak yang dapat diubah.');
         }
 
@@ -86,7 +88,7 @@ final class KelolaUsulanAset
             'JenisKebutuhan' => array_key_exists('JenisKebutuhan', $data) ? $data['JenisKebutuhan'] : $usulan->JenisKebutuhan,
             'TahunKebutuhan' => array_key_exists('TahunKebutuhan', $data) ? $data['TahunKebutuhan'] : $usulan->TahunKebutuhan,
             'Prioritas' => $data['Prioritas'] ?? $usulan->Prioritas,
-            'Status' => UsulanAset::STATUS_DRAFT,
+            'Status' => StatusUsulanAset::Draft->value,
         ])->save();
 
         $this->audit->catat('UsulanAset.Diperbarui', 'UsulanAset', $usulan->Id, $sebelum, $usulan->fresh()->toArray());
@@ -96,12 +98,12 @@ final class KelolaUsulanAset
 
     public function submit(UsulanAset $usulan): UsulanAset
     {
-        if ($usulan->Status !== UsulanAset::STATUS_DRAFT) {
+        if ($usulan->Status !== StatusUsulanAset::Draft->value) {
             throw new AturanBisnisDilanggar('Hanya usulan draft yang dapat disubmit.');
         }
 
         $usulan->forceFill([
-            'Status' => UsulanAset::STATUS_DIAJUKAN,
+            'Status' => StatusUsulanAset::Diajukan->value,
             'DiajukanPada' => now(),
         ])->save();
 
@@ -115,7 +117,7 @@ final class KelolaUsulanAset
      */
     public function nilai(UsulanAset $usulan, array $data, string $penggunaId): PenilaianUsulanAset
     {
-        if ($usulan->Status !== UsulanAset::STATUS_DIAJUKAN) {
+        if ($usulan->Status !== StatusUsulanAset::Diajukan->value) {
             throw new AturanBisnisDilanggar('Penilaian hanya dapat dicatat pada usulan yang telah disubmit.');
         }
 
@@ -142,7 +144,7 @@ final class KelolaUsulanAset
 
     public function ajukanPersetujuan(UsulanAset $usulan, string $penggunaId): UsulanAset
     {
-        if ($usulan->Status !== UsulanAset::STATUS_DIAJUKAN) {
+        if ($usulan->Status !== StatusUsulanAset::Diajukan->value) {
             throw new AturanBisnisDilanggar('Hanya usulan yang telah dinilai yang dapat diajukan untuk persetujuan.');
         }
 
@@ -161,7 +163,7 @@ final class KelolaUsulanAset
 
         return $this->transaksi->jalankan(function () use ($usulan, $penggunaId, $alur): UsulanAset {
             $this->ajukanPersetujuan->jalankan($alur, $usulan->Id, ['Prioritas' => $usulan->Prioritas], $penggunaId);
-            $usulan->Status = UsulanAset::STATUS_MENUNGGU_PERSETUJUAN;
+            $usulan->Status = StatusUsulanAset::MenungguPersetujuan->value;
             $usulan->save();
 
             $this->audit->catat('UsulanAset.DiajukanUntukPersetujuan', 'UsulanAset', $usulan->Id, dataSesudah: ['Status' => $usulan->Status]);
@@ -172,7 +174,7 @@ final class KelolaUsulanAset
 
     public function hapus(UsulanAset $usulan): void
     {
-        if (! in_array($usulan->Status, [UsulanAset::STATUS_DRAFT, UsulanAset::STATUS_DITOLAK], true)) {
+        if (! in_array($usulan->Status, [StatusUsulanAset::Draft->value, StatusUsulanAset::Ditolak->value], true)) {
             throw new AturanBisnisDilanggar('Hanya usulan draft atau ditolak yang dapat dihapus.');
         }
 

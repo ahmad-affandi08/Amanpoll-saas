@@ -8,6 +8,8 @@ use App\Core\Audit\LayananAudit;
 use App\Core\Entitas\RegistriEntitas;
 use App\Domain\Persetujuan\Application\Services\LayananNotifikasiPersetujuan;
 use App\Domain\Persetujuan\Application\Services\LayananPenyetuju;
+use App\Domain\Persetujuan\Domain\Enums\JenisKeputusanPersetujuan;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\KeputusanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
@@ -36,7 +38,7 @@ final class TolakPermintaanPersetujuan
 
     public function jalankan(PermintaanPersetujuan $permintaan, Pengguna $penyetuju, ?string $catatan): PermintaanPersetujuan
     {
-        if ($permintaan->Status !== PermintaanPersetujuan::STATUS_MENUNGGU) {
+        if ($permintaan->Status !== StatusPermintaanPersetujuan::Menunggu->value) {
             throw new AturanBisnisDilanggar('Permintaan persetujuan ini sudah selesai.');
         }
 
@@ -60,12 +62,12 @@ final class TolakPermintaanPersetujuan
                 'PermintaanPersetujuanId' => $permintaan->Id,
                 'TahapPersetujuanId' => $tahap->Id,
                 'PenyetujuId' => $penyetuju->Id,
-                'Keputusan' => KeputusanPersetujuan::KEPUTUSAN_DITOLAK,
+                'Keputusan' => JenisKeputusanPersetujuan::Ditolak->value,
                 'Catatan' => $catatan,
                 'DiputuskanPada' => now(),
             ]);
 
-            $permintaan->Status = PermintaanPersetujuan::STATUS_DITOLAK;
+            $permintaan->Status = StatusPermintaanPersetujuan::Ditolak->value;
             $permintaan->SelesaiPada = now()->toImmutable();
             $permintaan->save();
         });

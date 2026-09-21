@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Persetujuan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Persetujuan\Domain\Enums\JenisKeputusanPersetujuan;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\AlurPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\KeputusanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
@@ -145,7 +147,7 @@ class PersetujuanEngineTest extends TestCase
         $konteks->bersihkan();
 
         $this->assertNotNull($permintaan);
-        $this->assertSame(PermintaanPersetujuan::STATUS_MENUNGGU, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Menunggu->value, $permintaan->Status);
         $this->assertSame(1, $permintaan->TahapSaatIni);
     }
 
@@ -204,10 +206,10 @@ class PersetujuanEngineTest extends TestCase
         $keputusan = KeputusanPersetujuan::where('PermintaanPersetujuanId', $permintaan->Id)->first();
         $konteks->bersihkan();
 
-        $this->assertSame(PermintaanPersetujuan::STATUS_DISETUJUI, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Disetujui->value, $permintaan->Status);
         $this->assertNotNull($permintaan->SelesaiPada);
         $this->assertNotNull($keputusan);
-        $this->assertSame(KeputusanPersetujuan::KEPUTUSAN_DISETUJUI, $keputusan->Keputusan);
+        $this->assertSame(JenisKeputusanPersetujuan::Disetujui->value, $keputusan->Keputusan);
     }
 
     public function test_setujui_lanjut_ke_tahap_berikutnya_pada_alur_dua_tahap(): void
@@ -238,7 +240,7 @@ class PersetujuanEngineTest extends TestCase
         $konteks->tetapkan($organisasi->Id);
         $permintaan->refresh();
         $konteks->bersihkan();
-        $this->assertSame(PermintaanPersetujuan::STATUS_MENUNGGU, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Menunggu->value, $permintaan->Status);
         $this->assertSame(2, $permintaan->TahapSaatIni);
 
         // Penyetuju tahap 1 tidak berhak di tahap 2.
@@ -249,7 +251,7 @@ class PersetujuanEngineTest extends TestCase
         $konteks->tetapkan($organisasi->Id);
         $permintaan->refresh();
         $konteks->bersihkan();
-        $this->assertSame(PermintaanPersetujuan::STATUS_DISETUJUI, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Disetujui->value, $permintaan->Status);
     }
 
     public function test_bukan_penyetuju_yang_sah_ditolak(): void
@@ -327,7 +329,7 @@ class PersetujuanEngineTest extends TestCase
         $permintaan->refresh();
         $konteks->bersihkan();
 
-        $this->assertSame(PermintaanPersetujuan::STATUS_DITOLAK, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Ditolak->value, $permintaan->Status);
         $this->assertNotNull($permintaan->SelesaiPada);
     }
 
@@ -351,7 +353,7 @@ class PersetujuanEngineTest extends TestCase
         $konteks->tetapkan($organisasi->Id);
         $permintaan->refresh();
         $konteks->bersihkan();
-        $this->assertSame(PermintaanPersetujuan::STATUS_DIBATALKAN, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Dibatalkan->value, $permintaan->Status);
     }
 
     public function test_penyetuju_berbasis_peran(): void
@@ -448,14 +450,14 @@ class PersetujuanEngineTest extends TestCase
         $konteks->tetapkan($organisasi->Id);
         $permintaan->refresh();
         $konteks->bersihkan();
-        $this->assertSame(PermintaanPersetujuan::STATUS_MENUNGGU, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Menunggu->value, $permintaan->Status);
 
         $this->actingAs($penyetuju2)->post("/persetujuan/permintaan/{$permintaan->Id}/setujui")->assertSessionDoesntHaveErrors();
 
         $konteks->tetapkan($organisasi->Id);
         $permintaan->refresh();
         $konteks->bersihkan();
-        $this->assertSame(PermintaanPersetujuan::STATUS_DISETUJUI, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPersetujuan::Disetujui->value, $permintaan->Status);
     }
 
     public function test_inbox_menampilkan_permintaan_yang_perlu_ditindak(): void

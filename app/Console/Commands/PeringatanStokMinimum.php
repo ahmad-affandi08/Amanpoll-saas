@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
-use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +34,7 @@ final class PeringatanStokMinimum extends Command
             $sukuCadangDiBawahMinimum = DB::table('SukuCadang as sc')
                 ->leftJoin('StokSukuCadang as s', 's.SukuCadangId', '=', 'sc.Id')
                 ->where('sc.OrganisasiId', $organisasi->Id)
-                ->where('sc.Status', SukuCadang::STATUS_AKTIF)
+                ->where('sc.Status', StatusSukuCadang::Aktif->value)
                 ->whereNull('sc.DihapusPada')
                 ->groupBy('sc.Id', 'sc.Nama', 'sc.Kode', 'sc.StokMinimum')
                 ->havingRaw('COALESCE(SUM(s.JumlahTersedia), 0) - COALESCE(SUM(s.JumlahDitahan), 0) <= sc.StokMinimum')

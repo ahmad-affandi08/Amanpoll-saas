@@ -6,6 +6,7 @@ namespace App\Domain\Persediaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Persediaan\Application\Services\LayananSaldoReservasi;
+use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -20,7 +21,7 @@ final class LepaskanReservasiSukuCadang
 
     public function jalankan(ReservasiSukuCadang $reservasi): ReservasiSukuCadang
     {
-        if ($reservasi->Status !== ReservasiSukuCadang::STATUS_AKTIF) {
+        if ($reservasi->Status !== StatusReservasiSukuCadang::Aktif->value) {
             throw new AturanBisnisDilanggar('Hanya reservasi aktif yang bisa dilepas.');
         }
 
@@ -32,7 +33,7 @@ final class LepaskanReservasiSukuCadang
                 -1 * (float) $reservasi->Jumlah,
             );
 
-            $reservasi->Status = ReservasiSukuCadang::STATUS_DILEPAS;
+            $reservasi->Status = StatusReservasiSukuCadang::Dilepas->value;
             $reservasi->save();
         });
 

@@ -6,6 +6,7 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Domain\Persetujuan\Application\Actions\AjukanPermintaanPersetujuan;
@@ -40,7 +41,7 @@ final class KelolaAnggaran
                 'Tahun' => $data['Tahun'],
                 'MataUang' => $data['MataUang'] ?? 'IDR',
                 'Jumlah' => $data['Jumlah'],
-                'Status' => Anggaran::STATUS_DRAFT,
+                'Status' => StatusAnggaran::Draft->value,
             ]);
 
             $this->audit->catat('Anggaran.Dibuat', 'Anggaran', $anggaran->Id, dataSesudah: $anggaran->toArray());
@@ -54,7 +55,7 @@ final class KelolaAnggaran
      */
     public function perbarui(Anggaran $anggaran, array $data): Anggaran
     {
-        if (! in_array($anggaran->Status, [Anggaran::STATUS_DRAFT, Anggaran::STATUS_DITOLAK], true)) {
+        if (! in_array($anggaran->Status, [StatusAnggaran::Draft->value, StatusAnggaran::Ditolak->value], true)) {
             throw new AturanBisnisDilanggar('Hanya anggaran draft atau ditolak yang dapat diubah.');
         }
 
@@ -81,7 +82,7 @@ final class KelolaAnggaran
                 'Tahun' => $tahun,
                 'MataUang' => $data['MataUang'] ?? $anggaran->MataUang,
                 'Jumlah' => $jumlah->keString(),
-                'Status' => Anggaran::STATUS_DRAFT,
+                'Status' => StatusAnggaran::Draft->value,
             ])->save();
 
             $this->audit->catat('Anggaran.Diperbarui', 'Anggaran', $anggaran->Id, $sebelum, $anggaran->fresh()->toArray());
@@ -92,7 +93,7 @@ final class KelolaAnggaran
 
     public function ajukan(Anggaran $anggaran, string $penggunaId): Anggaran
     {
-        if ($anggaran->Status !== Anggaran::STATUS_DRAFT) {
+        if ($anggaran->Status !== StatusAnggaran::Draft->value) {
             throw new AturanBisnisDilanggar('Hanya anggaran draft yang dapat diajukan.');
         }
 
@@ -108,9 +109,9 @@ final class KelolaAnggaran
 
             if ($alur) {
                 $this->ajukanPersetujuan->jalankan($alur, $anggaran->Id, ['Jumlah' => $anggaran->Jumlah], $penggunaId);
-                $anggaran->Status = Anggaran::STATUS_MENUNGGU_PERSETUJUAN;
+                $anggaran->Status = StatusAnggaran::MenungguPersetujuan->value;
             } else {
-                $anggaran->Status = Anggaran::STATUS_AKTIF;
+                $anggaran->Status = StatusAnggaran::Aktif->value;
             }
 
             $anggaran->save();
@@ -122,7 +123,7 @@ final class KelolaAnggaran
 
     public function hapus(Anggaran $anggaran): void
     {
-        if (! in_array($anggaran->Status, [Anggaran::STATUS_DRAFT, Anggaran::STATUS_DITOLAK], true)) {
+        if (! in_array($anggaran->Status, [StatusAnggaran::Draft->value, StatusAnggaran::Ditolak->value], true)) {
             throw new AturanBisnisDilanggar('Hanya anggaran draft atau ditolak yang dapat dihapus.');
         }
 

@@ -6,6 +6,7 @@ namespace App\Domain\SiklusAset\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\SiklusAset\Domain\Enums\StatusSerahTerimaAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -22,7 +23,7 @@ final class TerimaSerahTerimaAset
      */
     public function jalankan(SerahTerimaAset $serahTerima, array $kondisiPerAset): SerahTerimaAset
     {
-        if ($serahTerima->Status !== SerahTerimaAset::STATUS_DISERAHKAN) {
+        if ($serahTerima->Status !== StatusSerahTerimaAset::Diserahkan->value) {
             throw new AturanBisnisDilanggar('Dokumen ini sudah diterima sebelumnya.');
         }
 
@@ -51,7 +52,7 @@ final class TerimaSerahTerimaAset
                 }
             }
 
-            $serahTerima->Status = SerahTerimaAset::STATUS_DITERIMA;
+            $serahTerima->Status = StatusSerahTerimaAset::Diterima->value;
             $serahTerima->DiterimaPada = now()->toImmutable();
             $serahTerima->save();
         });

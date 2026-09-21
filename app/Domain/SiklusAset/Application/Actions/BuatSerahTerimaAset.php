@@ -7,6 +7,7 @@ namespace App\Domain\SiklusAset\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Application\Services\LayananNomorDokumen;
+use App\Domain\SiklusAset\Domain\Enums\StatusSerahTerimaAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 
 final class BuatSerahTerimaAset
@@ -25,7 +26,7 @@ final class BuatSerahTerimaAset
     public function jalankan(array $data): SerahTerimaAset
     {
         $data['Nomor'] = $this->layananNomorDokumen->berikutnya($this->konteksOrganisasi->wajibId(), self::JENIS_DOKUMEN);
-        $data['Status'] = SerahTerimaAset::STATUS_DISERAHKAN;
+        $data['Status'] = StatusSerahTerimaAset::Diserahkan->value;
         $data['DiserahkanPada'] = now();
 
         /** @var SerahTerimaAset $serahTerima */

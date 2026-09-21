@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Application\Queries;
 
+use App\Domain\Aset\Domain\Enums\KondisiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
@@ -88,7 +89,7 @@ final class QueryAset implements PenyediaKpi
             ->all();
 
         return HasilKpi::persen(
-            (float) ($perKondisi[Aset::KONDISI_BAIK] ?? 0),
+            (float) ($perKondisi[KondisiAset::Baik->value] ?? 0),
             (float) $perKondisi->sum(),
             $rincian,
         );

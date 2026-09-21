@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Notifikasi\Application\Services;
 
+use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\StatusNotifikasi;
 use App\Domain\Notifikasi\Domain\Repositories\NotifikasiRepository;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\PreferensiNotifikasi;
@@ -19,7 +21,7 @@ final class LayananNotifikasi
     /**
      * @var list<string>
      */
-    private const KANAL_BAWAAN = [Notifikasi::KANAL_IN_APP];
+    private const KANAL_BAWAAN = [KanalNotifikasi::InApp->value];
 
     public function __construct(private readonly NotifikasiRepository $notifikasiRepository) {}
 
@@ -48,7 +50,7 @@ final class LayananNotifikasi
                 'Isi' => $isi,
                 'JenisEntitas' => $jenisEntitas,
                 'EntitasId' => $entitasId,
-                'Status' => Notifikasi::STATUS_ANTRI,
+                'Status' => StatusNotifikasi::Antri->value,
                 'JadwalKirimPada' => now(),
             ]));
 

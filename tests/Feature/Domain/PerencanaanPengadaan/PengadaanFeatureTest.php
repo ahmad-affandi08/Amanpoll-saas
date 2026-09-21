@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\PerencanaanPengadaan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
+use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\PerencanaanPengadaan\Application\Actions\CatatPembayaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Application\Actions\CatatPenerimaanPembelian;
@@ -18,15 +22,23 @@ use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPosAnggaran;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaTagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananSaldoAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\JenisTransaksiAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPenawaranPenyedia;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPenawaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusTagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPenawaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TransaksiAnggaran;
+use App\Domain\Persediaan\Domain\Enums\StatusGudang;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
@@ -66,7 +78,7 @@ final class PengadaanFeatureTest extends TestCase
             fn () => $aksi->submit($permintaan, $konteks['pengguna']->Id),
             AturanBisnisDilanggar::class,
         );
-        $this->assertSame(PermintaanPembelian::STATUS_DRAFT, $permintaan->refresh()->Status);
+        $this->assertSame(StatusPermintaanPembelian::Draft->value, $permintaan->refresh()->Status);
     }
 
     public function test_16_01_permintaan_pembelian_menolak_deskripsi_item_duplikat(): void
@@ -88,7 +100,7 @@ final class PengadaanFeatureTest extends TestCase
         $konteks = $this->siapkanKonteks();
         $permintaan = $this->buatPermintaanDisetujui($konteks);
 
-        $this->assertSame(PermintaanPembelian::STATUS_DISETUJUI, $permintaan->Status);
+        $this->assertSame(StatusPermintaanPembelian::Disetujui->value, $permintaan->Status);
     }
 
     public function test_16_02_dan_16_03_rfq_mengumpulkan_penawaran_lalu_memilih_pemenang(): void
@@ -103,7 +115,7 @@ final class PengadaanFeatureTest extends TestCase
             'BatasPenawaran' => now()->addDays(7),
             'PenyediaIds' => [$konteks['penyedia']->Id, $penyediaLain->Id],
         ], $konteks['pengguna']->Id);
-        $this->assertSame(PermintaanPenawaran::STATUS_DRAFT, $rfq->Status);
+        $this->assertSame(StatusPermintaanPenawaran::Draft->value, $rfq->Status);
         $this->assertSame(2, $rfq->penyediaDiundang()->count());
 
         // Penawaran hanya boleh masuk setelah RFQ dibuka.
@@ -113,7 +125,7 @@ final class PengadaanFeatureTest extends TestCase
         );
 
         $kelolaRfq->buka($rfq);
-        $this->assertSame(PermintaanPenawaran::STATUS_DIBUKA, $rfq->refresh()->Status);
+        $this->assertSame(StatusPermintaanPenawaran::Dibuka->value, $rfq->refresh()->Status);
 
         $penawaranMurah = $kelolaPenawaran->catat($rfq, $this->dataPenawaran($permintaan, $konteks['penyedia']->Id, '90000', '4800000'));
         $penawaranMahal = $kelolaPenawaran->catat($rfq, $this->dataPenawaran($permintaan, $penyediaLain->Id, '95000', '5000000'));
@@ -130,9 +142,9 @@ final class PengadaanFeatureTest extends TestCase
 
         $kelolaPenawaran->pilih($penawaranMurah);
 
-        $this->assertSame(PenawaranPenyedia::STATUS_TERPILIH, $penawaranMurah->refresh()->Status);
-        $this->assertSame(PenawaranPenyedia::STATUS_DITOLAK, $penawaranMahal->refresh()->Status);
-        $this->assertSame(PermintaanPenawaran::STATUS_DITUTUP, $rfq->refresh()->Status);
+        $this->assertSame(StatusPenawaranPenyedia::Terpilih->value, $penawaranMurah->refresh()->Status);
+        $this->assertSame(StatusPenawaranPenyedia::Ditolak->value, $penawaranMahal->refresh()->Status);
+        $this->assertSame(StatusPermintaanPenawaran::Ditutup->value, $rfq->refresh()->Status);
     }
 
     public function test_16_04_pesanan_pembelian_menyalin_penawaran_dan_mencatat_komitmen_anggaran(): void
@@ -140,14 +152,14 @@ final class PengadaanFeatureTest extends TestCase
         $konteks = $this->siapkanKonteks();
         $po = $this->buatPesananDikirim($konteks);
 
-        $this->assertSame(PesananPembelian::STATUS_DIKIRIM, $po->Status);
+        $this->assertSame(StatusPesananPembelian::Dikirim->value, $po->Status);
         $this->assertSame('10500000.00', $po->Total);
         $this->assertSame(2, $po->detail()->count());
 
         $komitmen = TransaksiAnggaran::query()
             ->where('ReferensiJenis', 'PesananPembelian')
             ->where('ReferensiId', $po->Id)
-            ->where('Jenis', TransaksiAnggaran::JENIS_KOMITMEN)
+            ->where('Jenis', JenisTransaksiAnggaran::Komitmen->value)
             ->get();
         $this->assertCount(1, $komitmen);
         $this->assertSame('10500000.00', $komitmen->first()->Jumlah);
@@ -160,7 +172,7 @@ final class PengadaanFeatureTest extends TestCase
         $this->assertSame(1, TransaksiAnggaran::query()
             ->where('ReferensiJenis', 'PesananPembelian')
             ->where('ReferensiId', $po->Id)
-            ->where('Jenis', TransaksiAnggaran::JENIS_KOMITMEN)
+            ->where('Jenis', JenisTransaksiAnggaran::Komitmen->value)
             ->count());
     }
 
@@ -194,7 +206,7 @@ final class PengadaanFeatureTest extends TestCase
         ], $konteks['pengguna']->Id);
 
         $this->assertSame(2, $penerimaan->detail()->count());
-        $this->assertSame(PesananPembelian::STATUS_DITERIMA_SEBAGIAN, $po->refresh()->Status);
+        $this->assertSame(StatusPesananPembelian::DiterimaSebagian->value, $po->refresh()->Status);
         $this->assertSame('4.0000', $this->stokTersedia($konteks));
         $this->assertSame(1, Aset::query()->where('NomorSeri', 'SN-001')->count());
 
@@ -232,7 +244,7 @@ final class PengadaanFeatureTest extends TestCase
             ],
         ], $konteks['pengguna']->Id);
 
-        $this->assertSame(PesananPembelian::STATUS_DITERIMA_PENUH, $po->refresh()->Status);
+        $this->assertSame(StatusPesananPembelian::DiterimaPenuh->value, $po->refresh()->Status);
         $this->assertSame('10.0000', $this->stokTersedia($konteks));
         $this->assertSame(2, Aset::query()->whereIn('NomorSeri', ['SN-001', 'SN-002'])->count());
     }
@@ -273,7 +285,7 @@ final class PengadaanFeatureTest extends TestCase
 
         $this->assertSame('5100000.00', $tagihan->Total);
         $this->assertSame('5100000.00', $tagihan->Sisa);
-        $this->assertSame(TagihanPenyedia::STATUS_BELUM_DIBAYAR, $tagihan->Status);
+        $this->assertSame(StatusTagihanPenyedia::BelumDibayar->value, $tagihan->Status);
 
         $catatPembayaran = app(CatatPembayaranPenyedia::class);
         $catatPembayaran->jalankan($tagihan, [
@@ -285,7 +297,7 @@ final class PengadaanFeatureTest extends TestCase
 
         $tagihan->refresh();
         $this->assertSame('3100000.00', $tagihan->Sisa);
-        $this->assertSame(TagihanPenyedia::STATUS_DIBAYAR_SEBAGIAN, $tagihan->Status);
+        $this->assertSame(StatusTagihanPenyedia::DibayarSebagian->value, $tagihan->Status);
 
         // Pembayaran menjadi realisasi dan melepas komitmen PO senilai yang sama.
         $saldo = app(LayananSaldoAnggaran::class)->hitung($konteks['pos']->refresh());
@@ -311,7 +323,7 @@ final class PengadaanFeatureTest extends TestCase
 
         $tagihan->refresh();
         $this->assertSame('0.00', $tagihan->Sisa);
-        $this->assertSame(TagihanPenyedia::STATUS_DIBAYAR, $tagihan->Status);
+        $this->assertSame(StatusTagihanPenyedia::Dibayar->value, $tagihan->Status);
         $this->assertSame(2, $tagihan->pembayaran()->count());
 
         $saldoAkhir = app(LayananSaldoAnggaran::class)->hitung($konteks['pos']->refresh());
@@ -341,7 +353,7 @@ final class PengadaanFeatureTest extends TestCase
             'Pajak' => '0.00',
             'Total' => '100000.00',
             'Sisa' => '100000.00',
-            'Status' => TagihanPenyedia::STATUS_BELUM_DIBAYAR,
+            'Status' => StatusTagihanPenyedia::BelumDibayar->value,
         ]);
 
         app(KonteksOrganisasi::class)->tetapkan($konteks['organisasi']->Id);
@@ -406,7 +418,7 @@ final class PengadaanFeatureTest extends TestCase
             'Jumlah' => $jumlahAnggaran,
         ]);
         app(KelolaAnggaran::class)->ajukan($anggaran, $pengguna->Id);
-        $this->assertSame(Anggaran::STATUS_AKTIF, $anggaran->refresh()->Status);
+        $this->assertSame(StatusAnggaran::Aktif->value, $anggaran->refresh()->Status);
 
         $kategoriAset = KategoriAset::create(['Kode' => 'KAT-'.uniqid(), 'Nama' => 'Perangkat Jaringan']);
 
@@ -416,22 +428,22 @@ final class PengadaanFeatureTest extends TestCase
             'unit' => $unit,
             'pos' => $pos->refresh(),
             'penyedia' => $this->buatPenyedia($organisasi),
-            'gudang' => Gudang::create(['Kode' => 'GDG-'.uniqid(), 'Nama' => 'Gudang Pusat', 'Status' => Gudang::STATUS_AKTIF]),
+            'gudang' => Gudang::create(['Kode' => 'GDG-'.uniqid(), 'Nama' => 'Gudang Pusat', 'Status' => StatusGudang::Aktif->value]),
             'sukuCadang' => SukuCadang::create([
                 'Kode' => 'SC-'.uniqid(),
                 'Nama' => 'Kabel Fiber',
                 'SatuanDasar' => 'Pcs',
                 'StokMinimum' => 0,
-                'Status' => SukuCadang::STATUS_AKTIF,
+                'Status' => StatusSukuCadang::Aktif->value,
             ]),
             'asetReferensi' => Aset::create([
                 'UnitOrganisasiId' => $unit->Id,
                 'KategoriAsetId' => $kategoriAset->Id,
                 'KodeAset' => 'AST-'.uniqid(),
                 'Nama' => 'Switch Referensi',
-                'Status' => Aset::STATUS_AKTIF,
-                'Kondisi' => Aset::KONDISI_BAIK,
-                'TingkatKritis' => Aset::KRITIS_NORMAL,
+                'Status' => StatusAset::Aktif->value,
+                'Kondisi' => KondisiAset::Baik->value,
+                'TingkatKritis' => TingkatKritisAset::Normal->value,
             ]),
         ];
     }
@@ -496,7 +508,7 @@ final class PengadaanFeatureTest extends TestCase
         $alur = $this->buatAlurPersetujuan($konteks['organisasi'], 'PermintaanPembelian', $penyetuju);
         $permintaan = $this->buatPermintaanDenganDuaItem($konteks);
         app(KelolaPermintaanPembelian::class)->submit($permintaan, $konteks['pengguna']->Id);
-        $this->assertSame(PermintaanPembelian::STATUS_MENUNGGU_PERSETUJUAN, $permintaan->refresh()->Status);
+        $this->assertSame(StatusPermintaanPembelian::MenungguPersetujuan->value, $permintaan->refresh()->Status);
 
         $permintaanPersetujuan = PermintaanPersetujuan::query()
             ->where('AlurPersetujuanId', $alur->Id)
@@ -549,7 +561,7 @@ final class PengadaanFeatureTest extends TestCase
             ->firstOrFail();
         app(SetujuiPermintaanPersetujuan::class)->jalankan($permintaanPersetujuan, $penyetuju, 'PO disetujui.');
         $this->actingAs($konteks['pengguna']);
-        $this->assertSame(PesananPembelian::STATUS_DISETUJUI, $po->refresh()->Status);
+        $this->assertSame(StatusPesananPembelian::Disetujui->value, $po->refresh()->Status);
 
         return $aksi->kirim($po);
     }
@@ -612,7 +624,7 @@ final class PengadaanFeatureTest extends TestCase
         return Penyedia::create([
             'Kode' => 'PNY-'.uniqid(),
             'Nama' => 'Penyedia '.uniqid(),
-            'Status' => Penyedia::STATUS_AKTIF,
+            'Status' => StatusPenyedia::Aktif->value,
         ]);
     }
 

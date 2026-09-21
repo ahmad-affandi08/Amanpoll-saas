@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Http\Controllers;
 
 use App\Core\Izin\PemeriksaIzin;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Application\Actions\BuatPerintahKerja;
 use App\Domain\Pemeliharaan\Application\Actions\UbahStatusPerintahKerja;
@@ -57,7 +58,7 @@ final class PerintahKerjaController extends Controller
         return Inertia::render('PerintahKerja/Index', [
             'perintahKerja' => PerintahKerjaResource::collection($daftar),
             'keluhan' => Keluhan::query()->whereIn('Status', ['Diterima', 'Diproses'])->latest('DilaporkanPada')->get(['Id', 'Nomor', 'Judul', 'Prioritas', 'LokasiId', 'AsetId']),
-            'aset' => Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']),
+            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']),
             'lokasi' => Lokasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
             'filter' => $filter,
             'dapatMengelola' => $dapatMengelola,

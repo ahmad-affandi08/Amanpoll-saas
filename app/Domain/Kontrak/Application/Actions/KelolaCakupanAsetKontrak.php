@@ -6,6 +6,7 @@ namespace App\Domain\Kontrak\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\KontrakAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -22,7 +23,7 @@ final class KelolaCakupanAsetKontrak
     /** @param array<string, mixed> $data */
     public function lampirkan(Kontrak $kontrak, array $data): KontrakAset
     {
-        if ($kontrak->Status !== Kontrak::STATUS_AKTIF) {
+        if ($kontrak->Status !== StatusKontrak::Aktif->value) {
             throw new AturanBisnisDilanggar('Aset hanya dapat dilampirkan pada kontrak berstatus aktif.');
         }
 

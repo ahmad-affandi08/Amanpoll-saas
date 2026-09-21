@@ -7,6 +7,7 @@ namespace App\Domain\Persediaan\Http\Controllers;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Persediaan\Application\Actions\BuatKompatibilitasSukuCadang;
 use App\Domain\Persediaan\Application\Actions\HapusKompatibilitasSukuCadang;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanKompatibilitasSukuCadangRequest;
 use App\Domain\Persediaan\Http\Resources\SukuCadangResource;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KompatibilitasSukuCadang;
@@ -51,7 +52,7 @@ final class KompatibilitasSukuCadangController extends Controller
 
         $sukuCadang = SukuCadang::query()
             ->whereIn('Id', $sukuCadangId)
-            ->where('Status', SukuCadang::STATUS_AKTIF)
+            ->where('Status', StatusSukuCadang::Aktif->value)
             ->orderBy('Nama')
             ->get();
 

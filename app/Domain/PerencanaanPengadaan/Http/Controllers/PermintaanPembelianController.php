@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusRencanaPengadaan;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanDetailPermintaanPembelianRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPermintaanPembelianRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\PermintaanPembelianResource;
@@ -14,6 +18,7 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPerm
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
@@ -31,12 +36,7 @@ final class PermintaanPembelianController extends Controller
         $this->authorize('viewAny', PermintaanPembelian::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:100'],
-            'status' => ['nullable', 'string', Rule::in([
-                PermintaanPembelian::STATUS_DRAFT,
-                PermintaanPembelian::STATUS_MENUNGGU_PERSETUJUAN,
-                PermintaanPembelian::STATUS_DISETUJUI,
-                PermintaanPembelian::STATUS_DITOLAK,
-            ])],
+            'status' => ['nullable', 'string', Rule::enum(StatusPermintaanPembelian::class)],
         ]);
 
         $permintaan = PermintaanPembelian::query()
@@ -52,7 +52,7 @@ final class PermintaanPembelianController extends Controller
             'permintaan' => PermintaanPembelianResource::collection($permintaan),
             'unitOrganisasi' => UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
             'rencana' => RencanaPengadaan::query()
-                ->where('Status', RencanaPengadaan::STATUS_DIRENCANAKAN)
+                ->where('Status', StatusRencanaPengadaan::Direncanakan->value)
                 ->orderBy('Nomor')
                 ->get(['Id', 'Nomor', 'Nama', 'PosAnggaranId']),
             'posAnggaran' => $this->daftarPosAktif(),
@@ -84,8 +84,8 @@ final class PermintaanPembelianController extends Controller
 
         return Inertia::render('PermintaanPembelian/Show', [
             'permintaan' => new PermintaanPembelianResource($permintaanPembelian),
-            'aset' => Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
-            'sukuCadang' => SukuCadang::query()->where('Status', SukuCadang::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
+            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
+            'sukuCadang' => SukuCadang::query()->where('Status', StatusSukuCadang::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
         ]);
     }
 
@@ -121,7 +121,7 @@ final class PermintaanPembelianController extends Controller
     private function daftarPosAktif(): Collection
     {
         return PosAnggaran::query()
-            ->whereHas('anggaran', fn ($query) => $query->where('Status', Anggaran::STATUS_AKTIF))
+            ->whereHas('anggaran', fn ($query) => $query->where('Status', StatusAnggaran::Aktif->value))
             ->orderBy('Kode')
             ->get(['Id', 'Kode', 'Nama']);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Notifikasi\Http\Controllers;
 
+use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
 use App\Domain\Notifikasi\Http\Resources\NotifikasiResource;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Http\Controllers\Controller;
@@ -20,14 +21,14 @@ final class NotifikasiController extends Controller
 
         $terbaru = Notifikasi::query()
             ->where('PenggunaId', $penggunaId)
-            ->where('Kanal', Notifikasi::KANAL_IN_APP)
+            ->where('Kanal', KanalNotifikasi::InApp->value)
             ->latest('DibuatPada')
             ->limit(20)
             ->get();
 
         $jumlahBelumDibaca = Notifikasi::query()
             ->where('PenggunaId', $penggunaId)
-            ->where('Kanal', Notifikasi::KANAL_IN_APP)
+            ->where('Kanal', KanalNotifikasi::InApp->value)
             ->whereNull('DibacaPada')
             ->count();
 

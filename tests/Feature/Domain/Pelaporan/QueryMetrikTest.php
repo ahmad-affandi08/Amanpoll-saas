@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Pelaporan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
@@ -97,9 +99,9 @@ final class QueryMetrikTest extends TestCase
 
     public function test_kpi_aset_menghitung_jumlah_nilai_dan_kondisi(): void
     {
-        $this->buatAset('AST-1', Aset::KONDISI_BAIK, 10_000_000);
-        $this->buatAset('AST-2', Aset::KONDISI_BAIK, 5_000_000);
-        $this->buatAset('AST-3', Aset::KONDISI_RUSAK, 1_000_000);
+        $this->buatAset('AST-1', KondisiAset::Baik->value, 10_000_000);
+        $this->buatAset('AST-2', KondisiAset::Baik->value, 5_000_000);
+        $this->buatAset('AST-3', KondisiAset::Rusak->value, 1_000_000);
 
         $this->assertSame(3.0, $this->hitung('aset.jumlah')->nilai);
         $this->assertSame(16_000_000.0, $this->hitung('aset.nilai_perolehan')->nilai);
@@ -179,7 +181,7 @@ final class QueryMetrikTest extends TestCase
 
     public function test_kpi_downtime_mttr_dan_mtbf_dihitung_dari_sesi_waktu_henti(): void
     {
-        $aset = $this->buatAset('AST-DT', Aset::KONDISI_BAIK, 1_000_000);
+        $aset = $this->buatAset('AST-DT', KondisiAset::Baik->value, 1_000_000);
 
         // Dua kegagalan tak terencana: 120 menit dan 60 menit.
         $this->buatDowntime($aset, CarbonImmutable::now()->subDays(3), 120, 'TidakTerencana');
@@ -212,7 +214,7 @@ final class QueryMetrikTest extends TestCase
 
     public function test_downtime_yang_belum_berakhir_dipotong_pada_batas_rentang(): void
     {
-        $aset = $this->buatAset('AST-DT2', Aset::KONDISI_RUSAK, 1_000_000);
+        $aset = $this->buatAset('AST-DT2', KondisiAset::Rusak->value, 1_000_000);
 
         // Sesi masih berjalan sejak 2 jam lalu.
         WaktuHentiAset::create([
@@ -231,7 +233,7 @@ final class QueryMetrikTest extends TestCase
 
     public function test_kpi_biaya_pemeliharaan_dan_biaya_per_aset(): void
     {
-        $aset = $this->buatAset('AST-BY', Aset::KONDISI_BAIK, 1_000_000);
+        $aset = $this->buatAset('AST-BY', KondisiAset::Baik->value, 1_000_000);
         $perintahKerja = $this->buatPerintahKerja([]);
         PerintahKerjaAset::create([
             'OrganisasiId' => $this->organisasi->Id,
@@ -280,11 +282,11 @@ final class QueryMetrikTest extends TestCase
 
     public function test_kpi_kalibrasi_memisahkan_terlambat_dan_segera_jatuh_tempo(): void
     {
-        $aset = $this->buatAset('AST-KAL', Aset::KONDISI_BAIK, 1_000_000);
+        $aset = $this->buatAset('AST-KAL', KondisiAset::Baik->value, 1_000_000);
 
         $this->buatRencanaKalibrasi($aset, CarbonImmutable::now()->subDays(5));
-        $this->buatRencanaKalibrasi($this->buatAset('AST-KAL2', Aset::KONDISI_BAIK, 1), CarbonImmutable::now()->addDays(10));
-        $this->buatRencanaKalibrasi($this->buatAset('AST-KAL3', Aset::KONDISI_BAIK, 1), CarbonImmutable::now()->addDays(200));
+        $this->buatRencanaKalibrasi($this->buatAset('AST-KAL2', KondisiAset::Baik->value, 1), CarbonImmutable::now()->addDays(10));
+        $this->buatRencanaKalibrasi($this->buatAset('AST-KAL3', KondisiAset::Baik->value, 1), CarbonImmutable::now()->addDays(200));
 
         // Satu terlambat + satu dalam jendela peringatan 30 hari.
         $this->assertSame(2.0, $this->hitung('kalibrasi.jatuh_tempo')->nilai);
@@ -376,7 +378,7 @@ final class QueryMetrikTest extends TestCase
         foreach (['Patuh', 'TidakPatuh', 'BelumDiperiksa'] as $indeks => $status) {
             KepatuhanAset::create([
                 'OrganisasiId' => $this->organisasi->Id,
-                'AsetId' => $this->buatAset('AST-KP'.$indeks, Aset::KONDISI_BAIK, 1)->Id,
+                'AsetId' => $this->buatAset('AST-KP'.$indeks, KondisiAset::Baik->value, 1)->Id,
                 'PersyaratanKepatuhanId' => $persyaratan->Id,
                 'Status' => $status,
             ]);
@@ -394,8 +396,8 @@ final class QueryMetrikTest extends TestCase
             'Nama' => 'Unit Lain',
         ]);
 
-        $this->buatAset('AST-U1', Aset::KONDISI_BAIK, 1_000_000);
-        $asetLain = $this->buatAset('AST-U2', Aset::KONDISI_BAIK, 9_000_000);
+        $this->buatAset('AST-U1', KondisiAset::Baik->value, 1_000_000);
+        $asetLain = $this->buatAset('AST-U2', KondisiAset::Baik->value, 9_000_000);
         $asetLain->UnitOrganisasiId = $unitLain->Id;
         $asetLain->save();
 
@@ -439,7 +441,7 @@ final class QueryMetrikTest extends TestCase
             'LokasiId' => $this->lokasi->Id,
             'KodeAset' => $kode.'-'.uniqid(),
             'Nama' => 'Aset '.$kode,
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
             'Kondisi' => $kondisi,
             'HargaPerolehan' => $harga,
         ]);

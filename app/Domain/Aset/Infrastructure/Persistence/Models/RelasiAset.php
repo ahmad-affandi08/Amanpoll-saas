@@ -15,10 +15,6 @@ final class RelasiAset extends ModelDasar
 
     protected $table = 'RelasiAset';
 
-    public const JENIS_KOMPONEN = 'Komponen';
-
-    public const JENIS_TERKAIT = 'Terkait';
-
     public $timestamps = false;
 
     protected $fillable = [

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Application\Actions;
 
+use App\Domain\SiklusAset\Domain\Enums\StatusDetailPenghapusanAset;
+use App\Domain\SiklusAset\Domain\Enums\StatusPengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -13,7 +15,7 @@ final class TambahDetailPenghapusanAset
 {
     public function jalankan(PengajuanPenghapusanAset $pengajuan, string $asetId, ?float $nilaiBukuSaatPenghapusan, ?float $hasilPelepasan, ?string $catatan): DetailPenghapusanAset
     {
-        if ($pengajuan->Status !== PengajuanPenghapusanAset::STATUS_DRAFT) {
+        if ($pengajuan->Status !== StatusPengajuanPenghapusanAset::Draft->value) {
             throw new AturanBisnisDilanggar('Detail aset hanya boleh ditambahkan selagi pengajuan masih berupa draft.');
         }
 
@@ -27,7 +29,7 @@ final class TambahDetailPenghapusanAset
             'AsetId' => $asetId,
             'NilaiBukuSaatPenghapusan' => $nilaiBukuSaatPenghapusan,
             'HasilPelepasan' => $hasilPelepasan,
-            'Status' => DetailPenghapusanAset::STATUS_MENUNGGU,
+            'Status' => StatusDetailPenghapusanAset::Menunggu->value,
             'Catatan' => $catatan,
         ]);
     }

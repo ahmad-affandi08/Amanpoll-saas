@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Sinkronisasi;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\KomentarEntitas;
@@ -386,8 +388,8 @@ final class AntrianSinkronisasiOfflineTest extends TestCase
             'LokasiId' => $lokasi->Id,
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Pompa Sentrifugal',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
         ]);
         PerintahKerjaAset::create([
             'OrganisasiId' => $organisasi->Id,

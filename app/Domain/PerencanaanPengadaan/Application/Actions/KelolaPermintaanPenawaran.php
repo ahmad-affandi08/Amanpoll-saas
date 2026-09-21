@@ -7,6 +7,8 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPenawaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenyediaPermintaanPenawaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPenawaran;
@@ -28,7 +30,7 @@ final class KelolaPermintaanPenawaran
     /** @param array<string, mixed> $data */
     public function buat(PermintaanPembelian $permintaan, array $data, string $penggunaId): PermintaanPenawaran
     {
-        if ($permintaan->Status !== PermintaanPembelian::STATUS_DISETUJUI) {
+        if ($permintaan->Status !== StatusPermintaanPembelian::Disetujui->value) {
             throw new AturanBisnisDilanggar('RFQ hanya dapat dibuat dari permintaan pembelian yang disetujui.');
         }
 
@@ -45,7 +47,7 @@ final class KelolaPermintaanPenawaran
                 'PermintaanPembelianId' => $permintaan->Id,
                 'TanggalDibuka' => now(),
                 'BatasPenawaran' => $data['BatasPenawaran'] ?? null,
-                'Status' => PermintaanPenawaran::STATUS_DRAFT,
+                'Status' => StatusPermintaanPenawaran::Draft->value,
                 'Catatan' => $data['Catatan'] ?? null,
                 'DibuatOleh' => $penggunaId,
             ]);
@@ -71,14 +73,14 @@ final class KelolaPermintaanPenawaran
 
     public function buka(PermintaanPenawaran $rfq): PermintaanPenawaran
     {
-        if ($rfq->Status !== PermintaanPenawaran::STATUS_DRAFT || ! $rfq->penyediaDiundang()->exists()) {
+        if ($rfq->Status !== StatusPermintaanPenawaran::Draft->value || ! $rfq->penyediaDiundang()->exists()) {
             throw new AturanBisnisDilanggar('RFQ draft harus memiliki minimal satu penyedia sebelum dibuka.');
         }
         if ($rfq->BatasPenawaran !== null && $rfq->BatasPenawaran->isPast()) {
             throw new AturanBisnisDilanggar('Batas penawaran harus berada di masa depan.');
         }
 
-        $rfq->Status = PermintaanPenawaran::STATUS_DIBUKA;
+        $rfq->Status = StatusPermintaanPenawaran::Dibuka->value;
         $rfq->TanggalDibuka = now()->toImmutable();
         $rfq->save();
         $rfq->penyediaDiundang()->update(['DikirimPada' => now(), 'Status' => 'Dikirim']);

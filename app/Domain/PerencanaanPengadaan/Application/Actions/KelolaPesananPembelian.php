@@ -6,6 +6,9 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\JenisTransaksiAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPenawaranPenyedia;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
@@ -33,7 +36,7 @@ final class KelolaPesananPembelian
     /** @param array<string, mixed> $data */
     public function buatDariPenawaran(PenawaranPenyedia $penawaran, array $data, string $penggunaId): PesananPembelian
     {
-        if ($penawaran->Status !== PenawaranPenyedia::STATUS_TERPILIH) {
+        if ($penawaran->Status !== StatusPenawaranPenyedia::Terpilih->value) {
             throw new AturanBisnisDilanggar('PO hanya dapat dibuat dari penawaran terpilih.');
         }
         if (PesananPembelian::query()->where('PenawaranPenyediaId', $penawaran->Id)->exists()) {
@@ -63,7 +66,7 @@ final class KelolaPesananPembelian
                 'Pajak' => $penawaran->Pajak,
                 'Diskon' => $penawaran->Diskon,
                 'Total' => $penawaran->Total,
-                'Status' => PesananPembelian::STATUS_DRAFT,
+                'Status' => StatusPesananPembelian::Draft->value,
                 'Catatan' => $data['Catatan'] ?? null,
                 'DibuatOleh' => $penggunaId,
             ]);
@@ -94,7 +97,7 @@ final class KelolaPesananPembelian
 
     public function ajukan(PesananPembelian $po, string $penggunaId): PesananPembelian
     {
-        if ($po->Status !== PesananPembelian::STATUS_DRAFT || ! $po->detail()->exists()) {
+        if ($po->Status !== StatusPesananPembelian::Draft->value || ! $po->detail()->exists()) {
             throw new AturanBisnisDilanggar('Hanya PO draft dengan detail yang dapat diajukan.');
         }
         $alur = AlurPersetujuan::query()->where('JenisEntitas', 'PesananPembelian')->where('Aktif', true)->first();
@@ -103,7 +106,7 @@ final class KelolaPesananPembelian
         }
 
         $this->ajukanPersetujuan->jalankan($alur, $po->Id, ['Total' => $po->Total], $penggunaId);
-        $po->Status = PesananPembelian::STATUS_MENUNGGU_PERSETUJUAN;
+        $po->Status = StatusPesananPembelian::MenungguPersetujuan->value;
         $po->save();
 
         return $po->refresh();
@@ -111,15 +114,15 @@ final class KelolaPesananPembelian
 
     public function kirim(PesananPembelian $po): PesananPembelian
     {
-        if ($po->Status !== PesananPembelian::STATUS_DISETUJUI || $po->PosAnggaranId === null) {
+        if ($po->Status !== StatusPesananPembelian::Disetujui->value || $po->PosAnggaranId === null) {
             throw new AturanBisnisDilanggar('Hanya PO yang disetujui dan memiliki pos anggaran yang dapat dikirim.');
         }
 
         return $this->transaksi->jalankan(function () use ($po): PesananPembelian {
             $terkunci = PesananPembelian::query()->lockForUpdate()->findOrFail($po->Id);
-            if (! TransaksiAnggaran::query()->where('ReferensiJenis', 'PesananPembelian')->where('ReferensiId', $terkunci->Id)->where('Jenis', TransaksiAnggaran::JENIS_KOMITMEN)->exists()) {
+            if (! TransaksiAnggaran::query()->where('ReferensiJenis', 'PesananPembelian')->where('ReferensiId', $terkunci->Id)->where('Jenis', JenisTransaksiAnggaran::Komitmen->value)->exists()) {
                 $this->catatTransaksiAnggaran->jalankan($terkunci->posAnggaran()->firstOrFail(), [
-                    'Jenis' => TransaksiAnggaran::JENIS_KOMITMEN,
+                    'Jenis' => JenisTransaksiAnggaran::Komitmen->value,
                     'Jumlah' => $terkunci->Total,
                     'Tanggal' => now()->toDateString(),
                     'ReferensiJenis' => 'PesananPembelian',
@@ -127,7 +130,7 @@ final class KelolaPesananPembelian
                     'Keterangan' => "Komitmen PO {$terkunci->Nomor}",
                 ]);
             }
-            $terkunci->Status = PesananPembelian::STATUS_DIKIRIM;
+            $terkunci->Status = StatusPesananPembelian::Dikirim->value;
             $terkunci->save();
             $this->audit->catat('PesananPembelian.Dikirim', 'PesananPembelian', $terkunci->Id, dataSesudah: ['Status' => $terkunci->Status]);
 

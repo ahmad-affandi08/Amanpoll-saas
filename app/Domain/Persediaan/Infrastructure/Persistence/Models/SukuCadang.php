@@ -15,10 +15,6 @@ final class SukuCadang extends ModelDasar
 {
     use MilikOrganisasi, SoftDeletes;
 
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_NONAKTIF = 'Nonaktif';
-
     protected $table = 'SukuCadang';
 
     public const CREATED_AT = 'DibuatPada';

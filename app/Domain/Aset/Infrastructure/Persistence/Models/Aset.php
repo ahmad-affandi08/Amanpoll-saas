@@ -29,28 +29,6 @@ final class Aset extends ModelDasar
 
     public const DELETED_AT = 'DihapusPada';
 
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_NONAKTIF = 'Nonaktif';
-
-    public const STATUS_DIPINJAM = 'Dipinjam';
-
-    public const STATUS_RUSAK = 'Rusak';
-
-    public const STATUS_DIARSIPKAN = 'Diarsipkan';
-
-    public const KONDISI_BAIK = 'Baik';
-
-    public const KONDISI_PERLU_PERHATIAN = 'PerluPerhatian';
-
-    public const KONDISI_RUSAK = 'Rusak';
-
-    public const KRITIS_NORMAL = 'Normal';
-
-    public const KRITIS_TINGGI = 'Tinggi';
-
-    public const KRITIS_SANGAT_TINGGI = 'SangatTinggi';
-
     protected $fillable = [
         'OrganisasiId',
         'UnitOrganisasiId',

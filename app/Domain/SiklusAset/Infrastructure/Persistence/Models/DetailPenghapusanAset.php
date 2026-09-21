@@ -18,12 +18,6 @@ final class DetailPenghapusanAset extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_MENUNGGU = 'Menunggu';
-
-    public const STATUS_SELESAI = 'Selesai';
-
-    public const STATUS_DIBATALKAN = 'Dibatalkan';
-
     protected $fillable = [
         'OrganisasiId',
         'PengajuanPenghapusanAsetId',

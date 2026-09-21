@@ -17,18 +17,6 @@ final class SinkronisasiEksternal extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_DIPROSES = 'Diproses';
-
-    public const STATUS_BERHASIL = 'Berhasil';
-
-    public const STATUS_SEBAGIAN = 'Sebagian';
-
-    public const STATUS_GAGAL = 'Gagal';
-
-    public const ARAH_TARIK = 'Tarik';
-
-    public const ARAH_DORONG = 'Dorong';
-
     protected $fillable = [
         'OrganisasiId',
         'IntegrasiEksternalId',

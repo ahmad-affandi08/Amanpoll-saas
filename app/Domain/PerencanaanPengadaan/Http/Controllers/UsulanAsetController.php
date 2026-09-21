@@ -8,6 +8,8 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaUsulanAset;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\PrioritasUsulanAset;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusUsulanAset;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPenilaianUsulanAsetRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanUsulanAsetRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\UsulanAsetResource;
@@ -29,14 +31,8 @@ final class UsulanAsetController extends Controller
         $this->authorize('viewAny', UsulanAset::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:100'],
-            'status' => ['nullable', 'string', Rule::in([
-                UsulanAset::STATUS_DRAFT,
-                UsulanAset::STATUS_DIAJUKAN,
-                UsulanAset::STATUS_MENUNGGU_PERSETUJUAN,
-                UsulanAset::STATUS_DISETUJUI,
-                UsulanAset::STATUS_DITOLAK,
-            ])],
-            'prioritas' => ['nullable', 'string', Rule::in(UsulanAset::DAFTAR_PRIORITAS)],
+            'status' => ['nullable', 'string', Rule::enum(StatusUsulanAset::class)],
+            'prioritas' => ['nullable', 'string', Rule::enum(PrioritasUsulanAset::class)],
         ]);
 
         $usulan = UsulanAset::query()

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Pemeliharaan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
@@ -18,6 +21,8 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuHentiAset;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuKerja;
+use App\Domain\Persediaan\Domain\Enums\StatusGudang;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\PemakaianSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
@@ -65,9 +70,9 @@ final class PerintahKerjaTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-PMP-01',
             'Nama' => 'Pompa Sentrifugal Utama',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_TINGGI,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Tinggi->value,
             'LokasiId' => $lokasi->Id,
         ]);
 
@@ -111,7 +116,7 @@ final class PerintahKerjaTest extends TestCase
             'OrganisasiId' => $organisasi->Id,
             'Kode' => 'GDG-SP-'.uniqid(),
             'Nama' => 'Gudang Sparepart Sentral',
-            'Status' => Gudang::STATUS_AKTIF,
+            'Status' => StatusGudang::Aktif->value,
         ]);
         $sukuCadang = SukuCadang::create([
             'OrganisasiId' => $organisasi->Id,
@@ -120,7 +125,7 @@ final class PerintahKerjaTest extends TestCase
             'SatuanDasar' => 'Pcs',
             'HargaRataRata' => 75000,
             'StokMinimum' => 5,
-            'Status' => SukuCadang::STATUS_AKTIF,
+            'Status' => StatusSukuCadang::Aktif->value,
         ]);
         StokSukuCadang::create([
             'OrganisasiId' => $organisasi->Id,
@@ -409,9 +414,9 @@ final class PerintahKerjaTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-02',
             'Nama' => 'Aset 2',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
 
         $this->actingAs($manajer)->post('/pemeliharaan/perintah-kerja', [
@@ -452,9 +457,9 @@ final class PerintahKerjaTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-03',
             'Nama' => 'Aset 3',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
 
         $this->actingAs($manajer)->post('/pemeliharaan/perintah-kerja', [
@@ -496,9 +501,9 @@ final class PerintahKerjaTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-04',
             'Nama' => 'Aset 4',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
 
         $this->actingAs($manajer)->post('/pemeliharaan/perintah-kerja', [
@@ -573,9 +578,9 @@ final class PerintahKerjaTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-05',
             'Nama' => 'Aset 5',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
 
         $this->actingAs($manajer)->post('/pemeliharaan/perintah-kerja', [
@@ -647,16 +652,16 @@ final class PerintahKerjaTest extends TestCase
             'KategoriAsetId' => $kategoriAset->Id,
             'KodeAset' => 'AST-06',
             'Nama' => 'Aset 6',
-            'Status' => Aset::STATUS_AKTIF,
-            'Kondisi' => Aset::KONDISI_BAIK,
-            'TingkatKritis' => Aset::KRITIS_NORMAL,
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
         ]);
 
         $gudang = Gudang::create([
             'OrganisasiId' => $organisasi->Id,
             'Kode' => 'GDG-06-'.uniqid(),
             'Nama' => 'Gudang 6',
-            'Status' => Gudang::STATUS_AKTIF,
+            'Status' => StatusGudang::Aktif->value,
         ]);
         $sukuCadang = SukuCadang::create([
             'OrganisasiId' => $organisasi->Id,
@@ -665,7 +670,7 @@ final class PerintahKerjaTest extends TestCase
             'SatuanDasar' => 'Meter',
             'HargaRataRata' => 20000,
             'StokMinimum' => 1,
-            'Status' => SukuCadang::STATUS_AKTIF,
+            'Status' => StatusSukuCadang::Aktif->value,
         ]);
         StokSukuCadang::create([
             'OrganisasiId' => $organisasi->Id,

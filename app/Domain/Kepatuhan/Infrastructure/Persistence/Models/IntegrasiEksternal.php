@@ -20,15 +20,6 @@ final class IntegrasiEksternal extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
-    public const STATUS_AKTIF = 'Aktif';
-
-    public const STATUS_NONAKTIF = 'Nonaktif';
-
-    public const STATUS_BERMASALAH = 'Bermasalah';
-
-    /** @var list<string> */
-    public const DAFTAR_STATUS = [self::STATUS_AKTIF, self::STATUS_NONAKTIF, self::STATUS_BERMASALAH];
-
     protected $fillable = [
         'OrganisasiId',
         'Kode',

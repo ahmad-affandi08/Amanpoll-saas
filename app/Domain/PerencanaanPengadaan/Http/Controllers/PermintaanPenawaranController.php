@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 
+use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPermintaanPenawaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPenawaran;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPenawaranPenyediaRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPermintaanPenawaranRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\PermintaanPenawaranResource;
@@ -27,11 +30,7 @@ final class PermintaanPenawaranController extends Controller
         $this->authorize('viewAny', PermintaanPenawaran::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:100'],
-            'status' => ['nullable', 'string', Rule::in([
-                PermintaanPenawaran::STATUS_DRAFT,
-                PermintaanPenawaran::STATUS_DIBUKA,
-                PermintaanPenawaran::STATUS_DITUTUP,
-            ])],
+            'status' => ['nullable', 'string', Rule::enum(StatusPermintaanPenawaran::class)],
         ]);
 
         $rfq = PermintaanPenawaran::query()
@@ -46,10 +45,10 @@ final class PermintaanPenawaranController extends Controller
         return Inertia::render('PermintaanPenawaran/Index', [
             'rfq' => PermintaanPenawaranResource::collection($rfq),
             'permintaanDisetujui' => PermintaanPembelian::query()
-                ->where('Status', PermintaanPembelian::STATUS_DISETUJUI)
+                ->where('Status', StatusPermintaanPembelian::Disetujui->value)
                 ->orderBy('Nomor')
                 ->get(['Id', 'Nomor', 'TotalEstimasi']),
-            'penyedia' => Penyedia::query()->where('Status', Penyedia::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
+            'penyedia' => Penyedia::query()->where('Status', StatusPenyedia::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
             'filter' => $filter,
         ]);
     }

@@ -6,6 +6,7 @@ namespace App\Domain\Kepatuhan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Kepatuhan\Domain\Enums\StatusSertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -32,7 +33,7 @@ final class KelolaSertifikasiAset
                 'Penerbit' => $data['Penerbit'] ?? null,
                 'TerbitPada' => $data['TerbitPada'] ?? null,
                 'BerlakuSampai' => $data['BerlakuSampai'] ?? null,
-                'Status' => SertifikasiAset::STATUS_AKTIF,
+                'Status' => StatusSertifikasiAset::Aktif->value,
                 'BerkasId' => $data['BerkasId'] ?? null,
             ]);
             $this->audit->catat('SertifikasiAset.Diterbitkan', 'Aset', $aset->Id, dataSesudah: $sertifikasi->toArray());
@@ -44,7 +45,7 @@ final class KelolaSertifikasiAset
     /** @param array<string, mixed> $data */
     public function ubah(SertifikasiAset $sertifikasi, array $data): SertifikasiAset
     {
-        if ($sertifikasi->Status === SertifikasiAset::STATUS_DICABUT) {
+        if ($sertifikasi->Status === StatusSertifikasiAset::Dicabut->value) {
             throw new AturanBisnisDilanggar('Sertifikat yang sudah dicabut tidak dapat diubah.');
         }
         $this->pastikanPeriodeValid($data);
@@ -60,10 +61,10 @@ final class KelolaSertifikasiAset
         ]);
 
         // Perpanjangan masa berlaku mengembalikan sertifikat kedaluwarsa menjadi aktif.
-        if ($sertifikasi->Status === SertifikasiAset::STATUS_KEDALUWARSA
+        if ($sertifikasi->Status === StatusSertifikasiAset::Kedaluwarsa->value
             && $sertifikasi->BerlakuSampai !== null
             && CarbonImmutable::parse((string) $sertifikasi->BerlakuSampai)->gte(CarbonImmutable::today())) {
-            $sertifikasi->Status = SertifikasiAset::STATUS_AKTIF;
+            $sertifikasi->Status = StatusSertifikasiAset::Aktif->value;
         }
 
         $sertifikasi->save();
@@ -74,11 +75,11 @@ final class KelolaSertifikasiAset
 
     public function cabut(SertifikasiAset $sertifikasi, string $alasan): SertifikasiAset
     {
-        if ($sertifikasi->Status === SertifikasiAset::STATUS_DICABUT) {
+        if ($sertifikasi->Status === StatusSertifikasiAset::Dicabut->value) {
             throw new AturanBisnisDilanggar('Sertifikat sudah dicabut sebelumnya.');
         }
 
-        $sertifikasi->Status = SertifikasiAset::STATUS_DICABUT;
+        $sertifikasi->Status = StatusSertifikasiAset::Dicabut->value;
         $sertifikasi->save();
         $this->audit->catat('SertifikasiAset.Dicabut', 'SertifikasiAset', $sertifikasi->Id, dataSesudah: [
             'Status' => $sertifikasi->Status,

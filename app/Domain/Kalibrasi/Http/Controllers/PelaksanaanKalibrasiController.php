@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kalibrasi\Http\Controllers;
 
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kalibrasi\Application\Actions\KelolaPelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Http\Requests\SimpanHasilTitikUkurKalibrasiRequest;
@@ -43,7 +44,7 @@ final class PelaksanaanKalibrasiController extends Controller
 
         $asetList = Aset::query()
             ->where('OrganisasiId', $organisasiId)
-            ->where('Status', Aset::STATUS_AKTIF)
+            ->where('Status', StatusAset::Aktif->value)
             ->orderBy('Nama')
             ->get(['Id', 'KodeAset', 'Nama']);
 

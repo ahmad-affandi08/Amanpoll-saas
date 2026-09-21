@@ -7,7 +7,9 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananSaldoAnggaran;
-use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusRencanaPengadaan;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusUsulanAset;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailRencanaPengadaan;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan;
@@ -52,7 +54,7 @@ final class KelolaRencanaPengadaan
                 'Nama' => $data['Nama'],
                 'Tahun' => $data['Tahun'],
                 'PosAnggaranId' => $pos?->Id,
-                'Status' => RencanaPengadaan::STATUS_DRAFT,
+                'Status' => StatusRencanaPengadaan::Draft->value,
                 'TotalEstimasi' => '0.00',
                 'DibuatOleh' => $penggunaId,
             ]);
@@ -152,7 +154,7 @@ final class KelolaRencanaPengadaan
 
             $pos = PosAnggaran::query()->lockForUpdate()->findOrFail($rencanaTerkunci->PosAnggaranId);
             $anggaran = $pos->anggaran()->firstOrFail();
-            if ($anggaran->Status !== Anggaran::STATUS_AKTIF) {
+            if ($anggaran->Status !== StatusAnggaran::Aktif->value) {
                 throw new AturanBisnisDilanggar('Pos anggaran harus berasal dari anggaran aktif.');
             }
 
@@ -161,7 +163,7 @@ final class KelolaRencanaPengadaan
                 throw new AturanBisnisDilanggar('Total estimasi rencana melebihi sisa pos anggaran.');
             }
 
-            $rencanaTerkunci->Status = RencanaPengadaan::STATUS_DIRENCANAKAN;
+            $rencanaTerkunci->Status = StatusRencanaPengadaan::Direncanakan->value;
             $rencanaTerkunci->save();
             $this->audit->catat('RencanaPengadaan.Difinalisasi', 'RencanaPengadaan', $rencanaTerkunci->Id, dataSesudah: $rencanaTerkunci->toArray());
 
@@ -188,13 +190,13 @@ final class KelolaRencanaPengadaan
     private function tambahkanUsulan(RencanaPengadaan $rencana, string $usulanId, array $override = []): DetailRencanaPengadaan
     {
         $usulan = UsulanAset::query()->findOrFail($usulanId);
-        if ($usulan->Status !== UsulanAset::STATUS_DISETUJUI) {
+        if ($usulan->Status !== StatusUsulanAset::Disetujui->value) {
             throw new AturanBisnisDilanggar('Hanya usulan yang sudah disetujui dapat masuk ke rencana pengadaan.');
         }
 
         $sudahDirencanakan = DetailRencanaPengadaan::query()
             ->where('UsulanAsetId', $usulan->Id)
-            ->whereHas('rencanaPengadaan', fn ($query) => $query->where('Status', '!=', RencanaPengadaan::STATUS_DIBATALKAN))
+            ->whereHas('rencanaPengadaan', fn ($query) => $query->where('Status', '!=', StatusRencanaPengadaan::Dibatalkan->value))
             ->exists();
         if ($sudahDirencanakan) {
             throw new AturanBisnisDilanggar("Usulan {$usulan->Nomor} sudah masuk ke rencana pengadaan lain.");
@@ -235,7 +237,7 @@ final class KelolaRencanaPengadaan
 
     private function pastikanDraft(RencanaPengadaan $rencana): void
     {
-        if ($rencana->Status !== RencanaPengadaan::STATUS_DRAFT) {
+        if ($rencana->Status !== StatusRencanaPengadaan::Draft->value) {
             throw new AturanBisnisDilanggar('Hanya rencana draft yang dapat diubah.');
         }
     }

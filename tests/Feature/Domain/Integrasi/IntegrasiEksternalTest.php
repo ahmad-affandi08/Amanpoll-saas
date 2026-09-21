@@ -6,14 +6,17 @@ namespace Tests\Feature\Domain\Integrasi;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\IntegrasiAudit\Application\Services\LayananPanggilanBalikWeb;
+use App\Domain\IntegrasiAudit\Domain\Enums\StatusPengirimanPanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
 use App\Domain\Kepatuhan\Application\Actions\KelolaIntegrasiEksternal;
 use App\Domain\Kepatuhan\Application\Actions\KelolaPemetaanDataEksternal;
 use App\Domain\Kepatuhan\Application\Services\LayananSinkronisasiEksternal;
+use App\Domain\Kepatuhan\Domain\Enums\ArahSinkronisasiEksternal;
+use App\Domain\Kepatuhan\Domain\Enums\StatusIntegrasiEksternal;
+use App\Domain\Kepatuhan\Domain\Enums\StatusSinkronisasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PemetaanDataEksternal;
-use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SinkronisasiEksternal;
 use App\Domain\Kepatuhan\Jobs\JalankanSinkronisasiEksternal;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
@@ -146,15 +149,15 @@ final class IntegrasiEksternalTest extends TestCase
         $integrasi = $this->buatIntegrasi($konteks);
         $layanan = app(LayananSinkronisasiEksternal::class);
 
-        $berhasil = $layanan->selesaikan($layanan->mulai($integrasi, 'Aset', SinkronisasiEksternal::ARAH_TARIK), 10, 0);
-        $this->assertSame(SinkronisasiEksternal::STATUS_BERHASIL, $berhasil->Status);
+        $berhasil = $layanan->selesaikan($layanan->mulai($integrasi, 'Aset', ArahSinkronisasiEksternal::Tarik->value), 10, 0);
+        $this->assertSame(StatusSinkronisasiEksternal::Berhasil->value, $berhasil->Status);
         $this->assertSame(10, $berhasil->JumlahData);
 
-        $sebagian = $layanan->selesaikan($layanan->mulai($integrasi, 'Aset', SinkronisasiEksternal::ARAH_DORONG), 7, 3);
-        $this->assertSame(SinkronisasiEksternal::STATUS_SEBAGIAN, $sebagian->Status);
+        $sebagian = $layanan->selesaikan($layanan->mulai($integrasi, 'Aset', ArahSinkronisasiEksternal::Dorong->value), 7, 3);
+        $this->assertSame(StatusSinkronisasiEksternal::Sebagian->value, $sebagian->Status);
 
-        $gagal = $layanan->selesaikan($layanan->mulai($integrasi, 'Aset', SinkronisasiEksternal::ARAH_TARIK), 0, 5, 'Bearer abcdef gagal');
-        $this->assertSame(SinkronisasiEksternal::STATUS_GAGAL, $gagal->Status);
+        $gagal = $layanan->selesaikan($layanan->mulai($integrasi, 'Aset', ArahSinkronisasiEksternal::Tarik->value), 0, 5, 'Bearer abcdef gagal');
+        $this->assertSame(StatusSinkronisasiEksternal::Gagal->value, $gagal->Status);
 
         // Pesan kegagalan tidak boleh menyimpan kredensial mentah.
         $this->assertStringNotContainsString('abcdef', (string) $gagal->PesanKesalahan);
@@ -165,10 +168,10 @@ final class IntegrasiEksternalTest extends TestCase
     {
         $konteks = $this->siapkanKonteks();
         $integrasi = $this->buatIntegrasi($konteks);
-        app(KelolaIntegrasiEksternal::class)->ubahStatus($integrasi, IntegrasiEksternal::STATUS_NONAKTIF);
+        app(KelolaIntegrasiEksternal::class)->ubahStatus($integrasi, StatusIntegrasiEksternal::Nonaktif->value);
 
         $this->assertThrows(
-            fn () => app(LayananSinkronisasiEksternal::class)->mulai($integrasi->refresh(), 'Aset', SinkronisasiEksternal::ARAH_TARIK),
+            fn () => app(LayananSinkronisasiEksternal::class)->mulai($integrasi->refresh(), 'Aset', ArahSinkronisasiEksternal::Tarik->value),
             AturanBisnisDilanggar::class,
         );
     }
@@ -180,9 +183,9 @@ final class IntegrasiEksternalTest extends TestCase
         $integrasi = $this->buatIntegrasi($konteks);
 
         $sinkronisasi = app(LayananSinkronisasiEksternal::class)
-            ->antrikan($integrasi, 'Aset', SinkronisasiEksternal::ARAH_TARIK);
+            ->antrikan($integrasi, 'Aset', ArahSinkronisasiEksternal::Tarik->value);
 
-        $this->assertSame(SinkronisasiEksternal::STATUS_DIPROSES, $sinkronisasi->Status);
+        $this->assertSame(StatusSinkronisasiEksternal::Diproses->value, $sinkronisasi->Status);
         Queue::assertPushed(JalankanSinkronisasiEksternal::class);
     }
 
@@ -193,9 +196,9 @@ final class IntegrasiEksternalTest extends TestCase
         $integrasi = $this->buatIntegrasi($konteks);
         $layanan = app(LayananSinkronisasiEksternal::class);
 
-        $hasil = $layanan->jalankan($layanan->mulai($integrasi, 'Aset', SinkronisasiEksternal::ARAH_TARIK));
+        $hasil = $layanan->jalankan($layanan->mulai($integrasi, 'Aset', ArahSinkronisasiEksternal::Tarik->value));
 
-        $this->assertSame(SinkronisasiEksternal::STATUS_SEBAGIAN, $hasil->Status);
+        $this->assertSame(StatusSinkronisasiEksternal::Sebagian->value, $hasil->Status);
         $this->assertSame(2, $hasil->JumlahBerhasil);
         $this->assertSame(1, $hasil->JumlahGagal);
         $this->assertNotNull($integrasi->refresh()->TerakhirSinkronPada);
@@ -211,15 +214,15 @@ final class IntegrasiEksternalTest extends TestCase
         $konteks = $this->siapkanKonteks();
         $integrasi = $this->buatIntegrasi($konteks);
         $layanan = app(LayananSinkronisasiEksternal::class);
-        $sinkronisasi = $layanan->mulai($integrasi, 'Aset', SinkronisasiEksternal::ARAH_DORONG);
+        $sinkronisasi = $layanan->mulai($integrasi, 'Aset', ArahSinkronisasiEksternal::Dorong->value);
 
         $this->assertThrows(fn () => $layanan->jalankan($sinkronisasi), AturanBisnisDilanggar::class);
-        $this->assertSame(SinkronisasiEksternal::STATUS_DIPROSES, $sinkronisasi->refresh()->Status);
+        $this->assertSame(StatusSinkronisasiEksternal::Diproses->value, $sinkronisasi->refresh()->Status);
 
         // Percobaan terakhir job menutup baris sinkronisasi sebagai gagal.
         (new JalankanSinkronisasiEksternal($sinkronisasi->Id))->failed(new AturanBisnisDilanggar('Bearer abc gagal'));
         $sinkronisasi->refresh();
-        $this->assertSame(SinkronisasiEksternal::STATUS_GAGAL, $sinkronisasi->Status);
+        $this->assertSame(StatusSinkronisasiEksternal::Gagal->value, $sinkronisasi->Status);
         $this->assertStringNotContainsString('abc', (string) $sinkronisasi->PesanKesalahan);
     }
 
@@ -233,7 +236,7 @@ final class IntegrasiEksternalTest extends TestCase
 
         $this->assertFalse($hasil['berhasil']);
         $this->assertSame(503, $hasil['status']);
-        $this->assertSame(IntegrasiEksternal::STATUS_BERMASALAH, $integrasi->refresh()->Status);
+        $this->assertSame(StatusIntegrasiEksternal::Bermasalah->value, $integrasi->refresh()->Status);
     }
 
     public function test_19_05_pengiriman_ditandatangani_dan_dicatat(): void
@@ -247,7 +250,7 @@ final class IntegrasiEksternalTest extends TestCase
         $this->assertTrue($layanan->kirim($pengiriman));
 
         $pengiriman->refresh();
-        $this->assertSame(PengirimanPanggilanBalikWeb::STATUS_BERHASIL, $pengiriman->Status);
+        $this->assertSame(StatusPengirimanPanggilanBalikWeb::Berhasil->value, $pengiriman->Status);
         $this->assertSame(200, $pengiriman->StatusHttp);
         $this->assertNotNull($pengiriman->DikirimPada);
 
@@ -269,7 +272,7 @@ final class IntegrasiEksternalTest extends TestCase
 
         $this->assertFalse($layanan->kirim($pengiriman));
         $pengiriman->refresh();
-        $this->assertSame(PengirimanPanggilanBalikWeb::STATUS_GAGAL, $pengiriman->Status);
+        $this->assertSame(StatusPengirimanPanggilanBalikWeb::Gagal->value, $pengiriman->Status);
         $this->assertSame(1, $pengiriman->Percobaan);
         $this->assertNotNull($pengiriman->JadwalCobaLagiPada);
 
@@ -282,7 +285,7 @@ final class IntegrasiEksternalTest extends TestCase
         for ($i = 0; $i < PengirimanPanggilanBalikWeb::BATAS_PERCOBAAN; $i++) {
             $layanan->kirim($pengiriman->refresh());
         }
-        $this->assertSame(PengirimanPanggilanBalikWeb::STATUS_GAGAL_PERMANEN, $pengiriman->refresh()->Status);
+        $this->assertSame(StatusPengirimanPanggilanBalikWeb::GagalPermanen->value, $pengiriman->refresh()->Status);
         $this->assertNull($pengiriman->JadwalCobaLagiPada);
     }
 
@@ -296,7 +299,7 @@ final class IntegrasiEksternalTest extends TestCase
         $pengiriman = $this->buatPengiriman($konteks, $webhook);
 
         $this->assertFalse(app(LayananPanggilanBalikWeb::class)->kirim($pengiriman));
-        $this->assertSame(PengirimanPanggilanBalikWeb::STATUS_GAGAL_PERMANEN, $pengiriman->refresh()->Status);
+        $this->assertSame(StatusPengirimanPanggilanBalikWeb::GagalPermanen->value, $pengiriman->refresh()->Status);
         Http::assertNothingSent();
     }
 
@@ -323,7 +326,7 @@ final class IntegrasiEksternalTest extends TestCase
             'Kode' => 'EXT-LAIN',
             'Nama' => 'Integrasi Tenant Lain',
             'Jenis' => 'ERP',
-            'Status' => IntegrasiEksternal::STATUS_AKTIF,
+            'Status' => StatusIntegrasiEksternal::Aktif->value,
         ]);
 
         app(KonteksOrganisasi::class)->tetapkan($konteks['organisasi']->Id);
@@ -401,7 +404,7 @@ final class IntegrasiEksternalTest extends TestCase
             'PanggilanBalikWebId' => $webhook->Id,
             'Peristiwa' => 'Uji.Peristiwa',
             'MuatanData' => ['IdPeristiwa' => (string) Str::ulid(), 'Data' => ['nilai' => 1]],
-            'Status' => PengirimanPanggilanBalikWeb::STATUS_ANTRI,
+            'Status' => StatusPengirimanPanggilanBalikWeb::Antri->value,
         ]);
     }
 

@@ -7,6 +7,8 @@ namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 use App\Domain\PerencanaanPengadaan\Application\Actions\CatatTransaksiAnggaran;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaAnggaran;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPosAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\JenisTransaksiAnggaran;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanAnggaranRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPosAnggaranRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanTransaksiAnggaranRequest;
@@ -32,13 +34,7 @@ final class AnggaranController extends Controller
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:100'],
             'tahun' => ['nullable', 'integer', 'between:2000,2100'],
-            'status' => ['nullable', 'string', Rule::in([
-                Anggaran::STATUS_DRAFT,
-                Anggaran::STATUS_MENUNGGU_PERSETUJUAN,
-                Anggaran::STATUS_AKTIF,
-                Anggaran::STATUS_DITOLAK,
-                Anggaran::STATUS_DITUTUP,
-            ])],
+            'status' => ['nullable', 'string', Rule::enum(StatusAnggaran::class)],
         ]);
 
         $anggaran = Anggaran::query()
@@ -150,7 +146,7 @@ final class AnggaranController extends Controller
         CatatTransaksiAnggaran $aksi,
     ): RedirectResponse {
         $this->authorize('transact', $posAnggaran);
-        if ($request->string('Jenis')->toString() === TransaksiAnggaran::JENIS_PENYESUAIAN) {
+        if ($request->string('Jenis')->toString() === JenisTransaksiAnggaran::Penyesuaian->value) {
             $this->authorize('adjust', $posAnggaran->anggaran);
         }
 

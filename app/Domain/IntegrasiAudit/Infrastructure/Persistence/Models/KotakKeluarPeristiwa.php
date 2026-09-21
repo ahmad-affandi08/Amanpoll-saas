@@ -17,14 +17,6 @@ final class KotakKeluarPeristiwa extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_MENUNGGU = 'Menunggu';
-
-    public const STATUS_DIPROSES = 'Diproses';
-
-    public const STATUS_SELESAI = 'Selesai';
-
-    public const STATUS_GAGAL = 'Gagal';
-
     /** Setelah percobaan ini habis, peristiwa berhenti dicoba dan menunggu tinjauan manual. */
     public const BATAS_PERCOBAAN = 5;
 

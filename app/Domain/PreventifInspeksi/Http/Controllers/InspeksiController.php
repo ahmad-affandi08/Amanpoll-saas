@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\PreventifInspeksi\Http\Controllers;
 
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\PreventifInspeksi\Application\Actions\KelolaInspeksi;
@@ -34,7 +35,7 @@ final class InspeksiController extends Controller
             ->get();
 
         $templatList = TemplatInspeksi::query()->where('Aktif', true)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']);
-        $asetList = Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']);
+        $asetList = Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']);
         $inspektorList = Pengguna::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']);
 
         return Inertia::render('Inspeksi/Index', [

@@ -15,14 +15,6 @@ final class PermintaanPersetujuan extends ModelDasar
 {
     use MilikOrganisasi;
 
-    public const STATUS_MENUNGGU = 'Menunggu';
-
-    public const STATUS_DISETUJUI = 'Disetujui';
-
-    public const STATUS_DITOLAK = 'Ditolak';
-
-    public const STATUS_DIBATALKAN = 'Dibatalkan';
-
     protected $table = 'PermintaanPersetujuan';
 
     public $timestamps = false;

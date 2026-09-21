@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Langganan;
 
 use App\Domain\Aset\Application\Actions\BuatAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
@@ -203,7 +204,7 @@ final class EntitlementDanBatasTest extends KasusLangganan
             'KategoriAsetId' => $kategori->Id,
             'KodeAset' => 'AST-'.uniqid(),
             'Nama' => 'Aset uji',
-            'Status' => Aset::STATUS_AKTIF,
+            'Status' => StatusAset::Aktif->value,
         ], $dibuatOleh ?? (string) $this->buatPengguna()->Id);
     }
 }

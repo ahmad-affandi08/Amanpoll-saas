@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Persediaan\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Persediaan\Domain\Enums\StatusGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -33,7 +34,7 @@ final class SimpanGudangRequest extends FormRequest
                 Rule::exists('Lokasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'PenanggungJawabId' => ['nullable', 'string',
                 Rule::exists('Pengguna', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))],
-            'Status' => ['required', 'string', Rule::in([Gudang::STATUS_AKTIF, Gudang::STATUS_NONAKTIF])],
+            'Status' => ['required', 'string', Rule::enum(StatusGudang::class)],
         ];
     }
 }

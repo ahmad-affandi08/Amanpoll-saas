@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Http\Requests;
 
-use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,7 +23,7 @@ final class TerimaSerahTerimaAsetRequest extends FormRequest
         return [
             'Detail' => ['required', 'array', 'min:1'],
             'Detail.*.AsetId' => ['required', 'string'],
-            'Detail.*.KondisiSaatDiterima' => ['required', 'string', Rule::in([Aset::KONDISI_BAIK, Aset::KONDISI_PERLU_PERHATIAN, Aset::KONDISI_RUSAK])],
+            'Detail.*.KondisiSaatDiterima' => ['required', 'string', Rule::enum(KondisiAset::class)],
         ];
     }
 }

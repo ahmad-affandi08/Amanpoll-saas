@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Persediaan\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -40,7 +41,7 @@ final class SimpanSukuCadangRequest extends FormRequest
             'HargaRataRata' => ['nullable', 'numeric', 'min:0'],
             'MemakaiBatch' => ['boolean'],
             'MemakaiKadaluarsa' => ['boolean'],
-            'Status' => ['required', 'string', Rule::in([SukuCadang::STATUS_AKTIF, SukuCadang::STATUS_NONAKTIF])],
+            'Status' => ['required', 'string', Rule::enum(StatusSukuCadang::class)],
         ];
     }
 }

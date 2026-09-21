@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Kepatuhan\Http\Controllers;
 
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kepatuhan\Application\Actions\KelolaKepatuhanAset;
 use App\Domain\Kepatuhan\Application\Actions\KelolaSertifikasiAset;
 use App\Domain\Kepatuhan\Application\Actions\KelolaStandarKepatuhan;
 use App\Domain\Kepatuhan\Application\Services\LayananKepatuhan;
+use App\Domain\Kepatuhan\Domain\Enums\StatusKepatuhanAset;
+use App\Domain\Kepatuhan\Domain\Enums\StatusSertifikasiAset;
 use App\Domain\Kepatuhan\Http\Requests\CabutSertifikasiRequest;
 use App\Domain\Kepatuhan\Http\Requests\SimpanKepatuhanAsetRequest;
 use App\Domain\Kepatuhan\Http\Requests\SimpanPersyaratanKepatuhanRequest;
@@ -36,7 +39,7 @@ final class KepatuhanController extends Controller
         $this->authorize('viewAny', StandarKepatuhan::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:120'],
-            'status' => ['nullable', 'string', Rule::in(KepatuhanAset::DAFTAR_STATUS)],
+            'status' => ['nullable', 'string', Rule::enum(StatusKepatuhanAset::class)],
         ]);
 
         $kewajiban = KepatuhanAset::query()
@@ -55,7 +58,7 @@ final class KepatuhanController extends Controller
             'standar' => StandarKepatuhanResource::collection(
                 StandarKepatuhan::query()->withCount('persyaratan')->orderBy('Kode')->get()
             ),
-            'aset' => Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
+            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
             'ringkasan' => $layanan->ringkasan($request->user('web')->OrganisasiId),
             'filter' => $filter,
         ]);
@@ -145,7 +148,7 @@ final class KepatuhanController extends Controller
         $this->authorize('viewAny', SertifikasiAset::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:120'],
-            'status' => ['nullable', 'string', Rule::in(SertifikasiAset::DAFTAR_STATUS)],
+            'status' => ['nullable', 'string', Rule::enum(StatusSertifikasiAset::class)],
         ]);
 
         $sertifikasi = SertifikasiAset::query()
@@ -160,7 +163,7 @@ final class KepatuhanController extends Controller
 
         return Inertia::render('Sertifikasi/Index', [
             'sertifikasi' => SertifikasiAsetResource::collection($sertifikasi),
-            'aset' => Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
+            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
             'filter' => $filter,
         ]);
     }

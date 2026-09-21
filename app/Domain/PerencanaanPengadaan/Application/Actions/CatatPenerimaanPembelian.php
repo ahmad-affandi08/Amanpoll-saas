@@ -6,13 +6,20 @@ namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Aset\Application\Actions\BuatAset;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPenerimaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPenerimaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\DetailPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenerimaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
 use App\Domain\Persediaan\Application\Actions\PostingMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\JenisMutasiStok;
+use App\Domain\Persediaan\Domain\Enums\StatusMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\DetailMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
@@ -31,7 +38,7 @@ final class CatatPenerimaanPembelian
     /** @param array<string, mixed> $data */
     public function jalankan(PesananPembelian $po, array $data, string $penggunaId): PenerimaanPembelian
     {
-        if (! in_array($po->Status, [PesananPembelian::STATUS_DIKIRIM, PesananPembelian::STATUS_DITERIMA_SEBAGIAN], true)) {
+        if (! in_array($po->Status, [StatusPesananPembelian::Dikirim->value, StatusPesananPembelian::DiterimaSebagian->value], true)) {
             throw new AturanBisnisDilanggar('Penerimaan hanya dapat dicatat untuk PO yang sudah dikirim dan belum diterima penuh.');
         }
 
@@ -45,7 +52,7 @@ final class CatatPenerimaanPembelian
                 'TanggalTerima' => $data['TanggalTerima'] ?? now(),
                 'NomorSuratJalan' => $data['NomorSuratJalan'] ?? null,
                 'DiterimaOleh' => $penggunaId,
-                'Status' => PenerimaanPembelian::STATUS_DITERIMA,
+                'Status' => StatusPenerimaanPembelian::Diterima->value,
                 'Catatan' => $data['Catatan'] ?? null,
             ]);
 
@@ -94,8 +101,8 @@ final class CatatPenerimaanPembelian
             $this->integrasikanStok($penerimaan, $detailDiterima, $penggunaId);
             $this->integrasikanAset($terkunci, $penerimaan, $detailDiterima, $penggunaId);
             $terkunci->Status = $this->sudahDiterimaPenuh($terkunci)
-                ? PesananPembelian::STATUS_DITERIMA_PENUH
-                : PesananPembelian::STATUS_DITERIMA_SEBAGIAN;
+                ? StatusPesananPembelian::DiterimaPenuh->value
+                : StatusPesananPembelian::DiterimaSebagian->value;
             $terkunci->save();
             $this->audit->catat('PenerimaanPembelian.Dicatat', 'PenerimaanPembelian', $penerimaan->Id, dataSesudah: ['PesananPembelianId' => $terkunci->Id, 'StatusPO' => $terkunci->Status]);
 
@@ -117,12 +124,12 @@ final class CatatPenerimaanPembelian
         $mutasi = MutasiStok::create([
             'OrganisasiId' => $penerimaan->OrganisasiId,
             'Nomor' => 'RCV-STK-'.Str::upper(Str::random(10)),
-            'Jenis' => MutasiStok::JENIS_PENERIMAAN,
+            'Jenis' => JenisMutasiStok::Penerimaan->value,
             'GudangTujuanId' => $penerimaan->GudangId,
             'ReferensiJenis' => 'PenerimaanPembelian',
             'ReferensiId' => $penerimaan->Id,
             'Tanggal' => $penerimaan->TanggalTerima,
-            'Status' => MutasiStok::STATUS_DRAFT,
+            'Status' => StatusMutasiStok::Draft->value,
             'Catatan' => "Penerimaan {$penerimaan->Nomor}",
             'DibuatOleh' => $penggunaId,
         ]);
@@ -170,9 +177,9 @@ final class CatatPenerimaanPembelian
                     'HargaPerolehan' => $detailPo->HargaSatuan,
                     'MataUang' => $po->MataUang,
                     'SumberDana' => "PO {$po->Nomor}",
-                    'Status' => Aset::STATUS_AKTIF,
-                    'Kondisi' => $detail->Kondisi === 'Baik' ? Aset::KONDISI_BAIK : Aset::KONDISI_PERLU_PERHATIAN,
-                    'TingkatKritis' => Aset::KRITIS_NORMAL,
+                    'Status' => StatusAset::Aktif->value,
+                    'Kondisi' => $detail->Kondisi === 'Baik' ? KondisiAset::Baik->value : KondisiAset::PerluPerhatian->value,
+                    'TingkatKritis' => TingkatKritisAset::Normal->value,
                     'Catatan' => "Dibuat otomatis dari penerimaan {$penerimaan->Nomor}.",
                 ], $penggunaId);
             }

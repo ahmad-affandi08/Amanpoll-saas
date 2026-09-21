@@ -6,7 +6,9 @@ namespace App\Domain\SiklusAset\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Persetujuan\Application\Actions\BatalkanPermintaanPersetujuan;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
+use App\Domain\SiklusAset\Domain\Enums\StatusPengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -21,16 +23,16 @@ final class BatalkanPengajuanPenghapusanAset
 
     public function jalankan(PengajuanPenghapusanAset $pengajuan): PengajuanPenghapusanAset
     {
-        if (! in_array($pengajuan->Status, [PengajuanPenghapusanAset::STATUS_DRAFT, PengajuanPenghapusanAset::STATUS_MENUNGGU], true)) {
+        if (! in_array($pengajuan->Status, [StatusPengajuanPenghapusanAset::Draft->value, StatusPengajuanPenghapusanAset::Menunggu->value], true)) {
             throw new AturanBisnisDilanggar('Hanya pengajuan berstatus draft atau menunggu yang dapat dibatalkan.');
         }
 
         $this->transaksi->jalankan(function () use ($pengajuan): void {
-            if ($pengajuan->Status === PengajuanPenghapusanAset::STATUS_MENUNGGU) {
+            if ($pengajuan->Status === StatusPengajuanPenghapusanAset::Menunggu->value) {
                 $permintaanPersetujuan = PermintaanPersetujuan::query()
                     ->where('JenisEntitas', SubmitPengajuanPenghapusanAset::JENIS_ENTITAS)
                     ->where('EntitasId', $pengajuan->Id)
-                    ->where('Status', PermintaanPersetujuan::STATUS_MENUNGGU)
+                    ->where('Status', StatusPermintaanPersetujuan::Menunggu->value)
                     ->first();
 
                 if ($permintaanPersetujuan) {
@@ -38,7 +40,7 @@ final class BatalkanPengajuanPenghapusanAset
                 }
             }
 
-            $pengajuan->Status = PengajuanPenghapusanAset::STATUS_DIBATALKAN;
+            $pengajuan->Status = StatusPengajuanPenghapusanAset::Dibatalkan->value;
             $pengajuan->save();
         });
 

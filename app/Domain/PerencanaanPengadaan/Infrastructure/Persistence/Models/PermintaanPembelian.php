@@ -22,14 +22,6 @@ final class PermintaanPembelian extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
-    public const STATUS_DRAFT = 'Draft';
-
-    public const STATUS_MENUNGGU_PERSETUJUAN = 'MenungguPersetujuan';
-
-    public const STATUS_DISETUJUI = 'Disetujui';
-
-    public const STATUS_DITOLAK = 'Ditolak';
-
     protected $fillable = [
         'OrganisasiId',
         'Nomor',

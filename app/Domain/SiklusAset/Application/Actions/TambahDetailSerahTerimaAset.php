@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\SiklusAset\Application\Actions;
 
+use App\Domain\SiklusAset\Domain\Enums\StatusSerahTerimaAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailSerahTerimaAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -13,7 +14,7 @@ final class TambahDetailSerahTerimaAset
 {
     public function jalankan(SerahTerimaAset $serahTerima, string $asetId, ?string $kondisiSaatDiserahkan, ?string $catatan): DetailSerahTerimaAset
     {
-        if ($serahTerima->Status !== SerahTerimaAset::STATUS_DISERAHKAN) {
+        if ($serahTerima->Status !== StatusSerahTerimaAset::Diserahkan->value) {
             throw new AturanBisnisDilanggar('Detail aset hanya boleh ditambahkan sebelum dokumen ini diterima.');
         }
 

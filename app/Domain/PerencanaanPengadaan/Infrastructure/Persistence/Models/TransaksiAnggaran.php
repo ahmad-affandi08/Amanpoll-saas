@@ -13,21 +13,6 @@ final class TransaksiAnggaran extends ModelDasar
 {
     use MilikOrganisasi;
 
-    public const JENIS_KOMITMEN = 'Komitmen';
-
-    public const JENIS_REALISASI = 'Realisasi';
-
-    public const JENIS_PELEPASAN_KOMITMEN = 'PelepasanKomitmen';
-
-    public const JENIS_PENYESUAIAN = 'Penyesuaian';
-
-    public const DAFTAR_JENIS = [
-        self::JENIS_KOMITMEN,
-        self::JENIS_REALISASI,
-        self::JENIS_PELEPASAN_KOMITMEN,
-        self::JENIS_PENYESUAIAN,
-    ];
-
     protected $table = 'TransaksiAnggaran';
 
     public $timestamps = false;

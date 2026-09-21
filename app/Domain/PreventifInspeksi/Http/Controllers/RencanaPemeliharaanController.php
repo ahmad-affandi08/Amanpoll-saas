@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\PreventifInspeksi\Http\Controllers;
 
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\PreventifInspeksi\Application\Actions\JadwalkanPemeliharaanPreventif;
 use App\Domain\PreventifInspeksi\Application\Actions\KelolaRencanaPemeliharaan;
@@ -68,7 +69,7 @@ final class RencanaPemeliharaanController extends Controller
         ]);
 
         $asetTersedia = Aset::query()
-            ->where('Status', Aset::STATUS_AKTIF)
+            ->where('Status', StatusAset::Aktif->value)
             ->orderBy('Nama')
             ->get(['Id', 'KodeAset', 'Nama', 'LokasiId']);
 

@@ -21,22 +21,6 @@ final class KepatuhanAset extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
-    public const STATUS_BELUM_DIPERIKSA = 'BelumDiperiksa';
-
-    public const STATUS_PATUH = 'Patuh';
-
-    public const STATUS_TIDAK_PATUH = 'TidakPatuh';
-
-    public const STATUS_KEDALUWARSA = 'Kedaluwarsa';
-
-    /** @var list<string> */
-    public const DAFTAR_STATUS = [
-        self::STATUS_BELUM_DIPERIKSA,
-        self::STATUS_PATUH,
-        self::STATUS_TIDAK_PATUH,
-        self::STATUS_KEDALUWARSA,
-    ];
-
     protected $fillable = [
         'OrganisasiId',
         'AsetId',

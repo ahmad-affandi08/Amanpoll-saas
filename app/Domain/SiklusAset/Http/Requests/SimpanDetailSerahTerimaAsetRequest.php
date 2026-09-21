@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\SiklusAset\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
-use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +26,7 @@ final class SimpanDetailSerahTerimaAsetRequest extends FormRequest
         return [
             'AsetId' => ['required', 'string',
                 Rule::exists('Aset', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
-            'KondisiSaatDiserahkan' => ['nullable', 'string', Rule::in([Aset::KONDISI_BAIK, Aset::KONDISI_PERLU_PERHATIAN, Aset::KONDISI_RUSAK])],
+            'KondisiSaatDiserahkan' => ['nullable', 'string', Rule::enum(KondisiAset::class)],
             'Catatan' => ['nullable', 'string'],
         ];
     }

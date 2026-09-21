@@ -21,10 +21,6 @@ final class SerahTerimaAset extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
-    public const STATUS_DISERAHKAN = 'Diserahkan';
-
-    public const STATUS_DITERIMA = 'Diterima';
-
     protected $fillable = [
         'OrganisasiId',
         'Nomor',

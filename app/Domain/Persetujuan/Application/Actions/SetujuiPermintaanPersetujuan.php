@@ -8,6 +8,8 @@ use App\Core\Audit\LayananAudit;
 use App\Core\Entitas\RegistriEntitas;
 use App\Domain\Persetujuan\Application\Services\LayananNotifikasiPersetujuan;
 use App\Domain\Persetujuan\Application\Services\LayananPenyetuju;
+use App\Domain\Persetujuan\Domain\Enums\JenisKeputusanPersetujuan;
+use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\KeputusanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
@@ -32,7 +34,7 @@ final class SetujuiPermintaanPersetujuan
      */
     public function jalankan(PermintaanPersetujuan $permintaan, Pengguna $penyetuju, ?string $catatan): array
     {
-        if ($permintaan->Status !== PermintaanPersetujuan::STATUS_MENUNGGU) {
+        if ($permintaan->Status !== StatusPermintaanPersetujuan::Menunggu->value) {
             throw new AturanBisnisDilanggar('Permintaan persetujuan ini sudah selesai.');
         }
 
@@ -59,7 +61,7 @@ final class SetujuiPermintaanPersetujuan
                 'PermintaanPersetujuanId' => $permintaan->Id,
                 'TahapPersetujuanId' => $tahap->Id,
                 'PenyetujuId' => $penyetuju->Id,
-                'Keputusan' => KeputusanPersetujuan::KEPUTUSAN_DISETUJUI,
+                'Keputusan' => JenisKeputusanPersetujuan::Disetujui->value,
                 'Catatan' => $catatan,
                 'DiputuskanPada' => now(),
             ]);
@@ -67,7 +69,7 @@ final class SetujuiPermintaanPersetujuan
             $jumlahSetuju = KeputusanPersetujuan::query()
                 ->where('PermintaanPersetujuanId', $permintaan->Id)
                 ->where('TahapPersetujuanId', $tahap->Id)
-                ->where('Keputusan', KeputusanPersetujuan::KEPUTUSAN_DISETUJUI)
+                ->where('Keputusan', JenisKeputusanPersetujuan::Disetujui->value)
                 ->count();
 
             if ($jumlahSetuju < $tahap->JumlahMinimumPenyetuju) {
@@ -83,7 +85,7 @@ final class SetujuiPermintaanPersetujuan
             if ($tahapBerikutnya) {
                 $permintaan->TahapSaatIni = $tahapBerikutnya->Urutan;
             } else {
-                $permintaan->Status = PermintaanPersetujuan::STATUS_DISETUJUI;
+                $permintaan->Status = StatusPermintaanPersetujuan::Disetujui->value;
                 $permintaan->SelesaiPada = now()->toImmutable();
                 $selesai = true;
             }

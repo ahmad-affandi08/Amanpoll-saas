@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\IntegrasiAudit\Application\Services;
 
+use App\Domain\IntegrasiAudit\Domain\Enums\StatusPengirimanPanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\KotakKeluarPeristiwa;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
@@ -62,7 +63,7 @@ final class LayananPanggilanBalikWeb
                 'PanggilanBalikWebId' => $webhook->Id,
                 'Peristiwa' => $peristiwa->NamaPeristiwa,
                 'MuatanData' => $muatan,
-                'Status' => PengirimanPanggilanBalikWeb::STATUS_ANTRI,
+                'Status' => StatusPengirimanPanggilanBalikWeb::Antri->value,
             ]);
 
             KirimPanggilanBalikWeb::dispatch($pengiriman->Id);
@@ -78,7 +79,7 @@ final class LayananPanggilanBalikWeb
      */
     public function kirim(PengirimanPanggilanBalikWeb $pengiriman): bool
     {
-        if ($pengiriman->Status === PengirimanPanggilanBalikWeb::STATUS_BERHASIL) {
+        if ($pengiriman->Status === StatusPengirimanPanggilanBalikWeb::Berhasil->value) {
             return true;
         }
 
@@ -106,7 +107,7 @@ final class LayananPanggilanBalikWeb
             $pengiriman->Respons = mb_substr($respons->body(), 0, 2000);
 
             if ($respons->successful()) {
-                $pengiriman->Status = PengirimanPanggilanBalikWeb::STATUS_BERHASIL;
+                $pengiriman->Status = StatusPengirimanPanggilanBalikWeb::Berhasil->value;
                 $pengiriman->DikirimPada = now()->toImmutable();
                 $pengiriman->JadwalCobaLagiPada = null;
                 $pengiriman->Percobaan = $pengiriman->Percobaan + 1;
@@ -171,10 +172,10 @@ final class LayananPanggilanBalikWeb
         $pengiriman->Respons = mb_substr($pengiriman->Respons ?? $kesalahan, 0, 2000);
 
         if ($percobaan >= PengirimanPanggilanBalikWeb::BATAS_PERCOBAAN) {
-            $pengiriman->Status = PengirimanPanggilanBalikWeb::STATUS_GAGAL_PERMANEN;
+            $pengiriman->Status = StatusPengirimanPanggilanBalikWeb::GagalPermanen->value;
             $pengiriman->JadwalCobaLagiPada = null;
         } else {
-            $pengiriman->Status = PengirimanPanggilanBalikWeb::STATUS_GAGAL;
+            $pengiriman->Status = StatusPengirimanPanggilanBalikWeb::Gagal->value;
             $pengiriman->JadwalCobaLagiPada = now()->addSeconds(60 * (2 ** ($percobaan - 1)))->toImmutable();
         }
 
@@ -183,7 +184,7 @@ final class LayananPanggilanBalikWeb
 
     private function tandaiGagalPermanen(PengirimanPanggilanBalikWeb $pengiriman, string $kesalahan): void
     {
-        $pengiriman->Status = PengirimanPanggilanBalikWeb::STATUS_GAGAL_PERMANEN;
+        $pengiriman->Status = StatusPengirimanPanggilanBalikWeb::GagalPermanen->value;
         $pengiriman->Respons = $kesalahan;
         $pengiriman->JadwalCobaLagiPada = null;
         $pengiriman->save();

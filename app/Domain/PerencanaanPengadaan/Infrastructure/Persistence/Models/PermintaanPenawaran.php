@@ -19,12 +19,6 @@ final class PermintaanPenawaran extends ModelDasar
 
     public $timestamps = false;
 
-    public const STATUS_DRAFT = 'Draft';
-
-    public const STATUS_DIBUKA = 'Dibuka';
-
-    public const STATUS_DITUTUP = 'Ditutup';
-
     protected $fillable = [
         'OrganisasiId',
         'Nomor',

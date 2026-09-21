@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPesananPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPenawaranPenyedia;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPesananPembelianRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\PenawaranPenyediaResource;
 use App\Domain\PerencanaanPengadaan\Http\Resources\PesananPembelianResource;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
+use App\Domain\Persediaan\Domain\Enums\StatusGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -25,15 +28,7 @@ final class PesananPembelianController extends Controller
         $this->authorize('viewAny', PesananPembelian::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:100'],
-            'status' => ['nullable', 'string', Rule::in([
-                PesananPembelian::STATUS_DRAFT,
-                PesananPembelian::STATUS_MENUNGGU_PERSETUJUAN,
-                PesananPembelian::STATUS_DISETUJUI,
-                PesananPembelian::STATUS_DITOLAK,
-                PesananPembelian::STATUS_DIKIRIM,
-                PesananPembelian::STATUS_DITERIMA_SEBAGIAN,
-                PesananPembelian::STATUS_DITERIMA_PENUH,
-            ])],
+            'status' => ['nullable', 'string', Rule::enum(StatusPesananPembelian::class)],
         ]);
 
         $pesanan = PesananPembelian::query()
@@ -49,7 +44,7 @@ final class PesananPembelianController extends Controller
             'pesanan' => PesananPembelianResource::collection($pesanan),
             'penawaranTerpilih' => PenawaranPenyediaResource::collection(
                 PenawaranPenyedia::query()
-                    ->where('Status', PenawaranPenyedia::STATUS_TERPILIH)
+                    ->where('Status', StatusPenawaranPenyedia::Terpilih->value)
                     ->whereDoesntHave('pesananPembelian')
                     ->with(['penyedia', 'permintaanPenawaran'])
                     ->orderByDesc('DibuatPada')
@@ -86,7 +81,7 @@ final class PesananPembelianController extends Controller
 
         return Inertia::render('PesananPembelian/Show', [
             'pesanan' => new PesananPembelianResource($pesananPembelian),
-            'gudang' => Gudang::query()->where('Status', Gudang::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
+            'gudang' => Gudang::query()->where('Status', StatusGudang::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
         ]);
     }
 

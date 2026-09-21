@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Kontrak\Http\Controllers;
 
+use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kontrak\Application\Actions\KelolaCakupanAsetKontrak;
 use App\Domain\Kontrak\Application\Actions\KelolaKontrak;
 use App\Domain\Kontrak\Application\Actions\KelolaLayananKontrak;
 use App\Domain\Kontrak\Application\Services\LayananPeringatanKontrak;
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Http\Requests\BatalkanKontrakRequest;
 use App\Domain\Kontrak\Http\Requests\CatatPemakaianLayananRequest;
 use App\Domain\Kontrak\Http\Requests\SimpanKontrakAsetRequest;
@@ -19,6 +21,7 @@ use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\KontrakAset;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\LayananKontrak;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
+use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +37,7 @@ final class KontrakController extends Controller
         $this->authorize('viewAny', Kontrak::class);
         $filter = $request->validate([
             'cari' => ['nullable', 'string', 'max:120'],
-            'status' => ['nullable', 'string', Rule::in(Kontrak::DAFTAR_STATUS)],
+            'status' => ['nullable', 'string', Rule::enum(StatusKontrak::class)],
             'penyedia' => ['nullable', 'string'],
         ]);
 
@@ -52,7 +55,7 @@ final class KontrakController extends Controller
 
         return Inertia::render('Kontrak/Index', [
             'kontrak' => KontrakResource::collection($kontrak),
-            'penyedia' => Penyedia::query()->where('Status', Penyedia::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
+            'penyedia' => Penyedia::query()->where('Status', StatusPenyedia::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
             'tingkatLayanan' => TingkatLayanan::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'ringkasan' => $peringatan->ringkasan($request->user('web')->OrganisasiId),
             'filter' => $filter,
@@ -76,7 +79,7 @@ final class KontrakController extends Controller
 
         return Inertia::render('Kontrak/Show', [
             'kontrak' => new KontrakResource($kontrak),
-            'aset' => Aset::query()->where('Status', Aset::STATUS_AKTIF)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
+            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
         ]);
     }
 

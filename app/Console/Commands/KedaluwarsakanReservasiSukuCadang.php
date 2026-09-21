@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Core\Organisasi\ScopeOrganisasi;
 use App\Domain\Persediaan\Application\Services\LayananSaldoReservasi;
+use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use Illuminate\Console\Command;
@@ -32,7 +33,7 @@ final class KedaluwarsakanReservasiSukuCadang extends Command
     public function handle(): int
     {
         $reservasiKedaluwarsa = ReservasiSukuCadang::withoutGlobalScope(ScopeOrganisasi::class)
-            ->where('Status', ReservasiSukuCadang::STATUS_AKTIF)
+            ->where('Status', StatusReservasiSukuCadang::Aktif->value)
             ->whereNotNull('KadaluarsaPada')
             ->where('KadaluarsaPada', '<', now())
             ->get();
@@ -46,7 +47,7 @@ final class KedaluwarsakanReservasiSukuCadang extends Command
                     -1 * (float) $reservasi->Jumlah,
                 );
 
-                $reservasi->Status = ReservasiSukuCadang::STATUS_KADALUARSA;
+                $reservasi->Status = StatusReservasiSukuCadang::Kadaluarsa->value;
                 $reservasi->save();
             });
         }
