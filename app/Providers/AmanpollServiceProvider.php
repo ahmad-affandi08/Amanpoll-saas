@@ -12,6 +12,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
+use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -73,6 +74,7 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('JenisKalibrasi', JenisKalibrasi::class, 'Kalibrasi.Kelola');
         $registri->daftarkan('RencanaKalibrasi', RencanaKalibrasi::class, 'Kalibrasi.Kelola');
         $registri->daftarkan('PelaksanaanKalibrasi', PelaksanaanKalibrasi::class, 'Kalibrasi.Kelola');
+        $registri->daftarkan('Kontrak', Kontrak::class, 'Kontrak.Kelola');
         $registri->daftarkan('Anggaran', Anggaran::class, 'Pengadaan.Kelola');
         $registri->daftarkan('UsulanAset', UsulanAset::class, 'Pengadaan.Kelola');
         $registri->daftarkan('RencanaPengadaan', RencanaPengadaan::class, 'Pengadaan.Kelola');

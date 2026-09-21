@@ -1867,80 +1867,8 @@ parameters:
 			path: app/Domain/Kontrak/Domain/Repositories/LayananKontrakRepository.php
 
 		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Requests\\SimpanKontrakAsetRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kontrak/Http/Requests/SimpanKontrakAsetRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Requests\\SimpanKontrakRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kontrak/Http/Requests/SimpanKontrakRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Requests\\SimpanLayananKontrakRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kontrak/Http/Requests/SimpanLayananKontrakRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Resources\\KontrakAsetResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kontrak/Http/Resources/KontrakAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Resources\\KontrakAsetResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Kontrak/Http/Resources/KontrakAsetResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Resources\\KontrakResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kontrak/Http/Resources/KontrakResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Resources\\KontrakResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Kontrak/Http/Resources/KontrakResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Resources\\LayananKontrakResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kontrak/Http/Resources/LayananKontrakResource.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Http\\Resources\\LayananKontrakResource\:\:toArray\(\) should return array but returns array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Kontrak/Http/Resources/LayananKontrakResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/Kontrak.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\Kontrak\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/Kontrak.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\Kontrak\:\:penyedia\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/Kontrak.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\Kontrak\:\:tingkatLayanan\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/Kontrak.php
 
@@ -1951,38 +1879,8 @@ parameters:
 			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/KontrakAset.php
 
 		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\KontrakAset\:\:aset\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/KontrakAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\KontrakAset\:\:kontrak\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/KontrakAset.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\KontrakAset\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/KontrakAset.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$OrganisasiId\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/LayananKontrak.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\LayananKontrak\:\:kontrak\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/LayananKontrak.php
-
-		-
-			message: '#^Method App\\Domain\\Kontrak\\Infrastructure\\Persistence\\Models\\LayananKontrak\:\:organisasi\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Domain/Kontrak/Infrastructure/Persistence/Models/LayananKontrak.php
 

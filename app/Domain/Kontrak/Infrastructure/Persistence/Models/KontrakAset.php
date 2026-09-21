@@ -36,16 +36,25 @@ final class KontrakAset extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Kontrak, $this>
+     */
     public function kontrak(): BelongsTo
     {
         return $this->belongsTo(Kontrak::class, 'KontrakId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Aset, $this>
+     */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');

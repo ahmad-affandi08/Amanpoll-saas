@@ -45,6 +45,13 @@ final class DefinisiKonfigurasi
                 'Label' => 'Ambang nilai transaksi wajib persetujuan (Rupiah)',
                 'Rahasia' => false,
             ],
+            'Kontrak.HariPeringatan' => [
+                'Namespace' => 'Kontrak',
+                'Tipe' => 'string',
+                'Default' => '90,60,30',
+                'Label' => 'Ambang hari peringatan kontrak akan berakhir (dipisah koma)',
+                'Rahasia' => false,
+            ],
             'Integrasi.WebhookRahasia' => [
                 'Namespace' => 'Integrasi',
                 'Tipe' => 'string',

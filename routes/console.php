@@ -45,3 +45,8 @@ Schedule::command('kalibrasi:kirim-peringatan-jatuh-tempo')
     ->dailyAt('06:30')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
     ->withoutOverlapping();
+
+Schedule::command('kontrak:kirim-peringatan-berakhir')
+    ->dailyAt('06:45')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();

@@ -1031,36 +1031,36 @@ Flow procurement end-to-end lulus test dan tidak menghasilkan mismatch total/qua
 
 ## 17.01 Kontrak
 
-- [ ] CRUD.
-- [ ] Penyedia.
-- [ ] Tanggal.
-- [ ] Nilai.
-- [ ] Status.
-- [ ] Dokumen.
+- [x] CRUD.
+- [x] Penyedia.
+- [x] Tanggal.
+- [x] Nilai.
+- [x] Status.
+- [x] Dokumen.
 
 ## 17.02 KontrakAset
 
-- [ ] Attach aset.
-- [ ] Validasi tenant.
-- [ ] Periode coverage.
+- [x] Attach aset.
+- [x] Validasi tenant.
+- [x] Periode coverage.
 
 ## 17.03 LayananKontrak
 
-- [ ] Jenis layanan.
-- [ ] SLA.
-- [ ] Limit bila ada.
-- [ ] Hubungan ke PerintahKerja vendor.
+- [x] Jenis layanan.
+- [x] SLA.
+- [x] Limit bila ada.
+- [x] Hubungan ke PerintahKerja vendor.
 
 ## 17.04 Reminder
 
-- [ ] H-90/H-60/H-30 configurable.
-- [ ] Expired.
-- [ ] Notification.
-- [ ] Dashboard.
+- [x] H-90/H-60/H-30 configurable.
+- [x] Expired.
+- [x] Notification.
+- [x] Dashboard.
 
 ### Gate 17
 
-Pekerjaan vendor dapat ditelusuri ke penyedia dan kontrak aktif.
+Pekerjaan vendor dapat ditelusuri ke penyedia dan kontrak aktif (Terpenuhi).
 
 ---
 

@@ -36,11 +36,17 @@ final class LayananKontrak extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Kontrak, $this>
+     */
     public function kontrak(): BelongsTo
     {
         return $this->belongsTo(Kontrak::class, 'KontrakId', 'Id');

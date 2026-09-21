@@ -55,6 +55,7 @@ import {
   ChevronsUpDown,
   LogOut,
   ClipboardList,
+  FileSignature,
   ShoppingCart,
   type LucideIcon,
 } from 'lucide-react';
@@ -215,6 +216,12 @@ const navRantaiPasok: GrupNav = {
       href: '/penyedia',
       icon: Truck,
       kodeIzin: 'Penyedia.Kelola',
+    },
+    {
+      label: 'Kontrak',
+      href: '/kontrak',
+      icon: FileSignature,
+      kodeIzin: 'Kontrak.Kelola',
     },
   ],
 };

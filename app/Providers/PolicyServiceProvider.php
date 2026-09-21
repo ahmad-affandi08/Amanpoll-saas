@@ -26,6 +26,8 @@ use App\Domain\Kolaborasi\Http\Policies\BerkasPolicy;
 use App\Domain\Kolaborasi\Http\Policies\TagPolicy;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Tag;
+use App\Domain\Kontrak\Http\Policies\KontrakPolicy;
+use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Notifikasi\Http\Policies\TemplatNotifikasiPolicy;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
 use App\Domain\Pemeliharaan\Http\Policies\KategoriKeluhanPolicy;
@@ -179,6 +181,7 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(UsulanAset::class, UsulanAsetPolicy::class);
         Gate::policy(RencanaPengadaan::class, RencanaPengadaanPolicy::class);
         Gate::policy(PermintaanPembelian::class, PengadaanPolicy::class);
+        Gate::policy(Kontrak::class, KontrakPolicy::class);
         Gate::policy(PermintaanPenawaran::class, PengadaanPolicy::class);
         Gate::policy(PenawaranPenyedia::class, PengadaanPolicy::class);
         Gate::policy(PesananPembelian::class, PengadaanPolicy::class);

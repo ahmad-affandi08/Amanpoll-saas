@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Kontrak\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanKontrakAsetRequest extends FormRequest
 {
@@ -13,16 +15,18 @@ final class SimpanKontrakAsetRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $organisasiId = app(KonteksOrganisasi::class)->wajibId();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'KontrakId' => ['sometimes'],
-            'AsetId' => ['sometimes'],
-            'MulaiPada' => ['nullable'],
-            'BerakhirPada' => ['nullable'],
-            'Catatan' => ['nullable'],
+            'AsetId' => ['required', 'string', Rule::exists('Aset', 'Id')->where('OrganisasiId', $organisasiId)],
+            'MulaiPada' => ['nullable', 'date'],
+            'BerakhirPada' => ['nullable', 'date', 'after_or_equal:MulaiPada'],
+            'Catatan' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

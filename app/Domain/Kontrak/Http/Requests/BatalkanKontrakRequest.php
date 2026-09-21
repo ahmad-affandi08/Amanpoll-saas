@@ -6,7 +6,7 @@ namespace App\Domain\Kontrak\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class SimpanLayananKontrakRequest extends FormRequest
+final class BatalkanKontrakRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -19,10 +19,7 @@ final class SimpanLayananKontrakRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Nama' => ['required', 'string', 'max:180'],
-            'Deskripsi' => ['nullable', 'string', 'max:2000'],
-            'Kuota' => ['nullable', 'numeric', 'decimal:0,4', 'gt:0'],
-            'Satuan' => ['nullable', 'string', 'max:50'],
+            'Alasan' => ['required', 'string', 'min:5', 'max:500'],
         ];
     }
 }
