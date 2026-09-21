@@ -312,6 +312,24 @@ Domain/NamaDomain/
 - Proses berat masuk queue.
 - Query tenant selalu dibatasi `OrganisasiId`.
 
+### 5.4 Pemisahan Host
+
+Satu basis kode dan satu aplikasi Laravel melayani beberapa host:
+
+| Host | Isi | Autentikasi |
+|---|---|---|
+| `amanpoll.com` | Situs publik: landing page, konten, harga, demo, formulir | Anonim |
+| `dashboard.amanpoll.com` | Sistem penuh: login, dashboard organisasi, seluruh modul | Wajib login |
+| `partner.amanpoll.com` | Portal partner, tahap lanjut | Login partner |
+
+Aturan:
+
+- Pemisahan memakai `Route::domain(...)`, bukan aplikasi kedua dan bukan pengecekan host di dalam controller.
+- Host dibaca dari konfigurasi yang berasal dari environment; host tidak boleh ditulis langsung di source atau di frontend.
+- Host publik berjalan tanpa middleware `auth` dan `organisasi`; host sistem tetap memakai keduanya.
+- Root `/` pada host publik adalah landing page; root pada host sistem adalah dashboard organisasi dan mengarahkan pengunjung anonim ke halaman login.
+- Rincian halaman publik, SEO, dan attribution lintas host ada di `MARKETING.md` bagian 1.
+
 ---
 
 ## 6. Standar Kode
@@ -1250,6 +1268,8 @@ Cron menangani:
 - Report generation.
 - Cleanup.
 
+Seluruh host pada 5.4 dilayani satu instalasi yang sama: subdomain dibuat di hPanel dengan document root yang sama seperti domain utama, sehingga tidak ada duplikasi source, vendor, build, maupun `.env`.
+
 Ketika pindah ke VPS, queue dapat dipindah ke Redis/Horizon tanpa mengubah business contract.
 
 ---
@@ -1269,6 +1289,8 @@ Ketika pindah ke VPS, queue dapat dipindah ke Redis/Horizon tanpa mengubah busin
 - Authorization di backend.
 - Audit security-sensitive actions.
 - Secure cookie pada HTTPS.
+- Cookie sesi memakai domain induk agar berlaku lintas subdomain, dengan `SESSION_DOMAIN` dari environment.
+- Host non-publik tidak dapat diindeks mesin pencari.
 - File authorization.
 - Mass assignment terkendali.
 

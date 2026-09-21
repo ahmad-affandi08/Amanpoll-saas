@@ -1538,7 +1538,27 @@ Target:
 - [ ] APP_DEBUG=false.
 - [ ] HTTPS.
 
-## 27.02 Build
+## 27.02 Host dan Subdomain
+
+Situs publik dan sistem dipisah per host sesuai `PRD.md` 5.4 dan `MARKETING.md` bagian 1, tetapi tetap satu instalasi:
+
+```text
+amanpoll.com            → public_html   (situs publik)
+dashboard.amanpoll.com  → public_html   (sistem penuh)
+partner.amanpoll.com    → public_html   (tahap lanjut)
+```
+
+- [ ] Subdomain dibuat di hPanel dengan document root sama seperti domain utama.
+- [ ] Tidak ada duplikasi source, `vendor`, `build`, atau `.env` per host.
+- [ ] Host diisi lewat environment, bukan literal di source.
+- [ ] SSL aktif untuk setiap host, termasuk subdomain.
+- [ ] `SESSION_DOMAIN` diisi domain induk agar sesi berlaku lintas subdomain.
+- [ ] `SESSION_SECURE_COOKIE=true`.
+- [ ] Redirect 301 dari bentuk non-kanonik ke bentuk kanonik yang dipilih.
+- [ ] Host non-publik mengirim `noindex` dan `robots.txt` yang melarang crawl.
+- [ ] Root host publik membuka landing page; root host sistem mengarahkan pengunjung anonim ke login.
+
+## 27.03 Build
 
 - [ ] `composer install --no-dev --optimize-autoloader`.
 - [ ] Build frontend sebelum upload bila Node tidak tersedia/diinginkan di server.
@@ -1546,7 +1566,7 @@ Target:
 - [ ] `php artisan optimize`.
 - [ ] `php artisan storage:link` bila strategi file public memerlukannya.
 
-## 27.03 Cron
+## 27.04 Cron
 
 - [ ] Scheduler.
 - [ ] Queue worker pendek.
@@ -1555,7 +1575,7 @@ Target:
 - [ ] Test reminder.
 - [ ] Test outbox.
 
-## 27.04 Database Production
+## 27.05 Database Production
 
 - [ ] Buat database dari hPanel.
 - [ ] Gunakan schema hosting tanpa `CREATE DATABASE`.
@@ -1565,7 +1585,7 @@ Target:
 
 ### Gate 27
 
-Smoke test production lulus setelah deployment.
+Smoke test production lulus setelah deployment, dan setiap host terbukti melayani isi yang benar: landing page pada host publik, login/dashboard pada host sistem, tanpa kebocoran halaman antar host.
 
 ---
 

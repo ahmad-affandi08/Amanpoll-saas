@@ -20,13 +20,61 @@ Aturan implementasi:
 - Semua job asynchronous harus kompatibel dengan Niagahoster shared hosting: database queue + cron.
 - Jangan mewajibkan Redis, Horizon, Supervisor, systemd, Docker, Octane, FrankenPHP, atau daemon permanen.
 - Jangan hard-code landing page, CTA, trial duration, campaign, email sequence, WhatsApp flow, pricing presentation, referral reward, dan SEO metadata bila dapat dibuat configurable.
+- Jangan hard-code host. Situs publik berada di `amanpoll.com` dan sistem penuh di `dashboard.amanpoll.com`; keduanya dilayani satu aplikasi lewat `Route::domain(...)` dengan host dari konfigurasi (bagian 1).
 - Secret provider tetap di environment/secret storage.
 - Semua UI mengikuti `DESIGN.md`: light only, IBM Plex Sans, steel-blue/navy + safety amber, responsive, radius moderat, tanpa AI-slop visual.
 - Catat progress di `PROGRESS.md`.
 
 ---
 
-# 1. Sasaran Sistem
+# 1. Arsitektur Domain dan Host
+
+Amanpoll dilayani **satu aplikasi Laravel dari satu basis kode**, tetapi dipecah menjadi beberapa host:
+
+| Host | Isi | Autentikasi |
+|---|---|---|
+| `amanpoll.com` | Situs publik: landing page, konten, harga, demo, formulir, lead magnet, tools | Anonim |
+| `dashboard.amanpoll.com` | Sistem penuh: login, dashboard organisasi, seluruh modul operasional, dan Dashboard Platform termasuk Growth & Marketing | Wajib login |
+| `partner.amanpoll.com` | Portal partner, tahap lanjut (bagian 21) | Login partner |
+
+Aturan:
+
+- Root `/` pada `amanpoll.com` adalah landing page, bukan dashboard. Rute aplikasi yang hari ini berada di root dipindah ke host dashboard ketika pekerjaan pemasaran dimulai.
+- Host tidak boleh ditulis langsung di source maupun di frontend. Semua host dibaca dari konfigurasi (`amanpoll.domain.publik`, `amanpoll.domain.dashboard`, `amanpoll.domain.partner`) yang berasal dari environment.
+- Pemisahan dilakukan dengan `Route::domain(...)`, bukan aplikasi kedua, bukan repository kedua, dan bukan pengecekan host di dalam controller.
+- Middleware kedua host berbeda: host publik tanpa `auth` dan tanpa `organisasi`, dengan rate limit serta cache respons; host dashboard tetap memakai `auth` + `organisasi` seperti sekarang.
+- Ketiga host diarahkan ke satu `public_html` yang sama di Niagahoster; subdomain dibuat dengan document root yang sama (`TASK.md` FASE 27).
+- Halaman publik tetap Inertia + React, memakai build Vite yang sama, dan tetap tunduk pada `DESIGN.md`.
+
+## 1.1 Sesi dan cookie lintas host
+
+- Cookie sesi memakai domain induk (`.amanpoll.com`) supaya identitas pengunjung tidak putus saat berpindah dari situs publik ke dashboard.
+- `SESSION_DOMAIN` dan `SESSION_SECURE_COOKIE` dikonfigurasi dari environment, tidak di-hard-code.
+- Cookie identitas pengunjung pemasaran (`SesiPengunjung`) juga memakai domain induk. Tanpa itu first touch hilang saat pendaftaran trial, karena formulir pendaftaran berada di host dashboard sementara kunjungan pertama terjadi di host publik.
+- Sesi login hanya berlaku pada host dashboard. Host publik tidak pernah membaca sesi organisasi, hanya sesi pengunjung anonim.
+- CSRF untuk formulir publik tetap aktif; formulir publik tidak boleh dikirim lintas host.
+
+## 1.2 SEO dan redirect
+
+- Hanya `amanpoll.com` yang boleh diindeks. `dashboard.amanpoll.com` dan `partner.amanpoll.com` mengirim `X-Robots-Tag: noindex` dan `robots.txt` yang melarang seluruh crawl.
+- `canonical` seluruh halaman publik selalu memakai host publik, termasuk ketika halaman diakses lewat host lain.
+- Pilih satu bentuk kanonik antara `amanpoll.com` dan `www.amanpoll.com`, lalu redirect 301 bentuk lainnya.
+- `sitemap.xml` hanya berisi URL host publik.
+- Redirect manager (bagian 9) hanya berlaku untuk host publik.
+
+## 1.3 Lingkungan non-produksi
+
+| Lingkungan | Publik | Dashboard |
+|---|---|---|
+| Lokal | `amanpoll.test` | `dashboard.amanpoll.test` |
+| Staging | `staging.amanpoll.com` | `dashboard.staging.amanpoll.com` |
+| Produksi | `amanpoll.com` | `dashboard.amanpoll.com` |
+
+Test yang menyentuh route publik atau dashboard wajib menetapkan host dari konfigurasi, bukan menuliskan host produksi.
+
+---
+
+# 2. Sasaran Sistem
 
 Amanpoll harus mempunyai **Growth Operating System** internal:
 
@@ -57,7 +105,9 @@ Targetnya:
 
 ---
 
-# 2. Posisi Domain
+# 3. Posisi Bounded Context
+
+"Domain" di bagian ini berarti bounded context DDD, bukan host. Peta host ada di bagian 1.
 
 Tambahkan bounded context:
 
@@ -92,33 +142,36 @@ app/Domain/Pemasaran/
 └── Support/
 ```
 
-Frontend:
+Frontend mengikuti `PRD.md` bagian 14.1: satu folder PascalCase per feature di `resources/js/features/`, berkas dibuat saat ada isinya, tanpa barrel `index.ts`.
 
 ```text
-resources/js/features/pemasaran/
-├── dashboard/
-├── prospek/
-├── crm/
-├── kampanye/
-├── halaman/
-├── formulir/
-├── konten/
-├── seo/
-├── otomasi/
-├── email/
-├── whatsapp/
-├── sosial/
-├── trial/
-├── referral/
-├── partner/
-├── eksperimen/
-├── attribution/
-└── analytics/
+resources/js/features/
+├── Publik/                 halaman amanpoll.com: landing, artikel, harga, tools
+├── Prospek/
+├── KampanyePemasaran/
+├── HalamanPemasaran/
+├── FormulirPemasaran/
+├── KontenPemasaran/
+├── SeoPemasaran/
+├── OtomasiPemasaran/
+├── EmailPemasaran/
+├── WhatsAppPemasaran/
+├── SosialPemasaran/
+├── DemoTrial/
+├── ReferralPemasaran/
+├── PartnerPemasaran/
+├── EksperimenPemasaran/
+├── AttributionPemasaran/
+└── AnalitikPemasaran/
 ```
+
+`Publik/` adalah satu-satunya feature yang dirender pada host publik; sisanya hanya dirender pada host dashboard.
 
 ---
 
-# 3. Navigasi Dashboard Platform
+# 4. Navigasi Dashboard Platform
+
+Seluruh navigasi di bawah berada di `dashboard.amanpoll.com`, tidak pernah di host publik.
 
 ```text
 Platform
@@ -154,9 +207,11 @@ Platform
 
 Semua menu ini hanya untuk role platform yang memiliki permission sesuai.
 
+Yang dikelola dari sini adalah isi `amanpoll.com`: landing page, konten, formulir, dan SEO diterbitkan ke host publik dari dashboard, tanpa deploy.
+
 ---
 
-# 4. Dashboard Growth
+# 5. Dashboard Growth
 
 KPI utama:
 
@@ -224,7 +279,7 @@ Alert platform:
 
 ---
 
-# 5. Prospek & CRM
+# 6. Prospek & CRM
 
 ## 5.1 Sumber lead
 
@@ -317,7 +372,7 @@ Jangan hard-code score sebagai angka permanen di source.
 
 ---
 
-# 6. Timeline Prospek
+# 7. Timeline Prospek
 
 Satu timeline gabungan:
 
@@ -338,9 +393,11 @@ Event berasal dari website, aplikasi, email, WhatsApp, billing, subscription, re
 
 ---
 
-# 7. Landing Page Builder
+# 8. Landing Page Builder
 
-Landing page dapat dibuat/diubah dari dashboard tanpa deploy.
+Landing page dikelola dari `dashboard.amanpoll.com` dan diterbitkan ke `amanpoll.com` tanpa deploy.
+
+Pratinjau draf memakai URL bertanda tangan pada host publik dan wajib `noindex`, supaya draf tidak terindeks dan tidak dapat ditebak.
 
 Tipe:
 
@@ -409,7 +466,7 @@ Wajib:
 
 ---
 
-# 8. CMS Konten & SEO
+# 9. CMS Konten & SEO
 
 Jenis konten:
 
@@ -467,7 +524,7 @@ Support redirect:
 
 ---
 
-# 9. Lead Magnet & Form Builder
+# 10. Lead Magnet & Form Builder
 
 Lead magnet:
 
@@ -515,7 +572,7 @@ Anti-spam:
 
 ---
 
-# 10. Demo Management
+# 11. Demo Management
 
 Dashboard dapat mengatur:
 
@@ -542,7 +599,7 @@ Demo reset menggunakan scheduled job.
 
 ---
 
-# 11. Trial Management
+# 12. Trial Management
 
 Terintegrasi dengan domain Langganan.
 
@@ -588,7 +645,7 @@ DIPERPANJANG
 
 ---
 
-# 12. Campaign Management
+# 13. Campaign Management
 
 Field:
 
@@ -645,7 +702,7 @@ Objective:
 
 ---
 
-# 13. UTM & Attribution
+# 14. UTM & Attribution
 
 Capture:
 
@@ -667,9 +724,16 @@ Minimum attribution:
 
 Anonymous visitor dapat di-merge setelah form submit/login/trial register. Jangan melakukan identity merge berdasarkan sinyal lemah.
 
+Perjalanan pengunjung melintasi dua host: kunjungan dan campaign tercatat di `amanpoll.com`, sedangkan pendaftaran trial terjadi di `dashboard.amanpoll.com`. Karena itu:
+
+- identitas pengunjung dibawa lewat cookie berdomain induk (bagian 1.1), bukan lewat query string yang mudah hilang atau dipalsukan;
+- bila cookie tidak tersedia, UTM dan session ID boleh diteruskan sekali lewat parameter pada tautan CTA menuju host dashboard, lalu segera dipindahkan ke cookie;
+- first touch ditetapkan di kunjungan pertama pada host publik dan tidak boleh ditimpa oleh kunjungan ke host dashboard;
+- kunjungan langsung ke host dashboard tanpa riwayat publik dicatat sebagai `direct`, bukan dibiarkan kosong.
+
 ---
 
-# 14. Email Marketing
+# 15. Email Marketing
 
 Template:
 
@@ -727,7 +791,7 @@ Provider menggunakan adapter.
 
 ---
 
-# 15. WhatsApp Automation
+# 16. WhatsApp Automation
 
 Provider abstraction wajib.
 
@@ -757,7 +821,7 @@ Wajib hormati:
 
 ---
 
-# 16. Marketing Automation Engine
+# 17. Marketing Automation Engine
 
 Struktur:
 
@@ -827,7 +891,7 @@ Setiap execution wajib idempotent.
 
 ---
 
-# 17. Social Media Scheduler
+# 18. Social Media Scheduler
 
 Support abstraction:
 
@@ -876,7 +940,7 @@ Artikel
 
 ---
 
-# 18. Pricing & Offer
+# 19. Pricing & Offer
 
 Source harga tetap dari domain Langganan/Billing.
 
@@ -903,7 +967,7 @@ Jangan mengubah transaksi Billing secara langsung dari domain Marketing.
 
 ---
 
-# 19. Referral
+# 20. Referral
 
 Customer mempunyai:
 
@@ -938,7 +1002,7 @@ Wajib anti self-referral.
 
 ---
 
-# 20. Partner Program
+# 21. Partner Program
 
 Jenis:
 
@@ -963,7 +1027,7 @@ Data:
 - agreement reference;
 - payout reference.
 
-Tahap lanjut:
+Tahap lanjut, host tersendiri sesuai peta pada bagian 1:
 
 ```text
 partner.amanpoll.com
@@ -973,7 +1037,7 @@ Partner dapat melihat lead, trial, paid customer, commission, payout, dan market
 
 ---
 
-# 21. Eksperimen A/B
+# 22. Eksperimen A/B
 
 Target:
 
@@ -1007,7 +1071,7 @@ Jangan auto-declare winner tanpa minimum sample configuration.
 
 ---
 
-# 22. Event Taxonomy
+# 23. Event Taxonomy
 
 Public:
 
@@ -1060,7 +1124,7 @@ KomisiPartnerDibuat
 
 ---
 
-# 23. Database Konseptual
+# 24. Database Konseptual
 
 Gunakan naming PascalCase konsisten dengan Amanpoll.
 
@@ -1149,7 +1213,7 @@ Gunakan ULID sesuai konvensi project.
 
 ---
 
-# 24. Relasi dengan Domain Existing
+# 25. Relasi dengan Domain Existing
 
 ## Langganan/Billing
 
@@ -1188,7 +1252,7 @@ Semua publication/configuration/action sensitif tercatat.
 
 ---
 
-# 25. Permission
+# 26. Permission
 
 Minimal:
 
@@ -1235,7 +1299,7 @@ Export data harus permission terpisah.
 
 ---
 
-# 26. Consent, Audit, dan Safety
+# 27. Consent, Audit, dan Safety
 
 Wajib simpan:
 
@@ -1280,7 +1344,7 @@ Automation mempunyai:
 
 ---
 
-# 27. Provider Contract
+# 28. Provider Contract
 
 Contoh:
 
@@ -1308,7 +1372,7 @@ interface PenyediaAnalyticsPemasaran
 
 ---
 
-# 28. Background Job
+# 29. Background Job
 
 ```text
 ProsesOtomasiPemasaran
@@ -1335,7 +1399,7 @@ php artisan queue:work database --stop-when-empty --max-time=50
 
 ---
 
-# 29. Developer Settings
+# 30. Developer Settings
 
 ```text
 Growth & Marketing
@@ -1355,11 +1419,13 @@ Growth & Marketing
     └── Partner
 ```
 
+Submenu **Domain** menampilkan host publik, host dashboard, dan host partner yang sedang aktif beserta asalnya dari environment, bentuk kanonik yang dipilih, serta status `noindex` tiap host. Nilainya hanya dapat dibaca dari dashboard; perubahannya dilakukan lewat environment, bukan lewat form.
+
 Dashboard tidak pernah menampilkan secret penuh.
 
 ---
 
-# 30. Feature Flag
+# 31. Feature Flag
 
 ```text
 marketing.crm
@@ -1376,7 +1442,7 @@ marketing.analytics
 
 ---
 
-# 31. MVP
+# 32. MVP
 
 Prioritas pertama:
 
@@ -1407,9 +1473,11 @@ Setelah stabil:
 
 ---
 
-# 32. Integrasi ke TASK.md
+# 33. Integrasi ke TASK.md
 
 Jangan membuat implementasi marketing meloncat melewati dependency utama.
+
+Langkah pertama sebelum fitur pemasaran apa pun adalah pemisahan host (bagian 1): konfigurasi host, grup `Route::domain(...)`, pemindahan rute aplikasi yang kini berada di root ke host dashboard, cookie berdomain induk, dan `noindex` untuk host non-publik. Pemisahan ini menyentuh rute autentikasi yang sudah ada, jadi dikerjakan sebagai satu perubahan tersendiri lengkap dengan test, bukan disisipkan di tengah fitur lain.
 
 Setelah Foundation + IAM:
 
@@ -1451,38 +1519,66 @@ Setelah Hardening:
 
 ---
 
-# 33. Public Route
+# 34. Peta Route per Host
+
+## 34.1 `amanpoll.com` — publik
 
 ```text
 /
- /fitur
- /fitur/asset-management
- /fitur/work-order
- /fitur/preventive-maintenance
- /fitur/inventory
- /fitur/calibration
- /fitur/procurement
+/fitur
+/fitur/asset-management
+/fitur/work-order
+/fitur/preventive-maintenance
+/fitur/inventory
+/fitur/calibration
+/fitur/procurement
 
- /industri/manufaktur
- /industri/hotel
- /industri/property
- /industri/healthcare
- /industri/workshop
+/industri/manufaktur
+/industri/hotel
+/industri/property
+/industri/healthcare
+/industri/workshop
 
- /harga
- /demo
- /trial
+/harga
+/demo
+/trial
 
- /artikel
- /artikel/{slug}
+/artikel
+/artikel/{slug}
 
- /template
- /tools
+/template
+/tools
+
+/robots.txt
+/sitemap.xml
 ```
+
+Seluruh route ini anonim, boleh di-cache, dan tidak pernah memuat data tenant. Tombol "Masuk" dan "Coba Gratis" mengarah ke host dashboard.
+
+`/trial` adalah halaman penjelasan, bukan formulir pendaftaran. Formulirnya berada di host dashboard supaya sesi dan cookie yang terbentuk sudah benar sejak awal.
+
+## 34.2 `dashboard.amanpoll.com` — sistem
+
+```text
+/login
+/lupa-kata-sandi
+/reset-kata-sandi/{penggunaId}/{token}
+/daftar                      pendaftaran trial dari landing page
+
+/                            dashboard organisasi
+/aset, /perintah-kerja, ...  seluruh modul operasional
+/platform/...                Dashboard Platform, termasuk Growth & Marketing
+```
+
+Tidak ada landing page di host ini. Pengunjung anonim yang membuka `/` diarahkan ke halaman login, bukan ke landing page.
+
+## 34.3 `partner.amanpoll.com` — portal partner
+
+Tahap lanjut. Isi dan haknya mengikuti bagian 21.
 
 ---
 
-# 34. Acceptance Criteria MVP
+# 35. Acceptance Criteria MVP
 
 MVP selesai jika:
 
@@ -1504,11 +1600,16 @@ MVP selesai jika:
 - action sensitif masuk audit;
 - seluruh UI responsive;
 - job berjalan dengan database queue;
+- landing page tampil di host publik, bukan di host dashboard;
+- root host dashboard tidak pernah menampilkan landing page;
+- tidak ada host yang ditulis langsung di source atau di frontend;
+- first touch bertahan ketika pengunjung berpindah dari host publik ke host dashboard lalu mendaftar trial;
+- host dashboard dan host partner tidak dapat diindeks;
 - test tersedia.
 
 ---
 
-# 35. Test Minimum
+# 36. Test Minimum
 
 Feature:
 
@@ -1528,6 +1629,10 @@ TrialActivationTest
 ReferralConversionTest
 PermissionPemasaranTest
 AuditPemasaranTest
+RouteHostPublikTest
+RouteHostDashboardTest
+AttributionLintasHostTest
+NoindexHostDashboardTest
 ```
 
 Unit:
@@ -1542,7 +1647,7 @@ TransisiStatusProspekTest
 
 ---
 
-# 36. Definition of Done
+# 37. Definition of Done
 
 Fitur marketing dianggap selesai jika:
 
@@ -1563,7 +1668,7 @@ Fitur marketing dianggap selesai jika:
 
 ---
 
-# 37. Hasil Akhir yang Diinginkan
+# 38. Hasil Akhir yang Diinginkan
 
 Founder harus dapat membuka satu dashboard dan melihat:
 
