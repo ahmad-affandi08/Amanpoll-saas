@@ -54,6 +54,9 @@ final class KeputusanPersetujuan extends ModelDasar
         return $this->belongsTo(TahapPersetujuan::class, 'TahapPersetujuanId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Pengguna, $this>
+     */
     public function penyetuju(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'PenyetujuId', 'Id');

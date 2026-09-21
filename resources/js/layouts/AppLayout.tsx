@@ -7,11 +7,7 @@ import { NotificationBell } from '@/components/notifikasi/NotificationBell';
 import { LogoMark } from '@/components/shared/LogoMark';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +53,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   LogOut,
+  ClipboardList,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -109,8 +106,16 @@ const navOperasionalAset: GrupNav = {
       subItems: [
         { label: 'Keluhan', href: '/pemeliharaan/keluhan' },
         { label: 'Perintah Kerja', href: '/pemeliharaan/perintah-kerja' },
-        { label: 'Tingkat Layanan (SLA)', href: '/pemeliharaan/tingkat-layanan', kodeIzin: 'Pemeliharaan.Kelola' },
-        { label: 'Kategori Keluhan', href: '/pemeliharaan/kategori-keluhan', kodeIzin: 'Pemeliharaan.Kelola' },
+        {
+          label: 'Tingkat Layanan (SLA)',
+          href: '/pemeliharaan/tingkat-layanan',
+          kodeIzin: 'Pemeliharaan.Kelola',
+        },
+        {
+          label: 'Kategori Keluhan',
+          href: '/pemeliharaan/kategori-keluhan',
+          kodeIzin: 'Pemeliharaan.Kelola',
+        },
         { label: 'Kode Kegagalan', href: '/pemeliharaan/kode-kegagalan', kodeIzin: 'PerintahKerja.Kelola' },
       ],
     },
@@ -118,9 +123,17 @@ const navOperasionalAset: GrupNav = {
       label: 'Preventif & Inspeksi',
       icon: CalendarClock,
       subItems: [
-        { label: 'Rencana Preventif', href: '/preventif-inspeksi/rencana-pemeliharaan', kodeIzin: 'Pemeliharaan.Kelola' },
+        {
+          label: 'Rencana Preventif',
+          href: '/preventif-inspeksi/rencana-pemeliharaan',
+          kodeIzin: 'Pemeliharaan.Kelola',
+        },
         { label: 'Inspeksi Berkala', href: '/preventif-inspeksi/inspeksi', kodeIzin: 'Pemeliharaan.Kelola' },
-        { label: 'Daftar Periksa', href: '/preventif-inspeksi/templat-daftar-periksa', kodeIzin: 'Pemeliharaan.Kelola' },
+        {
+          label: 'Daftar Periksa',
+          href: '/preventif-inspeksi/templat-daftar-periksa',
+          kodeIzin: 'Pemeliharaan.Kelola',
+        },
       ],
     },
     {
@@ -139,6 +152,19 @@ const navOperasionalAset: GrupNav = {
 const navRantaiPasok: GrupNav = {
   label: 'Persediaan & Rekanan',
   items: [
+    {
+      label: 'Perencanaan & Pengadaan',
+      icon: ClipboardList,
+      subItems: [
+        { label: 'Anggaran', href: '/perencanaan-pengadaan/anggaran', kodeIzin: 'Pengadaan.Kelola' },
+        { label: 'Usulan Aset', href: '/perencanaan-pengadaan/usulan-aset', kodeIzin: 'Pengadaan.Kelola' },
+        {
+          label: 'Rencana Pengadaan',
+          href: '/perencanaan-pengadaan/rencana-pengadaan',
+          kodeIzin: 'Pengadaan.Kelola',
+        },
+      ],
+    },
     {
       label: 'Persediaan',
       icon: Warehouse,
@@ -192,12 +218,7 @@ const navPengaturan: GrupNav = {
   ],
 };
 
-const semuaGrup: GrupNav[] = [
-  navUtama,
-  navOperasionalAset,
-  navRantaiPasok,
-  navPengaturan,
-];
+const semuaGrup: GrupNav[] = [navUtama, navOperasionalAset, navRantaiPasok, navPengaturan];
 
 function tautanAktif(pathSekarang: string, href?: string): boolean {
   if (!href) return false;
@@ -248,9 +269,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                     <LogoMark className="size-full object-contain" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate text-base font-bold text-white tracking-tight">
-                      Amanpoll
-                    </span>
+                    <span className="truncate text-base font-bold text-white tracking-tight">Amanpoll</span>
                     <span
                       className="truncate text-[11px] text-sidebar-foreground/75 font-medium leading-tight"
                       title="Asset & Maintenance Management Multi-Industri"
@@ -293,10 +312,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link
-                        href="/platform/organisasi"
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
+                      <Link href="/platform/organisasi" className="flex items-center gap-2 cursor-pointer">
                         <Settings className="size-4 text-muted-foreground" />
                         <span>Pengaturan Organisasi</span>
                       </Link>
@@ -338,9 +354,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                                 className="cursor-pointer"
                               >
                                 <Icon size={18} strokeWidth={1.75} />
-                                <span className="group-data-[collapsible=icon]:hidden">
-                                  {item.label}
-                                </span>
+                                <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                               </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
@@ -361,7 +375,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                                       'flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-md cursor-pointer transition-colors',
                                       tautanAktif(pathSekarang, subItem.href)
                                         ? 'bg-teknisi-700 text-white font-semibold'
-                                        : 'text-foreground hover:bg-permukaan-100'
+                                        : 'text-foreground hover:bg-permukaan-100',
                                     )}
                                   >
                                     <span>{subItem.label}</span>
@@ -390,9 +404,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                               className="cursor-pointer"
                             >
                               <Icon size={18} strokeWidth={1.75} />
-                              <span className="group-data-[collapsible=icon]:hidden">
-                                {item.label}
-                              </span>
+                              <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                               <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
@@ -427,9 +439,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                       >
                         <Link href={item.href || '#'}>
                           <Icon size={18} strokeWidth={1.75} />
-                          <span className="group-data-[collapsible=icon]:hidden">
-                            {item.label}
-                          </span>
+                          <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -453,10 +463,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     {auth.pengguna?.AvatarUrl ? (
-                      <AvatarImage
-                        src={auth.pengguna.AvatarUrl}
-                        alt={auth.pengguna.Nama}
-                      />
+                      <AvatarImage src={auth.pengguna.AvatarUrl} alt={auth.pengguna.Nama} />
                     ) : null}
                     <AvatarFallback className="rounded-lg bg-teknisi-700 text-white font-bold text-xs">
                       {getInisial(auth.pengguna?.Nama)}
@@ -483,10 +490,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       {auth.pengguna?.AvatarUrl ? (
-                        <AvatarImage
-                          src={auth.pengguna.AvatarUrl}
-                          alt={auth.pengguna.Nama}
-                        />
+                        <AvatarImage src={auth.pengguna.AvatarUrl} alt={auth.pengguna.Nama} />
                       ) : null}
                       <AvatarFallback className="rounded-lg bg-teknisi-700 text-white font-bold text-xs">
                         {getInisial(auth.pengguna?.Nama)}
@@ -505,19 +509,13 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                    <Link
-                      href="/platform/profil"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
+                    <Link href="/platform/profil" className="flex items-center gap-2 cursor-pointer">
                       <CircleUserRound className="size-4" />
                       <span>Profil Akun</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link
-                      href="/notifikasi/preferensi"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
+                    <Link href="/notifikasi/preferensi" className="flex items-center gap-2 cursor-pointer">
                       <BellRing className="size-4" />
                       <span>Preferensi Notifikasi</span>
                     </Link>
@@ -554,9 +552,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         .filter((item) => !item.kodeIzin || boleh(item.kodeIzin))
         .map((item) => {
           if (!item.subItems) return item;
-          const subTersaring = item.subItems.filter(
-            (sub) => !sub.kodeIzin || boleh(sub.kodeIzin)
-          );
+          const subTersaring = item.subItems.filter((sub) => !sub.kodeIzin || boleh(sub.kodeIzin));
           return { ...item, subItems: subTersaring };
         })
         .filter((item) => !item.subItems || item.subItems.length > 0),

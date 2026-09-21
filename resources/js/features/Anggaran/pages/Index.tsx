@@ -1,8 +1,304 @@
-export default function AnggaranIndex() {
+import { type FormEvent, useState } from 'react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Plus, Search, WalletCards } from 'lucide-react';
+import AppLayout from '@/layouts/AppLayout';
+import { EmptyState } from '@/components/shared/EmptyState';
+import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Paginasi } from '@/types/global';
+import type { Anggaran, StatusAnggaran } from '@/features/Anggaran/types';
+import { formatUang } from '@/lib/uang';
+
+interface Ringkas {
+  Id: string;
+  Nama: string;
+}
+
+interface Props {
+  anggaran: Paginasi<Anggaran>;
+  unitOrganisasi: Ringkas[];
+  filter: { cari?: string; tahun?: number; status?: StatusAnggaran };
+}
+
+const TANPA = '__tanpa__';
+const SEMUA = '__semua__';
+const VARIAN_STATUS = {
+  Draft: 'netral',
+  MenungguPersetujuan: 'perhatian',
+  Aktif: 'sukses',
+  Ditolak: 'bahaya',
+  Ditutup: 'netral',
+} as const;
+
+function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
+  const [buka, setBuka] = useState(false);
+  const form = useForm({
+    UnitOrganisasiId: TANPA,
+    Kode: '',
+    Nama: '',
+    Tahun: new Date().getFullYear().toString(),
+    MataUang: 'IDR',
+    Jumlah: '',
+  });
+
+  function submit(event: FormEvent): void {
+    event.preventDefault();
+    form.transform((data) => ({
+      ...data,
+      UnitOrganisasiId: data.UnitOrganisasiId === TANPA ? null : data.UnitOrganisasiId,
+    }));
+    form.post('/perencanaan-pengadaan/anggaran', { onSuccess: () => setBuka(false) });
+  }
+
   return (
-    <section className="space-y-2">
-      <h1 className="text-2xl font-semibold tracking-tight">Anggaran</h1>
-      <p className="text-sm text-zinc-500">Halaman modul Anggaran. Implementasikan use-case dan UI di feature ini.</p>
-    </section>
+    <Dialog open={buka} onOpenChange={setBuka}>
+      <DialogTrigger asChild>
+        <Button className="min-h-11 sm:min-h-9">
+          <Plus /> Buat Anggaran
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Buat Anggaran</DialogTitle>
+          <DialogDescription>
+            Siapkan periode dan pagu. Pos anggaran ditambahkan setelah draft dibuat.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="kode-anggaran">Kode</Label>
+              <Input
+                id="kode-anggaran"
+                value={form.data.Kode}
+                onChange={(event) => form.setData('Kode', event.target.value)}
+              />
+              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="tahun-anggaran">Periode Tahun</Label>
+              <Input
+                id="tahun-anggaran"
+                type="number"
+                min={2000}
+                max={2100}
+                value={form.data.Tahun}
+                onChange={(event) => form.setData('Tahun', event.target.value)}
+              />
+              {form.errors.Tahun && <p className="text-sm text-destructive">{form.errors.Tahun}</p>}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nama-anggaran">Nama</Label>
+            <Input
+              id="nama-anggaran"
+              value={form.data.Nama}
+              onChange={(event) => form.setData('Nama', event.target.value)}
+            />
+            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label>Scope Unit</Label>
+            <Select
+              value={form.data.UnitOrganisasiId}
+              onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={TANPA}>Seluruh organisasi</SelectItem>
+                {unitOrganisasi.map((unit) => (
+                  <SelectItem key={unit.Id} value={unit.Id}>
+                    {unit.Nama}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="jumlah-anggaran">Total Anggaran</Label>
+              <Input
+                id="jumlah-anggaran"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={form.data.Jumlah}
+                onChange={(event) => form.setData('Jumlah', event.target.value)}
+              />
+              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="mata-uang">Mata Uang</Label>
+              <Input
+                id="mata-uang"
+                maxLength={3}
+                value={form.data.MataUang}
+                onChange={(event) => form.setData('MataUang', event.target.value.toUpperCase())}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={form.processing}>
+              Buat Draft
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Props) {
+  const [cari, setCari] = useState(filter.cari ?? '');
+  const [status, setStatus] = useState(filter.status ?? SEMUA);
+
+  function terapkanFilter(event: FormEvent): void {
+    event.preventDefault();
+    router.get(
+      '/perencanaan-pengadaan/anggaran',
+      { cari: cari || undefined, status: status === SEMUA ? undefined : status },
+      { preserveState: true },
+    );
+  }
+
+  return (
+    <AppLayout>
+      <Head title="Anggaran" />
+      <div className="space-y-6">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Anggaran</h1>
+            <p className="text-sm text-muted-foreground">
+              Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi.
+            </p>
+          </div>
+          <DialogBuatAnggaran unitOrganisasi={unitOrganisasi} />
+        </header>
+
+        <form
+          onSubmit={terapkanFilter}
+          className="flex flex-col gap-2 rounded-[9px] border border-border bg-card p-3 sm:flex-row"
+        >
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+            <Input
+              aria-label="Cari anggaran"
+              className="pl-9"
+              placeholder="Cari kode atau nama..."
+              value={cari}
+              onChange={(event) => setCari(event.target.value)}
+            />
+          </div>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-full sm:w-52">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={SEMUA}>Semua status</SelectItem>
+              {Object.keys(VARIAN_STATUS).map((nilai) => (
+                <SelectItem key={nilai} value={nilai}>
+                  {nilai === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : nilai}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button type="submit" variant="outline">
+            Terapkan
+          </Button>
+        </form>
+
+        {anggaran.data.length === 0 ? (
+          <EmptyState
+            ilustrasi="/assets/3d/dashboard-analitik.webp"
+            judul="Belum ada anggaran."
+            deskripsi="Buat anggaran periode pertama untuk mulai mengalokasikan pos."
+          />
+        ) : (
+          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full text-sm">
+                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-3">Anggaran</th>
+                    <th className="px-4 py-3">Periode / Scope</th>
+                    <th className="px-4 py-3 text-right">Total</th>
+                    <th className="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {anggaran.data.map((item) => (
+                    <tr key={item.Id} className="hover:bg-muted/30">
+                      <td className="px-4 py-3">
+                        <Link
+                          className="font-medium text-foreground hover:text-primary"
+                          href={`/perencanaan-pengadaan/anggaran/${item.Id}`}
+                        >
+                          {item.Nama}
+                        </Link>
+                        <div className="font-mono text-xs text-muted-foreground">
+                          {item.Kode} · {item.JumlahPos ?? 0} pos
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {item.Tahun}
+                        <div className="text-xs">{item.NamaUnitOrganisasi ?? 'Seluruh organisasi'}</div>
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-semibold">
+                        {formatUang(item.Jumlah, item.MataUang)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant={VARIAN_STATUS[item.Status]}>
+                          {item.Status === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : item.Status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="divide-y divide-border md:hidden">
+              {anggaran.data.map((item) => (
+                <Link
+                  key={item.Id}
+                  href={`/perencanaan-pengadaan/anggaran/${item.Id}`}
+                  className="flex min-h-24 items-center gap-3 p-4"
+                >
+                  <WalletCards className="size-5 shrink-0 text-primary" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{item.Nama}</p>
+                    <p className="font-mono text-xs text-muted-foreground">
+                      {item.Kode} · {item.Tahun}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold">{formatUang(item.Jumlah, item.MataUang)}</p>
+                  </div>
+                  <Badge variant={VARIAN_STATUS[item.Status]}>
+                    {item.Status === 'MenungguPersetujuan' ? 'Menunggu' : item.Status}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+            <Pagination
+              meta={anggaran.meta}
+              onNavigasi={(page) => navigasiHalaman(page, { cari, status: status === SEMUA ? '' : status })}
+            />
+          </div>
+        )}
+      </div>
+    </AppLayout>
   );
 }

@@ -9,10 +9,21 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Anggaran extends ModelDasar
 {
     use MilikOrganisasi;
+
+    public const STATUS_DRAFT = 'Draft';
+
+    public const STATUS_MENUNGGU_PERSETUJUAN = 'MenungguPersetujuan';
+
+    public const STATUS_AKTIF = 'Aktif';
+
+    public const STATUS_DITOLAK = 'Ditolak';
+
+    public const STATUS_DITUTUP = 'Ditutup';
 
     protected $table = 'Anggaran';
 
@@ -41,13 +52,27 @@ final class Anggaran extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<UnitOrganisasi, $this>
+     */
     public function unitOrganisasi(): BelongsTo
     {
         return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PosAnggaran, $this>
+     */
+    public function posAnggaran(): HasMany
+    {
+        return $this->hasMany(PosAnggaran::class, 'AnggaranId', 'Id')->orderBy('Kode');
     }
 }

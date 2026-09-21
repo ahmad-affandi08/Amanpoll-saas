@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Http\Requests;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanPosAnggaranRequest extends FormRequest
 {
@@ -15,16 +17,14 @@ final class SimpanPosAnggaranRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
+        $wajib = $this->isMethod('post') ? 'required' : 'sometimes';
+        $organisasiId = app(KonteksOrganisasi::class)->wajibId();
+
         return [
-            'OrganisasiId' => ['sometimes'],
-            'AnggaranId' => ['sometimes'],
-            'IndukId' => ['nullable'],
-            'Kode' => ['sometimes'],
-            'Nama' => ['sometimes'],
-            'Jumlah' => ['sometimes'],
-            'Terpakai' => ['sometimes'],
-            'Ditahan' => ['sometimes'],
+            'IndukId' => ['nullable', 'string', Rule::exists('PosAnggaran', 'Id')->where('OrganisasiId', $organisasiId)],
+            'Kode' => [$wajib, 'string', 'max:80'],
+            'Nama' => [$wajib, 'string', 'max:180'],
+            'Jumlah' => [$wajib, 'numeric', 'decimal:0,2', 'min:0.01', 'max:99999999999999.99'],
         ];
     }
 }

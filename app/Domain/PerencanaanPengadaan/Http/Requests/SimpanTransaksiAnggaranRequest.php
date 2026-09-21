@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Http\Requests;
 
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TransaksiAnggaran;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanTransaksiAnggaranRequest extends FormRequest
 {
@@ -15,16 +17,13 @@ final class SimpanTransaksiAnggaranRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'PosAnggaranId' => ['sometimes'],
-            'Jenis' => ['sometimes'],
-            'ReferensiJenis' => ['nullable'],
-            'ReferensiId' => ['nullable'],
-            'Jumlah' => ['sometimes'],
-            'Tanggal' => ['sometimes'],
-            'Keterangan' => ['nullable'],
+            'Jenis' => ['required', 'string', Rule::in(TransaksiAnggaran::DAFTAR_JENIS)],
+            'ReferensiJenis' => ['nullable', 'string', 'max:80', 'required_with:ReferensiId'],
+            'ReferensiId' => ['nullable', 'string', 'size:26', 'required_with:ReferensiJenis'],
+            'Jumlah' => ['required', 'numeric', 'decimal:0,2', 'not_in:0,0.0,0.00', 'max:99999999999999.99'],
+            'Tanggal' => ['required', 'date'],
+            'Keterangan' => ['nullable', 'string', 'max:2000', Rule::requiredIf($this->input('Jenis') === TransaksiAnggaran::JENIS_PENYESUAIAN)],
         ];
     }
 }

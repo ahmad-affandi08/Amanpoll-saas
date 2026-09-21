@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Http\Requests;
 
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanPenilaianUsulanAsetRequest extends FormRequest
 {
@@ -15,16 +17,11 @@ final class SimpanPenilaianUsulanAsetRequest extends FormRequest
 
     public function rules(): array
     {
-        // Perketat rule sesuai invariant use-case sebelum endpoint diaktifkan.
         return [
-            'OrganisasiId' => ['sometimes'],
-            'UsulanAsetId' => ['sometimes'],
-            'Kriteria' => ['sometimes'],
-            'Bobot' => ['sometimes'],
-            'Nilai' => ['sometimes'],
-            'Skor' => ['sometimes'],
-            'DinilaiOleh' => ['nullable'],
-            'DinilaiPada' => ['sometimes'],
+            'Kriteria' => ['required', 'string', 'max:160'],
+            'Bobot' => ['required', 'numeric', 'decimal:0,4', 'min:0.0001', 'max:100'],
+            'Nilai' => ['required', 'numeric', 'decimal:0,4', 'min:0', 'max:100'],
+            'Prioritas' => ['nullable', 'string', Rule::in(UsulanAset::DAFTAR_PRIORITAS)],
         ];
     }
 }

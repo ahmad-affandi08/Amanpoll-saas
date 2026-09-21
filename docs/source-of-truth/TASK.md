@@ -917,47 +917,47 @@ Riwayat kalibrasi lengkap, sertifikat authorized, next due konsisten (Terpenuhi)
 
 ## 15.01 Anggaran
 
-- [ ] Periode.
-- [ ] Total.
-- [ ] Status.
-- [ ] Approval bila dibutuhkan.
+- [x] Periode.
+- [x] Total.
+- [x] Status.
+- [x] Approval bila dibutuhkan.
 
 ## 15.02 PosAnggaran
 
-- [ ] CRUD.
-- [ ] Parent bila digunakan.
-- [ ] Nilai.
-- [ ] Scope.
+- [x] CRUD.
+- [x] Parent bila digunakan.
+- [x] Nilai.
+- [x] Scope.
 
 ## 15.03 TransaksiAnggaran
 
-- [ ] Komitmen.
-- [ ] Realisasi.
-- [ ] Pelepasan komitmen.
-- [ ] Adjustment sesuai izin.
-- [ ] Sisa dihitung dari ledger/transaksi.
-- [ ] Cegah race condition.
+- [x] Komitmen.
+- [x] Realisasi.
+- [x] Pelepasan komitmen.
+- [x] Adjustment sesuai izin.
+- [x] Sisa dihitung dari ledger/transaksi.
+- [x] Cegah race condition.
 
 ## 15.04 UsulanAset
 
-- [ ] Draft.
-- [ ] Submit.
-- [ ] Penilaian.
-- [ ] Prioritas.
-- [ ] Approval.
-- [ ] Histori.
+- [x] Draft.
+- [x] Submit.
+- [x] Penilaian.
+- [x] Prioritas.
+- [x] Approval.
+- [x] Histori.
 
 ## 15.05 RencanaPengadaan
 
-- [ ] Buat dari usulan.
-- [ ] Detail.
-- [ ] Estimasi.
-- [ ] Pos anggaran.
-- [ ] Status.
+- [x] Buat dari usulan.
+- [x] Detail.
+- [x] Estimasi.
+- [x] Pos anggaran.
+- [x] Status.
 
 ### Gate 15
 
-Sisa anggaran dapat direkonsiliasi dari transaksi, bukan angka edit manual.
+Sisa anggaran dapat direkonsiliasi dari transaksi, bukan angka edit manual (Terpenuhi).
 
 ---
 

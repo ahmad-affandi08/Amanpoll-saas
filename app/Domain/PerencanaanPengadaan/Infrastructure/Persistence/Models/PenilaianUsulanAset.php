@@ -39,16 +39,25 @@ final class PenilaianUsulanAset extends ModelDasar
         ];
     }
 
+    /**
+     * @return BelongsTo<Organisasi, $this>
+     */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<UsulanAset, $this>
+     */
     public function usulanAset(): BelongsTo
     {
         return $this->belongsTo(UsulanAset::class, 'UsulanAsetId', 'Id');
     }
 
+    /**
+     * @return BelongsTo<Pengguna, $this>
+     */
     public function dinilaiOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DinilaiOleh', 'Id');

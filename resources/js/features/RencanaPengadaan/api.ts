@@ -1,5 +1,4 @@
-import axios from 'axios';
-
-export const apiRencanaPengadaan = axios.create({
-  headers: { Accept: 'application/json' },
-});
+export const ruteRencanaPengadaan = {
+  index: '/perencanaan-pengadaan/rencana-pengadaan',
+  detail: (id: string) => `/perencanaan-pengadaan/rencana-pengadaan/${id}`,
+};

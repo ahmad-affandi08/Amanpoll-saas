@@ -44,6 +44,14 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KontakPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\PenilaianPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\PerencanaanPengadaan\Http\Policies\AnggaranPolicy;
+use App\Domain\PerencanaanPengadaan\Http\Policies\PosAnggaranPolicy;
+use App\Domain\PerencanaanPengadaan\Http\Policies\RencanaPengadaanPolicy;
+use App\Domain\PerencanaanPengadaan\Http\Policies\UsulanAsetPolicy;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\Anggaran;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggaran;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPengadaan;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persediaan\Http\Policies\GudangPolicy;
 use App\Domain\Persediaan\Http\Policies\KategoriSukuCadangPolicy;
 use App\Domain\Persediaan\Http\Policies\KelompokSukuCadangPolicy;
@@ -159,5 +167,9 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(RencanaKalibrasi::class, RencanaKalibrasiPolicy::class);
         Gate::policy(PelaksanaanKalibrasi::class, PelaksanaanKalibrasiPolicy::class);
         Gate::policy(TitikUkurKalibrasi::class, TitikUkurKalibrasiPolicy::class);
+        Gate::policy(Anggaran::class, AnggaranPolicy::class);
+        Gate::policy(PosAnggaran::class, PosAnggaranPolicy::class);
+        Gate::policy(UsulanAset::class, UsulanAsetPolicy::class);
+        Gate::policy(RencanaPengadaan::class, RencanaPengadaanPolicy::class);
     }
 }
