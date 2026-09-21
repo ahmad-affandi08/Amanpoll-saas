@@ -42,7 +42,7 @@ final class JenisKalibrasiController extends Controller
 
         $this->kelolaJenis->buat(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Jenis kalibrasi berhasil ditambahkan.');
@@ -55,7 +55,7 @@ final class JenisKalibrasiController extends Controller
         $this->kelolaJenis->perbarui(
             $jenisKalibrasi,
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Jenis kalibrasi berhasil diperbarui.');
@@ -67,7 +67,7 @@ final class JenisKalibrasiController extends Controller
 
         $this->kelolaJenis->hapus(
             $jenisKalibrasi,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Jenis kalibrasi berhasil dihapus.');
@@ -80,7 +80,7 @@ final class JenisKalibrasiController extends Controller
         $this->kelolaJenis->tambahTitikUkur(
             $jenisKalibrasi,
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Titik ukur standar berhasil ditambahkan.');
@@ -93,7 +93,7 @@ final class JenisKalibrasiController extends Controller
         $this->kelolaJenis->perbaruiTitikUkur(
             $titikUkurKalibrasi,
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Titik ukur standar berhasil diperbarui.');
@@ -105,7 +105,7 @@ final class JenisKalibrasiController extends Controller
 
         $this->kelolaJenis->hapusTitikUkur(
             $titikUkurKalibrasi,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Titik ukur standar berhasil dihapus.');

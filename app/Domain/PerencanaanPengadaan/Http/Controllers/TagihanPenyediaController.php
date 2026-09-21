@@ -70,7 +70,7 @@ final class TagihanPenyediaController extends Controller
     public function bayar(SimpanPembayaranPenyediaRequest $request, TagihanPenyedia $tagihanPenyedia, CatatPembayaranPenyedia $aksi): RedirectResponse
     {
         $this->authorize('update', $tagihanPenyedia);
-        $aksi->jalankan($tagihanPenyedia, $request->validated(), $request->user()->Id);
+        $aksi->jalankan($tagihanPenyedia, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Pembayaran dicatat dan sisa tagihan dihitung ulang.');
     }

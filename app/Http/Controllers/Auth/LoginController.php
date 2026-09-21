@@ -81,8 +81,8 @@ final class LoginController extends Controller
 
         RateLimiter::clear($kunciBatas);
         $request->session()->regenerate();
-        DB::table('Pengguna')->where('Id', $request->user()->Id)->update(['TerakhirMasukPada' => now()]);
-        $this->layananCatatanAkses->catat('Login', (string) $organisasi->Id, (string) $request->user()->Id, true);
+        DB::table('Pengguna')->where('Id', $request->user('web')->Id)->update(['TerakhirMasukPada' => now()]);
+        $this->layananCatatanAkses->catat('Login', (string) $organisasi->Id, (string) $request->user('web')->Id, true);
 
         return redirect()->intended(route('dashboard'));
     }

@@ -63,7 +63,7 @@ final class PermintaanPembelianController extends Controller
     public function store(SimpanPermintaanPembelianRequest $request, KelolaPermintaanPembelian $aksi): RedirectResponse
     {
         $this->authorize('create', PermintaanPembelian::class);
-        $permintaan = $aksi->buat($request->validated(), $request->user()->Id);
+        $permintaan = $aksi->buat($request->validated(), $request->user('web')->Id);
 
         return redirect()
             ->route('perencanaanPengadaan.permintaan.show', $permintaan)
@@ -108,7 +108,7 @@ final class PermintaanPembelianController extends Controller
     public function submit(Request $request, PermintaanPembelian $permintaanPembelian, KelolaPermintaanPembelian $aksi): RedirectResponse
     {
         $this->authorize('update', $permintaanPembelian);
-        $aksi->submit($permintaanPembelian, $request->user()->Id);
+        $aksi->submit($permintaanPembelian, $request->user('web')->Id);
 
         return back()->with('sukses', 'Permintaan pembelian diajukan untuk persetujuan.');
     }

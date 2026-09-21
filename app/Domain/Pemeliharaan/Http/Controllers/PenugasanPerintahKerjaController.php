@@ -23,7 +23,7 @@ final class PenugasanPerintahKerjaController extends Controller
             $request->validated('PenggunaIds'),
             $request->validated('PeranTugas'),
             $request->boolean('GantiPenugasanAktif'),
-            $request->user()->Id,
+            $request->user('web')->Id,
         );
 
         return back()->with('sukses', 'Penugasan teknisi berhasil diperbarui.');
@@ -36,7 +36,7 @@ final class PenugasanPerintahKerjaController extends Controller
         ResponsPenugasanPerintahKerja $aksi,
     ): RedirectResponse {
         $this->authorize('responsPenugasan', [$perintahKerja, $penugasan]);
-        $aksi->jalankan($penugasan, $request->validated('Respons'), $request->validated('Catatan'), $request->user()->Id);
+        $aksi->jalankan($penugasan, $request->validated('Respons'), $request->validated('Catatan'), $request->user('web')->Id);
 
         return back()->with('sukses', 'Respons penugasan berhasil disimpan.');
     }

@@ -62,7 +62,7 @@ final class PesananPembelianController extends Controller
     public function store(SimpanPesananPembelianRequest $request, PenawaranPenyedia $penawaranPenyedia, KelolaPesananPembelian $aksi): RedirectResponse
     {
         $this->authorize('create', PesananPembelian::class);
-        $pesanan = $aksi->buatDariPenawaran($penawaranPenyedia, $request->validated(), $request->user()->Id);
+        $pesanan = $aksi->buatDariPenawaran($penawaranPenyedia, $request->validated(), $request->user('web')->Id);
 
         return redirect()
             ->route('perencanaanPengadaan.po.show', $pesanan)
@@ -93,7 +93,7 @@ final class PesananPembelianController extends Controller
     public function ajukan(Request $request, PesananPembelian $pesananPembelian, KelolaPesananPembelian $aksi): RedirectResponse
     {
         $this->authorize('update', $pesananPembelian);
-        $aksi->ajukan($pesananPembelian, $request->user()->Id);
+        $aksi->ajukan($pesananPembelian, $request->user('web')->Id);
 
         return back()->with('sukses', 'PO diajukan untuk persetujuan.');
     }

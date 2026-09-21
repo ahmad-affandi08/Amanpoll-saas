@@ -28,7 +28,7 @@ final class RiwayatLokasiAsetController extends Controller
         $this->authorize('update', $aset);
 
         $data = $request->validated();
-        $aksi->jalankan($aset, $data['LokasiTujuanId'] ?? null, $data['Alasan'] ?? null, $request->user()->Id);
+        $aksi->jalankan($aset, $data['LokasiTujuanId'] ?? null, $data['Alasan'] ?? null, $request->user('web')->Id);
 
         return back()->with('sukses', 'Lokasi aset berhasil dipindahkan.');
     }

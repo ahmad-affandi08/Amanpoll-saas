@@ -16,7 +16,7 @@ final class NotifikasiController extends Controller
 {
     public function ringkasan(Request $request): JsonResponse
     {
-        $penggunaId = $request->user()->Id;
+        $penggunaId = $request->user('web')->Id;
 
         $terbaru = Notifikasi::query()
             ->where('PenggunaId', $penggunaId)
@@ -39,7 +39,7 @@ final class NotifikasiController extends Controller
 
     public function baca(Notifikasi $notifikasi, Request $request): RedirectResponse
     {
-        if ($notifikasi->PenggunaId !== $request->user()->Id) {
+        if ($notifikasi->PenggunaId !== $request->user('web')->Id) {
             throw new AksesDitolak('Notifikasi ini bukan milik Anda.');
         }
 
@@ -54,7 +54,7 @@ final class NotifikasiController extends Controller
     public function bacaSemua(Request $request): RedirectResponse
     {
         Notifikasi::query()
-            ->where('PenggunaId', $request->user()->Id)
+            ->where('PenggunaId', $request->user('web')->Id)
             ->whereNull('DibacaPada')
             ->update(['DibacaPada' => now()]);
 

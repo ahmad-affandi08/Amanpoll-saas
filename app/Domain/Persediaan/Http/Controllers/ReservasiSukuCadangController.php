@@ -44,7 +44,7 @@ final class ReservasiSukuCadangController extends Controller
     {
         $this->authorize('create', ReservasiSukuCadang::class);
 
-        $aksi->jalankan($request->validated(), $request->user()->Id);
+        $aksi->jalankan($request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Reservasi suku cadang berhasil dibuat.');
     }
@@ -62,7 +62,7 @@ final class ReservasiSukuCadangController extends Controller
     {
         $this->authorize('update', $reservasiSukuCadang);
 
-        $aksi->jalankan($reservasiSukuCadang, $request->user()->Id);
+        $aksi->jalankan($reservasiSukuCadang, $request->user('web')->Id);
 
         return back()->with('sukses', 'Reservasi suku cadang berhasil dipakai.');
     }

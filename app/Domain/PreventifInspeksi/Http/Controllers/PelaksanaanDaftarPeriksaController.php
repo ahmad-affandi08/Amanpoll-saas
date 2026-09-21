@@ -26,7 +26,7 @@ final class PelaksanaanDaftarPeriksaController extends Controller
 
         $pelaksanaan = $this->kelolaPelaksanaan->mulai(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()->route('preventifInspeksi.pelaksanaan-daftar-periksa.show', $pelaksanaan->Id)
@@ -59,7 +59,7 @@ final class PelaksanaanDaftarPeriksaController extends Controller
         $this->kelolaPelaksanaan->simpanJawaban(
             $pelaksanaanDaftarPeriksa,
             $request->validated('jawaban'),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Jawaban berhasil disimpan.');
@@ -78,7 +78,7 @@ final class PelaksanaanDaftarPeriksaController extends Controller
         $pelaksanaan = $this->kelolaPelaksanaan->finalisasi(
             $pelaksanaanDaftarPeriksa,
             $data['catatan'] ?? null,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', "Daftar periksa berhasil diselesaikan dengan skor {$pelaksanaan->Skor}%.");

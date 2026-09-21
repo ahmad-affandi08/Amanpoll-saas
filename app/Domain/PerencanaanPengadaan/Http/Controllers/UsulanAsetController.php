@@ -110,7 +110,7 @@ final class UsulanAsetController extends Controller
     public function store(SimpanUsulanAsetRequest $request, KelolaUsulanAset $aksi): RedirectResponse
     {
         $this->authorize('create', UsulanAset::class);
-        $usulan = $aksi->buat($request->validated(), $request->user()->Id);
+        $usulan = $aksi->buat($request->validated(), $request->user('web')->Id);
 
         return redirect()->route('perencanaanPengadaan.usulan.show', $usulan)->with('sukses', 'Draft usulan dibuat.');
     }
@@ -145,7 +145,7 @@ final class UsulanAsetController extends Controller
         KelolaUsulanAset $aksi,
     ): RedirectResponse {
         $this->authorize('update', $usulanAset);
-        $aksi->nilai($usulanAset, $request->validated(), $request->user()->Id);
+        $aksi->nilai($usulanAset, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Penilaian ditambahkan.');
     }
@@ -153,7 +153,7 @@ final class UsulanAsetController extends Controller
     public function ajukanPersetujuan(Request $request, UsulanAset $usulanAset, KelolaUsulanAset $aksi): RedirectResponse
     {
         $this->authorize('update', $usulanAset);
-        $aksi->ajukanPersetujuan($usulanAset, $request->user()->Id);
+        $aksi->ajukanPersetujuan($usulanAset, $request->user('web')->Id);
 
         return back()->with('sukses', 'Usulan diajukan untuk persetujuan.');
     }

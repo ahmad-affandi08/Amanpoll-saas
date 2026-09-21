@@ -25,7 +25,7 @@ final class OperasionalPerintahKerjaController extends Controller
         BuatReservasiSukuCadang $aksi,
     ): RedirectResponse {
         $this->authorize('operate', $perintahKerja);
-        $aksi->jalankan([...$request->validated(), 'PerintahKerjaId' => $perintahKerja->Id], $request->user()->Id);
+        $aksi->jalankan([...$request->validated(), 'PerintahKerjaId' => $perintahKerja->Id], $request->user('web')->Id);
 
         return back()->with('sukses', 'Suku cadang berhasil direservasi untuk pekerjaan.');
     }
@@ -37,7 +37,7 @@ final class OperasionalPerintahKerjaController extends Controller
     ): RedirectResponse {
         $this->authorize('operate', $perintahKerja);
         $reservasi = ReservasiSukuCadang::query()->findOrFail($request->validated('ReservasiSukuCadangId'));
-        $aksi->jalankan($perintahKerja, $reservasi, $request->validated('Aksi'), $request->user()->Id);
+        $aksi->jalankan($perintahKerja, $reservasi, $request->validated('Aksi'), $request->user('web')->Id);
 
         return back()->with('sukses', $request->validated('Aksi') === 'Pakai' ? 'Suku cadang berhasil dipakai dan biaya tercatat.' : 'Sisa reservasi berhasil dikembalikan.');
     }
@@ -48,7 +48,7 @@ final class OperasionalPerintahKerjaController extends Controller
         CatatBiayaPerintahKerja $aksi,
     ): RedirectResponse {
         $this->authorize('manageCost', $perintahKerja);
-        $aksi->jalankan($perintahKerja, $request->validated(), $request->user()->Id);
+        $aksi->jalankan($perintahKerja, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Biaya pekerjaan berhasil dicatat.');
     }
@@ -59,7 +59,7 @@ final class OperasionalPerintahKerjaController extends Controller
         SimpanAnalisisKegagalan $aksi,
     ): RedirectResponse {
         $this->authorize('operate', $perintahKerja);
-        $aksi->jalankan($perintahKerja, $request->validated(), $request->user()->Id);
+        $aksi->jalankan($perintahKerja, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Analisis kegagalan berhasil disimpan.');
     }

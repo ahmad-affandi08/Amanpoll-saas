@@ -43,7 +43,7 @@ final class PenerimaanPembelianController extends Controller
     public function store(SimpanPenerimaanPembelianRequest $request, PesananPembelian $pesananPembelian, CatatPenerimaanPembelian $aksi): RedirectResponse
     {
         $this->authorize('create', PenerimaanPembelian::class);
-        $aksi->jalankan($pesananPembelian, $request->validated(), $request->user()->Id);
+        $aksi->jalankan($pesananPembelian, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Penerimaan dicatat; stok/aset dan status PO telah disinkronkan.');
     }

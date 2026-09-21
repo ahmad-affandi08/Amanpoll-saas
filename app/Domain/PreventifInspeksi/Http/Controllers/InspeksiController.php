@@ -55,7 +55,7 @@ final class InspeksiController extends Controller
 
         $inspeksi = $this->kelolaInspeksi->jadwalkan(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()->route('preventifInspeksi.inspeksi.show', $inspeksi->Id)
@@ -94,7 +94,7 @@ final class InspeksiController extends Controller
         $this->kelolaInspeksi->laksanakan(
             $inspeksi,
             $data,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Hasil inspeksi berhasil dicatat.');
@@ -113,7 +113,7 @@ final class InspeksiController extends Controller
         $perintahKerja = $this->kelolaInspeksi->buatPerintahKerjaKorektif(
             $inspeksi,
             $data,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', "Perintah kerja korektif {$perintahKerja->Nomor} berhasil dibuat dari temuan inspeksi.");

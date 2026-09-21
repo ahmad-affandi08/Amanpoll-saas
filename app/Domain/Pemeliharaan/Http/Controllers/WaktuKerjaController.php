@@ -15,7 +15,7 @@ final class WaktuKerjaController extends Controller
     public function store(AksiWaktuKerjaRequest $request, PerintahKerja $perintahKerja, KelolaWaktuKerja $aksi): RedirectResponse
     {
         $this->authorize('operate', $perintahKerja);
-        $aksi->jalankan($perintahKerja, $request->user()->Id, $request->validated('Aksi'), $request->validated('Catatan'));
+        $aksi->jalankan($perintahKerja, $request->user('web')->Id, $request->validated('Aksi'), $request->validated('Catatan'));
 
         return back()->with('sukses', 'Waktu kerja berhasil diperbarui.');
     }

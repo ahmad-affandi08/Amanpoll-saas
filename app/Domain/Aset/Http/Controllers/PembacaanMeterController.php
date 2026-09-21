@@ -30,7 +30,7 @@ final class PembacaanMeterController extends Controller
         $aset = $meterAset->aset;
         $this->authorize('update', $aset);
 
-        $aksi->jalankan($meterAset, $request->validated(), $request->user()->Id);
+        $aksi->jalankan($meterAset, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Pembacaan meter berhasil dicatat.');
     }

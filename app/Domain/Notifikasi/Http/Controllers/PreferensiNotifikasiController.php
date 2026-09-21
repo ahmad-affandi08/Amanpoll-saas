@@ -25,7 +25,7 @@ final class PreferensiNotifikasiController extends Controller
     public function index(Request $request): JsonResponse
     {
         $preferensiTersimpan = PreferensiNotifikasi::query()
-            ->where('PenggunaId', $request->user()->Id)
+            ->where('PenggunaId', $request->user('web')->Id)
             ->get()
             ->keyBy(fn (PreferensiNotifikasi $p) => "{$p->JenisPeristiwa}#{$p->Kanal}");
 
@@ -49,7 +49,7 @@ final class PreferensiNotifikasiController extends Controller
     {
         $data = $request->validated();
 
-        $aksi->jalankan($request->user()->Id, $data['JenisPeristiwa'], $data['Kanal'], $data['Aktif']);
+        $aksi->jalankan($request->user('web')->Id, $data['JenisPeristiwa'], $data['Kanal'], $data['Aktif']);
 
         return back()->with('sukses', 'Preferensi notifikasi berhasil disimpan.');
     }

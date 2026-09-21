@@ -115,7 +115,7 @@ final class AnggaranController extends Controller
     public function ajukan(Request $request, Anggaran $anggaran, KelolaAnggaran $aksi): RedirectResponse
     {
         $this->authorize('update', $anggaran);
-        $aksi->ajukan($anggaran, $request->user()->Id);
+        $aksi->ajukan($anggaran, $request->user('web')->Id);
 
         return back()->with('sukses', 'Anggaran diajukan.');
     }

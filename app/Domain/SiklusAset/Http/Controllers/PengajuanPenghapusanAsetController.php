@@ -60,7 +60,7 @@ final class PengajuanPenghapusanAsetController extends Controller
     {
         $this->authorize('create', PengajuanPenghapusanAset::class);
 
-        $pengajuan = $aksi->jalankan($request->validated(), $request->user()->Id);
+        $pengajuan = $aksi->jalankan($request->validated(), $request->user('web')->Id);
 
         return redirect("/penghapusan-aset/{$pengajuan->Id}")->with('sukses', 'Draft pengajuan penghapusan berhasil dibuat.');
     }
@@ -96,7 +96,7 @@ final class PengajuanPenghapusanAsetController extends Controller
     {
         $this->authorize('update', $pengajuanPenghapusanAset);
 
-        $aksi->jalankan($pengajuanPenghapusanAset, $request->user()->Id);
+        $aksi->jalankan($pengajuanPenghapusanAset, $request->user('web')->Id);
 
         return back()->with('sukses', 'Pengajuan penghapusan berhasil disubmit untuk persetujuan.');
     }

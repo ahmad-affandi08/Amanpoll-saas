@@ -47,7 +47,7 @@ final class TemplatInspeksiController extends Controller
 
         $this->kelolaInspeksi->buatTemplat(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Templat inspeksi berhasil dibuat.');
@@ -60,7 +60,7 @@ final class TemplatInspeksiController extends Controller
         $this->kelolaInspeksi->perbaruiTemplat(
             $templatInspeksi,
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Templat inspeksi berhasil diperbarui.');

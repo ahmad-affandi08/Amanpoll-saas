@@ -38,11 +38,11 @@ final class KeluhanController extends Controller
             'status' => ['nullable', Rule::enum(StatusKeluhan::class)],
             'prioritas' => ['nullable', Rule::enum(PrioritasKeluhan::class)],
         ]);
-        $dapatMengelola = $this->izin->boleh($request->user()->Id, 'Keluhan.Kelola');
+        $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'Keluhan.Kelola');
 
         $keluhan = Keluhan::query()
             ->with(['kategoriKeluhan', 'tingkatLayanan', 'aset', 'lokasi', 'pelapor'])
-            ->when(! $dapatMengelola, fn ($query) => $query->where('PelaporId', $request->user()->Id))
+            ->when(! $dapatMengelola, fn ($query) => $query->where('PelaporId', $request->user('web')->Id))
             ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
             ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
             ->latest('DilaporkanPada')
@@ -68,13 +68,13 @@ final class KeluhanController extends Controller
         $data = $request->validated();
         $lampiran = $data['Lampiran'] ?? [];
         unset($data['Lampiran']);
-        if (! $this->izin->boleh($request->user()->Id, 'Keluhan.Kelola')) {
+        if (! $this->izin->boleh($request->user('web')->Id, 'Keluhan.Kelola')) {
             unset($data['Prioritas']);
         }
-        $keluhan = $aksi->jalankan($data, $request->user()->Id);
+        $keluhan = $aksi->jalankan($data, $request->user('web')->Id);
         foreach ($lampiran as $berkasTerunggah) {
-            $berkas = $unggahBerkas->jalankan($berkasTerunggah, $request->user()->Id);
-            $lampirkanBerkas->jalankan('Keluhan', $keluhan->Id, $berkas->Id, 'Bukti', null, $request->user()->Id);
+            $berkas = $unggahBerkas->jalankan($berkasTerunggah, $request->user('web')->Id);
+            $lampirkanBerkas->jalankan('Keluhan', $keluhan->Id, $berkas->Id, 'Bukti', null, $request->user('web')->Id);
         }
 
         return redirect()->route('pemeliharaan.keluhan.show', $keluhan)->with('sukses', 'Keluhan berhasil dilaporkan.');
@@ -95,7 +95,7 @@ final class KeluhanController extends Controller
     public function ubahStatus(UbahStatusKeluhanRequest $request, Keluhan $keluhan, UbahStatusKeluhan $aksi): RedirectResponse
     {
         $this->authorize('ubahStatus', [$keluhan, $request->validated('Status')]);
-        $aksi->jalankan($keluhan, StatusKeluhan::from($request->validated('Status')), $request->validated('Catatan'), $request->integer('Versi'), $request->user()->Id);
+        $aksi->jalankan($keluhan, StatusKeluhan::from($request->validated('Status')), $request->validated('Catatan'), $request->integer('Versi'), $request->user('web')->Id);
 
         return back()->with('sukses', 'Status keluhan berhasil diperbarui.');
     }

@@ -70,7 +70,7 @@ final class PermintaanMutasiAsetController extends Controller
     {
         $this->authorize('create', PermintaanMutasiAset::class);
 
-        $permintaan = $aksi->jalankan($request->validated(), $request->user()->Id);
+        $permintaan = $aksi->jalankan($request->validated(), $request->user('web')->Id);
 
         return redirect("/mutasi-aset/{$permintaan->Id}")->with('sukses', 'Draft permintaan mutasi berhasil dibuat.');
     }
@@ -100,7 +100,7 @@ final class PermintaanMutasiAsetController extends Controller
     {
         $this->authorize('update', $permintaanMutasiAset);
 
-        $aksi->jalankan($permintaanMutasiAset, $request->user()->Id);
+        $aksi->jalankan($permintaanMutasiAset, $request->user('web')->Id);
 
         return back()->with('sukses', 'Permintaan mutasi berhasil disubmit untuk persetujuan.');
     }
@@ -118,7 +118,7 @@ final class PermintaanMutasiAsetController extends Controller
     {
         $this->authorize('update', $permintaanMutasiAset);
 
-        $aksi->jalankan($permintaanMutasiAset, $request->user()->Id);
+        $aksi->jalankan($permintaanMutasiAset, $request->user('web')->Id);
 
         return back()->with('sukses', 'Mutasi aset berhasil dieksekusi.');
     }

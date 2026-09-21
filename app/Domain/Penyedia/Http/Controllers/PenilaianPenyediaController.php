@@ -34,7 +34,7 @@ final class PenilaianPenyediaController extends Controller
     {
         $this->authorize('create', PenilaianPenyedia::class);
 
-        $aksi->jalankan($penyedia, $request->validated(), $request->user()->Id);
+        $aksi->jalankan($penyedia, $request->validated(), $request->user('web')->Id);
 
         return back()->with('sukses', 'Penilaian penyedia berhasil disimpan.');
     }

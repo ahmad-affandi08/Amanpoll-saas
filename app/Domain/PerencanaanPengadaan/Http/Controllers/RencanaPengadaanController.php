@@ -81,7 +81,7 @@ final class RencanaPengadaanController extends Controller
     public function store(SimpanRencanaPengadaanRequest $request, KelolaRencanaPengadaan $aksi): RedirectResponse
     {
         $this->authorize('create', RencanaPengadaan::class);
-        $rencana = $aksi->buat($request->validated(), $request->user()->Id);
+        $rencana = $aksi->buat($request->validated(), $request->user('web')->Id);
 
         return redirect()->route('perencanaanPengadaan.rencana.show', $rencana)->with('sukses', 'Draft rencana pengadaan dibuat.');
     }

@@ -44,7 +44,7 @@ final class TemplatDaftarPeriksaController extends Controller
 
         $templat = $this->kelolaTemplat->buat(
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()->route('preventifInspeksi.templat-daftar-periksa.show', $templat->Id)
@@ -75,7 +75,7 @@ final class TemplatDaftarPeriksaController extends Controller
         $this->kelolaTemplat->perbarui(
             $templatDaftarPeriksa,
             $request->validated(),
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return back()->with('sukses', 'Templat daftar periksa berhasil diperbarui.');
@@ -87,7 +87,7 @@ final class TemplatDaftarPeriksaController extends Controller
 
         $versiBaru = $this->kelolaTemplat->buatVersiBaru(
             $templatDaftarPeriksa,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()->route('preventifInspeksi.templat-daftar-periksa.show', $versiBaru->Id)
@@ -100,7 +100,7 @@ final class TemplatDaftarPeriksaController extends Controller
 
         $this->kelolaTemplat->hapus(
             $templatDaftarPeriksa,
-            $request->user()->Id
+            $request->user('web')->Id
         );
 
         return redirect()->route('preventifInspeksi.templat-daftar-periksa.index')

@@ -60,7 +60,7 @@ final class MutasiStokController extends Controller
     {
         $this->authorize('create', MutasiStok::class);
 
-        $mutasiStok = $aksi->jalankan($request->validated(), $request->user()->Id);
+        $mutasiStok = $aksi->jalankan($request->validated(), $request->user('web')->Id);
 
         return redirect("/mutasi-stok/{$mutasiStok->Id}")->with('sukses', 'Draft mutasi stok berhasil dibuat.');
     }
@@ -89,7 +89,7 @@ final class MutasiStokController extends Controller
     {
         $this->authorize('update', $mutasiStok);
 
-        $aksi->jalankan($mutasiStok, $request->user()->Id);
+        $aksi->jalankan($mutasiStok, $request->user('web')->Id);
 
         return back()->with('sukses', 'Mutasi stok berhasil diposting.');
     }

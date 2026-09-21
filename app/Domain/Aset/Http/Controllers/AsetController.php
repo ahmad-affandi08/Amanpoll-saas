@@ -85,7 +85,7 @@ final class AsetController extends Controller
     {
         $this->authorize('create', Aset::class);
 
-        $aset = $aksi->jalankan($request->validated(), $request->user()->Id);
+        $aset = $aksi->jalankan($request->validated(), $request->user('web')->Id);
 
         return redirect("/aset/{$aset->Id}")->with('sukses', 'Aset berhasil didaftarkan.');
     }

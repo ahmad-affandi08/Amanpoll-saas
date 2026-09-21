@@ -27,7 +27,7 @@ final class UbahProfilRequest extends FormRequest
                 Rule::unique('Pengguna', 'Email')
                     ->where(fn ($query) => $query->where('OrganisasiId', app(KonteksOrganisasi::class)->id()))
                     ->whereNull('DihapusPada')
-                    ->ignore($this->user()->Id, 'Id'),
+                    ->ignore($this->user('web')->Id, 'Id'),
             ],
             'Telepon' => ['nullable', 'string', 'max:50'],
         ];

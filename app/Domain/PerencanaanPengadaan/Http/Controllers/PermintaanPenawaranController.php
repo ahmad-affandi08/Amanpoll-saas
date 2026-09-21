@@ -59,7 +59,7 @@ final class PermintaanPenawaranController extends Controller
         $this->authorize('create', PermintaanPenawaran::class);
         $data = $request->validated();
         $permintaan = PermintaanPembelian::query()->whereKey($data['PermintaanPembelianId'])->firstOrFail();
-        $rfq = $aksi->buat($permintaan, $data, $request->user()->Id);
+        $rfq = $aksi->buat($permintaan, $data, $request->user('web')->Id);
 
         return redirect()
             ->route('perencanaanPengadaan.rfq.show', $rfq)

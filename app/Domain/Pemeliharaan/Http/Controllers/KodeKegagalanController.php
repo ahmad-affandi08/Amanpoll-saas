@@ -47,6 +47,6 @@ final class KodeKegagalanController extends Controller
 
     private function pastikanBerizin(Request $request): void
     {
-        abort_unless($this->izin->boleh($request->user()->Id, 'PerintahKerja.Kelola'), 403);
+        abort_unless($this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola'), 403);
     }
 }

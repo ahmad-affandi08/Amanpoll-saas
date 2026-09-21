@@ -47,7 +47,7 @@ final class PenggunaPeranController extends Controller
     private function pastikanBerizin(Request $request): void
     {
         abort_unless(
-            $this->pemeriksaIzin->boleh((string) $request->user()->Id, 'Pengguna.Kelola'),
+            $this->pemeriksaIzin->boleh((string) $request->user('web')->Id, 'Pengguna.Kelola'),
             403,
         );
     }
