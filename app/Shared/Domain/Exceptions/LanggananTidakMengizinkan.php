@@ -10,8 +10,7 @@ namespace App\Shared\Domain\Exceptions;
  *
  * Dipisahkan dari AksesDitolak karena penyebabnya berbeda dan jalan keluarnya
  * juga berbeda: yang ini tidak diselesaikan dengan memberi izin pada peran,
- * melainkan dengan membayar atau menaikkan paket. Status 402 membuat klien API
- * dapat membedakan keduanya tanpa membaca pesan.
+ * melainkan dengan membayar atau menaikkan paket.
  */
 final class LanggananTidakMengizinkan extends PengecualianDomain
 {

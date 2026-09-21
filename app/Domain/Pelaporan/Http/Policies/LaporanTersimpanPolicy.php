@@ -11,10 +11,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 /**
  * Kepemilikan laporan tersimpan (21.03).
  *
- * Laporan bertanda Pribadi hanya terlihat pemiliknya. Laporan yang dibagikan
- * terlihat oleh siapa pun yang boleh melihat laporan, tetapi tetap hanya dapat
- * diubah dan dihapus pemiliknya — "dibagikan" berarti dapat dibaca, bukan
- * dapat diambil alih.
+ * Laporan bertanda Pribadi hanya terlihat pemiliknya.
  */
 final class LaporanTersimpanPolicy
 {

@@ -14,8 +14,7 @@ use Illuminate\Console\Command;
  *
  * Penegakan tidak bergantung pada perintah ini — status efektif selalu dihitung
  * ulang saat permintaan diproses — sehingga terlambat dijalankan tidak membuat
- * tenant kedaluwarsa tetap dapat menulis. Yang dikerjakan di sini adalah
- * membuat kolomnya dapat dipercaya untuk daftar dan laporan.
+ * tenant kedaluwarsa tetap dapat menulis.
  */
 final class SegarkanStatusLangganan extends Command
 {

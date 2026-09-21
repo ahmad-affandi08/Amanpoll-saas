@@ -91,31 +91,37 @@ final class PerintahKerja extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Keluhan, $this> */
     public function keluhan(): BelongsTo
     {
         return $this->belongsTo(Keluhan::class, 'KeluhanId', 'Id');
     }
 
+    /** @return BelongsTo<TingkatLayanan, $this> */
     public function tingkatLayanan(): BelongsTo
     {
         return $this->belongsTo(TingkatLayanan::class, 'TingkatLayananId', 'Id');
     }
 
+    /** @return BelongsTo<Lokasi, $this> */
     public function lokasi(): BelongsTo
     {
         return $this->belongsTo(Lokasi::class, 'LokasiId', 'Id');
     }
 
+    /** @return BelongsTo<UnitOrganisasi, $this> */
     public function unitOrganisasi(): BelongsTo
     {
         return $this->belongsTo(UnitOrganisasi::class, 'UnitOrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function dibuatOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DibuatOleh', 'Id');
@@ -182,6 +188,7 @@ final class PerintahKerja extends ModelDasar
         return $this->hasMany(PemakaianSukuCadang::class, 'PerintahKerjaId', 'Id')->latest('DipakaiPada');
     }
 
+    /** @return HasMany<PelaksanaanDaftarPeriksa, $this> */
     public function pelaksanaanDaftarPeriksa(): HasMany
     {
         return $this->hasMany(PelaksanaanDaftarPeriksa::class, 'PerintahKerjaId', 'Id');

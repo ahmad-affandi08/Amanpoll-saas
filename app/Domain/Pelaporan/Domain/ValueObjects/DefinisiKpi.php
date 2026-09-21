@@ -12,8 +12,7 @@ use App\Domain\Pelaporan\Domain\Enums\SatuanKpi;
  *
  * `formula` bukan komentar hiasan — ia dikirim ke klien dan ditampilkan pada
  * setiap kartu KPI, sehingga pembaca dasbor selalu dapat melihat angka itu
- * dihitung dari apa (Gate 21). Mengubah cara hitung tanpa memperbarui teks ini
- * akan membuat dasbor berbohong, jadi keduanya diuji bersama.
+ * dihitung dari apa (Gate 21).
  */
 final readonly class DefinisiKpi
 {

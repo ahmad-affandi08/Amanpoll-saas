@@ -46,11 +46,13 @@ final class KomponenDasbor extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<DasborTersimpan, $this> */
     public function dasborTersimpan(): BelongsTo
     {
         return $this->belongsTo(DasborTersimpan::class, 'DasborTersimpanId', 'Id');

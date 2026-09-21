@@ -27,9 +27,7 @@ function inisial(nama?: string | null): string {
 /**
  * Umpan aktivitas entitas (DESIGN.md 12).
  *
- * Pelaku ditampilkan sebagai inisial, bukan foto: data aktivitas dibaca dari
- * catatan audit yang tidak selalu membawa avatar, dan gambar yang gagal muat
- * pada daftar panjang lebih mengganggu daripada inisial yang selalu ada.
+ * Pelaku ditampilkan sebagai inisial karena catatan audit tidak membawa avatar.
  */
 export function ActivityFeed({
   butir,

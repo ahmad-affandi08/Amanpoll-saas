@@ -23,12 +23,8 @@ interface Props {
 /**
  * Baris pencarian dan filter baku (DESIGN.md 9, 12).
  *
- * Seluruh filter berada pada satu baris di atas isi, dan tombol reset hanya
- * muncul ketika ada yang perlu direset — tombol yang selalu ada tetapi sering
- * tidak berguna melatih pengguna untuk mengabaikannya.
- *
- * Di ponsel kolom pencarian melebar penuh dan filter membungkus ke bawahnya,
- * bukan menyusut menjadi kotak-kotak sempit yang sulit disentuh.
+ * Tombol reset hanya muncul bila ada filter aktif. Di ponsel kolom pencarian
+ * melebar penuh dan filter membungkus ke bawahnya.
  */
 export function SearchFilterBar({
   kueri,

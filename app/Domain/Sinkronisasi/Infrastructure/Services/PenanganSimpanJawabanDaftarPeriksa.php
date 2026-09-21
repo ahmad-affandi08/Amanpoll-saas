@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Gate;
  * Jawaban daftar periksa yang diisi teknisi saat offline (20.05).
  *
  * PelaksanaanDaftarPeriksa tidak memakai kolom versi; penguncian terjadi lewat
- * status. Bila pelaksanaan sudah difinalisasi orang lain selagi perangkat ini
- * offline, jawaban lokal berhenti sebagai konflik dan menunggu keputusan
- * pengguna, bukan dibuang atau menimpa hasil final (20.06).
+ * status.
  */
 final class PenanganSimpanJawabanDaftarPeriksa implements PenanganOperasiSinkronisasi
 {

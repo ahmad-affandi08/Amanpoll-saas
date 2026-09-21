@@ -16,11 +16,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Menjalankan ulang mutasi offline yang masih menunggu (20.03).
  *
- * Klien biasanya mendorong dan langsung memproses antreannya sendiri. Perintah
- * ini menutup kasus perangkat yang keburu kehilangan sinyal lagi setelah
- * mendorong antrean: mutasinya tetap diterapkan tanpa menunggu teknisi membuka
- * aplikasi kembali. Klaim atomik di layanan menjaga agar mutasi yang sama tidak
- * diterapkan dua kali oleh perintah ini dan klien secara bersamaan.
+ * Klien biasanya mendorong dan langsung memproses antreannya sendiri.
  */
 final class ProsesAntrianSinkronisasi extends Command
 {

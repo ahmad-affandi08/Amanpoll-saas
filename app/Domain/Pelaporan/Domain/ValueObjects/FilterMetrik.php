@@ -10,9 +10,8 @@ use Carbon\CarbonImmutable;
  * Irisan data yang berlaku untuk seluruh KPI pada satu tampilan (21.02):
  * rentang tanggal plus penyaring unit organisasi dan lokasi.
  *
- * Filter ini sengaja tidak memuat OrganisasiId. Pembatasan tenant dipegang
- * global scope MilikOrganisasi pada setiap model, jadi tidak ada jalur di mana
- * pemanggil dapat "memilih" organisasi lain lewat filter.
+ * Filter ini sengaja tidak memuat OrganisasiId: pembatasan tenant dipegang
+ * global scope MilikOrganisasi, bukan oleh pemanggil.
  */
 final readonly class FilterMetrik
 {

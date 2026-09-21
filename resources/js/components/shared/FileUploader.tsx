@@ -29,14 +29,10 @@ function ukuranTerbaca(byte: number): string {
 /**
  * Pemilih berkas dengan seret-lepas (DESIGN.md 13).
  *
- * Tetap memakai `<input type="file">` yang sesungguhnya dan hanya
- * menyembunyikannya secara visual, bukan menggantinya dengan div yang
- * mendengarkan klik: dengan begitu papan ketik, pembaca layar, dan dialog
- * berkas bawaan sistem tetap bekerja. Area seret-lepas adalah kemudahan
- * tambahan di atasnya, bukan satu-satunya jalan.
- *
- * Penolakan ukuran ditampilkan di sini agar pengguna tahu sebelum menunggu
- * unggahan; batas yang sebenarnya tetap ditegakkan server.
+ * `<input type="file">` yang sesungguhnya hanya disembunyikan secara visual
+ * agar papan ketik dan pembaca layar tetap bekerja; seret-lepas hanya kemudahan
+ * tambahan. Batas ukuran di sini sekadar umpan balik awal — server yang
+ * menegakkannya.
  */
 export function FileUploader({
   berkas,

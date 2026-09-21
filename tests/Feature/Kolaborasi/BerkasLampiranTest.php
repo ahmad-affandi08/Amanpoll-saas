@@ -292,7 +292,7 @@ class BerkasLampiranTest extends TestCase
 
         $konteks->tetapkan($organisasi->Id);
         $this->assertDatabaseMissing('LampiranEntitas', ['BerkasId' => $berkas->Id]);
-        $this->assertSoftDeleted('Berkas', ['Id' => $berkas->Id]);
+        $this->assertSoftDeleted($berkas);
         $konteks->bersihkan();
     }
 

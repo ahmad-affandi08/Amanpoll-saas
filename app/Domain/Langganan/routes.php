@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Route;
 /**
  * Admin platform bekerja lintas tenant, jadi bindingnya dibuat eksplisit lepas
  * dari global scope organisasi. Namanya dibedakan dari parameter tenant supaya
- * tidak ada rute tenant yang tanpa sengaja ikut memakai binding tanpa batas ini.
+ * tidak ada rute tenant yang tanpa sengaja ikut memakai binding tanpa batas
+ * ini.
  */
 Route::bind(
     'langgananPlatform',

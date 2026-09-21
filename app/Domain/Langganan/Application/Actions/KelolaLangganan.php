@@ -20,10 +20,7 @@ use Carbon\CarbonImmutable;
  * Siklus hidup langganan satu organisasi (22.04).
  *
  * Satu organisasi hanya memiliki satu baris langganan yang berlaku; pergantian
- * paket mengubah baris itu, bukan membuat baris kedua. Itu disengaja: dua baris
- * aktif berarti dua jawaban entitlement untuk tenant yang sama, dan yang mana
- * yang menang akan bergantung pada urutan query. Sesuai PRD, pergantian paket
- * tidak pernah menyentuh data tenant — hanya haknya yang berubah.
+ * paket mengubah baris itu, bukan membuat baris kedua.
  */
 final class KelolaLangganan
 {

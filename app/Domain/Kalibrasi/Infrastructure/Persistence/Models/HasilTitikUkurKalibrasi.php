@@ -42,16 +42,19 @@ final class HasilTitikUkurKalibrasi extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PelaksanaanKalibrasi, $this> */
     public function pelaksanaanKalibrasi(): BelongsTo
     {
         return $this->belongsTo(PelaksanaanKalibrasi::class, 'PelaksanaanKalibrasiId', 'Id');
     }
 
+    /** @return BelongsTo<TitikUkurKalibrasi, $this> */
     public function titikUkurKalibrasi(): BelongsTo
     {
         return $this->belongsTo(TitikUkurKalibrasi::class, 'TitikUkurKalibrasiId', 'Id');

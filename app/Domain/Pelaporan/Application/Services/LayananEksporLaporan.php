@@ -19,13 +19,14 @@ use RuntimeException;
  * Pembuatan berkas ekspor laporan (21.05).
  *
  * Dijalankan dari antrean, bukan dari permintaan HTTP, karena laporan lebar
- * dapat menyentuh belasan query agregat. Hasilnya disimpan sebagai Berkas milik
- * organisasi, ditandai di DataTambahan sebagai ekspor laporan beserta filter
- * yang dipakai, lalu pemesannya diberi tahu.
+ * dapat menyentuh belasan query agregat.
  */
 final class LayananEksporLaporan
 {
-    /** Penanda pada Berkas.DataTambahan yang membedakan ekspor dari lampiran biasa. */
+    /**
+     * Penanda pada Berkas.DataTambahan yang membedakan ekspor dari lampiran
+     * biasa.
+     */
     public const JENIS_BERKAS = 'EksporLaporan';
 
     /** @var array<string, PenulisEkspor> */
@@ -42,9 +43,7 @@ final class LayananEksporLaporan
         $this->penulis[$penulis->format()->value] = $penulis;
     }
 
-    /**
-     * @param  list<string>  $kunciKpi
-     */
+    /** @param  list<string>  $kunciKpi */
     public function jalankan(
         Pengguna $pengguna,
         array $kunciKpi,

@@ -53,6 +53,7 @@ final class Penyedia extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');

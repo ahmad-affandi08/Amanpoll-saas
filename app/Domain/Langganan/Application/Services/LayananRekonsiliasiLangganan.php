@@ -13,12 +13,8 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 /**
  * Rekonsiliasi tagihan terhadap pembayarannya (22.06).
  *
- * Webhook dapat hilang, dan konfirmasi manual dapat tercatat di luar alur.
- * Rekonsiliasi memeriksa ulang setiap tagihan hidup terhadap jumlah pembayaran
- * berhasilnya, memperbaiki status yang tertinggal, dan melaporkan selisih yang
- * tidak dapat diperbaiki sendiri — dibayar berlebih atau dibayar untuk tagihan
- * yang sudah dibatalkan — karena keduanya menuntut keputusan manusia, bukan
- * koreksi otomatis.
+ * Memperbaiki status yang tertinggal karena webhook hilang, dan melaporkan
+ * selisih yang menuntut keputusan manusia alih-alih mengoreksinya sendiri.
  */
 final class LayananRekonsiliasiLangganan
 {

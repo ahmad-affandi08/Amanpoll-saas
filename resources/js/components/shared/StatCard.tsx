@@ -30,10 +30,8 @@ const IKON_ARAH: Record<Arah, LucideIcon> = {
 /**
  * Kartu angka tunggal (DESIGN.md 13).
  *
- * Arah perubahan selalu didampingi ikon dan teks, tidak pernah warna saja:
- * pembaca dengan buta warna harus dapat membedakan naik dari turun. Warnanya
- * mengikuti apakah naik itu kabar baik, karena "downtime naik 20%" bukan
- * prestasi walau panahnya ke atas.
+ * Arah perubahan selalu didampingi ikon dan teks, tidak pernah warna saja.
+ * Warnanya mengikuti `naikItuBaik`, bukan arah panahnya.
  */
 export function StatCard({ label, nilai, keterangan, ikon: Ikon, perubahan, className }: Props) {
   const IkonArah = perubahan ? IKON_ARAH[perubahan.arah] : null;

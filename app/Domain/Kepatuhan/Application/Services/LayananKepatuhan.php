@@ -288,7 +288,7 @@ final class LayananKepatuhan
             ->where('JenisEntitas', $jenisEntitas)
             ->where('EntitasId', $entitasId)
             ->where('JenisPeristiwa', $jenisPeristiwa)
-            ->where('DibuatPada', '>=', $sejak->startOfDay())
+            ->where('JadwalKirimPada', '>=', $sejak->startOfDay())
             ->exists();
 
         if ($sudahAda || $penerima === []) {

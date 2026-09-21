@@ -50,16 +50,19 @@ final class PermintaanPersetujuan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<AlurPersetujuan, $this> */
     public function alurPersetujuan(): BelongsTo
     {
         return $this->belongsTo(AlurPersetujuan::class, 'AlurPersetujuanId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function dimintaOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DimintaOleh', 'Id');

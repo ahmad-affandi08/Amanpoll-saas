@@ -17,8 +17,7 @@ use Illuminate\Support\Collection;
  * KPI anggaran (21.01: budget).
  *
  * Anggaran bersifat tahunan, jadi rentang filter dipakai untuk memilih tahun
- * yang tersentuh rentang, bukan untuk memotong nilainya per hari. Pagu yang
- * dipotong proporsional akan memberi kesan presisi yang tidak ada di datanya.
+ * yang tersentuh rentang, bukan untuk memotong nilainya per hari.
  */
 final class QueryAnggaran implements PenyediaKpi
 {
@@ -80,16 +79,9 @@ final class QueryAnggaran implements PenyediaKpi
             ->map(fn (object $baris): array => $this->keArrayAsosiatif($baris));
     }
 
-    /**
-     * Baris agregat mentah datang sebagai objek dinamis; dikonversi sekali di
-     * sini supaya sisa kelas bekerja dengan array bertipe.
-     *
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     private function keArrayAsosiatif(object $baris): array
     {
-        // get_object_vars() menjamin kunci string, sehingga tidak perlu anotasi
-        // tambahan untuk meyakinkan analisis statis.
         return get_object_vars($baris);
     }
 

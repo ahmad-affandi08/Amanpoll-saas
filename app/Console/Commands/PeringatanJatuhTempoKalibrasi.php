@@ -9,8 +9,9 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Illuminate\Console\Command;
 
 /**
- * Memeriksa kalibrasi yang segera jatuh tempo atau terlambat di setiap organisasi
- * dan mengirim notifikasi peringatan dengan proteksi anti-duplikasi harian (14.05).
+ * Memeriksa kalibrasi yang segera jatuh tempo atau terlambat di setiap
+ * organisasi dan mengirim notifikasi peringatan dengan proteksi anti-duplikasi
+ * harian (14.05).
  */
 final class PeringatanJatuhTempoKalibrasi extends Command
 {

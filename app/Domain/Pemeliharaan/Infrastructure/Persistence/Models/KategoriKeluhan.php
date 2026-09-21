@@ -40,21 +40,25 @@ final class KategoriKeluhan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<KategoriKeluhan, $this> */
     public function induk(): BelongsTo
     {
         return $this->belongsTo(KategoriKeluhan::class, 'IndukId', 'Id');
     }
 
+    /** @return BelongsTo<TingkatLayanan, $this> */
     public function tingkatLayanan(): BelongsTo
     {
         return $this->belongsTo(TingkatLayanan::class, 'TingkatLayananId', 'Id');
     }
 
+    /** @return BelongsTo<Peran, $this> */
     public function peranPenanggungJawab(): BelongsTo
     {
         return $this->belongsTo(Peran::class, 'PeranPenanggungJawabId', 'Id');

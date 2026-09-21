@@ -19,12 +19,9 @@ use Illuminate\Database\UniqueConstraintViolationException;
 /**
  * Pencatatan pembayaran dan pelunasan tagihan (22.06).
  *
- * Idempotensi ditegakkan lewat indeks unik (PenyediaPembayaran,
- * IdPeristiwaPenyedia), bukan lewat pemeriksaan "sudah ada belum" sebelum
- * menulis: dua pengiriman webhook yang tiba bersamaan akan lolos dari
- * pemeriksaan itu dan menghasilkan dua pembayaran. Yang kalah dalam perlombaan
- * ditangkap di sini dan dikembalikan sebagai pembayaran yang sudah ada, jadi
- * penyedia menerima jawaban sukses dan berhenti mengirim ulang.
+ * Idempotensi ditegakkan indeks unik (PenyediaPembayaran, IdPeristiwaPenyedia),
+ * bukan pemeriksaan sebelum menulis yang akan lolos saat dua webhook tiba
+ * bersamaan; yang kalah ditangkap di sini dan dikembalikan apa adanya.
  */
 final class CatatPembayaranLangganan
 {

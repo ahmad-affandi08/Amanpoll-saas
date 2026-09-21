@@ -19,7 +19,10 @@ interface PenanganOperasiSinkronisasi
     /** Kode operasi yang dikirim klien, mis. `PerintahKerja.UbahStatus`. */
     public function operasi(): string;
 
-    /** Jenis entitas yang dimutasi; dipakai untuk penanda sinkronisasi dan audit. */
+    /**
+     * Jenis entitas yang dimutasi; dipakai untuk penanda sinkronisasi dan
+     * audit.
+     */
     public function jenisEntitas(): string;
 
     /** Apakah operasi ini wajib menyertakan EntitasId. */

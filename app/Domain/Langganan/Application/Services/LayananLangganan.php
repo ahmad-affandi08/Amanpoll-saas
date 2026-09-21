@@ -12,10 +12,6 @@ use Carbon\CarbonImmutable;
  * Pembacaan status langganan satu organisasi (22.04).
  *
  * Status efektif dihitung dari tanggal, bukan hanya dibaca dari kolom Status.
- * Kolomnya bisa tertinggal — perintah penyegar berjalan sekali sehari, dan
- * sebuah langganan bisa lewat tengah malam di antara dua jalannya. Menghitung
- * ulang di sini membuat pemblokiran tidak pernah terlambat satu hari, dan
- * membuat hasilnya sama baik diakses lewat web maupun lewat API.
  */
 final class LayananLangganan
 {

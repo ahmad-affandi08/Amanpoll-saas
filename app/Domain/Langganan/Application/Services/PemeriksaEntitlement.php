@@ -16,11 +16,9 @@ use Illuminate\Support\Facades\DB;
 /**
  * Satu-satunya tempat entitlement dijawab (22.05).
  *
- * Seluruh penegakan — gerbang rute, penjaga batas, dan prop yang dikirim ke
- * UI — memanggil kelas ini, sehingga tidak mungkin ada jalur yang memakai
- * aturan berbeda. Inilah yang membuat Gate 22 dapat dipenuhi: menembak API
- * langsung tidak melewati pemeriksaan mana pun yang hanya hidup di UI, sebab
- * di UI tidak ada aturan yang tidak ada di sini.
+ * Seluruh penegakan — gerbang rute, penjaga batas, dan prop yang dikirim ke UI
+ * — memanggil kelas ini, sehingga tidak mungkin ada jalur yang memakai aturan
+ * berbeda.
  */
 final class PemeriksaEntitlement
 {

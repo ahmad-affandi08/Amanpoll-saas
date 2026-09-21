@@ -20,8 +20,7 @@ use Carbon\CarbonImmutable;
  *
  * Penerbitan bersifat idempoten per periode: menjalankan penagihan dua kali
  * pada hari yang sama tidak menghasilkan dua tagihan, karena satu langganan
- * hanya boleh punya satu tagihan hidup untuk satu rentang periode. Tanpa itu,
- * percobaan ulang perintah terjadwal akan menagih pelanggan berkali-kali.
+ * hanya boleh punya satu tagihan hidup untuk satu rentang periode.
  */
 final class TerbitkanTagihanLangganan
 {

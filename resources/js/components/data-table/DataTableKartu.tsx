@@ -4,14 +4,8 @@ import { EmptyState } from '@/components/shared/EmptyState';
 /**
  * Tampilan kartu untuk DataTable di layar sempit (DESIGN.md 9.3).
  *
- * Tabel operasional yang dibaca teknisi di lapangan tidak layak dipaksa
- * digeser mendatar di layar 360px: yang dicari adalah satu pekerjaan, bukan
- * perbandingan antar baris. Kolom pembanding pada tabel administratif tetap
- * lebih terbaca sebagai baris, jadi mode ini dinyalakan per tabel, bukan
- * dipaksakan ke semuanya.
- *
- * Kolom menentukan perannya sendiri lewat `meta.kartu`, sehingga kartu tidak
- * perlu menebak mana judul dan mana aksi.
+ * Dinyalakan per tabel lewat `kartuDiPonsel`; kolom menentukan perannya sendiri
+ * lewat `meta.kartu`.
  */
 export function DataTableKartu<TData>({
   table,
@@ -87,9 +81,8 @@ function KartuBaris<TData>({ row }: { row: Row<TData> }) {
 }
 
 /**
- * Header kolom sering berupa komponen pengurut, bukan teks, sehingga tidak
- * dapat dipakai sebagai label kartu. Kolom menyediakan `labelKartu`; bila tidak,
- * id kolom dirapikan seadanya.
+ * Header kolom sering berupa komponen pengurut, bukan teks. Kolom menyediakan
+ * `labelKartu`; bila tidak, id kolom dirapikan seadanya.
  */
 function labelKolom(label: string | undefined, id: string): string {
   if (label) return label;

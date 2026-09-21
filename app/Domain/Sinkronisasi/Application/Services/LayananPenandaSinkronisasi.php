@@ -13,9 +13,7 @@ use Illuminate\Support\Str;
  * Penanda sinkronisasi per perangkat dan jenis entitas (20.04).
  *
  * TokenSinkronisasi adalah sidik jari paket offline terakhir yang diterima
- * perangkat. Klien mengirimkannya kembali saat menarik paket baru sehingga
- * dapat diketahui apakah datanya masih sama persis dengan server, dan
- * TerakhirSinkronPada memberi teknisi umur data yang sedang ia lihat.
+ * perangkat.
  */
 final class LayananPenandaSinkronisasi
 {

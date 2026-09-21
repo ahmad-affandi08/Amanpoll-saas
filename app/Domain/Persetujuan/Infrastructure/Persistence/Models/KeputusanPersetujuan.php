@@ -39,16 +39,19 @@ final class KeputusanPersetujuan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PermintaanPersetujuan, $this> */
     public function permintaanPersetujuan(): BelongsTo
     {
         return $this->belongsTo(PermintaanPersetujuan::class, 'PermintaanPersetujuanId', 'Id');
     }
 
+    /** @return BelongsTo<TahapPersetujuan, $this> */
     public function tahapPersetujuan(): BelongsTo
     {
         return $this->belongsTo(TahapPersetujuan::class, 'TahapPersetujuanId', 'Id');

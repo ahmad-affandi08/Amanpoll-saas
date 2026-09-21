@@ -36,16 +36,19 @@ final class JadwalPemeliharaan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<RencanaPemeliharaanAset, $this> */
     public function rencanaPemeliharaanAset(): BelongsTo
     {
         return $this->belongsTo(RencanaPemeliharaanAset::class, 'RencanaPemeliharaanAsetId', 'Id');
     }
 
+    /** @return BelongsTo<PerintahKerja, $this> */
     public function perintahKerja(): BelongsTo
     {
         return $this->belongsTo(PerintahKerja::class, 'PerintahKerjaId', 'Id');

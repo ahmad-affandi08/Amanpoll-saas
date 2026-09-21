@@ -43,16 +43,19 @@ final class JawabanDaftarPeriksa extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PelaksanaanDaftarPeriksa, $this> */
     public function pelaksanaanDaftarPeriksa(): BelongsTo
     {
         return $this->belongsTo(PelaksanaanDaftarPeriksa::class, 'PelaksanaanDaftarPeriksaId', 'Id');
     }
 
+    /** @return BelongsTo<ButirTemplatDaftarPeriksa, $this> */
     public function butirTemplatDaftarPeriksa(): BelongsTo
     {
         return $this->belongsTo(ButirTemplatDaftarPeriksa::class, 'ButirTemplatDaftarPeriksaId', 'Id');

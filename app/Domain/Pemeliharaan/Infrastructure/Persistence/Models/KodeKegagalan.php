@@ -36,11 +36,13 @@ final class KodeKegagalan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<KategoriAset, $this> */
     public function kategoriAset(): BelongsTo
     {
         return $this->belongsTo(KategoriAset::class, 'KategoriAsetId', 'Id');

@@ -15,8 +15,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
  *
  * Aset adalah keadaan saat ini, bukan aliran transaksi, sehingga rentang
  * tanggal tidak dipakai di sini — memfilter aset "yang ada bulan lalu" akan
- * salah menggambarkan jumlah yang dikelola hari ini. Filter unit dan lokasi
- * tetap berlaku penuh.
+ * salah menggambarkan jumlah yang dikelola hari ini.
  */
 final class QueryAset implements PenyediaKpi
 {

@@ -16,9 +16,7 @@ use App\Shared\Domain\Exceptions\LanggananTidakMengizinkan;
  *
  * Batas tidak dapat dijaga oleh middleware: sebuah permintaan baru melanggar
  * kuota setelah diketahui berapa baris yang sudah ada, jadi pemeriksaannya
- * harus terjadi tepat sebelum baris baru dibuat. Karena itu penjaga ini
- * dipanggil dari dalam use-case pembuatan, bukan dari rute — jalur API dan
- * jalur web sama-sama melewatinya.
+ * harus terjadi tepat sebelum baris baru dibuat.
  */
 final class PenjagaBatasLangganan
 {

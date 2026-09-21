@@ -43,16 +43,19 @@ final class TemplatDaftarPeriksa extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<KategoriAset, $this> */
     public function kategoriAset(): BelongsTo
     {
         return $this->belongsTo(KategoriAset::class, 'KategoriAsetId', 'Id');
     }
 
+    /** @return BelongsTo<ModelAset, $this> */
     public function modelAset(): BelongsTo
     {
         return $this->belongsTo(ModelAset::class, 'ModelAsetId', 'Id');

@@ -21,21 +21,11 @@ use Illuminate\Support\Facades\Validator;
 use Throwable;
 
 /**
- * Antrean mutasi offline (20.03) beserta deteksi dan penyelesaian konflik
- * (20.06).
+ * Antrean mutasi offline (20.03) dan penyelesaian konfliknya (20.06).
  *
- * Dua jaminan yang menjadi inti Gate 20:
- *
- * 1. Penggandaan tidak mungkin terjadi. Setiap mutasi membawa KunciOperasi
- *    yang dibuat klien dan unik per perangkat, sehingga pengiriman ulang
- *    akibat jaringan putus memakai baris antrean yang sama, bukan membuat
- *    transaksi bisnis kedua.
- * 2. Mutasi tidak pernah menimpa server diam-diam. Versi entitas yang dibaca
- *    klien dibandingkan dengan versi server sebelum Action dipanggil, dan
- *    perbedaan menghentikan mutasi pada status Konflik sampai pengguna memilih.
- *
- * Kolom `Konflik` menyimpan detail konflik maupun detail kegagalan, supaya
- * klien dapat menjelaskan ke teknisi apa yang terjadi tanpa menebak.
+ * KunciOperasi dari klien membuat pengiriman ulang memakai baris antrean yang
+ * sama, dan VersiKlien dibandingkan dengan versi server sebelum Action
+ * dipanggil — dua hal itulah inti Gate 20.
  */
 final class LayananAntrianSinkronisasi
 {

@@ -16,17 +16,18 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
 /**
- * Dasbor kustom milik pengguna (21.04): pilihan komponen, urutan, lebar, dan
- * penanda dasbor bawaan.
+ * Dasbor kustom milik pengguna (21.04): komponen, urutan, lebar, dan penanda
+ * dasbor bawaan.
  *
- * Validasi dilakukan penuh di server. Komponen yang menunjuk KPI tak dikenal,
- * KPI di luar kewenangan penyimpannya, atau bentuk yang tidak mungkin digambar
- * dari rincian KPI tersebut ditolak di sini — bukan disembunyikan di klien —
- * supaya tidak ada dasbor tersimpan yang menampilkan bagan kosong (21.02).
+ * KPI tak dikenal, KPI di luar kewenangan penyimpan, dan bentuk yang tidak
+ * mungkin digambar ditolak di server, bukan disembunyikan di klien.
  */
 final class KelolaDasborTersimpan
 {
-    /** Batas komponen per dasbor supaya satu halaman tidak menjadi ratusan query. */
+    /**
+     * Batas komponen per dasbor supaya satu halaman tidak menjadi ratusan
+     * query.
+     */
     public const BATAS_KOMPONEN = 24;
 
     public function __construct(

@@ -45,21 +45,25 @@ final class TahapPersetujuan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<AlurPersetujuan, $this> */
     public function alurPersetujuan(): BelongsTo
     {
         return $this->belongsTo(AlurPersetujuan::class, 'AlurPersetujuanId', 'Id');
     }
 
+    /** @return BelongsTo<Peran, $this> */
     public function peran(): BelongsTo
     {
         return $this->belongsTo(Peran::class, 'PeranId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function pengguna(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');

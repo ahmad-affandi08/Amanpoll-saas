@@ -33,11 +33,13 @@ final class HariLibur extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Lokasi, $this> */
     public function lokasi(): BelongsTo
     {
         return $this->belongsTo(Lokasi::class, 'LokasiId', 'Id');

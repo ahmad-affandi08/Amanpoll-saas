@@ -13,9 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
  * Penerapan filter unit organisasi dan lokasi (21.02) ke query metrik.
  *
  * Tabel yang tidak memiliki kedua kolom itu dijangkau lewat aset atau perintah
- * kerja yang bersangkutan. Ada pula metrik yang memang tidak berdimensi unit
- * atau lokasi (pengadaan, kontrak); untuk itu penyedia KPI-nya menandai
- * eksplisit bahwa filter tidak berlaku, bukan diam-diam mengabaikannya.
+ * kerja yang bersangkutan.
  */
 trait MenyaringLingkup
 {

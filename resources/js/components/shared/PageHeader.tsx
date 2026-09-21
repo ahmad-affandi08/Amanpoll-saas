@@ -26,11 +26,8 @@ interface Props {
  * Kepala halaman baku (DESIGN.md 12).
  *
  * Breadcrumb diturunkan dari URL terhadap peta navigasi, jadi halaman tidak
- * perlu menuliskannya dan tidak bisa menuliskannya keliru. Judul selalu satu
- * `h1` per halaman, sehingga urutan heading tetap benar bagi pembaca layar.
- *
- * Di ponsel aksi turun ke baris sendiri dan melebar penuh: tombol utama yang
- * terhimpit di sebelah judul panjang adalah target sentuh yang buruk.
+ * perlu menuliskannya. Judul selalu satu `h1` per halaman. Di ponsel aksi turun
+ * ke baris sendiri dan melebar penuh.
  */
 export function PageHeader({
   judul,

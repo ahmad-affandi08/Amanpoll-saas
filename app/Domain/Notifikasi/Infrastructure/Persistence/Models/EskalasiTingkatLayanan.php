@@ -47,21 +47,25 @@ final class EskalasiTingkatLayanan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<TingkatLayanan, $this> */
     public function tingkatLayanan(): BelongsTo
     {
         return $this->belongsTo(TingkatLayanan::class, 'TingkatLayananId', 'Id');
     }
 
+    /** @return BelongsTo<Peran, $this> */
     public function peran(): BelongsTo
     {
         return $this->belongsTo(Peran::class, 'PeranId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function pengguna(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');

@@ -77,31 +77,37 @@ final class Keluhan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<KategoriKeluhan, $this> */
     public function kategoriKeluhan(): BelongsTo
     {
         return $this->belongsTo(KategoriKeluhan::class, 'KategoriKeluhanId', 'Id');
     }
 
+    /** @return BelongsTo<TingkatLayanan, $this> */
     public function tingkatLayanan(): BelongsTo
     {
         return $this->belongsTo(TingkatLayanan::class, 'TingkatLayananId', 'Id');
     }
 
+    /** @return BelongsTo<Aset, $this> */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
+    /** @return BelongsTo<Lokasi, $this> */
     public function lokasi(): BelongsTo
     {
         return $this->belongsTo(Lokasi::class, 'LokasiId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function pelapor(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'PelaporId', 'Id');

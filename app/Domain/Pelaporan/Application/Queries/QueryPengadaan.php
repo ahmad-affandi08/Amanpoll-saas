@@ -15,9 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
  * KPI pengadaan (21.01: procurement).
  *
  * Pesanan pembelian tidak membawa unit organisasi maupun lokasi, sehingga
- * filter dimensi tidak berlaku di sini. Klien diberi tahu lewat konteks
- * `FilterDimensiBerlaku` supaya tidak ada yang mengira angka ini sudah
- * mengikuti filter di atas layar padahal tidak.
+ * filter dimensi tidak berlaku di sini.
  */
 final class QueryPengadaan implements PenyediaKpi
 {

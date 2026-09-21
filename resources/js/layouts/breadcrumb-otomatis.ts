@@ -2,16 +2,11 @@ import type { JejakBreadcrumb } from '@/components/ui/breadcrumb';
 import { semuaGrup } from '@/layouts/navigasi';
 
 /**
- * Menurunkan breadcrumb dari peta navigasi (DESIGN.md 12).
+ * Menurunkan breadcrumb dari peta navigasi (DESIGN.md 12), bukan dari data per
+ * halaman, supaya breadcrumb tidak dapat menyimpang dari menu.
  *
- * Ditulis sebagai turunan, bukan sebagai data per halaman, karena breadcrumb
- * yang ditulis tangan di tiap halaman pasti lambat laun berbeda dari menunya —
- * dan breadcrumb yang berbeda dari menu lebih menyesatkan daripada tidak ada
- * breadcrumb sama sekali.
- *
- * Ruas yang tidak dikenal peta navigasi tetap ditampilkan dari potongan URL-nya
- * supaya halaman detail tidak kehilangan konteks; pemanggil dapat menimpanya
- * dengan nama entitas yang sebenarnya.
+ * Ruas yang tidak dikenal peta tetap ditampilkan dari potongan URL-nya;
+ * pemanggil dapat menimpanya lewat `timpaTerakhir`.
  */
 
 interface Simpul {
@@ -66,10 +61,7 @@ function labelDariRuas(ruas: string): string {
   return kata.charAt(0).toUpperCase() + kata.slice(1);
 }
 
-/**
- * ULID dan UUID tidak pernah pantas muncul di breadcrumb; halaman detail
- * menimpanya dengan nama entitas lewat `timpaTerakhir`.
- */
+/** ULID dan UUID tidak pernah pantas muncul di breadcrumb. */
 function ruasIdentitas(ruas: string): boolean {
   return /^[0-9a-z]{26}$/i.test(ruas) || /^[0-9a-f-]{32,36}$/i.test(ruas);
 }

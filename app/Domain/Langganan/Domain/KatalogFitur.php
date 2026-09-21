@@ -11,12 +11,10 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 /**
  * Master fitur paket (22.01).
  *
- * Kode fitur tertanam di rute, di middleware, dan di baris PaketFitur milik
- * setiap pelanggan, jadi kode adalah kontrak jangka panjang: menghapus atau
- * mengganti satu kode akan membuka modul berbayar atau menutup modul yang sudah
- * dibayar. Karena itu katalog ini yang menjadi sumber kebenaran — tabel
- * FiturPaket disemai dari sini, bukan sebaliknya, sehingga tidak mungkin ada
- * kode yang dipakai kode program tetapi tidak ada masternya.
+ * Sumber kebenaran kode fitur; tabel FiturPaket disemai dari sini.
+ *
+ * Kode tertanam di rute dan di baris PaketFitur pelanggan, jadi jangan diubah
+ * namanya — tambah kode baru dan pensiunkan yang lama.
  */
 final class KatalogFitur
 {

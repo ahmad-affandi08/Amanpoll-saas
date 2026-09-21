@@ -162,7 +162,7 @@ final class LayananPeringatanKontrak
             ->where('JenisEntitas', 'Kontrak')
             ->where('EntitasId', $kontrak->Id)
             ->where('JenisPeristiwa', $jenisPeristiwa)
-            ->where('DibuatPada', '>=', $sejak->startOfDay())
+            ->where('JadwalKirimPada', '>=', $sejak->startOfDay())
             ->exists();
 
         if ($sudahAda || $penerima === []) {

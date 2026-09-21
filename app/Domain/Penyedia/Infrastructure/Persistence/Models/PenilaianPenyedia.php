@@ -46,16 +46,19 @@ final class PenilaianPenyedia extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Penyedia, $this> */
     public function penyedia(): BelongsTo
     {
         return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function dinilaiOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DinilaiOleh', 'Id');

@@ -41,16 +41,19 @@ final class WaktuHentiAset extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Aset, $this> */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
+    /** @return BelongsTo<PerintahKerja, $this> */
     public function perintahKerja(): BelongsTo
     {
         return $this->belongsTo(PerintahKerja::class, 'PerintahKerjaId', 'Id');

@@ -47,11 +47,13 @@ final class ButirTemplatDaftarPeriksa extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<TemplatDaftarPeriksa, $this> */
     public function templatDaftarPeriksa(): BelongsTo
     {
         return $this->belongsTo(TemplatDaftarPeriksa::class, 'TemplatDaftarPeriksaId', 'Id');

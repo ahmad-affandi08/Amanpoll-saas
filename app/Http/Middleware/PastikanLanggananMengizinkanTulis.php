@@ -14,19 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Pemblokiran tulis untuk tenant yang langganannya habis (22.05, Gate 22).
  *
- * Middleware ini sengaja tidak dipasang per rute melainkan pada grup web dan
- * api sekaligus, dengan prioritas setelah konteks organisasi ditetapkan. Itu
- * satu-satunya cara memastikan tidak ada rute yang "kelupaan dijaga": rute baru
- * ikut terjaga sejak hari pertama, dan menembak endpoint API langsung melewati
- * pemeriksaan yang persis sama dengan yang dilewati UI.
- *
- * Kebijakannya baca-saja, bukan blokir total: tenant tetap dapat melihat
- * datanya dan membuka halaman tagihan, sehingga ia tidak terkunci dari jalan
- * keluarnya sendiri.
+ * Dipasang pada grup web dan api, bukan per rute, supaya tidak ada rute yang
+ * dapat lupa dijaga.
  */
 final class PastikanLanggananMengizinkanTulis
 {
-    /** Metode yang tidak mengubah keadaan, jadi tetap diizinkan saat kedaluwarsa. */
+    /**
+     * Metode yang tidak mengubah keadaan, jadi tetap diizinkan saat
+     * kedaluwarsa.
+     */
     private const METODE_BACA = ['GET', 'HEAD', 'OPTIONS'];
 
     /**

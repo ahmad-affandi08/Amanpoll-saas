@@ -40,21 +40,25 @@ final class BiayaPerintahKerja extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PerintahKerja, $this> */
     public function perintahKerja(): BelongsTo
     {
         return $this->belongsTo(PerintahKerja::class, 'PerintahKerjaId', 'Id');
     }
 
+    /** @return BelongsTo<Penyedia, $this> */
     public function penyedia(): BelongsTo
     {
         return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function dibuatOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DibuatOleh', 'Id');

@@ -11,16 +11,10 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
 /**
- * Pembayaran lewat transfer bank yang dikonfirmasi manual (22.06).
+ * Pembayaran transfer bank dengan konfirmasi manual (22.06).
  *
- * Ini implementasi nyata, bukan tiruan: banyak pelanggan institusi memang
- * membayar dengan transfer dan konfirmasi administratif. Karena alurnya penuh —
- * instruksi, konfirmasi, pelunasan, rekonsiliasi — ia sekaligus membuktikan
- * bahwa abstraksinya cukup untuk menampung gateway sungguhan nanti.
- *
- * "Webhook"-nya di sini adalah konfirmasi dari administrator platform, sehingga
- * keabsahannya ditentukan oleh rahasia bersama, bukan oleh tanda tangan
- * gateway.
+ * "Webhook"-nya adalah konfirmasi administrator, jadi keabsahannya ditentukan
+ * rahasia bersama, bukan tanda tangan gateway.
  */
 final class PenyediaPembayaranTransferManual implements PenyediaPembayaran
 {

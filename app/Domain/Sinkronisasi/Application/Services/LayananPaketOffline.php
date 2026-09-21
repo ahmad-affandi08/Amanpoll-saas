@@ -21,14 +21,9 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Paket data yang dibawa teknisi ke lapangan (20.05).
  *
- * Isinya sengaja dibatasi pada apa yang benar-benar dibutuhkan untuk bekerja
- * tanpa sinyal: penugasan milik teknisi itu sendiri, ringkasan aset yang
- * dikerjakan, dan daftar periksa yang menempel pada pekerjaan tersebut. Tidak
- * ada data organisasi yang lebih luas, harga, atau data pengguna lain yang
- * ikut tersimpan di perangkat (PRD 8.17: data sensitif lokal diminimalkan).
- *
- * Setiap bagian membawa sidik jari (token) supaya klien tahu apakah paket
- * lokalnya masih identik dengan server tanpa membandingkan seluruh isi.
+ * Isinya dibatasi pada penugasan milik teknisi itu sendiri beserta aset dan
+ * daftar periksanya; harga dan data pengguna lain tidak ikut ke perangkat (PRD
+ * 8.17).
  */
 final class LayananPaketOffline
 {

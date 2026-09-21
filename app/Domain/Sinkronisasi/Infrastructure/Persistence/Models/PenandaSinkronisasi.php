@@ -33,11 +33,13 @@ final class PenandaSinkronisasi extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PerangkatPengguna, $this> */
     public function perangkatPengguna(): BelongsTo
     {
         return $this->belongsTo(PerangkatPengguna::class, 'PerangkatPenggunaId', 'Id');

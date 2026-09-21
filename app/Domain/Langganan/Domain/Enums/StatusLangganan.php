@@ -9,9 +9,7 @@ namespace App\Domain\Langganan\Domain\Enums;
  *
  * Tenggang adalah status turunan, bukan sesuatu yang ditulis operator: begitu
  * tanggal berakhir terlewat, langganan aktif menjadi Tenggang dengan
- * sendirinya, lalu Kedaluwarsa setelah masa tenggang habis. Menyimpannya
- * sebagai status tersendiri membuat alasan pemblokiran dapat dijelaskan ke
- * pengguna, bukan sekadar "tidak aktif".
+ * sendirinya, lalu Kedaluwarsa setelah masa tenggang habis.
  */
 enum StatusLangganan: string
 {

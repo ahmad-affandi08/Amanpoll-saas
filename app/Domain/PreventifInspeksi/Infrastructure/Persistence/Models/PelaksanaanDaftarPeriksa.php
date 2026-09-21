@@ -44,31 +44,37 @@ final class PelaksanaanDaftarPeriksa extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<TemplatDaftarPeriksa, $this> */
     public function templatDaftarPeriksa(): BelongsTo
     {
         return $this->belongsTo(TemplatDaftarPeriksa::class, 'TemplatDaftarPeriksaId', 'Id');
     }
 
+    /** @return BelongsTo<PerintahKerja, $this> */
     public function perintahKerja(): BelongsTo
     {
         return $this->belongsTo(PerintahKerja::class, 'PerintahKerjaId', 'Id');
     }
 
+    /** @return BelongsTo<Aset, $this> */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function dilaksanakanOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DilaksanakanOleh', 'Id');
     }
 
+    /** @return HasMany<JawabanDaftarPeriksa, $this> */
     public function jawaban(): HasMany
     {
         return $this->hasMany(JawabanDaftarPeriksa::class, 'PelaksanaanDaftarPeriksaId', 'Id');

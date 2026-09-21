@@ -12,11 +12,9 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 /**
  * Katalog seluruh KPI Amanpoll beserta rumusnya (Gate 21).
  *
- * Satu-satunya daftar resmi. Dasbor, laporan tersimpan, komponen dasbor
- * kustom, dan ekspor semuanya menyebut KPI lewat kunci di sini, sehingga tidak
- * ada tempat kedua yang bisa menyimpang. Kunci bersifat stabil dan tersimpan di
- * konfigurasi pengguna, jadi jangan pernah diubah namanya — tambahkan kunci
- * baru dan pensiunkan yang lama bila definisinya berubah.
+ * Satu-satunya daftar resmi; dasbor, laporan, dan ekspor menyebut KPI lewat
+ * kunci di sini. Kunci tersimpan di konfigurasi pengguna, jadi jangan diubah
+ * namanya — tambah kunci baru dan pensiunkan yang lama.
  */
 final class KatalogKpi
 {

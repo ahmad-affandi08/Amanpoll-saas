@@ -17,8 +17,6 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
  *
  * Konfigurasi dinormalkan sebelum disimpan: kunci KPI yang tidak dikenal atau
  * tidak diizinkan bagi penyimpannya dibuang, dan rentang tanggal dibakukan.
- * Tanpa itu, laporan tersimpan menjadi jalur memutar untuk menyimpan kunci
- * sembarang yang baru meledak saat dibuka orang lain.
  */
 final class KelolaLaporanTersimpan
 {

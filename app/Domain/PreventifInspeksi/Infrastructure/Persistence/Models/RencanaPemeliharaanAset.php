@@ -45,21 +45,25 @@ final class RencanaPemeliharaanAset extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<RencanaPemeliharaan, $this> */
     public function rencanaPemeliharaan(): BelongsTo
     {
         return $this->belongsTo(RencanaPemeliharaan::class, 'RencanaPemeliharaanId', 'Id');
     }
 
+    /** @return BelongsTo<Aset, $this> */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
+    /** @return HasMany<JadwalPemeliharaan, $this> */
     public function jadwal(): HasMany
     {
         return $this->hasMany(JadwalPemeliharaan::class, 'RencanaPemeliharaanAsetId', 'Id');

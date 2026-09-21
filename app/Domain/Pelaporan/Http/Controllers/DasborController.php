@@ -22,9 +22,7 @@ use Inertia\Response;
  * Dasbor operasional dan manajemen (21.02).
  *
  * Susunan yang dipakai adalah dasbor tersimpan yang dipilih pengguna, atau
- * dasbor bawaannya, atau preset sesuai kewenangan. KPI dihitung di server dan
- * hanya yang benar-benar terpasang pada susunan aktif — dasbor tidak pernah
- * menghitung tiga puluh KPI untuk menampilkan enam.
+ * dasbor bawaannya, atau preset sesuai kewenangan.
  */
 final class DasborController extends Controller
 {

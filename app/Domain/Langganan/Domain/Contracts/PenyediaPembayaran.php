@@ -12,9 +12,7 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
  *
  * Kontrak ini sengaja hanya memuat yang benar-benar berbeda antar penyedia:
  * cara memulai pembayaran, cara membuktikan bahwa sebuah webhook memang datang
- * darinya, dan cara menerjemahkan muatannya. Segala hal lain — penulisan
- * pembayaran, pelunasan tagihan, perpanjangan langganan — tetap milik domain,
- * sehingga mengganti penyedia tidak mengubah satu pun aturan bisnis.
+ * darinya, dan cara menerjemahkan muatannya.
  */
 interface PenyediaPembayaran
 {
@@ -38,8 +36,6 @@ interface PenyediaPembayaran
      */
     public function webhookSah(array $muatan, array $header): bool;
 
-    /**
-     * @param  array<string, mixed>  $muatan
-     */
+    /** @param  array<string, mixed>  $muatan */
     public function terjemahkanWebhook(array $muatan): PeristiwaPembayaran;
 }

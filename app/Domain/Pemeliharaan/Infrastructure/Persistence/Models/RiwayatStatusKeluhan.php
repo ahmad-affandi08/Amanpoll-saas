@@ -35,16 +35,19 @@ final class RiwayatStatusKeluhan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Keluhan, $this> */
     public function keluhan(): BelongsTo
     {
         return $this->belongsTo(Keluhan::class, 'KeluhanId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function diubahOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DiubahOleh', 'Id');

@@ -15,9 +15,8 @@ interface Props {
 /**
  * Keadaan gagal memuat (DESIGN.md 13.6).
  *
- * Berbeda dari EmptyState: kosong berarti belum ada datanya, gagal berarti
- * datanya mungkin ada tetapi tidak terbaca. Membedakan keduanya penting karena
- * tindakan penggunanya berbeda — yang satu membuat data, yang satu mencoba lagi.
+ * Dipisahkan dari EmptyState karena tindakan penggunanya berbeda: membuat data
+ * versus mencoba lagi.
  */
 export function ErrorState({
   judul = 'Data gagal dimuat.',

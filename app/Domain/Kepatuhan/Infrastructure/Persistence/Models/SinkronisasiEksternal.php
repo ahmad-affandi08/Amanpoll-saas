@@ -54,11 +54,13 @@ final class SinkronisasiEksternal extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<IntegrasiEksternal, $this> */
     public function integrasiEksternal(): BelongsTo
     {
         return $this->belongsTo(IntegrasiEksternal::class, 'IntegrasiEksternalId', 'Id');

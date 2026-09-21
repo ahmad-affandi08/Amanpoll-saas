@@ -12,13 +12,9 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * Susunan dasbor: preset bawaan per peran (21.02) dan dasbor tersimpan milik
- * pengguna (21.04).
+ * Susunan dasbor: preset per peran (21.02) dan dasbor tersimpan (21.04).
  *
- * Preset dipilih dari izin yang benar-benar dimiliki pengguna, bukan dari nama
- * peran, sehingga organisasi yang menamai perannya berbeda tetap mendapat
- * dasbor yang sesuai kewenangannya. KPI yang tidak diizinkan disaring belakangan
- * oleh LayananMetrik, jadi preset boleh menyebut KPI apa pun tanpa risiko bocor.
+ * Preset dipilih dari izin yang dimiliki, bukan dari nama peran.
  */
 final class LayananDasbor
 {

@@ -17,8 +17,6 @@ use Illuminate\Database\Eloquent\Builder;
  * KPI kepatuhan tingkat layanan (21.01: SLA).
  *
  * Penyebut selalu dibatasi pada pekerjaan yang benar-benar punya batas waktu.
- * Pekerjaan tanpa SLA tidak dihitung sebagai "patuh" — memasukkannya akan
- * menaikkan angka tanpa ada layanan yang benar-benar dipenuhi.
  */
 final class QueryTingkatLayanan implements PenyediaKpi
 {

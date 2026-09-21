@@ -128,7 +128,7 @@ class KomentarEntitasTest extends TestCase
             ->assertSessionDoesntHaveErrors();
 
         $konteks->tetapkan($organisasi->Id);
-        $this->assertSoftDeleted('KomentarEntitas', ['Id' => $komentar->Id]);
+        $this->assertSoftDeleted($komentar);
         $konteks->bersihkan();
     }
 

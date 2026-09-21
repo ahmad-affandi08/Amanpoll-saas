@@ -11,8 +11,7 @@ use App\Domain\Langganan\Domain\Enums\StatusLangganan;
  *
  * Dihitung sekali lalu disimpan di cache, sehingga seluruh pemeriksaan dalam
  * satu permintaan — gerbang rute, penjaga batas, dan prop untuk UI — membaca
- * jawaban yang sama. Tanpa itu, UI bisa menampilkan tombol yang backend tolak
- * pada permintaan berikutnya.
+ * jawaban yang sama.
  */
 final readonly class Entitlement
 {

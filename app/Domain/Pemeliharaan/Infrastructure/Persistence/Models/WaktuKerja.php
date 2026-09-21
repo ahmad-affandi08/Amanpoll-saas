@@ -41,16 +41,19 @@ final class WaktuKerja extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PerintahKerja, $this> */
     public function perintahKerja(): BelongsTo
     {
         return $this->belongsTo(PerintahKerja::class, 'PerintahKerjaId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function pengguna(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'PenggunaId', 'Id');

@@ -56,46 +56,55 @@ final class PelaksanaanKalibrasi extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<RencanaKalibrasi, $this> */
     public function rencanaKalibrasi(): BelongsTo
     {
         return $this->belongsTo(RencanaKalibrasi::class, 'RencanaKalibrasiId', 'Id');
     }
 
+    /** @return BelongsTo<Aset, $this> */
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
     }
 
+    /** @return BelongsTo<JenisKalibrasi, $this> */
     public function jenisKalibrasi(): BelongsTo
     {
         return $this->belongsTo(JenisKalibrasi::class, 'JenisKalibrasiId', 'Id');
     }
 
+    /** @return BelongsTo<Penyedia, $this> */
     public function penyedia(): BelongsTo
     {
         return $this->belongsTo(Penyedia::class, 'PenyediaId', 'Id');
     }
 
+    /** @return BelongsTo<PerintahKerja, $this> */
     public function perintahKerja(): BelongsTo
     {
         return $this->belongsTo(PerintahKerja::class, 'PerintahKerjaId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function dilaksanakanOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DilaksanakanOleh', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function diverifikasiOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DiverifikasiOleh', 'Id');
     }
 
+    /** @return HasMany<HasilTitikUkurKalibrasi, $this> */
     public function hasilTitikUkur(): HasMany
     {
         return $this->hasMany(HasilTitikUkurKalibrasi::class, 'PelaksanaanKalibrasiId', 'Id');

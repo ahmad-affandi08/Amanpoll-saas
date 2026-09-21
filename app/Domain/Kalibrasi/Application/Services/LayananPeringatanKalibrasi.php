@@ -118,13 +118,17 @@ final class LayananPeringatanKalibrasi
                 continue;
             }
 
-            // CEK ANTI DUPLIKASI: Apakah notifikasi peristiwa ini untuk rencana ini sudah dikirim hari ini?
+            /*
+             * Anti duplikasi (14.05). Dibandingkan dengan JadwalKirimPada, bukan
+             * DibuatPada: kolom itu diisi nilai bawaan basis data, sehingga tidak
+             * mengikuti jam aplikasi.
+             */
             $sudahAdaNotifikasiHariIni = DB::table('Notifikasi')
                 ->where('OrganisasiId', $organisasiId)
                 ->where('JenisEntitas', 'RencanaKalibrasi')
                 ->where('EntitasId', $rencana->Id)
                 ->where('JenisPeristiwa', $jenisPeristiwa)
-                ->whereDate('DibuatPada', $hariIni->toDateString())
+                ->whereDate('JadwalKirimPada', $hariIni->toDateString())
                 ->exists();
 
             if ($sudahAdaNotifikasiHariIni) {

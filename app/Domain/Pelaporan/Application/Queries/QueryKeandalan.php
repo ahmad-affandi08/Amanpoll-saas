@@ -15,14 +15,9 @@ use Illuminate\Database\Eloquent\Collection;
 /**
  * KPI keandalan: downtime, ketersediaan, MTTR, dan MTBF (21.01).
  *
- * Dua keputusan yang menentukan arti angkanya:
- *
- * 1. Sesi downtime yang belum berakhir tetap dihitung, dipotong pada batas
- *    akhir rentang. Mengabaikannya akan membuat aset yang sedang mati total
- *    justru terlihat paling sehat.
- * 2. Penyebut ketersediaan dan MTBF hanya memuat aset yang pernah mengalami
- *    downtime. Memakai seluruh populasi aset akan mengencerkan angka sampai
- *    selalu mendekati 100% dan tidak ada gunanya dibaca.
+ * Sesi downtime yang belum berakhir tetap dihitung dan dipotong pada akhir
+ * rentang; penyebut ketersediaan dan MTBF hanya memuat aset yang pernah
+ * mengalami downtime.
  */
 final class QueryKeandalan implements PenyediaKpi
 {

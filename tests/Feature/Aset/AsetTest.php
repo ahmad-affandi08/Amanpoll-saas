@@ -249,7 +249,7 @@ class AsetTest extends TestCase
 
         $konteks = app(KonteksOrganisasi::class);
         $konteks->tetapkan($organisasi->Id);
-        $this->assertSoftDeleted('Aset', ['Id' => $aset->Id]);
+        $this->assertSoftDeleted($aset);
         $konteks->bersihkan();
     }
 

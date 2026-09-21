@@ -38,11 +38,13 @@ final class AturanTingkatLayanan extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<TingkatLayanan, $this> */
     public function tingkatLayanan(): BelongsTo
     {
         return $this->belongsTo(TingkatLayanan::class, 'TingkatLayananId', 'Id');

@@ -14,9 +14,7 @@ use RuntimeException;
  * Penulis PDF lewat Dompdf.
  *
  * Dompdf memuat seluruh dokumen ke memori, jadi laporan yang sangat panjang
- * dipotong dan diberi catatan eksplisit di kaki dokumen. Diam-diam memotong
- * akan menghasilkan PDF yang terlihat lengkap padahal bukan; untuk data penuh,
- * pengguna diarahkan ke CSV atau XLSX yang memang ditulis streaming.
+ * dipotong dan diberi catatan eksplisit di kaki dokumen.
  */
 final class PenulisEksporPdf implements PenulisEkspor
 {

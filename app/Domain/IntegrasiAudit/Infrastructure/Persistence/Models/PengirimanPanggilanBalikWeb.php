@@ -53,11 +53,13 @@ final class PengirimanPanggilanBalikWeb extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<PanggilanBalikWeb, $this> */
     public function panggilanBalikWeb(): BelongsTo
     {
         return $this->belongsTo(PanggilanBalikWeb::class, 'PanggilanBalikWebId', 'Id');

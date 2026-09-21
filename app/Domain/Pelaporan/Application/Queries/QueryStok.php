@@ -15,9 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * KPI persediaan (21.01: stock).
  *
- * Stok adalah posisi saat ini, jadi rentang tanggal tidak dipakai. Filter unit
- * organisasi juga tidak berlaku karena gudang tidak berada di bawah unit; yang
- * berlaku hanya lokasi, lewat gudang.
+ * Stok adalah posisi saat ini, jadi rentang tanggal tidak dipakai.
  */
 final class QueryStok implements PenyediaKpi
 {

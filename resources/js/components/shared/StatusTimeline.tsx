@@ -27,12 +27,10 @@ const LABEL_NADA: Record<NadaTahap, string> = {
 };
 
 /**
- * Riwayat status sebuah entitas (DESIGN.md 12 — "Activity / history").
+ * Riwayat status sebuah entitas (DESIGN.md 12).
  *
- * Nada tahap disampaikan lewat bentuk titik sekaligus teks tersembunyi bagi
- * pembaca layar, bukan lewat warna saja. Garis penyambungnya digambar dengan
- * border, bukan elemen tersendiri, supaya tinggi tiap tahap boleh berbeda
- * tanpa membuat garisnya terputus.
+ * Nada tahap disampaikan lewat bentuk titik dan teks bagi pembaca layar, bukan
+ * warna saja. Garis penyambung digambar dengan border agar tinggi tahap bebas.
  */
 export function StatusTimeline({ tahap, className }: { tahap: TahapStatus[]; className?: string }) {
   if (tahap.length === 0) {

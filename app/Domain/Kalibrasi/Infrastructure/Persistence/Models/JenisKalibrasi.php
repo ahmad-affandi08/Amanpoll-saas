@@ -34,21 +34,25 @@ final class JenisKalibrasi extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return HasMany<TitikUkurKalibrasi, $this> */
     public function titikUkur(): HasMany
     {
         return $this->hasMany(TitikUkurKalibrasi::class, 'JenisKalibrasiId', 'Id')->orderBy('Urutan');
     }
 
+    /** @return HasMany<RencanaKalibrasi, $this> */
     public function rencanaKalibrasi(): HasMany
     {
         return $this->hasMany(RencanaKalibrasi::class, 'JenisKalibrasiId', 'Id');
     }
 
+    /** @return HasMany<PelaksanaanKalibrasi, $this> */
     public function pelaksanaanKalibrasi(): HasMany
     {
         return $this->hasMany(PelaksanaanKalibrasi::class, 'JenisKalibrasiId', 'Id');

@@ -31,11 +31,13 @@ final class EntitasTag extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Tag, $this> */
     public function tag(): BelongsTo
     {
         return $this->belongsTo(Tag::class, 'TagId', 'Id');

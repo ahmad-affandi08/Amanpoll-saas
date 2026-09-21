@@ -94,7 +94,7 @@ class PenyediaTest extends TestCase
         $this->actingAs($pengguna)->delete("/penyedia/{$penyedia->Id}")->assertSessionDoesntHaveErrors();
 
         $konteks->tetapkan($organisasi->Id);
-        $this->assertSoftDeleted('Penyedia', ['Id' => $penyedia->Id]);
+        $this->assertSoftDeleted($penyedia);
         $konteks->bersihkan();
     }
 

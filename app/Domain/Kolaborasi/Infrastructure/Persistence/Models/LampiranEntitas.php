@@ -35,16 +35,19 @@ final class LampiranEntitas extends ModelDasar
         ];
     }
 
+    /** @return BelongsTo<Organisasi, $this> */
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
     }
 
+    /** @return BelongsTo<Berkas, $this> */
     public function berkas(): BelongsTo
     {
         return $this->belongsTo(Berkas::class, 'BerkasId', 'Id');
     }
 
+    /** @return BelongsTo<Pengguna, $this> */
     public function dibuatOleh(): BelongsTo
     {
         return $this->belongsTo(Pengguna::class, 'DibuatOleh', 'Id');

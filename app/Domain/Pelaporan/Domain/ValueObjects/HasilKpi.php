@@ -8,9 +8,7 @@ namespace App\Domain\Pelaporan\Domain\ValueObjects;
  * Hasil satu KPI.
  *
  * `rincian` adalah baris penyusun angka utama — kategori, tren per periode,
- * atau daftar entitas. Ini yang membuat angka dapat ditelusuri kembali ke
- * sumber transaksinya (PRD 8.18) dan yang dipakai grafik serta ekspor, supaya
- * tidak ada bagan yang digambar dari angka karangan.
+ * atau daftar entitas.
  */
 final readonly class HasilKpi
 {
