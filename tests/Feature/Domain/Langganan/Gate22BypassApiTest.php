@@ -183,7 +183,7 @@ final class Gate22BypassApiTest extends KasusLangganan
             berakhirPada: CarbonImmutable::now()->subDays(60)->toDateString(),
         );
 
-        $this->actingAs($this->buatPengguna())->get(route('langganan.index'))->assertOk();
+        $this->actingAs($this->buatPengguna(['Pengaturan.Kelola']))->get(route('langganan.index'))->assertOk();
     }
 
     /** @param list<string> $cakupan */

@@ -19,7 +19,9 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.pelaporan_lanjutan'
 
         // Ekspor (21.05). Pembuatan berkas berjalan di antrean; unduhan
         // diotorisasi ulang per berkas.
-        Route::post('/ekspor', [EksporLaporanController::class, 'store'])->name('ekspor.store');
+        Route::post('/ekspor', [EksporLaporanController::class, 'store'])
+            ->middleware('throttle:ekspor')
+            ->name('ekspor.store');
         Route::get('/ekspor/{berkas}', [EksporLaporanController::class, 'unduh'])->name('ekspor.unduh');
 
         // Dasbor kustom (21.04).

@@ -20,6 +20,13 @@ final class PanggilanBalikWeb extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
+    /**
+     * Rahasia penanda tangan webhook tidak pernah ikut serialisasi.
+     *
+     * @var list<string>
+     */
+    protected $hidden = ['Rahasia'];
+
     protected $fillable = [
         'OrganisasiId',
         'Nama',

@@ -214,7 +214,7 @@ final class TagihanDanPembayaranTest extends KasusLangganan
     public function test_tenant_mendapat_instruksi_pembayaran_dari_penyedia_terpasang(): void
     {
         $tagihan = $this->terbitkanTagihan();
-        $pengguna = $this->buatPengguna();
+        $pengguna = $this->buatPengguna(['Pengaturan.Kelola']);
 
         $this->actingAs($pengguna)
             ->post(route('langganan.tagihan.bayar', $tagihan))

@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AutentikasiKunciApi;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\PastikanAkunMasihAktif;
 use App\Http\Middleware\PastikanCakupanKunciApi;
 use App\Http\Middleware\PastikanFiturPaketAktif;
 use App\Http\Middleware\PastikanIdempoten;
@@ -28,6 +29,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [HandleInertiaRequests::class]);
         $middleware->web(prepend: [TetapkanKorelasiId::class]);
         $middleware->api(prepend: [TetapkanKorelasiId::class]);
+
+        // Status akun diperiksa ulang tiap permintaan, bukan hanya saat masuk:
+        // sesi berumur panjang dan PemeriksaIzin hanya membaca peran, sehingga
+        // tanpa ini penonaktifan pengguna atau organisasi tidak segera berlaku.
+        $middleware->web(append: [PastikanAkunMasihAktif::class]);
 
         // Penjaga langganan dipasang pada grup, bukan per rute, supaya tidak ada
         // rute yang dapat lupa dijaga — termasuk rute API yang ditembak langsung
@@ -68,6 +74,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToPriorityList(
             before: SubstituteBindings::class,
             prepend: AutentikasiKunciApi::class,
+        );
+
+        // Berjalan setelah konteks organisasi ada — pencatatan akses menulis ke
+        // tabel bertenant — tetapi sebelum route model binding, supaya akun yang
+        // dinonaktifkan tidak pernah menyentuh data.
+        $middleware->appendToPriorityList(
+            after: TetapkanKonteksOrganisasi::class,
+            append: PastikanAkunMasihAktif::class,
         );
 
         // Penjaga langganan harus berjalan setelah konteks organisasi ada dan

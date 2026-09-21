@@ -167,7 +167,7 @@ final class EntitlementDanBatasTest extends KasusLangganan
         ]);
         $this->buatLangganan($paket);
 
-        $respons = $this->actingAs($this->buatPengguna())->get(route('langganan.index'));
+        $respons = $this->actingAs($this->buatPengguna(['Pengaturan.Kelola']))->get(route('langganan.index'));
         $respons->assertOk();
 
         $props = $respons->viewData('page')['props'];
@@ -185,7 +185,7 @@ final class EntitlementDanBatasTest extends KasusLangganan
         $paket = $this->buatPaketLengkap();
         $this->buatLangganan($paket, StatusLangganan::Aktif, berakhirPada: '2026-01-01');
 
-        $props = $this->actingAs($this->buatPengguna())
+        $props = $this->actingAs($this->buatPengguna(['Pengaturan.Kelola']))
             ->get(route('langganan.index'))
             ->viewData('page')['props'];
 

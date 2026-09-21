@@ -7,12 +7,13 @@ namespace App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Shared\Infrastructure\Persistence\HanyaTambah;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class CatatanAudit extends ModelDasar
 {
-    use MilikOrganisasi;
+    use HanyaTambah, MilikOrganisasi;
 
     protected $table = 'CatatanAudit';
 

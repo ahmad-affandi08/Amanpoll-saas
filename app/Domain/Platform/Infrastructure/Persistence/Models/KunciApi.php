@@ -16,6 +16,14 @@ final class KunciApi extends ModelDasar
 
     public $timestamps = false;
 
+    /**
+     * Hash kunci tidak pernah ikut serialisasi, supaya tidak bocor lewat
+     * response JSON atau prop Inertia yang dibuat belakangan.
+     *
+     * @var list<string>
+     */
+    protected $hidden = ['HashKunci'];
+
     protected $fillable = [
         'OrganisasiId',
         'Nama',

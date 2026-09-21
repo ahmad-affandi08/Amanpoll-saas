@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Keamanan;
+
+use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
+use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+
+/**
+ * `OrganisasiId` ada di `$fillable` hampir seluruh model, jadi satu Form
+ * Request yang lalai meloloskannya sudah cukup untuk menulis ke tenant lain.
+ * Penjagaannya karena itu berada di trait MilikOrganisasi, bukan di tiap
+ * aturan validasi (24).
+ */
+final class MassAssignmentOrganisasiTest extends KasusKeamanan
+{
+    public function test_menolak_penulisan_ke_organisasi_lain_lewat_mass_assignment(): void
+    {
+        $organisasiA = $this->buatOrganisasi('ORG-MA-A');
+        $organisasiB = $this->buatOrganisasi('ORG-MA-B');
+
+        $this->dalamOrganisasi($organisasiA, function () use ($organisasiB): void {
+            $this->expectException(AturanBisnisDilanggar::class);
+
+            Lokasi::create([
+                'OrganisasiId' => $organisasiB->Id,
+                'Kode' => 'LOK-SELUNDUPAN',
+                'Nama' => 'Lokasi Selundupan',
+            ]);
+        });
+
+        $adaDiB = $this->dalamOrganisasi(
+            $organisasiB,
+            fn (): bool => Lokasi::query()->where('Kode', 'LOK-SELUNDUPAN')->exists(),
+        );
+
+        $this->assertFalse($adaDiB);
+    }
+
+    public function test_organisasi_id_yang_sama_dengan_konteks_tetap_diterima(): void
+    {
+        $organisasi = $this->buatOrganisasi('ORG-MA-SAMA');
+
+        $lokasi = $this->dalamOrganisasi($organisasi, fn (): Lokasi => Lokasi::create([
+            'OrganisasiId' => $organisasi->Id,
+            'Kode' => 'LOK-SAH',
+            'Nama' => 'Lokasi Sah',
+        ]));
+
+        $this->assertSame($organisasi->Id, $lokasi->OrganisasiId);
+    }
+
+    public function test_tanpa_konteks_organisasi_id_eksplisit_tetap_diizinkan(): void
+    {
+        // Jalur lintas tenant yang sah — konsol platform, pekerjaan terjadwal —
+        // berjalan tanpa konteks dan menetapkan organisasinya sendiri.
+        $organisasi = $this->buatOrganisasi('ORG-MA-KONSOL');
+
+        $lokasi = Lokasi::create([
+            'OrganisasiId' => $organisasi->Id,
+            'Kode' => 'LOK-KONSOL',
+            'Nama' => 'Lokasi Konsol',
+        ]);
+
+        $this->assertSame($organisasi->Id, $lokasi->OrganisasiId);
+    }
+}

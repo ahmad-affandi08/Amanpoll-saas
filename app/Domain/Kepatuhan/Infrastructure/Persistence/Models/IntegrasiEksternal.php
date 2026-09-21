@@ -20,6 +20,15 @@ final class IntegrasiEksternal extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
+    /**
+     * Cast `encrypted` melindungi data saat tersimpan, bukan saat diserialisasi:
+     * `toArray()` mengembalikan nilai yang sudah didekripsi. Kredensial penyedia
+     * karena itu disembunyikan eksplisit.
+     *
+     * @var list<string>
+     */
+    protected $hidden = ['KonfigurasiTerenkripsi'];
+
     protected $fillable = [
         'OrganisasiId',
         'Kode',

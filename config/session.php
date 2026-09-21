@@ -169,7 +169,10 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // Default Amanpoll: aman kecuali dimatikan secara sadar. Di luar lingkungan
+    // lokal, cookie sesi hanya boleh melintas HTTPS walau environment-nya lupa
+    // diisi (24).
+    'secure' => env('SESSION_SECURE_COOKIE', env('APP_ENV', 'production') !== 'local'),
 
     /*
     |--------------------------------------------------------------------------

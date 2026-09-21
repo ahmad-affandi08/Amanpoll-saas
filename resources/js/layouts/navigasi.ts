@@ -251,7 +251,7 @@ const navPengaturan: GrupNav = {
           kodeFitur: 'modul.integrasi',
         },
         { label: 'Log Audit', href: '/integrasi-audit/audit', kodeIzin: 'Audit.Lihat' },
-        { label: 'Langganan', href: '/langganan' },
+        { label: 'Langganan', href: '/langganan', kodeIzin: 'Pengaturan.Kelola' },
       ],
     },
   ],

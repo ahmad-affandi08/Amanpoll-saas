@@ -10,6 +10,7 @@ use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
 use App\Domain\Langganan\Domain\Enums\StatusTagihanLangganan;
 use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Langganan\Domain\ValueObjects\DefinisiFitur;
+use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -30,6 +31,8 @@ final class LanggananTenantController extends Controller
 
     public function index(): Response
     {
+        $this->authorize('viewAny', Langganan::class);
+
         return Inertia::render('Langganan/Index', [
             'entitlement' => $this->entitlement->sekarang()->keArray(),
             'pemakaian' => $this->penjagaBatas->pemakaian(),
@@ -53,6 +56,8 @@ final class LanggananTenantController extends Controller
      */
     public function bayar(TagihanLangganan $tagihan, RegistriPenyediaPembayaran $registri): RedirectResponse
     {
+        $this->authorize('bayar', Langganan::class);
+
         $status = StatusTagihanLangganan::tryFrom((string) $tagihan->Status);
         if ($status === null || ! $status->masihDapatDibayar()) {
             throw new AturanBisnisDilanggar('Tagihan ini sudah tidak dapat dibayar.');

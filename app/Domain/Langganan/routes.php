@@ -23,7 +23,7 @@ Route::bind(
 
 // Webhook penyedia pembayaran (22.06). Tanpa sesi dan tanpa tenant: keabsahannya
 // dibuktikan oleh tanda tangan penyedia, bukan oleh pengguna yang masuk.
-Route::middleware('api')
+Route::middleware(['api', 'throttle:webhook'])
     ->post('/webhook/pembayaran/{penyedia}', WebhookPembayaranController::class)
     ->name('langganan.webhook.pembayaran');
 
@@ -33,7 +33,9 @@ Route::middleware('api')
 Route::middleware('web')->prefix('admin-platform')->name('adminPlatform.')->group(function (): void {
     Route::middleware('guest:platform')->group(function (): void {
         Route::get('/login', [AuthPlatformController::class, 'create'])->name('login');
-        Route::post('/login', [AuthPlatformController::class, 'store'])->name('login.store');
+        Route::post('/login', [AuthPlatformController::class, 'store'])
+            ->middleware('throttle:masuk')
+            ->name('login.store');
     });
 
     Route::middleware('auth:platform')->group(function (): void {

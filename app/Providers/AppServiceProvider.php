@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Shared\Infrastructure\Inertia\FeaturePageViewFinder;
+use App\Shared\Infrastructure\Keamanan\PenjagaKonfigurasiProduksi;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,5 +30,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Inertia props tidak butuh amplop 'data' ala API; frontend memakai prop resource langsung.
         JsonResource::withoutWrapping();
+
+        PenjagaKonfigurasiProduksi::periksa($this->app);
     }
 }

@@ -1391,26 +1391,37 @@ Tidak ada halaman utama yang memerlukan desktop untuk menyelesaikan pekerjaan te
 
 # FASE 24 — Security Hardening
 
-- [ ] CSRF audit.
-- [ ] XSS audit.
-- [ ] Authorization audit.
-- [ ] Mass assignment audit.
-- [ ] File upload audit.
-- [ ] API rate limit.
-- [ ] Login rate limit.
-- [ ] Session cookie secure.
-- [ ] Credential encryption.
-- [ ] API key hashing.
-- [ ] Cross-tenant penetration test internal.
-- [ ] IDOR test.
-- [ ] Export authorization test.
-- [ ] Audit log tamper resistance sesuai kemampuan schema.
-- [ ] Dependency vulnerability check.
-- [ ] Production debug off.
+- [x] CSRF audit.
+- [x] XSS audit.
+- [x] Authorization audit.
+- [x] Mass assignment audit.
+- [x] File upload audit.
+- [x] API rate limit.
+- [x] Login rate limit.
+- [x] Session cookie secure.
+- [x] Credential encryption.
+- [x] API key hashing.
+- [x] Cross-tenant penetration test internal.
+- [x] IDOR test.
+- [x] Export authorization test.
+- [x] Audit log tamper resistance sesuai kemampuan schema.
+- [x] Dependency vulnerability check.
+- [x] Production debug off.
 
 ### Gate 24
 
-Tidak ada known critical/high issue yang belum memiliki keputusan mitigasi.
+Tidak ada known critical/high issue yang belum memiliki keputusan mitigasi. (Terpenuhi)
+
+Temuan yang diperbaiki: sesi bertahan setelah pengguna atau organisasinya
+dinonaktifkan; halaman dan pembayaran langganan terbuka bagi setiap pengguna
+tenant; dasbor kalibrasi tanpa pemeriksaan policy; injeksi rumus pada ekspor
+CSV; `OrganisasiId` dapat menunjuk tenant lain lewat mass assignment; rute API,
+webhook, dan ekspor tanpa batas laju; kredensial dan hash kunci API ikut
+serialisasi model.
+
+Batas yang diterima secara sadar: `HanyaTambah` tidak menyala pada operasi
+massal, sehingga kebijakan retensi `catatan-akses:bersihkan` tetap berjalan dan
+akses langsung ke basis data tetap di luar jangkauan kode aplikasi.
 
 ---
 
