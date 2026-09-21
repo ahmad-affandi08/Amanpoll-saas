@@ -1016,6 +1016,39 @@ Hapus kategori "Pompa"?
 Kategori tidak dapat dihapus jika masih digunakan oleh aset.
 ```
 
+## 22.1 Komponen Konfirmasi
+
+`window.confirm` tidak dipakai. Konfirmasi memakai satu dialog bersama lewat
+`useKonfirmasi()`; dialognya berbasis AlertDialog sehingga fokus jatuh ke tombol
+batal dan tidak tertutup oleh Esc atau klik di luar.
+
+```ts
+const konfirmasi = useKonfirmasi();
+
+if (await konfirmasi({
+  judul: `Hapus kategori "${kategori.Nama}"?`,
+  deskripsi: 'Kategori yang masih dipakai aset tidak dapat dihapus.',
+  ragam: 'bahaya',
+})) {
+  router.delete(ruteKategoriAset.detail(kategori.Id));
+}
+```
+
+`deskripsi` wajib menjelaskan dampak. Untuk tindakan yang menuntut alasan,
+gunakan opsi `alasan`; untuk penghapusan permanen gunakan
+`ketikUntukKonfirmasi` agar pengguna mengetik ulang nama entitas.
+
+Ragam menentukan warna tombol dan ilustrasi:
+
+| Ragam | Dipakai untuk | Ilustrasi |
+|---|---|---|
+| `bahaya` | Menghapus data | `/assets/3d/hapus.webp` |
+| `perhatian` | Membatalkan, mencabut, mengeksekusi, mengunci | `/assets/3d/peringatan.webp` |
+| `info` | Keputusan tanpa efek merusak | `/assets/3d/info.webp` |
+
+Ilustrasi 3D pada dialog berukuran 40px dan bersifat penanda, bukan hiasan.
+Bila berkasnya gagal dimuat, komponen menggantinya dengan ikon berwarna.
+
 ---
 
 # 23. Approval UX

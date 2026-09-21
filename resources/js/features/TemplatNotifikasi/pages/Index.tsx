@@ -21,6 +21,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { TemplatNotifikasi } from '@/features/Notifikasi/types';
 import { ruteTemplatNotifikasi } from '@/features/TemplatNotifikasi/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   templatNotifikasi: TemplatNotifikasi[];
@@ -115,8 +116,16 @@ function DialogFormTemplat({ templat }: { templat: TemplatNotifikasi | null }) {
 }
 
 export default function TemplatNotifikasiIndex({ templatNotifikasi }: Props) {
-  const hapus = (item: TemplatNotifikasi) => {
-    if (!confirm(`Hapus templat "${item.Kode}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: TemplatNotifikasi) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus templat "${item.Kode}"?`,
+        deskripsi: 'Notifikasi yang memakai kode ini akan gagal dikirim sampai templat diganti.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteTemplatNotifikasi.detail(item.Id), { preserveScroll: true });
   };
 

@@ -20,6 +20,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { HariLibur } from '@/features/HariLibur/types';
 import { ruteHariLibur } from '@/features/HariLibur/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   hariLibur: HariLibur[];
@@ -91,8 +92,16 @@ function formatTanggal(tanggal: string): string {
 }
 
 export default function HariLiburIndex({ hariLibur }: Props) {
-  const hapus = (libur: HariLibur) => {
-    if (!confirm(`Hapus hari libur "${libur.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (libur: HariLibur) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus hari libur "${libur.Nama}"?`,
+        deskripsi: 'Perhitungan tenggat SLA pada tanggal itu kembali dihitung sebagai hari kerja.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteHariLibur.detail(libur.Id), { preserveScroll: true });
   };
 

@@ -20,6 +20,7 @@ import { formatUang } from '@/lib/uang';
 import type { KelompokSukuCadang, KompatibilitasSukuCadang, SukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Ringkas {
   Id: string;
@@ -262,13 +263,28 @@ export default function SukuCadangShow({
   modelAset,
   aset,
 }: Props) {
-  const hapusKelompok = (item: KelompokSukuCadang) => {
-    if (!confirm(`Hapus batch "${item.NomorBatch}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapusKelompok = async (item: KelompokSukuCadang) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus batch "${item.NomorBatch}"?`,
+        deskripsi: 'Riwayat stok yang mengacu ke batch ini tidak ikut terhapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(`/kelompok-suku-cadang/${item.Id}`, { preserveScroll: true });
   };
 
-  const hapusKompatibilitas = (item: KompatibilitasSukuCadang) => {
-    if (!confirm('Hapus kompatibilitas ini?')) return;
+  const hapusKompatibilitas = async (item: KompatibilitasSukuCadang) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Hapus kompatibilitas ini?',
+        deskripsi: 'Suku cadang tidak lagi muncul sebagai pilihan untuk aset tersebut.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteSukuCadang.kompatibilitasDetail(item.Id), { preserveScroll: true });
   };
 

@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { PrioritasUsulanAset, UsulanAset } from '@/features/UsulanAset/types';
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Referensi {
   Id: string;
@@ -349,17 +350,38 @@ export default function UsulanAsetShow({
   kategoriAset,
   modelAset,
 }: Props) {
+  const konfirmasi = useKonfirmasi();
   const dapatUbah = usulan.Status === 'Draft' || usulan.Status === 'Ditolak';
   const dapatNilai = usulan.Status === 'Diajukan';
-  function submitUsulan(): void {
-    if (confirm(`Submit ${usulan.Nomor} untuk penilaian?`)) router.post(ruteUsulanAset.submit(usulan.Id));
+  async function submitUsulan(): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Submit ${usulan.Nomor} untuk penilaian?`,
+        deskripsi: 'Usulan terkunci dari perubahan selama proses penilaian.',
+        ragam: 'perhatian',
+      })
+    )
+      router.post(ruteUsulanAset.submit(usulan.Id));
   }
-  function ajukanPersetujuan(): void {
-    if (confirm(`Ajukan ${usulan.Nomor} ke alur persetujuan aktif?`))
+  async function ajukanPersetujuan(): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Ajukan ${usulan.Nomor} ke alur persetujuan aktif?`,
+        deskripsi: 'Penyetuju pada alur aktif akan menerima permintaan persetujuan.',
+        ragam: 'perhatian',
+      })
+    )
       router.post(ruteUsulanAset.ajukanPersetujuan(usulan.Id));
   }
-  function hapus(): void {
-    if (confirm(`Hapus usulan ${usulan.Nomor}?`)) router.delete(ruteUsulanAset.detail(usulan.Id));
+  async function hapus(): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Hapus usulan ${usulan.Nomor}?`,
+        deskripsi: 'Seluruh penilaian pada usulan ini ikut terhapus.',
+        ragam: 'bahaya',
+      })
+    )
+      router.delete(ruteUsulanAset.detail(usulan.Id));
   }
   return (
     <AppLayout>

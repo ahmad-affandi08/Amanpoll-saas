@@ -18,6 +18,7 @@ import type { PermintaanMutasiAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_MUTASI } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   permintaan: PermintaanMutasiAset;
@@ -81,18 +82,42 @@ function DialogTambahAset({ permintaan, aset }: { permintaan: PermintaanMutasiAs
 }
 
 export default function MutasiAsetShow({ permintaan, aset }: Props) {
-  const hapusDetail = (detailId: string) => {
-    if (!confirm('Hapus aset ini dari daftar mutasi?')) return;
+  const konfirmasi = useKonfirmasi();
+  const hapusDetail = async (detailId: string) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Hapus aset ini dari daftar mutasi?',
+        deskripsi: 'Aset dikeluarkan dari permintaan; permintaan itu sendiri tetap ada.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteMutasiAset.detailDetail(detailId), { preserveScroll: true });
   };
 
   const submit = () => router.post(ruteMutasiAset.submit(permintaan.Id), {}, { preserveScroll: true });
-  const batalkan = () => {
-    if (!confirm('Batalkan permintaan mutasi ini?')) return;
+  const batalkan = async () => {
+    if (
+      !(await konfirmasi({
+        judul: 'Batalkan permintaan mutasi ini?',
+        deskripsi: 'Permintaan tidak dapat diajukan lagi dan lokasi aset tidak berubah.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
+    )
+      return;
     router.post(ruteMutasiAset.batalkan(permintaan.Id), {}, { preserveScroll: true });
   };
-  const eksekusi = () => {
-    if (!confirm('Eksekusi mutasi ini? Lokasi/unit aset akan diperbarui.')) return;
+  const eksekusi = async () => {
+    if (
+      !(await konfirmasi({
+        judul: 'Eksekusi mutasi ini?',
+        deskripsi: 'Lokasi/unit aset akan diperbarui.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
+    )
+      return;
     router.post(ruteMutasiAset.eksekusi(permintaan.Id), {}, { preserveScroll: true });
   };
 

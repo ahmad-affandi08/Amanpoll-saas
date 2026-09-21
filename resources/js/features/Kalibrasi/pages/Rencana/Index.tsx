@@ -33,6 +33,7 @@ import {
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   rencanaKalibrasi: RencanaKalibrasi[];
@@ -53,6 +54,7 @@ export default function RencanaKalibrasiIndex({
   penyedia,
   filter,
 }: Props) {
+  const konfirmasi = useKonfirmasi();
   const [bukaDialog, setBukaDialog] = useState(false);
   const [rencanaDiedit, setRencanaDiedit] = useState<RencanaKalibrasi | null>(null);
   const [pencarian, setPencarian] = useState('');
@@ -129,8 +131,14 @@ export default function RencanaKalibrasiIndex({
     }
   };
 
-  const hapusRencana = (rk: RencanaKalibrasi) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus rencana kalibrasi untuk aset "${rk.aset?.Nama}"?`)) {
+  const hapusRencana = async (rk: RencanaKalibrasi) => {
+    if (
+      await konfirmasi({
+        judul: `Hapus rencana kalibrasi aset "${rk.aset?.Nama}"?`,
+        deskripsi: 'Jadwal kalibrasi berikutnya untuk aset ini tidak akan dibuat lagi.',
+        ragam: 'bahaya',
+      })
+    ) {
       form.delete(ruteKalibrasi.rencanaDetail(rk.Id));
     }
   };

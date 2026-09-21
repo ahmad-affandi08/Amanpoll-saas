@@ -19,6 +19,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { NomorDokumen } from '@/features/NomorDokumen/types';
 import { ruteNomorDokumen } from '@/features/NomorDokumen/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   nomorDokumen: NomorDokumen[];
@@ -132,8 +133,16 @@ function DialogFormPola({ pola }: { pola: NomorDokumen | null }) {
 }
 
 export default function NomorDokumenIndex({ nomorDokumen }: Props) {
-  const hapus = (pola: NomorDokumen) => {
-    if (!confirm(`Hapus pola nomor "${pola.JenisDokumen}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (pola: NomorDokumen) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus pola nomor "${pola.JenisDokumen}"?`,
+        deskripsi: 'Dokumen baru memakai nomor cadangan sampai pola dibuat lagi.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteNomorDokumen.detail(pola.Id), { preserveScroll: true });
   };
 

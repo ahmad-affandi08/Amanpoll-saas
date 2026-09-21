@@ -22,6 +22,7 @@ import type { AlurPersetujuan, JenisPenyetuju, TahapPersetujuan } from '@/featur
 import type { Peran } from '@/features/PeranIzin/types';
 import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteAlurPersetujuan } from '@/features/AlurPersetujuan/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   alurPersetujuan: AlurPersetujuan[];
@@ -265,11 +266,19 @@ function DialogKelolaTahap({
   peran: Peran[];
   pengguna: Pengguna[];
 }) {
+  const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
   const [mengedit, setMengedit] = useState<TahapPersetujuan | null>(null);
 
-  const hapus = (tahap: TahapPersetujuan) => {
-    if (!confirm(`Hapus tahap "${tahap.Nama}"?`)) return;
+  const hapus = async (tahap: TahapPersetujuan) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus tahap "${tahap.Nama}"?`,
+        deskripsi: 'Urutan tahap sesudahnya akan bergeser naik.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(`/persetujuan/tahap/${tahap.Id}`, { preserveScroll: true });
   };
 
@@ -347,8 +356,16 @@ export default function AlurPersetujuanIndex({
   peran,
   pengguna,
 }: Props) {
-  const hapus = (alur: AlurPersetujuan) => {
-    if (!confirm(`Hapus alur "${alur.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (alur: AlurPersetujuan) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus alur "${alur.Nama}"?`,
+        deskripsi: 'Entitas yang memakai alur ini tidak dapat diajukan sampai ada alur aktif pengganti.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteAlurPersetujuan.detail(alur.Id), { preserveScroll: true });
   };
 

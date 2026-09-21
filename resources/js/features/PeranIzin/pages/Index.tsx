@@ -22,6 +22,7 @@ import { useIzin } from '@/hooks/use-izin';
 import type { Peran, KatalogIzin } from '@/features/PeranIzin/types';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { http } from '@/lib/http';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   peran: Peran[];
@@ -160,11 +161,19 @@ function DialogKelolaIzin({ peran }: { peran: Peran }) {
 }
 
 export default function PeranIzinIndex({ peran }: Props) {
+  const konfirmasi = useKonfirmasi();
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
 
-  const hapus = (item: Peran) => {
-    if (!confirm(`Hapus peran "${item.Nama}"?`)) return;
+  const hapus = async (item: Peran) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus peran "${item.Nama}"?`,
+        deskripsi: 'Pengguna yang memegang peran ini kehilangan seluruh izin darinya.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(rutePeranIzin.detail(item.Id), { preserveScroll: true });
   };
 

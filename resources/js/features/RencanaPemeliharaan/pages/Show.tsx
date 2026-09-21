@@ -18,6 +18,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { ArrowLeft, Plus, Trash2, Calendar, Building, Wrench, Clock, CheckCircle2 } from 'lucide-react';
 import type { RencanaPemeliharaan } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   rencana: RencanaPemeliharaan;
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export default function ShowRencana({ rencana, asetTersedia }: Props) {
+  const konfirmasi = useKonfirmasi();
   const [bukaDialogAset, setBukaDialogAset] = useState(false);
 
   const formAset = useForm({
@@ -44,8 +46,15 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
     });
   };
 
-  const lepasAset = (asetId: string, namaAset: string) => {
-    if (confirm(`Apakah Anda yakin ingin melepas aset "${namaAset}" dari rencana pemeliharaan ini?`)) {
+  const lepasAset = async (asetId: string, namaAset: string) => {
+    if (
+      await konfirmasi({
+        judul: `Lepas aset "${namaAset}" dari rencana ini?`,
+        deskripsi: 'Jadwal preventif berikutnya tidak lagi dibuat untuk aset tersebut.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      })
+    ) {
       router.delete(ruteRencanaPemeliharaan.asetDetail(rencana.Id, asetId));
     }
   };

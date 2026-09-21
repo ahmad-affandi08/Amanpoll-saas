@@ -20,6 +20,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { KategoriAset } from '@/features/Aset/types';
 import { ruteKategoriAset } from '@/features/KategoriAset/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   kategoriAset: KategoriAset[];
@@ -179,8 +180,16 @@ function DialogFormKategoriAset({
 }
 
 export default function KategoriAsetIndex({ kategoriAset }: Props) {
-  const hapus = (item: KategoriAset) => {
-    if (!confirm(`Hapus kategori "${item.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: KategoriAset) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus kategori "${item.Nama}"?`,
+        deskripsi: 'Kategori yang masih dipakai aset atau memiliki subkategori tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteKategoriAset.detail(item.Id), { preserveScroll: true });
   };
 

@@ -18,6 +18,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { CalendarClock, Plus, Search, Play, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import type { RencanaPemeliharaan, TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
+  const konfirmasi = useKonfirmasi();
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
   const [menjalankanScheduler, setMenjalankanScheduler] = useState(false);
@@ -58,11 +60,14 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
     });
   };
 
-  const jalankanScheduler = () => {
+  const jalankanScheduler = async () => {
     if (
-      confirm(
-        'Jalankan pemeriksaan penjadwalan preventif sekarang? Perintah kerja akan otomatis dibuat untuk aset yang jatuh tempo dalam horizon waktu.',
-      )
+      await konfirmasi({
+        judul: 'Jalankan penjadwalan preventif sekarang?',
+        deskripsi: 'Perintah kerja dibuat otomatis untuk aset yang jatuh tempo dalam horizon waktu rencana.',
+        ragam: 'perhatian',
+        labelAksi: 'Jalankan',
+      })
     ) {
       setMenjalankanScheduler(true);
       router.post(

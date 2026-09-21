@@ -26,6 +26,7 @@ import type {
 } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   anggaran: Anggaran;
@@ -361,6 +362,7 @@ function DialogUbahAnggaran({ anggaran }: { anggaran: Anggaran }) {
 }
 
 export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }: Props) {
+  const konfirmasi = useKonfirmasi();
   const posisi = anggaran.PosAnggaran ?? [];
   const ringkasan = useMemo(
     () =>
@@ -376,21 +378,33 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
   );
   const dapatUbah = anggaran.Status === 'Draft' || anggaran.Status === 'Ditolak';
 
-  function ajukan(): void {
-    if (confirm(`Ajukan anggaran ${anggaran.Kode}? Struktur pos tidak dapat diubah setelah diajukan.`))
+  async function ajukan(): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Ajukan anggaran ${anggaran.Kode}?`,
+        deskripsi: `Struktur pos tidak dapat diubah setelah diajukan.`,
+        ragam: 'perhatian',
+      })
+    )
       router.post(ruteAnggaran.ajukan(anggaran.Id));
   }
-  function hapusAnggaran(): void {
-    if (confirm(`Hapus draft anggaran ${anggaran.Kode}? Tindakan ini hanya berhasil bila belum ada pos.`))
+  async function hapusAnggaran(): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Hapus draft anggaran ${anggaran.Kode}?`,
+        deskripsi: `Tindakan ini hanya berhasil bila belum ada pos.`,
+        ragam: 'bahaya',
+      })
+    )
       router.delete(ruteAnggaran.detail(anggaran.Id));
   }
-  function hapusPos(pos: PosAnggaran): void {
-    if (
-      confirm(
-        `Hapus pos ${pos.Kode} — ${pos.Nama}? Pos yang memiliki anak atau transaksi tidak dapat dihapus.`,
-      )
-    )
-      router.delete(ruteAnggaran.posDetail(pos.Id), { preserveScroll: true });
+  async function hapusPos(pos: PosAnggaran): Promise<void> {
+    const lanjut = await konfirmasi({
+      judul: `Hapus pos "${pos.Kode} — ${pos.Nama}"?`,
+      deskripsi: 'Pos yang masih memiliki pos anak atau transaksi anggaran tidak dapat dihapus.',
+      ragam: 'bahaya',
+    });
+    if (lanjut) router.delete(ruteAnggaran.posDetail(pos.Id), { preserveScroll: true });
   }
 
   return (

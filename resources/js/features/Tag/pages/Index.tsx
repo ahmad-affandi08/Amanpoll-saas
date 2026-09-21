@@ -18,6 +18,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { Tag } from '@/features/Kolaborasi/types';
 import { ruteTag } from '@/features/Tag/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   tag: Tag[];
@@ -89,8 +90,16 @@ function DialogFormTag({ tag }: { tag: Tag | null }) {
 }
 
 export default function TagIndex({ tag }: Props) {
-  const hapus = (item: Tag) => {
-    if (!confirm(`Hapus tag "${item.Nama}"? Semua penandaan pada entitas lain akan ikut terhapus.`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: Tag) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus tag "${item.Nama}"?`,
+        deskripsi: `Semua penandaan pada entitas lain akan ikut terhapus.`,
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteTag.detail(item.Id), { preserveScroll: true });
   };
 

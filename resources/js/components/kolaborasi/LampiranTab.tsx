@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { http } from '@/lib/http';
 import type { LampiranEntitas } from '@/features/Kolaborasi/types';
 import { ruteKolaborasi } from '@/features/Kolaborasi/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   jenisEntitas: string;
@@ -19,6 +20,7 @@ function formatUkuran(byte: number | null): string {
 }
 
 export function LampiranTab({ jenisEntitas, entitasId }: Props) {
+  const konfirmasi = useKonfirmasi();
   const [lampiran, setLampiran] = useState<LampiranEntitas[]>([]);
   const [memuat, setMemuat] = useState(true);
   const [mengunggah, setMengunggah] = useState(false);
@@ -53,8 +55,15 @@ export function LampiranTab({ jenisEntitas, entitasId }: Props) {
     );
   };
 
-  const hapus = (item: LampiranEntitas) => {
-    if (!confirm(`Hapus berkas "${item.Berkas?.NamaAsli}"?`)) return;
+  const hapus = async (item: LampiranEntitas) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus berkas "${item.Berkas?.NamaAsli}"?`,
+        deskripsi: 'Berkas dilepas dari entitas ini dan tidak dapat diunduh lagi.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteKolaborasi.berkasDetail(item.BerkasId), { preserveScroll: true, onSuccess: muat });
   };
 

@@ -20,6 +20,7 @@ import type { PengajuanPenghapusanAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_PENGHAPUSAN } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { rutePenghapusanAset } from '@/features/PenghapusanAset/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   pengajuan: PengajuanPenghapusanAset;
@@ -102,19 +103,40 @@ function DialogTambahAset({ pengajuan, aset }: { pengajuan: PengajuanPenghapusan
 }
 
 export default function PenghapusanAsetShow({ pengajuan, aset }: Props) {
-  const hapusDetail = (detailId: string) => {
-    if (!confirm('Hapus aset ini dari pengajuan?')) return;
+  const konfirmasi = useKonfirmasi();
+  const hapusDetail = async (detailId: string) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Hapus aset ini dari pengajuan?',
+        deskripsi: 'Aset dikeluarkan dari pengajuan; status asetnya tidak berubah.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(rutePenghapusanAset.detailDetail(detailId), { preserveScroll: true });
   };
 
   const submit = () => router.post(rutePenghapusanAset.submit(pengajuan.Id), {}, { preserveScroll: true });
-  const batalkan = () => {
-    if (!confirm('Batalkan pengajuan penghapusan ini?')) return;
+  const batalkan = async () => {
+    if (
+      !(await konfirmasi({
+        judul: 'Batalkan pengajuan penghapusan ini?',
+        deskripsi: 'Pengajuan tidak dapat dilanjutkan dan aset tetap aktif.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
+    )
+      return;
     router.post(rutePenghapusanAset.batalkan(pengajuan.Id), {}, { preserveScroll: true });
   };
-  const eksekusi = () => {
+  const eksekusi = async () => {
     if (
-      !confirm('Eksekusi penghapusan? Aset akan diarsipkan dan tidak dapat dikembalikan lewat halaman ini.')
+      !(await konfirmasi({
+        judul: 'Eksekusi penghapusan?',
+        deskripsi: 'Aset akan diarsipkan dan tidak dapat dikembalikan lewat halaman ini.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
     )
       return;
     router.post(rutePenghapusanAset.eksekusi(pengajuan.Id), {}, { preserveScroll: true });

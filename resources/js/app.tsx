@@ -4,6 +4,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Toaster } from 'sonner';
+import { PenyediaKonfirmasi } from '@/hooks/use-konfirmasi';
 
 createInertiaApp({
   title: (title) => (title ? title + ' - Amanpoll' : 'Amanpoll'),
@@ -20,7 +21,9 @@ createInertiaApp({
     if (!el) return;
     createRoot(el).render(
       <>
-        <App {...props} />
+        <PenyediaKonfirmasi>
+          <App {...props} />
+        </PenyediaKonfirmasi>
         <Toaster richColors position="top-right" />
       </>,
     );

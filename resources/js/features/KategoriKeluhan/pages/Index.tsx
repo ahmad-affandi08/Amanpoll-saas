@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import type { KategoriKeluhan, PrioritasKeluhan } from '@/features/Keluhan/types';
 import { ruteKategoriKeluhan } from '@/features/KategoriKeluhan/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Ringkas {
   Id: string;
@@ -189,6 +190,7 @@ function DialogKategori({
 }
 
 export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }: Props) {
+  const konfirmasi = useKonfirmasi();
   const columns = useMemo<ColumnDef<KategoriKeluhan>[]>(
     () => [
       {
@@ -250,10 +252,15 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
             <Button
               variant="ghost"
               size="sm"
-              onClick={() =>
-                confirm(`Hapus kategori ${row.original.Nama}?`) &&
-                router.delete(ruteKategoriKeluhan.detail(row.original.Id))
-              }
+              onClick={async () => {
+                const lanjut = await konfirmasi({
+                  judul: `Hapus kategori "${row.original.Nama}"?`,
+                  deskripsi:
+                    'Keluhan yang sudah memakai kategori ini tetap tersimpan dengan kategori kosong.',
+                  ragam: 'bahaya',
+                });
+                if (lanjut) router.delete(ruteKategoriKeluhan.detail(row.original.Id));
+              }}
             >
               Hapus
             </Button>

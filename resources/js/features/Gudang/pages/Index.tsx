@@ -21,6 +21,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import type { Gudang, LokasiGudang, StatusGudang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_GUDANG } from '@/features/Persediaan/status';
 import { ruteGudang } from '@/features/Gudang/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface LokasiRingkas {
   Id: string;
@@ -127,6 +128,7 @@ function DialogFormGudang({ gudang, lokasi }: { gudang: Gudang | null; lokasi: L
 }
 
 function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGudang: LokasiGudang[] }) {
+  const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
   const form = useForm({ Kode: '', Nama: '', IndukId: TANPA });
 
@@ -142,8 +144,15 @@ function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGu
     );
   };
 
-  const hapus = (item: LokasiGudang) => {
-    if (!confirm(`Hapus lokasi "${item.Nama}"?`)) return;
+  const hapus = async (item: LokasiGudang) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus lokasi "${item.Nama}"?`,
+        deskripsi: 'Lokasi yang masih menyimpan stok tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(`/lokasi-gudang/${item.Id}`, { preserveScroll: true });
   };
 
@@ -201,8 +210,16 @@ function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGu
 }
 
 export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: Props) {
-  const hapus = (item: Gudang) => {
-    if (!confirm(`Hapus gudang "${item.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: Gudang) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus gudang "${item.Nama}"?`,
+        deskripsi: 'Gudang yang masih memiliki stok atau mutasi tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteGudang.detail(item.Id), { preserveScroll: true });
   };
 

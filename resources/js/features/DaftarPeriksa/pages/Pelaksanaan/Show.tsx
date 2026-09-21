@@ -20,12 +20,14 @@ import {
 import type { PelaksanaanDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { statusPelaksanaanBadge } from '@/features/PreventifInspeksi/status';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   pelaksanaan: PelaksanaanDaftarPeriksa;
 }
 
 export default function ShowPelaksanaan({ pelaksanaan }: Props) {
+  const konfirmasi = useKonfirmasi();
   const terkunci = pelaksanaan.Status === 'Selesai';
   const butirList = pelaksanaan.templatDaftarPeriksa?.butir ?? [];
 
@@ -83,11 +85,14 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
     );
   };
 
-  const finalisasi = () => {
+  const finalisasi = async () => {
     if (
-      confirm(
-        'Apakah Anda yakin ingin menyelesaikan checklist ini? Setelah selesai, checklist akan terkunci dan skor akan dihitung.',
-      )
+      await konfirmasi({
+        judul: 'Selesaikan pelaksanaan daftar periksa ini?',
+        deskripsi: 'Jawaban dikunci dan skor dihitung; perubahan setelah ini tidak dapat dilakukan.',
+        ragam: 'perhatian',
+        labelAksi: 'Selesaikan',
+      })
     ) {
       setSedangMenyimpan(true);
       // Simpan jawaban terlebih dahulu lalu finalisasi

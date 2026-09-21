@@ -19,6 +19,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@
 import { http } from '@/lib/http';
 import type { DefinisiKolomKustom, TipeDataKolomKustom } from '@/features/Kolaborasi/types';
 import { ruteKolomKustom } from '@/features/KolomKustom/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   jenisEntitasTersedia: string[];
@@ -145,6 +146,7 @@ function DialogFormDefinisi({
 }
 
 export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
+  const konfirmasi = useKonfirmasi();
   const [jenisEntitas, setJenisEntitas] = useState(jenisEntitasTersedia[0] ?? '');
   const [definisi, setDefinisi] = useState<DefinisiKolomKustom[]>([]);
   const [memuat, setMemuat] = useState(true);
@@ -160,8 +162,15 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
 
   useEffect(muat, [jenisEntitas]);
 
-  const hapus = (item: DefinisiKolomKustom) => {
-    if (!confirm(`Hapus kolom kustom "${item.Label}"?`)) return;
+  const hapus = async (item: DefinisiKolomKustom) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus kolom kustom "${item.Label}"?`,
+        deskripsi: 'Seluruh nilai yang sudah diisi pada kolom ini ikut terhapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteKolomKustom.detail(item.Id), { preserveScroll: true, onSuccess: muat });
   };
 

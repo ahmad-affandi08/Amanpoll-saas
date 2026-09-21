@@ -21,6 +21,7 @@ import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import type { Lokasi, KategoriLokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteLokasi } from '@/features/Lokasi/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   lokasi: Lokasi[];
@@ -31,6 +32,7 @@ interface Props {
 const TANPA = '__tanpa__';
 
 function DialogKelolaKategori({ kategoriLokasi }: { kategoriLokasi: KategoriLokasi[] }) {
+  const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
   const form = useForm({ Kode: '', Nama: '', Keterangan: '' });
 
@@ -39,8 +41,15 @@ function DialogKelolaKategori({ kategoriLokasi }: { kategoriLokasi: KategoriLoka
     form.post(ruteLokasi.kategori, { onSuccess: () => form.reset(), preserveScroll: true });
   };
 
-  const hapus = (kategori: KategoriLokasi) => {
-    if (!confirm(`Hapus kategori "${kategori.Nama}"?`)) return;
+  const hapus = async (kategori: KategoriLokasi) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus kategori "${kategori.Nama}"?`,
+        deskripsi: 'Lokasi yang memakai kategori ini kehilangan penandaannya.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteLokasi.kategoriDetail(kategori.Id), { preserveScroll: true });
   };
 
@@ -252,8 +261,16 @@ function DialogFormLokasi({
 }
 
 export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: Props) {
-  const hapus = (item: Lokasi) => {
-    if (!confirm(`Hapus lokasi "${item.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: Lokasi) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus lokasi "${item.Nama}"?`,
+        deskripsi: 'Lokasi yang masih memiliki sub-lokasi atau aset tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteLokasi.detail(item.Id), { preserveScroll: true });
   };
 

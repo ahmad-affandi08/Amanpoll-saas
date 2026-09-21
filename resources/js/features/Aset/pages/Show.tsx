@@ -37,6 +37,7 @@ import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import { ruteAset } from '@/features/Aset/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   aset: Aset;
@@ -491,6 +492,7 @@ function TabPenanggungJawab({ aset, unitOrganisasi }: { aset: Aset; unitOrganisa
 }
 
 function TabRelasi({ aset }: { aset: Aset }) {
+  const konfirmasi = useKonfirmasi();
   const [sebagaiInduk, setSebagaiInduk] = useState<RelasiAset[]>([]);
   const [sebagaiAnak, setSebagaiAnak] = useState<RelasiAset[]>([]);
   const [memuat, setMemuat] = useState(true);
@@ -520,8 +522,15 @@ function TabRelasi({ aset }: { aset: Aset }) {
     });
   };
 
-  const hapus = (relasi: RelasiAset) => {
-    if (!confirm('Hapus relasi ini?')) return;
+  const hapus = async (relasi: RelasiAset) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Hapus relasi ini?',
+        deskripsi: 'Hubungan antar aset dilepas; kedua aset tetap tersimpan.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteAset.relasiDetail(relasi.Id), { preserveScroll: true, onSuccess: muat });
   };
 
@@ -602,6 +611,7 @@ function TabRelasi({ aset }: { aset: Aset }) {
 }
 
 function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
+  const konfirmasi = useKonfirmasi();
   const [data, setData] = useState<GaransiAset[]>([]);
   const [memuat, setMemuat] = useState(true);
   const form = useForm({
@@ -637,8 +647,15 @@ function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
     });
   };
 
-  const hapus = (garansi: GaransiAset) => {
-    if (!confirm('Hapus garansi ini?')) return;
+  const hapus = async (garansi: GaransiAset) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Hapus garansi ini?',
+        deskripsi: 'Pengingat masa garansi untuk aset ini ikut berhenti.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteAset.garansiDetail(garansi.Id), { preserveScroll: true, onSuccess: muat });
   };
 

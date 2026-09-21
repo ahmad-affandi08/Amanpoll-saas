@@ -25,6 +25,7 @@ import type { KatalogIzin } from '@/features/PeranIzin/types';
 import { ruteKunciApi } from '@/features/KunciApi/api';
 import { http } from '@/lib/http';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   kunciApi: KunciApi[];
@@ -43,7 +44,7 @@ function DialogTampilkanToken({ token, onTutup }: { token: string; onTutup: () =
         <DialogHeader>
           <DialogTitle>Kunci API Berhasil Dibuat</DialogTitle>
         </DialogHeader>
-        <Alert>
+        <Alert variant="perhatian">
           <AlertTitle>Simpan token ini sekarang</AlertTitle>
           <AlertDescription>Token hanya ditampilkan sekali dan tidak dapat dilihat kembali.</AlertDescription>
         </Alert>
@@ -178,6 +179,7 @@ function DialogBuatKunci() {
 }
 
 export default function KunciApiIndex({ kunciApi }: Props) {
+  const konfirmasi = useKonfirmasi();
   const { flash } = usePage<PageProps>().props;
   const [tokenTampil, setTokenTampil] = useState<string | null>(null);
 
@@ -185,8 +187,16 @@ export default function KunciApiIndex({ kunciApi }: Props) {
     if (flash.tokenKunciApi) setTokenTampil(flash.tokenKunciApi);
   }, [flash.tokenKunciApi]);
 
-  const cabut = (item: KunciApi) => {
-    if (!confirm(`Cabut kunci API "${item.Nama}"?`)) return;
+  const cabut = async (item: KunciApi) => {
+    if (
+      !(await konfirmasi({
+        judul: `Cabut kunci API "${item.Nama}"?`,
+        deskripsi: 'Integrasi yang memakai kunci ini langsung kehilangan akses.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
+    )
+      return;
     router.delete(ruteKunciApi.detail(item.Id), { preserveScroll: true });
   };
 

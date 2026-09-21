@@ -30,12 +30,14 @@ import {
 } from 'lucide-react';
 import type { JenisKalibrasi, TitikUkurKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   jenisKalibrasi: JenisKalibrasi[];
 }
 
 export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
+  const konfirmasi = useKonfirmasi();
   const [pencarian, setPencarian] = useState('');
   const [bukaDialogJenis, setBukaDialogJenis] = useState(false);
   const [jenisDiedit, setJenisDiedit] = useState<JenisKalibrasi | null>(null);
@@ -106,8 +108,14 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
     }
   };
 
-  const hapusJenis = (jenis: JenisKalibrasi) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus jenis kalibrasi "${jenis.Nama}"?`)) {
+  const hapusJenis = async (jenis: JenisKalibrasi) => {
+    if (
+      await konfirmasi({
+        judul: `Hapus jenis kalibrasi "${jenis.Nama}"?`,
+        deskripsi: 'Jenis yang masih dipakai rencana atau pelaksanaan kalibrasi tidak dapat dihapus.',
+        ragam: 'bahaya',
+      })
+    ) {
       formJenis.delete(ruteKalibrasi.jenisDetail(jenis.Id));
     }
   };
@@ -171,8 +179,14 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
     }
   };
 
-  const hapusTitik = (titik: TitikUkurKalibrasi) => {
-    if (confirm(`Hapus titik ukur standar "${titik.Nama}"?`)) {
+  const hapusTitik = async (titik: TitikUkurKalibrasi) => {
+    if (
+      await konfirmasi({
+        judul: `Hapus titik ukur standar "${titik.Nama}"?`,
+        deskripsi: 'Titik ukur ini tidak lagi muncul pada pelaksanaan kalibrasi berikutnya.',
+        ragam: 'bahaya',
+      })
+    ) {
       formTitik.delete(ruteKalibrasi.titikUkurDetail(titik.Id));
     }
   };

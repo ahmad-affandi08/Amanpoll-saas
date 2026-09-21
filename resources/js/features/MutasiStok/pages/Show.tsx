@@ -18,6 +18,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import type { MutasiStok } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface SukuCadangRingkas {
   Id: string;
@@ -110,18 +111,41 @@ function DialogTambahDetail({
 }
 
 export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
-  const hapusDetail = (detailId: string) => {
-    if (!confirm('Hapus baris ini dari mutasi?')) return;
+  const konfirmasi = useKonfirmasi();
+  const hapusDetail = async (detailId: string) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Hapus baris ini dari mutasi?',
+        deskripsi: 'Saldo stok belum berubah selama mutasi masih berstatus draft.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(`/detail-mutasi-stok/${detailId}`, { preserveScroll: true });
   };
 
-  const posting = () => {
-    if (!confirm('Posting mutasi ini? Saldo stok akan berubah secara permanen.')) return;
+  const posting = async () => {
+    if (
+      !(await konfirmasi({
+        judul: 'Posting mutasi ini?',
+        deskripsi: 'Saldo stok akan berubah secara permanen.',
+        ragam: 'perhatian',
+      }))
+    )
+      return;
     router.post(ruteMutasiStok.posting(mutasiStok.Id), {}, { preserveScroll: true });
   };
 
-  const batalkan = () => {
-    if (!confirm('Batalkan draft mutasi ini?')) return;
+  const batalkan = async () => {
+    if (
+      !(await konfirmasi({
+        judul: 'Batalkan draft mutasi ini?',
+        deskripsi: 'Draft tidak dapat diposting lagi dan saldo stok tidak berubah.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
+    )
+      return;
     router.post(ruteMutasiStok.batalkan(mutasiStok.Id), {}, { preserveScroll: true });
   };
 

@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { DetailRencanaPengadaan, RencanaPengadaan } from '@/features/RencanaPengadaan/types';
 import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface PosRingkas {
   Id: string;
@@ -296,20 +297,39 @@ function DialogTambahDetail({
 }
 
 export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDisetujui, sukuCadang }: Props) {
+  const konfirmasi = useKonfirmasi();
   const detail = rencana.Detail ?? [];
   const draft = rencana.Status === 'Draft';
-  function hapusDetail(item: DetailRencanaPengadaan): void {
-    if (confirm(`Hapus detail ${item.Deskripsi}? Total estimasi akan dihitung ulang.`))
+  async function hapusDetail(item: DetailRencanaPengadaan): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Hapus detail ${item.Deskripsi}?`,
+        deskripsi: `Total estimasi akan dihitung ulang.`,
+        ragam: 'bahaya',
+      })
+    )
       router.delete(ruteRencanaPengadaan.detailDetail(rencana.Id, item.Id), {
         preserveScroll: true,
       });
   }
-  function finalisasi(): void {
-    if (confirm(`Finalisasi ${rencana.Nomor}? Rencana tidak dapat diubah lagi.`))
+  async function finalisasi(): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Finalisasi ${rencana.Nomor}?`,
+        deskripsi: `Rencana tidak dapat diubah lagi.`,
+        ragam: 'perhatian',
+      })
+    )
       router.post(ruteRencanaPengadaan.finalisasi(rencana.Id));
   }
-  function hapus(): void {
-    if (confirm(`Hapus draft rencana ${rencana.Nomor} beserta seluruh detailnya?`))
+  async function hapus(): Promise<void> {
+    if (
+      await konfirmasi({
+        judul: `Hapus draft rencana ${rencana.Nomor} beserta seluruh detailnya?`,
+        deskripsi: 'Usulan yang terhubung kembali tersedia untuk rencana lain.',
+        ragam: 'bahaya',
+      })
+    )
       router.delete(ruteRencanaPengadaan.detail(rencana.Id));
   }
   return (

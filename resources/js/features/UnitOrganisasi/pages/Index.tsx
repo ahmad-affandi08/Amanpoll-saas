@@ -19,6 +19,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteUnitOrganisasi } from '@/features/UnitOrganisasi/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   unitOrganisasi: UnitOrganisasi[];
@@ -140,13 +141,21 @@ function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semu
 }
 
 export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
+  const konfirmasi = useKonfirmasi();
   const namaIndukDari = useMemo(() => {
     const peta = new Map(unitOrganisasi.map((u) => [u.Id, u.Nama]));
     return (indukId: string | null) => (indukId ? (peta.get(indukId) ?? '—') : '—');
   }, [unitOrganisasi]);
 
-  const hapus = (unit: UnitOrganisasi) => {
-    if (!confirm(`Hapus unit "${unit.Nama}"?`)) return;
+  const hapus = async (unit: UnitOrganisasi) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus unit "${unit.Nama}"?`,
+        deskripsi: 'Unit yang masih memiliki sub-unit, pengguna, atau aset tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteUnitOrganisasi.detail(unit.Id), { preserveScroll: true });
   };
 

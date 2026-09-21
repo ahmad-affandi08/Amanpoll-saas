@@ -31,6 +31,7 @@ import type {
   RekapPenilaianPenyedia,
 } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   penyedia: Penyedia[];
@@ -38,6 +39,7 @@ interface Props {
 }
 
 function DialogKelolaKategori({ kategoriPenyedia }: { kategoriPenyedia: KategoriPenyedia[] }) {
+  const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
   const form = useForm({ Kode: '', Nama: '' });
 
@@ -46,8 +48,15 @@ function DialogKelolaKategori({ kategoriPenyedia }: { kategoriPenyedia: Kategori
     form.post(rutePenyedia.kategori, { onSuccess: () => form.reset(), preserveScroll: true });
   };
 
-  const hapus = (kategori: KategoriPenyedia) => {
-    if (!confirm(`Hapus kategori "${kategori.Nama}"?`)) return;
+  const hapus = async (kategori: KategoriPenyedia) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus kategori "${kategori.Nama}"?`,
+        deskripsi: 'Penyedia yang memakai kategori ini kehilangan penandaannya.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(rutePenyedia.kategoriDetail(kategori.Id), { preserveScroll: true });
   };
 
@@ -294,6 +303,7 @@ function TabKategori({
 }
 
 function TabKontak({ penyedia }: { penyedia: Penyedia }) {
+  const konfirmasi = useKonfirmasi();
   const [data, setData] = useState<KontakPenyedia[]>([]);
   const [memuat, setMemuat] = useState(true);
   const form = useForm({ Nama: '', Jabatan: '', Email: '', Telepon: '', Utama: false });
@@ -319,8 +329,15 @@ function TabKontak({ penyedia }: { penyedia: Penyedia }) {
     });
   };
 
-  const hapus = (kontak: KontakPenyedia) => {
-    if (!confirm(`Hapus kontak "${kontak.Nama}"?`)) return;
+  const hapus = async (kontak: KontakPenyedia) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus kontak "${kontak.Nama}"?`,
+        deskripsi: 'Kontak tidak lagi muncul sebagai tujuan korespondensi penyedia.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(rutePenyedia.kontakDetail(kontak.Id), { preserveScroll: true, onSuccess: muat });
   };
 
@@ -590,8 +607,16 @@ function DialogTambahPenyedia() {
 }
 
 export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
-  const hapus = (item: Penyedia) => {
-    if (!confirm(`Hapus penyedia "${item.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: Penyedia) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus penyedia "${item.Nama}"?`,
+        deskripsi: 'Penyedia yang masih terhubung ke pengadaan atau kontrak tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(rutePenyedia.detail(item.Id), { preserveScroll: true });
   };
 

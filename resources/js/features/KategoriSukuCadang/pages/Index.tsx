@@ -18,6 +18,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { KategoriSukuCadang } from '@/features/Persediaan/types';
 import { ruteKategoriSukuCadang } from '@/features/KategoriSukuCadang/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   kategoriSukuCadang: KategoriSukuCadang[];
@@ -113,8 +114,16 @@ function DialogFormKategori({
 }
 
 export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
-  const hapus = (item: KategoriSukuCadang) => {
-    if (!confirm(`Hapus kategori "${item.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: KategoriSukuCadang) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus kategori "${item.Nama}"?`,
+        deskripsi: 'Kategori yang masih dipakai suku cadang tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteKategoriSukuCadang.detail(item.Id), { preserveScroll: true });
   };
 

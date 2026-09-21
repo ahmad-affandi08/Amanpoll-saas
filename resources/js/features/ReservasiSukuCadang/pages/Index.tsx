@@ -18,6 +18,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import type { ReservasiSukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_RESERVASI } from '@/features/Persediaan/status';
 import { ruteReservasiSukuCadang } from '@/features/ReservasiSukuCadang/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Ringkas {
   Id: string;
@@ -129,13 +130,29 @@ function DialogBuatReservasi({ gudang, sukuCadang }: { gudang: Ringkas[]; sukuCa
 }
 
 export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang }: Props) {
-  const lepaskan = (item: ReservasiSukuCadang) => {
-    if (!confirm('Lepas reservasi ini? Hold stok akan dikembalikan.')) return;
+  const konfirmasi = useKonfirmasi();
+  const lepaskan = async (item: ReservasiSukuCadang) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Lepas reservasi ini?',
+        deskripsi: 'Hold stok akan dikembalikan.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
+    )
+      return;
     router.post(ruteReservasiSukuCadang.lepaskan(item.Id), {}, { preserveScroll: true });
   };
 
-  const konsumsi = (item: ReservasiSukuCadang) => {
-    if (!confirm('Pakai reservasi ini? Stok fisik akan berkurang lewat mutasi Pengeluaran.')) return;
+  const konsumsi = async (item: ReservasiSukuCadang) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Pakai reservasi ini?',
+        deskripsi: 'Stok fisik akan berkurang lewat mutasi Pengeluaran.',
+        ragam: 'perhatian',
+      }))
+    )
+      return;
     router.post(ruteReservasiSukuCadang.konsumsi(item.Id), {}, { preserveScroll: true });
   };
 

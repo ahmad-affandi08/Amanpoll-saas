@@ -17,6 +17,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { Merek } from '@/features/Aset/types';
 import { ruteMerek } from '@/features/Merek/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   merek: Merek[];
@@ -90,8 +91,16 @@ function DialogFormMerek({ merek }: { merek: Merek | null }) {
 }
 
 export default function MerekIndex({ merek }: Props) {
-  const hapus = (item: Merek) => {
-    if (!confirm(`Hapus merek "${item.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: Merek) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus merek "${item.Nama}"?`,
+        deskripsi: 'Merek yang masih dipakai model aset tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteMerek.detail(item.Id), { preserveScroll: true });
   };
 

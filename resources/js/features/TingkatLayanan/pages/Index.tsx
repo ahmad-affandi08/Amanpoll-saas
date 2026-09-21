@@ -25,6 +25,7 @@ import type {
   TingkatLayanan,
 } from '@/features/Keluhan/types';
 import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Ringkas {
   Id: string;
@@ -382,6 +383,7 @@ function DialogTingkatLayanan({
 }
 
 export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }: Props) {
+  const konfirmasi = useKonfirmasi();
   return (
     <AppLayout>
       <Head title="Tingkat Layanan" />
@@ -431,10 +433,14 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }:
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() =>
-                      confirm(`Hapus tingkat layanan ${sla.Nama}?`) &&
-                      router.delete(ruteTingkatLayanan.detail(sla.Id))
-                    }
+                    onClick={async () => {
+                      const lanjut = await konfirmasi({
+                        judul: `Hapus tingkat layanan "${sla.Nama}"?`,
+                        deskripsi: 'Aturan respons, resolusi, dan eskalasinya ikut terhapus.',
+                        ragam: 'bahaya',
+                      });
+                      if (lanjut) router.delete(ruteTingkatLayanan.detail(sla.Id));
+                    }}
                   >
                     Hapus
                   </Button>

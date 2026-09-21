@@ -19,6 +19,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { KategoriAset, Merek, ModelAset } from '@/features/Aset/types';
 import { ruteModelAset } from '@/features/ModelAset/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   modelAset: ModelAset[];
@@ -217,8 +218,16 @@ function DialogFormModelAset({
 }
 
 export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props) {
-  const hapus = (item: ModelAset) => {
-    if (!confirm(`Hapus model "${item.Nama}"?`)) return;
+  const konfirmasi = useKonfirmasi();
+  const hapus = async (item: ModelAset) => {
+    if (
+      !(await konfirmasi({
+        judul: `Hapus model "${item.Nama}"?`,
+        deskripsi: 'Model yang masih dipakai aset tidak dapat dihapus.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteModelAset.detail(item.Id), { preserveScroll: true });
   };
 

@@ -16,6 +16,7 @@ import {
 import { http } from '@/lib/http';
 import type { PermintaanPersetujuan, StatusPermintaanPersetujuan } from '@/features/Persetujuan/types';
 import { rutePermintaanPersetujuan } from '@/features/PermintaanPersetujuan/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 function badgeStatus(status: StatusPermintaanPersetujuan) {
   const varian = status === 'Disetujui' ? 'default' : status === 'Menunggu' ? 'secondary' : 'outline';
@@ -130,6 +131,7 @@ function InboxTab() {
 }
 
 function MilikSayaTab() {
+  const konfirmasi = useKonfirmasi();
   const [data, setData] = useState<PermintaanPersetujuan[]>([]);
   const [memuat, setMemuat] = useState(true);
 
@@ -143,8 +145,16 @@ function MilikSayaTab() {
 
   useEffect(muat, []);
 
-  const batalkan = (permintaan: PermintaanPersetujuan) => {
-    if (!confirm('Batalkan permintaan ini?')) return;
+  const batalkan = async (permintaan: PermintaanPersetujuan) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Batalkan permintaan ini?',
+        deskripsi: 'Penyetuju berikutnya tidak lagi menerima permintaan ini.',
+        ragam: 'bahaya',
+        ilustrasi: '/assets/3d/peringatan.webp',
+      }))
+    )
+      return;
     router.delete(rutePermintaanPersetujuan.detail(permintaan.Id), { preserveScroll: true, onSuccess: muat });
   };
 

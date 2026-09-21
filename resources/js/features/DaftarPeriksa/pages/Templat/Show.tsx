@@ -34,6 +34,7 @@ import type {
   TipeJawabanDaftarPeriksa,
 } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   templat: TemplatDaftarPeriksa;
@@ -42,6 +43,7 @@ interface Props {
 }
 
 export default function ShowTemplat({ templat, kategoriAset }: Props) {
+  const konfirmasi = useKonfirmasi();
   const [bukaDialogButir, setBukaDialogButir] = useState(false);
   const [butirDiedit, setButirDiedit] = useState<ButirTemplatDaftarPeriksa | null>(null);
 
@@ -131,14 +133,26 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
     }
   };
 
-  const hapusButir = (butirId: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus butir pertanyaan ini?')) {
+  const hapusButir = async (butirId: string) => {
+    if (
+      await konfirmasi({
+        judul: 'Hapus butir pertanyaan ini?',
+        deskripsi: 'Pelaksanaan yang sudah berjalan tetap memakai versi templat lamanya.',
+        ragam: 'bahaya',
+      })
+    ) {
       router.delete(ruteDaftarPeriksa.butirDetail(templat.Id, butirId));
     }
   };
 
-  const buatVersiBaru = () => {
-    if (confirm(`Buat versi baru dari templat "${templat.Nama}"? Versi saat ini akan diarsipkan.`)) {
+  const buatVersiBaru = async () => {
+    if (
+      await konfirmasi({
+        judul: `Buat versi baru dari templat "${templat.Nama}"?`,
+        deskripsi: `Versi saat ini akan diarsipkan.`,
+        ragam: 'perhatian',
+      })
+    ) {
       router.post(ruteDaftarPeriksa.versiBaru(templat.Id));
     }
   };

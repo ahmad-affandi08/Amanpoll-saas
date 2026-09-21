@@ -6,6 +6,7 @@ import { http } from '@/lib/http';
 import type { KomentarEntitas } from '@/features/Kolaborasi/types';
 import type { PageProps } from '@/types/global';
 import { ruteKolaborasi } from '@/features/Kolaborasi/api';
+import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
 interface Props {
   jenisEntitas: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function KomentarTab({ jenisEntitas, entitasId }: Props) {
+  const konfirmasi = useKonfirmasi();
   const { auth } = usePage<PageProps>().props;
   const [komentar, setKomentar] = useState<KomentarEntitas[]>([]);
   const [memuat, setMemuat] = useState(true);
@@ -60,8 +62,15 @@ export function KomentarTab({ jenisEntitas, entitasId }: Props) {
     );
   };
 
-  const hapus = (item: KomentarEntitas) => {
-    if (!confirm('Hapus komentar ini?')) return;
+  const hapus = async (item: KomentarEntitas) => {
+    if (
+      !(await konfirmasi({
+        judul: 'Hapus komentar ini?',
+        deskripsi: 'Komentar hilang dari riwayat kolaborasi entitas ini.',
+        ragam: 'bahaya',
+      }))
+    )
+      return;
     router.delete(ruteKolaborasi.komentarDetail(item.Id), { preserveScroll: true, onSuccess: muat });
   };
 
