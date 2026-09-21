@@ -1414,6 +1414,67 @@ Tidak ada known critical/high issue yang belum memiliki keputusan mitigasi.
 
 ---
 
+# FASE 24.5 — Pemisahan Host
+
+Prasyarat wajib `MARKETING.md` bagian 1 dan 33, serta `PRD.md` 5.4. Diberi nomor sisipan supaya FASE 25–28 yang sudah dirujuk di banyak tempat tidak perlu dinomori ulang.
+
+Dikerjakan sebagai satu perubahan tersendiri lengkap dengan test, bukan disisipkan di tengah fitur lain, karena menyentuh rute autentikasi yang sudah ada. Ditempatkan sebelum FASE 26 dan 27 agar perubahan rute ikut tercakup oleh Testing Lengkap dan Deployment, bukan membatalkan keduanya.
+
+## 24.5.01 Konfigurasi Host
+
+- [ ] `amanpoll.domain.publik`, `amanpoll.domain.dashboard`, `amanpoll.domain.partner` di `config/amanpoll.php`.
+- [ ] Nilai berasal dari environment, bukan literal di source.
+- [ ] Bentuk kanonik dipilih antara `amanpoll.com` dan `www.amanpoll.com`.
+- [ ] Host lokal/staging/produksi sesuai `MARKETING.md` 1.3.
+- [ ] Tidak ada host produksi yang ditulis di test.
+
+## 24.5.02 Grup Route per Host
+
+- [ ] Grup `Route::domain(...)` untuk host publik.
+- [ ] Grup `Route::domain(...)` untuk host dashboard.
+- [ ] Rute aplikasi yang kini di root dipindah ke host dashboard.
+- [ ] Rute autentikasi ikut pindah ke host dashboard.
+- [ ] Host publik tanpa middleware `auth` dan `organisasi`.
+- [ ] Root host publik membuka landing page placeholder.
+- [ ] Root host dashboard mengarahkan pengunjung anonim ke login.
+- [ ] Tidak ada pengecekan host di dalam controller.
+
+## 24.5.03 Sesi dan Cookie Lintas Host
+
+- [ ] `SESSION_DOMAIN` memakai domain induk lewat environment.
+- [ ] `SESSION_SECURE_COOKIE` dari environment.
+- [ ] Cookie `SesiPengunjung` memakai domain induk.
+- [ ] Sesi login hanya berlaku pada host dashboard.
+- [ ] Host publik tidak pernah membaca sesi organisasi.
+- [ ] CSRF formulir publik tetap aktif dan tidak lintas host.
+
+## 24.5.04 SEO dan Redirect Host
+
+- [ ] `X-Robots-Tag: noindex` pada host dashboard dan partner.
+- [ ] `robots.txt` melarang crawl pada host non-publik.
+- [ ] `canonical` selalu memakai host publik.
+- [ ] Redirect 301 dari bentuk non-kanonik.
+- [ ] `sitemap.xml` hanya berisi URL host publik.
+
+## 24.5.05 Cache dan Rate Limit Host Publik
+
+- [ ] Rate limit rute publik.
+- [ ] Cache respons halaman publik.
+- [ ] Halaman publik tidak pernah memuat data tenant.
+
+## 24.5.06 Test Host
+
+- [ ] `RouteHostPublikTest`.
+- [ ] `RouteHostDashboardTest`.
+- [ ] `NoindexHostDashboardTest`.
+- [ ] Test menetapkan host dari konfigurasi.
+
+### Gate 24.5
+
+Landing page tampil di host publik dan tidak pernah di host dashboard; root host dashboard tidak pernah menampilkan landing page; tidak ada host yang ditulis langsung di source maupun di frontend; host non-publik terbukti tidak dapat diindeks.
+
+---
+
 # FASE 25 — Performance dan Reliability
 
 ## 25.01 Database
@@ -1628,6 +1689,429 @@ Smoke test production lulus setelah deployment, dan setiap host terbukti melayan
 
 ---
 
+# FASE 29–38 — Growth & Marketing
+
+Sumber: `MARKETING.md`. Fase-fase ini dimulai setelah FASE 28 dan mengasumsikan FASE 24.5 sudah lulus gate; tanpa pemisahan host, attribution lintas host tidak dapat dibuktikan.
+
+Urutan mengikuti `MARKETING.md` bagian 33: prasyaratnya adalah Foundation + IAM (FASE 01–04), Notifikasi + Integrasi (FASE 06 dan 19), Langganan (FASE 22), UI Core (FASE 23), dan Hardening (FASE 24) — seluruhnya sudah terlewati pada titik ini.
+
+FASE 29–37 adalah MVP `MARKETING.md` bagian 32 butir 1–10. FASE 38 memuat butir 11–17 sebagai garis besar; checklist rincinya disusun setelah MVP lulus gate, supaya tidak lapuk sebelum dikerjakan.
+
+Berlaku untuk seluruh fase di bawah: domain `Pemasaran` tidak boleh menduplikasi Langganan, Billing, Notifikasi, Integrasi, Audit, Persetujuan, Organisasi, dan IAM; mutasi ke domain lain lewat application service atau domain contract; seluruh job asynchronous memakai database queue tanpa Redis, Horizon, Supervisor, atau daemon permanen.
+
+---
+
+# FASE 29 — Fondasi Pemasaran
+
+## 29.01 Bounded Context
+
+- [ ] `app/Domain/Pemasaran` sesuai struktur `MARKETING.md` bagian 3.
+- [ ] Routes domain terdaftar lewat `DomainServiceProvider`.
+- [ ] Berkas dibuat saat ada isinya, tanpa barrel `index.ts` di frontend.
+
+## 29.02 Konfigurasi Pemasaran
+
+- [ ] Tabel `KonfigurasiPemasaran`.
+- [ ] Trial, lead scoring, attribution, referral, consent configurable.
+- [ ] Secret provider tetap di environment, tidak di database.
+- [ ] Dashboard tidak pernah menampilkan secret penuh.
+
+## 29.03 Permission
+
+- [ ] Izin `platform.pemasaran.*` sesuai `MARKETING.md` bagian 26.
+- [ ] Izin ekspor terpisah dari izin lihat.
+- [ ] Seeder izin diperbarui.
+- [ ] Hanya role platform yang memperoleh izin ini.
+
+## 29.04 Feature Flag
+
+- [ ] Mekanisme feature flag platform. Belum ada di FASE 00–28 dan belum pernah dibuat.
+- [ ] Flag `marketing.*` sesuai `MARKETING.md` bagian 31.
+- [ ] Flag mati berarti menu dan rutenya tidak dapat diakses, bukan sekadar disembunyikan.
+
+## 29.05 Navigasi Dashboard Platform
+
+- [ ] Menu `Growth & Marketing` sesuai `MARKETING.md` bagian 4.
+- [ ] Hanya pada host dashboard.
+- [ ] Submenu `Pengaturan → Domain` menampilkan host aktif secara baca-saja.
+
+## 29.06 Audit
+
+- [ ] Action sensitif `MARKETING.md` bagian 27 tercatat di audit yang sudah ada.
+- [ ] Tidak membuat tabel audit kedua.
+
+### Gate 29
+
+Menu Growth & Marketing hanya dapat diakses role platform berizin; mematikan flag `marketing.*` menutup rutenya, bukan hanya menyembunyikan menunya.
+
+---
+
+# FASE 30 — Pengunjung, UTM, dan Attribution
+
+## 30.01 Sesi Pengunjung
+
+- [ ] Tabel `SesiPengunjung`.
+- [ ] Cookie berdomain induk.
+- [ ] Pengunjung anonim tidak pernah membaca sesi organisasi.
+
+## 30.02 Event Pemasaran
+
+- [ ] Tabel `EventPemasaran`.
+- [ ] Event publik sesuai `MARKETING.md` bagian 23.
+- [ ] Collector menolak event di luar taxonomy.
+
+## 30.03 UTM
+
+- [ ] Tabel `UtmPemasaran`.
+- [ ] Capture `utm_*`, referrer, landing URL, first page, session ID, device.
+
+## 30.04 Attribution
+
+- [ ] Tabel `AttributionPemasaran`.
+- [ ] First touch dan last touch.
+- [ ] First touch ditetapkan di host publik dan tidak dapat ditimpa host dashboard.
+- [ ] Last touch dapat diperbarui.
+- [ ] Kunjungan langsung ke host dashboard tanpa riwayat publik dicatat `direct`.
+
+## 30.05 Identity Merge
+
+- [ ] Pengunjung anonim di-merge setelah form submit, login, atau trial register.
+- [ ] Merge tidak dilakukan berdasarkan sinyal lemah.
+- [ ] UTM boleh diteruskan sekali lewat parameter CTA lintas host, lalu segera dipindah ke cookie.
+
+## 30.06 Kampanye
+
+- [ ] Tabel `Kampanye`, `KampanyeChannel`.
+- [ ] Field, status, channel, dan objective sesuai `MARKETING.md` bagian 13.
+- [ ] Event dan attribution menunjuk kampanye, bukan sekadar string `utm_campaign`.
+- [ ] Biaya, audience, dan target kampanye menyusul di FASE 38; tanpa biaya, CAC per channel belum dapat dihitung.
+
+## 30.07 Job
+
+- [ ] Job `HitungAttribution` di database queue.
+- [ ] Job `SinkronkanStatusProvider` untuk status kiriman yang datang belakangan.
+
+## 30.08 Test
+
+- [ ] `UtmTersimpanTest`.
+- [ ] `AttributionPertamaTerjagaTest`.
+- [ ] `AttributionTerakhirDiperbaruiTest`.
+- [ ] `AttributionLintasHostTest`.
+- [ ] `HitungAttributionTest`.
+
+### Gate 30
+
+Pengunjung yang datang dari kampanye di host publik lalu mendaftar trial di host dashboard tetap membawa first touch aslinya.
+
+---
+
+# FASE 31 — Prospek dan CRM
+
+## 31.01 Prospek
+
+- [ ] Tabel `Prospek`, `KontakProspek`, `OrganisasiProspek`.
+- [ ] Data lead minimal sesuai `MARKETING.md` 5.2.
+- [ ] Sumber lead sesuai `MARKETING.md` 5.1.
+
+## 31.02 Pipeline
+
+- [ ] Tabel `TahapPipeline`, `RiwayatTahapProspek`.
+- [ ] State `BARU → DIHUBUNGI → TERLIBAT → DEMO → TRIAL → AKTIF → QUALIFIED → MENANG`.
+- [ ] State alternatif `TIDAK_COCOK`, `HILANG`, `UNSUBSCRIBE`.
+- [ ] Setiap perubahan tahap tercatat di timeline.
+
+## 31.03 Skor Prospek
+
+- [ ] Tabel `SkorProspek`, `AturanSkorProspek`.
+- [ ] Aturan configurable, angka tidak di-hard-code.
+- [ ] Job `HitungSkorProspek`.
+
+## 31.04 Tag dan Aktivitas
+
+- [ ] Tabel `TagProspek`, `ProspekTag`, `AktivitasProspek`.
+- [ ] Timeline gabungan sesuai `MARKETING.md` bagian 7.
+- [ ] Sumber event: website, aplikasi, email, billing, subscription, referral, automation.
+
+## 31.05 Masuk dan Keluar
+
+- [ ] Import CSV.
+- [ ] Lead capture lewat API dan webhook.
+- [ ] Ekspor dengan izin terpisah dan tercatat di audit.
+- [ ] Rate limit ekspor.
+
+## 31.06 Test
+
+- [ ] `ProspekDibuatTest`.
+- [ ] `PipelineProspekTest`.
+- [ ] `SkorProspekTest`.
+- [ ] `TransisiStatusProspekTest`.
+- [ ] `HitungSkorProspekTest`.
+- [ ] `PermissionPemasaranTest`.
+
+### Gate 31
+
+Lead dari seluruh sumber masuk ke satu pipeline dengan timeline yang utuh; ekspor lead tidak dapat dilakukan tanpa izin ekspor dan selalu meninggalkan jejak audit.
+
+---
+
+# FASE 32 — Halaman Publik dan Formulir
+
+## 32.01 Halaman Pemasaran
+
+- [ ] Tabel `HalamanPemasaran`, `VersiHalamanPemasaran`, `BlokHalamanPemasaran`.
+- [ ] Tipe dan blok sesuai `MARKETING.md` bagian 8.
+- [ ] Status `DRAF → REVIEW → TERJADWAL → TERBIT → DIARSIPKAN`.
+
+## 32.02 Penerbitan
+
+- [ ] Terbit dan tarik terjadwal.
+- [ ] Revision history dan versioning.
+- [ ] Rollback.
+- [ ] Publikasi tercatat di audit.
+- [ ] Pratinjau draf memakai URL bertanda tangan pada host publik dan wajib `noindex`.
+
+## 32.03 Redirect
+
+- [ ] Tabel `RedirectPemasaran`.
+- [ ] Dukungan 301, 302, 410.
+- [ ] Hanya berlaku pada host publik.
+
+## 32.04 Formulir
+
+- [ ] Tabel `FormulirPemasaran`, `FieldFormulirPemasaran`, `PengirimanFormulir`.
+- [ ] Field sesuai `MARKETING.md` bagian 10, termasuk hidden UTM dan consent.
+- [ ] Config: success message, redirect, source, campaign, tags, trigger otomasi, webhook.
+
+## 32.05 Anti-spam
+
+- [ ] Honeypot.
+- [ ] Rate limit.
+- [ ] CAPTCHA opsional.
+
+## 32.06 Frontend Publik
+
+- [ ] `resources/js/features/Publik` sebagai satu-satunya feature pada host publik.
+- [ ] Inertia + React dengan build Vite yang sama.
+- [ ] Mengikuti `DESIGN.md`.
+- [ ] Rute publik sesuai `MARKETING.md` 34.1 sebatas yang dicakup MVP.
+- [ ] `/trial` adalah halaman penjelasan; formulir pendaftaran berada di host dashboard.
+
+## 32.07 Test
+
+- [ ] `FormulirPemasaranTest`.
+- [ ] Draf tidak dapat diakses tanpa tanda tangan dan tidak terindeks.
+
+### Gate 32
+
+Landing page dapat dibuat, diterbitkan, dan dikembalikan dari dashboard tanpa deploy, dan formulir publiknya menghasilkan lead lengkap dengan UTM.
+
+---
+
+# FASE 33 — Trial Event dan Aktivasi
+
+## 33.01 Konfigurasi Trial
+
+- [ ] Durasi, paket, kebutuhan kartu, batas user/lokasi/aset, grace period, kebijakan perpanjangan.
+- [ ] Dibaca dari domain Langganan, tidak diduplikasi.
+- [ ] Perubahan konfigurasi tercatat di audit.
+
+## 33.02 State Trial
+
+- [ ] State `TERDAFTAR → SETUP → AKTIF → TERAKTIVASI → KONVERSI`.
+- [ ] State alternatif `KADALUARSA`, `DIBATALKAN`, `DIPERPANJANG`.
+- [ ] Mutasi langganan lewat application service, bukan langsung ke Billing.
+
+## 33.03 Activation Checklist
+
+- [ ] Organisasi, lokasi, aset pertama, undangan pengguna, perintah kerja pertama, preventive pertama.
+- [ ] Event trial sesuai `MARKETING.md` bagian 23.
+
+## 33.04 Prospek ke Organisasi
+
+- [ ] Trial yang menghasilkan workspace menautkan `Prospek → Organisasi`.
+- [ ] Referensi attribution tetap dipertahankan.
+
+## 33.05 Event Revenue
+
+- [ ] Event revenue sesuai `MARKETING.md` bagian 23 dari domain Langganan.
+- [ ] Event masuk timeline prospek.
+
+## 33.06 Test
+
+- [ ] `TrialActivationTest`.
+- [ ] Konversi trial terhubung ke Langganan.
+
+### Gate 33
+
+Perjalanan satu pengunjung dari kunjungan pertama sampai berlangganan terbaca utuh dalam satu timeline, dan revenue-nya tertaut ke channel asalnya.
+
+---
+
+# FASE 34 — Consent dan Email Pemasaran
+
+## 34.01 Consent
+
+- [ ] Simpan consent, timestamp, sumber, versi kebijakan.
+- [ ] Unsubscribe.
+- [ ] Suppression list.
+- [ ] Permintaan penghapusan/anonimisasi.
+
+## 34.02 Template dan Sequence
+
+- [ ] Tabel `TemplateEmailPemasaran`, `SequenceEmailPemasaran`, `LangkahSequenceEmail`.
+- [ ] Variabel sesuai `MARKETING.md` bagian 15.
+- [ ] Sequence trial configurable, bukan hard-code.
+
+## 34.03 Pengiriman
+
+- [ ] Tabel `PengirimanEmailPemasaran`.
+- [ ] Status `TERJADWAL`, `DIKIRIM`, `TERKIRIM`, `DIBUKA`, `DIKLIK`, `BOUNCE`, `GAGAL`, `UNSUBSCRIBE`.
+- [ ] Kontrak `PenyediaEmailPemasaran`.
+- [ ] Job `KirimEmailPemasaran` idempoten; retry tidak menghasilkan kiriman ganda.
+- [ ] Rate limit pengiriman.
+
+## 34.04 Penegakan
+
+- [ ] Unsubscribe menghentikan seluruh pesan pemasaran.
+- [ ] Suppression list dihormati sebelum pengiriman.
+- [ ] Consent diperiksa di domain, bukan hanya di UI.
+
+## 34.05 Test
+
+- [ ] `SequenceEmailTest`.
+- [ ] `SuppressionListTest`.
+
+### Gate 34
+
+Menjalankan ulang pengiriman yang gagal tidak menghasilkan email ganda, dan penerima yang unsubscribe tidak pernah menerima pesan pemasaran berikutnya.
+
+---
+
+# FASE 35 — Otomasi Pemasaran
+
+## 35.01 Struktur
+
+- [ ] Tabel `OtomasiPemasaran`, `VersiOtomasiPemasaran`, `LangkahOtomasiPemasaran`.
+- [ ] Bentuk `Trigger → Condition → Delay → Action`.
+
+## 35.02 Trigger dan Condition
+
+- [ ] Trigger sesuai `MARKETING.md` bagian 17.
+- [ ] Condition sesuai `MARKETING.md` bagian 17, termasuk consent.
+
+## 35.03 Action
+
+- [ ] Action dasar: kirim email, tambah tag, update skor, update status, enroll/remove sequence, notifikasi internal, webhook.
+- [ ] Action yang menyentuh Langganan lewat domain contract.
+
+## 35.04 Eksekusi
+
+- [ ] Tabel `EksekusiOtomasiPemasaran`, `LogEksekusiOtomasi`.
+- [ ] Setiap eksekusi idempoten.
+- [ ] Execution cap, daily message cap, retry cap.
+- [ ] DLQ memakai mekanisme FASE 19.
+- [ ] Job `ProsesOtomasiPemasaran` di database queue.
+
+## 35.05 Test
+
+- [ ] `AutomationTriggerTest`.
+- [ ] `AutomationIdempotencyTest`.
+- [ ] `EvaluasiKondisiOtomasiTest`.
+
+### Gate 35
+
+Otomasi yang dijalankan dua kali atas peristiwa yang sama tidak menghasilkan aksi ganda, dan kegagalan penyedia berhenti di DLQ tanpa mengulang tanpa batas.
+
+---
+
+# FASE 36 — Referral Dasar
+
+## 36.01 Program
+
+- [ ] Tabel `ProgramReferral`, `Referral`, `RewardReferral`.
+- [ ] Referral code dan referral URL.
+
+## 36.02 State
+
+- [ ] State `DIBUAT → DIKLIK → LEAD → TRIAL → PAID → REWARD_PENDING → REWARDED`.
+- [ ] Anti self-referral.
+
+## 36.03 Reward
+
+- [ ] Reward configurable: extension, credit, coupon, custom.
+- [ ] Pemberian reward lewat domain contract Langganan, bukan mutasi Billing langsung.
+- [ ] Perubahan reward tercatat di audit.
+- [ ] Job `ProsesRewardReferral`.
+
+## 36.04 Test
+
+- [ ] `ReferralConversionTest`.
+- [ ] `HitungRewardReferralTest`.
+
+### Gate 36
+
+Referral dapat ditelusuri dari klik sampai pembayaran, dan seseorang tidak dapat memberi referral kepada dirinya sendiri.
+
+---
+
+# FASE 37 — Dashboard Growth
+
+## 37.01 KPI
+
+- [ ] KPI sesuai `MARKETING.md` bagian 5.
+- [ ] Definisi KPI terdokumentasi seperti `KatalogKpi` FASE 21, bukan rumus tersebar.
+
+## 37.02 Funnel
+
+- [ ] Funnel `Visitor → Lead → Demo → Trial → Activated → Qualified → Paid`.
+- [ ] Angka dapat ditelusuri ke sumber transaksinya.
+
+## 37.03 Filter
+
+- [ ] Tanggal, channel, campaign, industri, landing page, device, paket, referral, partner.
+
+## 37.04 Alert
+
+- [ ] Alert platform sesuai `MARKETING.md` bagian 5.
+- [ ] Memakai engine Notifikasi yang sudah ada.
+
+## 37.05 Job Metrik
+
+- [ ] Job `HitungMetrikKampanye`.
+- [ ] Tidak ada N+1 pada halaman dashboard.
+
+## 37.06 Test
+
+- [ ] `AuditPemasaranTest`.
+- [ ] Funnel terbukti konsisten dengan data transaksi.
+
+### Gate 37 — Gate MVP Pemasaran
+
+Seluruh acceptance criteria `MARKETING.md` bagian 35 terpenuhi. Founder dapat membuka satu dashboard dan menjawab channel mana menghasilkan customer, campaign mana menghasilkan revenue, dan landing page mana paling efektif.
+
+---
+
+# FASE 38 — Pemasaran Lanjutan
+
+Garis besar `MARKETING.md` bagian 32 butir 11–17. Checklist rinci disusun setelah Gate 37 lulus.
+
+- [ ] 38.01 WhatsApp automation — `MARKETING.md` bagian 16. Wajib opt-in, template approval provider, frequency cap, STOP, suppression list.
+- [ ] 38.02 Social media scheduler — bagian 18. Adapter penyedia, satu konten utama dengan banyak distribusi.
+- [ ] 38.03 Demo management — bagian 11. Dataset, reset terjadwal, modul terlihat, tracking event demo.
+- [ ] 38.04 CMS konten dan SEO manager — bagian 9. Artikel, keyword, cluster, intent, sitemap, schema.
+- [ ] 38.05 Lead magnet dan tools publik — bagian 10. Template, checklist, kalkulator MTTR/MTBF, QR generator.
+- [ ] 38.06 Eksperimen A/B — bagian 22. Tanpa auto-declare winner sebelum sampel minimum.
+- [ ] 38.07 Pricing dan offer presentation — bagian 19. Harga tetap bersumber dari Langganan/Billing.
+- [ ] 38.08 Kampanye lanjutan — bagian 13 dan 24. `KampanyeBiaya`, `KampanyeTarget`, `KampanyeKonten`; membuka CAC dan revenue per channel di Dashboard Growth.
+- [ ] 38.09 Partner program — bagian 21, termasuk host `partner.amanpoll.com` dan komisi.
+- [ ] 38.10 Advanced attribution — bagian 14 di luar first/last touch.
+
+### Gate 38
+
+Ditetapkan saat checklist rincinya disusun.
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text
@@ -1681,6 +2165,8 @@ Smoke test production lulus setelah deployment, dan setiap host terbukti melayan
 ↓
 24 Security Hardening
 ↓
+24.5 Pemisahan Host
+↓
 25 Performance + Reliability
 ↓
 26 Testing Lengkap
@@ -1688,9 +2174,31 @@ Smoke test production lulus setelah deployment, dan setiap host terbukti melayan
 27 Deployment Niagahoster
 ↓
 28 UAT + Release
+↓
+29 Fondasi Pemasaran
+↓
+30 Pengunjung + UTM + Attribution
+↓
+31 Prospek + CRM
+↓
+32 Halaman Publik + Formulir
+↓
+33 Trial Event + Aktivasi
+↓
+34 Consent + Email Pemasaran
+↓
+35 Otomasi Pemasaran
+↓
+36 Referral Dasar
+↓
+37 Dashboard Growth
+↓
+38 Pemasaran Lanjutan
 ```
 
 Alasan urutan tersebut: setiap fase memakai fondasi dari fase sebelumnya. Dashboard berada dekat akhir karena dashboard harus membaca data transaksi yang sudah benar, bukan menjadi halaman demo yang lebih dulu dibuat.
+
+Pemisahan host berada di 24.5 karena ia mengubah rute autentikasi: dikerjakan sebelum Testing Lengkap dan Deployment, bukan sesudahnya. Pemasaran berada setelah rilis karena seluruh prasyaratnya — IAM, Notifikasi, Integrasi, Langganan, UI Core, Hardening — baru lengkap di titik itu, dan attribution lintas host menuntut 24.5 sudah lulus.
 
 ---
 
