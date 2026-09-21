@@ -21,6 +21,7 @@ import type { Paginasi } from '@/types/global';
 import type { SerahTerimaAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
 import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   serahTerima: Paginasi<SerahTerimaAset>;
@@ -87,15 +88,15 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
     <AppLayout>
       <Head title="Serah Terima Aset" />
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Serah Terima Aset</h1>
-            <p className="text-sm text-muted-foreground">
-              Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi.
-            </p>
-          </div>
-          <DialogBuatSerahTerima />
-        </div>
+        <PageHeader
+          judul="Serah Terima Aset"
+          deskripsi="Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi."
+          aksi={
+            <>
+              <DialogBuatSerahTerima />
+            </>
+          }
+        />
 
         <div className="w-56 space-y-1.5">
           <Label>Status</Label>

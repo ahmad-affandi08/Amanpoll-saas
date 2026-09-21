@@ -26,6 +26,7 @@ import { ruteKunciApi } from '@/features/KunciApi/api';
 import { http } from '@/lib/http';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   kunciApi: KunciApi[];
@@ -281,13 +282,16 @@ export default function KunciApiIndex({ kunciApi }: Props) {
     <AppLayout>
       <Head title="Kunci API" />
       {tokenTampil && <DialogTampilkanToken token={tokenTampil} onTutup={() => setTokenTampil(null)} />}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Kunci API</h1>
-          <p className="text-sm text-muted-foreground">Kelola akses integrasi eksternal ke Amanpoll.</p>
-        </div>
-        <DialogBuatKunci />
-      </div>
+      <PageHeader
+        judul="Kunci API"
+        deskripsi="Kelola akses integrasi eksternal ke Amanpoll."
+        aksi={
+          <>
+            <DialogBuatKunci />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

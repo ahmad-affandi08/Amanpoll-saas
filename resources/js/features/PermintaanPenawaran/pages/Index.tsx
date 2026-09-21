@@ -23,6 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { PermintaanPenawaran, StatusPermintaanPenawaran } from '@/features/PermintaanPenawaran/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface PermintaanRingkas {
   Id: string;
@@ -175,15 +176,15 @@ export default function PermintaanPenawaranIndex({ rfq, permintaanDisetujui, pen
     <AppLayout>
       <Head title="Permintaan Penawaran" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Permintaan Penawaran</h1>
-            <p className="text-sm text-muted-foreground">
-              Undang penyedia, catat penawaran masuk, dan pilih hasil evaluasi.
-            </p>
-          </div>
-          <DialogBuatRfq permintaanDisetujui={permintaanDisetujui} penyedia={penyedia} />
-        </header>
+        <PageHeader
+          judul="Permintaan Penawaran"
+          deskripsi="Undang penyedia, catat penawaran masuk, dan pilih hasil evaluasi."
+          aksi={
+            <>
+              <DialogBuatRfq permintaanDisetujui={permintaanDisetujui} penyedia={penyedia} />
+            </>
+          }
+        />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_12rem_auto]">
           <div className="relative">

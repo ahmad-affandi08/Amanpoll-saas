@@ -21,6 +21,7 @@ import type { PelaksanaanDaftarPeriksa } from '@/features/PreventifInspeksi/type
 import { statusPelaksanaanBadge } from '@/features/PreventifInspeksi/status';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   pelaksanaan: PelaksanaanDaftarPeriksa;
@@ -124,6 +125,7 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
   return (
     <AppLayout>
       <Head title={`Pelaksanaan: ${pelaksanaan.templatDaftarPeriksa?.Nama ?? 'Checklist'}`} />
+      <BreadcrumbHalaman />
 
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* Navigasi Balik */}

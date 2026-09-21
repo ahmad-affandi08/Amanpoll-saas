@@ -21,6 +21,7 @@ import { VARIAN_BADGE_STATUS_PENGHAPUSAN } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { rutePenghapusanAset } from '@/features/PenghapusanAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   pengajuan: PengajuanPenghapusanAset;
@@ -146,33 +147,37 @@ export default function PenghapusanAsetShow({ pengajuan, aset }: Props) {
     <AppLayout>
       <Head title={pengajuan.Nomor} />
       <div className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">{pengajuan.Nomor}</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              {pengajuan.MetodePenghapusan ?? 'Penghapusan Aset'}
-            </h1>
-            <p className="max-w-xl text-sm text-muted-foreground">{pengajuan.Alasan}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={VARIAN_BADGE_STATUS_PENGHAPUSAN[pengajuan.Status]}>{pengajuan.Status}</Badge>
-            {pengajuan.Status === 'Draft' && (
-              <Button size="sm" onClick={submit}>
-                Submit
-              </Button>
-            )}
-            {(pengajuan.Status === 'Draft' || pengajuan.Status === 'Menunggu') && (
-              <Button size="sm" variant="outline" onClick={batalkan}>
-                Batalkan
-              </Button>
-            )}
-            {pengajuan.Status === 'Disetujui' && (
-              <Button size="sm" variant="destructive" onClick={eksekusi}>
-                Eksekusi
-              </Button>
-            )}
-          </div>
-        </div>
+        <PageHeader
+          judul={pengajuan.MetodePenghapusan ?? 'Penghapusan Aset'}
+          lencana={
+            <>
+              <p className="font-mono text-sm text-muted-foreground">{pengajuan.Nomor}</p>
+            </>
+          }
+          meta={pengajuan.Alasan}
+          aksi={
+            <>
+              <div className="flex items-center gap-2">
+                <Badge variant={VARIAN_BADGE_STATUS_PENGHAPUSAN[pengajuan.Status]}>{pengajuan.Status}</Badge>
+                {pengajuan.Status === 'Draft' && (
+                  <Button size="sm" onClick={submit}>
+                    Submit
+                  </Button>
+                )}
+                {(pengajuan.Status === 'Draft' || pengajuan.Status === 'Menunggu') && (
+                  <Button size="sm" variant="outline" onClick={batalkan}>
+                    Batalkan
+                  </Button>
+                )}
+                {pengajuan.Status === 'Disetujui' && (
+                  <Button size="sm" variant="destructive" onClick={eksekusi}>
+                    Eksekusi
+                  </Button>
+                )}
+              </div>
+            </>
+          }
+        />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-[9px] border border-border bg-card p-4">

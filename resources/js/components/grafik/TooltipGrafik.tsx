@@ -50,13 +50,7 @@ function labelBaris(payload: unknown, cadangan: string): string {
  * Label kategori berasal dari data (nama gudang, nama anggaran) sehingga selalu
  * dirender sebagai teks React biasa, tidak pernah lewat HTML mentah.
  */
-export function TooltipGrafik({
-  active,
-  payload,
-  label,
-  formatNilai,
-  formatLabel,
-}: PropsTooltipGrafik) {
+export function TooltipGrafik({ active, payload, label, formatNilai, formatLabel }: PropsTooltipGrafik) {
   if (!active || !payload || payload.length === 0) {
     return null;
   }

@@ -30,6 +30,7 @@ import type {
   StatusKepatuhan,
 } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface AsetRingkas {
   Id: string;
@@ -371,18 +372,18 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
     <AppLayout>
       <Head title="Kepatuhan" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Kepatuhan</h1>
-            <p className="text-sm text-muted-foreground">
-              Standar yang berlaku bagi organisasi, persyaratannya, dan status kepatuhan tiap aset.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <DialogTugaskan standar={standar} aset={aset} />
-            <DialogBuatStandar />
-          </div>
-        </header>
+        <PageHeader
+          judul="Kepatuhan"
+          deskripsi="Standar yang berlaku bagi organisasi, persyaratannya, dan status kepatuhan tiap aset."
+          aksi={
+            <>
+              <div className="flex flex-wrap gap-2">
+                <DialogTugaskan standar={standar} aset={aset} />
+                <DialogBuatStandar />
+              </div>
+            </>
+          }
+        />
 
         <div className="grid gap-3 sm:grid-cols-4">
           {[

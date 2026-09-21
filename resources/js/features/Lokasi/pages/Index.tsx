@@ -22,6 +22,7 @@ import type { Lokasi, KategoriLokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteLokasi } from '@/features/Lokasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   lokasi: Lokasi[];
@@ -339,16 +340,23 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: 
   return (
     <AppLayout>
       <Head title="Lokasi" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Lokasi</h1>
-          <p className="text-sm text-muted-foreground">Kelola lokasi fisik aset dan fasilitas.</p>
-        </div>
-        <div className="flex gap-2">
-          <DialogKelolaKategori kategoriLokasi={kategoriLokasi} />
-          <DialogFormLokasi lokasi={null} unitOrganisasi={unitOrganisasi} kategoriLokasi={kategoriLokasi} />
-        </div>
-      </div>
+      <PageHeader
+        judul="Lokasi"
+        deskripsi="Kelola lokasi fisik aset dan fasilitas."
+        aksi={
+          <>
+            <div className="flex gap-2">
+              <DialogKelolaKategori kategoriLokasi={kategoriLokasi} />
+              <DialogFormLokasi
+                lokasi={null}
+                unitOrganisasi={unitOrganisasi}
+                kategoriLokasi={kategoriLokasi}
+              />
+            </div>
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

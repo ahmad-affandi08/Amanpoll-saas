@@ -34,6 +34,7 @@ import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   rencanaKalibrasi: RencanaKalibrasi[];
@@ -168,19 +169,23 @@ export default function RencanaKalibrasiIndex({
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Rencana Kalibrasi</h1>
-            <p className="text-sm text-muted-foreground">
+        <PageHeader
+          judul="Rencana Kalibrasi"
+          deskripsi={
+            <>
               Atur siklus interval, tanggal jatuh tempo, dan mitra kalibrasi untuk setiap instrumen
               operasional.
-            </p>
-          </div>
-          <Button onClick={bukaModalTambah} size="sm">
-            <Plus className="mr-1.5 size-4" />
-            Buat Rencana Kalibrasi
-          </Button>
-        </div>
+            </>
+          }
+          aksi={
+            <>
+              <Button onClick={bukaModalTambah} size="sm">
+                <Plus className="mr-1.5 size-4" />
+                Buat Rencana Kalibrasi
+              </Button>
+            </>
+          }
+        />
 
         {/* Filter Card */}
         <Card className="border-border">

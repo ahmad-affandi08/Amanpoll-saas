@@ -11,6 +11,7 @@ import type { Paginasi } from '@/types/global';
 import type { PenerimaanPembelian } from '@/features/PenerimaanPembelian/types';
 import { rutePenerimaanPembelian } from '@/features/PenerimaanPembelian/api';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   penerimaan: Paginasi<PenerimaanPembelian>;
@@ -33,12 +34,10 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
     <AppLayout>
       <Head title="Penerimaan Pembelian" />
       <div className="space-y-6">
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Penerimaan Pembelian</h1>
-          <p className="text-sm text-muted-foreground">
-            Riwayat penerimaan barang; stok dan registrasi aset dibuat otomatis saat dokumen dicatat.
-          </p>
-        </header>
+        <PageHeader
+          judul="Penerimaan Pembelian"
+          deskripsi="Riwayat penerimaan barang; stok dan registrasi aset dibuat otomatis saat dokumen dicatat."
+        />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_auto]">
           <div className="relative">

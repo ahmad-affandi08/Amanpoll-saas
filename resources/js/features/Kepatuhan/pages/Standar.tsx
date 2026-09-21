@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import type { PersyaratanKepatuhan, StandarKepatuhan } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   standar: StandarKepatuhan;
@@ -160,6 +161,7 @@ export default function KepatuhanStandar({ standar }: Props) {
   return (
     <AppLayout>
       <Head title={`${standar.Kode} — Standar Kepatuhan`} />
+      <BreadcrumbHalaman />
       <div className="space-y-6">
         <Link
           href={ruteKepatuhan.index}

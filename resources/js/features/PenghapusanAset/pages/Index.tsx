@@ -21,6 +21,7 @@ import type { Paginasi } from '@/types/global';
 import type { PengajuanPenghapusanAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_PENGHAPUSAN } from '@/features/SiklusAset/status';
 import { rutePenghapusanAset } from '@/features/PenghapusanAset/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   pengajuan: Paginasi<PengajuanPenghapusanAset>;
@@ -104,15 +105,15 @@ export default function PenghapusanAsetIndex({ pengajuan, filter }: Props) {
     <AppLayout>
       <Head title="Penghapusan Aset" />
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Penghapusan Aset</h1>
-            <p className="text-sm text-muted-foreground">
-              Pengajuan pelepasan aset -- draft, persetujuan, sampai eksekusi.
-            </p>
-          </div>
-          <DialogBuatPengajuan />
-        </div>
+        <PageHeader
+          judul="Penghapusan Aset"
+          deskripsi="Pengajuan pelepasan aset -- draft, persetujuan, sampai eksekusi."
+          aksi={
+            <>
+              <DialogBuatPengajuan />
+            </>
+          }
+        />
 
         <div className="w-56 space-y-1.5">
           <Label>Status</Label>

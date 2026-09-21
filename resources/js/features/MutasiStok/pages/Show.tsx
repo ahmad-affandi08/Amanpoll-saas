@@ -19,6 +19,7 @@ import type { MutasiStok } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface SukuCadangRingkas {
   Id: string;
@@ -153,33 +154,35 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
     <AppLayout>
       <Head title={mutasiStok.Nomor} />
       <div className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">{mutasiStok.Nomor}</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{mutasiStok.Jenis}</h1>
-            <p className="text-sm text-muted-foreground">
-              {mutasiStok.NamaGudangAsal ?? '—'}{' '}
+        <PageHeader
+          judul={mutasiStok.Jenis}
+          labelBreadcrumb={mutasiStok.Nomor}
+          lencana={
+            <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[mutasiStok.Status]}>{mutasiStok.Status}</Badge>
+          }
+          deskripsi={
+            <>
+              <span className="font-mono">{mutasiStok.Nomor}</span> · {mutasiStok.NamaGudangAsal ?? '—'}{' '}
               {(mutasiStok.NamaGudangAsal || mutasiStok.NamaGudangTujuan) && '→'}{' '}
               {mutasiStok.NamaGudangTujuan ?? '—'}
-            </p>
-            {mutasiStok.Catatan && (
-              <p className="mt-1 max-w-xl text-sm text-muted-foreground">{mutasiStok.Catatan}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[mutasiStok.Status]}>{mutasiStok.Status}</Badge>
-            {mutasiStok.Status === 'Draft' && (
-              <Button size="sm" onClick={posting}>
-                Posting
-              </Button>
-            )}
-            {mutasiStok.Status === 'Draft' && (
-              <Button size="sm" variant="outline" onClick={batalkan}>
-                Batalkan
-              </Button>
-            )}
-          </div>
-        </div>
+            </>
+          }
+          meta={mutasiStok.Catatan ? <span className="max-w-xl">{mutasiStok.Catatan}</span> : undefined}
+          aksi={
+            <>
+              {mutasiStok.Status === 'Draft' && (
+                <Button size="sm" onClick={posting}>
+                  Posting
+                </Button>
+              )}
+              {mutasiStok.Status === 'Draft' && (
+                <Button size="sm" variant="outline" onClick={batalkan}>
+                  Batalkan
+                </Button>
+              )}
+            </>
+          }
+        />
 
         <div className="rounded-[9px] border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between">

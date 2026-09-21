@@ -19,13 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { KartuKpi } from '@/components/grafik/KartuKpi';
 import { BarisFilter } from '@/features/Pelaporan/components/BarisFilter';
@@ -41,6 +35,7 @@ import type {
   PilihanDimensi,
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   laporan: LaporanTersimpanItem[];
@@ -100,26 +95,26 @@ export default function LaporanIndex({
     <AppLayout>
       <Head title="Laporan" />
       <div className="space-y-5">
-        <header className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Laporan</h1>
-            <p className="text-sm text-muted-foreground">
-              Simpan kombinasi KPI dan filter, lalu ekspor hasilnya saat dibutuhkan.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" onClick={() => setDialogBaru(true)}>
-              <Plus className="size-4" />
-              Laporan baru
-            </Button>
-            {dibuka && kpiDibuka.length > 0 && (
-              <Button size="sm" variant="outline" onClick={() => setDialogEkspor(true)}>
-                <FileDown className="size-4" />
-                Ekspor
-              </Button>
-            )}
-          </div>
-        </header>
+        <PageHeader
+          judul="Laporan"
+          deskripsi="Simpan kombinasi KPI dan filter, lalu ekspor hasilnya saat dibutuhkan."
+          aksi={
+            <>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" onClick={() => setDialogBaru(true)}>
+                  <Plus className="size-4" />
+                  Laporan baru
+                </Button>
+                {dibuka && kpiDibuka.length > 0 && (
+                  <Button size="sm" variant="outline" onClick={() => setDialogEkspor(true)}>
+                    <FileDown className="size-4" />
+                    Ekspor
+                  </Button>
+                )}
+              </div>
+            </>
+          }
+        />
 
         {flash.sukses && (
           <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-600">
@@ -343,7 +338,10 @@ function DialogLaporanBaru({
             <legend className="text-sm font-medium">KPI ({form.data.KunciKpi.length} dipilih)</legend>
             <div className="max-h-64 space-y-1.5 overflow-y-auto rounded-[5px] border border-border p-2">
               {katalogKpi.map((kpi) => (
-                <label key={kpi.Kunci} className="flex items-start gap-2 rounded-[5px] p-1.5 hover:bg-permukaan-100">
+                <label
+                  key={kpi.Kunci}
+                  className="flex items-start gap-2 rounded-[5px] p-1.5 hover:bg-permukaan-100"
+                >
                   <Checkbox
                     checked={form.data.KunciKpi.includes(kpi.Kunci)}
                     onCheckedChange={() => alihkan(kpi.Kunci)}

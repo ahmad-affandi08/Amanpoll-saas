@@ -32,6 +32,7 @@ import type {
 } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   penyedia: Penyedia[];
@@ -699,18 +700,19 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
   return (
     <AppLayout>
       <Head title="Penyedia" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Penyedia</h1>
-          <p className="text-sm text-muted-foreground">
-            Kelola data vendor/supplier untuk pengadaan, kontrak, dan kalibrasi.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <DialogKelolaKategori kategoriPenyedia={kategoriPenyedia} />
-          <DialogTambahPenyedia />
-        </div>
-      </div>
+      <PageHeader
+        judul="Penyedia"
+        deskripsi="Kelola data vendor/supplier untuk pengadaan, kontrak, dan kalibrasi."
+        aksi={
+          <>
+            <div className="flex gap-2">
+              <DialogKelolaKategori kategoriPenyedia={kategoriPenyedia} />
+              <DialogTambahPenyedia />
+            </div>
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

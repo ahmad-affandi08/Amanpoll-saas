@@ -35,6 +35,7 @@ import type {
 } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   templat: TemplatDaftarPeriksa;
@@ -160,6 +161,7 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
   return (
     <AppLayout>
       <Head title={`Builder: ${templat.Nama}`} />
+      <BreadcrumbHalaman />
 
       <div className="space-y-6">
         {/* Breadcrumb & Navigation */}

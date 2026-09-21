@@ -19,6 +19,7 @@ import { VARIAN_BADGE_STATUS_MUTASI } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   permintaan: PermintaanMutasiAset;
@@ -125,36 +126,36 @@ export default function MutasiAsetShow({ permintaan, aset }: Props) {
     <AppLayout>
       <Head title={permintaan.Nomor} />
       <div className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">{permintaan.Nomor}</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              {permintaan.JenisMutasi}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {permintaan.NamaLokasiAsal ?? '—'} →{' '}
+        <PageHeader
+          judul={permintaan.JenisMutasi}
+          labelBreadcrumb={permintaan.Nomor}
+          deskripsi={
+            <>
+              <span className="font-mono">{permintaan.Nomor}</span> · {permintaan.NamaLokasiAsal ?? '—'} →{' '}
               {permintaan.NamaLokasiTujuan ?? permintaan.NamaUnitTujuan ?? '—'}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={VARIAN_BADGE_STATUS_MUTASI[permintaan.Status]}>{permintaan.Status}</Badge>
-            {permintaan.Status === 'Draft' && (
-              <Button size="sm" onClick={submit}>
-                Submit
-              </Button>
-            )}
-            {(permintaan.Status === 'Draft' || permintaan.Status === 'Menunggu') && (
-              <Button size="sm" variant="outline" onClick={batalkan}>
-                Batalkan
-              </Button>
-            )}
-            {permintaan.Status === 'Disetujui' && (
-              <Button size="sm" onClick={eksekusi}>
-                Eksekusi
-              </Button>
-            )}
-          </div>
-        </div>
+            </>
+          }
+          aksi={
+            <>
+              <Badge variant={VARIAN_BADGE_STATUS_MUTASI[permintaan.Status]}>{permintaan.Status}</Badge>
+              {permintaan.Status === 'Draft' && (
+                <Button size="sm" onClick={submit}>
+                  Submit
+                </Button>
+              )}
+              {(permintaan.Status === 'Draft' || permintaan.Status === 'Menunggu') && (
+                <Button size="sm" variant="outline" onClick={batalkan}>
+                  Batalkan
+                </Button>
+              )}
+              {permintaan.Status === 'Disetujui' && (
+                <Button size="sm" onClick={eksekusi}>
+                  Eksekusi
+                </Button>
+              )}
+            </>
+          }
+        />
 
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-[9px] border border-border bg-card p-4">

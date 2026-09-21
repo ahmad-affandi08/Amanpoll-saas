@@ -22,6 +22,7 @@ import type { PrioritasUsulanAset, UsulanAset } from '@/features/UsulanAset/type
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Referensi {
   Id: string;
@@ -393,46 +394,49 @@ export default function UsulanAsetShow({
         >
           <ArrowLeft className="size-4" /> Kembali ke Usulan Aset
         </Link>
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">{usulan.Nomor}</p>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">{usulan.NamaKebutuhan}</h1>
-              <Badge variant={VARIAN_STATUS[usulan.Status]}>
-                {usulan.Status === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : usulan.Status}
-              </Badge>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {usulan.NamaUnitOrganisasi} · diajukan oleh {usulan.NamaPengaju}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {dapatUbah && (
-              <DialogUbahUsulan
-                usulan={usulan}
-                unitOrganisasi={unitOrganisasi}
-                kategoriAset={kategoriAset}
-                modelAset={modelAset}
-              />
-            )}
-            {usulan.Status === 'Draft' && (
-              <Button size="sm" onClick={submitUsulan}>
-                <Send /> Submit
-              </Button>
-            )}
-            {dapatNilai && <DialogPenilaian usulan={usulan} />}
-            {dapatNilai && (usulan.Penilaian?.length ?? 0) > 0 && (
-              <Button size="sm" onClick={ajukanPersetujuan}>
-                <ShieldCheck /> Ajukan Persetujuan
-              </Button>
-            )}
-            {dapatUbah && (
-              <Button size="sm" variant="outline" onClick={hapus}>
-                <Trash2 /> Hapus
-              </Button>
-            )}
-          </div>
-        </header>
+        <PageHeader
+          judul={usulan.NamaKebutuhan}
+          labelBreadcrumb={usulan.Nomor}
+          lencana={
+            <Badge variant={VARIAN_STATUS[usulan.Status]}>
+              {usulan.Status === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : usulan.Status}
+            </Badge>
+          }
+          deskripsi={
+            <>
+              <span className="font-mono">{usulan.Nomor}</span> · {usulan.NamaUnitOrganisasi} · diajukan oleh{' '}
+              {usulan.NamaPengaju}
+            </>
+          }
+          aksi={
+            <>
+              {dapatUbah && (
+                <DialogUbahUsulan
+                  usulan={usulan}
+                  unitOrganisasi={unitOrganisasi}
+                  kategoriAset={kategoriAset}
+                  modelAset={modelAset}
+                />
+              )}
+              {usulan.Status === 'Draft' && (
+                <Button size="sm" onClick={submitUsulan}>
+                  <Send /> Submit
+                </Button>
+              )}
+              {dapatNilai && <DialogPenilaian usulan={usulan} />}
+              {dapatNilai && (usulan.Penilaian?.length ?? 0) > 0 && (
+                <Button size="sm" onClick={ajukanPersetujuan}>
+                  <ShieldCheck /> Ajukan Persetujuan
+                </Button>
+              )}
+              {dapatUbah && (
+                <Button size="sm" variant="outline" onClick={hapus}>
+                  <Trash2 /> Hapus
+                </Button>
+              )}
+            </>
+          }
+        />
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
             ['Jumlah', Number(usulan.Jumlah).toLocaleString('id-ID')],

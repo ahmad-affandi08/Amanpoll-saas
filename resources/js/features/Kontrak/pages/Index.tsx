@@ -23,6 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { JenisKontrak, Kontrak, RingkasanKontrak, StatusKontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
 import { formatUang } from '@/lib/uang';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface PenyediaRingkas {
   Id: string;
@@ -280,15 +281,15 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
     <AppLayout>
       <Head title="Kontrak" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Kontrak</h1>
-            <p className="text-sm text-muted-foreground">
-              Kontrak penyedia, aset yang tercakup, layanan, dan pengingat masa berlaku.
-            </p>
-          </div>
-          <DialogBuatKontrak penyedia={penyedia} tingkatLayanan={tingkatLayanan} />
-        </header>
+        <PageHeader
+          judul="Kontrak"
+          deskripsi="Kontrak penyedia, aset yang tercakup, layanan, dan pengingat masa berlaku."
+          aksi={
+            <>
+              <DialogBuatKontrak penyedia={penyedia} tingkatLayanan={tingkatLayanan} />
+            </>
+          }
+        />
 
         <div className="grid gap-3 sm:grid-cols-4">
           {[

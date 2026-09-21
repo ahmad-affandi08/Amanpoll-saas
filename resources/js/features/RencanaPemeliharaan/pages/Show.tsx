@@ -19,6 +19,7 @@ import { ArrowLeft, Plus, Trash2, Calendar, Building, Wrench, Clock, CheckCircle
 import type { RencanaPemeliharaan } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   rencana: RencanaPemeliharaan;
@@ -66,6 +67,7 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
   return (
     <AppLayout>
       <Head title={`Rencana: ${rencana.Nama}`} />
+      <BreadcrumbHalaman />
 
       <div className="space-y-6">
         {/* Breadcrumb */}

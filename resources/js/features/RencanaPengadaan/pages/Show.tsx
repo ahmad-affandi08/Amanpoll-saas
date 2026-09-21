@@ -21,6 +21,7 @@ import type { DetailRencanaPengadaan, RencanaPengadaan } from '@/features/Rencan
 import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface PosRingkas {
   Id: string;
@@ -342,32 +343,33 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
         >
           <ArrowLeft className="size-4" /> Kembali ke Rencana Pengadaan
         </Link>
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">
-              {rencana.Nomor} · {rencana.Tahun}
-            </p>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">{rencana.Nama}</h1>
-              <Badge variant={VARIAN_STATUS[rencana.Status]}>{rencana.Status}</Badge>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {rencana.NamaPosAnggaran ?? 'Pos anggaran belum dipilih'} · dibuat oleh{' '}
+        <PageHeader
+          judul={rencana.Nama}
+          labelBreadcrumb={rencana.Nomor}
+          lencana={<Badge variant={VARIAN_STATUS[rencana.Status]}>{rencana.Status}</Badge>}
+          deskripsi={
+            <>
+              <span className="font-mono">
+                {rencana.Nomor} · {rencana.Tahun}
+              </span>{' '}
+              · {rencana.NamaPosAnggaran ?? 'Pos anggaran belum dipilih'} · dibuat oleh{' '}
               {rencana.NamaPembuat ?? '—'}
-            </p>
-          </div>
-          {draft && (
-            <div className="flex flex-wrap gap-2">
-              <DialogUbahRencana rencana={rencana} posAnggaran={posAnggaran} />
-              <Button size="sm" onClick={finalisasi}>
-                <CheckCircle2 /> Finalisasi
-              </Button>
-              <Button size="sm" variant="outline" onClick={hapus}>
-                <Trash2 /> Hapus
-              </Button>
-            </div>
-          )}
-        </header>
+            </>
+          }
+          aksi={
+            draft ? (
+              <>
+                <DialogUbahRencana rencana={rencana} posAnggaran={posAnggaran} />
+                <Button size="sm" onClick={finalisasi}>
+                  <CheckCircle2 /> Finalisasi
+                </Button>
+                <Button size="sm" variant="outline" onClick={hapus}>
+                  <Trash2 /> Hapus
+                </Button>
+              </>
+            ) : undefined
+          }
+        />
         <div className="grid gap-3 sm:grid-cols-3">
           <Card>
             <CardHeader className="pb-2">

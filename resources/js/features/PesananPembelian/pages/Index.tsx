@@ -24,6 +24,7 @@ import type { PenawaranPenyedia } from '@/features/PermintaanPenawaran/types';
 import type { PesananPembelian, StatusPesananPembelian } from '@/features/PesananPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   pesanan: Paginasi<PesananPembelian>;
@@ -147,12 +148,10 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
     <AppLayout>
       <Head title="Pesanan Pembelian" />
       <div className="space-y-6">
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Pesanan Pembelian</h1>
-          <p className="text-sm text-muted-foreground">
-            PO dibuat dari penawaran terpilih; komitmen anggaran dicatat saat PO dikirim.
-          </p>
-        </header>
+        <PageHeader
+          judul="Pesanan Pembelian"
+          deskripsi="PO dibuat dari penawaran terpilih; komitmen anggaran dicatat saat PO dikirim."
+        />
 
         {penawaranTerpilih.length > 0 && (
           <Card>

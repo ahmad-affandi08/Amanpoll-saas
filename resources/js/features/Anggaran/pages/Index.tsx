@@ -22,6 +22,7 @@ import type { Paginasi } from '@/types/global';
 import type { Anggaran, StatusAnggaran } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Ringkas {
   Id: string;
@@ -181,15 +182,15 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
     <AppLayout>
       <Head title="Anggaran" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Anggaran</h1>
-            <p className="text-sm text-muted-foreground">
-              Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi.
-            </p>
-          </div>
-          <DialogBuatAnggaran unitOrganisasi={unitOrganisasi} />
-        </header>
+        <PageHeader
+          judul="Anggaran"
+          deskripsi="Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi."
+          aksi={
+            <>
+              <DialogBuatAnggaran unitOrganisasi={unitOrganisasi} />
+            </>
+          }
+        />
 
         <form
           onSubmit={terapkanFilter}

@@ -48,7 +48,7 @@ export function KartuKpi({
               <button
                 type="button"
                 aria-label={`Rumus ${kpi.Nama}`}
-                className="shrink-0 rounded-[5px] p-1 text-muted-foreground hover:bg-permukaan-100 hover:text-foreground"
+                className="flex size-11 shrink-0 items-center justify-center rounded-[5px] text-muted-foreground hover:bg-permukaan-100 hover:text-foreground sm:size-7"
               >
                 <Info className="size-4" />
               </button>
@@ -58,9 +58,7 @@ export function KartuKpi({
               <p>{kpi.Formula}</p>
               <p className="mt-1 text-muted-foreground">Sumber: {kpi.Sumber}</p>
               {kpi.Konteks.FilterDimensiBerlaku === false && (
-                <p className="mt-1 text-safety-600">
-                  Filter unit dan lokasi tidak berlaku untuk KPI ini.
-                </p>
+                <p className="mt-1 text-safety-600">Filter unit dan lokasi tidak berlaku untuk KPI ini.</p>
               )}
             </TooltipContent>
           </Tooltip>

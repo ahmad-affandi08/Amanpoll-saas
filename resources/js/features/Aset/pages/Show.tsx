@@ -38,6 +38,7 @@ import type { Penyedia } from '@/features/Penyedia/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import { ruteAset } from '@/features/Aset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   aset: Aset;
@@ -1021,16 +1022,18 @@ export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unit
   return (
     <AppLayout>
       <Head title={aset.Nama} />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{aset.Nama}</h1>
-          <p className="font-mono text-sm text-muted-foreground">
+      <PageHeader
+        className="mb-6"
+        judul={aset.Nama}
+        labelBreadcrumb={aset.KodeAset}
+        lencana={<Badge variant={VARIAN_BADGE_STATUS_ASET[aset.Status]}>{aset.Status}</Badge>}
+        deskripsi={
+          <span className="font-mono">
             {aset.KodeAset}
             {aset.KodeQr && ` · QR: ${aset.KodeQr}`}
-          </p>
-        </div>
-        <Badge variant={VARIAN_BADGE_STATUS_ASET[aset.Status]}>{aset.Status}</Badge>
-      </div>
+          </span>
+        }
+      />
 
       <Tabs defaultValue="info">
         <TabsList>

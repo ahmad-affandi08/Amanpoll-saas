@@ -23,6 +23,7 @@ import type { DetailPesananPembelian, PesananPembelian } from '@/features/Pesana
 import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface GudangRingkas {
   Id: string;
@@ -385,42 +386,43 @@ export default function PesananPembelianShow(props: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-mono text-2xl font-semibold">{pesanan.Nomor}</h1>
-              <Badge variant={VARIAN_STATUS[pesanan.Status]}>{pesanan.Status}</Badge>
-            </div>
-            <p className="text-sm text-muted-foreground">
+        <PageHeader
+          judul={<span className="font-mono">{pesanan.Nomor}</span>}
+          labelBreadcrumb={pesanan.Nomor}
+          lencana={<Badge variant={VARIAN_STATUS[pesanan.Status]}>{pesanan.Status}</Badge>}
+          deskripsi={
+            <>
               {pesanan.NamaPenyedia} · sumber {pesanan.NomorPermintaanPembelian ?? '-'} ·{' '}
               {pesanan.NamaPosAnggaran ?? 'Tanpa pos anggaran'}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {pesanan.Status === 'Draft' && (
-              <Button
-                size="sm"
-                className="min-h-11 sm:min-h-9"
-                disabled={memproses}
-                onClick={() => jalankanAksi(rutePesananPembelian.ajukan(pesanan.Id))}
-              >
-                <Send /> Ajukan Persetujuan
-              </Button>
-            )}
-            {pesanan.Status === 'Disetujui' && (
-              <Button
-                size="sm"
-                className="min-h-11 sm:min-h-9"
-                disabled={memproses}
-                onClick={() => jalankanAksi(rutePesananPembelian.kirim(pesanan.Id))}
-              >
-                <Truck /> Kirim ke Penyedia
-              </Button>
-            )}
-            {bolehTerima && <DialogCatatPenerimaan {...props} />}
-            {bolehTagih && <DialogCatatTagihan pesanan={pesanan} />}
-          </div>
-        </header>
+            </>
+          }
+          aksi={
+            <>
+              {pesanan.Status === 'Draft' && (
+                <Button
+                  size="sm"
+                  className="min-h-11 sm:min-h-9"
+                  disabled={memproses}
+                  onClick={() => jalankanAksi(rutePesananPembelian.ajukan(pesanan.Id))}
+                >
+                  <Send /> Ajukan Persetujuan
+                </Button>
+              )}
+              {pesanan.Status === 'Disetujui' && (
+                <Button
+                  size="sm"
+                  className="min-h-11 sm:min-h-9"
+                  disabled={memproses}
+                  onClick={() => jalankanAksi(rutePesananPembelian.kirim(pesanan.Id))}
+                >
+                  <Truck /> Kirim ke Penyedia
+                </Button>
+              )}
+              {bolehTerima && <DialogCatatPenerimaan {...props} />}
+              {bolehTagih && <DialogCatatTagihan pesanan={pesanan} />}
+            </>
+          }
+        />
 
         <Card>
           <CardHeader>

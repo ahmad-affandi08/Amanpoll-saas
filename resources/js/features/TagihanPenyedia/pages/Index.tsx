@@ -12,6 +12,7 @@ import type { Paginasi } from '@/types/global';
 import type { StatusTagihanPenyedia, TagihanPenyedia } from '@/features/TagihanPenyedia/types';
 import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   tagihan: Paginasi<TagihanPenyedia>;
@@ -39,12 +40,10 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
     <AppLayout>
       <Head title="Tagihan Penyedia" />
       <div className="space-y-6">
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Tagihan Penyedia</h1>
-          <p className="text-sm text-muted-foreground">
-            Tagihan hasil matching PO dan penerimaan, beserta sisa yang belum dibayar.
-          </p>
-        </header>
+        <PageHeader
+          judul="Tagihan Penyedia"
+          deskripsi="Tagihan hasil matching PO dan penerimaan, beserta sisa yang belum dibayar."
+        />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_12rem_auto]">
           <div className="relative">

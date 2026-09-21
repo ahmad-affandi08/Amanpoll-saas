@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteProfil } from '@/features/Profil/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   pengguna: Pengguna;
@@ -153,10 +154,7 @@ export default function ProfilIndex({ pengguna }: Props) {
   return (
     <AppLayout>
       <Head title="Profil" />
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Profil</h1>
-        <p className="text-sm text-muted-foreground">Kelola data diri, kata sandi, dan perangkat Anda.</p>
-      </div>
+      <PageHeader judul="Profil" deskripsi="Kelola data diri, kata sandi, dan perangkat Anda." />
       <div className="grid gap-4 md:grid-cols-2">
         <FormProfil pengguna={pengguna} />
         <FormKataSandi />

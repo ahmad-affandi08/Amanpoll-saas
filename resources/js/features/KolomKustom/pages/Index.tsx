@@ -20,6 +20,7 @@ import { http } from '@/lib/http';
 import type { DefinisiKolomKustom, TipeDataKolomKustom } from '@/features/Kolaborasi/types';
 import { ruteKolomKustom } from '@/features/KolomKustom/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   jenisEntitasTersedia: string[];
@@ -177,15 +178,18 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
   return (
     <AppLayout>
       <Head title="Kolom Kustom" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Kolom Kustom</h1>
-          <p className="text-sm text-muted-foreground">
-            Tambahkan field tambahan khusus organisasi Anda untuk setiap jenis data.
-          </p>
-        </div>
-        {jenisEntitas && <DialogFormDefinisi jenisEntitas={jenisEntitas} definisi={null} onSelesai={muat} />}
-      </div>
+      <PageHeader
+        judul="Kolom Kustom"
+        deskripsi="Tambahkan field tambahan khusus organisasi Anda untuk setiap jenis data."
+        aksi={
+          <>
+            {jenisEntitas && (
+              <DialogFormDefinisi jenisEntitas={jenisEntitas} definisi={null} onSelesai={muat} />
+            )}
+          </>
+        }
+        className="mb-6"
+      />
 
       <div className="mb-4 w-64 space-y-2">
         <Label>Jenis Entitas</Label>

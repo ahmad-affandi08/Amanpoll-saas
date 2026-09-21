@@ -27,6 +27,7 @@ import type {
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   anggaran: Anggaran;
@@ -411,41 +412,39 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
     <AppLayout>
       <Head title={`${anggaran.Kode} — Anggaran`} />
       <div className="space-y-6">
-        <Link
-          href={ruteAnggaran.index}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" /> Kembali ke Anggaran
-        </Link>
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">
-              {anggaran.Kode} · {anggaran.Tahun}
-            </p>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">{anggaran.Nama}</h1>
-              <Badge variant={VARIAN_STATUS[anggaran.Status]}>
-                {anggaran.Status === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : anggaran.Status}
-              </Badge>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
+        <PageHeader
+          judul={anggaran.Nama}
+          labelBreadcrumb={anggaran.Kode}
+          lencana={
+            <Badge variant={VARIAN_STATUS[anggaran.Status]}>
+              {anggaran.Status === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : anggaran.Status}
+            </Badge>
+          }
+          deskripsi={
+            <>
+              <span className="font-mono">
+                {anggaran.Kode} · {anggaran.Tahun}
+              </span>
+              {' · '}
               {anggaran.NamaUnitOrganisasi ?? 'Scope seluruh organisasi'}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {dapatUbah && <DialogUbahAnggaran anggaran={anggaran} />}
-            {anggaran.Status === 'Draft' && (
-              <Button size="sm" onClick={ajukan}>
-                <Send /> Ajukan
-              </Button>
-            )}
-            {dapatUbah && (
-              <Button size="sm" variant="outline" onClick={hapusAnggaran}>
-                <Trash2 /> Hapus
-              </Button>
-            )}
-          </div>
-        </header>
+            </>
+          }
+          aksi={
+            <>
+              {dapatUbah && <DialogUbahAnggaran anggaran={anggaran} />}
+              {anggaran.Status === 'Draft' && (
+                <Button size="sm" onClick={ajukan}>
+                  <Send /> Ajukan
+                </Button>
+              )}
+              {dapatUbah && (
+                <Button size="sm" variant="outline" onClick={hapusAnggaran}>
+                  <Trash2 /> Hapus
+                </Button>
+              )}
+            </>
+          }
+        />
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[

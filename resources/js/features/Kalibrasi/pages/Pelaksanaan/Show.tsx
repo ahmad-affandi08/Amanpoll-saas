@@ -31,6 +31,7 @@ import {
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   pelaksanaan: PelaksanaanKalibrasi;
@@ -176,6 +177,7 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
   return (
     <AppLayout>
       <Head title={`Kalibrasi ${pelaksanaan.Nomor} - ${pelaksanaan.aset?.Nama}`} />
+      <BreadcrumbHalaman />
 
       <div className="space-y-6">
         {/* Header */}

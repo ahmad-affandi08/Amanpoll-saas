@@ -22,6 +22,7 @@ import type { Gudang, LokasiGudang, StatusGudang } from '@/features/Persediaan/t
 import { VARIAN_BADGE_STATUS_GUDANG } from '@/features/Persediaan/status';
 import { ruteGudang } from '@/features/Gudang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface LokasiRingkas {
   Id: string;
@@ -286,15 +287,16 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: P
   return (
     <AppLayout>
       <Head title="Gudang" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Gudang</h1>
-          <p className="text-sm text-muted-foreground">
-            Kelola gudang beserta lokasi penyimpanan di dalamnya.
-          </p>
-        </div>
-        <DialogFormGudang gudang={null} lokasi={lokasi} />
-      </div>
+      <PageHeader
+        judul="Gudang"
+        deskripsi="Kelola gudang beserta lokasi penyimpanan di dalamnya."
+        aksi={
+          <>
+            <DialogFormGudang gudang={null} lokasi={lokasi} />
+          </>
+        }
+        className="mb-6"
+      />
 
       {gudang.length === 0 ? (
         <EmptyState

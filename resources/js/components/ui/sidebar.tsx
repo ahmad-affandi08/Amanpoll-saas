@@ -222,7 +222,9 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn('size-8', className)}
+      // Pemicu drawer adalah target sentuh terpenting di ponsel; ia tidak boleh
+      // lebih kecil dari tombol lain.
+      className={cn('size-11 sm:size-8', className)}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -265,7 +267,11 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        'bg-background relative flex w-full flex-1 flex-col',
+        // min-w-0 wajib: tanpa itu isi selebar apa pun (tabel lebar, kode
+        // panjang) mendorong lebar main sebagai anak flex, sehingga seluruh
+        // halaman menggeser mendatar walau tabelnya sendiri sudah berada di
+        // dalam wadah overflow-x-auto.
+        'bg-background relative flex w-full min-w-0 flex-1 flex-col',
         'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-[10px] md:peer-data-[variant=inset]:shadow-sm md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2',
         className,
       )}

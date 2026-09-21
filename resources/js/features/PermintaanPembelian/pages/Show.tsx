@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { JenisItemPengadaan, PermintaanPembelian } from '@/features/PermintaanPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface AsetRingkas {
   Id: string;
@@ -249,33 +250,38 @@ export default function PermintaanPembelianShow(props: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-mono text-2xl font-semibold">{permintaan.Nomor}</h1>
+        <PageHeader
+          judul={<span className="font-mono">{permintaan.Nomor}</span>}
+          labelBreadcrumb={permintaan.Nomor}
+          lencana={
+            <>
               <Badge variant={VARIAN_STATUS[permintaan.Status]}>{permintaan.Status}</Badge>
               <Badge variant="secondary">{permintaan.Prioritas}</Badge>
-            </div>
-            <p className="text-sm text-muted-foreground">
+            </>
+          }
+          deskripsi={
+            <>
               {permintaan.NamaPosAnggaran ?? 'Pos belum dipilih'} ·{' '}
               {permintaan.NamaUnitOrganisasi ?? 'Tanpa unit'}
               {permintaan.NamaPeminta ? ` · Diminta oleh ${permintaan.NamaPeminta}` : ''}
-            </p>
-          </div>
-          {draft && (
-            <div className="flex flex-wrap gap-2">
-              <DialogTambahItem {...props} />
-              <Button
-                size="sm"
-                className="min-h-11 sm:min-h-9"
-                disabled={memproses}
-                onClick={submitPermintaan}
-              >
-                <Send /> Ajukan Persetujuan
-              </Button>
-            </div>
-          )}
-        </header>
+            </>
+          }
+          aksi={
+            draft ? (
+              <>
+                <DialogTambahItem {...props} />
+                <Button
+                  size="sm"
+                  className="min-h-11 sm:min-h-9"
+                  disabled={memproses}
+                  onClick={submitPermintaan}
+                >
+                  <Send /> Ajukan Persetujuan
+                </Button>
+              </>
+            ) : undefined
+          }
+        />
 
         <Card>
           <CardHeader>

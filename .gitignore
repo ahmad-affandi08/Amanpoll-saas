@@ -25,3 +25,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Tangkapan layar hasil audit responsif; dibuat ulang dengan
+# `node tests/Responsif/audit-responsif.mjs` dan tidak perlu diversikan.
+/tests/Responsif/hasil/*/

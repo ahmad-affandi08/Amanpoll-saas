@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import type { Paginasi } from '@/types/global';
 import type { PanggilanBalikWeb, PengirimanPanggilanBalikWeb } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   webhook: PanggilanBalikWeb;
@@ -28,6 +29,7 @@ export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
   return (
     <AppLayout>
       <Head title={`Pengiriman ${webhook.Nama}`} />
+      <BreadcrumbHalaman />
       <div className="space-y-6">
         <Link
           href={ruteIntegrasi.index}

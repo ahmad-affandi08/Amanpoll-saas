@@ -17,6 +17,7 @@ import { http } from '@/lib/http';
 import type { PermintaanPersetujuan, StatusPermintaanPersetujuan } from '@/features/Persetujuan/types';
 import { rutePermintaanPersetujuan } from '@/features/PermintaanPersetujuan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 function badgeStatus(status: StatusPermintaanPersetujuan) {
   const varian = status === 'Disetujui' ? 'default' : status === 'Menunggu' ? 'secondary' : 'outline';
@@ -205,12 +206,10 @@ export default function PermintaanPersetujuanIndex() {
   return (
     <AppLayout>
       <Head title="Persetujuan Saya" />
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Persetujuan Saya</h1>
-        <p className="text-sm text-muted-foreground">
-          Kelola permintaan persetujuan yang Anda ajukan atau yang perlu tindakan Anda.
-        </p>
-      </div>
+      <PageHeader
+        judul="Persetujuan Saya"
+        deskripsi="Kelola permintaan persetujuan yang Anda ajukan atau yang perlu tindakan Anda."
+      />
 
       <Tabs defaultValue="inbox">
         <TabsList>

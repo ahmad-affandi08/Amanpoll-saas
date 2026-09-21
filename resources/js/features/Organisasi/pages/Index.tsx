@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Organisasi } from '@/features/Organisasi/types';
 import { ruteOrganisasi } from '@/features/Organisasi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   organisasi: Organisasi;
@@ -86,15 +87,17 @@ export default function OrganisasiIndex({ organisasi }: Props) {
   return (
     <AppLayout>
       <Head title="Organisasi" />
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Organisasi</h1>
-        <p className="text-sm text-muted-foreground">
-          Kode: <span className="font-mono">{organisasi.Kode}</span>{' '}
-          <Badge variant="outline" className="ml-2">
-            {organisasi.Status}
-          </Badge>
-        </p>
-      </div>
+      <PageHeader
+        judul="Organisasi"
+        deskripsi={
+          <>
+            Kode: <span className="font-mono">{organisasi.Kode}</span>{' '}
+            <Badge variant="outline" className="ml-2">
+              {organisasi.Status}
+            </Badge>
+          </>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="md:col-span-1">

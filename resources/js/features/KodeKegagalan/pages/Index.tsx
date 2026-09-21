@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -214,15 +215,16 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
     <AppLayout>
       <Head title="Kode Kegagalan" />
 
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Kode Kegagalan</h1>
-          <p className="text-sm text-muted-foreground">
-            Katalog taksonomi Problem-Cause-Remedy untuk standarisasi analisis kegagalan aset.
-          </p>
-        </div>
-        <DialogFormKodeKegagalan kategoriAset={kategoriAset} />
-      </div>
+      <PageHeader
+        judul="Kode Kegagalan"
+        deskripsi="Katalog taksonomi Problem-Cause-Remedy untuk standarisasi analisis kegagalan aset."
+        aksi={
+          <>
+            <DialogFormKodeKegagalan kategoriAset={kategoriAset} />
+          </>
+        }
+        className="mb-6"
+      />
 
       {/* FILTER TAB JENIS */}
       <div className="mb-4 flex flex-wrap gap-2">

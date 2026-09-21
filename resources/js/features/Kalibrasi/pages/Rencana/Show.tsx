@@ -8,6 +8,7 @@ import { ArrowLeft, Sliders, Clock, Building2, Plus } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   rencana: RencanaKalibrasi;
@@ -21,6 +22,7 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
   return (
     <AppLayout>
       <Head title={`Rencana Kalibrasi - ${rencana.aset?.Nama}`} />
+      <BreadcrumbHalaman />
 
       <div className="space-y-6">
         {/* Navigation & Header */}

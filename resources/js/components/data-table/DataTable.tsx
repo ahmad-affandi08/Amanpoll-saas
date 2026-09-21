@@ -17,6 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DataTableToolbar, FilterFasetKolom } from '@/components/data-table/DataTableToolbar';
 import { DataTablePagination } from '@/components/data-table/DataTablePagination';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { DataTableKartu } from '@/components/data-table/DataTableKartu';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -26,6 +27,12 @@ interface DataTableProps<TData, TValue> {
   aksi?: ReactNode;
   pesanKosong?: string;
   ilustrasiKosong?: string;
+  /**
+   * Menyalakan tampilan kartu di bawah 640px. Dipakai untuk tabel operasional
+   * yang dibaca di lapangan; tabel dengan banyak kolom pembanding justru lebih
+   * terbaca sebagai baris, jadi bawaannya mati.
+   */
+  kartuDiPonsel?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -36,6 +43,7 @@ export function DataTable<TData, TValue>({
   aksi,
   pesanKosong = 'Tidak ada data.',
   ilustrasiKosong,
+  kartuDiPonsel = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -67,7 +75,13 @@ export function DataTable<TData, TValue>({
         facetedFilters={facetedFilters}
         aksi={aksi}
       />
-      <Table>
+      {kartuDiPonsel && (
+        <div className="sm:hidden">
+          <DataTableKartu table={table} pesanKosong={pesanKosong} ilustrasiKosong={ilustrasiKosong} />
+        </div>
+      )}
+
+      <Table className={kartuDiPonsel ? 'hidden sm:table' : undefined}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

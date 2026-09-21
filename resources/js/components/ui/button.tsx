@@ -14,11 +14,15 @@ const buttonVariants = cva(
         ghost: 'text-foreground hover:bg-permukaan-100',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-[#a8342f]',
       },
+      // Tinggi di ponsel dinaikkan ke 44px (DESIGN.md 9.3): pekerjaan lapangan
+      // dilakukan sambil berdiri, sering bersarung tangan, dan tombol setinggi
+      // 32-36px terlalu mudah meleset. Dari 640px ke atas ukurannya kembali
+      // padat karena di sana penunjuknya tetikus.
       size: {
-        default: 'h-9 px-4 py-2',
-        sm: 'h-8 px-3',
-        lg: 'h-10 px-6',
-        icon: 'size-9',
+        default: 'min-h-11 px-4 py-2 sm:h-9 sm:min-h-0',
+        sm: 'min-h-11 px-3 sm:h-8 sm:min-h-0',
+        lg: 'min-h-11 px-6 sm:h-10 sm:min-h-0',
+        icon: 'size-11 sm:size-9',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },

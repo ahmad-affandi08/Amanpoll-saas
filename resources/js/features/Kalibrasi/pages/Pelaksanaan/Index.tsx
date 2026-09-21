@@ -33,6 +33,7 @@ import {
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   pelaksanaanKalibrasi: PelaksanaanKalibrasi[];
@@ -139,19 +140,23 @@ export default function PelaksanaanKalibrasiIndex({
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Pelaksanaan Kalibrasi</h1>
-            <p className="text-sm text-muted-foreground">
+        <PageHeader
+          judul="Pelaksanaan Kalibrasi"
+          deskripsi={
+            <>
               Catat hasil pengujian titik ukur, verifikasi sertifikat lab, dan pantau pengesahan kalibrasi
               instrumen.
-            </p>
-          </div>
-          <Button onClick={() => setBukaDialog(true)} size="sm">
-            <Plus className="mr-1.5 size-4" />
-            Jadwalkan Kalibrasi
-          </Button>
-        </div>
+            </>
+          }
+          aksi={
+            <>
+              <Button onClick={() => setBukaDialog(true)} size="sm">
+                <Plus className="mr-1.5 size-4" />
+                Jadwalkan Kalibrasi
+              </Button>
+            </>
+          }
+        />
 
         {/* Filter & Search */}
         <Card className="border-border">

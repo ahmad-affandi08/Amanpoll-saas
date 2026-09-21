@@ -26,6 +26,7 @@ import type {
 } from '@/features/PermintaanPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface UnitRingkas {
   Id: string;
@@ -254,15 +255,19 @@ export default function PermintaanPembelianIndex({
     <AppLayout>
       <Head title="Permintaan Pembelian" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Permintaan Pembelian</h1>
-            <p className="text-sm text-muted-foreground">
-              Draft kebutuhan, validasi sisa anggaran, dan pengajuan persetujuan.
-            </p>
-          </div>
-          <DialogBuatPermintaan unitOrganisasi={unitOrganisasi} rencana={rencana} posAnggaran={posAnggaran} />
-        </header>
+        <PageHeader
+          judul="Permintaan Pembelian"
+          deskripsi="Draft kebutuhan, validasi sisa anggaran, dan pengajuan persetujuan."
+          aksi={
+            <>
+              <DialogBuatPermintaan
+                unitOrganisasi={unitOrganisasi}
+                rencana={rencana}
+                posAnggaran={posAnggaran}
+              />
+            </>
+          }
+        />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_12rem_auto]">
           <div className="relative">

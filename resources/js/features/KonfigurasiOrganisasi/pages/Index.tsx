@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { KonfigurasiOrganisasi } from '@/features/Konfigurasi/types';
 import { ruteKonfigurasiOrganisasi } from '@/features/KonfigurasiOrganisasi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   konfigurasi: KonfigurasiOrganisasi[];
@@ -72,10 +73,7 @@ export default function KonfigurasiOrganisasiIndex({ konfigurasi }: Props) {
   return (
     <AppLayout>
       <Head title="Konfigurasi" />
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Konfigurasi Organisasi</h1>
-        <p className="text-sm text-muted-foreground">Pengaturan per fitur untuk organisasi Anda.</p>
-      </div>
+      <PageHeader judul="Konfigurasi Organisasi" deskripsi="Pengaturan per fitur untuk organisasi Anda." />
 
       <div className="space-y-4">
         {Object.entries(kelompok).map(([namespace, daftar]) => (

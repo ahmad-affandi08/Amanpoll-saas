@@ -30,6 +30,7 @@ import {
 import type { Inspeksi } from '@/features/PreventifInspeksi/types';
 import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   inspeksi: Inspeksi[];
@@ -88,128 +89,129 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-permukaan-900">Inspeksi Aset Berkala</h1>
-            <p className="text-sm text-permukaan-500">
-              Pemeriksaan fisik, pemantauan kondisi aset, dan pencatatan temuan operasional.
-            </p>
-          </div>
-
-          <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
-            <DialogTrigger asChild>
-              <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
-                <Plus className="h-4 w-4" />
-                Jadwalkan Inspeksi
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <form onSubmit={onSubmit}>
-                <DialogHeader>
-                  <DialogTitle>Jadwalkan Inspeksi Aset</DialogTitle>
-                </DialogHeader>
-
-                <div className="grid gap-4 py-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="TemplatInspeksiId">
-                      Templat Inspeksi <span className="text-rose-500">*</span>
-                    </Label>
-                    <Select
-                      value={form.data.TemplatInspeksiId}
-                      onValueChange={(val) => form.setData('TemplatInspeksiId', val)}
-                      required
-                    >
-                      <SelectTrigger id="TemplatInspeksiId" className="cursor-pointer">
-                        <SelectValue placeholder="Pilih Templat Inspeksi..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {templatInspeksi.map((t) => (
-                          <SelectItem key={t.Id} value={t.Id}>
-                            {t.Kode} - {t.Nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="AsetId">
-                      Unit Aset yang Diinspeksi <span className="text-rose-500">*</span>
-                    </Label>
-                    <Select
-                      value={form.data.AsetId}
-                      onValueChange={(val) => form.setData('AsetId', val)}
-                      required
-                    >
-                      <SelectTrigger id="AsetId" className="cursor-pointer">
-                        <SelectValue placeholder="Pilih Unit Aset..." />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {aset.map((a) => (
-                          <SelectItem key={a.Id} value={a.Id}>
-                            {a.KodeAset} - {a.Nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="DijadwalkanPada">
-                      Tanggal Jadwal Inspeksi <span className="text-rose-500">*</span>
-                    </Label>
-                    <DatePicker
-                      value={form.data.DijadwalkanPada}
-                      onChange={(val) => form.setData('DijadwalkanPada', val)}
-                      placeholder="Pilih tanggal jadwal..."
-                    />
-                    {form.errors.DijadwalkanPada && (
-                      <p className="text-xs text-rose-500">{form.errors.DijadwalkanPada}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="DilaksanakanOleh">Inspektor / Petugas (Opsional)</Label>
-                    <Select
-                      value={form.data.DilaksanakanOleh || '__none__'}
-                      onValueChange={(val) => form.setData('DilaksanakanOleh', val === '__none__' ? '' : val)}
-                    >
-                      <SelectTrigger id="DilaksanakanOleh" className="cursor-pointer">
-                        <SelectValue placeholder="Pilih Petugas..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">-- Ditentukan Nanti --</SelectItem>
-                        {inspektor.map((p) => (
-                          <SelectItem key={p.Id} value={p.Id}>
-                            {p.Nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="cursor-pointer"
-                    onClick={() => setBukaDialog(false)}
-                  >
-                    Batal
+        <PageHeader
+          judul="Inspeksi Aset Berkala"
+          deskripsi="Pemeriksaan fisik, pemantauan kondisi aset, dan pencatatan temuan operasional."
+          aksi={
+            <>
+              <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
+                <DialogTrigger asChild>
+                  <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
+                    <Plus className="h-4 w-4" />
+                    Jadwalkan Inspeksi
                   </Button>
-                  <Button
-                    type="submit"
-                    className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                    disabled={form.processing || !form.data.TemplatInspeksiId || !form.data.AsetId}
-                  >
-                    {form.processing ? 'Menjadwalkan...' : 'Jadwalkan'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <form onSubmit={onSubmit}>
+                    <DialogHeader>
+                      <DialogTitle>Jadwalkan Inspeksi Aset</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="grid gap-4 py-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="TemplatInspeksiId">
+                          Templat Inspeksi <span className="text-rose-500">*</span>
+                        </Label>
+                        <Select
+                          value={form.data.TemplatInspeksiId}
+                          onValueChange={(val) => form.setData('TemplatInspeksiId', val)}
+                          required
+                        >
+                          <SelectTrigger id="TemplatInspeksiId" className="cursor-pointer">
+                            <SelectValue placeholder="Pilih Templat Inspeksi..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {templatInspeksi.map((t) => (
+                              <SelectItem key={t.Id} value={t.Id}>
+                                {t.Kode} - {t.Nama}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="AsetId">
+                          Unit Aset yang Diinspeksi <span className="text-rose-500">*</span>
+                        </Label>
+                        <Select
+                          value={form.data.AsetId}
+                          onValueChange={(val) => form.setData('AsetId', val)}
+                          required
+                        >
+                          <SelectTrigger id="AsetId" className="cursor-pointer">
+                            <SelectValue placeholder="Pilih Unit Aset..." />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            {aset.map((a) => (
+                              <SelectItem key={a.Id} value={a.Id}>
+                                {a.KodeAset} - {a.Nama}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="DijadwalkanPada">
+                          Tanggal Jadwal Inspeksi <span className="text-rose-500">*</span>
+                        </Label>
+                        <DatePicker
+                          value={form.data.DijadwalkanPada}
+                          onChange={(val) => form.setData('DijadwalkanPada', val)}
+                          placeholder="Pilih tanggal jadwal..."
+                        />
+                        {form.errors.DijadwalkanPada && (
+                          <p className="text-xs text-rose-500">{form.errors.DijadwalkanPada}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="DilaksanakanOleh">Inspektor / Petugas (Opsional)</Label>
+                        <Select
+                          value={form.data.DilaksanakanOleh || '__none__'}
+                          onValueChange={(val) =>
+                            form.setData('DilaksanakanOleh', val === '__none__' ? '' : val)
+                          }
+                        >
+                          <SelectTrigger id="DilaksanakanOleh" className="cursor-pointer">
+                            <SelectValue placeholder="Pilih Petugas..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__none__">-- Ditentukan Nanti --</SelectItem>
+                            {inspektor.map((p) => (
+                              <SelectItem key={p.Id} value={p.Id}>
+                                {p.Nama}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => setBukaDialog(false)}
+                      >
+                        Batal
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                        disabled={form.processing || !form.data.TemplatInspeksiId || !form.data.AsetId}
+                      >
+                        {form.processing ? 'Menjadwalkan...' : 'Jadwalkan'}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </>
+          }
+        />
 
         {/* Ringkasan Hasil Inspeksi */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

@@ -21,6 +21,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { HariLibur } from '@/features/HariLibur/types';
 import { ruteHariLibur } from '@/features/HariLibur/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   hariLibur: HariLibur[];
@@ -153,15 +154,16 @@ export default function HariLiburIndex({ hariLibur }: Props) {
   return (
     <AppLayout>
       <Head title="Hari Libur" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Hari Libur</h1>
-          <p className="text-sm text-muted-foreground">
-            Dipakai untuk menghindari penjadwalan pekerjaan di hari libur.
-          </p>
-        </div>
-        <DialogTambahHariLibur />
-      </div>
+      <PageHeader
+        judul="Hari Libur"
+        deskripsi="Dipakai untuk menghindari penjadwalan pekerjaan di hari libur."
+        aksi={
+          <>
+            <DialogTambahHariLibur />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

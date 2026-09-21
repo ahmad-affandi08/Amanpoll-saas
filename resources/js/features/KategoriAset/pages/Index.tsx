@@ -21,6 +21,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { KategoriAset } from '@/features/Aset/types';
 import { ruteKategoriAset } from '@/features/KategoriAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   kategoriAset: KategoriAset[];
@@ -247,15 +248,16 @@ export default function KategoriAsetIndex({ kategoriAset }: Props) {
   return (
     <AppLayout>
       <Head title="Kategori Aset" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Kategori Aset</h1>
-          <p className="text-sm text-muted-foreground">
-            Klasifikasi aset beserta default penyusutan dan kebutuhan pemeliharaan/kalibrasi.
-          </p>
-        </div>
-        <DialogFormKategoriAset kategori={null} semuaKategori={kategoriAset} />
-      </div>
+      <PageHeader
+        judul="Kategori Aset"
+        deskripsi="Klasifikasi aset beserta default penyusutan dan kebutuhan pemeliharaan/kalibrasi."
+        aksi={
+          <>
+            <DialogFormKategoriAset kategori={null} semuaKategori={kategoriAset} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

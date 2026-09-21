@@ -19,6 +19,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { Tag } from '@/features/Kolaborasi/types';
 import { ruteTag } from '@/features/Tag/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   tag: Tag[];
@@ -140,15 +141,16 @@ export default function TagIndex({ tag }: Props) {
   return (
     <AppLayout>
       <Head title="Tag" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tag</h1>
-          <p className="text-sm text-muted-foreground">
-            Label bebas untuk menandai dan menyaring data lintas modul.
-          </p>
-        </div>
-        <DialogFormTag tag={null} />
-      </div>
+      <PageHeader
+        judul="Tag"
+        deskripsi="Label bebas untuk menandai dan menyaring data lintas modul."
+        aksi={
+          <>
+            <DialogFormTag tag={null} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

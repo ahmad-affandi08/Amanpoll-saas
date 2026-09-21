@@ -23,6 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { PrioritasUsulanAset, StatusUsulanAset, UsulanAset } from '@/features/UsulanAset/types';
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Referensi {
   Id: string;
@@ -267,19 +268,19 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
     <AppLayout>
       <Head title="Usulan Aset" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Usulan Aset</h1>
-            <p className="text-sm text-muted-foreground">
-              Susun kebutuhan, lakukan penilaian, lalu ajukan persetujuan.
-            </p>
-          </div>
-          <DialogBuatUsulan
-            unitOrganisasi={unitOrganisasi}
-            kategoriAset={kategoriAset}
-            modelAset={modelAset}
-          />
-        </header>
+        <PageHeader
+          judul="Usulan Aset"
+          deskripsi="Susun kebutuhan, lakukan penilaian, lalu ajukan persetujuan."
+          aksi={
+            <>
+              <DialogBuatUsulan
+                unitOrganisasi={unitOrganisasi}
+                kategoriAset={kategoriAset}
+                modelAset={modelAset}
+              />
+            </>
+          }
+        />
         <form
           onSubmit={terapkanFilter}
           className="grid gap-2 rounded-[9px] border border-border bg-card p-3 sm:grid-cols-[1fr_13rem_11rem_auto]"

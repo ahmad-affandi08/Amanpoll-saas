@@ -10,13 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { rutePelaporan } from '@/features/Pelaporan/api';
 import type {
@@ -27,6 +21,7 @@ import type {
   SusunanDasbor,
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   dasbor: DasborTersimpanPenuh[];
@@ -77,32 +72,32 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
     <AppLayout>
       <Head title="Dasbor Kustom" />
       <div className="space-y-5">
-        <header className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Dasbor Kustom</h1>
-            <p className="text-sm text-muted-foreground">
-              Pilih KPI yang ingin Anda lihat, atur urutan dan lebarnya, lalu tandai satu sebagai bawaan.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={rutePelaporan.dasbor}>
-                <LayoutDashboard className="size-4" />
-                Buka dasbor
-              </Link>
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                setDiedit(null);
-                setMenyusun(true);
-              }}
-            >
-              <Plus className="size-4" />
-              Dasbor baru
-            </Button>
-          </div>
-        </header>
+        <PageHeader
+          judul="Dasbor Kustom"
+          deskripsi="Pilih KPI yang ingin Anda lihat, atur urutan dan lebarnya, lalu tandai satu sebagai bawaan."
+          aksi={
+            <>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={rutePelaporan.dasbor}>
+                    <LayoutDashboard className="size-4" />
+                    Buka dasbor
+                  </Link>
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setDiedit(null);
+                    setMenyusun(true);
+                  }}
+                >
+                  <Plus className="size-4" />
+                  Dasbor baru
+                </Button>
+              </div>
+            </>
+          }
+        />
 
         {flash.sukses && (
           <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-600">
@@ -210,9 +205,7 @@ function Penyusun({
 }) {
   const [nama, setNama] = useState(awal?.Nama ?? '');
   const [bawaan, setBawaan] = useState(awal?.Bawaan ?? false);
-  const [komponen, setKomponen] = useState<KomponenDraf[]>(
-    (awal?.Komponen ?? []).map(dariSusunan),
-  );
+  const [komponen, setKomponen] = useState<KomponenDraf[]>((awal?.Komponen ?? []).map(dariSusunan));
   const [memproses, setMemproses] = useState(false);
 
   const tambah = (kunci: string) => {

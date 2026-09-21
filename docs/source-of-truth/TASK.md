@@ -1335,57 +1335,57 @@ Implementasi visual mengikuti `DESIGN.md`.
 
 ## 23.01 Shell
 
-- [ ] Sidebar desktop.
-- [ ] Sidebar collapsed.
-- [ ] Mobile drawer.
-- [ ] Topbar.
-- [ ] Breadcrumb.
-- [ ] Page header.
-- [ ] Notification center.
-- [ ] User menu.
+- [x] Sidebar desktop.
+- [x] Sidebar collapsed.
+- [x] Mobile drawer.
+- [x] Topbar.
+- [x] Breadcrumb.
+- [x] Page header.
+- [x] Notification center.
+- [x] User menu.
 
 ## 23.02 Standard Components
 
-- [ ] Button.
-- [ ] Input.
-- [ ] Select.
-- [ ] Combobox.
-- [ ] Date picker.
-- [ ] Textarea.
-- [ ] Checkbox.
-- [ ] Radio.
-- [ ] Switch.
-- [ ] Badge.
-- [ ] Alert.
-- [ ] Dialog.
-- [ ] Drawer/Sheet.
-- [ ] Tabs.
-- [ ] DataTable.
-- [ ] Pagination.
-- [ ] EmptyState.
-- [ ] ErrorState.
-- [ ] Skeleton.
-- [ ] FileUploader.
-- [ ] SearchFilterBar.
-- [ ] StatusTimeline.
-- [ ] StatCard.
-- [ ] ActivityFeed.
+- [x] Button.
+- [x] Input.
+- [x] Select.
+- [x] Combobox.
+- [x] Date picker.
+- [x] Textarea.
+- [x] Checkbox.
+- [x] Radio.
+- [x] Switch.
+- [x] Badge.
+- [x] Alert.
+- [x] Dialog.
+- [x] Drawer/Sheet.
+- [x] Tabs.
+- [x] DataTable.
+- [x] Pagination.
+- [x] EmptyState.
+- [x] ErrorState.
+- [x] Skeleton.
+- [x] FileUploader.
+- [x] SearchFilterBar.
+- [x] StatusTimeline.
+- [x] StatCard.
+- [x] ActivityFeed.
 
 ## 23.03 Responsive Audit
 
 Test minimal:
 
-- [ ] 360x800.
-- [ ] 390x844.
-- [ ] 768x1024.
-- [ ] 1024x768.
-- [ ] 1280x800.
-- [ ] 1440x900.
-- [ ] 1920x1080.
+- [x] 360x800.
+- [x] 390x844.
+- [x] 768x1024.
+- [x] 1024x768.
+- [x] 1280x800.
+- [x] 1440x900.
+- [x] 1920x1080.
 
 ### Gate 23
 
-Tidak ada halaman utama yang memerlukan desktop untuk menyelesaikan pekerjaan teknisi dasar.
+Tidak ada halaman utama yang memerlukan desktop untuk menyelesaikan pekerjaan teknisi dasar. (Terpenuhi)
 
 ---
 

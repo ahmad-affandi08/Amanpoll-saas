@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { PermintaanPenawaran } from '@/features/PermintaanPenawaran/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   rfq: PermintaanPenawaran;
@@ -244,31 +245,32 @@ export default function PermintaanPenawaranShow({ rfq }: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-mono text-2xl font-semibold">{rfq.Nomor}</h1>
-              <Badge variant={VARIAN_STATUS[rfq.Status]}>{rfq.Status}</Badge>
-            </div>
-            <p className="text-sm text-muted-foreground">
+        <PageHeader
+          judul={<span className="font-mono">{rfq.Nomor}</span>}
+          labelBreadcrumb={rfq.Nomor}
+          lencana={<Badge variant={VARIAN_STATUS[rfq.Status]}>{rfq.Status}</Badge>}
+          deskripsi={
+            <>
               Sumber {rfq.PermintaanPembelian?.Nomor ?? '-'} · {(rfq.PenyediaDiundang ?? []).length} penyedia
               diundang
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {rfq.Status === 'Draft' && (
-              <Button
-                size="sm"
-                className="min-h-11 sm:min-h-9"
-                disabled={memproses}
-                onClick={() => jalankanAksi(rutePermintaanPenawaran.buka(rfq.Id))}
-              >
-                <Send /> Buka RFQ
-              </Button>
-            )}
-            {rfq.Status === 'Dibuka' && <DialogCatatPenawaran rfq={rfq} />}
-          </div>
-        </header>
+            </>
+          }
+          aksi={
+            <>
+              {rfq.Status === 'Draft' && (
+                <Button
+                  size="sm"
+                  className="min-h-11 sm:min-h-9"
+                  disabled={memproses}
+                  onClick={() => jalankanAksi(rutePermintaanPenawaran.buka(rfq.Id))}
+                >
+                  <Send /> Buka RFQ
+                </Button>
+              )}
+              {rfq.Status === 'Dibuka' && <DialogCatatPenawaran rfq={rfq} />}
+            </>
+          }
+        />
 
         <Card>
           <CardHeader>

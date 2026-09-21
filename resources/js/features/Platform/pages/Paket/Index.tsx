@@ -17,18 +17,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { labelBatas, rupiah } from '@/features/Langganan/format';
 import type { DefinisiFitur, PaketItem } from '@/features/Langganan/types';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   paket: PaketItem[];
@@ -67,18 +61,19 @@ export default function PlatformPaketIndex({ paket, katalogFitur }: Props) {
       <Head title="Paket Langganan" />
 
       <div className="space-y-6">
-        <header className="flex flex-wrap items-end justify-between gap-3">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">Paket Langganan</h1>
-            <p className="text-sm text-muted-foreground">
-              Harga, masa berlaku, dan modul yang termasuk pada tiap paket.
-            </p>
-          </div>
-          <Button onClick={() => buka(null)}>
-            <Plus aria-hidden="true" className="size-4" />
-            Paket baru
-          </Button>
-        </header>
+        <PageHeader
+          tanpaBreadcrumb
+          judul="Paket Langganan"
+          deskripsi="Harga, masa berlaku, dan modul yang termasuk pada tiap paket."
+          aksi={
+            <>
+              <Button onClick={() => buka(null)}>
+                <Plus aria-hidden="true" className="size-4" />
+                Paket baru
+              </Button>
+            </>
+          }
+        />
 
         <Card>
           <CardHeader>
@@ -184,9 +179,10 @@ function DialogPaket({
       return {
         Kode: definisi.Kode,
         Diizinkan: tersimpan?.Diizinkan ?? definisi.DiizinkanBawaan,
-        BatasNilai: tersimpan?.BatasNilai === null || tersimpan?.BatasNilai === undefined
-          ? ''
-          : String(tersimpan.BatasNilai),
+        BatasNilai:
+          tersimpan?.BatasNilai === null || tersimpan?.BatasNilai === undefined
+            ? ''
+            : String(tersimpan.BatasNilai),
       };
     }),
   });
@@ -306,8 +302,12 @@ function DialogPaket({
                         onChange={(e) => ubahFitur(definisi.Kode, { BatasNilai: e.target.value })}
                       />
                       <p className="text-xs text-muted-foreground">
-                        Saat ini: {labelBatas(baris.BatasNilai === '' ? null : Number(baris.BatasNilai), definisi.SatuanBatas)}.
-                        Nilai 0 berarti tidak boleh sama sekali.
+                        Saat ini:{' '}
+                        {labelBatas(
+                          baris.BatasNilai === '' ? null : Number(baris.BatasNilai),
+                          definisi.SatuanBatas,
+                        )}
+                        . Nilai 0 berarti tidak boleh sama sekali.
                       </p>
                     </div>
                   )}

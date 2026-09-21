@@ -31,6 +31,7 @@ import {
 import type { JenisKalibrasi, TitikUkurKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   jenisKalibrasi: JenisKalibrasi[];
@@ -204,18 +205,18 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Jenis Kalibrasi</h1>
-            <p className="text-sm text-muted-foreground">
-              Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji.
-            </p>
-          </div>
-          <Button onClick={bukaModalTambahJenis} size="sm">
-            <Plus className="mr-1.5 size-4" />
-            Tambah Jenis Kalibrasi
-          </Button>
-        </div>
+        <PageHeader
+          judul="Jenis Kalibrasi"
+          deskripsi="Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji."
+          aksi={
+            <>
+              <Button onClick={bukaModalTambahJenis} size="sm">
+                <Plus className="mr-1.5 size-4" />
+                Tambah Jenis Kalibrasi
+              </Button>
+            </>
+          }
+        />
 
         {/* List Card */}
         <Card className="border-border">

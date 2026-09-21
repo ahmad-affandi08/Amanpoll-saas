@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   keluhan: Keluhan;
@@ -152,28 +153,34 @@ export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan
           ← Kembali ke Keluhan
         </Link>
       </div>
-      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
+      <PageHeader
+        className="mb-6"
+        judul={keluhan.Judul}
+        labelBreadcrumb={keluhan.Nomor}
+        lencana={
+          <>
             <span className="font-mono text-sm text-muted-foreground">{keluhan.Nomor}</span>
             <Badge variant={VARIAN_PRIORITAS_KELUHAN[keluhan.Prioritas]}>{keluhan.Prioritas}</Badge>
             <Badge variant={VARIAN_STATUS_KELUHAN[keluhan.Status]}>{keluhan.Status}</Badge>
-          </div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight">{keluhan.Judul}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          </>
+        }
+        deskripsi={
+          <>
             Dilaporkan {formatTanggal(keluhan.DilaporkanPada)} oleh {keluhan.NamaPelapor}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {dapatMengelola && <DialogPrioritas keluhan={keluhan} />}
-          <DialogStatus
-            keluhan={keluhan}
-            transisi={
-              dapatMengelola ? transisiDiizinkan : transisiDiizinkan.filter((s) => s === 'Dibatalkan')
-            }
-          />
-        </div>
-      </div>
+          </>
+        }
+        aksi={
+          <>
+            {dapatMengelola && <DialogPrioritas keluhan={keluhan} />}
+            <DialogStatus
+              keluhan={keluhan}
+              transisi={
+                dapatMengelola ? transisiDiizinkan : transisiDiizinkan.filter((s) => s === 'Dibatalkan')
+              }
+            />
+          </>
+        }
+      />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
         <div className="space-y-5">
           <Card>

@@ -12,6 +12,7 @@ import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import type { Paginasi } from '@/types/global';
 import type { CatatanAudit, FilterCatatanAudit } from '@/features/Audit/types';
 import { ruteAudit } from '@/features/Audit/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   catatan: Paginasi<CatatanAudit>;
@@ -38,12 +39,10 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
     <AppLayout>
       <Head title="Log Audit" />
       <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Log Audit</h1>
-          <p className="text-sm text-muted-foreground">
-            Riwayat perubahan data lintas modul, tersaring per organisasi.
-          </p>
-        </div>
+        <PageHeader
+          judul="Log Audit"
+          deskripsi="Riwayat perubahan data lintas modul, tersaring per organisasi."
+        />
 
         <form
           onSubmit={terapkanFilter}

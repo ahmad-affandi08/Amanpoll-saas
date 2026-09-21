@@ -22,6 +22,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { TemplatNotifikasi } from '@/features/Notifikasi/types';
 import { ruteTemplatNotifikasi } from '@/features/TemplatNotifikasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   templatNotifikasi: TemplatNotifikasi[];
@@ -174,15 +175,16 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi }: Props) {
   return (
     <AppLayout>
       <Head title="Templat Notifikasi" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Templat Notifikasi</h1>
-          <p className="text-sm text-muted-foreground">
-            Kelola isi pesan notifikasi per peristiwa dan kanal.
-          </p>
-        </div>
-        <DialogFormTemplat templat={null} />
-      </div>
+      <PageHeader
+        judul="Templat Notifikasi"
+        deskripsi="Kelola isi pesan notifikasi per peristiwa dan kanal."
+        aksi={
+          <>
+            <DialogFormTemplat templat={null} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

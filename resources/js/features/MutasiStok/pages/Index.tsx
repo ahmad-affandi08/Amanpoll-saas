@@ -18,6 +18,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import type { JenisMutasiStok, MutasiStok } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Ringkas {
   Id: string;
@@ -160,15 +161,16 @@ export default function MutasiStokIndex({ mutasiStok, gudang }: Props) {
   return (
     <AppLayout>
       <Head title="Mutasi Stok" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Mutasi Stok</h1>
-          <p className="text-sm text-muted-foreground">
-            Penerimaan, pengeluaran, transfer, penyesuaian, dan retur -- draf, posting, sampai audit.
-          </p>
-        </div>
-        <DialogBuatMutasi gudang={gudang} />
-      </div>
+      <PageHeader
+        judul="Mutasi Stok"
+        deskripsi="Penerimaan, pengeluaran, transfer, penyesuaian, dan retur -- draf, posting, sampai audit."
+        aksi={
+          <>
+            <DialogBuatMutasi gudang={gudang} />
+          </>
+        }
+        className="mb-6"
+      />
 
       {mutasiStok.length === 0 ? (
         <EmptyState

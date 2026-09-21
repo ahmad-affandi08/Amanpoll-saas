@@ -20,6 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { KategoriAset, Merek, ModelAset } from '@/features/Aset/types';
 import { ruteModelAset } from '@/features/ModelAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   modelAset: ModelAset[];
@@ -282,15 +283,16 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props
   return (
     <AppLayout>
       <Head title="Model Aset" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Model Aset</h1>
-          <p className="text-sm text-muted-foreground">
-            Master model/tipe aset lengkap dengan metadata teknis dan interval pemeliharaan/kalibrasi.
-          </p>
-        </div>
-        <DialogFormModelAset model={null} kategoriAset={kategoriAset} merek={merek} />
-      </div>
+      <PageHeader
+        judul="Model Aset"
+        deskripsi="Master model/tipe aset lengkap dengan metadata teknis dan interval pemeliharaan/kalibrasi."
+        aksi={
+          <>
+            <DialogFormModelAset model={null} kategoriAset={kategoriAset} merek={merek} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

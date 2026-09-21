@@ -21,6 +21,7 @@ import type { KelompokSukuCadang, KompatibilitasSukuCadang, SukuCadang } from '@
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Ringkas {
   Id: string;
@@ -292,16 +293,19 @@ export default function SukuCadangShow({
     <AppLayout>
       <Head title={sukuCadang.Nama} />
       <div className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">{sukuCadang.Kode}</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{sukuCadang.Nama}</h1>
-            <p className="text-sm text-muted-foreground">
-              {sukuCadang.NamaKategori ?? 'Tanpa kategori'} &middot; Satuan {sukuCadang.SatuanDasar}
-            </p>
-          </div>
-          <Badge variant={VARIAN_BADGE_STATUS_SUKU_CADANG[sukuCadang.Status]}>{sukuCadang.Status}</Badge>
-        </div>
+        <PageHeader
+          judul={sukuCadang.Nama}
+          labelBreadcrumb={sukuCadang.Kode}
+          lencana={
+            <Badge variant={VARIAN_BADGE_STATUS_SUKU_CADANG[sukuCadang.Status]}>{sukuCadang.Status}</Badge>
+          }
+          deskripsi={
+            <>
+              <span className="font-mono">{sukuCadang.Kode}</span> ·{' '}
+              {sukuCadang.NamaKategori ?? 'Tanpa kategori'} · Satuan {sukuCadang.SatuanDasar}
+            </>
+          }
+        />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-[9px] border border-border bg-card p-4">

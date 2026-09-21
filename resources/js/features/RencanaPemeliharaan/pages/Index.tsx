@@ -19,6 +19,7 @@ import { CalendarClock, Plus, Search, Play, ArrowRight, ShieldCheck, CheckCircle
 import type { RencanaPemeliharaan, TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
@@ -91,180 +92,179 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-permukaan-900">
-              Rencana Pemeliharaan Preventif
-            </h1>
-            <p className="text-sm text-permukaan-500">
-              Otomatisasi siklus pemeliharaan berkala, pencegahan downtime, dan kepatuhan servis aset.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              className="cursor-pointer gap-2"
-              onClick={jalankanScheduler}
-              disabled={menjalankanScheduler}
-            >
-              <Play className="h-4 w-4 text-teknisi-600" />
-              {menjalankanScheduler ? 'Menjadwalkan...' : 'Jalankan Penjadwal'}
-            </Button>
-
-            <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
-              <DialogTrigger asChild>
-                <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
-                  <Plus className="h-4 w-4" />
-                  Buat Rencana Baru
+        <PageHeader
+          judul="Rencana Pemeliharaan Preventif"
+          deskripsi="Otomatisasi siklus pemeliharaan berkala, pencegahan downtime, dan kepatuhan servis aset."
+          aksi={
+            <>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="cursor-pointer gap-2"
+                  onClick={jalankanScheduler}
+                  disabled={menjalankanScheduler}
+                >
+                  <Play className="h-4 w-4 text-teknisi-600" />
+                  {menjalankanScheduler ? 'Menjadwalkan...' : 'Jalankan Penjadwal'}
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <form onSubmit={onSubmit}>
-                  <DialogHeader>
-                    <DialogTitle>Buat Rencana Pemeliharaan</DialogTitle>
-                  </DialogHeader>
 
-                  <div className="grid gap-4 py-4">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="Kode">
-                        Kode Rencana <span className="text-rose-500">*</span>
-                      </Label>
-                      <Input
-                        id="Kode"
-                        placeholder="Misal: PM-CHILLER-BULANAN"
-                        value={form.data.Kode}
-                        onChange={(e) => form.setData('Kode', e.target.value)}
-                        required
-                      />
-                      {form.errors.Kode && <p className="text-xs text-rose-500">{form.errors.Kode}</p>}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="Nama">
-                        Nama Rencana <span className="text-rose-500">*</span>
-                      </Label>
-                      <Input
-                        id="Nama"
-                        placeholder="Misal: Servis Rutin Bulanan Chiller Utama"
-                        value={form.data.Nama}
-                        onChange={(e) => form.setData('Nama', e.target.value)}
-                        required
-                      />
-                      {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="IntervalNilai">
-                          Interval <span className="text-rose-500">*</span>
-                        </Label>
-                        <Input
-                          id="IntervalNilai"
-                          type="number"
-                          min={1}
-                          value={form.data.IntervalNilai}
-                          onChange={(e) => form.setData('IntervalNilai', Number(e.target.value))}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="IntervalSatuan">Satuan Waktu</Label>
-                        <Select
-                          value={form.data.IntervalSatuan}
-                          onValueChange={(val) => form.setData('IntervalSatuan', val)}
-                        >
-                          <SelectTrigger id="IntervalSatuan" className="cursor-pointer">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Hari">Hari</SelectItem>
-                            <SelectItem value="Minggu">Minggu</SelectItem>
-                            <SelectItem value="Bulan">Bulan</SelectItem>
-                            <SelectItem value="Tahun">Tahun</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="TemplatDaftarPeriksaId">Hubungkan Templat Checklist (Opsional)</Label>
-                      <Select
-                        value={form.data.TemplatDaftarPeriksaId || '__none__'}
-                        onValueChange={(val) =>
-                          form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
-                        }
-                      >
-                        <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
-                          <SelectValue placeholder="Pilih Templat Checklist" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="__none__">-- Tanpa Checklist Otomatis --</SelectItem>
-                          {templatDaftarPeriksa.map((t) => (
-                            <SelectItem key={t.Id} value={t.Id}>
-                              {t.Kode} - {t.Nama}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="Prioritas">Prioritas Perintah Kerja</Label>
-                        <Select
-                          value={form.data.Prioritas}
-                          onValueChange={(val) => form.setData('Prioritas', val)}
-                        >
-                          <SelectTrigger id="Prioritas" className="cursor-pointer">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Rendah">Rendah</SelectItem>
-                            <SelectItem value="Normal">Normal</SelectItem>
-                            <SelectItem value="Tinggi">Tinggi</SelectItem>
-                            <SelectItem value="Darurat">Darurat</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="BuatHariSebelum">Buat WO (Hari Sebelum)</Label>
-                        <Input
-                          id="BuatHariSebelum"
-                          type="number"
-                          min={0}
-                          value={form.data.BuatPerintahKerjaHariSebelum}
-                          onChange={(e) =>
-                            form.setData('BuatPerintahKerjaHariSebelum', Number(e.target.value))
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      onClick={() => setBukaDialog(false)}
-                    >
-                      Batal
+                <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
+                      <Plus className="h-4 w-4" />
+                      Buat Rencana Baru
                     </Button>
-                    <Button
-                      type="submit"
-                      className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                      disabled={form.processing}
-                    >
-                      {form.processing ? 'Menyimpan...' : 'Simpan Rencana'}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <form onSubmit={onSubmit}>
+                      <DialogHeader>
+                        <DialogTitle>Buat Rencana Pemeliharaan</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="grid gap-4 py-4">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="Kode">
+                            Kode Rencana <span className="text-rose-500">*</span>
+                          </Label>
+                          <Input
+                            id="Kode"
+                            placeholder="Misal: PM-CHILLER-BULANAN"
+                            value={form.data.Kode}
+                            onChange={(e) => form.setData('Kode', e.target.value)}
+                            required
+                          />
+                          {form.errors.Kode && <p className="text-xs text-rose-500">{form.errors.Kode}</p>}
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="Nama">
+                            Nama Rencana <span className="text-rose-500">*</span>
+                          </Label>
+                          <Input
+                            id="Nama"
+                            placeholder="Misal: Servis Rutin Bulanan Chiller Utama"
+                            value={form.data.Nama}
+                            onChange={(e) => form.setData('Nama', e.target.value)}
+                            required
+                          />
+                          {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <Label htmlFor="IntervalNilai">
+                              Interval <span className="text-rose-500">*</span>
+                            </Label>
+                            <Input
+                              id="IntervalNilai"
+                              type="number"
+                              min={1}
+                              value={form.data.IntervalNilai}
+                              onChange={(e) => form.setData('IntervalNilai', Number(e.target.value))}
+                              required
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor="IntervalSatuan">Satuan Waktu</Label>
+                            <Select
+                              value={form.data.IntervalSatuan}
+                              onValueChange={(val) => form.setData('IntervalSatuan', val)}
+                            >
+                              <SelectTrigger id="IntervalSatuan" className="cursor-pointer">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Hari">Hari</SelectItem>
+                                <SelectItem value="Minggu">Minggu</SelectItem>
+                                <SelectItem value="Bulan">Bulan</SelectItem>
+                                <SelectItem value="Tahun">Tahun</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="TemplatDaftarPeriksaId">
+                            Hubungkan Templat Checklist (Opsional)
+                          </Label>
+                          <Select
+                            value={form.data.TemplatDaftarPeriksaId || '__none__'}
+                            onValueChange={(val) =>
+                              form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
+                            }
+                          >
+                            <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
+                              <SelectValue placeholder="Pilih Templat Checklist" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__none__">-- Tanpa Checklist Otomatis --</SelectItem>
+                              {templatDaftarPeriksa.map((t) => (
+                                <SelectItem key={t.Id} value={t.Id}>
+                                  {t.Kode} - {t.Nama}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <Label htmlFor="Prioritas">Prioritas Perintah Kerja</Label>
+                            <Select
+                              value={form.data.Prioritas}
+                              onValueChange={(val) => form.setData('Prioritas', val)}
+                            >
+                              <SelectTrigger id="Prioritas" className="cursor-pointer">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Rendah">Rendah</SelectItem>
+                                <SelectItem value="Normal">Normal</SelectItem>
+                                <SelectItem value="Tinggi">Tinggi</SelectItem>
+                                <SelectItem value="Darurat">Darurat</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <Label htmlFor="BuatHariSebelum">Buat WO (Hari Sebelum)</Label>
+                            <Input
+                              id="BuatHariSebelum"
+                              type="number"
+                              min={0}
+                              value={form.data.BuatPerintahKerjaHariSebelum}
+                              onChange={(e) =>
+                                form.setData('BuatPerintahKerjaHariSebelum', Number(e.target.value))
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="cursor-pointer"
+                          onClick={() => setBukaDialog(false)}
+                        >
+                          Batal
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                          disabled={form.processing}
+                        >
+                          {form.processing ? 'Menyimpan...' : 'Simpan Rencana'}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </>
+          }
+        />
 
         {/* Ringkasan Metrik */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

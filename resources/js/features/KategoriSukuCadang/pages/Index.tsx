@@ -19,6 +19,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { KategoriSukuCadang } from '@/features/Persediaan/types';
 import { ruteKategoriSukuCadang } from '@/features/KategoriSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   kategoriSukuCadang: KategoriSukuCadang[];
@@ -170,15 +171,16 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
   return (
     <AppLayout>
       <Head title="Kategori Suku Cadang" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Kategori Suku Cadang</h1>
-          <p className="text-sm text-muted-foreground">
-            Klasifikasi suku cadang, mendukung hierarki sub-kategori.
-          </p>
-        </div>
-        <DialogFormKategori kategori={null} semuaKategori={kategoriSukuCadang} />
-      </div>
+      <PageHeader
+        judul="Kategori Suku Cadang"
+        deskripsi="Klasifikasi suku cadang, mendukung hierarki sub-kategori."
+        aksi={
+          <>
+            <DialogFormKategori kategori={null} semuaKategori={kategoriSukuCadang} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

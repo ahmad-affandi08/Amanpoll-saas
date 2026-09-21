@@ -23,6 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { RencanaPengadaan, StatusRencanaPengadaan } from '@/features/RencanaPengadaan/types';
 import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface PosRingkas {
   Id: string;
@@ -178,15 +179,15 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
     <AppLayout>
       <Head title="Rencana Pengadaan" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Rencana Pengadaan</h1>
-            <p className="text-sm text-muted-foreground">
-              Konsolidasikan usulan disetujui ke rencana dan pos anggaran.
-            </p>
-          </div>
-          <DialogBuatRencana posAnggaran={posAnggaran} usulanDisetujui={usulanDisetujui} />
-        </header>
+        <PageHeader
+          judul="Rencana Pengadaan"
+          deskripsi="Konsolidasikan usulan disetujui ke rencana dan pos anggaran."
+          aksi={
+            <>
+              <DialogBuatRencana posAnggaran={posAnggaran} usulanDisetujui={usulanDisetujui} />
+            </>
+          }
+        />
         <form
           onSubmit={terapkanFilter}
           className="grid gap-2 rounded-[9px] border border-border bg-card p-3 sm:grid-cols-[1fr_8rem_12rem_auto]"

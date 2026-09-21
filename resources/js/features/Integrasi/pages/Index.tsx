@@ -28,6 +28,7 @@ import type {
   PanggilanBalikWeb,
 } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   integrasi: IntegrasiEksternal[];
@@ -265,18 +266,18 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa }:
     <AppLayout>
       <Head title="Integrasi" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Integrasi</h1>
-            <p className="text-sm text-muted-foreground">
-              Sistem eksternal, panggilan balik web, dan antrean peristiwa keluar.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <DialogBuatWebhook />
-            <DialogBuatIntegrasi />
-          </div>
-        </header>
+        <PageHeader
+          judul="Integrasi"
+          deskripsi="Sistem eksternal, panggilan balik web, dan antrean peristiwa keluar."
+          aksi={
+            <>
+              <div className="flex flex-wrap gap-2">
+                <DialogBuatWebhook />
+                <DialogBuatIntegrasi />
+              </div>
+            </>
+          }
+        />
 
         {(antrianPeristiwa.gagal > 0 || antrianPeristiwa.pengirimanGagal > 0) && (
           <Alert variant="perhatian">

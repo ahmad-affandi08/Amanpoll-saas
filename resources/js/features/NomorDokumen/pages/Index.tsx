@@ -20,6 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { NomorDokumen } from '@/features/NomorDokumen/types';
 import { ruteNomorDokumen } from '@/features/NomorDokumen/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   nomorDokumen: NomorDokumen[];
@@ -195,13 +196,16 @@ export default function NomorDokumenIndex({ nomorDokumen }: Props) {
   return (
     <AppLayout>
       <Head title="Nomor Dokumen" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Nomor Dokumen</h1>
-          <p className="text-sm text-muted-foreground">Pola penomoran otomatis untuk dokumen operasional.</p>
-        </div>
-        <DialogFormPola pola={null} />
-      </div>
+      <PageHeader
+        judul="Nomor Dokumen"
+        deskripsi="Pola penomoran otomatis untuk dokumen operasional."
+        aksi={
+          <>
+            <DialogFormPola pola={null} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

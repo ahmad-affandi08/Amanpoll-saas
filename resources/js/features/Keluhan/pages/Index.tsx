@@ -19,6 +19,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface KategoriRingkas {
   Id: string;
@@ -227,17 +228,25 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
   return (
     <AppLayout>
       <Head title="Keluhan" />
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Keluhan</h1>
-          <p className="text-sm text-muted-foreground">
-            {dapatMengelola
-              ? 'Triage dan pantau keluhan beserta kepatuhan SLA.'
-              : 'Laporkan masalah dan pantau status keluhan Anda.'}
-          </p>
-        </div>
-        <DialogBuatKeluhan kategori={kategori} aset={aset} lokasi={lokasi} dapatMengelola={dapatMengelola} />
-      </div>
+      <PageHeader
+        judul="Keluhan"
+        deskripsi={
+          dapatMengelola
+            ? 'Triage dan pantau keluhan beserta kepatuhan SLA.'
+            : 'Laporkan masalah dan pantau status keluhan Anda.'
+        }
+        aksi={
+          <>
+            <DialogBuatKeluhan
+              kategori={kategori}
+              aset={aset}
+              lokasi={lokasi}
+              dapatMengelola={dapatMengelola}
+            />
+          </>
+        }
+        className="mb-6"
+      />
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
         <Select value={filter.status ?? TANPA} onValueChange={(value) => filterData('status', value)}>
           <SelectTrigger className="w-full">

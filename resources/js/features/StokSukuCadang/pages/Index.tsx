@@ -9,6 +9,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import { EmptyState } from '@/components/shared/EmptyState';
 import type { StokSukuCadang } from '@/features/Persediaan/types';
 import { ruteStokSukuCadang } from '@/features/StokSukuCadang/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Ringkas {
   Id: string;
@@ -109,12 +110,10 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
   return (
     <AppLayout>
       <Head title="Stok Suku Cadang" />
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Stok Suku Cadang</h1>
-        <p className="text-sm text-muted-foreground">
-          Saldo stok per gudang -- hanya baca. Perubahan hanya lewat Mutasi Stok atau Reservasi.
-        </p>
-      </div>
+      <PageHeader
+        judul="Stok Suku Cadang"
+        deskripsi="Saldo stok per gudang -- hanya baca. Perubahan hanya lewat Mutasi Stok atau Reservasi."
+      />
 
       <div className="mb-4 grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">

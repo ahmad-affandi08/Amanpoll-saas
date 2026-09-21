@@ -26,6 +26,7 @@ import type { KategoriAset } from '@/features/Aset/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 import { ruteAset } from '@/features/Aset/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -262,15 +263,15 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
     <AppLayout>
       <Head title="Aset" />
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Aset</h1>
-            <p className="text-sm text-muted-foreground">
-              Daftar induk aset organisasi -- identitas, lokasi, dan status.
-            </p>
-          </div>
-          <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} />
-        </div>
+        <PageHeader
+          judul="Aset"
+          deskripsi="Daftar induk aset organisasi -- identitas, lokasi, dan status."
+          aksi={
+            <>
+              <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} />
+            </>
+          }
+        />
 
         {/* Mobile: filter di Sheet (DESIGN.md 13.8/33), bukan grid yang dipaksakan */}
         <div className="md:hidden">

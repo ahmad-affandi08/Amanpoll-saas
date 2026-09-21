@@ -1,10 +1,5 @@
 export type StatusAntrianSinkronisasi =
-  | 'Menunggu'
-  | 'Diproses'
-  | 'Selesai'
-  | 'Gagal'
-  | 'Konflik'
-  | 'Dibatalkan';
+  'Menunggu' | 'Diproses' | 'Selesai' | 'Gagal' | 'Konflik' | 'Dibatalkan';
 
 export type KeputusanKonflik = 'PakaiServer' | 'TerapkanUlang';
 

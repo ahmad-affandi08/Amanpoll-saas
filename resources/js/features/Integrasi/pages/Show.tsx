@@ -27,6 +27,7 @@ import type {
   StatusIntegrasi,
 } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   integrasi: IntegrasiEksternal;
@@ -231,6 +232,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi }: Pro
   return (
     <AppLayout>
       <Head title={`${integrasi.Kode} — Integrasi`} />
+      <BreadcrumbHalaman />
       <div className="space-y-6">
         <Link
           href={ruteIntegrasi.index}

@@ -4,13 +4,7 @@ import AppLayout from '@/layouts/AppLayout';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { KartuKpi } from '@/components/grafik/KartuKpi';
 import { BarisFilter } from '@/features/Pelaporan/components/BarisFilter';
 import { rutePelaporan } from '@/features/Pelaporan/api';
@@ -21,6 +15,7 @@ import type {
   PilihanDimensi,
   SusunanDasbor,
 } from '@/features/Pelaporan/types';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   susunan: SusunanDasbor;
@@ -50,49 +45,53 @@ export default function Dashboard({
   const komponenTampil = susunan.Komponen.filter((komponen) => metrik[komponen.KunciKpi] !== undefined);
 
   const gantiDasbor = (nilai: string) => {
-    router.get(rutePelaporan.dasbor, { ...filter, dasbor: nilai }, { preserveState: true, preserveScroll: true });
+    router.get(
+      rutePelaporan.dasbor,
+      { ...filter, dasbor: nilai },
+      { preserveState: true, preserveScroll: true },
+    );
   };
 
   return (
     <AppLayout>
       <Head title="Dashboard" />
       <div className="space-y-5">
-        <header className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">{susunan.Nama}</h1>
-            <p className="text-sm text-muted-foreground">
-              Ringkasan operasional Amanpoll. Setiap angka membawa rumusnya sendiri.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Select value={susunan.Kunci} onValueChange={gantiDasbor}>
-              <SelectTrigger className="w-[13rem]">
-                <SelectValue placeholder="Pilih dasbor" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="preset">Bawaan sesuai peran</SelectItem>
-                {dasborTersimpan.map((dasbor) => (
-                  <SelectItem key={dasbor.Id} value={dasbor.Id}>
-                    {dasbor.Nama}
-                    {dasbor.Bawaan ? ' (bawaan)' : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm" asChild>
-              <Link href={rutePelaporan.dasborKustom}>
-                <LayoutGrid className="size-4" />
-                Atur dasbor
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link href={rutePelaporan.laporan}>
-                <SlidersHorizontal className="size-4" />
-                Laporan
-              </Link>
-            </Button>
-          </div>
-        </header>
+        <PageHeader
+          judul={susunan.Nama}
+          deskripsi="Ringkasan operasional Amanpoll. Setiap angka membawa rumusnya sendiri."
+          aksi={
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select value={susunan.Kunci} onValueChange={gantiDasbor}>
+                  <SelectTrigger className="w-[13rem]">
+                    <SelectValue placeholder="Pilih dasbor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="preset">Bawaan sesuai peran</SelectItem>
+                    {dasborTersimpan.map((dasbor) => (
+                      <SelectItem key={dasbor.Id} value={dasbor.Id}>
+                        {dasbor.Nama}
+                        {dasbor.Bawaan ? ' (bawaan)' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={rutePelaporan.dasborKustom}>
+                    <LayoutGrid className="size-4" />
+                    Atur dasbor
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={rutePelaporan.laporan}>
+                    <SlidersHorizontal className="size-4" />
+                    Laporan
+                  </Link>
+                </Button>
+              </div>
+            </>
+          }
+        />
 
         <BarisFilter
           filter={filter}

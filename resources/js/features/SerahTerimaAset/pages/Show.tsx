@@ -18,6 +18,7 @@ import type { SerahTerimaAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   serahTerima: SerahTerimaAset;
@@ -172,21 +173,24 @@ export default function SerahTerimaAsetShow({ serahTerima, aset }: Props) {
     <AppLayout>
       <Head title={serahTerima.Nomor} />
       <div className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="font-mono text-sm text-muted-foreground">{serahTerima.Nomor}</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{serahTerima.Jenis}</h1>
-            <p className="text-sm text-muted-foreground">
-              {serahTerima.NamaPihakMenyerahkan ?? '—'} → {serahTerima.NamaPihakMenerima ?? '—'}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+        <PageHeader
+          judul={serahTerima.Jenis}
+          labelBreadcrumb={serahTerima.Nomor}
+          lencana={
             <Badge variant={VARIAN_BADGE_STATUS_SERAH_TERIMA[serahTerima.Status]}>{serahTerima.Status}</Badge>
-            {serahTerima.Status === 'Diserahkan' && serahTerima.DetailSerahTerimaAset.length > 0 && (
+          }
+          deskripsi={
+            <>
+              <span className="font-mono">{serahTerima.Nomor}</span> ·{' '}
+              {serahTerima.NamaPihakMenyerahkan ?? '—'} → {serahTerima.NamaPihakMenerima ?? '—'}
+            </>
+          }
+          aksi={
+            serahTerima.Status === 'Diserahkan' && serahTerima.DetailSerahTerimaAset.length > 0 ? (
               <DialogTerima serahTerima={serahTerima} />
-            )}
-          </div>
-        </div>
+            ) : undefined
+          }
+        />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-[9px] border border-border bg-card p-4">

@@ -18,6 +18,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { Merek } from '@/features/Aset/types';
 import { ruteMerek } from '@/features/Merek/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   merek: Merek[];
@@ -140,13 +141,16 @@ export default function MerekIndex({ merek }: Props) {
   return (
     <AppLayout>
       <Head title="Merek" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Merek</h1>
-          <p className="text-sm text-muted-foreground">Katalog merek/produsen untuk model aset.</p>
-        </div>
-        <DialogFormMerek merek={null} />
-      </div>
+      <PageHeader
+        judul="Merek"
+        deskripsi="Katalog merek/produsen untuk model aset."
+        aksi={
+          <>
+            <DialogFormMerek merek={null} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

@@ -41,6 +41,7 @@ import type {
   MutasiOffline,
   PenugasanOffline,
 } from '@/features/Sinkronisasi/types';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 const VARIAN_STATUS_MUTASI = {
   Menunggu: 'perhatian',
@@ -98,10 +99,7 @@ export default function TeknisiOffline() {
     }
   }, [paket, daring, muatPaket]);
 
-  const asetPerId = useMemo(
-    () => new Map((paket?.Aset ?? []).map((aset) => [aset.Id, aset])),
-    [paket?.Aset],
-  );
+  const asetPerId = useMemo(() => new Map((paket?.Aset ?? []).map((aset) => [aset.Id, aset])), [paket?.Aset]);
 
   const daftarPeriksaPerPekerjaan = useMemo(() => {
     const peta = new Map<string, DaftarPeriksaOffline[]>();
@@ -119,24 +117,24 @@ export default function TeknisiOffline() {
     <AppLayout>
       <Head title="Mode Teknisi (Offline)" />
       <div className="space-y-6">
-        <header className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Mode Teknisi</h1>
-            <p className="text-sm text-muted-foreground">
-              Penugasan, daftar periksa, dan catatan lapangan yang tetap dapat dikerjakan tanpa sinyal.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => void dorong()} disabled={!daring}>
-              <RefreshCw className={cn('size-4', status === 'Menyinkronkan' && 'animate-spin')} />
-              Kirim antrean
-            </Button>
-            <Button size="sm" onClick={() => void muatPaket()} disabled={!daring || memuat}>
-              <Download className="size-4" />
-              Perbarui paket
-            </Button>
-          </div>
-        </header>
+        <PageHeader
+          judul="Mode Teknisi"
+          deskripsi="Penugasan, daftar periksa, dan catatan lapangan yang tetap dapat dikerjakan tanpa sinyal."
+          aksi={
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => void dorong()} disabled={!daring}>
+                  <RefreshCw className={cn('size-4', status === 'Menyinkronkan' && 'animate-spin')} />
+                  Kirim antrean
+                </Button>
+                <Button size="sm" onClick={() => void muatPaket()} disabled={!daring || memuat}>
+                  <Download className="size-4" />
+                  Perbarui paket
+                </Button>
+              </div>
+            </>
+          }
+        />
 
         <div className="grid gap-3 sm:grid-cols-3">
           <RingkasanKartu
@@ -193,7 +191,9 @@ export default function TeknisiOffline() {
                   <KartuPenugasan
                     key={pekerjaan.Id}
                     pekerjaan={pekerjaan}
-                    namaAset={pekerjaan.AsetId.map((id) => asetPerId.get(id)?.Nama).filter(Boolean) as string[]}
+                    namaAset={
+                      pekerjaan.AsetId.map((id) => asetPerId.get(id)?.Nama).filter(Boolean) as string[]
+                    }
                     daftarPeriksa={daftarPeriksaPerPekerjaan.get(pekerjaan.Id) ?? []}
                     onKerjakan={() => setPekerjaanTerpilih(pekerjaan)}
                     onDaftarPeriksa={setDaftarPeriksaTerpilih}

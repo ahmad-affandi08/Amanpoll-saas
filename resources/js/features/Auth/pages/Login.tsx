@@ -29,8 +29,9 @@ export default function Login() {
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label>Kode Organisasi</Label>
+          <Label htmlFor="kode-organisasi">Kode Organisasi</Label>
           <Input
+            id="kode-organisasi"
             value={form.data.KodeOrganisasi}
             onChange={(e) => form.setData('KodeOrganisasi', e.target.value)}
             autoComplete="organization"
@@ -40,8 +41,9 @@ export default function Login() {
           )}
         </div>
         <div className="space-y-1.5">
-          <Label>Email</Label>
+          <Label htmlFor="email">Email</Label>
           <Input
+            id="email"
             type="email"
             value={form.data.Email}
             onChange={(e) => form.setData('Email', e.target.value)}
@@ -49,9 +51,11 @@ export default function Login() {
           {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
         </div>
         <div className="space-y-1.5">
-          <Label>Kata Sandi</Label>
+          <Label htmlFor="kata-sandi">Kata Sandi</Label>
           <Input
+            id="kata-sandi"
             type="password"
+            autoComplete="current-password"
             value={form.data.KataSandi}
             onChange={(e) => form.setData('KataSandi', e.target.value)}
           />

@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { http } from '@/lib/http';
 import type { PreferensiBaris } from '@/features/Notifikasi/types';
 import { rutePreferensiNotifikasi } from '@/features/PreferensiNotifikasi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 export default function PreferensiNotifikasiIndex() {
   const [data, setData] = useState<PreferensiBaris[]>([]);
@@ -42,12 +43,10 @@ export default function PreferensiNotifikasiIndex() {
   return (
     <AppLayout>
       <Head title="Preferensi Notifikasi" />
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Preferensi Notifikasi</h1>
-        <p className="text-sm text-muted-foreground">
-          Atur peristiwa mana yang ingin Anda terima melalui tiap kanal notifikasi.
-        </p>
-      </div>
+      <PageHeader
+        judul="Preferensi Notifikasi"
+        deskripsi="Atur peristiwa mana yang ingin Anda terima melalui tiap kanal notifikasi."
+      />
 
       {memuat && <p className="text-sm text-muted-foreground">Memuat...</p>}
 

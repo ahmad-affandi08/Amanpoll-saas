@@ -22,6 +22,7 @@ import { VARIAN_BADGE_STATUS_MUTASI } from '@/features/SiklusAset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   permintaan: Paginasi<PermintaanMutasiAset>;
@@ -148,15 +149,15 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
     <AppLayout>
       <Head title="Mutasi Aset" />
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Mutasi Aset</h1>
-            <p className="text-sm text-muted-foreground">
-              Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi.
-            </p>
-          </div>
-          <DialogBuatMutasi lokasi={lokasi} unitOrganisasi={unitOrganisasi} />
-        </div>
+        <PageHeader
+          judul="Mutasi Aset"
+          deskripsi="Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi."
+          aksi={
+            <>
+              <DialogBuatMutasi lokasi={lokasi} unitOrganisasi={unitOrganisasi} />
+            </>
+          }
+        />
 
         <div className="w-56 space-y-1.5">
           <Label>Status</Label>

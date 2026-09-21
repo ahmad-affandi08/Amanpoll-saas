@@ -26,6 +26,7 @@ import type {
 } from '@/features/Keluhan/types';
 import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Ringkas {
   Id: string;
@@ -387,15 +388,16 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }:
   return (
     <AppLayout>
       <Head title="Tingkat Layanan" />
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Tingkat Layanan</h1>
-          <p className="text-sm text-muted-foreground">
-            Konfigurasi kalender, target respons dan penyelesaian, serta tahapan eskalasi.
-          </p>
-        </div>
-        <DialogTingkatLayanan item={null} peran={peran} pengguna={pengguna} />
-      </div>
+      <PageHeader
+        judul="Tingkat Layanan"
+        deskripsi="Konfigurasi kalender, target respons dan penyelesaian, serta tahapan eskalasi."
+        aksi={
+          <>
+            <DialogTingkatLayanan item={null} peran={peran} pengguna={pengguna} />
+          </>
+        }
+        className="mb-6"
+      />
       <div className="grid gap-4 xl:grid-cols-2">
         {tingkatLayanan.map((sla) => (
           <Card key={sla.Id}>

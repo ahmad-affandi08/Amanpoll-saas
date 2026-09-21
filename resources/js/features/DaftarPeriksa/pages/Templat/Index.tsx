@@ -18,6 +18,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { ClipboardCheck, Plus, Search, Layers, ArrowRight } from 'lucide-react';
 import type { TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   templat: TemplatDaftarPeriksa[];
@@ -59,113 +60,114 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
       <Head title="Templat Daftar Periksa (Checklist)" />
 
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-permukaan-900">Templat Daftar Periksa</h1>
-            <p className="text-sm text-permukaan-500">
-              Kelola lembar periksa terstandarisasi untuk inspeksi dan pemeliharaan preventif.
-            </p>
-          </div>
-
-          <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
-            <DialogTrigger asChild>
-              <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
-                <Plus className="h-4 w-4" />
-                Buat Templat Baru
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <form onSubmit={onSubmit}>
-                <DialogHeader>
-                  <DialogTitle>Buat Templat Daftar Periksa</DialogTitle>
-                </DialogHeader>
-
-                <div className="grid gap-4 py-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="Kode">
-                      Kode Templat <span className="text-rose-500">*</span>
-                    </Label>
-                    <Input
-                      id="Kode"
-                      placeholder="Misal: CK-POMPA-01"
-                      value={form.data.Kode}
-                      onChange={(e) => form.setData('Kode', e.target.value)}
-                      required
-                    />
-                    {form.errors.Kode && <p className="text-xs text-rose-500">{form.errors.Kode}</p>}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="Nama">
-                      Nama Templat <span className="text-rose-500">*</span>
-                    </Label>
-                    <Input
-                      id="Nama"
-                      placeholder="Misal: Checklist Servis Rutin Pompa Sentrifugal"
-                      value={form.data.Nama}
-                      onChange={(e) => form.setData('Nama', e.target.value)}
-                      required
-                    />
-                    {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="Jenis">Jenis Operasi</Label>
-                    <Select value={form.data.Jenis} onValueChange={(val) => form.setData('Jenis', val)}>
-                      <SelectTrigger id="Jenis" className="cursor-pointer">
-                        <SelectValue placeholder="Pilih Jenis" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Pemeliharaan">Pemeliharaan</SelectItem>
-                        <SelectItem value="Inspeksi">Inspeksi</SelectItem>
-                        <SelectItem value="Kalibrasi">Kalibrasi</SelectItem>
-                        <SelectItem value="Umum">Umum</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="KategoriAsetId">Kategori Aset Terkait (Opsional)</Label>
-                    <Select
-                      value={form.data.KategoriAsetId || '__none__'}
-                      onValueChange={(val) => form.setData('KategoriAsetId', val === '__none__' ? '' : val)}
-                    >
-                      <SelectTrigger id="KategoriAsetId" className="cursor-pointer">
-                        <SelectValue placeholder="Semua Kategori" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">-- Umum (Semua Kategori) --</SelectItem>
-                        {kategoriAset.map((k) => (
-                          <SelectItem key={k.Id} value={k.Id}>
-                            {k.Nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="cursor-pointer"
-                    onClick={() => setBukaDialog(false)}
-                  >
-                    Batal
+        <PageHeader
+          judul="Templat Daftar Periksa"
+          deskripsi="Kelola lembar periksa terstandarisasi untuk inspeksi dan pemeliharaan preventif."
+          aksi={
+            <>
+              <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
+                <DialogTrigger asChild>
+                  <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
+                    <Plus className="h-4 w-4" />
+                    Buat Templat Baru
                   </Button>
-                  <Button
-                    type="submit"
-                    className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                    disabled={form.processing}
-                  >
-                    {form.processing ? 'Menyimpan...' : 'Simpan & Lanjutkan'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <form onSubmit={onSubmit}>
+                    <DialogHeader>
+                      <DialogTitle>Buat Templat Daftar Periksa</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="grid gap-4 py-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="Kode">
+                          Kode Templat <span className="text-rose-500">*</span>
+                        </Label>
+                        <Input
+                          id="Kode"
+                          placeholder="Misal: CK-POMPA-01"
+                          value={form.data.Kode}
+                          onChange={(e) => form.setData('Kode', e.target.value)}
+                          required
+                        />
+                        {form.errors.Kode && <p className="text-xs text-rose-500">{form.errors.Kode}</p>}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="Nama">
+                          Nama Templat <span className="text-rose-500">*</span>
+                        </Label>
+                        <Input
+                          id="Nama"
+                          placeholder="Misal: Checklist Servis Rutin Pompa Sentrifugal"
+                          value={form.data.Nama}
+                          onChange={(e) => form.setData('Nama', e.target.value)}
+                          required
+                        />
+                        {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="Jenis">Jenis Operasi</Label>
+                        <Select value={form.data.Jenis} onValueChange={(val) => form.setData('Jenis', val)}>
+                          <SelectTrigger id="Jenis" className="cursor-pointer">
+                            <SelectValue placeholder="Pilih Jenis" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Pemeliharaan">Pemeliharaan</SelectItem>
+                            <SelectItem value="Inspeksi">Inspeksi</SelectItem>
+                            <SelectItem value="Kalibrasi">Kalibrasi</SelectItem>
+                            <SelectItem value="Umum">Umum</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="KategoriAsetId">Kategori Aset Terkait (Opsional)</Label>
+                        <Select
+                          value={form.data.KategoriAsetId || '__none__'}
+                          onValueChange={(val) =>
+                            form.setData('KategoriAsetId', val === '__none__' ? '' : val)
+                          }
+                        >
+                          <SelectTrigger id="KategoriAsetId" className="cursor-pointer">
+                            <SelectValue placeholder="Semua Kategori" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__none__">-- Umum (Semua Kategori) --</SelectItem>
+                            {kategoriAset.map((k) => (
+                              <SelectItem key={k.Id} value={k.Id}>
+                                {k.Nama}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => setBukaDialog(false)}
+                      >
+                        Batal
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                        disabled={form.processing}
+                      >
+                        {form.processing ? 'Menyimpan...' : 'Simpan & Lanjutkan'}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </>
+          }
+        />
 
         <div className="flex items-center gap-2 max-w-sm">
           <div className="relative w-full">

@@ -30,6 +30,7 @@ import {
 import type { Inspeksi } from '@/features/PreventifInspeksi/types';
 import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
+import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 
 interface Props {
   inspeksi: Inspeksi;
@@ -76,6 +77,7 @@ export default function ShowInspeksi({ inspeksi }: Props) {
   return (
     <AppLayout>
       <Head title={`Inspeksi ${inspeksi.Nomor}`} />
+      <BreadcrumbHalaman />
 
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* Navigasi Balik */}

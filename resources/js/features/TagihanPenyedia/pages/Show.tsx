@@ -23,6 +23,7 @@ import type { TagihanPenyedia } from '@/features/TagihanPenyedia/types';
 import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   tagihan: TagihanPenyedia;
@@ -153,13 +154,12 @@ export default function TagihanPenyediaShow({ tagihan }: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-mono text-2xl font-semibold">{tagihan.NomorTagihan}</h1>
-              <Badge variant={VARIAN_STATUS[tagihan.Status]}>{tagihan.Status}</Badge>
-            </div>
-            <p className="text-sm text-muted-foreground">
+        <PageHeader
+          judul={<span className="font-mono">{tagihan.NomorTagihan}</span>}
+          labelBreadcrumb={tagihan.NomorTagihan}
+          lencana={<Badge variant={VARIAN_STATUS[tagihan.Status]}>{tagihan.Status}</Badge>}
+          deskripsi={
+            <>
               {tagihan.NamaPenyedia} ·{' '}
               {tagihan.PesananPembelianId ? (
                 <Link
@@ -171,10 +171,10 @@ export default function TagihanPenyediaShow({ tagihan }: Props) {
               ) : (
                 'Tanpa PO'
               )}
-            </p>
-          </div>
-          {tagihan.Status !== 'Dibayar' && <DialogCatatPembayaran tagihan={tagihan} />}
-        </header>
+            </>
+          }
+          aksi={tagihan.Status !== 'Dibayar' ? <DialogCatatPembayaran tagihan={tagihan} /> : undefined}
+        />
 
         <Card>
           <CardHeader>

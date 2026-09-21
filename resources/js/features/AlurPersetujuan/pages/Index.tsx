@@ -23,6 +23,7 @@ import type { Peran } from '@/features/PeranIzin/types';
 import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteAlurPersetujuan } from '@/features/AlurPersetujuan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   alurPersetujuan: AlurPersetujuan[];
@@ -438,15 +439,16 @@ export default function AlurPersetujuanIndex({
   return (
     <AppLayout>
       <Head title="Alur Persetujuan" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Alur Persetujuan</h1>
-          <p className="text-sm text-muted-foreground">
-            Definisikan tahapan persetujuan untuk berbagai jenis entitas.
-          </p>
-        </div>
-        <DialogFormAlur alur={null} jenisEntitasTersedia={jenisEntitasTersedia} />
-      </div>
+      <PageHeader
+        judul="Alur Persetujuan"
+        deskripsi="Definisikan tahapan persetujuan untuk berbagai jenis entitas."
+        aksi={
+          <>
+            <DialogFormAlur alur={null} jenisEntitasTersedia={jenisEntitasTersedia} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

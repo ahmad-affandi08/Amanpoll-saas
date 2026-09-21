@@ -45,10 +45,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
   const idJudul = useId();
 
   const deretWaktu = bentuk === 'Garis';
-  const data = useMemo(
-    () => (deretWaktu ? kpi.Rincian : lipatEkor(kpi.Rincian)),
-    [kpi.Rincian, deretWaktu],
-  );
+  const data = useMemo(() => (deretWaktu ? kpi.Rincian : lipatEkor(kpi.Rincian)), [kpi.Rincian, deretWaktu]);
   const formatter = (nilai: number) => formatNilai(nilai, kpi.Satuan, kpi.Desimal);
 
   if (data.length === 0) {
@@ -177,7 +174,13 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
                 cursor={{ fill: WARNA_GRID }}
                 content={(props) => <TooltipGrafik {...props} formatNilai={formatter} />}
               />
-              <Bar dataKey="Nilai" name={kpi.Nama} barSize={18} radius={[0, 4, 4, 0]} isAnimationActive={false}>
+              <Bar
+                dataKey="Nilai"
+                name={kpi.Nama}
+                barSize={18}
+                radius={[0, 4, 4, 0]}
+                isAnimationActive={false}
+              >
                 {data.map((baris, indeks) => (
                   <Cell key={baris.Label} fill={warnaIrisan(baris.Label, indeks)} />
                 ))}
@@ -209,7 +212,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
       <button
         type="button"
         onClick={() => setTabelTampil((tampil) => !tampil)}
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+        className="inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground sm:min-h-6"
         aria-expanded={tabelTampil}
       >
         {tabelTampil ? <TrendingUp className="size-3.5" /> : <Table2 className="size-3.5" />}

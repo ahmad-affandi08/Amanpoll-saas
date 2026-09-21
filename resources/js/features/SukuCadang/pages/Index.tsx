@@ -22,6 +22,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import type { KategoriSukuCadang, StatusSukuCadang, SukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface KategoriRingkas {
   Id: string;
@@ -263,15 +264,16 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
   return (
     <AppLayout>
       <Head title="Suku Cadang" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Suku Cadang</h1>
-          <p className="text-sm text-muted-foreground">
-            Master data suku cadang beserta saldo stok bersih lintas gudang.
-          </p>
-        </div>
-        <DialogFormSukuCadang kategoriSukuCadang={kategoriSukuCadang} />
-      </div>
+      <PageHeader
+        judul="Suku Cadang"
+        deskripsi="Master data suku cadang beserta saldo stok bersih lintas gudang."
+        aksi={
+          <>
+            <DialogFormSukuCadang kategoriSukuCadang={kategoriSukuCadang} />
+          </>
+        }
+        className="mb-6"
+      />
 
       {jumlahDibawahMinimum > 0 && (
         <div className="mb-4 rounded-[9px] border border-bahaya-600/25 bg-bahaya-600/10 px-4 py-3 text-sm text-bahaya-600">

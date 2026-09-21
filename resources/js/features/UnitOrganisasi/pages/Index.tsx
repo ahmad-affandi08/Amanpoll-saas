@@ -20,6 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteUnitOrganisasi } from '@/features/UnitOrganisasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   unitOrganisasi: UnitOrganisasi[];
@@ -216,13 +217,16 @@ export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
   return (
     <AppLayout>
       <Head title="Unit Organisasi" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Unit Organisasi</h1>
-          <p className="text-sm text-muted-foreground">Kelola struktur divisi dan hierarki organisasi.</p>
-        </div>
-        <DialogFormUnit unit={null} semuaUnit={unitOrganisasi} />
-      </div>
+      <PageHeader
+        judul="Unit Organisasi"
+        deskripsi="Kelola struktur divisi dan hierarki organisasi."
+        aksi={
+          <>
+            <DialogFormUnit unit={null} semuaUnit={unitOrganisasi} />
+          </>
+        }
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

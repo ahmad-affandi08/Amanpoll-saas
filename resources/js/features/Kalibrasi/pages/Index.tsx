@@ -10,6 +10,7 @@ import { BellRing, Search, ArrowRight, Calendar } from 'lucide-react';
 import type { PelaksanaanKalibrasi, RencanaKalibrasi, StatistikKepatuhan } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   statistik: StatistikKepatuhan;
@@ -50,20 +51,20 @@ export default function KalibrasiDashboard({ statistik, rencanaKalibrasi, pelaks
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dasbor Kalibrasi</h1>
-            <p className="text-sm text-muted-foreground">
-              Ringkasan kepatuhan, jadwal jatuh tempo, dan riwayat kalibrasi instrumen.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={jalankanPengingat} disabled={sedangMemeriksa}>
-              <BellRing className="mr-1.5 size-4 text-teknisi-700" />
-              {sedangMemeriksa ? 'Memeriksa...' : 'Kirim Pengingat'}
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          judul="Dasbor Kalibrasi"
+          deskripsi="Ringkasan kepatuhan, jadwal jatuh tempo, dan riwayat kalibrasi instrumen."
+          aksi={
+            <>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={jalankanPengingat} disabled={sedangMemeriksa}>
+                  <BellRing className="mr-1.5 size-4 text-teknisi-700" />
+                  {sedangMemeriksa ? 'Memeriksa...' : 'Kirim Pengingat'}
+                </Button>
+              </div>
+            </>
+          }
+        />
 
         {/* 4 Clean StatCards (DESIGN.md 13.5: Label, Nilai, Metadata kecil) */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

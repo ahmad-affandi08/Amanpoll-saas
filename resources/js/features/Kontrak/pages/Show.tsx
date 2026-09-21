@@ -25,6 +25,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import type { Kontrak, LayananKontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
 import { formatUang } from '@/lib/uang';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface AsetRingkas {
   Id: string;
@@ -356,18 +357,17 @@ export default function KontrakShow({ kontrak, aset }: Props) {
           <ArrowLeft className="size-4" /> Kembali ke Kontrak
         </Link>
 
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">{kontrak.Nama}</h1>
-              <Badge variant={VARIAN_STATUS[kontrak.Status]}>{kontrak.Status}</Badge>
-            </div>
-            <p className="font-mono text-sm text-muted-foreground">
+        <PageHeader
+          judul={kontrak.Nama}
+          labelBreadcrumb={kontrak.Nomor}
+          lencana={<Badge variant={VARIAN_STATUS[kontrak.Status]}>{kontrak.Status}</Badge>}
+          deskripsi={
+            <span className="font-mono">
               {kontrak.Nomor} · {kontrak.Jenis} · {kontrak.NamaPenyedia ?? 'Tanpa penyedia'}
-            </p>
-          </div>
-          {aktif && <DialogBatalkan kontrak={kontrak} />}
-        </header>
+            </span>
+          }
+          aksi={aktif ? <DialogBatalkan kontrak={kontrak} /> : undefined}
+        />
 
         {aktif && kontrak.SisaHari >= 0 && kontrak.SisaHari <= kontrak.PeringatanHariSebelum && (
           <Alert variant="perhatian">

@@ -23,6 +23,7 @@ import type { Peran, KatalogIzin } from '@/features/PeranIzin/types';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { http } from '@/lib/http';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   peran: Peran[];
@@ -235,13 +236,12 @@ export default function PeranIzinIndex({ peran }: Props) {
   return (
     <AppLayout>
       <Head title="Peran & Izin" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Peran & Izin</h1>
-          <p className="text-sm text-muted-foreground">Kelola peran dan hak akses per organisasi.</p>
-        </div>
-        {bolehKelola && <DialogFormPeran peran={null} />}
-      </div>
+      <PageHeader
+        judul="Peran & Izin"
+        deskripsi="Kelola peran dan hak akses per organisasi."
+        aksi={<>{bolehKelola && <DialogFormPeran peran={null} />}</>}
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}

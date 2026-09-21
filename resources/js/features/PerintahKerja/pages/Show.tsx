@@ -29,6 +29,7 @@ import {
   VARIAN_STATUS_PERINTAH_KERJA,
 } from '@/features/PerintahKerja/status';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface TeknisiOpsi {
   Id: string;
@@ -854,10 +855,12 @@ export default function PerintahKerjaShow({
         </Link>
       </div>
 
-      {/* HEADER SECTION */}
-      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
+      <PageHeader
+        className="mb-6"
+        judul={perintahKerja.Judul}
+        labelBreadcrumb={perintahKerja.Nomor}
+        lencana={
+          <>
             <span className="font-mono text-sm font-semibold text-muted-foreground">
               {perintahKerja.Nomor}
             </span>
@@ -869,41 +872,39 @@ export default function PerintahKerjaShow({
             {perintahKerja.NomorKeluhan && (
               <Badge variant="info">Keluhan: {perintahKerja.NomorKeluhan}</Badge>
             )}
-          </div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-            {perintahKerja.Judul}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          </>
+        }
+        deskripsi={
+          <>
             Lokasi: {perintahKerja.NamaLokasi ?? '—'} · Persentase Selesai: {perintahKerja.PersentaseSelesai}%
-          </p>
-        </div>
+          </>
+        }
+        aksi={
+          <>
+            {penugasanSaya && penugasanSaya.Status === 'Ditugaskan' && (
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => tanganiResponsPenugasan('Terima')}
+                  className="cursor-pointer bg-sukses-600 hover:bg-sukses-700 text-white"
+                >
+                  Terima Tugas
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => tanganiResponsPenugasan('Tolak')}
+                  className="cursor-pointer"
+                >
+                  Tolak
+                </Button>
+              </div>
+            )}
 
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Action Terima / Tolak Penugasan Saya */}
-          {penugasanSaya && penugasanSaya.Status === 'Ditugaskan' && (
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                onClick={() => tanganiResponsPenugasan('Terima')}
-                className="cursor-pointer bg-sukses-600 hover:bg-sukses-700 text-white"
-              >
-                Terima Tugas
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => tanganiResponsPenugasan('Tolak')}
-                className="cursor-pointer"
-              >
-                Tolak
-              </Button>
-            </div>
-          )}
-
-          {/* Dialog Ubah Status */}
-          <DialogUbahStatus perintahKerja={perintahKerja} transisi={transisiDiizinkan} />
-        </div>
-      </div>
+            <DialogUbahStatus perintahKerja={perintahKerja} transisi={transisiDiizinkan} />
+          </>
+        }
+      />
 
       {/* BANNER NOTIFIKASI SESI AKTIF */}
       {(sesiKerjaAktif || waktuHentiAktif) && (

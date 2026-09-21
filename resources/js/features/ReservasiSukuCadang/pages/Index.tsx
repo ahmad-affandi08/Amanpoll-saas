@@ -19,6 +19,7 @@ import type { ReservasiSukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_RESERVASI } from '@/features/Persediaan/status';
 import { ruteReservasiSukuCadang } from '@/features/ReservasiSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Ringkas {
   Id: string;
@@ -159,15 +160,16 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
   return (
     <AppLayout>
       <Head title="Reservasi Suku Cadang" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Reservasi Suku Cadang</h1>
-          <p className="text-sm text-muted-foreground">
-            Menahan stok tersedia untuk kebutuhan mendatang tanpa mengurangi stok fisik.
-          </p>
-        </div>
-        <DialogBuatReservasi gudang={gudang} sukuCadang={sukuCadang} />
-      </div>
+      <PageHeader
+        judul="Reservasi Suku Cadang"
+        deskripsi="Menahan stok tersedia untuk kebutuhan mendatang tanpa mengurangi stok fisik."
+        aksi={
+          <>
+            <DialogBuatReservasi gudang={gudang} sukuCadang={sukuCadang} />
+          </>
+        }
+        className="mb-6"
+      />
 
       {reservasi.length === 0 ? (
         <EmptyState

@@ -10,7 +10,11 @@ const TAMPILAN: Record<
   { label: string; ikon: typeof Wifi; kelas: string; berputar?: boolean }
 > = {
   Online: { label: 'Online', ikon: Wifi, kelas: 'border-sukses-600/25 bg-sukses-600/10 text-sukses-600' },
-  Offline: { label: 'Offline', ikon: CloudOff, kelas: 'border-safety-600/30 bg-safety-500/15 text-safety-600' },
+  Offline: {
+    label: 'Offline',
+    ikon: CloudOff,
+    kelas: 'border-safety-600/30 bg-safety-500/15 text-safety-600',
+  },
   Menyinkronkan: {
     label: 'Menyinkronkan',
     ikon: RefreshCw,

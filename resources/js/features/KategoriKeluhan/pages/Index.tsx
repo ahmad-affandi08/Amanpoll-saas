@@ -21,6 +21,7 @@ import { Switch } from '@/components/ui/switch';
 import type { KategoriKeluhan, PrioritasKeluhan } from '@/features/Keluhan/types';
 import { ruteKategoriKeluhan } from '@/features/KategoriKeluhan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Ringkas {
   Id: string;
@@ -274,15 +275,16 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
   return (
     <AppLayout>
       <Head title="Kategori Keluhan" />
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Kategori Keluhan</h1>
-          <p className="text-sm text-muted-foreground">
-            Atur prioritas bawaan, kebutuhan aset, SLA, dan routing triage.
-          </p>
-        </div>
-        <DialogKategori item={null} kategori={kategori} tingkatLayanan={tingkatLayanan} peran={peran} />
-      </div>
+      <PageHeader
+        judul="Kategori Keluhan"
+        deskripsi="Atur prioritas bawaan, kebutuhan aset, SLA, dan routing triage."
+        aksi={
+          <>
+            <DialogKategori item={null} kategori={kategori} tingkatLayanan={tingkatLayanan} peran={peran} />
+          </>
+        }
+        className="mb-6"
+      />
       <DataTable
         columns={columns}
         data={kategori}

@@ -17,18 +17,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { tanggal } from '@/features/Langganan/format';
 import type { LanggananPlatformItem, PilihanRingkas, StatusLangganan } from '@/features/Langganan/types';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface PilihanSiklus {
   Nilai: string;
@@ -71,18 +65,19 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
       <Head title="Langganan Tenant" />
 
       <div className="space-y-6">
-        <header className="flex flex-wrap items-end justify-between gap-3">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">Langganan Tenant</h1>
-            <p className="text-sm text-muted-foreground">
-              Status efektif dihitung dari tanggal, jadi kolom ini selalu mencerminkan hak akses hari ini.
-            </p>
-          </div>
-          <Button onClick={() => setDialogTerbuka(true)}>
-            <Plus aria-hidden="true" className="size-4" />
-            Mulai / ganti paket
-          </Button>
-        </header>
+        <PageHeader
+          tanpaBreadcrumb
+          judul="Langganan Tenant"
+          deskripsi="Status efektif dihitung dari tanggal, jadi kolom ini selalu mencerminkan hak akses hari ini."
+          aksi={
+            <>
+              <Button onClick={() => setDialogTerbuka(true)}>
+                <Plus aria-hidden="true" className="size-4" />
+                Mulai / ganti paket
+              </Button>
+            </>
+          }
+        />
 
         <Card>
           <CardHeader>
@@ -112,7 +107,9 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
                       <TableCell>
                         <div className="space-y-0.5">
                           <p className="font-medium text-foreground">{item.NamaOrganisasi ?? '—'}</p>
-                          <p className="text-xs text-muted-foreground">{item.KodeOrganisasi ?? item.OrganisasiId}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.KodeOrganisasi ?? item.OrganisasiId}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>{item.NamaPaket ?? '—'}</TableCell>

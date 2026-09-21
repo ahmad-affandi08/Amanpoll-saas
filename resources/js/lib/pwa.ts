@@ -60,7 +60,9 @@ export function terapkanPembaruan(): void {
     return;
   }
 
-  navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload(), { once: true });
+  navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload(), {
+    once: true,
+  });
   menungguPembaruan.postMessage({ type: 'LEWATI_MENUNGGU' });
   menungguPembaruan = null;
 }
@@ -70,9 +72,7 @@ function kirimKeServiceWorker(pesan: Record<string, unknown>): void {
     return;
   }
 
-  navigator.serviceWorker.ready
-    .then((siap) => siap.active?.postMessage(pesan))
-    .catch(() => undefined);
+  navigator.serviceWorker.ready.then((siap) => siap.active?.postMessage(pesan)).catch(() => undefined);
 }
 
 /** Menyekat cache runtime per organisasi + pengguna (20.02). */

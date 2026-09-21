@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Paginasi } from '@/types/global';
 import type { SertifikasiAset, StatusSertifikasi } from '@/features/Sertifikasi/types';
 import { ruteSertifikasi } from '@/features/Sertifikasi/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface AsetRingkas {
   Id: string;
@@ -228,15 +229,15 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
     <AppLayout>
       <Head title="Sertifikasi Aset" />
       <div className="space-y-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Sertifikasi Aset</h1>
-            <p className="text-sm text-muted-foreground">
-              Sertifikat aset beserta penerbit, masa berlaku, dan statusnya.
-            </p>
-          </div>
-          <DialogTerbitkan aset={aset} />
-        </header>
+        <PageHeader
+          judul="Sertifikasi Aset"
+          deskripsi="Sertifikat aset beserta penerbit, masa berlaku, dan statusnya."
+          aksi={
+            <>
+              <DialogTerbitkan aset={aset} />
+            </>
+          }
+        />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_13rem_auto]">
           <div className="relative">

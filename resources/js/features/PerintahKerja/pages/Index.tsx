@@ -27,6 +27,7 @@ import {
   VARIAN_STATUS_PERINTAH_KERJA,
 } from '@/features/PerintahKerja/status';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface KeluhanRingkas {
   Id: string;
@@ -372,17 +373,18 @@ export default function PerintahKerjaIndex({
   return (
     <AppLayout>
       <Head title="Perintah Kerja" />
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Perintah Kerja</h1>
-          <p className="text-sm text-muted-foreground">
-            {dapatMengelola
-              ? 'Tugaskan teknisi, pantau jam kerja, catat downtime aset, dan kontrol biaya perbaikan.'
-              : 'Daftar penugasan perintah kerja dan pencatatan operasional Anda.'}
-          </p>
-        </div>
-        {dapatMengelola && <DialogBuatPerintahKerja keluhan={keluhan} aset={aset} lokasi={lokasi} />}
-      </div>
+      <PageHeader
+        judul="Perintah Kerja"
+        deskripsi={
+          dapatMengelola
+            ? 'Tugaskan teknisi, pantau jam kerja, catat downtime aset, dan kontrol biaya perbaikan.'
+            : 'Daftar penugasan perintah kerja dan pencatatan operasional Anda.'
+        }
+        aksi={
+          <>{dapatMengelola && <DialogBuatPerintahKerja keluhan={keluhan} aset={aset} lokasi={lokasi} />}</>
+        }
+        className="mb-6"
+      />
 
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
         <Select value={filter.status ?? TANPA} onValueChange={(val) => filterData('status', val)}>
@@ -424,84 +426,140 @@ export default function PerintahKerjaIndex({
           deskripsi="Perintah kerja perbaikan atau pemeliharaan aset akan tercatat di sini."
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border bg-muted/40 text-xs font-medium text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Nomor</th>
-                <th className="px-4 py-3">Judul & Jenis</th>
-                <th className="px-4 py-3">Aset & Lokasi</th>
-                <th className="px-4 py-3">Prioritas</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Teknisi</th>
-                <th className="px-4 py-3">Waktu / Henti</th>
-                <th className="px-4 py-3">Total Biaya</th>
-                <th className="px-4 py-3 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {perintahKerja.map((item) => {
-                const asetUtama = item.Aset?.find((a) => a.Utama) ?? item.Aset?.[0];
-                return (
-                  <tr key={item.Id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs font-medium">
-                      <Link
-                        href={rutePerintahKerja.detail(item.Id)}
-                        className="text-teknisi-700 hover:underline cursor-pointer"
-                      >
-                        {item.Nomor}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-foreground">{item.Judul}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {item.Jenis}
-                        {item.NomorKeluhan && (
-                          <span className="ml-1 text-primary">· Keluhan {item.NomorKeluhan}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium">
-                        {asetUtama ? `${asetUtama.KodeAset} · ${asetUtama.Nama}` : '—'}
-                      </div>
-                      <div className="text-xs text-muted-foreground">{item.NamaLokasi ?? '—'}</div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[item.Prioritas]}>
-                        {item.Prioritas}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      {item.Penugasan && item.Penugasan.length > 0 ? (
-                        <div className="text-xs">
-                          <span className="font-medium">{item.Penugasan[0].NamaPengguna ?? 'Teknisi'}</span>
-                          {item.Penugasan.length > 1 && (
-                            <span className="text-muted-foreground ml-1">(+{item.Penugasan.length - 1})</span>
+        <div className="rounded-lg border border-border bg-card">
+          {/*
+            Di ponsel daftar ini menjadi kartu (DESIGN.md 9.3). Teknisi di
+            lapangan mencari satu pekerjaan, bukan membandingkan delapan kolom,
+            dan memaksanya menggeser mendatar di layar 360px membuat pekerjaan
+            dasar menuntut layar besar — persis yang dilarang Gate 23.
+          */}
+          <ul className="divide-y divide-border sm:hidden">
+            {perintahKerja.map((item) => {
+              const asetUtama = item.Aset?.find((a) => a.Utama) ?? item.Aset?.[0];
+
+              return (
+                <li key={item.Id} className="space-y-2 p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link
+                      href={rutePerintahKerja.detail(item.Id)}
+                      className="font-mono text-xs font-medium text-teknisi-700 hover:underline"
+                    >
+                      {item.Nomor}
+                    </Link>
+                    <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[item.Prioritas]}>{item.Prioritas}</Badge>
+                    <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
+                  </div>
+
+                  <p className="text-sm font-medium text-foreground">{item.Judul}</p>
+
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                    <dt className="text-muted-foreground">Aset</dt>
+                    <dd className="min-w-0 text-foreground">
+                      {asetUtama ? `${asetUtama.KodeAset} · ${asetUtama.Nama}` : '—'}
+                    </dd>
+                    <dt className="text-muted-foreground">Lokasi</dt>
+                    <dd className="min-w-0 text-foreground">{item.NamaLokasi ?? '—'}</dd>
+                    <dt className="text-muted-foreground">Teknisi</dt>
+                    <dd className="min-w-0 text-foreground">
+                      {item.Penugasan && item.Penugasan.length > 0
+                        ? (item.Penugasan[0].NamaPengguna ?? 'Teknisi')
+                        : 'Belum ditugaskan'}
+                    </dd>
+                    <dt className="text-muted-foreground">Waktu</dt>
+                    <dd className="min-w-0 text-foreground">
+                      Kerja {item.TotalWaktuKerjaMenit ?? 0}m · Henti {item.TotalDowntimeMenit ?? 0}m
+                    </dd>
+                  </dl>
+
+                  <Button asChild size="sm" variant="outline" className="w-full cursor-pointer">
+                    <Link href={rutePerintahKerja.detail(item.Id)}>Buka perintah kerja</Link>
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="hidden overflow-x-auto sm:block">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-border bg-muted/40 text-xs font-medium text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3">Nomor</th>
+                  <th className="px-4 py-3">Judul & Jenis</th>
+                  <th className="px-4 py-3">Aset & Lokasi</th>
+                  <th className="px-4 py-3">Prioritas</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Teknisi</th>
+                  <th className="px-4 py-3">Waktu / Henti</th>
+                  <th className="px-4 py-3">Total Biaya</th>
+                  <th className="px-4 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {perintahKerja.map((item) => {
+                  const asetUtama = item.Aset?.find((a) => a.Utama) ?? item.Aset?.[0];
+                  return (
+                    <tr key={item.Id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-4 py-3 font-mono text-xs font-medium">
+                        <Link
+                          href={rutePerintahKerja.detail(item.Id)}
+                          className="text-teknisi-700 hover:underline cursor-pointer"
+                        >
+                          {item.Nomor}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-foreground">{item.Judul}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {item.Jenis}
+                          {item.NomorKeluhan && (
+                            <span className="ml-1 text-primary">· Keluhan {item.NomorKeluhan}</span>
                           )}
                         </div>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Belum ditugaskan</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-xs">
-                      <div>Kerja: {item.TotalWaktuKerjaMenit ?? 0}m</div>
-                      <div className="text-muted-foreground">Henti: {item.TotalDowntimeMenit ?? 0}m</div>
-                    </td>
-                    <td className="px-4 py-3 text-xs font-medium">{formatRupiah(item.TotalBiaya ?? 0)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button asChild size="sm" variant="outline" className="cursor-pointer">
-                        <Link href={rutePerintahKerja.detail(item.Id)}>Buka</Link>
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium">
+                          {asetUtama ? `${asetUtama.KodeAset} · ${asetUtama.Nama}` : '—'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{item.NamaLokasi ?? '—'}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[item.Prioritas]}>
+                          {item.Prioritas}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
+                      </td>
+                      <td className="px-4 py-3">
+                        {item.Penugasan && item.Penugasan.length > 0 ? (
+                          <div className="text-xs">
+                            <span className="font-medium">{item.Penugasan[0].NamaPengguna ?? 'Teknisi'}</span>
+                            {item.Penugasan.length > 1 && (
+                              <span className="text-muted-foreground ml-1">
+                                (+{item.Penugasan.length - 1})
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Belum ditugaskan</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-xs">
+                        <div>Kerja: {item.TotalWaktuKerjaMenit ?? 0}m</div>
+                        <div className="text-muted-foreground">Henti: {item.TotalDowntimeMenit ?? 0}m</div>
+                      </td>
+                      <td className="px-4 py-3 text-xs font-medium">{formatRupiah(item.TotalBiaya ?? 0)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Button asChild size="sm" variant="outline" className="cursor-pointer">
+                          <Link href={rutePerintahKerja.detail(item.Id)}>Buka</Link>
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </AppLayout>

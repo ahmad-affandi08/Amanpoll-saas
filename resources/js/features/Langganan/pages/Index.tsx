@@ -5,14 +5,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { angka, labelBatas, persenPemakaian, rupiah, tanggal } from '@/features/Langganan/format';
 import type { PageProps } from '@/types/global';
 import type {
@@ -22,6 +15,7 @@ import type {
   StatusLangganan,
   TagihanItem,
 } from '@/features/Langganan/types';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   entitlement: Entitlement;
@@ -31,7 +25,10 @@ interface Props {
 }
 
 /** Status dipetakan ke nada visual; warnanya selalu didampingi ikon dan teks. */
-const NADA_STATUS: Record<StatusLangganan, { varian: 'default' | 'secondary' | 'destructive'; catatan: string }> = {
+const NADA_STATUS: Record<
+  StatusLangganan,
+  { varian: 'default' | 'secondary' | 'destructive'; catatan: string }
+> = {
   UjiCoba: { varian: 'secondary', catatan: 'Masa uji coba sedang berjalan.' },
   Aktif: { varian: 'default', catatan: 'Langganan berjalan normal.' },
   Tenggang: {
@@ -44,7 +41,8 @@ const NADA_STATUS: Record<StatusLangganan, { varian: 'default' | 'secondary' | '
   },
   Dibatalkan: {
     varian: 'destructive',
-    catatan: 'Langganan dibatalkan. Data tetap dapat dibaca; hubungi administrator untuk mengaktifkan kembali.',
+    catatan:
+      'Langganan dibatalkan. Data tetap dapat dibaca; hubungi administrator untuk mengaktifkan kembali.',
   },
 };
 
@@ -61,12 +59,10 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
       <Head title="Langganan" />
 
       <div className="space-y-6">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Langganan</h1>
-          <p className="text-sm text-muted-foreground">
-            Paket yang sedang berjalan, pemakaian terhadap batasnya, dan riwayat tagihan organisasi Anda.
-          </p>
-        </header>
+        <PageHeader
+          judul="Langganan"
+          deskripsi="Paket yang sedang berjalan, pemakaian terhadap batasnya, dan riwayat tagihan organisasi Anda."
+        />
 
         {!entitlement.AksesPenuh && (
           <div
@@ -226,7 +222,11 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
                             size="sm"
                             variant="outline"
                             onClick={() =>
-                              router.post(`/langganan/tagihan/${baris.Id}/bayar`, {}, { preserveScroll: true })
+                              router.post(
+                                `/langganan/tagihan/${baris.Id}/bayar`,
+                                {},
+                                { preserveScroll: true },
+                              )
                             }
                           >
                             <CreditCard aria-hidden="true" className="size-4" />

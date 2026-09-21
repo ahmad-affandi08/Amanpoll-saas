@@ -237,7 +237,10 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
     async (kunciOperasi: string, keputusan: KeputusanKonflik) => {
       if (!konteks) return;
 
-      const { data } = await http.post<{ Antrean: AntrianServer[] }>(ruteOffline.antrianStatus, amplopPerangkat());
+      const { data } = await http.post<{ Antrean: AntrianServer[] }>(
+        ruteOffline.antrianStatus,
+        amplopPerangkat(),
+      );
       const baris = data.Antrean.find((item) => item.KunciOperasi === kunciOperasi);
       if (!baris) {
         await serapAntreanServer(data.Antrean);
@@ -245,7 +248,10 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
       }
 
       await http.post(ruteOffline.antrianKonflik(baris.Id), { Keputusan: keputusan });
-      const segar = await http.post<{ Antrean: AntrianServer[] }>(ruteOffline.antrianStatus, amplopPerangkat());
+      const segar = await http.post<{ Antrean: AntrianServer[] }>(
+        ruteOffline.antrianStatus,
+        amplopPerangkat(),
+      );
       await serapAntreanServer(segar.data.Antrean);
       await muatPaket();
     },
@@ -302,7 +308,9 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
     };
   }, [dorong]);
 
-  const jumlahBelumTersinkron = antrian.filter((m) => m.Status === 'Menunggu' || m.Status === 'Diproses').length;
+  const jumlahBelumTersinkron = antrian.filter(
+    (m) => m.Status === 'Menunggu' || m.Status === 'Diproses',
+  ).length;
   const jumlahKonflik = antrian.filter((m) => m.Status === 'Konflik').length;
 
   const nilai = useMemo<NilaiSinkronisasi>(

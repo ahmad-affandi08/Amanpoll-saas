@@ -20,6 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import { useIzin } from '@/hooks/use-izin';
 import type { Pengguna, PeranRingkas } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
   pengguna: Pengguna[];
@@ -313,13 +314,12 @@ export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
   return (
     <AppLayout>
       <Head title="Pengguna" />
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Pengguna</h1>
-          <p className="text-sm text-muted-foreground">Kelola akun pengguna dan penetapan peran.</p>
-        </div>
-        {bolehKelola && <DialogFormPengguna pengguna={null} />}
-      </div>
+      <PageHeader
+        judul="Pengguna"
+        deskripsi="Kelola akun pengguna dan penetapan peran."
+        aksi={<>{bolehKelola && <DialogFormPengguna pengguna={null} />}</>}
+        className="mb-6"
+      />
 
       <DataTable
         columns={columns}
