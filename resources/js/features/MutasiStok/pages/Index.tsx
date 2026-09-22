@@ -15,7 +15,9 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import type { JenisMutasiStok, MutasiStok } from '@/features/Persediaan/types';
+import type { Paginasi } from '@/types/global';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -26,7 +28,7 @@ interface Ringkas {
 }
 
 interface Props {
-  mutasiStok: MutasiStok[];
+  mutasiStok: Paginasi<MutasiStok>;
   gudang: Ringkas[];
   filter: { status?: string; jenis?: string };
 }
@@ -157,7 +159,14 @@ function DialogBuatMutasi({ gudang }: { gudang: Ringkas[] }) {
   );
 }
 
-export default function MutasiStokIndex({ mutasiStok, gudang }: Props) {
+/** Hanya penyaring yang benar-benar terisi yang ikut dibawa saat berpindah halaman. */
+function filterAktif(filter: Props['filter']): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(filter).filter((pasangan): pasangan is [string, string] => Boolean(pasangan[1])),
+  );
+}
+
+export default function MutasiStokIndex({ mutasiStok, gudang, filter }: Props) {
   return (
     <AppLayout>
       <Head title="Mutasi Stok" />
@@ -172,7 +181,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang }: Props) {
         className="mb-6"
       />
 
-      {mutasiStok.length === 0 ? (
+      {mutasiStok.data.length === 0 ? (
         <EmptyState
           ilustrasi="/assets/3d/persediaan.webp"
           judul="Belum ada mutasi stok."
@@ -180,7 +189,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang }: Props) {
         />
       ) : (
         <div className="space-y-2">
-          {mutasiStok.map((m) => (
+          {mutasiStok.data.map((m) => (
             <Link
               key={m.Id}
               href={ruteMutasiStok.detail(m.Id)}
@@ -203,6 +212,10 @@ export default function MutasiStokIndex({ mutasiStok, gudang }: Props) {
               <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[m.Status]}>{m.Status}</Badge>
             </Link>
           ))}
+          <Pagination
+            meta={mutasiStok.meta}
+            onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
+          />
         </div>
       )}
     </AppLayout>

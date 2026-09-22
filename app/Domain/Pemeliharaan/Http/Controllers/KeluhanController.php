@@ -47,7 +47,8 @@ final class KeluhanController extends Controller
             ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
             ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
             ->latest('DilaporkanPada')
-            ->get();
+            ->paginate(25)
+            ->withQueryString();
 
         return Inertia::render('Keluhan/Index', [
             'keluhan' => KeluhanResource::collection($keluhan),

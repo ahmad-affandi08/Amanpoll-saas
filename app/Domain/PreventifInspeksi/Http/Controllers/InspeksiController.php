@@ -27,12 +27,32 @@ final class InspeksiController extends Controller
     {
         $this->authorize('viewAny', Inspeksi::class);
 
-        $daftarInspeksi = Inspeksi::query()
-            ->with(['templatInspeksi', 'aset.lokasi', 'perintahKerja', 'dilaksanakanOleh'])
+        $cari = trim((string) $request->input('cari'));
+
+        /*
+         * Penyaring dipakai dua kali: sekali untuk halaman yang tampil, sekali
+         * untuk kartu ringkasannya. Menghitung kartu dari baris yang tampil akan
+         * membuatnya berubah-ubah mengikuti halaman, dan angka yang hanya benar
+         * di halaman pertama lebih buruk daripada tidak ada angka sama sekali.
+         */
+        $tersaring = fn () => Inspeksi::query()
             ->when($request->input('status'), fn ($q, $status) => $q->where('Status', $status))
             ->when($request->input('hasil'), fn ($q, $hasil) => $q->where('Hasil', $hasil))
+            ->when($cari !== '', fn ($q) => $q->where(fn ($sub) => $sub
+                ->where('Nomor', 'like', "%{$cari}%")
+                ->orWhereHas('aset', fn ($aset) => $aset->where('Nama', 'like', "%{$cari}%"))
+                ->orWhereHas('templatInspeksi', fn ($templat) => $templat->where('Nama', 'like', "%{$cari}%"))));
+
+        $daftarInspeksi = $tersaring()
+            ->with(['templatInspeksi', 'aset.lokasi', 'perintahKerja', 'dilaksanakanOleh'])
             ->latest('DijadwalkanPada')
-            ->get();
+            ->paginate(25)
+            ->withQueryString();
+
+        $ringkasan = $tersaring()
+            ->selectRaw('Hasil, count(*) as jumlah')
+            ->groupBy('Hasil')
+            ->pluck('jumlah', 'Hasil');
 
         $templatList = TemplatInspeksi::query()->where('Aktif', true)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']);
         $asetList = Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']);
@@ -43,9 +63,15 @@ final class InspeksiController extends Controller
             'templatInspeksi' => $templatList,
             'aset' => $asetList,
             'inspektor' => $inspektorList,
+            'ringkasan' => [
+                'Lolos' => (int) ($ringkasan['Lolos'] ?? 0),
+                'PerluPerhatian' => (int) ($ringkasan['PerluPerhatian'] ?? 0),
+                'Gagal' => (int) ($ringkasan['Gagal'] ?? 0),
+            ],
             'filter' => [
                 'status' => $request->input('status'),
                 'hasil' => $request->input('hasil'),
+                'cari' => $cari === '' ? null : $cari,
             ],
         ]);
     }

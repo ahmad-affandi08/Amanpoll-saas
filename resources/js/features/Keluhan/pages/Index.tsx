@@ -16,7 +16,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
+import type { Paginasi } from '@/types/global';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -38,7 +40,7 @@ interface Ringkas {
   Nama: string;
 }
 interface Props {
-  keluhan: Keluhan[];
+  keluhan: Paginasi<Keluhan>;
   kategori: KategoriRingkas[];
   aset: AsetRingkas[];
   lokasi: Ringkas[];
@@ -218,6 +220,13 @@ function labelSla(item: Keluhan): string {
   return `${lewat ? 'Terlewati' : 'Batas'} ${formatTanggal(item.BatasPenyelesaianPada)}`;
 }
 
+/** Hanya penyaring yang benar-benar terisi yang ikut dibawa saat berpindah halaman. */
+function filterAktif(filter: Props['filter']): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(filter).filter((pasangan): pasangan is [string, string] => Boolean(pasangan[1])),
+  );
+}
+
 export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, dapatMengelola }: Props) {
   const filterData = (kunci: 'status' | 'prioritas', nilai: string) =>
     router.get(
@@ -286,7 +295,7 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
           </SelectContent>
         </Select>
       </div>
-      {keluhan.length === 0 ? (
+      {keluhan.data.length === 0 ? (
         <EmptyState
           ilustrasi="/assets/3d/keluhan.webp"
           judul="Belum ada keluhan."
@@ -294,7 +303,7 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
         />
       ) : (
         <div className="space-y-3">
-          {keluhan.map((item) => (
+          {keluhan.data.map((item) => (
             <Link
               key={item.Id}
               href={ruteKeluhan.detail(item.Id)}
@@ -329,6 +338,10 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
               </div>
             </Link>
           ))}
+          <Pagination
+            meta={keluhan.meta}
+            onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
+          />
         </div>
       )}
     </AppLayout>

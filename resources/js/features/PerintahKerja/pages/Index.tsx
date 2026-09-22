@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import type {
   JenisPerintahKerja,
   PerintahKerja,
@@ -28,6 +29,7 @@ import {
 } from '@/features/PerintahKerja/status';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { PageHeader } from '@/components/shared/PageHeader';
+import type { Paginasi } from '@/types/global';
 
 interface KeluhanRingkas {
   Id: string;
@@ -51,7 +53,7 @@ interface LokasiRingkas {
 }
 
 interface Props {
-  perintahKerja: PerintahKerja[];
+  perintahKerja: Paginasi<PerintahKerja>;
   keluhan: KeluhanRingkas[];
   aset: AsetRingkas[];
   lokasi: LokasiRingkas[];
@@ -354,6 +356,13 @@ function formatRupiah(nilai: number): string {
   }).format(nilai);
 }
 
+/** Hanya penyaring yang benar-benar terisi yang ikut dibawa saat berpindah halaman. */
+function filterAktif(filter: Props['filter']): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(filter).filter((pasangan): pasangan is [string, string] => Boolean(pasangan[1])),
+  );
+}
+
 export default function PerintahKerjaIndex({
   perintahKerja,
   keluhan,
@@ -420,7 +429,7 @@ export default function PerintahKerjaIndex({
         </Select>
       </div>
 
-      {perintahKerja.length === 0 ? (
+      {perintahKerja.data.length === 0 ? (
         <EmptyState
           judul="Belum ada perintah kerja"
           deskripsi="Perintah kerja perbaikan atau pemeliharaan aset akan tercatat di sini."
@@ -429,7 +438,7 @@ export default function PerintahKerjaIndex({
         <div className="rounded-lg border border-border bg-card">
           {/* Di ponsel daftar ini menjadi kartu (DESIGN.md 9.3). */}
           <ul className="divide-y divide-border sm:hidden">
-            {perintahKerja.map((item) => {
+            {perintahKerja.data.map((item) => {
               const asetUtama = item.Aset?.find((a) => a.Utama) ?? item.Aset?.[0];
 
               return (
@@ -490,7 +499,7 @@ export default function PerintahKerjaIndex({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {perintahKerja.map((item) => {
+                {perintahKerja.data.map((item) => {
                   const asetUtama = item.Aset?.find((a) => a.Utama) ?? item.Aset?.[0];
                   return (
                     <tr key={item.Id} className="hover:bg-muted/30 transition-colors">
@@ -555,6 +564,10 @@ export default function PerintahKerjaIndex({
               </tbody>
             </table>
           </div>
+          <Pagination
+            meta={perintahKerja.meta}
+            onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
+          />
         </div>
       )}
     </AppLayout>

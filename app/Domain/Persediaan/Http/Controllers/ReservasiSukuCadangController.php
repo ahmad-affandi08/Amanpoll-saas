@@ -31,7 +31,8 @@ final class ReservasiSukuCadangController extends Controller
             ->with(['gudang', 'sukuCadang', 'dibuatOleh'])
             ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
             ->latest('DibuatPada')
-            ->get();
+            ->paginate(25)
+            ->withQueryString();
 
         return Inertia::render('ReservasiSukuCadang/Index', [
             'reservasi' => ReservasiSukuCadangResource::collection($reservasi),

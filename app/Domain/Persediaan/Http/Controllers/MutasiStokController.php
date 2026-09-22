@@ -36,7 +36,8 @@ final class MutasiStokController extends Controller
             ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
             ->when($filter['jenis'] ?? null, fn ($q, $v) => $q->where('Jenis', $v))
             ->latest('DibuatPada')
-            ->get();
+            ->paginate(25)
+            ->withQueryString();
 
         return Inertia::render('MutasiStok/Index', [
             'mutasiStok' => MutasiStokResource::collection($mutasiStok),

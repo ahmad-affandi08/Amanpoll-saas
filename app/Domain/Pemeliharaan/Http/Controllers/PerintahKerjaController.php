@@ -53,7 +53,8 @@ final class PerintahKerjaController extends Controller
             ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
             ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
             ->latest('DibuatPada')
-            ->get();
+            ->paginate(25)
+            ->withQueryString();
 
         return Inertia::render('PerintahKerja/Index', [
             'perintahKerja' => PerintahKerjaResource::collection($daftar),

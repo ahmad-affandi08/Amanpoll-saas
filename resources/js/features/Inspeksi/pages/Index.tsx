@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import {
   ClipboardCheck,
   Plus,
@@ -28,21 +29,30 @@ import {
   Calendar,
 } from 'lucide-react';
 import type { Inspeksi } from '@/features/PreventifInspeksi/types';
+import type { Paginasi } from '@/types/global';
 import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { PageHeader } from '@/components/shared/PageHeader';
 
 interface Props {
-  inspeksi: Inspeksi[];
+  inspeksi: Paginasi<Inspeksi>;
   templatInspeksi: { Id: string; Nama: string; Kode: string }[];
   aset: { Id: string; KodeAset: string; Nama: string; LokasiId?: string | null }[];
   inspektor: { Id: string; Nama: string }[];
-  filter: { status?: string; hasil?: string };
+  ringkasan: { Lolos: number; PerluPerhatian: number; Gagal: number };
+  filter: { status?: string; hasil?: string; cari?: string | null };
 }
 
-export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspektor, filter }: Props) {
+/** Hanya penyaring yang benar-benar terisi yang ikut dibawa saat berpindah halaman. */
+function filterAktif(filter: Props['filter']): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(filter).filter((pasangan): pasangan is [string, string] => Boolean(pasangan[1])),
+  );
+}
+
+export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspektor, ringkasan, filter }: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
-  const [pencarian, setPencarian] = useState('');
+  const [pencarian, setPencarian] = useState(filter.cari ?? '');
 
   const form = useForm({
     TemplatInspeksiId: '',
@@ -72,16 +82,11 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
     );
   };
 
-  const daftarTersaring = inspeksi.filter(
-    (i) =>
-      i.Nomor.toLowerCase().includes(pencarian.toLowerCase()) ||
-      (i.aset?.Nama || '').toLowerCase().includes(pencarian.toLowerCase()) ||
-      (i.templatInspeksi?.Nama || '').toLowerCase().includes(pencarian.toLowerCase()),
-  );
-
-  const lolosCount = inspeksi.filter((i) => i.Hasil === 'Lolos').length;
-  const perhatianCount = inspeksi.filter((i) => i.Hasil === 'PerluPerhatian').length;
-  const gagalCount = inspeksi.filter((i) => i.Hasil === 'Gagal').length;
+  // Pencarian dan hitungan kartu keduanya dijawab server; menyaring di sini hanya akan menyaring satu halaman.
+  const daftarTersaring = inspeksi.data;
+  const lolosCount = ringkasan.Lolos;
+  const perhatianCount = ringkasan.PerluPerhatian;
+  const gagalCount = ringkasan.Gagal;
 
   return (
     <AppLayout>
@@ -217,7 +222,7 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-permukaan-500 font-medium">Total Jadwal</span>
-            <div className="text-2xl font-bold text-permukaan-900 mt-1">{inspeksi.length}</div>
+            <div className="text-2xl font-bold text-permukaan-900 mt-1">{inspeksi.data.length}</div>
           </div>
           <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
@@ -249,6 +254,11 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
               className="pl-9"
               value={pencarian}
               onChange={(e) => setPencarian(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  terapkanFilter('cari', pencarian === '' ? '__all__' : pencarian);
+                }
+              }}
             />
           </div>
 
@@ -355,6 +365,10 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
                 </tbody>
               </table>
             </div>
+            <Pagination
+              meta={inspeksi.meta}
+              onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
+            />
           </div>
         )}
       </div>

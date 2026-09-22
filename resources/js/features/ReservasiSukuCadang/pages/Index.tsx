@@ -15,7 +15,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
 import type { ReservasiSukuCadang } from '@/features/Persediaan/types';
+import type { Paginasi } from '@/types/global';
 import { VARIAN_BADGE_STATUS_RESERVASI } from '@/features/Persediaan/status';
 import { ruteReservasiSukuCadang } from '@/features/ReservasiSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
@@ -32,7 +34,7 @@ interface SukuCadangRingkas {
 }
 
 interface Props {
-  reservasi: ReservasiSukuCadang[];
+  reservasi: Paginasi<ReservasiSukuCadang>;
   gudang: Ringkas[];
   sukuCadang: SukuCadangRingkas[];
   filter: { status?: string };
@@ -130,7 +132,14 @@ function DialogBuatReservasi({ gudang, sukuCadang }: { gudang: Ringkas[]; sukuCa
   );
 }
 
-export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang }: Props) {
+/** Hanya penyaring yang benar-benar terisi yang ikut dibawa saat berpindah halaman. */
+function filterAktif(filter: Props['filter']): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(filter).filter((pasangan): pasangan is [string, string] => Boolean(pasangan[1])),
+  );
+}
+
+export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const lepaskan = async (item: ReservasiSukuCadang) => {
     if (
@@ -171,7 +180,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
         className="mb-6"
       />
 
-      {reservasi.length === 0 ? (
+      {reservasi.data.length === 0 ? (
         <EmptyState
           ilustrasi="/assets/3d/suku-cadang.webp"
           judul="Belum ada reservasi."
@@ -179,7 +188,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
         />
       ) : (
         <div className="space-y-2">
-          {reservasi.map((r) => (
+          {reservasi.data.map((r) => (
             <div
               key={r.Id}
               className="flex items-center justify-between rounded-[9px] border border-border bg-card p-4"
@@ -213,6 +222,10 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
               </div>
             </div>
           ))}
+          <Pagination
+            meta={reservasi.meta}
+            onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
+          />
         </div>
       )}
     </AppLayout>
