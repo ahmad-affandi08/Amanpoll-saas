@@ -158,7 +158,7 @@ function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGu
       }))
     )
       return;
-    router.delete(`/lokasi-gudang/${item.Id}`, { preserveScroll: true });
+    router.delete(ruteGudang.lokasiDetail(item.Id), { preserveScroll: true });
   };
 
   return (

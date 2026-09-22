@@ -100,7 +100,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
         { jawaban: daftar },
         {
           onSuccess: () => {
-            router.post(`/preventif-inspeksi/pelaksanaan-daftar-periksa/${pelaksanaan.Id}/finalisasi`, {
+            router.post(ruteDaftarPeriksa.pelaksanaanFinalisasi(pelaksanaan.Id), {
               catatan: catatanPelaksanaan || null,
             });
           },

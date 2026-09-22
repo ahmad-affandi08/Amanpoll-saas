@@ -275,7 +275,7 @@ export default function SukuCadangShow({
       }))
     )
       return;
-    router.delete(`/kelompok-suku-cadang/${item.Id}`, { preserveScroll: true });
+    router.delete(ruteSukuCadang.kelompokDetail(item.Id), { preserveScroll: true });
   };
 
   const hapusKompatibilitas = async (item: KompatibilitasSukuCadang) => {

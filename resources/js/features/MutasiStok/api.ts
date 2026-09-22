@@ -4,4 +4,5 @@ export const ruteMutasiStok = {
   batalkan: (id: string) => `/mutasi-stok/${id}/batalkan`,
   detail2: (id: string) => `/mutasi-stok/${id}/detail`,
   posting: (id: string) => `/mutasi-stok/${id}/posting`,
+  barisDetail: (detailId: string) => `/detail-mutasi-stok/${detailId}`,
 };

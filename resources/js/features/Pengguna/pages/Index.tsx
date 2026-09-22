@@ -173,7 +173,7 @@ function DialogKelolaPeran({
   };
 
   const cabut = (penggunaPeranId: string) => {
-    router.delete(`/platform/pengguna-peran/${penggunaPeranId}`, { preserveScroll: true });
+    router.delete(rutePengguna.peranDetail(penggunaPeranId), { preserveScroll: true });
   };
 
   return (

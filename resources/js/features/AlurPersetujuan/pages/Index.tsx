@@ -149,7 +149,7 @@ function FormTahap({
       },
     };
     if (tahap) {
-      router.put(`/persetujuan/tahap/${tahap.Id}`, payload, opsi);
+      router.put(ruteAlurPersetujuan.tahapDetail(tahap.Id), payload, opsi);
     } else {
       router.post(ruteAlurPersetujuan.tahap(alurPersetujuanId), payload, opsi);
     }
@@ -278,7 +278,7 @@ function DialogKelolaTahap({
       }))
     )
       return;
-    router.delete(`/persetujuan/tahap/${tahap.Id}`, { preserveScroll: true });
+    router.delete(ruteAlurPersetujuan.tahapDetail(tahap.Id), { preserveScroll: true });
   };
 
   return (

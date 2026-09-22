@@ -1,202 +1,217 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@import "@fontsource/ibm-plex-sans/400.css";
-@import "@fontsource/ibm-plex-sans/500.css";
-@import "@fontsource/ibm-plex-sans/600.css";
-@import "@fontsource/ibm-plex-sans/700.css";
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-sans/700.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+/*
+ * Amanpoll tidak punya dark mode (PRD 14 dan kriteria penerimaan 14), tetapi
+ * varian `dark:` bawaan Tailwind v4 menyala lewat `prefers-color-scheme`. Tanpa
+ * penimpaan ini, satu kelas `dark:` yang terbawa komponen pihak ketiga akan
+ * benar-benar menyala di perangkat bertema gelap -- di atas palet terang yang
+ * tidak punya pasangan gelapnya. Variannya diarahkan ke selektor yang tidak
+ * pernah ada, jadi kelasnya tetap tersusun tetapi tidak pernah cocok.
+ */
+@custom-variant dark (&:where([data-tema="gelap"] *));
 
 /* Design token Amanpoll: lihat docs/source-of-truth/DESIGN.md bagian 3-6. Light mode only, tidak ada dark mode. */
 @theme {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --font-sans:
+        'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  --color-teknisi-900: #17324D;
-  --color-teknisi-800: #1D4663;
-  --color-teknisi-700: #205B78;
-  --color-teknisi-600: #27718F;
-  --color-teknisi-500: #3487A6;
+    --color-teknisi-900: #17324d;
+    --color-teknisi-800: #1d4663;
+    --color-teknisi-700: #205b78;
+    --color-teknisi-600: #27718f;
+    --color-teknisi-500: #3487a6;
 
-  --color-safety-600: #D97706;
-  --color-safety-500: #F59E0B;
+    --color-safety-600: #d97706;
+    --color-safety-500: #f59e0b;
 
-  --color-sukses-600: #16835B;
-  --color-bahaya-600: #C2413B;
-  --color-info-600: #376FA6;
+    --color-sukses-600: #16835b;
+    --color-bahaya-600: #c2413b;
+    --color-info-600: #376fa6;
 
-  --color-grafit-950: #172027;
-  --color-grafit-700: #44515A;
-  --color-grafit-500: #6E7A82;
+    --color-grafit-950: #172027;
+    --color-grafit-700: #44515a;
+    --color-grafit-500: #6e7a82;
 
-  --color-garis-300: #D7DEE3;
-  --color-garis-200: #E7ECEF;
-  --color-permukaan-100: #F4F7F8;
-  --color-permukaan-50: #FAFBFC;
+    --color-garis-300: #d7dee3;
+    --color-garis-200: #e7ecef;
+    --color-permukaan-100: #f4f7f8;
+    --color-permukaan-50: #fafbfc;
 
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-xl: 12px;
 }
 
 :root {
-  --background: var(--color-permukaan-100);
-  --foreground: var(--color-grafit-950);
-  --card: #FFFFFF;
-  --card-foreground: var(--color-grafit-950);
-  --popover: #FFFFFF;
-  --popover-foreground: var(--color-grafit-950);
-  --primary: var(--color-teknisi-700);
-  --primary-hover: var(--color-teknisi-800);
-  --primary-foreground: #FFFFFF;
-  --secondary: var(--color-permukaan-100);
-  --secondary-foreground: var(--color-teknisi-900);
-  --muted: var(--color-permukaan-100);
-  --muted-foreground: var(--color-grafit-500);
-  --accent: var(--color-teknisi-500);
-  --accent-foreground: #FFFFFF;
-  --destructive: var(--color-bahaya-600);
-  --destructive-foreground: #FFFFFF;
-  --warning: var(--color-safety-600);
-  --success: var(--color-sukses-600);
-  --info: var(--color-info-600);
-  --border: var(--color-garis-300);
-  --input: var(--color-garis-300);
-  --ring: var(--color-teknisi-600);
-  --radius: 0.5rem;
+    --background: var(--color-permukaan-100);
+    --foreground: var(--color-grafit-950);
+    --card: #ffffff;
+    --card-foreground: var(--color-grafit-950);
+    --popover: #ffffff;
+    --popover-foreground: var(--color-grafit-950);
+    --primary: var(--color-teknisi-700);
+    --primary-hover: var(--color-teknisi-800);
+    --primary-foreground: #ffffff;
+    --secondary: var(--color-permukaan-100);
+    --secondary-foreground: var(--color-teknisi-900);
+    --muted: var(--color-permukaan-100);
+    --muted-foreground: var(--color-grafit-500);
+    --accent: var(--color-teknisi-500);
+    --accent-foreground: #ffffff;
+    --destructive: var(--color-bahaya-600);
+    --destructive-foreground: #ffffff;
+    --warning: var(--color-safety-600);
+    --success: var(--color-sukses-600);
+    --info: var(--color-info-600);
+    --border: var(--color-garis-300);
+    --input: var(--color-garis-300);
+    --ring: var(--color-teknisi-600);
+    --radius: 0.5rem;
 
-  /* Sidebar Amanpoll (DESIGN.md 9.1): permukaan gelap Teknisi-900, terpisah dari tema utama yang light-only. */
-  --sidebar: var(--color-teknisi-900);
-  --sidebar-foreground: rgb(255 255 255 / 0.7);
-  --sidebar-primary: #FFFFFF;
-  --sidebar-primary-foreground: var(--color-teknisi-900);
-  --sidebar-accent: rgb(255 255 255 / 0.1);
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgb(255 255 255 / 0.1);
-  --sidebar-ring: var(--color-teknisi-500);
+    /* Sidebar Amanpoll (DESIGN.md 9.1): permukaan gelap Teknisi-900, terpisah dari tema utama yang light-only. */
+    --sidebar: var(--color-teknisi-900);
+    --sidebar-foreground: rgb(255 255 255 / 0.7);
+    --sidebar-primary: #ffffff;
+    --sidebar-primary-foreground: var(--color-teknisi-900);
+    --sidebar-accent: rgb(255 255 255 / 0.1);
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgb(255 255 255 / 0.1);
+    --sidebar-ring: var(--color-teknisi-500);
 }
 
 /* Pemetaan agar utility shadcn/ui (bg-background, text-primary, dst) memakai token di atas. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --radius-DEFAULT: var(--radius);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --radius-DEFAULT: var(--radius);
 
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
 }
 
 /* Amanpoll tidak menyediakan dark mode; tema gelap browser diabaikan secara sengaja. */
-* { border-color: var(--border); }
-body { background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+* {
+    border-color: var(--border);
+}
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+}
 
 /* Pastikan semua tombol dan elemen interaktif yang bisa diklik menggunakan cursor: pointer */
 button:not(:disabled),
-[role="button"]:not([aria-disabled="true"]):not([disabled]),
-[role="tab"]:not([aria-disabled="true"]):not([disabled]),
-[role="menuitem"]:not([aria-disabled="true"]):not([disabled]),
-[role="option"]:not([aria-disabled="true"]):not([disabled]),
-input[type="button"]:not(:disabled),
-input[type="submit"]:not(:disabled),
-input[type="reset"]:not(:disabled),
-input[type="checkbox"]:not(:disabled),
-input[type="radio"]:not(:disabled),
+[role='button']:not([aria-disabled='true']):not([disabled]),
+[role='tab']:not([aria-disabled='true']):not([disabled]),
+[role='menuitem']:not([aria-disabled='true']):not([disabled]),
+[role='option']:not([aria-disabled='true']):not([disabled]),
+input[type='button']:not(:disabled),
+input[type='submit']:not(:disabled),
+input[type='reset']:not(:disabled),
+input[type='checkbox']:not(:disabled),
+input[type='radio']:not(:disabled),
 select:not(:disabled),
 a,
 summary {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 button:disabled,
-[role="button"][aria-disabled="true"],
-[role="tab"][aria-disabled="true"],
-[role="menuitem"][aria-disabled="true"],
-[role="option"][aria-disabled="true"],
+[role='button'][aria-disabled='true'],
+[role='tab'][aria-disabled='true'],
+[role='menuitem'][aria-disabled='true'],
+[role='option'][aria-disabled='true'],
 [disabled] {
-  cursor: not-allowed;
+    cursor: not-allowed;
 }
 
 /* Styling Scrollbar Umum (Light Theme) */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-garis-300) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-garis-300) transparent;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-garis-300);
-  border-radius: 9999px;
+    background: var(--color-garis-300);
+    border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-grafit-500);
+    background: var(--color-grafit-500);
 }
 
 /* Styling Scrollbar Khusus Sidebar (Dark Theme) */
-[data-sidebar="content"],
-[data-slot="sidebar-content"],
-[data-sidebar="sidebar"] * {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+[data-sidebar='content'],
+[data-slot='sidebar-content'],
+[data-sidebar='sidebar'] * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.18) transparent;
 }
 
-[data-sidebar="content"]::-webkit-scrollbar,
-[data-slot="sidebar-content"]::-webkit-scrollbar,
-[data-sidebar="sidebar"] *::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+[data-sidebar='content']::-webkit-scrollbar,
+[data-slot='sidebar-content']::-webkit-scrollbar,
+[data-sidebar='sidebar'] *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-[data-sidebar="content"]::-webkit-scrollbar-track,
-[data-slot="sidebar-content"]::-webkit-scrollbar-track,
-[data-sidebar="sidebar"] *::-webkit-scrollbar-track {
-  background: transparent;
+[data-sidebar='content']::-webkit-scrollbar-track,
+[data-slot='sidebar-content']::-webkit-scrollbar-track,
+[data-sidebar='sidebar'] *::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-[data-sidebar="content"]::-webkit-scrollbar-thumb,
-[data-slot="sidebar-content"]::-webkit-scrollbar-thumb,
-[data-sidebar="sidebar"] *::-webkit-scrollbar-thumb {
-  background: rgb(255 255 255 / 0.18);
-  border-radius: 9999px;
+[data-sidebar='content']::-webkit-scrollbar-thumb,
+[data-slot='sidebar-content']::-webkit-scrollbar-thumb,
+[data-sidebar='sidebar'] *::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.18);
+    border-radius: 9999px;
 }
 
-[data-sidebar="content"]::-webkit-scrollbar-thumb:hover,
-[data-slot="sidebar-content"]::-webkit-scrollbar-thumb:hover,
-[data-sidebar="sidebar"] *::-webkit-scrollbar-thumb:hover {
-  background: rgb(255 255 255 / 0.35);
+[data-sidebar='content']::-webkit-scrollbar-thumb:hover,
+[data-slot='sidebar-content']::-webkit-scrollbar-thumb:hover,
+[data-sidebar='sidebar'] *::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 0.35);
 }
-
-

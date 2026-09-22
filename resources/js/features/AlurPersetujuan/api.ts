@@ -4,4 +4,5 @@ export const ruteAlurPersetujuan = {
   aktifkan: (id: string) => `/persetujuan/alur/${id}/aktifkan`,
   nonaktifkan: (id: string) => `/persetujuan/alur/${id}/nonaktifkan`,
   tahap: (id: string) => `/persetujuan/alur/${id}/tahap`,
+  tahapDetail: (tahapId: string) => `/persetujuan/tahap/${tahapId}`,
 };

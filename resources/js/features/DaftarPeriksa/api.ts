@@ -7,4 +7,5 @@ export const ruteDaftarPeriksa = {
 
   pelaksanaan: '/preventif-inspeksi/pelaksanaan-daftar-periksa',
   pelaksanaanDetail: (id: string) => `/preventif-inspeksi/pelaksanaan-daftar-periksa/${id}`,
+  pelaksanaanFinalisasi: (id: string) => `/preventif-inspeksi/pelaksanaan-daftar-periksa/${id}/finalisasi`,
 };

@@ -122,7 +122,7 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
       }))
     )
       return;
-    router.delete(`/detail-mutasi-stok/${detailId}`, { preserveScroll: true });
+    router.delete(ruteMutasiStok.barisDetail(detailId), { preserveScroll: true });
   };
 
   const posting = async () => {

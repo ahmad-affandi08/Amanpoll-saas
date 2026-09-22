@@ -119,11 +119,8 @@ export function DialogTitikUkur({ jenis }: { jenis: JenisKalibrasi }) {
         </DialogHeader>
 
         <div className="space-y-6 pt-2">
-          <form
-            onSubmit={simpan}
-            className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-border space-y-3"
-          >
-            <div className="font-semibold text-xs text-zinc-900 dark:text-zinc-100 flex items-center justify-between">
+          <form onSubmit={simpan} className="p-4 rounded-lg bg-zinc-50 border border-border space-y-3">
+            <div className="font-semibold text-xs text-zinc-900 flex items-center justify-between">
               <span>{titikDiedit ? 'Edit Titik Ukur' : 'Tambah Titik Ukur Baru'}</span>
               {titikDiedit && (
                 <Button
@@ -232,7 +229,7 @@ export function DialogTitikUkur({ jenis }: { jenis: JenisKalibrasi }) {
           </form>
 
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+            <h4 className="text-xs font-semibold text-zinc-700">
               Daftar Titik Ukur Terdaftar ({titikUkur.length})
             </h4>
 
@@ -243,7 +240,7 @@ export function DialogTitikUkur({ jenis }: { jenis: JenisKalibrasi }) {
             ) : (
               <div className="border border-border rounded-lg overflow-hidden">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-500 border-b border-border">
+                  <thead className="bg-zinc-50 text-zinc-500 border-b border-border">
                     <tr>
                       <th className="px-3 py-2 w-10 text-center">#</th>
                       <th className="px-3 py-2">Nama Titik</th>
@@ -255,18 +252,16 @@ export function DialogTitikUkur({ jenis }: { jenis: JenisKalibrasi }) {
                   </thead>
                   <tbody className="divide-y divide-border">
                     {titikUkur.map((tu, idx) => (
-                      <tr key={tu.Id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30">
+                      <tr key={tu.Id} className="hover:bg-zinc-50/50">
                         <td className="px-3 py-2 text-center text-zinc-400 font-mono">
                           {tu.Urutan ?? idx + 1}
                         </td>
-                        <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">{tu.Nama}</td>
-                        <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300">
-                          {tu.NilaiReferensi ?? '-'}
-                        </td>
-                        <td className="px-3 py-2 font-mono text-[11px] text-zinc-600 dark:text-zinc-400">
+                        <td className="px-3 py-2 font-medium text-zinc-900">{tu.Nama}</td>
+                        <td className="px-3 py-2 text-zinc-700">{tu.NilaiReferensi ?? '-'}</td>
+                        <td className="px-3 py-2 font-mono text-[11px] text-zinc-600">
                           -{tu.ToleransiMinus ?? 0} / +{tu.ToleransiPlus ?? 0}
                         </td>
-                        <td className="px-3 py-2 text-zinc-600 dark:text-zinc-400">{tu.Satuan ?? '-'}</td>
+                        <td className="px-3 py-2 text-zinc-600">{tu.Satuan ?? '-'}</td>
                         <td className="px-3 py-2 text-right">
                           <div className="flex items-center justify-end gap-1">
                             <Button
