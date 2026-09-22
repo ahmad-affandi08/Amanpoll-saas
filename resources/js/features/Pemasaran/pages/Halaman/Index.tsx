@@ -9,10 +9,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { HalamanRingkas, PilihanHalaman } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  halaman: HalamanRingkas[];
+  halaman: Paginasi<HalamanRingkas>;
   pilihan: PilihanHalaman;
+  filter: FilterDaftar;
 }
 
 const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
@@ -23,7 +26,7 @@ const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destru
   Diarsipkan: 'destructive',
 };
 
-export default function PemasaranHalamanIndex({ halaman }: Props) {
+export default function PemasaranHalamanIndex({ halaman, pilihan, filter }: Props) {
   const columns = useMemo<ColumnDef<HalamanRingkas>[]>(
     () => [
       {
@@ -115,10 +118,25 @@ export default function PemasaranHalamanIndex({ halaman }: Props) {
 
       <DataTable
         columns={columns}
-        data={halaman}
+        data={halaman.data}
+        server={{ meta: halaman.meta, filter }}
+        facetedFilters={[
+          {
+            columnId: 'Status',
+            title: 'Status',
+            options: pilihan.Status.map((satu) => ({ label: satu, value: satu })),
+          },
+          {
+            columnId: 'Tipe',
+            title: 'Tipe',
+            options: pilihan.Tipe.map((satu) => ({ label: satu, value: satu })),
+          },
+        ]}
         kartuDiPonsel
         pencarianPlaceholder="Cari judul atau slug..."
-        pesanKosong="Belum ada halaman pemasaran."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada halaman yang cocok.' : 'Belum ada halaman pemasaran.'
+        }
       />
     </KerangkaPlatform>
   );

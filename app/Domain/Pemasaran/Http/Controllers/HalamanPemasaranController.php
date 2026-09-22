@@ -25,8 +25,10 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Kampanye;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\VersiHalamanPemasaran;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -42,16 +44,19 @@ final class HalamanPemasaranController extends Controller
         private readonly PenyusunPresentasiHarga $harga,
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $halaman = HalamanPemasaran::query()
-            ->with(['versiTerbit', 'versiDraf', 'kampanye'])
-            ->withCount('versi')
-            ->orderByDesc('DiperbaruiPada')
-            ->get();
+        $daftar = DaftarTersaring::untuk(
+            $request,
+            HalamanPemasaran::query()->with(['versiTerbit', 'versiDraf', 'kampanye'])->withCount('versi'),
+        )
+            ->cari(['Slug', 'Judul'])
+            ->urut(['Judul', 'Slug', 'Tipe', 'Status', 'DiperbaruiPada'], bawaan: 'DiperbaruiPada', arahBawaan: 'desc')
+            ->faset(['Status', 'Tipe']);
 
         return Inertia::render('Pemasaran/Halaman/Index', [
-            'halaman' => $halaman->map(fn (HalamanPemasaran $satu): array => $this->ringkas($satu))->all(),
+            'halaman' => $daftar->halamanTerpeta(fn (HalamanPemasaran $satu): array => $this->ringkas($satu)),
+            'filter' => $daftar->filterBerlaku(),
             'pilihan' => $this->pilihan(),
         ]);
     }

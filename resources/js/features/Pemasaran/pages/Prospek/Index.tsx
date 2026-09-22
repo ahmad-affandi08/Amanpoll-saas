@@ -20,11 +20,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Prospek, TahapRingkas } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  prospek: Prospek[];
+  prospek: Paginasi<Prospek>;
   tahap: TahapRingkas[];
-  filter: { tahap?: string; cari?: string };
+  filter: FilterDaftar;
 }
 
 function DialogProspekBaru() {
@@ -137,12 +139,11 @@ function DialogImpor() {
 }
 
 export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props) {
-  const [cari, setCari] = useState(filter.cari ?? '');
-
+  // Pencarian dan urutan ikut dibawa; pindah tahap tidak boleh membuang keduanya.
   const saring = (tahapKode: string | null) => {
     router.get(
       rutePemasaran.prospek,
-      { tahap: tahapKode ?? undefined, cari: cari || undefined },
+      { ...filter, tahap: tahapKode ?? undefined, page: undefined },
       { preserveState: true, preserveScroll: true },
     );
   };
@@ -169,12 +170,16 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
         accessorFn: (row) => row.Perusahaan ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Perusahaan" />,
         cell: ({ row }) => row.original.Perusahaan ?? '—',
+        // Turunan relasi organisasi prospek, bukan kolom Prospek.
+        enableSorting: false,
         meta: { label: 'Perusahaan' },
       },
       {
         id: 'Tahap',
         accessorFn: (row) => row.Tahap ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Tahap" />,
+        // Disaring lewat tombol tahap di atas tabel; urutannya ada di tabel lain.
+        enableSorting: false,
         cell: ({ row }) =>
           row.original.Tahap ? <Badge variant="secondary">{row.original.Tahap}</Badge> : '—',
         meta: { label: 'Tahap' },
@@ -223,16 +228,6 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <Input
-          value={cari}
-          onChange={(e) => setCari(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') saring(filter.tahap ?? null);
-          }}
-          placeholder="Cari nama atau email..."
-          className="max-w-xs"
-          aria-label="Cari prospek"
-        />
         <Button
           variant={filter.tahap ? 'ghost' : 'secondary'}
           size="sm"
@@ -254,10 +249,13 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
 
       <DataTable
         columns={columns}
-        data={prospek}
+        data={prospek.data}
+        server={{ meta: prospek.meta, filter }}
         kartuDiPonsel
-        pencarianPlaceholder="Cari prospek..."
-        pesanKosong="Belum ada prospek."
+        pencarianPlaceholder="Cari nama atau email..."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada prospek yang cocok.' : 'Belum ada prospek.'
+        }
       />
     </KerangkaPlatform>
   );

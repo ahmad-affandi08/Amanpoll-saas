@@ -20,7 +20,9 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KampanyeKonten;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KampanyeTarget;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\UtmPemasaran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,28 +35,31 @@ final class KampanyeController extends Controller
         private readonly LayananAudit $audit,
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $kampanye = Kampanye::query()
-            ->with('channel')
-            ->withCount('channel')
-            ->orderByDesc('DibuatPada')
-            ->get();
+        $daftar = DaftarTersaring::untuk($request, Kampanye::query()->with('channel')->withCount('channel'))
+            ->cari(['Kode', 'Nama'])
+            ->urut(['Nama', 'Kode', 'Status', 'MulaiPada', 'DibuatPada'], bawaan: 'DibuatPada', arahBawaan: 'desc')
+            ->faset(['Status', 'Objective']);
 
-        // Jumlah kunjungan per kampanye dibaca sekali sebagai peta, bukan satu query per baris.
+        $halaman = $daftar->halaman();
+        $idHalaman = $halaman->getCollection()->pluck('Id');
+
+        // Agregat dibatasi pada baris yang benar-benar tampil, bukan seluruh kampanye.
         $kunjungan = UtmPemasaran::query()
-            ->whereNotNull('KampanyeId')
+            ->whereIn('KampanyeId', $idHalaman)
             ->selectRaw('KampanyeId, COUNT(*) as Jumlah')
             ->groupBy('KampanyeId')
             ->pluck('Jumlah', 'KampanyeId');
 
         $biaya = KampanyeBiaya::query()
+            ->whereIn('KampanyeId', $idHalaman)
             ->selectRaw('KampanyeId, SUM(Jumlah) as Total')
             ->groupBy('KampanyeId')
             ->pluck('Total', 'KampanyeId');
 
         return Inertia::render('Pemasaran/Kampanye', [
-            'kampanye' => $kampanye->map(fn (Kampanye $satu): array => [
+            'kampanye' => DaftarTersaring::paginasi($halaman, fn (Kampanye $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,
                 'Nama' => $satu->Nama,
@@ -75,7 +80,8 @@ final class KampanyeController extends Controller
                 'UtmTerm' => $satu->UtmTerm,
                 'UtmContent' => $satu->UtmContent,
                 'Catatan' => $satu->Catatan,
-            ])->all(),
+            ]),
+            'filter' => $daftar->filterBerlaku(),
             'pilihan' => $this->pilihan(),
         ]);
     }

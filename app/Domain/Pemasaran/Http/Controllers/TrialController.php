@@ -13,7 +13,9 @@ use App\Domain\Pemasaran\Http\Requests\PerpanjangTrialRequest;
 use App\Domain\Pemasaran\Http\Requests\UbahStatusTrialRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,16 +24,15 @@ final class TrialController extends Controller
 {
     public function __construct(private readonly PembacaKonfigurasiTrial $konfigurasi) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $trial = Trial::query()
-            ->with(['organisasi', 'prospek', 'butir'])
-            ->orderByDesc('DibuatPada')
-            ->limit(200)
-            ->get();
+        $daftar = DaftarTersaring::untuk($request, Trial::query()->with(['organisasi', 'prospek', 'butir']))
+            ->urut(['Status', 'MulaiPada', 'BerakhirPada', 'DibuatPada'], bawaan: 'DibuatPada', arahBawaan: 'desc')
+            ->faset(['Status']);
 
         return Inertia::render('Pemasaran/Trial/Index', [
-            'trial' => $trial->map(fn (Trial $satu): array => $this->ringkas($satu))->all(),
+            'trial' => $daftar->halamanTerpeta(fn (Trial $satu): array => $this->ringkas($satu)),
+            'filter' => $daftar->filterBerlaku(),
             'konfigurasi' => $this->konfigurasi->berlaku()->keArray(),
             'pilihan' => [
                 'Status' => array_column(StatusTrial::cases(), 'value'),

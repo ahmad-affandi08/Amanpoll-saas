@@ -22,15 +22,18 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Redirect } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  redirect: Redirect[];
+  redirect: Paginasi<Redirect>;
   pilihan: { Kode: string[] };
+  filter: FilterDaftar;
 }
 
 const AKAR = rutePemasaran.redirect;
 
-export default function PemasaranRedirectIndex({ redirect, pilihan }: Props) {
+export default function PemasaranRedirectIndex({ redirect, pilihan, filter }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (satu: Redirect) => {
@@ -112,10 +115,20 @@ export default function PemasaranRedirectIndex({ redirect, pilihan }: Props) {
 
       <DataTable
         columns={columns}
-        data={redirect}
+        data={redirect.data}
+        server={{ meta: redirect.meta, filter }}
+        facetedFilters={[
+          {
+            columnId: 'Kode',
+            title: 'Kode',
+            options: pilihan.Kode.map((satu) => ({ label: satu, value: satu })),
+          },
+        ]}
         kartuDiPonsel
         pencarianPlaceholder="Cari alamat..."
-        pesanKosong="Belum ada redirect."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada redirect yang cocok.' : 'Belum ada redirect.'
+        }
       />
     </KerangkaPlatform>
   );

@@ -21,9 +21,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { KonfigurasiTrial, PilihanTrial, Trial } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  trial: Trial[];
+  trial: Paginasi<Trial>;
+  filter: FilterDaftar;
   konfigurasi: KonfigurasiTrial;
   pilihan: PilihanTrial;
 }
@@ -41,7 +44,7 @@ const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destru
   Dibatalkan: 'destructive',
 };
 
-export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan }: Props) {
+export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filter }: Props) {
   const columns = useMemo<ColumnDef<Trial>[]>(
     () => [
       {
@@ -145,10 +148,17 @@ export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan }: Pro
 
       <DataTable
         columns={columns}
-        data={trial}
+        data={trial.data}
+        server={{ meta: trial.meta, filter }}
+        facetedFilters={[
+          {
+            columnId: 'Status',
+            title: 'Status',
+            options: pilihan.Status.map((satu) => ({ label: satu, value: satu })),
+          },
+        ]}
         kartuDiPonsel
-        pencarianPlaceholder="Cari organisasi atau prospek..."
-        pesanKosong="Belum ada trial."
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada trial yang cocok.' : 'Belum ada trial.'}
       />
     </KerangkaPlatform>
   );

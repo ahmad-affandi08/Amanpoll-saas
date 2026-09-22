@@ -18,7 +18,9 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AktivitasProspek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TahapPipeline;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,29 +38,19 @@ final class ProspekController extends Controller
 
     public function index(Request $request): Response
     {
-        $filter = $request->validate([
-            'tahap' => ['nullable', 'string', 'max:50'],
-            'cari' => ['nullable', 'string', 'max:190'],
-        ]);
-
-        $prospek = Prospek::query()
-            ->with(['tahap', 'organisasiProspek', 'kampanye'])
-            ->when(
-                $filter['tahap'] ?? null,
-                fn ($q, string $kode) => $q->whereHas('tahap', fn ($t) => $t->where('Kode', $kode)),
-            )
-            ->when($filter['cari'] ?? null, fn ($q, string $cari) => $q->where(
-                fn ($w) => $w->where('Nama', 'like', "%{$cari}%")->orWhere('Email', 'like', "%{$cari}%"),
-            ))
-            ->orderByDesc('Skor')
-            ->orderByDesc('DibuatPada')
-            ->limit(200)
-            ->get();
+        $daftar = DaftarTersaring::untuk($request, Prospek::query()->with(['tahap', 'organisasiProspek', 'kampanye']))
+            // Perusahaan adalah nama relasi organisasiProspek, bukan kolom Prospek.
+            ->cari(['Nama', 'Email'])
+            ->urut(['Nama', 'Sumber', 'Skor'], bawaan: 'Skor', arahBawaan: 'desc')
+            // Tahap disaring lewat kodenya, bukan Id-nya, karena itu yang dikenal frontend.
+            ->saring('tahap', function (Builder $kueri, string $kode): void {
+                $kueri->whereHas('tahap', fn (Builder $tahap) => $tahap->where('Kode', $kode));
+            });
 
         return Inertia::render('Pemasaran/Prospek/Index', [
-            'prospek' => $prospek->map(fn (Prospek $satu): array => $this->ringkas($satu))->all(),
+            'prospek' => $daftar->halamanTerpeta(fn (Prospek $satu): array => $this->ringkas($satu)),
             'tahap' => $this->daftarTahap(),
-            'filter' => $filter,
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

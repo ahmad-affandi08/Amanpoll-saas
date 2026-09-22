@@ -10,7 +10,9 @@ use App\Domain\Pemasaran\Domain\Enums\KodeRedirect;
 use App\Domain\Pemasaran\Http\Requests\SimpanRedirectPemasaranRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RedirectPemasaran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,14 +24,15 @@ final class RedirectPemasaranController extends Controller
         private readonly LayananAudit $audit,
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $redirect = RedirectPemasaran::query()
-            ->orderBy('Dari')
-            ->get();
+        $daftar = DaftarTersaring::untuk($request, RedirectPemasaran::query())
+            ->cari(['Dari', 'Ke'])
+            ->urut(['Dari', 'Ke', 'Kode', 'JumlahDipakai'], bawaan: 'Dari')
+            ->faset(['Kode']);
 
         return Inertia::render('Pemasaran/Redirect/Index', [
-            'redirect' => $redirect->map(fn (RedirectPemasaran $satu): array => [
+            'redirect' => $daftar->halamanTerpeta(fn (RedirectPemasaran $satu): array => [
                 'Id' => $satu->Id,
                 'Dari' => $satu->Dari,
                 'Ke' => $satu->Ke,
@@ -38,7 +41,8 @@ final class RedirectPemasaranController extends Controller
                 'Catatan' => $satu->Catatan,
                 'JumlahDipakai' => $satu->JumlahDipakai,
                 'TerakhirDipakaiPada' => $satu->TerakhirDipakaiPada?->toIso8601String(),
-            ])->all(),
+            ]),
+            'filter' => $daftar->filterBerlaku(),
             'pilihan' => ['Kode' => array_column(KodeRedirect::cases(), 'value')],
         ]);
     }

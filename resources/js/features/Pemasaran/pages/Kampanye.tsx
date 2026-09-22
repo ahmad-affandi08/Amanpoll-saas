@@ -20,6 +20,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { formatAngka } from '@/lib/angka';
 import { BidangKode } from '@/components/shared/BidangKode';
 
@@ -55,8 +57,9 @@ interface Pilihan {
 }
 
 interface Props {
-  kampanye: Kampanye[];
+  kampanye: Paginasi<Kampanye>;
   pilihan: Pilihan;
+  filter: FilterDaftar;
 }
 
 function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; pilihan: Pilihan }) {
@@ -327,7 +330,7 @@ function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; 
   );
 }
 
-export default function PemasaranKampanye({ kampanye, pilihan }: Props) {
+export default function PemasaranKampanye({ kampanye, pilihan, filter }: Props) {
   const columns = useMemo<ColumnDef<Kampanye>[]>(
     () => [
       {
@@ -377,6 +380,8 @@ export default function PemasaranKampanye({ kampanye, pilihan }: Props) {
         id: 'JumlahKunjungan',
         accessorFn: (row) => row.JumlahKunjungan,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Kunjungan" />,
+        // Agregat yang dihitung untuk halaman ini saja, jadi tidak dapat diurutkan lintas halaman.
+        enableSorting: false,
         meta: { label: 'Kunjungan' },
       },
       {
@@ -384,6 +389,7 @@ export default function PemasaranKampanye({ kampanye, pilihan }: Props) {
         accessorFn: (row) => row.TotalBiaya,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Biaya" />,
         cell: ({ row }) => <span className="font-mono">{formatAngka(row.original.TotalBiaya)}</span>,
+        enableSorting: false,
         meta: { label: 'Biaya' },
       },
       {
@@ -419,10 +425,25 @@ export default function PemasaranKampanye({ kampanye, pilihan }: Props) {
 
       <DataTable
         columns={columns}
-        data={kampanye}
+        data={kampanye.data}
+        server={{ meta: kampanye.meta, filter }}
+        facetedFilters={[
+          {
+            columnId: 'Status',
+            title: 'Status',
+            options: pilihan.Status.map((satu) => ({ label: satu, value: satu })),
+          },
+          {
+            columnId: 'Objective',
+            title: 'Objective',
+            options: pilihan.Objective.map((satu) => ({ label: satu, value: satu })),
+          },
+        ]}
         kartuDiPonsel
         pencarianPlaceholder="Cari nama atau kode kampanye..."
-        pesanKosong="Belum ada kampanye."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada kampanye yang cocok.' : 'Belum ada kampanye.'
+        }
       />
     </KerangkaPlatform>
   );

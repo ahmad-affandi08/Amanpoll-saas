@@ -194,7 +194,7 @@ final class KampanyeDanEventTest extends KasusPemasaran
             ->get(route('pemasaran.kampanye.index'))
             ->viewData('page')['props'];
 
-        $this->assertSame(3, $props['kampanye'][0]['JumlahKunjungan']);
+        $this->assertSame(3, $props['kampanye']['data'][0]['JumlahKunjungan']);
     }
 
     public function test_peristiwa_tidak_dapat_dihapus(): void

@@ -39,6 +39,9 @@ final class DaftarTersaring
     /** @var array<string, string> */
     private array $kolomFaset = [];
 
+    /** @var array<string, callable(Builder<TModel>, string): void> */
+    private array $penyaringKhusus = [];
+
     /**
      * @param  Builder<TModel>  $kueri
      */
@@ -105,6 +108,66 @@ final class DaftarTersaring
     }
 
     /**
+     * Penyaring yang tidak dapat dinyatakan sebagai satu kolom, mis. lewat relasi.
+     *
+     * Nilainya tetap hanya diteruskan ke closure milik controller, jadi aturan
+     * yang sama berlaku: permintaan menyebut nilai, bukan nama kolom.
+     *
+     * @param  callable(Builder<TModel>, string): void  $terapkan
+     * @return self<TModel>
+     */
+    public function saring(string $kunci, callable $terapkan): self
+    {
+        $this->penyaringKhusus[$kunci] = $terapkan;
+
+        return $this;
+    }
+
+    /**
+     * Bentuk paginasi yang sama dengan Eloquent API Resource, untuk daftar yang
+     * barisnya disusun sendiri oleh controller alih-alih lewat Resource.
+     *
+     * @template TKeluar
+     *
+     * @param  callable(TModel): TKeluar  $peta
+     * @return array{data: list<TKeluar>, meta: array{current_page: int, last_page: int, per_page: int, total: int}, links: array{first: string, last: string, prev: string|null, next: string|null}}
+     */
+    public function halamanTerpeta(callable $peta, int $perHalaman = self::PER_HALAMAN): array
+    {
+        return self::paginasi($this->halaman($perHalaman), $peta);
+    }
+
+    /**
+     * Membungkus paginator yang sudah di tangan, untuk controller yang perlu
+     * memakai barisnya lebih dulu -- mis. menghitung agregat khusus halaman ini.
+     *
+     * @template TBaris of Model
+     * @template TKeluar
+     *
+     * @param  LengthAwarePaginator<int, TBaris>  $halaman
+     * @param  callable(TBaris): TKeluar  $peta
+     * @return array{data: list<TKeluar>, meta: array{current_page: int, last_page: int, per_page: int, total: int}, links: array{first: string, last: string, prev: string|null, next: string|null}}
+     */
+    public static function paginasi(LengthAwarePaginator $halaman, callable $peta): array
+    {
+        return [
+            'data' => array_values(array_map($peta, $halaman->items())),
+            'meta' => [
+                'current_page' => $halaman->currentPage(),
+                'last_page' => $halaman->lastPage(),
+                'per_page' => $halaman->perPage(),
+                'total' => $halaman->total(),
+            ],
+            'links' => [
+                'first' => $halaman->url(1),
+                'last' => $halaman->url($halaman->lastPage()),
+                'prev' => $halaman->previousPageUrl(),
+                'next' => $halaman->nextPageUrl(),
+            ],
+        ];
+    }
+
+    /**
      * @return LengthAwarePaginator<int, TModel>
      */
     public function halaman(int $perHalaman = self::PER_HALAMAN): LengthAwarePaginator
@@ -130,6 +193,14 @@ final class DaftarTersaring
             }
         }
 
+        foreach ($this->penyaringKhusus as $kunci => $terapkan) {
+            $nilai = (string) $this->permintaan->query($kunci, '');
+
+            if ($nilai !== '') {
+                $terapkan($kueri, $nilai);
+            }
+        }
+
         $kueri->orderBy($this->kolomUrut[$this->kunciUrut()] ?? $this->kunciUrut(), $this->arahUrut());
 
         return $kueri->paginate($perHalaman)->withQueryString();
@@ -149,7 +220,7 @@ final class DaftarTersaring
             'arah' => $this->arahUrut(),
         ];
 
-        foreach (array_keys($this->kolomFaset) as $kunci) {
+        foreach ([...array_keys($this->kolomFaset), ...array_keys($this->penyaringKhusus)] as $kunci) {
             $filter[$kunci] = (string) $this->permintaan->query($kunci, '');
         }
 
