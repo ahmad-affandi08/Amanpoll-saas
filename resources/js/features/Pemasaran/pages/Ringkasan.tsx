@@ -105,6 +105,12 @@ const PINTASAN = [
     izin: 'platform.konten.lihat',
   },
   {
+    label: 'Eksperimen A/B',
+    href: '/admin-platform/pemasaran/eksperimen',
+    keterangan: 'Varian, peserta, dan ambang sampel sebelum pemenang boleh dinyatakan.',
+    izin: 'platform.eksperimen.kelola',
+  },
+  {
     label: 'Referral',
     href: '/admin-platform/pemasaran/referral',
     keterangan: 'Program referral, kode pelanggan, dan imbalannya.',

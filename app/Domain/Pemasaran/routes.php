@@ -7,6 +7,7 @@ use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Http\Controllers\AturanSkorProspekController;
 use App\Domain\Pemasaran\Http\Controllers\DashboardGrowthController;
 use App\Domain\Pemasaran\Http\Controllers\DemoPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\EksperimenPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
@@ -104,6 +105,22 @@ Route::middleware(['web', 'auth:platform'])
                     Route::post('/{demo}/reset', [DemoPemasaranController::class, 'reset'])->name('reset');
                 });
             });
+
+        // Eksperimen A/B di balik flagnya sendiri (MARKETING.md 22).
+        Route::middleware([
+            'izin.platform:'.KatalogIzinPemasaran::EKSPERIMEN_KELOLA,
+            'fitur.platform:'.KatalogFiturPlatform::EKSPERIMEN,
+        ])->prefix('eksperimen')->name('eksperimen.')->group(function (): void {
+            Route::get('/', [EksperimenPemasaranController::class, 'index'])->name('index');
+            Route::post('/', [EksperimenPemasaranController::class, 'store'])->name('store');
+            Route::put('/{eksperimen}', [EksperimenPemasaranController::class, 'update'])->name('update');
+            Route::post('/{eksperimen}/status', [EksperimenPemasaranController::class, 'pindahkanStatus'])
+                ->name('status');
+            Route::post('/{eksperimen}/hitung', [EksperimenPemasaranController::class, 'hitung'])
+                ->name('hitung');
+            Route::post('/{eksperimen}/pemenang', [EksperimenPemasaranController::class, 'nyatakanPemenang'])
+                ->name('pemenang');
+        });
 
         // Penjadwal sosial di balik flagnya sendiri (MARKETING.md 18).
         Route::middleware([

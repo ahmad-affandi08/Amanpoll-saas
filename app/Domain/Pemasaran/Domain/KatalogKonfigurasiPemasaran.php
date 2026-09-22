@@ -55,6 +55,8 @@ final class KatalogKonfigurasiPemasaran
 
     public const ALERT_WHATSAPP_GAGAL_MAKS = 'alert.whatsapp_gagal_maks_persen';
 
+    public const EKSPERIMEN_MINIMUM_SAMPEL = 'eksperimen.minimum_sampel';
+
     /**
      * @return array<string, array{bawaan: mixed, keterangan: string}>
      */
@@ -116,6 +118,10 @@ final class KatalogKonfigurasiPemasaran
             self::ALERT_WHATSAPP_GAGAL_MAKS => [
                 'bawaan' => 10,
                 'keterangan' => 'Batas persentase kegagalan WhatsApp sebelum alert dibunyikan.',
+            ],
+            self::EKSPERIMEN_MINIMUM_SAMPEL => [
+                'bawaan' => 200,
+                'keterangan' => 'Sampel minimum tiap varian sebelum pemenang boleh dinyatakan.',
             ],
             self::EMAIL_SEQUENCE_TRIAL => [
                 'bawaan' => '',

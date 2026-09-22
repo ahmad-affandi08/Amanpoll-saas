@@ -2799,17 +2799,33 @@ hanya lahir dari pembayaran yang benar-benar terjadi.
 
 ## 38.06 Eksperimen A/B
 
-- [ ] Tabel `EksperimenPemasaran`, `VarianEksperimen`, `PartisipasiEksperimen`, `HasilEksperimen`.
-- [ ] Target uji sesuai bagian 22: headline, CTA, landing section, panjang form, pricing, onboarding copy, subjek email.
-- [ ] State `DRAF → AKTIF → DIJEDA → SELESAI`.
-- [ ] Penetapan varian per pengunjung bersifat tetap; pengunjung yang sama tidak berpindah varian.
-- [ ] Metric sesuai bagian 22, dibaca dari funnel yang sudah ada.
-- [ ] Minimum sample dari setelan; tanpa mencapainya pemenang tidak pernah dinyatakan.
-- [ ] `EksperimenPenetapanTest`, `MinimumSampelTest`.
+- [x] Tabel `EksperimenPemasaran`, `VarianEksperimen`, `PartisipasiEksperimen`, `HasilEksperimen`.
+- [x] Target uji sesuai bagian 22: headline, CTA, landing section, panjang form, pricing, onboarding copy, subjek email.
+- [x] State `DRAF → AKTIF → DIJEDA → SELESAI`.
+- [x] Penetapan varian per pengunjung bersifat tetap; pengunjung yang sama tidak berpindah varian.
+- [x] Metric sesuai bagian 22, dibaca dari funnel yang sudah ada.
+- [x] Minimum sample dari setelan; tanpa mencapainya pemenang tidak pernah dinyatakan.
+- [x] `EksperimenPenetapanTest`, `MinimumSampelTest`.
 
 Larangan auto-declare winner adalah inti butir ini. Yang diuji bukan bahwa
 tombolnya ada, melainkan bahwa eksperimen di bawah sampel minimum menolak
 menyatakan pemenang sekalipun selisihnya besar.
+
+Ambang dibaca dari varian yang paling sedikit pesertanya, bukan dari totalnya.
+Satu varian yang ramai tidak boleh menutupi varian yang masih sepi; selama
+salah satunya belum cukup, tidak ada yang dapat dibandingkan.
+
+Penetapan varian dijaga dua lapis. Lapis pertama indeks unik
+`(EksperimenPemasaranId, PengenalPengunjung)`, sehingga pengunjung yang sama
+tidak mungkin punya dua baris. Lapis kedua pemilihan pertamanya deterministik
+dari hash pengunjung, bukan acak, sehingga dua permintaan berbarengan pun
+memilih varian yang sama sebelum barisnya sempat tertulis. Kode eksperimen ikut
+dihash agar eksperimen tidak saling berkorelasi: tanpa itu pengunjung yang
+jatuh ke varian pertama di satu eksperimen jatuh ke varian pertama di semuanya.
+
+Metrik dibaca dengan memanggil `PenyusunFunnelGrowth` yang sama, hanya dengan
+subkueri peserta varian sebagai penyaring pengunjungnya. Penyebut tiap metrik
+adalah peserta varian itu, yakni semua orang yang benar-benar melihatnya.
 
 **Gate 38.06.** Pengunjung yang sama selalu melihat varian yang sama, dan
 pemenang tidak dapat dinyatakan sebelum sampel minimum tercapai.
