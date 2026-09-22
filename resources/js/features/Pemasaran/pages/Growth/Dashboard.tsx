@@ -52,6 +52,21 @@ interface BarisKampanye {
   Trial: number;
   Bayar: number;
   Revenue: number;
+  Biaya: number;
+}
+
+interface BarisCac {
+  Channel: string;
+  Biaya: number;
+  Pelanggan: number;
+  Cac: number | null;
+  Alasan: string | null;
+}
+
+interface CacTakTerpecah {
+  Biaya: number;
+  Pelanggan: number;
+  Kampanye: string[];
 }
 
 interface BarisHalaman {
@@ -75,6 +90,8 @@ interface Props {
   funnel: TahapFunnel[];
   kpi: KpiGrowth[];
   revenuePerChannel: Record<string, number>;
+  cacPerChannel: BarisCac[];
+  cacTakTerpecah: CacTakTerpecah;
   kampanye: BarisKampanye[];
   halaman: BarisHalaman[];
   alert: AlertGrowth[];
@@ -104,6 +121,8 @@ export default function Dashboard({
   funnel,
   kpi,
   revenuePerChannel,
+  cacPerChannel,
+  cacTakTerpecah,
   kampanye,
   halaman,
   alert,
@@ -148,6 +167,10 @@ export default function Dashboard({
         <Funnel funnel={funnel} />
         <RevenueChannel revenue={revenuePerChannel} />
       </div>
+
+      <section className="mt-6">
+        <CacChannel baris={cacPerChannel} takTerpecah={cacTakTerpecah} />
+      </section>
 
       <Tabs defaultValue="kampanye" className="mt-6">
         <TabsList>
@@ -352,6 +375,64 @@ function RevenueChannel({ revenue }: { revenue: Record<string, number> }) {
   );
 }
 
+/** CAC hanya pasti untuk kampanye berchannel tunggal; yang tidak pasti disebut, bukan dibagi rata. */
+function CacChannel({ baris, takTerpecah }: { baris: BarisCac[]; takTerpecah: CacTakTerpecah }) {
+  const rupiah = (nilai: number) =>
+    new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(nilai);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">CAC per Channel</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {baris.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Belum ada biaya kampanye tercatat pada rentang ini. Catat belanjanya di halaman kampanye
+            agar CAC punya pembilang.
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Channel</TableHead>
+                <TableHead className="text-right">Biaya</TableHead>
+                <TableHead className="text-right">Pelanggan baru</TableHead>
+                <TableHead className="text-right">CAC</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {baris.map((satu) => (
+                <TableRow key={satu.Channel}>
+                  <TableCell className="text-foreground">{satu.Channel}</TableCell>
+                  <TableCell className="text-right font-mono">{rupiah(satu.Biaya)}</TableCell>
+                  <TableCell className="text-right font-mono">{satu.Pelanggan}</TableCell>
+                  <TableCell className="text-right">
+                    {satu.Cac === null ? (
+                      <span className="text-xs text-muted-foreground">{satu.Alasan}</span>
+                    ) : (
+                      <span className="font-mono text-foreground">{rupiah(satu.Cac)}</span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+
+        {takTerpecah.Kampanye.length > 0 ? (
+          <p className="mt-3 rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
+            {takTerpecah.Kampanye.length} kampanye berjalan di lebih dari satu channel
+            ({takTerpecah.Kampanye.join(', ')}), sehingga {rupiah(takTerpecah.Biaya)} belanja dan{' '}
+            {takTerpecah.Pelanggan} pelanggan barunya tidak dapat dipecah per channel tanpa menebak.
+            Angkanya sengaja tidak diselipkan ke tabel di atas.
+          </p>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
 function DaftarAlert({ alert }: { alert: AlertGrowth[] }) {
   const ikon = (tingkat: string) => {
     if (tingkat === 'Kritis') return <CircleAlert aria-hidden="true" className="size-4 shrink-0" />;
@@ -414,6 +495,7 @@ function TabelKampanye({ kampanye }: { kampanye: BarisKampanye[] }) {
           <TableHead className="text-right">Lead</TableHead>
           <TableHead className="text-right">Trial</TableHead>
           <TableHead className="text-right">Bayar</TableHead>
+          <TableHead className="text-right">Biaya</TableHead>
           <TableHead className="text-right">Revenue</TableHead>
         </TableRow>
       </TableHeader>
@@ -428,6 +510,9 @@ function TabelKampanye({ kampanye }: { kampanye: BarisKampanye[] }) {
             <TableCell className="text-right font-mono">{satu.Lead}</TableCell>
             <TableCell className="text-right font-mono">{satu.Trial}</TableCell>
             <TableCell className="text-right font-mono">{satu.Bayar}</TableCell>
+            <TableCell className="text-right font-mono">
+              {new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(satu.Biaya)}
+            </TableCell>
             <TableCell className="text-right font-mono">
               {new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(satu.Revenue)}
             </TableCell>

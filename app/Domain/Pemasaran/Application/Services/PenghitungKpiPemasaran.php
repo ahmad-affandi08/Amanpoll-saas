@@ -19,6 +19,7 @@ final class PenghitungKpiPemasaran
     public function __construct(
         private readonly PenyaringGrowth $penyaring,
         private readonly PenyusunFunnelGrowth $funnel,
+        private readonly PenghitungCacKampanye $cac,
     ) {}
 
     /**
@@ -59,6 +60,7 @@ final class PenghitungKpiPemasaran
                 $tahap[TahapFunnelGrowth::Paid->value], $tahap[TahapFunnelGrowth::Activated->value],
             ),
             KatalogKpiPemasaran::REVENUE_PER_CHANNEL => array_sum($this->revenuePerChannel($filter)),
+            KatalogKpiPemasaran::CAC_PER_CHANNEL => $this->cac->gabungan($filter),
             KatalogKpiPemasaran::REFERRAL_KONVERSI => $this->referralKonversi($filter),
         ];
     }

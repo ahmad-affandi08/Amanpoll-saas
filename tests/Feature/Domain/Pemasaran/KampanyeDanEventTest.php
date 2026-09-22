@@ -6,6 +6,7 @@ namespace Tests\Feature\Domain\Pemasaran;
 
 use App\Domain\Pemasaran\Application\Services\PenyusunUlangAttribution;
 use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
+use App\Domain\Pemasaran\Domain\Enums\StatusKampanye;
 use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
@@ -59,6 +60,7 @@ final class KampanyeDanEventTest extends KasusPemasaran
         $kampanye = Kampanye::query()->with('channel')->firstOrFail();
 
         $this->assertSame('promo-q1', $kampanye->Kode);
+        $this->assertSame(StatusKampanye::Draf, $kampanye->Status);
         $this->assertEqualsCanonicalizing(
             ['GoogleAds', 'LinkedIn'],
             $kampanye->channel->pluck('Channel')->all(),
@@ -212,7 +214,7 @@ final class KampanyeDanEventTest extends KasusPemasaran
             'Kode' => 'promo-q1',
             'Nama' => 'Promo Kuartal 1',
             'Objective' => 'Lead',
-            'Status' => 'Aktif',
+            'Status' => 'Draf',
             'Channel' => ['GoogleAds', 'LinkedIn'],
         ];
     }

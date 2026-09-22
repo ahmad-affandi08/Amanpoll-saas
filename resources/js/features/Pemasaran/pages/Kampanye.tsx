@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -30,12 +30,25 @@ interface Kampanye {
   SelesaiPada: string | null;
   Channel: string[];
   JumlahKunjungan: number;
+  TotalBiaya: number;
+  Budget: number | null;
+  Audience: string | null;
+  Offer: string | null;
+  HalamanId: string | null;
+  FormulirId: string | null;
+  UtmSource: string | null;
+  UtmMedium: string | null;
+  UtmTerm: string | null;
+  UtmContent: string | null;
+  Catatan: string | null;
 }
 
 interface Pilihan {
   Status: string[];
   Objective: string[];
   Channel: string[];
+  Halaman: Record<string, string>;
+  Formulir: Record<string, string>;
 }
 
 interface Props {
@@ -49,11 +62,20 @@ function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; 
     Kode: kampanye?.Kode ?? '',
     Nama: kampanye?.Nama ?? '',
     Objective: kampanye?.Objective ?? pilihan.Objective[0],
-    Status: kampanye?.Status ?? pilihan.Status[0],
+    Status: kampanye?.Status ?? 'Draf',
     MulaiPada: kampanye?.MulaiPada ?? '',
     SelesaiPada: kampanye?.SelesaiPada ?? '',
     Channel: kampanye?.Channel ?? [],
-    Catatan: '',
+    Budget: kampanye?.Budget === null || kampanye?.Budget === undefined ? '' : String(kampanye.Budget),
+    Audience: kampanye?.Audience ?? '',
+    Offer: kampanye?.Offer ?? '',
+    HalamanId: kampanye?.HalamanId ?? '',
+    FormulirId: kampanye?.FormulirId ?? '',
+    UtmSource: kampanye?.UtmSource ?? '',
+    UtmMedium: kampanye?.UtmMedium ?? '',
+    UtmTerm: kampanye?.UtmTerm ?? '',
+    UtmContent: kampanye?.UtmContent ?? '',
+    Catatan: kampanye?.Catatan ?? '',
   });
 
   const submit = (e: FormEvent) => {
@@ -137,18 +159,26 @@ function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; 
 
             <div className="grid gap-2">
               <Label htmlFor="Status">Status</Label>
-              <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
-                <SelectTrigger id="Status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.Status.map((satu) => (
-                    <SelectItem key={satu} value={satu}>
-                      {satu}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {kampanye ? (
+                <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
+                  <SelectTrigger id="Status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.Status.map((satu) => (
+                      <SelectItem key={satu} value={satu}>
+                        {satu}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input id="Status" value="Draf" readOnly className="bg-muted" />
+              )}
+              <p className="text-sm text-muted-foreground">
+                Kampanye lahir sebagai draf, lalu berpindah menurut peta transisinya.
+              </p>
+              {form.errors.Status ? <p className="text-sm text-destructive">{form.errors.Status}</p> : null}
             </div>
           </div>
 
@@ -175,6 +205,106 @@ function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; 
               ) : null}
             </div>
           </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="Budget">Budget</Label>
+              <Input
+                id="Budget"
+                type="number"
+                min="0"
+                value={form.data.Budget}
+                onChange={(e) => form.setData('Budget', e.target.value)}
+              />
+              <p className="text-sm text-muted-foreground">
+                Rencana belanja. Realisasinya dicatat per hari di halaman detail.
+              </p>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="Offer">Offer</Label>
+              <Input
+                id="Offer"
+                value={form.data.Offer}
+                onChange={(e) => form.setData('Offer', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="Audience">Audience</Label>
+            <Input
+              id="Audience"
+              value={form.data.Audience}
+              onChange={(e) => form.setData('Audience', e.target.value)}
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="HalamanId">Landing page</Label>
+              <Select
+                value={form.data.HalamanId === '' ? 'kosong' : form.data.HalamanId}
+                onValueChange={(v) => form.setData('HalamanId', v === 'kosong' ? '' : v)}
+              >
+                <SelectTrigger id="HalamanId">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kosong">Belum ditentukan</SelectItem>
+                  {Object.entries(pilihan.Halaman).map(([id, slug]) => (
+                    <SelectItem key={id} value={id}>
+                      {slug}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="FormulirId">Formulir</Label>
+              <Select
+                value={form.data.FormulirId === '' ? 'kosong' : form.data.FormulirId}
+                onValueChange={(v) => form.setData('FormulirId', v === 'kosong' ? '' : v)}
+              >
+                <SelectTrigger id="FormulirId">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kosong">Belum ditentukan</SelectItem>
+                  {Object.entries(pilihan.Formulir).map(([id, kode]) => (
+                    <SelectItem key={id} value={id}>
+                      {kode}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <fieldset className="grid gap-2">
+            <legend className="text-sm font-medium">Tag UTM</legend>
+            <p className="text-sm text-muted-foreground">
+              <code className="font-mono">utm_campaign</code> selalu memakai kode di atas.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(
+                [
+                  ['UtmSource', 'utm_source'],
+                  ['UtmMedium', 'utm_medium'],
+                  ['UtmTerm', 'utm_term'],
+                  ['UtmContent', 'utm_content'],
+                ] as const
+              ).map(([kunci, label]) => (
+                <div key={kunci} className="grid gap-2">
+                  <Label htmlFor={kunci}>{label}</Label>
+                  <Input
+                    id={kunci}
+                    value={form.data[kunci]}
+                    onChange={(e) => form.setData(kunci, e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+          </fieldset>
 
           <fieldset className="grid gap-2">
             <legend className="text-sm font-medium">Channel</legend>
@@ -255,10 +385,24 @@ export default function KampanyeHalaman({ kampanye, pilihan }: Props) {
         meta: { label: 'Kunjungan' },
       },
       {
+        id: 'TotalBiaya',
+        accessorFn: (row) => row.TotalBiaya,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Biaya" />,
+        cell: ({ row }) => (
+          <span className="font-mono">
+            {new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(row.original.TotalBiaya)}
+          </span>
+        ),
+        meta: { label: 'Biaya' },
+      },
+      {
         id: 'aksi',
         header: 'Aksi',
         cell: ({ row }) => (
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={`/admin-platform/pemasaran/kampanye/${row.original.Id}`}>Detail</Link>
+            </Button>
             <DialogFormKampanye kampanye={row.original} pilihan={pilihan} />
           </div>
         ),

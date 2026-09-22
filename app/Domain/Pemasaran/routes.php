@@ -10,6 +10,7 @@ use App\Domain\Pemasaran\Http\Controllers\FormulirPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeController;
+use App\Domain\Pemasaran\Http\Controllers\KampanyeKonsolController;
 use App\Domain\Pemasaran\Http\Controllers\KonsenPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\OtomasiPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
@@ -95,10 +96,22 @@ Route::middleware(['web', 'auth:platform'])
             'fitur.platform:'.KatalogFiturPlatform::ANALITIK,
         ])->prefix('kampanye')->name('kampanye.')->group(function (): void {
             Route::get('/', [KampanyeController::class, 'index'])->name('index');
+            Route::get('/{kampanye}', [KampanyeController::class, 'show'])->name('show');
 
             Route::middleware('izin.platform:'.KatalogIzinPemasaran::KAMPANYE_KELOLA)->group(function (): void {
                 Route::post('/', [KampanyeController::class, 'store'])->name('store');
                 Route::put('/{kampanye}', [KampanyeController::class, 'update'])->name('update');
+
+                Route::post('/{kampanye}/biaya', [KampanyeKonsolController::class, 'simpanBiaya'])
+                    ->name('biaya.simpan');
+                Route::delete('/{kampanye}/biaya/{biaya}', [KampanyeKonsolController::class, 'hapusBiaya'])
+                    ->name('biaya.hapus');
+                Route::put('/{kampanye}/target', [KampanyeKonsolController::class, 'simpanTarget'])
+                    ->name('target.simpan');
+                Route::post('/{kampanye}/konten', [KampanyeKonsolController::class, 'simpanKonten'])
+                    ->name('konten.simpan');
+                Route::delete('/{kampanye}/konten/{konten}', [KampanyeKonsolController::class, 'hapusKonten'])
+                    ->name('konten.hapus');
             });
         });
 

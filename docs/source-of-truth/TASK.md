@@ -2589,21 +2589,30 @@ bagian 32 tidak sebut. Checklist rinci disusun setelah Gate 37 lulus.
 ## Urutan pengerjaan
 
 `MARKETING.md` bagian 32 sudah menetapkan urutan untuk tujuh butir, dan urutan
-itu dipakai apa adanya. Tiga butir sisanya — 38.03, 38.07, dan 38.08 — tidak
-disebut di sana, jadi penempatannya ditentukan ketergantungan, bukan selera:
+itu dipakai apa adanya kecuali satu pengecualian yang disebut di bawah. Tiga
+butir sisanya — 38.03, 38.07, dan 38.08 — tidak disebut di sana, jadi
+penempatannya ditentukan ketergantungan, bukan selera:
 
 ```text
 1.  38.08 Kampanye lanjutan     tanpa ketergantungan; membuka CAC yang kini kosong
 2.  38.03 Demo management       membuka tahap Demo di funnel yang kini selalu nol
 3.  38.01 WhatsApp automation   bagian 32 butir 11
 4.  38.02 Social scheduler      bagian 32 butir 12
-5.  38.09 Partner program       bagian 32 butir 13
-6.  38.06 Eksperimen A/B        bagian 32 butir 14
-7.  38.04 SEO manager           bagian 32 butir 15
-8.  38.05 Lead magnet           bagian 32 butir 16
-9.  38.10 Advanced attribution  bagian 32 butir 17
-10. 38.07 Pricing presentation  presentasi saja, tidak menghalangi apa pun
+5.  38.06 Eksperimen A/B        bagian 32 butir 14
+6.  38.04 SEO manager           bagian 32 butir 15
+7.  38.05 Lead magnet           bagian 32 butir 16
+8.  38.10 Advanced attribution  bagian 32 butir 17
+9.  38.07 Pricing presentation  presentasi saja, tidak menghalangi apa pun
+10. 38.09 Partner program       ditunda ke paling akhir atas keputusan pemilik
 ```
+
+Partner program berpindah dari butir 13 bagian 32 ke urutan terakhir. Itu satu-
+satunya penyimpangan dari urutan dokumen, dan diambil sebagai keputusan pemilik
+produk, bukan karena alasan teknis. Konsekuensinya dicatat supaya tidak lupa:
+KPI `revenue_partner` dan alert `komisi_partner_tertunda` tetap kosong lebih
+lama, dan pemicu otomasi `PartnerMengirimLead` tetap tanpa sumber sampai butir
+itu dikerjakan. Ketiganya sudah menyatakan alasannya sendiri di katalog
+masing-masing, jadi dashboard tidak berbohong selama penundaan ini.
 
 Tiap butir dikerjakan dan di-commit sendiri, dengan gate-nya sendiri. Satu gate
 untuk sepuluh modul yang saling lepas berarti tidak ada yang dapat diverifikasi
@@ -2644,17 +2653,29 @@ CHECKOUT_DIMULAI                                domain Langganan, di luar FASE 3
 
 ## 38.08 Kampanye Lanjutan
 
-- [ ] Tabel `KampanyeBiaya`, `KampanyeTarget`, `KampanyeKonten`.
-- [ ] Field kampanye lengkap sesuai bagian 13: budget, audience, landing page, form, offer, UTM.
-- [ ] State `DRAF → SIAP → AKTIF → DIJEDA → SELESAI → DIARSIPKAN` dengan peta transisi.
-- [ ] Channel sesuai daftar tertutup bagian 13, bukan teks bebas.
-- [ ] `cac_per_channel` dihidupkan di `KatalogKpiPemasaran`; alasan kekosongannya dihapus.
-- [ ] `HitungMetrikKampanye` ikut menjumlahkan biaya per hari.
-- [ ] Konsol biaya dan target di halaman kampanye.
-- [ ] `KampanyeBiayaTest`, `HitungCacTest`.
+- [x] Tabel `KampanyeBiaya`, `KampanyeTarget`, `KampanyeKonten`.
+- [x] Field kampanye lengkap sesuai bagian 13: budget, audience, landing page, form, offer, UTM.
+- [x] State `DRAF → SIAP → AKTIF → DIJEDA → SELESAI → DIARSIPKAN` dengan peta transisi.
+- [x] Channel sesuai daftar tertutup bagian 13, bukan teks bebas.
+- [x] `cac_per_channel` dihidupkan di `KatalogKpiPemasaran`; alasan kekosongannya dihapus.
+- [x] `HitungMetrikKampanye` ikut menjumlahkan biaya per hari.
+- [x] Konsol biaya dan target di halaman kampanye.
+- [x] `KampanyeBiayaTest`, `HitungCacTest`.
 
 Biaya dicatat per hari per kampanye, bukan satu angka total, supaya CAC dapat
 dibaca pada rentang tanggal mana pun tanpa membagi rata biaya sebulan.
+
+Biaya tercatat per `ChannelKampanye`, sedangkan pelanggan baru hanya tertaut ke
+kampanye lewat `AttributionPemasaran.KampanyeIdPertama`. CAC per channel karena
+itu hanya pasti untuk kampanye yang berjalan di satu channel. Kampanye
+multi-channel tidak dibagi rata: biaya dan pelanggan barunya dilaporkan terpisah
+sebagai angka yang tidak dapat dipecah, lengkap dengan daftar kampanyenya. Kartu
+KPI `cac_per_channel` menampilkan CAC gabungan seluruh kampanye; pecahannya
+dibaca di panel CAC.
+
+Kampanye baru selalu lahir sebagai draf. Tanpa aturan itu peta transisi tidak
+ada gunanya: siapa pun dapat membuat kampanye langsung berstatus Aktif dan
+melewati jalur yang dijaga.
 
 **Gate 38.08.** CAC per channel terbaca di dashboard dan angkanya sama dengan
 biaya dibagi pelanggan baru yang dihitung ulang langsung dari tabelnya.

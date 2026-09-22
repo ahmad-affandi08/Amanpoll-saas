@@ -188,14 +188,16 @@ final class KatalogKpiPemasaran
                 'Referral',
             ),
 
-            // Menunggu fase berikutnya ------------------------------------
             new DefinisiKpiPemasaran(
                 self::CAC_PER_CHANNEL, 'CAC per Channel', KelompokKpiPemasaran::Channel, SatuanKpi::Uang,
-                'Biaya kampanye per channel / jumlah pelanggan baru dari channel itu.',
-                'KampanyeBiaya',
-                belumTersedia: 'Tabel KampanyeBiaya lahir di FASE 38.08; tanpa angka biaya, CAC hanya tebakan.',
+                'SUM(KampanyeBiaya.Jumlah) / jumlah pelanggan baru seluruh kampanye. Kartu ini menampilkan '
+                .'CAC gabungan; pecahannya per channel hanya pasti untuk kampanye berchannel tunggal dan '
+                .'dirinci di panel CAC.',
+                'KampanyeBiaya, Trial, AttributionPemasaran',
                 naikItuBaik: false,
             ),
+
+            // Menunggu fase berikutnya ------------------------------------
             new DefinisiKpiPemasaran(
                 self::REVENUE_PARTNER, 'Partner-sourced Revenue', KelompokKpiPemasaran::Channel, SatuanKpi::Uang,
                 'SUM(PembayaranLangganan.Jumlah) dari pelanggan yang sumbernya satu partner.',

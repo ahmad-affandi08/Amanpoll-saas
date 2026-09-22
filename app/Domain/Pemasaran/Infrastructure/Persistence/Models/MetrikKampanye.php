@@ -24,6 +24,7 @@ final class MetrikKampanye extends ModelDasar
         'Teraktivasi',
         'Bayar',
         'Revenue',
+        'Biaya',
         'DihitungPada',
     ];
 
@@ -37,6 +38,7 @@ final class MetrikKampanye extends ModelDasar
             'Teraktivasi' => 'integer',
             'Bayar' => 'integer',
             'Revenue' => 'decimal:2',
+            'Biaya' => 'decimal:2',
             'DihitungPada' => 'immutable_datetime',
         ];
     }

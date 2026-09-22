@@ -76,6 +76,7 @@ abstract class KasusGrowth extends KasusPemasaran
         ?CarbonImmutable $pada = null,
         string $perangkat = 'Desktop',
         string $landing = '/',
+        ?string $kampanyeId = null,
     ): string {
         $pengenal = (string) Str::ulid();
         $waktu = $pada ?? $this->hariPerjalanan();
@@ -95,6 +96,7 @@ abstract class KasusGrowth extends KasusPemasaran
             'MediumPertama' => 'cpc',
             'LandingPertama' => $landing,
             'SentuhanPertamaPada' => $waktu,
+            'KampanyeIdPertama' => $kampanyeId,
             'SumberTerakhir' => $channel,
             'MediumTerakhir' => 'cpc',
             'LandingTerakhir' => $landing,

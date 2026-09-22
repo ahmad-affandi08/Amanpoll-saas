@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-/** Lima kueri agregat untuk seluruh kampanye sekaligus, hasilnya disimpan agar dashboard tidak menghitung ulang (MARKETING.md 5, 37.05). */
+/** Tujuh kueri agregat untuk seluruh kampanye sekaligus, hasilnya disimpan agar dashboard tidak menghitung ulang (MARKETING.md 5, 37.05). */
 final class HitungMetrikKampanye implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -43,6 +43,7 @@ final class HitungMetrikKampanye implements ShouldQueue
         $this->serap($ringkasan, $this->trial($hari, $akhir, 'TeraktivasiPada'), 'Teraktivasi');
         $this->serap($ringkasan, $this->trial($hari, $akhir, 'KonversiPada'), 'Bayar');
         $this->serap($ringkasan, $this->revenue($hari, $akhir), 'Revenue');
+        $this->serap($ringkasan, $this->biaya($hari), 'Biaya');
 
         foreach ($ringkasan as $baris) {
             $this->simpan($hari, $baris, $kunci);
@@ -59,7 +60,8 @@ final class HitungMetrikKampanye implements ShouldQueue
             $ringkasan[$kunci] ??= [
                 'kampanye' => $satu['kampanye'],
                 'channel' => $satu['channel'],
-                'Visitor' => 0, 'Lead' => 0, 'Trial' => 0, 'Teraktivasi' => 0, 'Bayar' => 0, 'Revenue' => 0.0,
+                'Visitor' => 0, 'Lead' => 0, 'Trial' => 0, 'Teraktivasi' => 0, 'Bayar' => 0,
+                'Revenue' => 0.0, 'Biaya' => 0.0,
             ];
 
             $ringkasan[$kunci][$kolom] = $satu['nilai'];
@@ -146,6 +148,30 @@ final class HitungMetrikKampanye implements ShouldQueue
     }
 
     /**
+     * Biaya dicatat per channel kampanye, bukan per sumber attribution, jadi ia dijumlahkan ke
+     * baris tingkat kampanye (channel kosong) agar totalnya tetap tepat tanpa mengarang pecahannya.
+     *
+     * @return array<string, array{kampanye: string|null, channel: string|null, nilai: float}>
+     */
+    private function biaya(CarbonImmutable $hari): array
+    {
+        $baris = DB::table('KampanyeBiaya')
+            ->where('Tanggal', $hari->toDateString())
+            ->groupBy('KampanyeId')
+            ->selectRaw('KampanyeId as kampanye, sum(Jumlah) as nilai')
+            ->get();
+
+        $hasil = [];
+
+        foreach ($baris as $satu) {
+            $kampanye = (string) $satu->kampanye;
+            $hasil[$kampanye.'|'] = ['kampanye' => $kampanye, 'channel' => null, 'nilai' => (float) $satu->nilai];
+        }
+
+        return $hasil;
+    }
+
+    /**
      * @param  Collection<int, \stdClass>  $baris
      * @return array<string, array{kampanye: string|null, channel: string|null, nilai: float}>
      */
@@ -194,6 +220,7 @@ final class HitungMetrikKampanye implements ShouldQueue
                 'Teraktivasi' => (int) $baris['Teraktivasi'],
                 'Bayar' => (int) $baris['Bayar'],
                 'Revenue' => round((float) $baris['Revenue'], 2),
+                'Biaya' => round((float) $baris['Biaya'], 2),
                 'DihitungPada' => CarbonImmutable::now(),
             ],
         );

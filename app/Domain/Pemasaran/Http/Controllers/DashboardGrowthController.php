@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Http\Controllers;
 
+use App\Domain\Pemasaran\Application\Services\PenghitungCacKampanye;
 use App\Domain\Pemasaran\Application\Services\PenghitungKpiPemasaran;
 use App\Domain\Pemasaran\Application\Services\PenyusunFunnelGrowth;
 use App\Domain\Pemasaran\Domain\Enums\TahapFunnelGrowth;
@@ -27,6 +28,7 @@ final class DashboardGrowthController extends Controller
     public function __construct(
         private readonly PenyusunFunnelGrowth $funnel,
         private readonly PenghitungKpiPemasaran $kpi,
+        private readonly PenghitungCacKampanye $cac,
     ) {}
 
     public function index(Request $request): Response
@@ -42,6 +44,8 @@ final class DashboardGrowthController extends Controller
             'funnel' => $this->funnelUntukLayar($funnel),
             'kpi' => $this->kpiUntukLayar($filter, $funnel),
             'revenuePerChannel' => $this->kpi->revenuePerChannel($filter),
+            'cacPerChannel' => $this->cac->perChannel($filter),
+            'cacTakTerpecah' => $this->cac->takTerpecah($filter),
             'kampanye' => $this->kampanye($filter),
             'halaman' => $this->halaman($filter),
             'alert' => $this->alert(),
@@ -130,6 +134,7 @@ final class DashboardGrowthController extends Controller
                 'Trial' => (int) $kelompok->sum('Trial'),
                 'Bayar' => (int) $kelompok->sum('Bayar'),
                 'Revenue' => round((float) $kelompok->sum('Revenue'), 2),
+                'Biaya' => round((float) $kelompok->sum('Biaya'), 2),
             ];
         }
 

@@ -189,7 +189,7 @@ final class DashboardGrowthTest extends KasusGrowth
         $kampanye = Kampanye::create([
             'Kode' => $kode,
             'Nama' => 'Kampanye '.$kode,
-            'Objective' => 'Akuisisi',
+            'Objective' => 'Lead',
             'Status' => 'Aktif',
         ]);
 
