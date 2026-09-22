@@ -8,13 +8,18 @@ use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuHentiAset;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\Inspeksi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -214,5 +219,41 @@ final class Aset extends ModelDasar
     public function pelaksanaanKalibrasi(): HasMany
     {
         return $this->hasMany(PelaksanaanKalibrasi::class, 'AsetId', 'Id')->latest('TanggalKalibrasi');
+    }
+
+    /**
+     * @return HasMany<Keluhan, $this>
+     */
+    public function keluhan(): HasMany
+    {
+        return $this->hasMany(Keluhan::class, 'AsetId', 'Id')->latest('DilaporkanPada');
+    }
+
+    /**
+     * Satu perintah kerja dapat menyentuh beberapa aset, jadi relasinya lewat tabel antara.
+     *
+     * @return BelongsToMany<PerintahKerja, $this>
+     */
+    public function perintahKerja(): BelongsToMany
+    {
+        return $this->belongsToMany(PerintahKerja::class, 'PerintahKerjaAset', 'AsetId', 'PerintahKerjaId')
+            ->withPivot(['Utama', 'KondisiAwal', 'KondisiAkhir'])
+            ->latest('PerintahKerja.DibuatPada');
+    }
+
+    /**
+     * @return HasMany<Inspeksi, $this>
+     */
+    public function inspeksi(): HasMany
+    {
+        return $this->hasMany(Inspeksi::class, 'AsetId', 'Id')->latest('DijadwalkanPada');
+    }
+
+    /**
+     * @return HasMany<WaktuHentiAset, $this>
+     */
+    public function waktuHenti(): HasMany
+    {
+        return $this->hasMany(WaktuHentiAset::class, 'AsetId', 'Id')->latest('MulaiPada');
     }
 }

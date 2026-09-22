@@ -11,4 +11,6 @@ export const ruteAset = {
   penanggungJawab: (id: string) => `/aset/${id}/penanggung-jawab`,
   relasi: (id: string) => `/aset/${id}/relasi`,
   riwayatLokasi: (id: string) => `/aset/${id}/riwayat-lokasi`,
+  riwayatPemeliharaan: (id: string) => `/aset/${id}/riwayat-pemeliharaan`,
+  riwayatKalibrasi: (id: string) => `/aset/${id}/riwayat-kalibrasi`,
 };

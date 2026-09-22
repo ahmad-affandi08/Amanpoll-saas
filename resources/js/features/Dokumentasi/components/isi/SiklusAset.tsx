@@ -65,10 +65,15 @@ export function SiklusAset() {
         <P>Halaman detail aset saat ini menyimpan riwayat ini, masing-masing di tabnya sendiri:</P>
         <Daftar>
           <Butir>
-            <Ui>Lokasi</Ui> — seluruh perpindahan lokasi beserta tanggalnya.
+            <Ui>Pemeliharaan</Ui> — keluhan, perintah kerja, inspeksi, dan waktu henti yang pernah menyentuh
+            aset ini, dengan ringkasan jumlah perbaikan dan total waktu hentinya.
           </Butir>
           <Butir>
-            <Ui>Penanggung Jawab</Ui> — pergantian pemegang aset.
+            <Ui>Kalibrasi</Ui> — rencana kalibrasi beserta seluruh pelaksanaannya, ditambah hasil terakhir dan
+            jatuh tempo berikutnya.
+          </Butir>
+          <Butir>
+            <Ui>Lokasi</Ui> dan <Ui>Penanggung Jawab</Ui> — perpindahan lokasi dan pergantian pemegang.
           </Butir>
           <Butir>
             <Ui>Nilai</Ui>, <Ui>Garansi</Ui>, <Ui>Meter</Ui> — riwayat penilaian, masa garansi, dan pembacaan
@@ -79,10 +84,9 @@ export function SiklusAset() {
           </Butir>
         </Daftar>
         <Catatan>
-          Riwayat pemeliharaan dan kalibrasi <Tegas>belum</Tegas> ditampilkan di halaman aset. Datanya
-          tercatat lengkap, tetapi untuk saat ini dibaca dari menu modulnya: keluhan dan perintah kerja di{' '}
-          <Jalur ruas={['Operasional & Aset', 'Pemeliharaan']} />, dan pelaksanaan kalibrasi di{' '}
-          <Jalur ruas={['Operasional & Aset', 'Kalibrasi']} />, disaring per aset.
+          Tiap tab memuat datanya sendiri saat dibuka, jadi membuka halaman aset tidak menarik seluruh
+          riwayatnya sekaligus. Daftar yang panjang dipotong pada 50 terbaru, dan jumlah seluruhnya tetap
+          disebutkan di kanan judul bagian.
         </Catatan>
         <P>
           Inilah alasan seluruh perubahan sebaiknya dilakukan lewat menu yang semestinya, bukan lewat

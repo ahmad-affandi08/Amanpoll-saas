@@ -175,3 +175,98 @@ export interface FilterAset {
   urutkan?: string;
   arah?: string;
 }
+
+/** Riwayat operasional aset, dibaca tab Pemeliharaan dan Kalibrasi. */
+export interface DaftarRiwayat<T> {
+  total: number;
+  data: T[];
+}
+
+export interface KeluhanAset {
+  Id: string;
+  Nomor: string;
+  Judul: string;
+  Kategori: string | null;
+  Prioritas: string;
+  Status: string;
+  DilaporkanPada: string;
+  DitutupPada: string | null;
+}
+
+export interface PerintahKerjaAset {
+  Id: string;
+  Nomor: string;
+  Judul: string;
+  Jenis: string;
+  Status: string;
+  Utama: boolean;
+  KondisiAwal: string | null;
+  KondisiAkhir: string | null;
+  DijadwalkanMulaiPada: string | null;
+  DiselesaikanPada: string | null;
+}
+
+export interface InspeksiAset {
+  Id: string;
+  Nomor: string;
+  Status: string;
+  Hasil: string | null;
+  Temuan: string | null;
+  DijadwalkanPada: string | null;
+  DilaksanakanPada: string | null;
+}
+
+export interface WaktuHentiAset {
+  Id: string;
+  Jenis: string | null;
+  Alasan: string | null;
+  DurasiMenit: number | null;
+  MulaiPada: string;
+  SelesaiPada: string | null;
+}
+
+export interface RiwayatPemeliharaanAset {
+  ringkasan: {
+    JumlahKeluhan: number;
+    JumlahPerintahKerja: number;
+    JumlahInspeksi: number;
+    TotalMenitHenti: number;
+    TerakhirDikerjakanPada: string | null;
+  };
+  keluhan: DaftarRiwayat<KeluhanAset>;
+  perintahKerja: DaftarRiwayat<PerintahKerjaAset>;
+  inspeksi: DaftarRiwayat<InspeksiAset>;
+  waktuHenti: DaftarRiwayat<WaktuHentiAset>;
+}
+
+export interface RencanaKalibrasiAset {
+  Id: string;
+  JenisKalibrasi: string | null;
+  Penyedia: string | null;
+  IntervalHari: number;
+  TanggalBerikutnya: string;
+  Aktif: boolean;
+}
+
+export interface PelaksanaanKalibrasiAset {
+  Id: string;
+  Nomor: string;
+  JenisKalibrasi: string | null;
+  Penyedia: string | null;
+  Hasil: string | null;
+  NomorSertifikat: string | null;
+  TanggalKalibrasi: string;
+  TanggalBerlakuSampai: string | null;
+}
+
+export interface RiwayatKalibrasiAset {
+  ringkasan: {
+    JumlahPelaksanaan: number;
+    TerakhirPada: string | null;
+    HasilTerakhir: string | null;
+    BerlakuSampai: string | null;
+    JatuhTempoBerikutnya: string | null;
+  };
+  rencana: RencanaKalibrasiAset[];
+  pelaksanaan: DaftarRiwayat<PelaksanaanKalibrasiAset>;
+}

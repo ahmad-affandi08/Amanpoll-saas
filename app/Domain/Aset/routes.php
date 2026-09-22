@@ -12,6 +12,7 @@ use App\Domain\Aset\Http\Controllers\ModelAsetController;
 use App\Domain\Aset\Http\Controllers\NilaiAsetController;
 use App\Domain\Aset\Http\Controllers\PembacaanMeterController;
 use App\Domain\Aset\Http\Controllers\RelasiAsetController;
+use App\Domain\Aset\Http\Controllers\RiwayatAsetController;
 use App\Domain\Aset\Http\Controllers\RiwayatLokasiAsetController;
 use App\Domain\Aset\Http\Controllers\RiwayatPenanggungJawabAsetController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,9 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::get('/{aset}', [AsetController::class, 'show'])->name('show');
             Route::put('/{aset}', [AsetController::class, 'update'])->name('update');
             Route::delete('/{aset}', [AsetController::class, 'destroy'])->name('destroy');
+
+            Route::get('/{aset}/riwayat-pemeliharaan', [RiwayatAsetController::class, 'pemeliharaan'])->name('riwayat-pemeliharaan.index');
+            Route::get('/{aset}/riwayat-kalibrasi', [RiwayatAsetController::class, 'kalibrasi'])->name('riwayat-kalibrasi.index');
 
             Route::get('/{aset}/riwayat-lokasi', [RiwayatLokasiAsetController::class, 'index'])->name('riwayat-lokasi.index');
             Route::post('/{aset}/riwayat-lokasi', [RiwayatLokasiAsetController::class, 'store'])->name('riwayat-lokasi.store');

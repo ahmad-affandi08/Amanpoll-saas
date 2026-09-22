@@ -16,6 +16,8 @@ import { TabRelasi } from '@/features/Aset/components/TabRelasi';
 import { TabGaransi } from '@/features/Aset/components/TabGaransi';
 import { TabNilai } from '@/features/Aset/components/TabNilai';
 import { TabMeter } from '@/features/Aset/components/TabMeter';
+import { TabPemeliharaan } from '@/features/Aset/components/TabPemeliharaan';
+import { TabKalibrasi } from '@/features/Aset/components/TabKalibrasi';
 
 interface Props {
   aset: Aset;
@@ -52,6 +54,8 @@ export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unit
           <TabsTrigger value="garansi">Garansi</TabsTrigger>
           <TabsTrigger value="nilai">Nilai</TabsTrigger>
           <TabsTrigger value="meter">Meter</TabsTrigger>
+          <TabsTrigger value="pemeliharaan">Pemeliharaan</TabsTrigger>
+          <TabsTrigger value="kalibrasi">Kalibrasi</TabsTrigger>
           <TabsTrigger value="kolaborasi">Kolaborasi</TabsTrigger>
         </TabsList>
         <TabsContent value="info">
@@ -80,6 +84,12 @@ export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unit
         </TabsContent>
         <TabsContent value="meter">
           <TabMeter aset={aset} />
+        </TabsContent>
+        <TabsContent value="pemeliharaan">
+          <TabPemeliharaan aset={aset} />
+        </TabsContent>
+        <TabsContent value="kalibrasi">
+          <TabKalibrasi aset={aset} />
         </TabsContent>
         <TabsContent value="kolaborasi">
           <PanelKolaborasi jenisEntitas="Aset" entitasId={aset.Id} />
