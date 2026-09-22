@@ -12,6 +12,7 @@ use App\Domain\Aset\Http\Resources\MerekResource;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,6 +29,7 @@ final class MerekController extends Controller
             ->urut(['Nama', 'NegaraAsal'], bawaan: 'Nama');
 
         return Inertia::render('Merek/Index', [
+            'wajib' => ['merek' => AturanWajib::untuk(SimpanMerekRequest::class)],
             'merek' => MerekResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
         ]);

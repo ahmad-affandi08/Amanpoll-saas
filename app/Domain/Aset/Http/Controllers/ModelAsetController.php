@@ -16,6 +16,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,6 +34,7 @@ final class ModelAsetController extends Controller
             ->faset(['KategoriAsetId', 'MerekId']);
 
         return Inertia::render('ModelAset/Index', [
+            'wajib' => ['modelAset' => AturanWajib::untuk(SimpanModelAsetRequest::class)],
             'modelAset' => ModelAsetResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),

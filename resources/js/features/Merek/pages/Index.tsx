@@ -22,13 +22,16 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   merek: Paginasi<Merek>;
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogFormMerek({ merek }: { merek: Merek | null }) {
+function DialogFormMerek({ merek, wajib }: { merek: Merek | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     merek
@@ -62,40 +65,42 @@ function DialogFormMerek({ merek }: { merek: Merek | null }) {
         <DialogHeader>
           <DialogTitle>{merek ? 'Ubah Merek' : 'Tambah Merek'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Negara Asal</Label>
-            <Input
-              value={form.data.NegaraAsal}
-              onChange={(e) => form.setData('NegaraAsal', e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Website</Label>
-            <Input
-              value={form.data.Website}
-              onChange={(e) => form.setData('Website', e.target.value)}
-              placeholder="https://"
-            />
-            {form.errors.Website && <p className="text-sm text-destructive">{form.errors.Website}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="NegaraAsal">Negara Asal</Label>
+              <Input
+                value={form.data.NegaraAsal}
+                onChange={(e) => form.setData('NegaraAsal', e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label nama="Website">Website</Label>
+              <Input
+                value={form.data.Website}
+                onChange={(e) => form.setData('Website', e.target.value)}
+                placeholder="https://"
+              />
+              {form.errors.Website && <p className="text-sm text-destructive">{form.errors.Website}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function MerekIndex({ merek, filter }: Props) {
+export default function MerekIndex({ merek, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Merek) => {
     if (
@@ -128,7 +133,7 @@ export default function MerekIndex({ merek, filter }: Props) {
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormMerek merek={row.original} />
+            <DialogFormMerek merek={row.original} wajib={wajib.merek} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -139,7 +144,7 @@ export default function MerekIndex({ merek, filter }: Props) {
         meta: { label: 'Aksi' },
       },
     ],
-    [],
+    [wajib],
   );
 
   return (
@@ -150,7 +155,7 @@ export default function MerekIndex({ merek, filter }: Props) {
         deskripsi="Katalog merek/produsen untuk model aset."
         aksi={
           <>
-            <DialogFormMerek merek={null} />
+            <DialogFormMerek merek={null} wajib={wajib.merek} />
           </>
         }
         className="mb-6"

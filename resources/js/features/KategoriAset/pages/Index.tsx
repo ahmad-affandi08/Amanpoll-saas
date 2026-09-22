@@ -26,6 +26,7 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 /** Hanya Id dan Nama: pemilih induk memuat seluruh kategori, bukan barisnya. */
 interface IndukRingkas {
@@ -37,14 +38,18 @@ interface Props {
   kategoriAset: Paginasi<KategoriAset>;
   pilihanInduk: IndukRingkas[];
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 function DialogFormKategoriAset({
   kategori,
   semuaKategori,
+  wajib,
 }: {
   kategori: KategoriAset | null;
   semuaKategori: IndukRingkas[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
@@ -98,95 +103,97 @@ function DialogFormKategoriAset({
         <DialogHeader>
           <DialogTitle>{kategori ? 'Ubah Kategori Aset' : 'Tambah Kategori Aset'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Kategori Induk</Label>
-            <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tidak ada (kategori utama)</SelectItem>
-                {semuaKategori
-                  .filter((k) => k.Id !== kategori?.Id)
-                  .map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            {form.errors.IndukId && <p className="text-sm text-destructive">{form.errors.IndukId}</p>}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Umur Manfaat (bulan)</Label>
+              <Label nama="IndukId">Kategori Induk</Label>
+              <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Tidak ada (kategori utama)</SelectItem>
+                  {semuaKategori
+                    .filter((k) => k.Id !== kategori?.Id)
+                    .map((k) => (
+                      <SelectItem key={k.Id} value={k.Id}>
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              {form.errors.IndukId && <p className="text-sm text-destructive">{form.errors.IndukId}</p>}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="UmurManfaatBulan">Umur Manfaat (bulan)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={form.data.UmurManfaatBulan}
+                  onChange={(e) => form.setData('UmurManfaatBulan', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="MetodePenyusutanBawaan">Metode Penyusutan Bawaan</Label>
+                <Input
+                  value={form.data.MetodePenyusutanBawaan}
+                  onChange={(e) => form.setData('MetodePenyusutanBawaan', e.target.value)}
+                  placeholder="mis. GarisLurus"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label nama="PersentaseNilaiResidu">Persentase Nilai Residu (%)</Label>
               <Input
                 type="number"
-                min={1}
-                value={form.data.UmurManfaatBulan}
-                onChange={(e) => form.setData('UmurManfaatBulan', e.target.value)}
+                min={0}
+                max={100}
+                value={form.data.PersentaseNilaiResidu}
+                onChange={(e) => form.setData('PersentaseNilaiResidu', e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label>Metode Penyusutan Bawaan</Label>
-              <Input
-                value={form.data.MetodePenyusutanBawaan}
-                onChange={(e) => form.setData('MetodePenyusutanBawaan', e.target.value)}
-                placeholder="mis. GarisLurus"
-              />
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.MemerlukanKalibrasi}
+                  onCheckedChange={(v) => form.setData('MemerlukanKalibrasi', v === true)}
+                />
+                Memerlukan Kalibrasi
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.MemerlukanPemeliharaan}
+                  onCheckedChange={(v) => form.setData('MemerlukanPemeliharaan', v === true)}
+                />
+                Memerlukan Pemeliharaan
+              </label>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Persentase Nilai Residu (%)</Label>
-            <Input
-              type="number"
-              min={0}
-              max={100}
-              value={form.data.PersentaseNilaiResidu}
-              onChange={(e) => form.setData('PersentaseNilaiResidu', e.target.value)}
-            />
-          </div>
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.MemerlukanKalibrasi}
-                onCheckedChange={(v) => form.setData('MemerlukanKalibrasi', v === true)}
-              />
-              Memerlukan Kalibrasi
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.MemerlukanPemeliharaan}
-                onCheckedChange={(v) => form.setData('MemerlukanPemeliharaan', v === true)}
-              />
-              Memerlukan Pemeliharaan
-            </label>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter }: Props) {
+export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: KategoriAset) => {
     if (
@@ -237,7 +244,11 @@ export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter }
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormKategoriAset kategori={row.original} semuaKategori={pilihanInduk} />
+            <DialogFormKategoriAset
+              kategori={row.original}
+              semuaKategori={pilihanInduk}
+              wajib={wajib.kategoriAset}
+            />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -248,7 +259,7 @@ export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter }
         meta: { label: 'Aksi' },
       },
     ],
-    [kategoriAset],
+    [kategoriAset, wajib],
   );
 
   return (
@@ -259,7 +270,7 @@ export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter }
         deskripsi="Klasifikasi aset beserta default penyusutan dan kebutuhan pemeliharaan/kalibrasi."
         aksi={
           <>
-            <DialogFormKategoriAset kategori={null} semuaKategori={pilihanInduk} />
+            <DialogFormKategoriAset kategori={null} semuaKategori={pilihanInduk} wajib={wajib.kategoriAset} />
           </>
         }
         className="mb-6"

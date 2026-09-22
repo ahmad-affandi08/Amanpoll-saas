@@ -26,22 +26,27 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   modelAset: Paginasi<ModelAset>;
   filter: FilterDaftar;
   kategoriAset: KategoriAset[];
   merek: Merek[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 function DialogFormModelAset({
   model,
   kategoriAset,
   merek,
+  wajib,
 }: {
   model: ModelAset | null;
   kategoriAset: KategoriAset[];
   merek: Merek[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const [errorSpesifikasi, setErrorSpesifikasi] = useState<string | null>(null);
@@ -112,116 +117,118 @@ function DialogFormModelAset({
         <DialogHeader>
           <DialogTitle>{model ? 'Ubah Model Aset' : 'Tambah Model Aset'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Kategori</Label>
-              <Select
-                value={form.data.KategoriAsetId}
-                onValueChange={(v) => form.setData('KategoriAsetId', v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {kategoriAset.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {form.errors.KategoriAsetId && (
-                <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>
-              )}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="KategoriAsetId">Kategori</Label>
+                <Select
+                  value={form.data.KategoriAsetId}
+                  onValueChange={(v) => form.setData('KategoriAsetId', v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {kategoriAset.map((k) => (
+                      <SelectItem key={k.Id} value={k.Id}>
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {form.errors.KategoriAsetId && (
+                  <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label nama="MerekId">Merek</Label>
+                <Select value={form.data.MerekId} onValueChange={(v) => form.setData('MerekId', v)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Tanpa merek</SelectItem>
+                    {merek.map((m) => (
+                      <SelectItem key={m.Id} value={m.Id}>
+                        {m.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Merek</Label>
-              <Select value={form.data.MerekId} onValueChange={(v) => form.setData('MerekId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa merek</SelectItem>
-                  {merek.map((m) => (
-                    <SelectItem key={m.Id} value={m.Id}>
-                      {m.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.KodeModel}
-              onUbah={(nilai) => form.setData('KodeModel', nilai)}
-              galat={form.errors.KodeModel}
-              label="Kode Model"
-              id="KodeModel"
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Produsen</Label>
-            <Input value={form.data.Produsen} onChange={(e) => form.setData('Produsen', e.target.value)} />
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label>Interval Pemeliharaan (hari)</Label>
-              <Input
-                type="number"
-                min={1}
-                value={form.data.IntervalPemeliharaanHari}
-                onChange={(e) => form.setData('IntervalPemeliharaanHari', e.target.value)}
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.KodeModel}
+                onUbah={(nilai) => form.setData('KodeModel', nilai)}
+                galat={form.errors.KodeModel}
+                label="Kode Model"
+                id="KodeModel"
               />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Interval Kalibrasi (hari)</Label>
-              <Input
-                type="number"
-                min={1}
-                value={form.data.IntervalKalibrasiHari}
-                onChange={(e) => form.setData('IntervalKalibrasiHari', e.target.value)}
-              />
+              <Label nama="Produsen">Produsen</Label>
+              <Input value={form.data.Produsen} onChange={(e) => form.setData('Produsen', e.target.value)} />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label nama="IntervalPemeliharaanHari">Interval Pemeliharaan (hari)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={form.data.IntervalPemeliharaanHari}
+                  onChange={(e) => form.setData('IntervalPemeliharaanHari', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="IntervalKalibrasiHari">Interval Kalibrasi (hari)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={form.data.IntervalKalibrasiHari}
+                  onChange={(e) => form.setData('IntervalKalibrasiHari', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="UmurManfaatBulan">Umur Manfaat (bulan)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={form.data.UmurManfaatBulan}
+                  onChange={(e) => form.setData('UmurManfaatBulan', e.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Umur Manfaat (bulan)</Label>
-              <Input
-                type="number"
-                min={1}
-                value={form.data.UmurManfaatBulan}
-                onChange={(e) => form.setData('UmurManfaatBulan', e.target.value)}
+              <Label nama="Spesifikasi">Spesifikasi Teknis (JSON, opsional)</Label>
+              <Textarea
+                value={form.data.Spesifikasi}
+                onChange={(e) => form.setData('Spesifikasi', e.target.value)}
+                rows={4}
+                placeholder='{"Daya": "5 kW", "Tegangan": "220V"}'
+                className="font-mono text-xs"
               />
+              {errorSpesifikasi && <p className="text-sm text-destructive">{errorSpesifikasi}</p>}
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Spesifikasi Teknis (JSON, opsional)</Label>
-            <Textarea
-              value={form.data.Spesifikasi}
-              onChange={(e) => form.setData('Spesifikasi', e.target.value)}
-              rows={4}
-              placeholder='{"Daya": "5 kW", "Tegangan": "220V"}'
-              className="font-mono text-xs"
-            />
-            {errorSpesifikasi && <p className="text-sm text-destructive">{errorSpesifikasi}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter }: Props) {
+export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: ModelAset) => {
     if (
@@ -272,7 +279,12 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter 
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormModelAset model={row.original} kategoriAset={kategoriAset} merek={merek} />
+            <DialogFormModelAset
+              model={row.original}
+              kategoriAset={kategoriAset}
+              merek={merek}
+              wajib={wajib.modelAset}
+            />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -283,7 +295,7 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter 
         meta: { label: 'Aksi' },
       },
     ],
-    [kategoriAset, merek],
+    [kategoriAset, merek, wajib],
   );
 
   return (
@@ -294,7 +306,12 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter 
         deskripsi="Master model/tipe aset lengkap dengan metadata teknis dan interval pemeliharaan/kalibrasi."
         aksi={
           <>
-            <DialogFormModelAset model={null} kategoriAset={kategoriAset} merek={merek} />
+            <DialogFormModelAset
+              model={null}
+              kategoriAset={kategoriAset}
+              merek={merek}
+              wajib={wajib.modelAset}
+            />
           </>
         }
         className="mb-6"
