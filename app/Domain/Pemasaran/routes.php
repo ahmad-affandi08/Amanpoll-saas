@@ -22,6 +22,7 @@ use App\Domain\Pemasaran\Http\Controllers\RingkasanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\SequenceEmailController;
 use App\Domain\Pemasaran\Http\Controllers\TemplateEmailController;
 use App\Domain\Pemasaran\Http\Controllers\TrialController;
+use App\Domain\Pemasaran\Http\Controllers\WhatsAppPemasaranController;
 use Illuminate\Support\Facades\Route;
 
 // Konsol Growth & Marketing (MARKETING.md 4).
@@ -102,6 +103,28 @@ Route::middleware(['web', 'auth:platform'])
                     Route::post('/{demo}/reset', [DemoPemasaranController::class, 'reset'])->name('reset');
                 });
             });
+
+        // Kanal WhatsApp di balik flagnya sendiri: tanpa akun bisnis, tidak ada yang dapat berangkat.
+        Route::middleware([
+            'izin.platform:'.KatalogIzinPemasaran::WHATSAPP_LIHAT,
+            'fitur.platform:'.KatalogFiturPlatform::WHATSAPP,
+        ])->prefix('whatsapp')->name('whatsapp.')->group(function (): void {
+            Route::get('/', [WhatsAppPemasaranController::class, 'index'])->name('index');
+
+            Route::middleware('izin.platform:'.KatalogIzinPemasaran::WHATSAPP_KELOLA)->group(function (): void {
+                Route::post('/template', [WhatsAppPemasaranController::class, 'simpanTemplate'])
+                    ->name('template.store');
+                Route::put('/template/{template}', [WhatsAppPemasaranController::class, 'perbaruiTemplate'])
+                    ->name('template.update');
+                Route::post('/template/{template}/ajukan', [WhatsAppPemasaranController::class, 'ajukanTemplate'])
+                    ->name('template.ajukan');
+                Route::post('/template/{template}/periksa', [WhatsAppPemasaranController::class, 'periksaTemplate'])
+                    ->name('template.periksa');
+                Route::post('/template/{template}/keputusan', [WhatsAppPemasaranController::class, 'catatKeputusan'])
+                    ->name('template.keputusan');
+                Route::put('/menu', [WhatsAppPemasaranController::class, 'simpanMenu'])->name('menu.simpan');
+            });
+        });
 
         // Kampanye berada di balik flag analitik: tanpa modulnya hidup, tidak ada tempat angkanya dibaca.
         Route::middleware([

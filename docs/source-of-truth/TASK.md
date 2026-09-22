@@ -2714,20 +2714,39 @@ growth, dan reset terjadwal tidak pernah menghapus data di luar dataset demo.
 
 ## 38.01 WhatsApp Automation
 
-- [ ] Tabel `TemplateWhatsAppPemasaran`, `PengirimanWhatsAppPemasaran`.
-- [ ] Kontrak `PenyediaWhatsApp` beserta penyedia palsu untuk test.
-- [ ] Status template mengikuti approval penyedia; template belum disetujui tidak dapat dikirim.
-- [ ] Opt-in dibaca dari `LayananKonsen` yang sama dengan email, bukan daftar kedua.
-- [ ] STOP dan daftar supresi dihormati, diperiksa lagi pada saat kirim.
-- [ ] Frequency cap per nomor per rentang waktu, dari setelan.
-- [ ] Menu dan respons configurable sesuai bagian 16, bukan ditulis di kode.
-- [ ] Aksi otomasi `KirimWhatsApp` masuk registri.
-- [ ] Alert `whatsapp_gagal_kirim` dihidupkan.
-- [ ] `WhatsAppConsentTest`, `WhatsAppIdempotencyTest`.
+- [x] Tabel `TemplateWhatsAppPemasaran`, `PengirimanWhatsAppPemasaran`.
+- [x] Kontrak `PenyediaWhatsApp` beserta penyedia palsu untuk test.
+- [x] Status template mengikuti approval penyedia; template belum disetujui tidak dapat dikirim.
+- [x] Opt-in dibaca dari `LayananKonsen` yang sama dengan email, bukan daftar kedua.
+- [x] STOP dan daftar supresi dihormati, diperiksa lagi pada saat kirim.
+- [x] Frequency cap per nomor per rentang waktu, dari setelan.
+- [x] Menu dan respons configurable sesuai bagian 16, bukan ditulis di kode.
+- [x] Aksi otomasi `KirimWhatsApp` masuk registri.
+- [x] Alert `whatsapp_gagal_kirim` dihidupkan.
+- [x] `WhatsAppConsentTest`, `WhatsAppIdempotencyTest`.
 
 Pengiriman nyata menunggu akun bisnis dan template yang disetujui Meta. Yang
 dibangun di fase ini adalah seluruh jalurnya dengan penyedia palsu, sama seperti
 email di FASE 34; tanpa itu, kanal ini tidak dapat diuji sama sekali.
+
+Agar opt-in benar-benar satu buku, `KonsenPemasaran` dan `DaftarSupresi`
+digeneralkan: kolom `Email` menjadi `Kontak`, `EmailHash` menjadi `KontakHash`,
+dan keduanya mendapat kolom `Kanal`. Kolom bernama `Email` yang berisi nomor
+telepon akan jadi jebakan bagi pembaca berikutnya. Supresinya tetap per kanal:
+berhenti dari WhatsApp tidak mencabut consent email, dan sebaliknya.
+
+Nomor dinormalkan ke E.164 tanpa tanda plus sebelum disimpan atau dibandingkan.
+Tanpa itu `0812-3456`, `+62 812 3456`, dan `628123456` menjadi tiga orang yang
+berbeda, dan satu di antaranya tetap dikirimi setelah mengirim STOP.
+
+Menu bagian 16 lahir sebagai tabel ketiga, `MenuWhatsAppPemasaran`, di luar dua
+tabel yang disebut checklist. Menu adalah daftar berurutan yang harus dapat
+berubah tanpa rilis, jadi ia baris data, bukan kode.
+
+Penyedia bawaan (`PenyediaWhatsAppLog`) hanya menulis ke log dan sengaja tidak
+pernah menyetujui template sendiri: menyetujui berarti berbohong atas nama
+penyedia, dan template yang dikira disetujui akan gagal diam-diam kelak.
+Persetujuan dicatat lewat jalur manual yang masuk audit sampai API-nya ada.
 
 **Gate 38.01.** Nomor yang mengirim STOP tidak pernah menerima pesan berikutnya,
 dan template tanpa persetujuan penyedia tidak dapat berangkat.

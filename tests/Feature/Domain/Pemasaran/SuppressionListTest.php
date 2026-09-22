@@ -120,7 +120,7 @@ final class SuppressionListTest extends KasusEmailPemasaran
         $this->assertTrue(app(LayananKonsen::class)->disupresi('budi@pabrik.test'));
         $this->assertSame(
             AlasanSupresi::Bounce,
-            DaftarSupresi::query()->where('Email', 'budi@pabrik.test')->firstOrFail()->Alasan,
+            DaftarSupresi::query()->where('Kontak', 'budi@pabrik.test')->firstOrFail()->Alasan,
         );
     }
 
@@ -146,19 +146,19 @@ final class SuppressionListTest extends KasusEmailPemasaran
         $konsen->cabut('budi@pabrik.test');
         $konsen->cabut('budi@pabrik.test');
 
-        $this->assertSame(1, DaftarSupresi::query()->where('Email', 'budi@pabrik.test')->count());
+        $this->assertSame(1, DaftarSupresi::query()->where('Kontak', 'budi@pabrik.test')->count());
     }
 
     /** Riwayat consent adalah bukti: pencabutan menambah baris, tidak menimpa yang lama. */
     public function test_riwayat_konsen_tetap_terbaca_sebagai_bukti(): void
     {
         $prospek = $this->buatProspek();
-        $awal = KonsenPemasaran::query()->where('Email', 'budi@pabrik.test')->firstOrFail();
+        $awal = KonsenPemasaran::query()->where('Kontak', 'budi@pabrik.test')->firstOrFail();
 
         app(LayananKonsen::class)->cabut('budi@pabrik.test', AlasanSupresi::Unsubscribe, $prospek);
 
         $riwayat = KonsenPemasaran::query()
-            ->where('Email', 'budi@pabrik.test')
+            ->where('Kontak', 'budi@pabrik.test')
             ->orderBy('DicatatPada')
             ->get();
 

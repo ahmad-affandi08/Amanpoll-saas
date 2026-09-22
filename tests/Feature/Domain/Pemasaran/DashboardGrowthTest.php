@@ -130,20 +130,15 @@ final class DashboardGrowthTest extends KasusGrowth
     /** Alert yang belum punya sumbernya tidak pernah diperiksa, dan katalog menyebut alasannya. */
     public function test_alert_tanpa_sumber_dinyatakan_belum_tersedia(): void
     {
-        foreach ([
-            KatalogAlertPemasaran::WHATSAPP_GAGAL_KIRIM,
-            KatalogAlertPemasaran::KOMISI_PARTNER_TERTUNDA,
-        ] as $kode) {
-            $this->assertTrue(KatalogAlertPemasaran::dikenal($kode));
-            $this->assertFalse(KatalogAlertPemasaran::tersedia($kode));
-        }
+        // Kanal WhatsApp sudah lahir di FASE 38.01; yang tersisa tanpa sumber hanyalah komisi partner.
+        $this->assertTrue(KatalogAlertPemasaran::dikenal(KatalogAlertPemasaran::KOMISI_PARTNER_TERTUNDA));
+        $this->assertFalse(KatalogAlertPemasaran::tersedia(KatalogAlertPemasaran::KOMISI_PARTNER_TERTUNDA));
 
         app(PemeriksaAlertPemasaran::class)->periksa();
 
-        $this->assertSame(0, AlertPemasaran::query()->whereIn('Kode', [
-            KatalogAlertPemasaran::WHATSAPP_GAGAL_KIRIM,
-            KatalogAlertPemasaran::KOMISI_PARTNER_TERTUNDA,
-        ])->count());
+        $this->assertSame(0, AlertPemasaran::query()
+            ->where('Kode', KatalogAlertPemasaran::KOMISI_PARTNER_TERTUNDA)
+            ->count());
     }
 
     public function test_alert_dapat_ditandai_selesai(): void

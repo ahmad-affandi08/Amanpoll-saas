@@ -133,10 +133,10 @@ final class KonsolEmailPemasaranTest extends KasusEmailPemasaran
         app(ProsesPermintaanData::class)->jalankan($permintaan);
 
         $this->assertNull(Prospek::query()->find($prospek->Id));
-        $this->assertSame(0, KonsenPemasaran::query()->where('Email', 'budi@pabrik.test')->count());
+        $this->assertSame(0, KonsenPemasaran::query()->where('Kontak', 'budi@pabrik.test')->count());
         $this->assertNull(PermintaanDataProspek::query()->findOrFail($permintaan->Id)->Email);
         $this->assertSame(0, DaftarSupresi::query()
-            ->where('Email', 'budi@pabrik.test')->count());
+            ->where('Kontak', 'budi@pabrik.test')->count());
     }
 
     /** Alamat yang datanya sudah dihapus tetap tidak boleh menerima surat lagi. */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Domain\Pemasaran\Domain\Enums\KanalPesan;
 use App\Domain\Pemasaran\Domain\Enums\SumberKonsen;
 use App\Shared\Infrastructure\Persistence\HanyaTambah;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
@@ -20,7 +21,8 @@ final class KonsenPemasaran extends ModelDasar
 
     protected $fillable = [
         'ProspekId',
-        'Email',
+        'Kanal',
+        'Kontak',
         'Diberikan',
         'Sumber',
         'VersiKebijakan',
@@ -33,6 +35,7 @@ final class KonsenPemasaran extends ModelDasar
     {
         return [
             'Diberikan' => 'boolean',
+            'Kanal' => KanalPesan::class,
             'Sumber' => SumberKonsen::class,
             'DicatatPada' => 'immutable_datetime',
         ];

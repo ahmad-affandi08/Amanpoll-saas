@@ -67,7 +67,7 @@ final class PerenderTemplateEmail
     }
 
     /** @param array<string, string> $variabel */
-    private function ganti(string $naskah, array $variabel): string
+    public function ganti(string $naskah, array $variabel): string
     {
         $kunci = array_map(static fn (string $nama): string => '{{'.$nama.'}}', array_keys($variabel));
         $naskah = str_replace($kunci, array_values($variabel), $naskah);

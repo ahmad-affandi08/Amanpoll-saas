@@ -35,25 +35,27 @@ final class KonsenPemasaranController extends Controller
         return Inertia::render('Pemasaran/Email/Konsen', [
             'cari' => $cari,
             'supresi' => DaftarSupresi::query()
-                ->when($cari !== '', fn ($kueri) => $kueri->where('Email', 'like', "%{$cari}%"))
+                ->when($cari !== '', fn ($kueri) => $kueri->where('Kontak', 'like', "%{$cari}%"))
                 ->orderByDesc('DitambahkanPada')
                 ->limit(200)
                 ->get()
                 ->map(fn (DaftarSupresi $satu): array => [
                     'Id' => $satu->Id,
-                    'Email' => $satu->Email,
+                    'Kanal' => $satu->Kanal->value,
+                    'Email' => $satu->Kontak,
                     'Alasan' => $satu->Alasan->value,
                     'Catatan' => $satu->Catatan,
                     'DitambahkanPada' => $satu->DitambahkanPada->toIso8601String(),
                 ])->all(),
             'riwayat' => $cari === '' ? [] : KonsenPemasaran::query()
-                ->where('Email', 'like', "%{$cari}%")
+                ->where('Kontak', 'like', "%{$cari}%")
                 ->orderByDesc('DicatatPada')
                 ->limit(100)
                 ->get()
                 ->map(fn (KonsenPemasaran $satu): array => [
                     'Id' => $satu->Id,
-                    'Email' => $satu->Email,
+                    'Kanal' => $satu->Kanal->value,
+                    'Email' => $satu->Kontak,
                     'Diberikan' => $satu->Diberikan,
                     'Sumber' => $satu->Sumber->value,
                     'VersiKebijakan' => $satu->VersiKebijakan,

@@ -84,6 +84,11 @@ Schedule::command('pemasaran:kirim-antrian-email')
     ->everyFiveMinutes()
     ->withoutOverlapping(5);
 
+// Pesan WhatsApp yang jatuh tempo diantrekan tiap lima menit (MARKETING.md 16).
+Schedule::command('pemasaran:kirim-antrian-whatsapp')
+    ->everyFiveMinutes()
+    ->withoutOverlapping(5);
+
 // Status kiriman yang datang belakangan ditarik tiap jam (MARKETING.md 15).
 Schedule::job(new SinkronkanStatusProvider)
     ->hourly()

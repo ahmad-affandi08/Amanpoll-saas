@@ -46,16 +46,19 @@ use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
 use App\Domain\Pemasaran\Application\Services\RegistriDatasetDemo;
 use App\Domain\Pemasaran\Application\Services\RegistriTindakanOtomasi;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaEmailPemasaran;
+use App\Domain\Pemasaran\Domain\Contracts\PenyediaWhatsApp;
 use App\Domain\Pemasaran\Infrastructure\Listeners\CatatPeristiwaRevenue;
 use App\Domain\Pemasaran\Infrastructure\Listeners\PemicuOtomasiPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Listeners\PerekamAktivasiTrial;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Services\DatasetDemoManufaktur;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaEmailLaravel;
+use App\Domain\Pemasaran\Infrastructure\Services\PenyediaWhatsAppLog;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanDaftarkanSequence;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHentikanSequence;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHitungUlangSkor;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanKirimEmail;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanKirimWhatsApp;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanNotifikasiInternal;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanPerpanjangTrial;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanPindahTahap;
@@ -186,6 +189,15 @@ final class AmanpollServiceProvider extends ServiceProvider
             };
         });
 
+        // Penyedia WhatsApp dipilih lewat konfigurasi; bawaannya hanya menulis ke log, bukan mengirim.
+        $this->app->bind(PenyediaWhatsApp::class, function ($app): PenyediaWhatsApp {
+            $kode = (string) config('amanpoll.pemasaran.penyedia_whatsapp', 'Log');
+
+            return match ($kode) {
+                default => $app->make(PenyediaWhatsAppLog::class),
+            };
+        });
+
         // Imbalan referral hanya boleh lewat domain Langganan, tidak pernah dengan menulis Billing dari luar.
         $this->app->bind(PemberiImbalanLangganan::class, PemberiImbalanLanggananBawaan::class);
 
@@ -204,6 +216,7 @@ final class AmanpollServiceProvider extends ServiceProvider
             $app->make(TindakanHentikanSequence::class),
             $app->make(TindakanNotifikasiInternal::class),
             $app->make(TindakanPerpanjangTrial::class),
+            $app->make(TindakanKirimWhatsApp::class),
             $app->make(TindakanWebhook::class),
         ]));
     }

@@ -80,8 +80,8 @@ final class KatalogAlertPemasaran
             self::WHATSAPP_GAGAL_KIRIM => [
                 'tingkat' => TingkatAlertPemasaran::Kritis,
                 'judul' => 'Pengiriman WhatsApp gagal meningkat',
-                'sumber' => 'PengirimanWhatsApp',
-                'belumTersedia' => 'Kanal WhatsApp lahir di FASE 38.01; belum ada kiriman yang dapat gagal.',
+                'sumber' => 'PengirimanWhatsAppPemasaran',
+                'belumTersedia' => null,
             ],
             self::KOMISI_PARTNER_TERTUNDA => [
                 'tingkat' => TingkatAlertPemasaran::Peringatan,

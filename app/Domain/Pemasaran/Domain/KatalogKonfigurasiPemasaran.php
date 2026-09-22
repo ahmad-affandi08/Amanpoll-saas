@@ -23,6 +23,18 @@ final class KatalogKonfigurasiPemasaran
 
     public const EMAIL_SEQUENCE_TRIAL = 'email.sequence_trial';
 
+    public const WHATSAPP_CAP_PER_NOMOR = 'whatsapp.cap_per_nomor';
+
+    public const WHATSAPP_CAP_JENDELA_JAM = 'whatsapp.cap_jendela_jam';
+
+    public const WHATSAPP_KATA_BERHENTI = 'whatsapp.kata_berhenti';
+
+    public const WHATSAPP_SAPAAN_MENU = 'whatsapp.sapaan_menu';
+
+    public const WHATSAPP_BALASAN_TIDAK_DIKENAL = 'whatsapp.balasan_tidak_dikenal';
+
+    public const WHATSAPP_BALASAN_BERHENTI = 'whatsapp.balasan_berhenti';
+
     public const OTOMASI_CAP_EKSEKUSI = 'otomasi.cap_eksekusi';
 
     public const OTOMASI_CAP_PERCOBAAN = 'otomasi.cap_percobaan';
@@ -40,6 +52,8 @@ final class KatalogKonfigurasiPemasaran
     public const ALERT_KAMPANYE_VISITOR_MIN = 'alert.kampanye_visitor_min';
 
     public const ALERT_HALAMAN_VIEW_MIN = 'alert.halaman_view_min';
+
+    public const ALERT_WHATSAPP_GAGAL_MAKS = 'alert.whatsapp_gagal_maks_persen';
 
     /**
      * @return array<string, array{bawaan: mixed, keterangan: string}>
@@ -74,6 +88,34 @@ final class KatalogKonfigurasiPemasaran
             self::EMAIL_CAP_HARIAN => [
                 'bawaan' => 500,
                 'keterangan' => 'Batas pengiriman email pemasaran per hari.',
+            ],
+            self::WHATSAPP_CAP_PER_NOMOR => [
+                'bawaan' => 3,
+                'keterangan' => 'Batas pesan WhatsApp pemasaran ke satu nomor dalam satu jendela waktu.',
+            ],
+            self::WHATSAPP_CAP_JENDELA_JAM => [
+                'bawaan' => 24,
+                'keterangan' => 'Panjang jendela frequency cap WhatsApp, dalam jam.',
+            ],
+            self::WHATSAPP_KATA_BERHENTI => [
+                'bawaan' => 'STOP, BERHENTI, UNSUBSCRIBE',
+                'keterangan' => 'Kata yang dianggap permintaan berhenti, dipisahkan koma.',
+            ],
+            self::WHATSAPP_SAPAAN_MENU => [
+                'bawaan' => 'Halo, saya asisten Amanpoll.',
+                'keterangan' => 'Kalimat pembuka sebelum daftar menu WhatsApp.',
+            ],
+            self::WHATSAPP_BALASAN_TIDAK_DIKENAL => [
+                'bawaan' => 'Maaf, pilihan itu belum ada. Balas dengan angka menu di bawah ini.',
+                'keterangan' => 'Balasan ketika pesan masuk tidak cocok dengan menu mana pun.',
+            ],
+            self::WHATSAPP_BALASAN_BERHENTI => [
+                'bawaan' => 'Baik, nomor ini tidak akan menerima pesan pemasaran lagi.',
+                'keterangan' => 'Balasan setelah permintaan berhenti diterima.',
+            ],
+            self::ALERT_WHATSAPP_GAGAL_MAKS => [
+                'bawaan' => 10,
+                'keterangan' => 'Batas persentase kegagalan WhatsApp sebelum alert dibunyikan.',
             ],
             self::EMAIL_SEQUENCE_TRIAL => [
                 'bawaan' => '',

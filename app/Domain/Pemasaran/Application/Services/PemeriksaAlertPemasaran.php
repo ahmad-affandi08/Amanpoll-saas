@@ -6,6 +6,7 @@ namespace App\Domain\Pemasaran\Application\Services;
 
 use App\Domain\Pemasaran\Domain\Enums\StatusEksekusiOtomasi;
 use App\Domain\Pemasaran\Domain\Enums\StatusPengirimanEmail;
+use App\Domain\Pemasaran\Domain\Enums\StatusPengirimanWhatsApp;
 use App\Domain\Pemasaran\Domain\Enums\StatusRewardReferral;
 use App\Domain\Pemasaran\Domain\KatalogAlertPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogKonfigurasiPemasaran;
@@ -30,6 +31,7 @@ final class PemeriksaAlertPemasaran
             $this->leadTanpaAktivitas($pada),
             $this->otomasiGagal($pada),
             $this->emailBounceNaik($pada),
+            $this->whatsappGagalKirim($pada),
             $this->kampanyeTanpaTrial($pada),
             $this->rewardReferralGagal($pada),
             $this->konversiHalamanAnomali($pada),
@@ -157,6 +159,44 @@ final class PemeriksaAlertPemasaran
             KatalogAlertPemasaran::EMAIL_BOUNCE_NAIK,
             "Bounce email tujuh hari terakhir {$persen}%, di atas ambang {$ambang}%.",
             ['Terkirim' => $terkirim, 'Bounce' => $bounce, 'Persen' => $persen, 'Ambang' => $ambang],
+            $pada,
+        );
+    }
+
+    /** Kegagalan WhatsApp biasanya berarti template dicabut atau nomor pengirim diblokir, bukan satu pesan sial. */
+    private function whatsappGagalKirim(CarbonImmutable $pada): ?AlertPemasaran
+    {
+        $ambang = $this->konfigurasi->angka(KatalogKonfigurasiPemasaran::ALERT_WHATSAPP_GAGAL_MAKS);
+        $sejak = $pada->subDays(7);
+
+        $dicoba = DB::table('PengirimanWhatsAppPemasaran')
+            ->where('Percobaan', '>', 0)
+            ->whereBetween('DiperbaruiStatusPada', [$sejak, $pada])
+            ->count();
+
+        if ($dicoba < 20) {
+            return null;
+        }
+
+        $gagal = DB::table('PengirimanWhatsAppPemasaran')
+            ->whereIn('Status', [
+                StatusPengirimanWhatsApp::Gagal->value,
+                StatusPengirimanWhatsApp::Ditolak->value,
+            ])
+            ->where('Percobaan', '>', 0)
+            ->whereBetween('DiperbaruiStatusPada', [$sejak, $pada])
+            ->count();
+
+        $persen = round($gagal / $dicoba * 100, 1);
+
+        if ($persen <= $ambang) {
+            return null;
+        }
+
+        return $this->catat(
+            KatalogAlertPemasaran::WHATSAPP_GAGAL_KIRIM,
+            "Kegagalan WhatsApp tujuh hari terakhir {$persen}%, di atas ambang {$ambang}%.",
+            ['Dicoba' => $dicoba, 'Gagal' => $gagal, 'Persen' => $persen, 'Ambang' => $ambang],
             $pada,
         );
     }

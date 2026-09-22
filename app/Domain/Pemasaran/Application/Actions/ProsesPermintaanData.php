@@ -6,6 +6,7 @@ namespace App\Domain\Pemasaran\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Pemasaran\Domain\Enums\JenisPermintaanData;
+use App\Domain\Pemasaran\Domain\Enums\KanalPesan;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AktivitasProspek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\DaftarSupresi;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KontakProspek;
@@ -96,9 +97,15 @@ final class ProsesPermintaanData
         $email = (string) $permintaan->Email;
 
         // Konsen bersifat hanya-tambah agar tidak dapat disunting; penghapusan yang sah adalah pengecualian yang disengaja.
-        DB::table('KonsenPemasaran')->where('Email', $email)->delete();
+        DB::table('KonsenPemasaran')
+            ->where('Kanal', KanalPesan::Email->value)
+            ->where('Kontak', $email)
+            ->delete();
 
-        DaftarSupresi::query()->where('EmailHash', $hash)->update(['Email' => null]);
+        DaftarSupresi::query()
+            ->where('Kanal', KanalPesan::Email->value)
+            ->where('KontakHash', $hash)
+            ->update(['Kontak' => null]);
 
         $prospek?->delete();
 

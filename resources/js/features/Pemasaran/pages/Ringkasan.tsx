@@ -93,6 +93,12 @@ const PINTASAN = [
     izin: 'platform.email.lihat',
   },
   {
+    label: 'WhatsApp',
+    href: '/admin-platform/pemasaran/whatsapp',
+    keterangan: 'Template, persetujuan penyedia, dan menu percakapan.',
+    izin: 'platform.whatsapp.lihat',
+  },
+  {
     label: 'Referral',
     href: '/admin-platform/pemasaran/referral',
     keterangan: 'Program referral, kode pelanggan, dan imbalannya.',
