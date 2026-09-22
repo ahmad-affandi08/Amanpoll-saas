@@ -57,3 +57,9 @@ export interface RingkasanKontrak {
   kedaluwarsa: number;
   tanpaPenyedia: number;
 }
+
+export interface AsetRingkas {
+  Id: string;
+  KodeAset: string;
+  Nama: string;
+}

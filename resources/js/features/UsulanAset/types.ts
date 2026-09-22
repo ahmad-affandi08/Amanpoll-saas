@@ -33,3 +33,8 @@ export interface UsulanAset {
   Penilaian?: PenilaianUsulanAset[];
   DibuatPada: string;
 }
+
+export interface Referensi {
+  Id: string;
+  Nama: string;
+}

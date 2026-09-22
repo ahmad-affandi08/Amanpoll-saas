@@ -47,6 +47,9 @@ interface PermintaanMutasi {
   Label: string;
 }
 
+/** Tanda tangan pengantri mutasi offline, dipakai dialog yang menulis draft. */
+export type FungsiAntrikan = (permintaan: PermintaanMutasi) => Promise<void>;
+
 interface NilaiSinkronisasi {
   status: StatusSinkronisasi;
   daring: boolean;
@@ -58,7 +61,7 @@ interface NilaiSinkronisasi {
   adaPembaruanAplikasi: boolean;
   terapkanPembaruanAplikasi: () => void;
   muatPaket: () => Promise<void>;
-  antrikan: (permintaan: PermintaanMutasi) => Promise<void>;
+  antrikan: FungsiAntrikan;
   dorong: () => Promise<void>;
   selesaikanKonflik: (kunciOperasi: string, keputusan: KeputusanKonflik) => Promise<void>;
   bersihkanDataLokal: () => Promise<void>;

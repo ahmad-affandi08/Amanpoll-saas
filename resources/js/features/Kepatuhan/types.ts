@@ -56,3 +56,9 @@ export interface RingkasanKepatuhan {
   sertifikatAkanBerakhir: number;
   sertifikatKedaluwarsa: number;
 }
+
+export interface AsetRingkas {
+  Id: string;
+  KodeAset: string;
+  Nama: string;
+}

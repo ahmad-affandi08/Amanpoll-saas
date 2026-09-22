@@ -53,3 +53,9 @@ export interface PesananPembelian {
   DibuatPada: string;
   DiperbaruiPada: string;
 }
+
+export interface GudangRingkas {
+  Id: string;
+  Kode: string;
+  Nama: string;
+}

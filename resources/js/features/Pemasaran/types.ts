@@ -435,3 +435,69 @@ export interface PilihanKonten {
   StatusKeyword: string[];
   Kampanye: Record<string, string>;
 }
+
+export interface Distribusi {
+  Id: string;
+  Channel: string;
+  Caption: string;
+  MediaUrl: string | null;
+  Cta: string | null;
+  TautanTujuan: string | null;
+  UtmSource: string | null;
+  UtmMedium: string | null;
+  UtmTerm: string | null;
+  UtmContent: string | null;
+  Status: string;
+  TujuanStatus: string[];
+  TautanBerUtm: string | null;
+  UrlTerbit: string | null;
+  Galat: string | null;
+  Percobaan: number;
+  TerbitPada: string | null;
+  JadwalPada: string | null;
+}
+
+export interface Konten {
+  Id: string;
+  Kode: string;
+  Judul: string;
+  Ringkasan: string | null;
+  MediaUrl: string | null;
+  HalamanId: string | null;
+  KampanyeId: string | null;
+  KampanyeKode: string | null;
+  HalamanSlug: string | null;
+  Distribusi: Distribusi[];
+}
+
+export interface Pilihan {
+  Channel: string[];
+  ChannelWajibMedia: string[];
+  Kampanye: Record<string, string>;
+  Halaman: Record<string, string>;
+}
+
+export interface Template {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Bahasa: string;
+  Kategori: string;
+  IsiTeks: string;
+  StatusPersetujuan: string;
+  AlasanPenolakan: string | null;
+  IdTemplatePenyedia: string | null;
+  DiperiksaPada: string | null;
+  Aktif: boolean;
+  SiapKirim: boolean;
+  TujuanStatus: string[];
+}
+
+export interface Menu {
+  Id: string;
+  Kunci: string;
+  Urutan: number;
+  Label: string;
+  Balasan: string;
+  Aktif: boolean;
+}

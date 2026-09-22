@@ -154,3 +154,40 @@ export interface KodeKegagalan {
   Deskripsi: string | null;
   Aktif: boolean;
 }
+
+export interface TeknisiOpsi {
+  Id: string;
+  Nama: string;
+  Jabatan: string | null;
+  BebanAktif: number;
+}
+
+export interface StokOpsi {
+  GudangId: string;
+  NamaGudang: string | null;
+  SukuCadangId: string;
+  NamaSukuCadang: string | null;
+  KodeSukuCadang: string | null;
+  TersediaBersih: number;
+}
+
+export interface KeluhanRingkas {
+  Id: string;
+  Nomor: string;
+  Judul: string;
+  Prioritas: PrioritasPerintahKerja;
+  LokasiId: string | null;
+  AsetId: string | null;
+}
+
+export interface AsetRingkas {
+  Id: string;
+  KodeAset: string;
+  Nama: string;
+  LokasiId: string | null;
+}
+
+export interface LokasiRingkas {
+  Id: string;
+  Nama: string;
+}

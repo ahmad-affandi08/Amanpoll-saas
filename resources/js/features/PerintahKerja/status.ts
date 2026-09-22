@@ -1,4 +1,4 @@
-import type { PrioritasPerintahKerja, StatusPerintahKerja } from './types';
+import type { JenisPerintahKerja, PrioritasPerintahKerja, StatusPerintahKerja } from './types';
 
 export const VARIAN_STATUS_PERINTAH_KERJA: Record<
   StatusPerintahKerja,
@@ -27,3 +27,14 @@ export const VARIAN_PRIORITAS_PERINTAH_KERJA: Record<
   Tinggi: 'perhatian',
   Kritis: 'destructive',
 };
+
+export const DAFTAR_PRIORITAS: PrioritasPerintahKerja[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
+
+export const DAFTAR_JENIS: JenisPerintahKerja[] = [
+  'Korektif',
+  'Preventif',
+  'Inspeksi',
+  'Kalibrasi',
+  'Umum',
+  'Vendor',
+];

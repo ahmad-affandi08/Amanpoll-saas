@@ -1,40 +1,25 @@
-import { type FormEvent, useState } from 'react';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, Pencil, Send, ShieldCheck, Star, Trash2 } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Send, ShieldCheck, Trash2 } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import type { PrioritasUsulanAset, UsulanAset } from '@/features/UsulanAset/types';
+import type { UsulanAset } from '@/features/UsulanAset/types';
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { DialogUbahUsulan } from '@/features/UsulanAset/components/DialogUbahUsulan';
+import { DialogPenilaian } from '@/features/UsulanAset/components/DialogPenilaian';
+import type { Referensi } from '@/features/UsulanAset/types';
 
-interface Referensi {
-  Id: string;
-  Nama: string;
-}
 interface Keputusan {
   Keputusan: string;
   Catatan: string | null;
   NamaPenyetuju: string | null;
   DiputuskanPada: string | null;
 }
+
 interface Persetujuan {
   Id: string;
   Status: string;
@@ -42,12 +27,14 @@ interface Persetujuan {
   SelesaiPada: string | null;
   Keputusan: Keputusan[];
 }
+
 interface CatatanAudit {
   Id: string;
   Aksi: string;
   PenggunaId: string | null;
   DibuatPada: string;
 }
+
 interface Props {
   usulan: UsulanAset;
   persetujuan: Persetujuan[];
@@ -57,7 +44,6 @@ interface Props {
   modelAset: Referensi[];
 }
 
-const PRIORITAS: PrioritasUsulanAset[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
 const VARIAN_STATUS = {
   Draft: 'netral',
   Diajukan: 'info',
@@ -65,283 +51,6 @@ const VARIAN_STATUS = {
   Disetujui: 'sukses',
   Ditolak: 'bahaya',
 } as const;
-
-function DialogUbahUsulan({
-  usulan,
-  unitOrganisasi,
-  kategoriAset,
-  modelAset,
-}: Pick<Props, 'usulan' | 'unitOrganisasi' | 'kategoriAset' | 'modelAset'>) {
-  const [buka, setBuka] = useState(false);
-  const form = useForm({
-    UnitOrganisasiId: usulan.UnitOrganisasiId,
-    KategoriAsetId: usulan.KategoriAsetId ?? TANPA_PILIHAN,
-    ModelAsetId: usulan.ModelAsetId ?? TANPA_PILIHAN,
-    NamaKebutuhan: usulan.NamaKebutuhan,
-    Jumlah: usulan.Jumlah,
-    EstimasiHargaSatuan: usulan.EstimasiHargaSatuan ?? '',
-    Alasan: usulan.Alasan,
-    JenisKebutuhan: usulan.JenisKebutuhan ?? '',
-    TahunKebutuhan: usulan.TahunKebutuhan?.toString() ?? '',
-    Prioritas: usulan.Prioritas,
-  });
-  function submit(event: FormEvent): void {
-    event.preventDefault();
-    form.transform((data) => ({
-      ...data,
-      KategoriAsetId: data.KategoriAsetId === TANPA_PILIHAN ? null : data.KategoriAsetId,
-      ModelAsetId: data.ModelAsetId === TANPA_PILIHAN ? null : data.ModelAsetId,
-      EstimasiHargaSatuan: data.EstimasiHargaSatuan || null,
-      JenisKebutuhan: data.JenisKebutuhan || null,
-      TahunKebutuhan: data.TahunKebutuhan || null,
-    }));
-    form.put(ruteUsulanAset.detail(usulan.Id), {
-      preserveScroll: true,
-      onSuccess: () => setBuka(false),
-    });
-  }
-  return (
-    <Dialog open={buka} onOpenChange={setBuka}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Pencil /> Ubah
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Ubah Usulan</DialogTitle>
-          <DialogDescription>
-            Usulan hanya dapat diubah selama berstatus draft atau ditolak.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Unit</Label>
-              <Select
-                value={form.data.UnitOrganisasiId}
-                onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {unitOrganisasi.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Prioritas</Label>
-              <Select
-                value={form.data.Prioritas}
-                onValueChange={(value) => form.setData('Prioritas', value as PrioritasUsulanAset)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PRIORITAS.map((item) => (
-                    <SelectItem key={item} value={item}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Nama Kebutuhan</Label>
-            <Input
-              value={form.data.NamaKebutuhan}
-              onChange={(event) => form.setData('NamaKebutuhan', event.target.value)}
-            />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Kategori</Label>
-              <Select
-                value={form.data.KategoriAsetId}
-                onValueChange={(value) => form.setData('KategoriAsetId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
-                  {kategoriAset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Model</Label>
-              <Select
-                value={form.data.ModelAsetId}
-                onValueChange={(value) => form.setData('ModelAsetId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
-                  {modelAset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label>Jumlah</Label>
-              <Input
-                type="number"
-                step="0.0001"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Harga / Unit</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={form.data.EstimasiHargaSatuan}
-                onChange={(event) => form.setData('EstimasiHargaSatuan', event.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Tahun</Label>
-              <Input
-                type="number"
-                value={form.data.TahunKebutuhan}
-                onChange={(event) => form.setData('TahunKebutuhan', event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Jenis Kebutuhan</Label>
-            <Input
-              value={form.data.JenisKebutuhan}
-              onChange={(event) => form.setData('JenisKebutuhan', event.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Alasan</Label>
-            <Textarea
-              rows={4}
-              value={form.data.Alasan}
-              onChange={(event) => form.setData('Alasan', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Perubahan
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function DialogPenilaian({ usulan }: { usulan: UsulanAset }) {
-  const [buka, setBuka] = useState(false);
-  const form = useForm({ Kriteria: '', Bobot: '1', Nilai: '', Prioritas: usulan.Prioritas });
-  function submit(event: FormEvent): void {
-    event.preventDefault();
-    form.post(ruteUsulanAset.penilaian(usulan.Id), {
-      preserveScroll: true,
-      onSuccess: () => {
-        setBuka(false);
-        form.reset('Kriteria', 'Nilai');
-      },
-    });
-  }
-  return (
-    <Dialog open={buka} onOpenChange={setBuka}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline">
-          <Star /> Tambah Penilaian
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Nilai Usulan</DialogTitle>
-          <DialogDescription>
-            Skor dihitung di server dari bobot × nilai dan prioritas usulan diperbarui.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Kriteria</Label>
-            <Input
-              value={form.data.Kriteria}
-              onChange={(event) => form.setData('Kriteria', event.target.value)}
-            />
-            {form.errors.Kriteria && <p className="text-sm text-destructive">{form.errors.Kriteria}</p>}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Bobot</Label>
-              <Input
-                type="number"
-                min="0.0001"
-                max="100"
-                step="0.0001"
-                value={form.data.Bobot}
-                onChange={(event) => form.setData('Bobot', event.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Nilai</Label>
-              <Input
-                type="number"
-                min="0"
-                max="100"
-                step="0.0001"
-                value={form.data.Nilai}
-                onChange={(event) => form.setData('Nilai', event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Prioritas Hasil</Label>
-            <Select
-              value={form.data.Prioritas}
-              onValueChange={(value) => form.setData('Prioritas', value as PrioritasUsulanAset)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PRIORITAS.map((item) => (
-                  <SelectItem key={item} value={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Penilaian
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 export default function UsulanAsetShow({
   usulan,
