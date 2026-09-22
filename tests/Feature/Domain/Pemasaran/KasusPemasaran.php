@@ -40,6 +40,12 @@ abstract class KasusPemasaran extends TestCase
         app(PemeriksaFiturPlatform::class)->bersihkanCache();
     }
 
+    protected function matikanFitur(string $kode): void
+    {
+        FiturPlatform::query()->where('Kode', $kode)->update(['Aktif' => false]);
+        app(PemeriksaFiturPlatform::class)->bersihkanCache();
+    }
+
     private function semaiFitur(): void
     {
         foreach (KatalogFiturPlatform::semua() as $kode => $definisi) {

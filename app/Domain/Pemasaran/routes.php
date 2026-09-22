@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
+use App\Domain\Pemasaran\Http\Controllers\FormulirPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ProspekController;
+use App\Domain\Pemasaran\Http\Controllers\RedirectPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\RingkasanPemasaranController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +69,74 @@ Route::middleware(['web', 'auth:platform'])
             Route::middleware('izin.platform:'.KatalogIzinPemasaran::KAMPANYE_KELOLA)->group(function (): void {
                 Route::post('/', [KampanyeController::class, 'store'])->name('store');
                 Route::put('/{kampanye}', [KampanyeController::class, 'update'])->name('update');
+            });
+        });
+
+        /*
+         * Landing page builder dan peta redirect. Keduanya di balik flag
+         * marketing.cms: mematikan modulnya menutup konsolnya, sementara
+         * halaman yang sudah terbit tetap dilayani host publik — menurunkan
+         * situs pemasaran bukan yang diminta siapa pun ketika mematikan
+         * konsol penyuntingnya.
+         */
+        Route::middleware('fitur.platform:'.KatalogFiturPlatform::CMS)->group(function (): void {
+            Route::prefix('halaman')->name('halaman.')->group(function (): void {
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_LIHAT)->group(function (): void {
+                    Route::get('/', [HalamanPemasaranController::class, 'index'])->name('index');
+                    Route::get('/baru', [HalamanPemasaranController::class, 'create'])->name('create');
+                    Route::get('/{halaman}', [HalamanPemasaranController::class, 'edit'])->name('edit');
+                });
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_KELOLA)->group(function (): void {
+                    Route::post('/', [HalamanPemasaranController::class, 'store'])->name('store');
+                    Route::put('/{halaman}', [HalamanPemasaranController::class, 'update'])->name('update');
+                    Route::get('/{halaman}/pratinjau/{versi}', [HalamanPemasaranController::class, 'pratinjau'])
+                        ->name('pratinjau');
+                });
+
+                /*
+                 * Menerbitkan, menjadwalkan, dan mengembalikan mengubah isi
+                 * situs publik, jadi ketiganya menuntut izin terbit — bukan
+                 * izin kelola (MARKETING.md 26).
+                 */
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_TERBITKAN)
+                    ->group(function (): void {
+                        Route::post('/{halaman}/terbitkan', [HalamanPemasaranController::class, 'terbitkan'])
+                            ->name('terbitkan');
+                        Route::post('/{halaman}/status', [HalamanPemasaranController::class, 'ubahStatus'])
+                            ->name('status');
+                        Route::post('/{halaman}/kembalikan/{versi}', [
+                            HalamanPemasaranController::class, 'kembalikan',
+                        ])->name('kembalikan');
+                    });
+            });
+
+            Route::prefix('formulir')->name('formulir.')->group(function (): void {
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_LIHAT)->group(function (): void {
+                    Route::get('/', [FormulirPemasaranController::class, 'index'])->name('index');
+                    Route::get('/{formulir}', [FormulirPemasaranController::class, 'show'])->name('show');
+                });
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_KELOLA)->group(function (): void {
+                    Route::post('/', [FormulirPemasaranController::class, 'store'])->name('store');
+                    Route::put('/{formulir}', [FormulirPemasaranController::class, 'update'])->name('update');
+                });
+            });
+
+            Route::prefix('redirect')->name('redirect.')->group(function (): void {
+                Route::get('/', [RedirectPemasaranController::class, 'index'])
+                    ->middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_LIHAT)
+                    ->name('index');
+
+                // Redirect mengubah alamat yang dilihat mesin pencari, jadi
+                // haknya sama dengan menerbitkan halaman.
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_TERBITKAN)
+                    ->group(function (): void {
+                        Route::post('/', [RedirectPemasaranController::class, 'store'])->name('store');
+                        Route::put('/{redirect}', [RedirectPemasaranController::class, 'update'])->name('update');
+                        Route::delete('/{redirect}', [RedirectPemasaranController::class, 'destroy'])
+                            ->name('destroy');
+                    });
             });
         });
 

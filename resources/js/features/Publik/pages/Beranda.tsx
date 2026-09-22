@@ -1,21 +1,16 @@
 import { Head } from '@inertiajs/react';
-import { LogoMark } from '@/components/shared/LogoMark';
 import { Button } from '@/components/ui/button';
-
-interface Props {
-  kanonik: string | null;
-  urlMasuk: string;
-  urlDaftar: string;
-}
+import { KerangkaPublik } from '../components/KerangkaPublik';
+import type { PropsPublik } from '../types';
 
 /**
- * Beranda situs publik (MARKETING.md 34.1).
+ * Beranda bawaan situs publik (MARKETING.md 34.1).
  *
- * Kerangka: isinya baru dapat disusun dari dashboard pada FASE 32. Yang sudah
- * berlaku di sini adalah aturan hostnya — halaman anonim, tanpa data tenant,
- * dan aksinya menyeberang ke host dashboard lewat URL absolut dari server.
+ * Tampil hanya selama belum ada halaman pemasaran yang terbit di `/`. Begitu
+ * ada, akar situs dilayani halaman itu — situs publik tidak boleh kosong di
+ * alamat utamanya hanya karena isinya belum disusun.
  */
-export default function Beranda({ kanonik, urlMasuk, urlDaftar }: Props) {
+export default function Beranda({ kanonik, urlMasuk, urlDaftar }: PropsPublik) {
   return (
     <>
       <Head>
@@ -27,22 +22,8 @@ export default function Beranda({ kanonik, urlMasuk, urlDaftar }: Props) {
         {kanonik ? <link rel="canonical" href={kanonik} /> : null}
       </Head>
 
-      <div className="flex min-h-screen flex-col bg-background">
-        <header className="border-b">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4">
-            <LogoMark />
-            <nav className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" asChild>
-                <a href={urlMasuk}>Masuk</a>
-              </Button>
-              <Button size="sm" asChild>
-                <a href={urlDaftar}>Coba Gratis</a>
-              </Button>
-            </nav>
-          </div>
-        </header>
-
-        <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center gap-6 px-4 py-16">
+      <KerangkaPublik urlMasuk={urlMasuk} urlDaftar={urlDaftar}>
+        <div className="mx-auto flex w-full max-w-6xl flex-col justify-center gap-6 px-4 py-16">
           <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-5xl">
             Aset, pemeliharaan, dan suku cadang dalam satu sistem
           </h1>
@@ -58,14 +39,8 @@ export default function Beranda({ kanonik, urlMasuk, urlDaftar }: Props) {
               <a href={urlMasuk}>Masuk ke Dashboard</a>
             </Button>
           </div>
-        </main>
-
-        <footer className="border-t">
-          <div className="mx-auto w-full max-w-6xl px-4 py-6 text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Amanpoll
-          </div>
-        </footer>
-      </div>
+        </div>
+      </KerangkaPublik>
     </>
   );
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Http\Controllers;
 
 use App\Core\Host\PetaHost;
+use App\Domain\Pemasaran\Domain\Enums\StatusHalamanPemasaran;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 
@@ -32,13 +34,31 @@ final class RobotsController extends Controller
         return $this->teks("User-agent: *\nDisallow: /\n");
     }
 
+    /**
+     * Peta situs berisi akar dan setiap halaman yang benar-benar terbit.
+     * Halaman ber-`NoIndex` dikecualikan: mengundang perayap ke alamat yang
+     * responsnya melarang pengindeksan hanya membuang anggaran perayapannya.
+     */
     public function sitemap(): Response
     {
-        $url = (string) $this->host->urlKanonik('/');
+        $jalur = HalamanPemasaran::query()
+            ->where('Status', StatusHalamanPemasaran::Terbit->value)
+            ->whereNotNull('VersiTerbitId')
+            ->where('NoIndex', false)
+            ->orderBy('Slug')
+            ->pluck('Slug')
+            ->all();
+
+        $url = array_values(array_unique(['/', ...$jalur]));
+
+        $baris = array_map(
+            fn (string $satu): string => '  <url><loc>'.e((string) $this->host->urlKanonik($satu)).'</loc></url>',
+            $url,
+        );
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n"
             .'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n"
-            .'  <url><loc>'.e($url).'</loc></url>'."\n"
+            .implode("\n", $baris)."\n"
             .'</urlset>'."\n";
 
         return response($xml, 200, ['Content-Type' => 'application/xml']);

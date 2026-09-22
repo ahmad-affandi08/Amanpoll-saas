@@ -71,3 +71,9 @@ Schedule::command('sinkronisasi:proses-antrian')
 Schedule::command('idempotensi:bersihkan')
     ->dailyAt('03:30')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));
+
+// Terbit dan tarik terjadwal halaman pemasaran. Tiap lima menit sudah cukup:
+// jadwalnya ditentukan manusia dalam satuan jam, bukan detik.
+Schedule::command('pemasaran:jalankan-jadwal-halaman')
+    ->everyFiveMinutes()
+    ->withoutOverlapping(5);

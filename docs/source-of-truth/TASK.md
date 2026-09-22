@@ -1934,52 +1934,108 @@ Test bagian 36 yang dipenuhi di sini: `ProspekDibuatTest`, `PipelineProspekTest`
 
 ## 32.01 Halaman Pemasaran
 
-- [ ] Tabel `HalamanPemasaran`, `VersiHalamanPemasaran`, `BlokHalamanPemasaran`.
-- [ ] Tipe dan blok sesuai `MARKETING.md` bagian 8.
-- [ ] Status `DRAF → REVIEW → TERJADWAL → TERBIT → DIARSIPKAN`.
+- [x] Tabel `HalamanPemasaran`, `VersiHalamanPemasaran`, `BlokHalamanPemasaran`.
+- [x] Tipe dan blok sesuai `MARKETING.md` bagian 8.
+- [x] Status `DRAF → REVIEW → TERJADWAL → TERBIT → DIARSIPKAN`.
+
+Isi halaman tidak disimpan pada barisnya sendiri melainkan pada versi;
+`HalamanPemasaran` hanya menunjuk versi mana yang terbit dan mana yang sedang
+disunting. Bentuk itu membuat revision history, rollback, dan terbit terjadwal
+menjadi satu mekanisme yang sama. Versi dan bloknya hanya-tambah.
+
+`Terbit → Terbit` diizinkan dalam peta transisi: menerbitkan draf baru di atas
+halaman yang sedang tayang adalah operasi yang paling sering terjadi, dan
+memaksanya turun ke draf lebih dulu hanya melahirkan jalur kedua yang harus
+sama-sama diingat.
 
 ## 32.02 Penerbitan
 
-- [ ] Terbit dan tarik terjadwal.
-- [ ] Revision history dan versioning.
-- [ ] Rollback.
-- [ ] Publikasi tercatat di audit.
-- [ ] Pratinjau draf memakai URL bertanda tangan pada host publik dan wajib `noindex`.
+- [x] Terbit dan tarik terjadwal.
+- [x] Revision history dan versioning.
+- [x] Rollback.
+- [x] Publikasi tercatat di audit.
+- [x] Pratinjau draf memakai URL bertanda tangan pada host publik dan wajib `noindex`.
+
+Rollback menyalin isi versi lama menjadi versi baru, bukan menunjuk balik:
+nomor versi selalu maju dan riwayatnya terbaca lurus. Penjadwalnya
+(`pemasaran:jalankan-jadwal-halaman`, tiap lima menit) membandingkan waktu yang
+sudah lewat, bukan waktu yang persis sekarang, sehingga jadwal yang terlewat
+tetap dijalankan alih-alih hilang.
+
+Isi halaman terbit di-cache, bukan respons HTTP-nya — itu jawaban atas
+penundaan dari FASE 24.5: badan respons Inertia memuat token CSRF milik satu
+sesi, sedangkan isi halaman tidak memuat apa pun yang mengikat ke seseorang.
 
 ## 32.03 Redirect
 
-- [ ] Tabel `RedirectPemasaran`.
-- [ ] Dukungan 301, 302, 410.
-- [ ] Hanya berlaku pada host publik.
+- [x] Tabel `RedirectPemasaran`.
+- [x] Dukungan 301, 302, 410.
+- [x] Hanya berlaku pada host publik.
+
+Middleware-nya dipasang pada grup host publik saja, dan berjalan setelah
+pengenal pengunjung ditetapkan supaya cookienya tetap terkirim bersama respons
+pengalihan.
 
 ## 32.04 Formulir
 
-- [ ] Tabel `FormulirPemasaran`, `FieldFormulirPemasaran`, `PengirimanFormulir`.
-- [ ] Field sesuai `MARKETING.md` bagian 10, termasuk hidden UTM dan consent.
-- [ ] Config: success message, redirect, source, campaign, tags, trigger otomasi, webhook.
+- [x] Tabel `FormulirPemasaran`, `FieldFormulirPemasaran`, `PengirimanFormulir`.
+- [x] Field sesuai `MARKETING.md` bagian 10, termasuk hidden UTM dan consent.
+- [x] Config: success message, redirect, source, campaign, tags, trigger otomasi, webhook.
+
+Jawaban mentah disimpan apa adanya pada `PengirimanFormulir` (hanya-tambah),
+lalu diterjemahkan menjadi prospek lewat `CatatProspek`. Field UTM tersembunyi
+diisi server dari sesi kunjungan; nilai UTM yang datang dari browser diabaikan.
+
+Pemicu otomasi dan webhook baru tersimpan sebagai konfigurasi. Yang
+menjalankannya adalah mesin otomasi di FASE 35.
 
 ## 32.05 Anti-spam
 
-- [ ] Honeypot.
-- [ ] Rate limit.
-- [ ] CAPTCHA opsional.
+- [x] Honeypot.
+- [x] Rate limit.
+- [x] CAPTCHA opsional.
+
+Honeypot dijawab persis seperti pengiriman yang berhasil. Rate limit `formulir`
+5/menit per IP. Verifikasi CAPTCHA agnostik penyedia dan gagal tertutup: tanpa
+kunci yang terpasang, atau saat penyedianya tidak dapat dihubungi, pengirimannya
+ditolak. Widget yang disertakan adalah Turnstile.
 
 ## 32.06 Frontend Publik
 
-- [ ] `resources/js/features/Publik` sebagai satu-satunya feature pada host publik.
-- [ ] Inertia + React dengan build Vite yang sama.
-- [ ] Mengikuti `DESIGN.md`.
-- [ ] Rute publik sesuai `MARKETING.md` 34.1 sebatas yang dicakup MVP.
-- [ ] `/trial` adalah halaman penjelasan; formulir pendaftaran berada di host dashboard.
+- [x] `resources/js/features/Publik` sebagai satu-satunya feature pada host publik.
+- [x] Inertia + React dengan build Vite yang sama.
+- [x] Mengikuti `DESIGN.md`.
+- [x] Rute publik sesuai `MARKETING.md` 34.1 sebatas yang dicakup MVP.
+- [x] `/trial` adalah halaman penjelasan; formulir pendaftaran berada di host dashboard.
+
+Alamat halaman ditentukan data, bukan kode: satu rute penampung melayani seluruh
+slug, sehingga rute `MARKETING.md` 34.1 dibuat dari konsol tanpa deploy. Host
+publik tidak punya rute autentikasi sama sekali, jadi `/trial` tidak mungkin
+memuat formulir pendaftaran — tombolnya menyeberang ke host dashboard.
 
 ## 32.07 Test
 
-- [ ] `FormulirPemasaranTest`.
-- [ ] Draf tidak dapat diakses tanpa tanda tangan dan tidak terindeks.
+- [x] `FormulirPemasaranTest`.
+- [x] Draf tidak dapat diakses tanpa tanda tangan dan tidak terindeks.
 
 ### Gate 32
 
 Landing page dapat dibuat, diterbitkan, dan dikembalikan dari dashboard tanpa deploy, dan formulir publiknya menghasilkan lead lengkap dengan UTM.
+
+**Terpenuhi.** Dibuktikan `HalamanPemasaranTest` (draf tak terlihat, terbit
+dilayani, sunting tidak mengubah yang tayang, rollback mengembalikan isi lama),
+`FormulirPemasaranTest` (pengiriman menjadi prospek lengkap dengan UTM dari
+kunjungan), `PratinjauDrafTest`, `RedirectPemasaranTest`,
+`KonsolHalamanPemasaranTest`, dan `KonsolFormulirDanRedirectTest`.
+
+Catatan jujur:
+
+- CAPTCHA diverifikasi agnostik penyedia, tetapi widget yang disertakan di
+  frontend hanya Turnstile. Penyedia lain perlu widgetnya dipasang sendiri.
+- Isi blok disunting sebagai JSON di konsol. Formulir khusus per jenis blok
+  baru sepadan setelah bentuk tiap blok mengendap.
+- CMS konten dan keyword manager (`MARKETING.md` 9) belum dikerjakan; yang masuk
+  FASE 32 hanyalah bagian redirect dan metadata SEO per halaman.
 
 ---
 
