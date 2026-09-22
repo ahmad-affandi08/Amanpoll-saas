@@ -13,6 +13,7 @@ use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ProspekController;
 use App\Domain\Pemasaran\Http\Controllers\RedirectPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\RingkasanPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\TrialController;
 use Illuminate\Support\Facades\Route;
 
 // Konsol Growth & Marketing (MARKETING.md 4).
@@ -65,6 +66,21 @@ Route::middleware(['web', 'auth:platform'])
                         'throttle:ekspor',
                     ])
                     ->name('ekspor');
+            });
+
+        // Trial berbagi flag dengan CRM: perjalanannya adalah perjalanan prospek yang sama.
+        Route::middleware('fitur.platform:'.KatalogFiturPlatform::CRM)
+            ->prefix('trial')
+            ->name('trial.')
+            ->group(function (): void {
+                Route::get('/', [TrialController::class, 'index'])
+                    ->middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_LIHAT)
+                    ->name('index');
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_KELOLA)->group(function (): void {
+                    Route::post('/{trial}/perpanjang', [TrialController::class, 'perpanjang'])->name('perpanjang');
+                    Route::post('/{trial}/status', [TrialController::class, 'ubahStatus'])->name('status');
+                });
             });
 
         // Kampanye berada di balik flag analitik: tanpa modulnya hidup, tidak ada tempat angkanya dibaca.

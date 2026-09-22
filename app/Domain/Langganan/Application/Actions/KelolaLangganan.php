@@ -10,11 +10,13 @@ use App\Domain\Langganan\Application\Services\LayananLangganan;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
 use App\Domain\Langganan\Domain\Enums\SiklusLangganan;
 use App\Domain\Langganan\Domain\Enums\StatusLangganan;
+use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\PaketLangganan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Event;
 
 /** Siklus hidup langganan satu organisasi (22.04). */
 final class KelolaLangganan
@@ -51,6 +53,7 @@ final class KelolaLangganan
 
             $langganan = $this->layananLangganan->untukOrganisasi($organisasiId) ?? new Langganan;
             $baru = ! $langganan->exists;
+            $paketSebelum = $baru ? null : $langganan->paketLangganan;
 
             $langganan->fill([
                 'OrganisasiId' => $organisasiId,
@@ -79,8 +82,25 @@ final class KelolaLangganan
 
             $this->entitlement->bersihkanCache($organisasiId);
 
+            Event::dispatch(new PeristiwaLangganan(
+                $baru ? PeristiwaLangganan::LANGGANAN_DIBUAT : $this->kodePerubahanPaket($paketSebelum, $paket),
+                $organisasiId,
+                $langganan->Id,
+                ['PaketLanggananId' => $paket->Id, 'Siklus' => $siklus->value],
+            ));
+
             return $langganan->refresh();
         });
+    }
+
+    /** Naik atau turun paket dibedakan dari harga bulanannya. */
+    private function kodePerubahanPaket(?PaketLangganan $sebelum, PaketLangganan $sesudah): string
+    {
+        $lama = (float) ($sebelum->HargaBulanan ?? 0);
+
+        return (float) $sesudah->HargaBulanan >= $lama
+            ? PeristiwaLangganan::UPGRADE_DILAKUKAN
+            : PeristiwaLangganan::DOWNGRADE_DILAKUKAN;
     }
 
     /** Memperpanjang satu periode. */
@@ -114,6 +134,47 @@ final class KelolaLangganan
         });
     }
 
+    /**
+     * Memperpanjang masa uji coba, bukan periode berbayar.
+     *
+     * Dipisah dari perpanjang(): yang itu mengakhiri uji coba karena periodenya
+     * sudah dibayar, sedangkan ini justru menundanya.
+     */
+    public function perpanjangUjiCoba(Langganan $langganan, int $hari): Langganan
+    {
+        if ($hari < 1) {
+            throw new AturanBisnisDilanggar('Perpanjangan uji coba minimal satu hari.');
+        }
+
+        return $this->transaksi->jalankan(function () use ($langganan, $hari): Langganan {
+            $sebelum = $langganan->UjiCobaSampai;
+            $titikTolak = $sebelum === null
+                ? CarbonImmutable::now()->startOfDay()
+                : CarbonImmutable::parse($sebelum)->startOfDay();
+
+            // Uji coba yang sudah lewat diperpanjang dari hari ini, bukan dari tanggal mati.
+            if ($titikTolak->lessThan(CarbonImmutable::now()->startOfDay())) {
+                $titikTolak = CarbonImmutable::now()->startOfDay();
+            }
+
+            $langganan->UjiCobaSampai = $titikTolak->addDays($hari);
+            $langganan->Status = StatusLangganan::UjiCoba->value;
+            $langganan->save();
+
+            $this->audit->catat(
+                'Langganan.UjiCobaDiperpanjang',
+                'Langganan',
+                $langganan->Id,
+                dataSebelum: ['UjiCobaSampai' => $sebelum?->toDateString()],
+                dataSesudah: ['UjiCobaSampai' => $langganan->UjiCobaSampai?->toDateString(), 'Hari' => $hari],
+            );
+
+            $this->entitlement->bersihkanCache((string) $langganan->OrganisasiId);
+
+            return $langganan->refresh();
+        });
+    }
+
     /** Pembatalan bawaannya berlaku di akhir periode. */
     public function batalkan(Langganan $langganan, bool $segera = false): Langganan
     {
@@ -136,6 +197,13 @@ final class KelolaLangganan
             ]);
 
             $this->entitlement->bersihkanCache((string) $langganan->OrganisasiId);
+
+            Event::dispatch(new PeristiwaLangganan(
+                PeristiwaLangganan::LANGGANAN_DIBATALKAN,
+                (string) $langganan->OrganisasiId,
+                $langganan->Id,
+                ['Segera' => $segera],
+            ));
 
             return $langganan->refresh();
         });

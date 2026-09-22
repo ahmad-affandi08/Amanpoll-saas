@@ -7,7 +7,9 @@ namespace App\Domain\Pemasaran\Domain;
 /** Setelan domain Pemasaran beserta nilai bawaannya (MARKETING.md 30). */
 final class KatalogKonfigurasiPemasaran
 {
-    public const TRIAL_HARI = 'trial.hari';
+    public const TRIAL_PAKET_KODE = 'trial.paket_kode';
+
+    public const TRIAL_KARTU_DIPERLUKAN = 'trial.kartu_diperlukan';
 
     public const TRIAL_PERPANJANGAN_MAKS_HARI = 'trial.perpanjangan_maks_hari';
 
@@ -31,9 +33,13 @@ final class KatalogKonfigurasiPemasaran
     public static function semua(): array
     {
         return [
-            self::TRIAL_HARI => [
-                'bawaan' => 14,
-                'keterangan' => 'Lama masa uji coba yang ditawarkan di situs publik.',
+            self::TRIAL_PAKET_KODE => [
+                'bawaan' => '',
+                'keterangan' => 'Kode paket yang dipakai trial; kosong berarti paket aktif termurah.',
+            ],
+            self::TRIAL_KARTU_DIPERLUKAN => [
+                'bawaan' => false,
+                'keterangan' => 'Apakah pendaftaran trial menuntut kartu sejak awal.',
             ],
             self::TRIAL_PERPANJANGAN_MAKS_HARI => [
                 'bawaan' => 14,

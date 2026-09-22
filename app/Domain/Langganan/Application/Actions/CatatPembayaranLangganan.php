@@ -7,6 +7,7 @@ namespace App\Domain\Langganan\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Domain\Langganan\Domain\Enums\StatusPembayaranLangganan;
 use App\Domain\Langganan\Domain\Enums\StatusTagihanLangganan;
+use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
 use App\Domain\Langganan\Domain\ValueObjects\PeristiwaPembayaran;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\PembayaranLangganan;
@@ -15,6 +16,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\Event;
 
 /** Pencatatan pembayaran dan pelunasan tagihan (22.06). */
 final class CatatPembayaranLangganan
@@ -74,6 +76,15 @@ final class CatatPembayaranLangganan
             'Jumlah' => $peristiwa->jumlah,
             'Status' => $peristiwa->status->value,
         ]);
+
+        Event::dispatch(new PeristiwaLangganan(
+            $peristiwa->status === StatusPembayaranLangganan::Berhasil
+                ? PeristiwaLangganan::PEMBAYARAN_BERHASIL
+                : PeristiwaLangganan::PEMBAYARAN_GAGAL,
+            (string) $tagihan->OrganisasiId,
+            (string) $tagihan->LanggananId,
+            ['PembayaranId' => $pembayaran->Id, 'Jumlah' => $peristiwa->jumlah],
+        ));
 
         return $pembayaran;
     }

@@ -98,17 +98,17 @@ final class FondasiPemasaranTest extends KasusPemasaran
         $konfigurasi = app(LayananKonfigurasiPemasaran::class);
 
         $this->assertSame(
-            KatalogKonfigurasiPemasaran::bawaan(KatalogKonfigurasiPemasaran::TRIAL_HARI),
-            $konfigurasi->ambil(KatalogKonfigurasiPemasaran::TRIAL_HARI),
+            KatalogKonfigurasiPemasaran::bawaan(KatalogKonfigurasiPemasaran::TRIAL_PERPANJANGAN_MAKS_HARI),
+            $konfigurasi->ambil(KatalogKonfigurasiPemasaran::TRIAL_PERPANJANGAN_MAKS_HARI),
         );
     }
 
     public function test_konfigurasi_yang_disimpan_menggantikan_bawaannya(): void
     {
         $konfigurasi = app(LayananKonfigurasiPemasaran::class);
-        $konfigurasi->simpan(KatalogKonfigurasiPemasaran::TRIAL_HARI, 30);
+        $konfigurasi->simpan(KatalogKonfigurasiPemasaran::TRIAL_PERPANJANGAN_MAKS_HARI, 30);
 
-        $this->assertSame(30, $konfigurasi->angka(KatalogKonfigurasiPemasaran::TRIAL_HARI));
+        $this->assertSame(30, $konfigurasi->angka(KatalogKonfigurasiPemasaran::TRIAL_PERPANJANGAN_MAKS_HARI));
     }
 
     public function test_konfigurasi_di_luar_katalog_ditolak(): void
@@ -143,12 +143,12 @@ final class FondasiPemasaranTest extends KasusPemasaran
     {
         $this->actingAs($this->buatAdmin([KatalogIzinPemasaran::PEMASARAN_KELOLA]), 'platform')
             ->post(route('pemasaran.pengaturan.konfigurasi'), [
-                'Kunci' => KatalogKonfigurasiPemasaran::TRIAL_HARI,
+                'Kunci' => KatalogKonfigurasiPemasaran::TRIAL_PERPANJANGAN_MAKS_HARI,
                 'Nilai' => 21,
             ])
             ->assertRedirect();
 
-        $this->assertSame(21, app(LayananKonfigurasiPemasaran::class)->angka(KatalogKonfigurasiPemasaran::TRIAL_HARI));
+        $this->assertSame(21, app(LayananKonfigurasiPemasaran::class)->angka(KatalogKonfigurasiPemasaran::TRIAL_PERPANJANGAN_MAKS_HARI));
 
         $this->assertTrue(
             CatatanAudit::query()

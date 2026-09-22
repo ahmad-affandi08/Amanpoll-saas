@@ -29,12 +29,21 @@ final class PenyusunTimelineProspek
     /** @return list<array<string, mixed>> */
     private function dariPeristiwa(Prospek $prospek): array
     {
-        if ($prospek->PengenalPengunjung === null) {
+        if ($prospek->PengenalPengunjung === null && $prospek->OrganisasiId === null) {
             return [];
         }
 
+        // Dua kunci, satu orang: sebelum ia menjadi tenant dan sesudahnya.
         return array_values(EventPemasaran::query()
-            ->where('PengenalPengunjung', $prospek->PengenalPengunjung)
+            ->where(function ($q) use ($prospek): void {
+                if ($prospek->PengenalPengunjung !== null) {
+                    $q->orWhere('PengenalPengunjung', $prospek->PengenalPengunjung);
+                }
+
+                if ($prospek->OrganisasiId !== null) {
+                    $q->orWhere('OrganisasiId', $prospek->OrganisasiId);
+                }
+            })
             ->orderByDesc('TerjadiPada')
             ->limit(self::BATAS)
             ->get()

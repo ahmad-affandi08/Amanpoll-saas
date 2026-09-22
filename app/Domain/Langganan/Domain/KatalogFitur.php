@@ -25,6 +25,8 @@ final class KatalogFitur
 
     public const BATAS_PENGGUNA = 'batas.pengguna';
 
+    public const BATAS_LOKASI = 'batas.lokasi';
+
     /** @var array<string, DefinisiFitur>|null */
     private static ?array $katalog = null;
 
@@ -102,6 +104,14 @@ final class KatalogFitur
                 TipeBatasFitur::Angka,
                 diizinkanBawaan: true,
                 satuanBatas: 'pengguna',
+            ),
+            new DefinisiFitur(
+                self::BATAS_LOKASI,
+                'Batas Jumlah Lokasi',
+                'Banyaknya lokasi yang boleh tercatat pada organisasi.',
+                TipeBatasFitur::Angka,
+                diizinkanBawaan: true,
+                satuanBatas: 'lokasi',
             ),
         ];
 

@@ -18,6 +18,7 @@ final class PerekamEventPemasaran
         ?string $sesiPengunjungId = null,
         ?string $url = null,
         ?array $dataTambahan = null,
+        ?string $organisasiId = null,
     ): EventPemasaran {
         if (! KatalogPeristiwaPemasaran::dikenal($jenis)) {
             throw new AturanBisnisDilanggar("Jenis peristiwa pemasaran {$jenis} tidak dikenal.");
@@ -25,6 +26,7 @@ final class PerekamEventPemasaran
 
         return EventPemasaran::create([
             'PengenalPengunjung' => $pengenalPengunjung,
+            'OrganisasiId' => $organisasiId,
             'SesiPengunjungId' => $sesiPengunjungId,
             'Jenis' => $jenis,
             'Url' => $url,

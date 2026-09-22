@@ -173,3 +173,37 @@ export interface PilihanAturanSkor {
   Peristiwa: Record<string, string>;
   AsalTertunda: string;
 }
+
+export interface Trial {
+  Id: string;
+  Organisasi: string | null;
+  OrganisasiId: string;
+  Prospek: string | null;
+  ProspekId: string | null;
+  Status: string;
+  MulaiPada: string;
+  BerakhirPada: string;
+  TeraktivasiPada: string | null;
+  KonversiPada: string | null;
+  HariPerpanjangan: number;
+  ButirSelesai: string[];
+  StatusBerikutnya: string[];
+}
+
+export interface KonfigurasiTrial {
+  DurasiHari: number;
+  PaketId: string | null;
+  NamaPaket: string | null;
+  KartuDiperlukan: boolean;
+  BatasPengguna: number | null;
+  BatasLokasi: number | null;
+  BatasAset: number | null;
+  HariTenggang: number;
+  PerpanjanganMaksHari: number;
+}
+
+export interface PilihanTrial {
+  Status: string[];
+  Butir: Array<{ Kode: string; Label: string }>;
+  ButirWajib: string[];
+}

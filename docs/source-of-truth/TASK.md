@@ -2059,39 +2059,90 @@ Catatan jujur:
 
 ## 33.01 Konfigurasi Trial
 
-- [ ] Durasi, paket, kebutuhan kartu, batas user/lokasi/aset, grace period, kebijakan perpanjangan.
-- [ ] Dibaca dari domain Langganan, tidak diduplikasi.
-- [ ] Perubahan konfigurasi tercatat di audit.
+- [x] Durasi, paket, kebutuhan kartu, batas user/lokasi/aset, grace period, kebijakan perpanjangan.
+- [x] Dibaca dari domain Langganan, tidak diduplikasi.
+- [x] Perubahan konfigurasi tercatat di audit.
+
+`PembacaKonfigurasiTrial` merakit setelan dari domain Langganan: durasi dari
+`langganan.hari_uji_coba`, paket dan batas dari `PaketFitur`/`KatalogFitur`,
+masa tenggang dari `hari_tenggang`. Yang tinggal di Pemasaran hanyalah yang
+memang miliknya — kebutuhan kartu dan extension policy.
+
+Kunci `trial.hari` dihapus dari `KonfigurasiPemasaran`. Ia menyalin
+`langganan.hari_uji_coba`, dan dua sumber untuk angka yang sama adalah dua
+angka yang cepat atau lambat akan berbeda. `KatalogFitur::BATAS_LOKASI`
+ditambahkan supaya batas lokasi punya tempat yang sama dengan batas aset dan
+pengguna, bukan tempat baru di Pemasaran.
 
 ## 33.02 State Trial
 
-- [ ] State `TERDAFTAR → SETUP → AKTIF → TERAKTIVASI → KONVERSI`.
-- [ ] State alternatif `KADALUARSA`, `DIBATALKAN`, `DIPERPANJANG`.
-- [ ] Mutasi langganan lewat application service, bukan langsung ke Billing.
+- [x] State `TERDAFTAR → SETUP → AKTIF → TERAKTIVASI → KONVERSI`.
+- [x] State alternatif `KADALUARSA`, `DIBATALKAN`, `DIPERPANJANG`.
+- [x] Mutasi langganan lewat application service, bukan langsung ke Billing.
+
+Konversi dapat datang dari keadaan hidup mana pun, termasuk `SETUP`: orang yang
+mendaftar lalu langsung membayar tanpa menyentuh checklist tetap pelanggan, dan
+transisi yang menolaknya akan menolak uang.
+
+Perpanjangan memanggil `KelolaLangganan::perpanjangUjiCoba()`, metode baru yang
+dipisah dari `perpanjang()` — yang itu justru mengakhiri uji coba karena
+periodenya sudah dibayar.
 
 ## 33.03 Activation Checklist
 
-- [ ] Organisasi, lokasi, aset pertama, undangan pengguna, perintah kerja pertama, preventive pertama.
-- [ ] Event trial sesuai `MARKETING.md` bagian 23.
+- [x] Organisasi, lokasi, aset pertama, undangan pengguna, perintah kerja pertama, preventive pertama.
+- [x] Event trial sesuai `MARKETING.md` bagian 23.
+
+Checklist tidak pernah dicentang manusia. Observer `PerekamAktivasiTrial`
+mendengar pembuatan Lokasi, Aset, Pengguna, PerintahKerja, dan
+RencanaPemeliharaan — itulah yang membedakan aktivasi dari sekadar mendaftar.
+Pencatatannya idempoten: aset keseratus tidak mencentang ulang "aset pertama".
 
 ## 33.04 Prospek ke Organisasi
 
-- [ ] Trial yang menghasilkan workspace menautkan `Prospek → Organisasi`.
-- [ ] Referensi attribution tetap dipertahankan.
+- [x] Trial yang menghasilkan workspace menautkan `Prospek → Organisasi`.
+- [x] Referensi attribution tetap dipertahankan.
+
+`EventPemasaran` mendapat kolom `OrganisasiId`. Peristiwa di dalam aplikasi
+tidak punya pengenal pengunjung, hanya organisasi; tanpa kolom itu perjalanan
+satu calon pelanggan putus tepat pada saat ia menjadi tenant. Timeline prospek
+kini membaca kedua kunci sekaligus.
 
 ## 33.05 Event Revenue
 
-- [ ] Event revenue sesuai `MARKETING.md` bagian 23 dari domain Langganan.
-- [ ] Event masuk timeline prospek.
+- [x] Event revenue sesuai `MARKETING.md` bagian 23 dari domain Langganan.
+- [x] Event masuk timeline prospek.
+
+Langganan menyiarkan `PeristiwaLangganan` dan tidak tahu ada yang
+mendengarkan; Pemasaran yang memasang pendengarnya. Arah ketergantungannya
+satu arah, sehingga domain penagihan tidak pernah bergantung pada modul
+pemasaran.
 
 ## 33.06 Test
 
-- [ ] `TrialActivationTest`.
-- [ ] Konversi trial terhubung ke Langganan.
+- [x] `TrialActivationTest`.
+- [x] Konversi trial terhubung ke Langganan.
 
 ### Gate 33
 
 Perjalanan satu pengunjung dari kunjungan pertama sampai berlangganan terbaca utuh dalam satu timeline, dan revenue-nya tertaut ke channel asalnya.
+
+**Terpenuhi.** `KonversiTrialTest::test_perjalanan_terbaca_utuh_dalam_satu_timeline`
+menelusuri satu orang dari formulir anonim, lewat `TrialDimulai`,
+`AsetPertamaDibuat`, dan `TrialTeraktivasi`, sampai `PembayaranBerhasil` — semua
+dalam satu timeline prospek, dengan attribution kunjungan pertamanya utuh.
+
+Catatan jujur:
+
+- Pendaftaran trial dari UI belum ada. `MulaiTrial` sudah menjadi pintu satu-satunya
+  dan sudah diuji, tetapi yang memanggilnya baru test dan konsol; halaman daftar
+  trial di host dashboard menyusul bersama alur pendaftaran mandiri.
+- `Aset`, `PerintahKerja`, dan `RencanaPemeliharaan` dicentang lewat observer yang
+  sama seperti `Lokasi`, tetapi yang diuji lewat model sungguhan baru `Lokasi`;
+  sisanya diuji lewat `CatatAktivasiTrial` langsung karena menyiapkan aset dan
+  perintah kerja lengkap menuntut sebagian besar fixture domain Pemeliharaan.
+- Kebutuhan kartu (`trial.kartu_diperlukan`) baru tersimpan sebagai setelan; yang
+  menegakkannya adalah alur pendaftaran yang belum ada.
 
 ---
 

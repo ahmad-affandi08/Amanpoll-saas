@@ -72,3 +72,8 @@ Schedule::command('idempotensi:bersihkan')
 Schedule::command('pemasaran:jalankan-jadwal-halaman')
     ->everyFiveMinutes()
     ->withoutOverlapping(5);
+
+// Trial yang masa berlakunya lewat ditutup tiap jam (MARKETING.md 12).
+Schedule::command('pemasaran:kedaluwarsakan-trial')
+    ->hourly()
+    ->withoutOverlapping();

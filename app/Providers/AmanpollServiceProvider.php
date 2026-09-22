@@ -19,6 +19,7 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Services\AdapterSinkronisasiRest;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
+use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
 use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTransferManual;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use App\Domain\Pelaporan\Application\Queries\QueryAnggaran;
@@ -40,6 +41,8 @@ use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporPdf;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
+use App\Domain\Pemasaran\Infrastructure\Listeners\CatatPeristiwaRevenue;
+use App\Domain\Pemasaran\Infrastructure\Listeners\PerekamAktivasiTrial;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -55,7 +58,9 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPen
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaan;
 use App\Domain\SiklusAset\Infrastructure\Listeners\SinkronkanStatusPersetujuanSiklusAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
@@ -69,6 +74,7 @@ use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganTambahCatatanPerinta
 use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganUbahStatusPerintahKerja;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 final class AmanpollServiceProvider extends ServiceProvider
@@ -192,5 +198,12 @@ final class AmanpollServiceProvider extends ServiceProvider
         // Mesin Persetujuan (FASE 06) domain-agnostic.
         PermintaanPersetujuan::observe(SinkronkanStatusPersetujuanSiklusAset::class);
         PermintaanPersetujuan::observe(SinkronkanStatusPersetujuanPerencanaanPengadaan::class);
+
+        // Activation checklist trial terisi dari pekerjaan nyata (MARKETING.md 12).
+        foreach ([Lokasi::class, Aset::class, Pengguna::class, PerintahKerja::class, RencanaPemeliharaan::class] as $model) {
+            $model::observe(PerekamAktivasiTrial::class);
+        }
+
+        Event::listen(PeristiwaLangganan::class, CatatPeristiwaRevenue::class);
     }
 }

@@ -15,8 +15,7 @@ return [
             'provider' => 'pengguna',
         ],
 
-        // Admin platform memakai guard sesi tersendiri sehingga sesi tenant dan
-        // sesi platform tidak pernah saling menggantikan (22.02).
+        // Admin platform memakai guard sesi tersendiri.
         'platform' => [
             'driver' => 'session',
             'provider' => 'admin_platform',

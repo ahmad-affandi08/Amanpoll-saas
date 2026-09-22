@@ -19,6 +19,7 @@ final class EventPemasaran extends ModelDasar
 
     protected $fillable = [
         'PengenalPengunjung',
+        'OrganisasiId',
         'SesiPengunjungId',
         'Jenis',
         'Url',
