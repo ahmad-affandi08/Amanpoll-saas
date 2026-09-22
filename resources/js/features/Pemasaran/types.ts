@@ -31,6 +31,17 @@ export interface ProspekDetail extends Prospek {
   Qualified: boolean;
 }
 
+/** Satu perpindahan tahap beserta lama menetap di tahap tujuannya. */
+export interface EntriRiwayatTahap {
+  Id: string;
+  TahapSebelum: string | null;
+  TahapSesudah: string | null;
+  Alasan: string | null;
+  BerpindahPada: string;
+  LamaHari: number;
+  Berjalan: boolean;
+}
+
 export interface EntriTimeline {
   Sumber: 'Peristiwa' | 'Aktivitas';
   Jenis: string;

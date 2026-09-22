@@ -127,6 +127,47 @@ final class PipelineProspekTest extends KasusProspek
         $this->assertContains('Peristiwa', $sumber);
     }
 
+    /**
+     * RiwayatTahapProspek sudah lama diisi tetapi tidak pernah dibaca, sehingga
+     * "sudah mengendap berapa lama di tahap ini" tidak terjawab di mana pun.
+     * Timeline hanya menyebut perpindahannya, bukan durasinya.
+     */
+    public function test_halaman_prospek_menampilkan_lama_menetap_tiap_tahap(): void
+    {
+        $prospek = $this->buatProspek();
+
+        // Tahap awal ditulis saat prospek dibuat; mundurkan supaya durasinya terukur.
+        RiwayatTahapProspek::query()
+            ->where('ProspekId', $prospek->Id)
+            ->update(['BerpindahPada' => now()->subDays(10)]);
+
+        $this->travelTo(now()->subDays(4));
+        app(PindahkanTahapProspek::class)->jalankan(
+            $prospek,
+            $this->tahap(KatalogTahapPipeline::DIHUBUNGI),
+            'Ditelepon sales.',
+        );
+        $this->travelBack();
+
+        $props = $this->actingAs($this->buatAdmin([KatalogIzinPemasaran::PROSPEK_LIHAT]), 'platform')
+            ->get(route('pemasaran.prospek.show', $prospek))
+            ->viewData('page')['props'];
+
+        $riwayat = $props['riwayatTahap'];
+
+        $this->assertCount(2, $riwayat);
+        // Urut naik: tahap awal dulu, lalu perpindahannya.
+        $this->assertNull($riwayat[0]['TahapSebelum']);
+        $this->assertSame(6, $riwayat[0]['LamaHari']);
+        $this->assertFalse($riwayat[0]['Berjalan']);
+
+        $this->assertSame('Dihubungi', $riwayat[1]['TahapSesudah']);
+        $this->assertSame('Ditelepon sales.', $riwayat[1]['Alasan']);
+        $this->assertSame(4, $riwayat[1]['LamaHari']);
+        // Tahap terakhir masih berjalan, jadi durasinya diukur sampai sekarang.
+        $this->assertTrue($riwayat[1]['Berjalan']);
+    }
+
     private function buatProspek(): Prospek
     {
         return app(CatatProspek::class)->jalankan(

@@ -10,17 +10,29 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import type { EntriTimeline, ProspekDetail, TahapRingkas } from '@/features/Pemasaran/types';
+import type {
+  EntriRiwayatTahap,
+  EntriTimeline,
+  ProspekDetail,
+  TahapRingkas,
+} from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   prospek: ProspekDetail;
   timeline: EntriTimeline[];
+  riwayatTahap: EntriRiwayatTahap[];
   tahap: TahapRingkas[];
   jenisAktivitas: string[];
 }
 
-export default function PemasaranProspekShow({ prospek, timeline, tahap, jenisAktivitas }: Props) {
+export default function PemasaranProspekShow({
+  prospek,
+  timeline,
+  riwayatTahap,
+  tahap,
+  jenisAktivitas,
+}: Props) {
   return (
     <KerangkaPlatform>
       <Head title={prospek.Nama} />
@@ -82,6 +94,7 @@ export default function PemasaranProspekShow({ prospek, timeline, tahap, jenisAk
 
         <div className="grid gap-6">
           <KartuKontak prospek={prospek} />
+          <KartuRiwayatTahap riwayat={riwayatTahap} />
           <KartuSkor prospek={prospek} />
         </div>
       </div>
@@ -258,4 +271,57 @@ function KartuSkor({ prospek }: { prospek: ProspekDetail }) {
       </CardContent>
     </Card>
   );
+}
+
+/** Lama menetap per tahap -- pertanyaan pipeline yang tidak terjawab timeline. */
+function KartuRiwayatTahap({ riwayat }: { riwayat: EntriRiwayatTahap[] }) {
+  const berjalan = riwayat.find((satu) => satu.Berjalan);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Riwayat Tahap</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {riwayat.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Prospek ini belum pernah berpindah tahap.</p>
+        ) : (
+          <>
+            {berjalan ? (
+              <p className="mb-3 text-sm text-muted-foreground">
+                Sudah {lamaHari(berjalan.LamaHari)} di tahap{' '}
+                <span className="font-medium text-foreground">{berjalan.TahapSesudah ?? 'ini'}</span>.
+              </p>
+            ) : null}
+            <ol className="grid gap-3 text-sm">
+              {[...riwayat].reverse().map((satu) => (
+                <li key={satu.Id} className="border-l-2 border-border pl-3">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="font-medium text-foreground">
+                      {satu.TahapSebelum
+                        ? `${satu.TahapSebelum} → ${satu.TahapSesudah ?? '—'}`
+                        : `Masuk ${satu.TahapSesudah ?? '—'}`}
+                    </span>
+                    <span className="tabular-nums text-muted-foreground">{lamaHari(satu.LamaHari)}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {tanggalWaktu(satu.BerpindahPada)}
+                    {satu.Alasan ? ` · ${satu.Alasan}` : ''}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function lamaHari(hari: number): string {
+  return hari === 0 ? 'kurang dari sehari' : `${hari} hari`;
+}
+
+function tanggalWaktu(nilai: string): string {
+  return new Date(nilai).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 }

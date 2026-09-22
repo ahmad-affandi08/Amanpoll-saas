@@ -16,6 +16,7 @@ use App\Domain\Pemasaran\Http\Requests\SimpanAktivitasProspekRequest;
 use App\Domain\Pemasaran\Http\Requests\SimpanProspekRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AktivitasProspek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RiwayatTahapProspek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TahapPipeline;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
@@ -72,9 +73,52 @@ final class ProspekController extends Controller
                 'Qualified' => $this->skor->qualified($prospek),
             ],
             'timeline' => $this->timeline->untuk($prospek),
+            'riwayatTahap' => $this->riwayatTahap($prospek),
             'tahap' => $this->daftarTahap(),
             'jenisAktivitas' => array_column(JenisAktivitasProspek::cases(), 'value'),
         ]);
+    }
+
+    /**
+     * Perpindahan tahap prospek beserta lama menetap di masing-masingnya.
+     *
+     * RiwayatTahapProspek sudah lama diisi PindahkanTahapProspek tetapi tidak
+     * pernah dibaca, sehingga pertanyaan pipeline yang paling sering muncul --
+     * prospek ini sudah mengendap berapa lama di tahap sekarang -- tidak
+     * terjawab. Timeline hanya menyebut perpindahannya, bukan durasinya.
+     *
+     * @return list<array{Id: string, TahapSebelum: string|null, TahapSesudah: string|null, Alasan: string|null, BerpindahPada: string, LamaHari: int, Berjalan: bool}>
+     */
+    private function riwayatTahap(Prospek $prospek): array
+    {
+        $riwayat = $prospek->riwayatTahap()
+            ->with(['tahapSebelum', 'tahapSesudah'])
+            ->orderBy('BerpindahPada')
+            ->get()
+            ->values()
+            ->all();
+
+        $sekarang = CarbonImmutable::now();
+        $baris = [];
+
+        foreach ($riwayat as $urutan => $satu) {
+            // Lama satu tahap diukur sampai perpindahan berikutnya; tahap
+            // terakhir masih berjalan, jadi diukur sampai sekarang.
+            $berikutnya = $riwayat[$urutan + 1] ?? null;
+            $akhir = $berikutnya === null ? $sekarang : $berikutnya->BerpindahPada;
+
+            $baris[] = [
+                'Id' => $satu->Id,
+                'TahapSebelum' => $satu->tahapSebelum?->Nama,
+                'TahapSesudah' => $satu->tahapSesudah?->Nama,
+                'Alasan' => $satu->Alasan,
+                'BerpindahPada' => $satu->BerpindahPada->toIso8601String(),
+                'LamaHari' => (int) $satu->BerpindahPada->diffInDays($akhir),
+                'Berjalan' => $berikutnya === null,
+            ];
+        }
+
+        return $baris;
     }
 
     public function store(SimpanProspekRequest $request, CatatProspek $aksi): RedirectResponse
