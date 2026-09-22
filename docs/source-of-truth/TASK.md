@@ -1574,6 +1574,31 @@ Cabang JSON `TagController` sengaja tidak ikut dipaginasi: pemilih tag di layar
 lain menghabiskan daftar itu sekaligus, dan kalau ikut, tag ke-26 akan hilang
 dari pemilih tanpa satu pun pesan galat.
 
+Empat belas daftar sisanya menyusul setelahnya, sehingga seluruh dua puluh
+enam halaman DataTable kini berjalan di server. Yang empat belas itu tidak
+terancam batas apa pun — kategori, peran, templat, dan pola nomor dokumen
+memang berisi puluhan baris — tetapi menyeragamkannya menghapus satu kelas
+kebingungan: tidak ada lagi halaman yang mencari, mengurutkan, atau
+memaginasi dengan aturan berbeda dari halaman sebelahnya.
+
+Lima di antaranya memakai daftar yang sama untuk mengisi pemilih "Induk" di
+form-nya, persis jebakan pemilih tag di atas: kalau ikut dipaginasi,
+kategori atau unit ke-26 hilang dari pilihan tanpa satu pun pesan galat.
+Kelimanya menerima prop tersendiri yang tidak dipaginasi.
+
+Dua perbaikan pada `DaftarTersaring` muncul dari pekerjaan itu, keduanya
+ditemukan saat menulis test:
+
+- Kunci utama dipakai sebagai pemutus seri. Beberapa urutan bawaan punya
+  banyak nilai kembar, dan tanpa urutan total yang pasti MySQL boleh
+  menukar posisi baris kembar antar permintaan — satu baris muncul di dua
+  halaman sementara baris lain tidak pernah muncul. Test perilakunya sempat
+  lolos meski pemutus serinya dicabut, karena pada data kecil MySQL
+  kebetulan stabil; yang benar-benar menjaganya adalah pemeriksaan bahwa
+  kueri-nya memang membawa pemutus seri itu.
+- Nomor halaman dibaca dari permintaan yang diserahkan ke kelas itu, bukan
+  dari resolver global Laravel.
+
 Indeks `(OrganisasiId, Nama)` ditambahkan untuk urutan bawaan enam daftar
 tenant. Diukur pada lima ribu baris satu organisasi: tanpa indeks, pemindaian
 seluruh tabel lalu filesort; dengan indeks, rentang indeks tanpa filesort.
