@@ -88,4 +88,27 @@ return [
         'bank_rekening' => env('AMANPOLL_LANGGANAN_BANK_REKENING', '000-000-0000'),
         'bank_atas_nama' => env('AMANPOLL_LANGGANAN_BANK_ATAS_NAMA', 'PT Amanpoll Indonesia'),
     ],
+
+    'cadangan' => [
+        // Disk tujuan; pada shared hosting ini tetap lokal, dan salinan luarnya diambil dari hPanel.
+        'disk' => env('AMANPOLL_CADANGAN_DISK', 'local'),
+        'folder' => env('AMANPOLL_CADANGAN_FOLDER', 'cadangan'),
+
+        /*
+         * Jalur biner mysqldump dan mysql. Shared hosting kadang tidak memasang
+         * keduanya di PATH; bila salah satu tidak ada, pencadangan berhenti
+         * dengan pesan jelas alih-alih menulis berkas kosong yang baru ketahuan
+         * tidak berguna saat dibutuhkan.
+         */
+        'mysqldump' => env('AMANPOLL_CADANGAN_MYSQLDUMP', 'mysqldump'),
+        'mysql' => env('AMANPOLL_CADANGAN_MYSQL', 'mysql'),
+
+        'retensi_hari' => env('AMANPOLL_CADANGAN_RETENSI_HARI', 14),
+
+        // Folder di bawah storage/app yang ikut dicadangkan; berkas unggahan tenant ada di sini.
+        'folder_berkas' => ['private', 'public'],
+
+        // Batas waktu satu proses dump, dalam detik.
+        'batas_detik' => env('AMANPOLL_CADANGAN_BATAS_DETIK', 600),
+    ],
 ];

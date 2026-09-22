@@ -23,6 +23,12 @@ Schedule::command('queue:prune-failed --hours=168')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
     ->withoutOverlapping(120);
 
+// Cadangan harian berjalan sebelum pembersihan apa pun, supaya yang tersimpan adalah keadaan utuh.
+Schedule::command('cadangan:jalankan')
+    ->dailyAt('01:45')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping(120);
+
 Schedule::command('auth:clear-resets')
     ->dailyAt('02:30')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))

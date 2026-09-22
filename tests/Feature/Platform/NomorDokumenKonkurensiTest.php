@@ -5,15 +5,29 @@ declare(strict_types=1);
 namespace Tests\Feature\Platform;
 
 use App\Domain\Platform\Application\Services\LayananNomorDokumen;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-/** Membuktikan LayananNomorDokumen::berikutnya() aman dari race condition memakai proses OS sungguhan. */
+/**
+ * Membuktikan LayananNomorDokumen::berikutnya() aman dari race condition memakai proses OS sungguhan.
+ *
+ * Dijalankan di atas MariaDB, bukan SQLite. Penjaga yang diuji adalah
+ * `lockForUpdate()`, dan SQLite tidak mengenalnya sama sekali — grammar-nya
+ * mengompilasi klausa itu menjadi kosong. Di sana transaksi hanya memegang
+ * kunci baca lalu berebut naik menjadi kunci tulis, sehingga hasilnya bukan
+ * "aman dari race" melainkan `database is locked` ketika mesin sedang sibuk.
+ * Test yang lulus karena mesinnya tidak mendukung mekanisme yang diuji tidak
+ * membuktikan apa pun.
+ *
+ * Karena barisnya harus terlihat oleh proses anak, test ini tidak memakai
+ * RefreshDatabase dan membereskan barisnya sendiri.
+ */
 class NomorDokumenKonkurensiTest extends TestCase
 {
-    private string $pathDb;
+    private const KONEKSI = 'mysql_paralel';
+
+    private string $organisasiId;
 
     protected function setUp(): void
     {
@@ -23,24 +37,25 @@ class NomorDokumenKonkurensiTest extends TestCase
             $this->markTestSkipped('Ekstensi pcntl tidak tersedia di lingkungan ini.');
         }
 
-        $this->pathDb = sys_get_temp_dir().'/nomor_dokumen_paralel_'.Str::random(8).'.sqlite';
-        touch($this->pathDb);
+        $bawaan = (string) config('database.default');
 
-        config(['database.connections.sqlite_paralel' => [
-            'driver' => 'sqlite',
-            'database' => $this->pathDb,
-            'prefix' => '',
-            'foreign_key_constraints' => false,
-        ]]);
+        if ((string) config("database.connections.{$bawaan}.driver") !== 'mysql') {
+            $this->markTestSkipped('Konkurensi penomoran hanya bermakna di atas MySQL/MariaDB.');
+        }
 
-        DB::connection('sqlite_paralel')->statement('PRAGMA busy_timeout = 5000');
-        Artisan::call('migrate', ['--database' => 'sqlite_paralel', '--force' => true]);
+        // Koneksi terpisah dengan setelan yang sama; anak memakainya tanpa mewarisi transaksi induk.
+        config(['database.connections.'.self::KONEKSI => config("database.connections.{$bawaan}")]);
+
+        $this->organisasiId = (string) Str::ulid();
     }
 
     protected function tearDown(): void
     {
-        DB::purge('sqlite_paralel');
-        @unlink($this->pathDb);
+        DB::connection(self::KONEKSI)->table('NomorDokumen')
+            ->where('OrganisasiId', $this->organisasiId)->delete();
+        DB::connection(self::KONEKSI)->table('Organisasi')
+            ->where('Id', $this->organisasiId)->delete();
+        DB::purge(self::KONEKSI);
 
         parent::tearDown();
     }
@@ -51,17 +66,20 @@ class NomorDokumenKonkurensiTest extends TestCase
         $iterasiPerProses = 10;
         $totalDiharapkan = $jumlahProses * $iterasiPerProses;
 
-        $organisasiId = (string) Str::ulid();
-        DB::connection('sqlite_paralel')->table('Organisasi')->insert([
-            'Id' => $organisasiId, 'Kode' => 'ORG-PARALEL', 'Nama' => 'Organisasi Paralel',
+        $organisasiId = $this->organisasiId;
+        DB::connection(self::KONEKSI)->table('Organisasi')->insert([
+            'Id' => $organisasiId, 'Kode' => 'ORG-PARALEL-'.Str::upper(Str::random(6)),
+            'Nama' => 'Organisasi Paralel', 'Status' => 'Aktif',
             'DibuatPada' => now(), 'DiperbaruiPada' => now(),
         ]);
-        DB::connection('sqlite_paralel')->table('NomorDokumen')->insert([
+        DB::connection(self::KONEKSI)->table('NomorDokumen')->insert([
             'Id' => (string) Str::ulid(), 'OrganisasiId' => $organisasiId, 'JenisDokumen' => 'ParalelTest',
             'Awalan' => 'PK', 'FormatNomor' => '{Awalan}-{Nomor:5}', 'NomorTerakhir' => 0,
             'ResetPeriode' => 'TidakAda', 'DibuatPada' => now(), 'DiperbaruiPada' => now(),
         ]);
-        DB::purge('sqlite_paralel');
+
+        // Anak adalah proses terpisah; barisnya harus sudah commit sebelum fork.
+        DB::purge(self::KONEKSI);
 
         $direktoriHasil = sys_get_temp_dir().'/nomor_dokumen_hasil_'.Str::random(8);
         mkdir($direktoriHasil);
@@ -110,9 +128,8 @@ class NomorDokumenKonkurensiTest extends TestCase
     private function jalankanSebagaiAnak(string $organisasiId, int $iterasi, string $pathHasil): void
     {
         try {
-            DB::purge('sqlite_paralel');
-            config(['database.default' => 'sqlite_paralel']);
-            DB::connection('sqlite_paralel')->statement('PRAGMA busy_timeout = 5000');
+            DB::purge(self::KONEKSI);
+            config(['database.default' => self::KONEKSI]);
 
             $layanan = app(LayananNomorDokumen::class);
             $baris = [];
