@@ -22,8 +22,8 @@ export default function PublikBeranda({ kanonik, urlMasuk, urlDaftar }: PropsPub
             Aset, pemeliharaan, dan suku cadang dalam satu sistem
           </h1>
           <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
-            Amanpoll mencatat setiap aset, menjadwalkan pemeliharaannya, dan menjaga
-            ketersediaan suku cadang — sampai ke teknisi yang bekerja tanpa sinyal.
+            Amanpoll mencatat setiap aset, menjadwalkan pemeliharaannya, dan menjaga ketersediaan suku cadang
+            — sampai ke teknisi yang bekerja tanpa sinyal.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button size="lg" asChild>

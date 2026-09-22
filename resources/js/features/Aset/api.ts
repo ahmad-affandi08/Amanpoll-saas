@@ -13,4 +13,5 @@ export const ruteAset = {
   riwayatLokasi: (id: string) => `/aset/${id}/riwayat-lokasi`,
   riwayatPemeliharaan: (id: string) => `/aset/${id}/riwayat-pemeliharaan`,
   riwayatKalibrasi: (id: string) => `/aset/${id}/riwayat-kalibrasi`,
+  label: (id: string[]) => `/aset/label?${id.map((satu) => `id[]=${encodeURIComponent(satu)}`).join('&')}`,
 };

@@ -26,7 +26,8 @@ export function daftarObjek(isi: Record<string, unknown>, kunci: string): Record
   }
 
   return nilai.filter(
-    (satu): satu is Record<string, unknown> => typeof satu === 'object' && satu !== null && !Array.isArray(satu),
+    (satu): satu is Record<string, unknown> =>
+      typeof satu === 'object' && satu !== null && !Array.isArray(satu),
   );
 }
 

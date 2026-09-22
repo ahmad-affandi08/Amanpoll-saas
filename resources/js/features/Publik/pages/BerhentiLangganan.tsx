@@ -17,8 +17,8 @@ export default function PublikBerhentiLangganan({ email }: Props) {
         <div className="w-full max-w-md space-y-3 rounded-lg border p-6 text-center">
           <h1 className="text-xl font-semibold tracking-tight">Anda sudah berhenti berlangganan</h1>
           <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{email}</span> tidak akan lagi menerima email pemasaran dari
-            Amanpoll. Email operasional yang berkaitan dengan akun Anda tetap dikirim.
+            <span className="font-mono">{email}</span> tidak akan lagi menerima email pemasaran dari Amanpoll.
+            Email operasional yang berkaitan dengan akun Anda tetap dikirim.
           </p>
         </div>
       </div>

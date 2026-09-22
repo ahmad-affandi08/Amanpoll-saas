@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Pemasaran\Application\Services;
+namespace App\Shared\Infrastructure\Qr;
 
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -10,21 +10,27 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 
-/** Generator QR aset untuk tool publik (MARKETING.md 10). */
+/**
+ * Encoder QR kode aset, dipakai tool publik (MARKETING.md 10) dan cetak label
+ * aset tenant.
+ *
+ * Batas jumlahnya tidak dipatok di sini karena kedua pemakainya punya alasan
+ * berbeda: tool publik menahan endpoint anonim tetap murah, sedangkan cetak
+ * label dibatasi oleh apa yang masuk akal dalam satu kali cetak.
+ */
 final class PembuatQrAset
 {
-    /** Satu lembar label sekali cetak; batasnya menjaga endpoint anonim ini tetap murah. */
-    public const MAKS_KODE = 50;
-
+    /** Batas panjang kode; di atas ini QR jadi terlalu rapat untuk dipindai dari label kecil. */
     public const MAKS_PANJANG_KODE = 120;
 
     private const UKURAN_PIKSEL = 220;
 
     /**
      * @param  list<string>  $kode
+     * @param  int  $maksKode  Batas jumlah kode yang ditentukan pemanggil.
      * @return list<array{Kode: string, Svg: string}>
      */
-    public function untuk(array $kode): array
+    public function untuk(array $kode, int $maksKode): array
     {
         $bersih = $this->rapikan($kode);
 
@@ -32,9 +38,9 @@ final class PembuatQrAset
             throw new AturanBisnisDilanggar('Tidak ada kode aset yang dapat dibuatkan QR.');
         }
 
-        if (count($bersih) > self::MAKS_KODE) {
+        if (count($bersih) > $maksKode) {
             throw new AturanBisnisDilanggar(
-                'Sekali buat paling banyak '.self::MAKS_KODE.' kode aset.',
+                'Sekali buat paling banyak '.$maksKode.' kode aset.',
             );
         }
 

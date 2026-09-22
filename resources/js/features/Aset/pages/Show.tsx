@@ -18,9 +18,11 @@ import { TabNilai } from '@/features/Aset/components/TabNilai';
 import { TabMeter } from '@/features/Aset/components/TabMeter';
 import { TabPemeliharaan } from '@/features/Aset/components/TabPemeliharaan';
 import { TabKalibrasi } from '@/features/Aset/components/TabKalibrasi';
+import { KartuQr } from '@/features/Aset/components/KartuQr';
 
 interface Props {
   aset: Aset;
+  qr: string | null;
   kategoriAset: KategoriAset[];
   modelAset: ModelAset[];
   penyedia: Penyedia[];
@@ -28,7 +30,15 @@ interface Props {
   lokasi: Lokasi[];
 }
 
-export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi, lokasi }: Props) {
+export default function AsetShow({
+  aset,
+  qr,
+  kategoriAset,
+  modelAset,
+  penyedia,
+  unitOrganisasi,
+  lokasi,
+}: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={aset.Nama} />
@@ -44,6 +54,8 @@ export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unit
           </span>
         }
       />
+
+      <KartuQr aset={aset} qr={qr} />
 
       <Tabs defaultValue="info">
         <TabsList>

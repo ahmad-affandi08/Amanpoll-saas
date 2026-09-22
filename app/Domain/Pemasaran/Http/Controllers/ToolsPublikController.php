@@ -6,13 +6,13 @@ namespace App\Domain\Pemasaran\Http\Controllers;
 
 use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Application\Services\KalkulatorKeandalanPublik;
-use App\Domain\Pemasaran\Application\Services\PembuatQrAset;
 use App\Domain\Pemasaran\Application\Services\PenautHostPengunjung;
 use App\Domain\Pemasaran\Application\Services\PerangkapSpam;
 use App\Domain\Pemasaran\Domain\Enums\ToolPublik;
 use App\Domain\Pemasaran\Http\Requests\BuatQrAsetRequest;
 use App\Domain\Pemasaran\Http\Requests\HitungKeandalanPublikRequest;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Qr\PembuatQrAset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -63,7 +63,7 @@ final class ToolsPublikController extends Controller
             ...$this->propsBersama($request),
             'tool' => $this->ringkasTool(ToolPublik::QrAset),
             'batas' => [
-                'MaksKode' => PembuatQrAset::MAKS_KODE,
+                'MaksKode' => BuatQrAsetRequest::MAKS_KODE,
                 'MaksPanjangKode' => PembuatQrAset::MAKS_PANJANG_KODE,
             ],
         ]);
@@ -78,7 +78,7 @@ final class ToolsPublikController extends Controller
         /** @var array{Kode: list<string>} $sah */
         $sah = $request->validated();
 
-        return back()->with('qr', $pembuat->untuk($sah['Kode']));
+        return back()->with('qr', $pembuat->untuk($sah['Kode'], BuatQrAsetRequest::MAKS_KODE));
     }
 
     /** @return array<string, mixed> */

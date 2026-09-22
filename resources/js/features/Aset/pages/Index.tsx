@@ -1,11 +1,12 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ListFilter } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import {
@@ -32,6 +33,8 @@ import { BidangKode } from '@/components/shared/BidangKode';
 interface Props {
   aset: Paginasi<Aset>;
   filter: FilterAset;
+  /** Batas sekali cetak, datang dari CetakLabelAsetRequest supaya tidak pernah berbeda. */
+  maksLabel: number;
   kategoriAset: KategoriAset[];
   lokasi: Lokasi[];
 }
@@ -240,9 +243,27 @@ function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset
   );
 }
 
-export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props) {
+export default function AsetIndex({ aset, filter, maksLabel, kategoriAset, lokasi }: Props) {
   const [form, setForm] = useState<FilterAset>(filter);
   const [sheetFilterBuka, setSheetFilterBuka] = useState(false);
+  // Paginasi memakai preserveState, jadi pilihan bertahan saat berpindah halaman.
+  const [terpilih, setTerpilih] = useState<string[]>([]);
+
+  const pilih = (id: string, aktif: boolean) => {
+    setTerpilih((kini) => (aktif ? [...kini, id] : kini.filter((satu) => satu !== id)));
+  };
+
+  const idHalamanIni = aset.data.map((satu) => satu.Id);
+  const semuaHalamanIniTerpilih =
+    idHalamanIni.length > 0 && idHalamanIni.every((id) => terpilih.includes(id));
+
+  const pilihHalamanIni = (aktif: boolean) => {
+    setTerpilih((kini) =>
+      aktif
+        ? [...kini, ...idHalamanIni.filter((id) => !kini.includes(id))]
+        : kini.filter((id) => !idHalamanIni.includes(id)),
+    );
+  };
 
   const terapkanFilter = (e?: FormEvent) => {
     e?.preventDefault();
@@ -355,12 +376,45 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
           </div>
         )}
 
+        {terpilih.length > 0 && (
+          <div className="hidden flex-wrap items-center justify-between gap-3 rounded-[9px] border border-border bg-muted/40 px-4 py-3 md:flex">
+            <p className="text-sm text-foreground">
+              {terpilih.length} aset dipilih
+              {terpilih.length > maksLabel && (
+                <span className="text-destructive">
+                  {' '}
+                  — sekali cetak paling banyak {maksLabel}, kurangi dulu pilihannya.
+                </span>
+              )}
+            </p>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setTerpilih([])}>
+                Bersihkan pilihan
+              </Button>
+              <Button size="sm" disabled={terpilih.length > maksLabel} asChild={terpilih.length <= maksLabel}>
+                {terpilih.length <= maksLabel ? (
+                  <Link href={ruteAset.label(terpilih)}>Cetak Label</Link>
+                ) : (
+                  <span>Cetak Label</span>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Desktop/tablet: table */}
         {aset.data.length > 0 && (
           <div className="hidden rounded-[9px] border border-border bg-card md:block">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    <Checkbox
+                      checked={semuaHalamanIniTerpilih}
+                      onCheckedChange={(nilai) => pilihHalamanIni(nilai === true)}
+                      aria-label="Pilih semua aset di halaman ini"
+                    />
+                  </TableHead>
                   <TableHead>Nama</TableHead>
                   <TableHead>Kategori</TableHead>
                   <TableHead>Lokasi</TableHead>
@@ -375,6 +429,14 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
                     className="cursor-pointer"
                     onClick={() => router.visit(ruteAset.detail(a.Id))}
                   >
+                    {/* Klik baris membuka detail, jadi kotak centangnya tidak boleh ikut memicunya. */}
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={terpilih.includes(a.Id)}
+                        onCheckedChange={(nilai) => pilih(a.Id, nilai === true)}
+                        aria-label={`Pilih ${a.Nama}`}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="font-medium text-foreground">{a.Nama}</div>
                       <div className="font-mono text-xs text-muted-foreground">{a.KodeAset}</div>

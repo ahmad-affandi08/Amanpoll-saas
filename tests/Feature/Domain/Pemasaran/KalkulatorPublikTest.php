@@ -6,11 +6,12 @@ namespace Tests\Feature\Domain\Pemasaran;
 
 use App\Domain\Pemasaran\Application\Actions\SimpanDrafKonten;
 use App\Domain\Pemasaran\Application\Services\KalkulatorKeandalanPublik;
-use App\Domain\Pemasaran\Application\Services\PembuatQrAset;
 use App\Domain\Pemasaran\Application\Services\PerangkapSpam;
 use App\Domain\Pemasaran\Domain\Enums\JenisKontenPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\ToolPublik;
+use App\Domain\Pemasaran\Http\Requests\BuatQrAsetRequest;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Qr\PembuatQrAset;
 
 /** Angka kalkulator publik sama dengan KPI yang sama di dalam aplikasi (Gate 38.05). */
 final class KalkulatorPublikTest extends KasusLeadMagnet
@@ -141,7 +142,7 @@ final class KalkulatorPublikTest extends KasusLeadMagnet
             ->assertOk()
             ->assertInertia(fn ($halaman) => $halaman
                 ->component('Publik/QrAset')
-                ->where('batas.MaksKode', PembuatQrAset::MAKS_KODE));
+                ->where('batas.MaksKode', BuatQrAsetRequest::MAKS_KODE));
     }
 
     public function test_qr_dibuat_untuk_setiap_kode(): void
@@ -163,7 +164,7 @@ final class KalkulatorPublikTest extends KasusLeadMagnet
     {
         $jahat = '</svg><script>alert(1)</script>';
 
-        $hasil = app(PembuatQrAset::class)->untuk([$jahat]);
+        $hasil = app(PembuatQrAset::class)->untuk([$jahat], BuatQrAsetRequest::MAKS_KODE);
 
         $this->assertStringNotContainsString('script', $hasil[0]['Svg']);
         $this->assertStringNotContainsString($jahat, $hasil[0]['Svg']);
@@ -171,7 +172,7 @@ final class KalkulatorPublikTest extends KasusLeadMagnet
 
     public function test_kode_kembar_disatukan(): void
     {
-        $hasil = app(PembuatQrAset::class)->untuk(['AST-1', 'AST-1', ' AST-1 ', 'AST-2']);
+        $hasil = app(PembuatQrAset::class)->untuk(['AST-1', 'AST-1', ' AST-1 ', 'AST-2'], BuatQrAsetRequest::MAKS_KODE);
 
         $this->assertCount(2, $hasil);
     }
@@ -180,20 +181,23 @@ final class KalkulatorPublikTest extends KasusLeadMagnet
     {
         $this->expectException(AturanBisnisDilanggar::class);
 
-        app(PembuatQrAset::class)->untuk(['', '   ']);
+        app(PembuatQrAset::class)->untuk(['', '   '], BuatQrAsetRequest::MAKS_KODE);
     }
 
     public function test_kode_terlalu_panjang_ditolak(): void
     {
         $this->expectException(AturanBisnisDilanggar::class);
 
-        app(PembuatQrAset::class)->untuk([str_repeat('A', PembuatQrAset::MAKS_PANJANG_KODE + 1)]);
+        app(PembuatQrAset::class)->untuk(
+            [str_repeat('A', PembuatQrAset::MAKS_PANJANG_KODE + 1)],
+            BuatQrAsetRequest::MAKS_KODE,
+        );
     }
 
     /** Endpoint anonim tidak boleh diminta membuat ribuan QR sekaligus. */
     public function test_kode_melebihi_batas_ditolak(): void
     {
-        $kode = array_map(fn (int $ke): string => 'AST-'.$ke, range(1, PembuatQrAset::MAKS_KODE + 1));
+        $kode = array_map(fn (int $ke): string => 'AST-'.$ke, range(1, BuatQrAsetRequest::MAKS_KODE + 1));
 
         $this->post($this->urlPublik('/tools/qr'), ['Kode' => $kode])
             ->assertSessionHasErrors('Kode');

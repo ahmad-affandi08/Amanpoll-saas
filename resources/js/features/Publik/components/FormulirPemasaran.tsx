@@ -138,7 +138,11 @@ function Captcha({ konfigurasi }: { konfigurasi: KonfigurasiCaptcha }) {
       <Head>
         <script src={konfigurasi.Skrip} async defer />
       </Head>
-      <div className="cf-turnstile" data-sitekey={konfigurasi.KunciSitus} data-response-field-name={konfigurasi.NamaField} />
+      <div
+        className="cf-turnstile"
+        data-sitekey={konfigurasi.KunciSitus}
+        data-response-field-name={konfigurasi.NamaField}
+      />
     </>
   );
 }

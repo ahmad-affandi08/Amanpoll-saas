@@ -104,7 +104,11 @@ export function Naskah({ isi }: Props) {
 
         if (blok.jenis === 'judul') {
           const kelas =
-            blok.tingkat === 2 ? 'text-2xl font-semibold' : blok.tingkat === 3 ? 'text-xl font-semibold' : 'text-lg font-semibold';
+            blok.tingkat === 2
+              ? 'text-2xl font-semibold'
+              : blok.tingkat === 3
+                ? 'text-xl font-semibold'
+                : 'text-lg font-semibold';
 
           return (
             <p key={kunci} className={`${kelas} mt-8 first:mt-0`} role="heading" aria-level={blok.tingkat}>

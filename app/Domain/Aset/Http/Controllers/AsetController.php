@@ -7,6 +7,7 @@ namespace App\Domain\Aset\Http\Controllers;
 use App\Domain\Aset\Application\Actions\BuatAset;
 use App\Domain\Aset\Application\Actions\HapusAset;
 use App\Domain\Aset\Application\Actions\UbahAset;
+use App\Domain\Aset\Http\Requests\CetakLabelAsetRequest;
 use App\Domain\Aset\Http\Requests\SimpanAsetRequest;
 use App\Domain\Aset\Http\Resources\AsetResource;
 use App\Domain\Aset\Http\Resources\KategoriAsetResource;
@@ -21,6 +22,7 @@ use App\Domain\Platform\Http\Resources\UnitOrganisasiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Qr\PembuatQrAset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -60,12 +62,14 @@ final class AsetController extends Controller
         return Inertia::render('Aset/Index', [
             'aset' => AsetResource::collection($aset),
             'filter' => $filter,
+            // Dikirim dari server supaya batas di tombol cetak tidak pernah beda dengan validasinya.
+            'maksLabel' => CetakLabelAsetRequest::MAKS_LABEL,
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
             'lokasi' => LokasiResource::collection(Lokasi::query()->orderBy('Nama')->get()),
         ]);
     }
 
-    public function show(Aset $aset): Response
+    public function show(Aset $aset, PembuatQrAset $pembuat): Response
     {
         $this->authorize('view', $aset);
 
@@ -73,6 +77,8 @@ final class AsetController extends Controller
 
         return Inertia::render('Aset/Show', [
             'aset' => new AsetResource($aset),
+            // KodeQr dulu hanya ditampilkan sebagai teks, jadi tidak pernah bisa dipindai.
+            'qr' => $aset->KodeQr === null ? null : $pembuat->untuk([$aset->KodeQr], 1)[0]['Svg'],
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
             'modelAset' => ModelAsetResource::collection(ModelAset::query()->orderBy('Nama')->get()),
             'penyedia' => PenyediaResource::collection(Penyedia::query()->orderBy('Nama')->get()),

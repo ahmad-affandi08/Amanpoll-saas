@@ -6,6 +6,7 @@ use App\Domain\Aset\Http\Controllers\AsetController;
 use App\Domain\Aset\Http\Controllers\AsetPindaiController;
 use App\Domain\Aset\Http\Controllers\GaransiAsetController;
 use App\Domain\Aset\Http\Controllers\KategoriAsetController;
+use App\Domain\Aset\Http\Controllers\LabelAsetController;
 use App\Domain\Aset\Http\Controllers\MerekController;
 use App\Domain\Aset\Http\Controllers\MeterAsetController;
 use App\Domain\Aset\Http\Controllers\ModelAsetController;
@@ -40,6 +41,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::get('/', [AsetController::class, 'index'])->name('index');
             Route::post('/', [AsetController::class, 'store'])->name('store');
             Route::get('/pindai/{kode}', [AsetPindaiController::class, 'tampilkan'])->name('pindai');
+            // Sebelum '/{aset}' supaya 'label' tidak tertelan sebagai id aset.
+            Route::get('/label', LabelAsetController::class)->name('label');
             Route::get('/{aset}', [AsetController::class, 'show'])->name('show');
             Route::put('/{aset}', [AsetController::class, 'update'])->name('update');
             Route::delete('/{aset}', [AsetController::class, 'destroy'])->name('destroy');
