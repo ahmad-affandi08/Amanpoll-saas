@@ -24,6 +24,13 @@ final class KirimNotifikasi implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * Kanal luar yang sedang bermasalah butuh jeda, bukan tiga hantaman beruntun.
+     *
+     * @var list<int>
+     */
+    public array $backoff = [30, 120];
+
     public function __construct(private readonly string $notifikasiId) {}
 
     public function handle(): void

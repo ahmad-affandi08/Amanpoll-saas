@@ -12,6 +12,13 @@ final class ProsesEskalasiKeluhan extends PekerjaanOrganisasi implements ShouldB
 {
     public int $uniqueFor = 300;
 
+    /**
+     * Eskalasi mengirim notifikasi ke orang sungguhan. Jadwalnya kembali tiap
+     * lima menit, jadi kegagalan lebih baik ditunggu jalan berikutnya daripada
+     * diulang dan berisiko mengirim dua kali.
+     */
+    public int $tries = 1;
+
     public function uniqueId(): string
     {
         return $this->OrganisasiId;

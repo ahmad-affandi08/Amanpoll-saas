@@ -17,6 +17,12 @@ final class HitungSkorProspek implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /** Skor dihitung ulang dari nol tiap jalan, jadi mengulang aman. */
+    public int $tries = 3;
+
+    /** @var list<int> */
+    public array $backoff = [10, 60];
+
     public function __construct(public readonly string $prospekId) {}
 
     public function handle(PenghitungSkorProspek $penghitung): void

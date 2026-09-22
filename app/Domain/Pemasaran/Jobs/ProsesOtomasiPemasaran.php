@@ -26,7 +26,9 @@ final class ProsesOtomasiPemasaran implements ShouldQueue
 
     public function handle(PenjalanOtomasi $penjalan): void
     {
-        $eksekusi = EksekusiOtomasiPemasaran::query()->find($this->eksekusiId);
+        // `event` dibaca `PenjalanOtomasi` untuk menyusun konteksnya; dimuat di sini supaya
+        // kebutuhan itu tersurat, bukan muncul sebagai kueri kedua dari dalam layanan.
+        $eksekusi = EksekusiOtomasiPemasaran::query()->with('event')->find($this->eksekusiId);
 
         if ($eksekusi !== null && ! $eksekusi->Status->final()) {
             $penjalan->jalankan($eksekusi);

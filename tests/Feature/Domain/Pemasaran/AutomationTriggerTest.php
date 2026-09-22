@@ -150,7 +150,8 @@ final class AutomationTriggerTest extends KasusOtomasi
 
     private function jalankanSemua(): void
     {
-        foreach (EksekusiOtomasiPemasaran::query()->get() as $eksekusi) {
+        // Menyusuri eksekusi tanpa memuat `event` berarti satu kueri tambahan per baris.
+        foreach (EksekusiOtomasiPemasaran::query()->with('event')->get() as $eksekusi) {
             if (! $eksekusi->Status->final()) {
                 app(PenjalanOtomasi::class)->jalankan($eksekusi);
             }

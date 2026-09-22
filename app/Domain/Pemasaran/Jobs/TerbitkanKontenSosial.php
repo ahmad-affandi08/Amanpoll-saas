@@ -23,6 +23,13 @@ final class TerbitkanKontenSosial implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * Penyedia sosial membatasi laju; mengulang tanpa jeda memperburuknya.
+     *
+     * @var list<int>
+     */
+    public array $backoff = [30, 120];
+
     public function __construct(public readonly string $jadwalId) {}
 
     public function handle(PenerbitKontenSosial $penerbit): void

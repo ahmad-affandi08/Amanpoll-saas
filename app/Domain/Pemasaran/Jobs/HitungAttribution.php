@@ -16,6 +16,12 @@ final class HitungAttribution implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /** Penyusunan ulang membaca sesi dan menimpa hasilnya, jadi mengulang aman. */
+    public int $tries = 3;
+
+    /** @var list<int> */
+    public array $backoff = [10, 60];
+
     public function __construct(public readonly string $pengenalPengunjung) {}
 
     public function handle(PenyusunUlangAttribution $penyusun): void

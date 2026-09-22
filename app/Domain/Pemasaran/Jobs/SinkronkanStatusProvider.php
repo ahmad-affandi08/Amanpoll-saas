@@ -19,6 +19,12 @@ final class SinkronkanStatusProvider implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /** Status hanya boleh maju, jadi menarik ulang laporan yang sama tidak mengubah apa pun. */
+    public int $tries = 3;
+
+    /** @var list<int> */
+    public array $backoff = [30, 120];
+
     private const BATAS = 200;
 
     public function handle(PenyediaEmailPemasaran $penyedia, PengirimEmailPemasaran $pengirim): void

@@ -23,6 +23,13 @@ final class BuatEksporLaporan implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * Ekspor besar gagal biasanya karena sumber daya sesaat; jeda memberi ruang pulih.
+     *
+     * @var list<int>
+     */
+    public array $backoff = [10, 60];
+
     public int $timeout = 300;
 
     /**

@@ -20,6 +20,13 @@ final class ResetDatasetDemo implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Membangun ulang seluruh dataset demo itu mahal, dan jadwalnya kembali tiap
+     * lima belas menit. Kegagalan lebih baik ditunggu jalan berikutnya daripada
+     * diulang langsung di jalan yang sama.
+     */
+    public int $tries = 1;
+
     public function __construct(private readonly ?string $kodeDemo = null)
     {
         $this->onConnection('database');

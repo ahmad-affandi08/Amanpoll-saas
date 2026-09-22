@@ -14,6 +14,13 @@ final class KirimPanggilanBalikWeb implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * Tangga percobaan ulang dimiliki `LayananPanggilanBalikWeb`, yang mencatat
+     * `Percobaan` lalu menjadwalkan sendiri kiriman berikutnya. Queue yang ikut
+     * mengulang akan menggandakan hitungan itu, jadi ia hanya menjalankan sekali.
+     */
+    public int $tries = 1;
+
     public function __construct(private readonly string $pengirimanId) {}
 
     public function handle(LayananPanggilanBalikWeb $layanan): void

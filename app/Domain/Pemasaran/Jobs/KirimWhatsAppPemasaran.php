@@ -22,6 +22,13 @@ final class KirimWhatsAppPemasaran implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * Penyedia WhatsApp membatasi laju; mengulang tanpa jeda memperburuknya.
+     *
+     * @var list<int>
+     */
+    public array $backoff = [30, 120];
+
     public function __construct(public readonly string $pengirimanId) {}
 
     public function handle(PengirimWhatsAppPemasaran $pengirim): void

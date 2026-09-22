@@ -21,6 +21,12 @@ final class HitungMetrikKampanye implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /** Agregat harian ditulis ulang utuh tiap jalan, jadi mengulang aman. */
+    public int $tries = 3;
+
+    /** @var list<int> */
+    public array $backoff = [30, 120];
+
     public function __construct(private readonly ?string $tanggal = null)
     {
         $this->onConnection('database');

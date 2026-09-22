@@ -22,6 +22,13 @@ final class KirimEmailPemasaran implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * Penyedia email yang menolak sesaat butuh jeda sebelum dicoba lagi.
+     *
+     * @var list<int>
+     */
+    public array $backoff = [30, 120];
+
     public function __construct(public readonly string $pengirimanId) {}
 
     public function handle(PengirimEmailPemasaran $pengirim): void

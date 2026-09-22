@@ -58,7 +58,8 @@ final class DaftarkanKeSequence
                 'DimulaiPada' => CarbonImmutable::now(),
             ]);
 
-            foreach ($sequence->langkah as $langkah) {
+            // Template tiap langkah ikut dimuat; tanpa ini sequence berisi N langkah menembak N kueri.
+            foreach ($sequence->langkah()->with('template')->get() as $langkah) {
                 if ($langkah->Aktif) {
                     $this->penjadwal->jadwalkanLangkah($pendaftaran, $langkah, $prospek);
                 }

@@ -99,7 +99,11 @@ use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganTambahCatatanPerinta
 use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganUbahStatusPerintahKerja;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 
 final class AmanpollServiceProvider extends ServiceProvider
@@ -239,6 +243,9 @@ final class AmanpollServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Lazy loading yang lolos ke produksi adalah N+1 yang tidak pernah terlihat di sini (FASE 25.01).
+        Model::preventLazyLoading(! $this->app->isProduction());
+
         $zonaWaktu = (string) config('amanpoll.zona_waktu_default', 'Asia/Jakarta');
         config(['app.timezone' => $zonaWaktu]);
         date_default_timezone_set($zonaWaktu);
@@ -285,5 +292,29 @@ final class AmanpollServiceProvider extends ServiceProvider
 
         // Otomasi menyala dari peristiwa yang ditulis, bukan dari pemanggil yang harus ingat memicunya.
         EventPemasaran::observe(PemicuOtomasiPemasaran::class);
+
+        $this->catatPekerjaanGagal();
+    }
+
+    /**
+     * Pekerjaan yang habis percobaannya meninggalkan jejak di log aplikasi.
+     *
+     * Tanpa ini kegagalan permanen hanya mengendap di tabel `PekerjaanGagal`
+     * yang tidak dibaca siapa pun lalu dipangkas seminggu kemudian, sehingga
+     * pekerjaan yang berhenti diam-diam terlihat persis seperti pekerjaan yang
+     * memang tidak pernah diantrekan (FASE 25.02).
+     */
+    private function catatPekerjaanGagal(): void
+    {
+        Queue::failing(function (JobFailed $peristiwa): void {
+            Log::error('Pekerjaan antrian gagal permanen.', [
+                'Pekerjaan' => $peristiwa->job->resolveName(),
+                'Koneksi' => $peristiwa->connectionName,
+                'Antrian' => $peristiwa->job->getQueue(),
+                'Percobaan' => $peristiwa->job->attempts(),
+                'Pengecualian' => $peristiwa->exception::class,
+                'Pesan' => mb_substr($peristiwa->exception->getMessage(), 0, 500),
+            ]);
+        });
     }
 }
