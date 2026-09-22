@@ -36,6 +36,8 @@ final class AdminPlatform extends Authenticatable
         'Email',
         'KataSandi',
         'Status',
+        'Izin',
+        'SuperAdmin',
         'TerakhirMasukPada',
     ];
 
@@ -44,6 +46,8 @@ final class AdminPlatform extends Authenticatable
     protected function casts(): array
     {
         return [
+            'Izin' => 'array',
+            'SuperAdmin' => 'boolean',
             'TerakhirMasukPada' => 'immutable_datetime',
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',

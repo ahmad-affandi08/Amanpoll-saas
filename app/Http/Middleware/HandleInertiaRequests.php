@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Core\Izin\PemeriksaIzin;
+use App\Core\Izin\PemeriksaIzinPlatform;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -16,6 +17,7 @@ final class HandleInertiaRequests extends Middleware
     public function __construct(
         private readonly PemeriksaIzin $pemeriksaIzin,
         private readonly PemeriksaEntitlement $pemeriksaEntitlement,
+        private readonly PemeriksaIzinPlatform $pemeriksaIzinPlatform,
     ) {}
 
     public function share(Request $request): array
@@ -44,6 +46,18 @@ final class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'izin' => fn (): array => $pengguna ? $this->pemeriksaIzin->daftarKodeIzin((string) $pengguna->Id) : [],
+            // Kewenangan konsol platform dibagikan terpisah: admin platform
+            // tidak punya organisasi, sehingga izin tenant di atas selalu kosong
+            // baginya dan menu konsolnya butuh sumbernya sendiri.
+            'platform' => function () use ($request): array {
+                $admin = $request->user('platform');
+
+                return $admin === null ? [] : [
+                    'Nama' => $admin->Nama,
+                    'SuperAdmin' => $admin->SuperAdmin === true,
+                    'Izin' => $this->pemeriksaIzinPlatform->daftarKode($admin),
+                ];
+            },
             // Entitlement dibagikan supaya UI dapat menyembunyikan menu dan
             // menonaktifkan tombol. Ini semata demi kenyamanan: penegakannya
             // tetap di backend, dan prop ini membaca sumber yang sama persis

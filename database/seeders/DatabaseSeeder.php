@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             IzinSeeder::class,
             FiturPaketSeeder::class,
+            FiturPlatformSeeder::class,
             DemoAwalSeeder::class,
         ]);
     }

@@ -1732,44 +1732,54 @@ Berlaku untuk seluruh fase di bawah: domain `Pemasaran` tidak boleh menduplikasi
 
 ## 29.01 Bounded Context
 
-- [ ] `app/Domain/Pemasaran` sesuai struktur `MARKETING.md` bagian 3.
-- [ ] Routes domain terdaftar lewat `DomainServiceProvider`.
-- [ ] Berkas dibuat saat ada isinya, tanpa barrel `index.ts` di frontend.
+- [x] `app/Domain/Pemasaran` sesuai struktur `MARKETING.md` bagian 3.
+- [x] Routes domain terdaftar lewat `DomainServiceProvider`.
+- [x] Berkas dibuat saat ada isinya, tanpa barrel `index.ts` di frontend.
 
 ## 29.02 Konfigurasi Pemasaran
 
-- [ ] Tabel `KonfigurasiPemasaran`.
-- [ ] Trial, lead scoring, attribution, referral, consent configurable.
-- [ ] Secret provider tetap di environment, tidak di database.
-- [ ] Dashboard tidak pernah menampilkan secret penuh.
+- [x] Tabel `KonfigurasiPemasaran`.
+- [x] Trial, lead scoring, attribution, referral, consent configurable.
+- [x] Secret provider tetap di environment, tidak di database.
+- [x] Dashboard tidak pernah menampilkan secret penuh.
 
 ## 29.03 Permission
 
-- [ ] Izin `platform.pemasaran.*` sesuai `MARKETING.md` bagian 26.
-- [ ] Izin ekspor terpisah dari izin lihat.
-- [ ] Seeder izin diperbarui.
-- [ ] Hanya role platform yang memperoleh izin ini.
+- [x] Izin `platform.pemasaran.*` sesuai `MARKETING.md` bagian 26.
+- [x] Izin ekspor terpisah dari izin lihat.
+- [x] Seeder izin diperbarui.
+- [x] Hanya role platform yang memperoleh izin ini.
 
 ## 29.04 Feature Flag
 
-- [ ] Mekanisme feature flag platform. Belum ada di FASE 00–28 dan belum pernah dibuat.
-- [ ] Flag `marketing.*` sesuai `MARKETING.md` bagian 31.
-- [ ] Flag mati berarti menu dan rutenya tidak dapat diakses, bukan sekadar disembunyikan.
+- [x] Mekanisme feature flag platform. Belum ada di FASE 00–28 dan belum pernah dibuat.
+- [x] Flag `marketing.*` sesuai `MARKETING.md` bagian 31.
+- [x] Flag mati berarti menu dan rutenya tidak dapat diakses, bukan sekadar disembunyikan.
 
 ## 29.05 Navigasi Dashboard Platform
 
-- [ ] Menu `Growth & Marketing` sesuai `MARKETING.md` bagian 4.
-- [ ] Hanya pada host dashboard.
-- [ ] Submenu `Pengaturan → Domain` menampilkan host aktif secara baca-saja.
+- [x] Menu `Growth & Marketing` sesuai `MARKETING.md` bagian 4.
+- [x] Hanya pada host dashboard.
+- [x] Submenu `Pengaturan → Domain` menampilkan host aktif secara baca-saja.
 
 ## 29.06 Audit
 
-- [ ] Action sensitif `MARKETING.md` bagian 27 tercatat di audit yang sudah ada.
-- [ ] Tidak membuat tabel audit kedua.
+- [x] Action sensitif `MARKETING.md` bagian 27 tercatat di audit yang sudah ada.
+- [x] Tidak membuat tabel audit kedua.
 
 ### Gate 29
 
-Menu Growth & Marketing hanya dapat diakses role platform berizin; mematikan flag `marketing.*` menutup rutenya, bukan hanya menyembunyikan menunya.
+Menu Growth & Marketing hanya dapat diakses role platform berizin; mematikan flag `marketing.*` menutup rutenya, bukan hanya menyembunyikan menunya. (Terpenuhi)
+
+Izin platform disimpan sebagai daftar kode pada baris AdminPlatform, bukan
+sebagai tabel peran tersendiri: admin platform berjumlah sedikit dan tidak punya
+hierarki unit seperti pengguna tenant, sehingga meniru RBAC tenant di sini hanya
+akan menduplikasi IAM. `SuperAdmin` dipertahankan supaya platform tidak pernah
+dapat mengunci dirinya sendiri di luar konsolnya.
+
+Flag disemai dalam keadaan mati, dan kode yang tidak dikenal katalog juga
+dianggap mati — salah ketik pada gerbang rute menutup halaman, bukan
+membukanya.
 
 ---
 

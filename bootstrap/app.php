@@ -6,7 +6,9 @@ use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PastikanAkunMasihAktif;
 use App\Http\Middleware\PastikanCakupanKunciApi;
 use App\Http\Middleware\PastikanFiturPaketAktif;
+use App\Http\Middleware\PastikanFiturPlatformAktif;
 use App\Http\Middleware\PastikanIdempoten;
+use App\Http\Middleware\PastikanIzinPlatform;
 use App\Http\Middleware\PastikanLanggananMengizinkanTulis;
 use App\Http\Middleware\PastikanMemilikiIzin;
 use App\Http\Middleware\TandaiHostTidakTerindeks;
@@ -69,6 +71,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'organisasi' => TetapkanKonteksOrganisasi::class,
             'fitur' => PastikanFiturPaketAktif::class,
             'izin' => PastikanMemilikiIzin::class,
+            'izin.platform' => PastikanIzinPlatform::class,
+            'fitur.platform' => PastikanFiturPlatformAktif::class,
             'kunci.api' => AutentikasiKunciApi::class,
             'cakupan.kunci' => PastikanCakupanKunciApi::class,
             'idempoten' => PastikanIdempoten::class,
