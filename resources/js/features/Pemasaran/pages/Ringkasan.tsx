@@ -19,6 +19,69 @@ interface Props {
   superAdmin: boolean;
 }
 
+const PINTASAN = [
+  {
+    label: 'Prospek',
+    href: '/admin-platform/pemasaran/prospek',
+    keterangan: 'Pipeline, skor, dan aktivitas prospek.',
+    izin: 'platform.prospek.lihat',
+  },
+  {
+    label: 'Aturan Skor',
+    href: '/admin-platform/pemasaran/prospek/aturan-skor',
+    keterangan: 'Bobot tiap sinyal terhadap skor prospek.',
+    izin: 'platform.prospek.lihat',
+  },
+  {
+    label: 'Trial',
+    href: '/admin-platform/pemasaran/trial',
+    keterangan: 'Trial berjalan beserta checklist aktivasinya.',
+    izin: 'platform.prospek.lihat',
+  },
+  {
+    label: 'Kampanye',
+    href: '/admin-platform/pemasaran/kampanye',
+    keterangan: 'Kampanye dan biayanya.',
+    izin: 'platform.kampanye.lihat',
+  },
+  {
+    label: 'Halaman Publik',
+    href: '/admin-platform/pemasaran/halaman',
+    keterangan: 'Landing page beserta versinya.',
+    izin: 'platform.halaman.lihat',
+  },
+  {
+    label: 'Formulir',
+    href: '/admin-platform/pemasaran/formulir',
+    keterangan: 'Formulir publik dan kirimannya.',
+    izin: 'platform.halaman.lihat',
+  },
+  {
+    label: 'Redirect',
+    href: '/admin-platform/pemasaran/redirect',
+    keterangan: 'Peta alih alamat situs publik.',
+    izin: 'platform.halaman.lihat',
+  },
+  {
+    label: 'Template Email',
+    href: '/admin-platform/pemasaran/email/template',
+    keterangan: 'Naskah email pemasaran dan variabelnya.',
+    izin: 'platform.email.lihat',
+  },
+  {
+    label: 'Sequence Email',
+    href: '/admin-platform/pemasaran/email/sequence',
+    keterangan: 'Rangkaian email onboarding dan jadwalnya.',
+    izin: 'platform.email.lihat',
+  },
+  {
+    label: 'Consent dan Supresi',
+    href: '/admin-platform/pemasaran/email/konsen',
+    keterangan: 'Siapa boleh dikirimi pesan, dan permintaan penghapusan data.',
+    izin: 'platform.email.lihat',
+  },
+] as const;
+
 export default function Ringkasan({ modul, izinSaya, superAdmin }: Props) {
   const hidup = modul.filter((satu) => satu.Aktif).length;
 
@@ -61,6 +124,23 @@ export default function Ringkasan({ modul, izinSaya, superAdmin }: Props) {
           </Card>
         ))}
       </div>
+
+      <section className="mt-8">
+        <h2 className="text-sm font-medium text-foreground">Halaman Konsol</h2>
+        <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {PINTASAN.filter((satu) => superAdmin || izinSaya.includes(satu.izin)).map((satu) => (
+            <li key={satu.href}>
+              <Link
+                href={satu.href}
+                className="block rounded-md border p-3 text-sm transition-colors hover:bg-accent"
+              >
+                <span className="font-medium text-foreground">{satu.label}</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">{satu.keterangan}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="mt-8">
         <h2 className="text-sm font-medium text-foreground">Kewenangan Anda</h2>

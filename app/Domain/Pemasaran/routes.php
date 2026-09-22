@@ -9,10 +9,13 @@ use App\Domain\Pemasaran\Http\Controllers\FormulirPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeController;
+use App\Domain\Pemasaran\Http\Controllers\KonsenPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ProspekController;
 use App\Domain\Pemasaran\Http\Controllers\RedirectPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\RingkasanPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\SequenceEmailController;
+use App\Domain\Pemasaran\Http\Controllers\TemplateEmailController;
 use App\Domain\Pemasaran\Http\Controllers\TrialController;
 use Illuminate\Support\Facades\Route;
 
@@ -150,6 +153,62 @@ Route::middleware(['web', 'auth:platform'])
                         Route::delete('/{redirect}', [RedirectPemasaranController::class, 'destroy'])
                             ->name('destroy');
                     });
+            });
+        });
+
+        // Email pemasaran: template, sequence, dan consent.
+        Route::prefix('email')->name('email.')->group(function (): void {
+            Route::prefix('template')->name('template.')->group(function (): void {
+                Route::get('/', [TemplateEmailController::class, 'index'])
+                    ->middleware('izin.platform:'.KatalogIzinPemasaran::EMAIL_LIHAT)
+                    ->name('index');
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::EMAIL_KELOLA)
+                    ->group(function (): void {
+                        Route::post('/', [TemplateEmailController::class, 'store'])->name('store');
+                        Route::put('/{template}', [TemplateEmailController::class, 'update'])->name('update');
+                        Route::delete('/{template}', [TemplateEmailController::class, 'destroy'])
+                            ->name('destroy');
+                    });
+            });
+
+            Route::prefix('sequence')->name('sequence.')->group(function (): void {
+                Route::get('/', [SequenceEmailController::class, 'index'])
+                    ->middleware('izin.platform:'.KatalogIzinPemasaran::EMAIL_LIHAT)
+                    ->name('index');
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::EMAIL_KELOLA)
+                    ->group(function (): void {
+                        Route::post('/', [SequenceEmailController::class, 'store'])->name('store');
+                        Route::put('/{sequence}', [SequenceEmailController::class, 'update'])->name('update');
+                        Route::post('/{sequence}/langkah', [SequenceEmailController::class, 'simpanLangkah'])
+                            ->name('langkah.store');
+                        Route::put('/{sequence}/langkah/{langkah}', [
+                            SequenceEmailController::class, 'simpanLangkah',
+                        ])->name('langkah.update');
+                        Route::delete('/{sequence}/langkah/{langkah}', [
+                            SequenceEmailController::class, 'hapusLangkah',
+                        ])->name('langkah.destroy');
+                    });
+            });
+
+            Route::prefix('konsen')->name('konsen.')->group(function (): void {
+                Route::get('/', [KonsenPemasaranController::class, 'index'])
+                    ->middleware('izin.platform:'.KatalogIzinPemasaran::EMAIL_LIHAT)
+                    ->name('index');
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::EMAIL_KELOLA)
+                    ->group(function (): void {
+                        Route::post('/supresi', [KonsenPemasaranController::class, 'supresi'])
+                            ->name('supresi');
+                        Route::post('/permintaan', [KonsenPemasaranController::class, 'catatPermintaan'])
+                            ->name('permintaan');
+                    });
+
+                // Memproses permintaan menghapus data orang sungguhan, jadi haknya sama dengan mengekspornya.
+                Route::post('/permintaan/{permintaan}/proses', [
+                    KonsenPemasaranController::class, 'prosesPermintaan',
+                ])->middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_EKSPOR)->name('permintaan.proses');
             });
         });
 

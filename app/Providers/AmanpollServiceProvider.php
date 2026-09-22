@@ -41,8 +41,10 @@ use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporPdf;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
+use App\Domain\Pemasaran\Domain\Contracts\PenyediaEmailPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Listeners\CatatPeristiwaRevenue;
 use App\Domain\Pemasaran\Infrastructure\Listeners\PerekamAktivasiTrial;
+use App\Domain\Pemasaran\Infrastructure\Services\PenyediaEmailLaravel;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -158,6 +160,15 @@ final class AmanpollServiceProvider extends ServiceProvider
                 return $registri;
             },
         );
+
+        // Penyedia email pemasaran dapat diganti lewat konfigurasi tanpa menyentuh pemanggilnya.
+        $this->app->bind(PenyediaEmailPemasaran::class, function ($app): PenyediaEmailPemasaran {
+            $kode = (string) config('amanpoll.pemasaran.penyedia_email', 'Laravel');
+
+            return match ($kode) {
+                default => $app->make(PenyediaEmailLaravel::class),
+            };
+        });
     }
 
     public function boot(): void

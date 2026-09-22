@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Core\Host\PetaHost;
+use App\Domain\Pemasaran\Http\Controllers\BerhentiLanggananController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPublikController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPublikController;
 use App\Domain\Pemasaran\Http\Controllers\RobotsController;
@@ -48,6 +49,11 @@ if ($host->situsPublikAktif()) {
             Route::get('/pratinjau/{halaman}/{versi}', [HalamanPublikController::class, 'pratinjau'])
                 ->middleware(['signed', 'throttle:publik', TandaiTidakTerindeks::class])
                 ->name('pratinjau');
+
+            // Tanpa kedaluwarsa: email lama tetap harus dapat dipakai berhenti berlangganan.
+            Route::get('/berhenti-langganan/{pengiriman}', BerhentiLanggananController::class)
+                ->middleware(['signed', 'throttle:publik', TandaiTidakTerindeks::class])
+                ->name('berhenti-langganan');
 
             Route::post('/formulir/{formulir}', FormulirPublikController::class)
                 ->middleware('throttle:formulir')

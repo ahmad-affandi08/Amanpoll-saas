@@ -6,6 +6,7 @@ namespace App\Domain\Pemasaran\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Pemasaran\Application\Services\PembacaKonfigurasiTrial;
+use App\Domain\Pemasaran\Application\Services\PendaftarSequenceTrial;
 use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\ButirAktivasi;
 use App\Domain\Pemasaran\Domain\Enums\StatusTrial;
@@ -16,13 +17,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use Carbon\CarbonImmutable;
 
-/**
- * Memulai trial untuk satu organisasi (MARKETING.md 12).
- *
- * Di sinilah prospek anonim menjadi tenant tanpa kehilangan riwayatnya:
- * `ProspekId` dan `PengenalPengunjung` disalin ke trialnya, sehingga attribution
- * tetap dapat ditelusuri setelah orangnya punya workspace sendiri.
- */
+/** Memulai trial; ProspekId dan PengenalPengunjung ikut disalin agar attribution tetap tertelusur (MARKETING.md 12). */
 final class MulaiTrial
 {
     public function __construct(
@@ -30,6 +25,7 @@ final class MulaiTrial
         private readonly PembacaKonfigurasiTrial $konfigurasi,
         private readonly PerekamEventPemasaran $event,
         private readonly LayananAudit $audit,
+        private readonly PendaftarSequenceTrial $sequence,
     ) {}
 
     public function jalankan(string $organisasiId, ?Prospek $prospek = null, ?string $langgananId = null): Trial
@@ -72,6 +68,8 @@ final class MulaiTrial
                 dataTambahan: ['TrialId' => $trial->Id, 'DurasiHari' => $setelan->durasiHari],
                 organisasiId: $organisasiId,
             );
+
+            $this->sequence->daftarkan($prospek);
 
             $this->audit->catat('Trial.Dimulai', 'Trial', $trial->Id, dataSesudah: [
                 'OrganisasiId' => $organisasiId,

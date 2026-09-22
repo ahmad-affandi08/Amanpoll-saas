@@ -50,6 +50,8 @@ return [
     |
     */
     'pemasaran' => [
+        'penyedia_email' => env('AMANPOLL_PEMASARAN_PENYEDIA_EMAIL', 'Laravel'),
+
         'captcha' => [
             'endpoint' => env(
                 'AMANPOLL_CAPTCHA_ENDPOINT',

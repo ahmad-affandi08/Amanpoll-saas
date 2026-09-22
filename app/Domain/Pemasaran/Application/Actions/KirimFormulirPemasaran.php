@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Application\Actions;
 
+use App\Domain\Pemasaran\Application\Services\LayananKonsen;
 use App\Domain\Pemasaran\Application\Services\PemeriksaCaptcha;
 use App\Domain\Pemasaran\Application\Services\PemvalidasiFormulirPemasaran;
 use App\Domain\Pemasaran\Application\Services\PenempelTagProspek;
 use App\Domain\Pemasaran\Domain\Enums\JenisFieldFormulir;
+use App\Domain\Pemasaran\Domain\Enums\SumberKonsen;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
 use App\Domain\Pemasaran\Domain\ValueObjects\HasilPengirimanFormulir;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FieldFormulirPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FormulirPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\PengirimanFormulir;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiPengunjung;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -30,6 +33,7 @@ final class KirimFormulirPemasaran
         private readonly CatatProspek $catatProspek,
         private readonly PenempelTagProspek $tag,
         private readonly PemeriksaCaptcha $captcha,
+        private readonly LayananKonsen $konsen,
     ) {}
 
     /**
@@ -81,6 +85,7 @@ final class KirimFormulirPemasaran
                 );
 
                 $this->tag->tempel($prospek, $this->tagFormulir($formulir));
+                $this->catatKonsen($prospek, $persetujuan, $alamatIp, $agenPengguna);
 
                 $pengiriman = PengirimanFormulir::create([
                     'FormulirPemasaranId' => $formulir->Id,
@@ -95,6 +100,29 @@ final class KirimFormulirPemasaran
 
                 return HasilPengirimanFormulir::tersimpan($prospek, $pengiriman);
             },
+        );
+    }
+
+    /** Persetujuan pada formulir adalah consent pemasaran, dan dicatat sebagai bukti. */
+    private function catatKonsen(
+        Prospek $prospek,
+        bool $persetujuan,
+        ?string $alamatIp,
+        ?string $agenPengguna,
+    ): void {
+        $email = (string) $prospek->Email;
+
+        if ($email === '') {
+            return;
+        }
+
+        $this->konsen->catat(
+            $email,
+            $persetujuan,
+            SumberKonsen::Formulir,
+            $prospek,
+            $alamatIp,
+            $agenPengguna,
         );
     }
 

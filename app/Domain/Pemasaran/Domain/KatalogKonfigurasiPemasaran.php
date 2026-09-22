@@ -21,6 +21,8 @@ final class KatalogKonfigurasiPemasaran
 
     public const EMAIL_CAP_HARIAN = 'email.cap_harian';
 
+    public const EMAIL_SEQUENCE_TRIAL = 'email.sequence_trial';
+
     public const OTOMASI_CAP_EKSEKUSI = 'otomasi.cap_eksekusi';
 
     public const OTOMASI_CAP_PERCOBAAN = 'otomasi.cap_percobaan';
@@ -60,6 +62,10 @@ final class KatalogKonfigurasiPemasaran
             self::EMAIL_CAP_HARIAN => [
                 'bawaan' => 500,
                 'keterangan' => 'Batas pengiriman email pemasaran per hari.',
+            ],
+            self::EMAIL_SEQUENCE_TRIAL => [
+                'bawaan' => '',
+                'keterangan' => 'Kode sequence email yang dijalankan saat trial dimulai; kosong berarti tidak ada.',
             ],
             self::OTOMASI_CAP_EKSEKUSI => [
                 'bawaan' => 1000,

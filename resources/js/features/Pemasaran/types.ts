@@ -207,3 +207,59 @@ export interface PilihanTrial {
   Butir: Array<{ Kode: string; Label: string }>;
   ButirWajib: string[];
 }
+
+export interface TemplateEmail {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Jenis: string;
+  Subjek: string;
+  IsiHtml: string;
+  IsiTeks: string | null;
+  Aktif: boolean;
+}
+
+export interface LangkahSequence {
+  Id: string;
+  TemplateEmailPemasaranId: string;
+  TemplateNama: string;
+  Urutan: number;
+  HariKe: number;
+  Aktif: boolean;
+}
+
+export interface SequenceEmail {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Keterangan: string | null;
+  Aktif: boolean;
+  JumlahBerjalan: number;
+  Langkah: LangkahSequence[];
+}
+
+export interface BarisSupresi {
+  Id: string;
+  Email: string | null;
+  Alasan: string;
+  Catatan: string | null;
+  DitambahkanPada: string | null;
+}
+
+export interface RiwayatKonsen {
+  Id: string;
+  Email: string;
+  Diberikan: boolean;
+  Sumber: string;
+  VersiKebijakan: string;
+  DicatatPada: string | null;
+}
+
+export interface PermintaanData {
+  Id: string;
+  Email: string | null;
+  Jenis: string;
+  Catatan: string | null;
+  DimintaPada: string | null;
+  DiprosesPada: string | null;
+}

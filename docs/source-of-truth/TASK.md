@@ -2165,40 +2165,111 @@ jadi `berjalan()` kini berarti "belum berakhir", bukan "belum teraktivasi".
 
 ## 34.01 Consent
 
-- [ ] Simpan consent, timestamp, sumber, versi kebijakan.
-- [ ] Unsubscribe.
-- [ ] Suppression list.
-- [ ] Permintaan penghapusan/anonimisasi.
+- [x] Simpan consent, timestamp, sumber, versi kebijakan.
+- [x] Unsubscribe.
+- [x] Suppression list.
+- [x] Permintaan penghapusan/anonimisasi.
+
+Consent hanya-tambah: pencabutan adalah baris baru yang menyatakan
+`Diberikan = false`, sehingga riwayatnya tetap terbaca sebagai bukti lengkap
+dengan versi kebijakan yang berlaku saat itu.
+
+Daftar supresi dikunci pada `EmailHash`, bukan alamatnya. Itulah yang membuat
+penghapusan data benar-benar penghapusan: alamatnya dibuang dari prospek,
+konsen, kiriman, dan bahkan dari baris supresinya sendiri, sementara sidiknya
+tetap menolak orang yang sama masuk kembali lewat formulir. Tanpa itu,
+"penghapusan" harus memilih antara menyimpan alamat yang diminta hilang atau
+mengirimi surat lagi orang yang sudah meminta berhenti.
+
+Anonimisasi menyisakan baris prospeknya tanpa identitas sehingga corong dan
+attribution tetap terbaca jujur; penghapusan membuang barisnya.
 
 ## 34.02 Template dan Sequence
 
-- [ ] Tabel `TemplateEmailPemasaran`, `SequenceEmailPemasaran`, `LangkahSequenceEmail`.
-- [ ] Variabel sesuai `MARKETING.md` bagian 15.
-- [ ] Sequence trial configurable, bukan hard-code.
+- [x] Tabel `TemplateEmailPemasaran`, `SequenceEmailPemasaran`, `LangkahSequenceEmail`.
+- [x] Variabel sesuai `MARKETING.md` bagian 15.
+- [x] Sequence trial configurable, bukan hard-code.
+
+Variabel yang salah ketik ditolak saat menyimpan, bukan dibiarkan lolos. Saat
+kirim, `{{NamaDepan}}` hanya lenyap tanpa suara, dan surat yang menyapa
+"Halo ," baru ketahuan setelah ribuan orang membacanya.
+
+Sequence onboarding trial ditunjuk lewat setelan `email.sequence_trial`.
+Tanpa setelan, tanpa consent, atau tanpa sequence aktif, trial tetap berjalan:
+email pemasaran bukan syarat orang boleh mencoba produknya.
+
+Langkah tidak dapat disunting selagi ada pendaftaran berjalan. Kiriman
+dijadwalkan di muka, jadi mengubah hari atau template setelah itu tidak lagi
+mengubah apa pun yang sudah terjadwal — hanya membuat konsol berbohong tentang
+apa yang akan orang terima.
 
 ## 34.03 Pengiriman
 
-- [ ] Tabel `PengirimanEmailPemasaran`.
-- [ ] Status `TERJADWAL`, `DIKIRIM`, `TERKIRIM`, `DIBUKA`, `DIKLIK`, `BOUNCE`, `GAGAL`, `UNSUBSCRIBE`.
-- [ ] Kontrak `PenyediaEmailPemasaran`.
-- [ ] Job `KirimEmailPemasaran` idempoten; retry tidak menghasilkan kiriman ganda.
-- [ ] Job `SinkronkanStatusProvider` untuk status kiriman yang datang belakangan (dipindah dari FASE 30).
-- [ ] Rate limit pengiriman.
+- [x] Tabel `PengirimanEmailPemasaran`.
+- [x] Status `TERJADWAL`, `DIKIRIM`, `TERKIRIM`, `DIBUKA`, `DIKLIK`, `BOUNCE`, `GAGAL`, `UNSUBSCRIBE`.
+- [x] Kontrak `PenyediaEmailPemasaran`.
+- [x] Job `KirimEmailPemasaran` idempoten; retry tidak menghasilkan kiriman ganda.
+- [x] Job `SinkronkanStatusProvider` untuk status kiriman yang datang belakangan (dipindah dari FASE 30).
+- [x] Rate limit pengiriman.
+
+Idempotensi bersandar pada kunci unik di basis data, bukan pada pemeriksaan
+sebelum menulis: seluruh langkah dijadwalkan di muka dengan
+`sequence:{pendaftaran}:langkah:{langkah}`, sehingga penjadwal yang berjalan
+dua kali menabrak indeks alih-alih melahirkan kiriman kedua.
+
+Status hanya boleh maju. Laporan "terkirim" yang tiba setelah "diklik" tidak
+memundurkan apa pun, karena penyedia tidak menjanjikan urutan.
+
+Cap harian dihitung dari yang benar-benar berangkat hari ini, bukan dari yang
+diantrekan; antrean yang gagal tidak memakan jatah kiriman orang lain.
 
 ## 34.04 Penegakan
 
-- [ ] Unsubscribe menghentikan seluruh pesan pemasaran.
-- [ ] Suppression list dihormati sebelum pengiriman.
-- [ ] Consent diperiksa di domain, bukan hanya di UI.
+- [x] Unsubscribe menghentikan seluruh pesan pemasaran.
+- [x] Suppression list dihormati sebelum pengiriman.
+- [x] Consent diperiksa di domain, bukan hanya di UI.
+
+Consent diperiksa lagi pada saat kirim, bukan hanya saat dijadwalkan. Jeda
+antara keduanya bisa berhari-hari, dan justru di sanalah orang menekan tombol
+berhenti langganan.
+
+Tautan berhenti langganan bertanda tangan dan tanpa kedaluwarsa: email lama
+tetap harus dapat dipakai bertahun kemudian, sedangkan tautan yang dapat
+ditebak memungkinkan siapa saja mencabut langganan orang lain. Satu klik,
+tanpa masuk, tanpa konfirmasi — meminta orang membuktikan dirinya sebelum
+boleh berhenti dikirimi surat adalah cara memperlambat pencabutan, bukan cara
+mengamankannya.
+
+Bounce keras masuk daftar supresi sendiri: alamat yang memantul akan memantul
+lagi, dan reputasi pengirimlah yang membayarnya.
 
 ## 34.05 Test
 
-- [ ] `SequenceEmailTest`.
-- [ ] `SuppressionListTest`.
+- [x] `SequenceEmailTest`.
+- [x] `SuppressionListTest`.
 
 ### Gate 34
 
 Menjalankan ulang pengiriman yang gagal tidak menghasilkan email ganda, dan penerima yang unsubscribe tidak pernah menerima pesan pemasaran berikutnya.
+
+**Terpenuhi.** `SequenceEmailTest::test_menjalankan_ulang_pekerjaan_tidak_mengirim_dua_kali`
+menjalankan job yang sama dua kali dan penyedia hanya menerima satu pesan;
+`test_kegagalan_penyedia_menyisakan_kiriman_untuk_dicoba_lagi` membuktikan
+paruh yang lebih sulit — kiriman yang gagal tetap `Terjadwal`, dicoba lagi,
+lalu berangkat tepat sekali.
+`SuppressionListTest::test_pesan_berikutnya_tidak_pernah_berangkat_setelah_unsubscribe`
+menempuh jalurnya utuh: satu email berangkat, penerimanya mengklik tautan di
+dalamnya, waktu dimajukan melewati jadwal dua langkah berikutnya, dan tidak
+satu pun berangkat.
+
+Kedua paruh Gate diuji lewat sabotase: mematikan pemeriksaan consent saat
+kirim membuat ketiga email berangkat; mematikan tanda tangan URL membuat
+tautan tebakan dapat mencabut langganan orang lain; mengabaikan daftar supresi
+menghidupkan kembali alamat yang sudah dihapus datanya.
+
+Satu hal yang ditemukan saat menulisnya: supresi harus berdiri sendiri, tidak
+boleh menumpang pada konsen negatif. Setelah bounce, consent orang itu masih
+positif — hanya daftar supresi yang menghentikannya.
 
 ---
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Pemasaran\Jobs\SinkronkanStatusProvider;
 use Illuminate\Support\Facades\Schedule;
 
 // | Shared hosting tidak menjalankan daemon queue secara permanen.
@@ -75,5 +76,15 @@ Schedule::command('pemasaran:jalankan-jadwal-halaman')
 
 // Trial yang masa berlakunya lewat ditutup tiap jam (MARKETING.md 12).
 Schedule::command('pemasaran:kedaluwarsakan-trial')
+    ->hourly()
+    ->withoutOverlapping();
+
+// Email pemasaran yang jatuh tempo diantrekan tiap lima menit (MARKETING.md 15).
+Schedule::command('pemasaran:kirim-antrian-email')
+    ->everyFiveMinutes()
+    ->withoutOverlapping(5);
+
+// Status kiriman yang datang belakangan ditarik tiap jam (MARKETING.md 15).
+Schedule::job(new SinkronkanStatusProvider)
     ->hourly()
     ->withoutOverlapping();

@@ -7,8 +7,10 @@ namespace App\Domain\Pemasaran\Application\Actions;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Langganan\Application\Actions\KelolaLangganan;
 use App\Domain\Langganan\Domain\Enums\SiklusLangganan;
+use App\Domain\Pemasaran\Application\Services\LayananKonsen;
 use App\Domain\Pemasaran\Application\Services\PembacaKonfigurasiTrial;
 use App\Domain\Pemasaran\Application\Services\PenjagaKartuTrial;
+use App\Domain\Pemasaran\Domain\Enums\SumberKonsen;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
 use App\Domain\Pemasaran\Domain\ValueObjects\KonfigurasiTrial;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
@@ -22,14 +24,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Support\Str;
 
-/**
- * Pendaftaran trial mandiri dari host dashboard (MARKETING.md 12, 34.1).
- *
- * Satu transaksi menghasilkan empat hal yang tidak boleh ada setengah-setengah:
- * organisasi, pengguna pemiliknya, langganan uji coba, dan trialnya. Workspace
- * tanpa pemilik, atau pemilik tanpa langganan, adalah tenant yang tidak dapat
- * dipakai dan tidak dapat ditagih.
- */
+/** Pendaftaran trial mandiri: organisasi, pemilik, langganan, dan trial lahir dalam satu transaksi (MARKETING.md 12, 34.1). */
 final class DaftarkanTrial
 {
     private const KODE_PERAN_PEMILIK = 'PEMILIK';
@@ -42,6 +37,7 @@ final class DaftarkanTrial
         private readonly KelolaLangganan $kelolaLangganan,
         private readonly CatatProspek $catatProspek,
         private readonly MulaiTrial $mulaiTrial,
+        private readonly LayananKonsen $konsen,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -90,6 +86,13 @@ final class DaftarkanTrial
             ],
             SumberProspek::Trial,
             $pengenalPengunjung,
+        );
+
+        $this->konsen->catat(
+            (string) $data['Email'],
+            (bool) ($data['Persetujuan'] ?? false),
+            SumberKonsen::Trial,
+            $prospek,
         );
 
         return $this->mulaiTrial->jalankan($organisasi->Id, $prospek, $langganan->Id);
