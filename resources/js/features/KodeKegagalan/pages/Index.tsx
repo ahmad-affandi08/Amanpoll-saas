@@ -20,6 +20,7 @@ import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -40,16 +41,20 @@ interface ItemKodeKegagalan {
 interface Props {
   kodeKegagalan: ItemKodeKegagalan[];
   kategoriAset: KategoriAsetRingkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 function DialogFormKodeKegagalan({
   kategoriAset,
   itemEdit,
   pemicu,
+  wajib,
 }: {
   kategoriAset: KategoriAsetRingkas[];
   itemEdit?: ItemKodeKegagalan;
   pemicu?: React.ReactNode;
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const sedangEdit = Boolean(itemEdit);
@@ -95,108 +100,110 @@ function DialogFormKodeKegagalan({
         <DialogHeader>
           <DialogTitle>{sedangEdit ? 'Edit Kode Kegagalan' : 'Tambah Kode Kegagalan'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Jenis Taksonomi</Label>
-            <Select
-              value={form.data.Jenis}
-              onValueChange={(val) => form.setData('Jenis', val as 'Masalah' | 'Penyebab' | 'Tindakan')}
-            >
-              <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Masalah" className="cursor-pointer">
-                  Masalah (Problem / Symptom)
-                </SelectItem>
-                <SelectItem value="Penyebab" className="cursor-pointer">
-                  Penyebab (Cause / Mechanism)
-                </SelectItem>
-                <SelectItem value="Tindakan" className="cursor-pointer">
-                  Tindakan (Remedy / Action)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {form.errors.Jenis && <p className="text-sm text-destructive">{form.errors.Jenis}</p>}
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-              contoh="Misal: MSL-001"
-            />
-
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Kategori Aset (Opsional)</Label>
+              <Label nama="Jenis">Jenis Taksonomi</Label>
               <Select
-                value={form.data.KategoriAsetId}
-                onValueChange={(val) => form.setData('KategoriAsetId', val)}
+                value={form.data.Jenis}
+                onValueChange={(val) => form.setData('Jenis', val as 'Masalah' | 'Penyebab' | 'Tindakan')}
               >
                 <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue placeholder="Semua kategori" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
-                    Semua Kategori Aset
+                  <SelectItem value="Masalah" className="cursor-pointer">
+                    Masalah (Problem / Symptom)
                   </SelectItem>
-                  {kategoriAset.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="Penyebab" className="cursor-pointer">
+                    Penyebab (Cause / Mechanism)
+                  </SelectItem>
+                  <SelectItem value="Tindakan" className="cursor-pointer">
+                    Tindakan (Remedy / Action)
+                  </SelectItem>
                 </SelectContent>
               </Select>
+              {form.errors.Jenis && <p className="text-sm text-destructive">{form.errors.Jenis}</p>}
             </div>
-          </div>
 
-          <div className="space-y-1.5">
-            <Label>Nama / Deskripsi Ringkas</Label>
-            <Input
-              value={form.data.Nama}
-              onChange={(e) => form.setData('Nama', e.target.value)}
-              placeholder="Contoh: Kebocoran Oli Seal, Overheat, Kalibrasi Sensor..."
-            />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+                contoh="Misal: MSL-001"
+              />
 
-          <div className="space-y-1.5">
-            <Label>Keterangan Tambahan</Label>
-            <Textarea
-              rows={3}
-              value={form.data.Keterangan}
-              onChange={(e) => form.setData('Keterangan', e.target.value)}
-              placeholder="Penjelasan konteks atau panduan diagnosa..."
-            />
-            {form.errors.Keterangan && <p className="text-sm text-destructive">{form.errors.Keterangan}</p>}
-          </div>
+              <div className="space-y-1.5">
+                <Label nama="KategoriAsetId">Kategori Aset (Opsional)</Label>
+                <Select
+                  value={form.data.KategoriAsetId}
+                  onValueChange={(val) => form.setData('KategoriAsetId', val)}
+                >
+                  <SelectTrigger className="w-full cursor-pointer">
+                    <SelectValue placeholder="Semua kategori" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
+                      Semua Kategori Aset
+                    </SelectItem>
+                    {kategoriAset.map((k) => (
+                      <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="checkbox"
-              id="kode-aktif"
-              checked={form.data.Aktif}
-              onChange={(e) => form.setData('Aktif', e.target.checked)}
-              className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
-            />
-            <label htmlFor="kode-aktif" className="text-sm font-medium cursor-pointer">
-              Aktif dan dapat dipilih pada perintah kerja
-            </label>
-          </div>
+            <div className="space-y-1.5">
+              <Label nama="Nama">Nama / Deskripsi Ringkas</Label>
+              <Input
+                value={form.data.Nama}
+                onChange={(e) => form.setData('Nama', e.target.value)}
+                placeholder="Contoh: Kebocoran Oli Seal, Overheat, Kalibrasi Sensor..."
+              />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing} className="cursor-pointer">
-              {sedangEdit ? 'Perbarui Kode' : 'Simpan Kode'}
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-1.5">
+              <Label nama="Keterangan">Keterangan Tambahan</Label>
+              <Textarea
+                rows={3}
+                value={form.data.Keterangan}
+                onChange={(e) => form.setData('Keterangan', e.target.value)}
+                placeholder="Penjelasan konteks atau panduan diagnosa..."
+              />
+              {form.errors.Keterangan && <p className="text-sm text-destructive">{form.errors.Keterangan}</p>}
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                type="checkbox"
+                id="kode-aktif"
+                checked={form.data.Aktif}
+                onChange={(e) => form.setData('Aktif', e.target.checked)}
+                className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
+              />
+              <label htmlFor="kode-aktif" className="text-sm font-medium cursor-pointer">
+                Aktif dan dapat dipilih pada perintah kerja
+              </label>
+            </div>
+
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing} className="cursor-pointer">
+                {sedangEdit ? 'Perbarui Kode' : 'Simpan Kode'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Props) {
+export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset, wajib }: Props) {
   const [tabJenis, setTabJenis] = useState<'Semua' | 'Masalah' | 'Penyebab' | 'Tindakan'>('Semua');
 
   const daftarTersaring =
@@ -217,7 +224,7 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
         deskripsi="Katalog taksonomi Problem-Cause-Remedy untuk standarisasi analisis kegagalan aset."
         aksi={
           <>
-            <DialogFormKodeKegagalan kategoriAset={kategoriAset} />
+            <DialogFormKodeKegagalan kategoriAset={kategoriAset} wajib={wajib.kodeKegagalan} />
           </>
         }
         className="mb-6"
@@ -297,6 +304,7 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
                           Edit
                         </Button>
                       }
+                      wajib={wajib.kodeKegagalan}
                     />
                   </td>
                 </tr>

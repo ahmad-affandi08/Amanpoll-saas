@@ -10,6 +10,7 @@ use App\Domain\PreventifInspeksi\Http\Requests\SimpanTemplatInspeksiRequest;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftarPeriksa;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatInspeksi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -35,6 +36,7 @@ final class TemplatInspeksiController extends Controller
         $templatDaftarPeriksa = TemplatDaftarPeriksa::query()->where('Aktif', true)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']);
 
         return Inertia::render('Inspeksi/Templat/Index', [
+            'wajib' => ['templat' => AturanWajib::untuk(SimpanTemplatInspeksiRequest::class)],
             'templat' => $daftarTemplat,
             'kategoriAset' => $kategoriAset,
             'templatDaftarPeriksa' => $templatDaftarPeriksa,

@@ -26,6 +26,7 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Ringkas {
   Id: string;
@@ -38,6 +39,8 @@ interface Props {
   tingkatLayanan: Ringkas[];
   peran: Ringkas[];
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 const PRIORITAS: PrioritasKeluhan[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
 
@@ -46,11 +49,13 @@ function DialogKategori({
   kategori,
   tingkatLayanan,
   peran,
+  wajib,
 }: {
   item: KategoriKeluhan | null;
   kategori: Ringkas[];
   tingkatLayanan: Ringkas[];
   peran: Ringkas[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -88,116 +93,125 @@ function DialogKategori({
         <DialogHeader>
           <DialogTitle>{item ? 'Ubah' : 'Tambah'} Kategori Keluhan</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-1.5">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
+              <div className="space-y-1.5">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Kategori Induk</Label>
-            <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tanpa induk</SelectItem>
-                {kategori
-                  .filter((k) => k.Id !== item?.Id)
-                  .map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Tingkat Layanan</Label>
+              <Label nama="IndukId">Kategori Induk</Label>
+              <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa induk</SelectItem>
+                  {kategori
+                    .filter((k) => k.Id !== item?.Id)
+                    .map((k) => (
+                      <SelectItem key={k.Id} value={k.Id}>
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="TingkatLayananId">Tingkat Layanan</Label>
+                <Select
+                  value={form.data.TingkatLayananId}
+                  onValueChange={(v) => form.setData('TingkatLayananId', v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Tanpa SLA</SelectItem>
+                    {tingkatLayanan.map((sla) => (
+                      <SelectItem key={sla.Id} value={sla.Id}>
+                        {sla.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="PrioritasBawaan">Prioritas Bawaan</Label>
+                <Select
+                  value={form.data.PrioritasBawaan}
+                  onValueChange={(v) => form.setData('PrioritasBawaan', v as PrioritasKeluhan)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIORITAS.map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="PeranPenanggungJawabId">Routing ke Peran</Label>
               <Select
-                value={form.data.TingkatLayananId}
-                onValueChange={(v) => form.setData('TingkatLayananId', v)}
+                value={form.data.PeranPenanggungJawabId}
+                onValueChange={(v) => form.setData('PeranPenanggungJawabId', v)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa SLA</SelectItem>
-                  {tingkatLayanan.map((sla) => (
-                    <SelectItem key={sla.Id} value={sla.Id}>
-                      {sla.Nama}
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa routing</SelectItem>
+                  {peran.map((p) => (
+                    <SelectItem key={p.Id} value={p.Id}>
+                      {p.Nama}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label>Prioritas Bawaan</Label>
-              <Select
-                value={form.data.PrioritasBawaan}
-                onValueChange={(v) => form.setData('PrioritasBawaan', v as PrioritasKeluhan)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PRIORITAS.map((p) => (
-                    <SelectItem key={p} value={p}>
-                      {p}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex flex-wrap gap-6">
+              <label className="flex items-center gap-2 text-sm">
+                <Switch checked={form.data.AsetWajib} onCheckedChange={(v) => form.setData('AsetWajib', v)} />{' '}
+                Aset wajib
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Switch checked={form.data.Aktif} onCheckedChange={(v) => form.setData('Aktif', v)} /> Aktif
+              </label>
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Routing ke Peran</Label>
-            <Select
-              value={form.data.PeranPenanggungJawabId}
-              onValueChange={(v) => form.setData('PeranPenanggungJawabId', v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tanpa routing</SelectItem>
-                {peran.map((p) => (
-                  <SelectItem key={p.Id} value={p.Id}>
-                    {p.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-wrap gap-6">
-            <label className="flex items-center gap-2 text-sm">
-              <Switch checked={form.data.AsetWajib} onCheckedChange={(v) => form.setData('AsetWajib', v)} />{' '}
-              Aset wajib
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Switch checked={form.data.Aktif} onCheckedChange={(v) => form.setData('Aktif', v)} /> Aktif
-            </label>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function KategoriKeluhanIndex({ kategori, pilihanInduk, tingkatLayanan, peran, filter }: Props) {
+export default function KategoriKeluhanIndex({
+  kategori,
+  pilihanInduk,
+  tingkatLayanan,
+  peran,
+  filter,
+  wajib,
+}: Props) {
   const konfirmasi = useKonfirmasi();
   const columns = useMemo<ColumnDef<KategoriKeluhan>[]>(
     () => [
@@ -256,6 +270,7 @@ export default function KategoriKeluhanIndex({ kategori, pilihanInduk, tingkatLa
               kategori={pilihanInduk}
               tingkatLayanan={tingkatLayanan}
               peran={peran}
+              wajib={wajib.kategoriKeluhan}
             />
             <Button
               variant="ghost"
@@ -276,7 +291,7 @@ export default function KategoriKeluhanIndex({ kategori, pilihanInduk, tingkatLa
         ),
       },
     ],
-    [pilihanInduk, tingkatLayanan, peran],
+    [pilihanInduk, tingkatLayanan, peran, wajib],
   );
 
   return (
@@ -287,7 +302,13 @@ export default function KategoriKeluhanIndex({ kategori, pilihanInduk, tingkatLa
         deskripsi="Atur prioritas bawaan, kebutuhan aset, SLA, dan routing triage."
         aksi={
           <>
-            <DialogKategori item={null} kategori={pilihanInduk} tingkatLayanan={tingkatLayanan} peran={peran} />
+            <DialogKategori
+              item={null}
+              kategori={pilihanInduk}
+              tingkatLayanan={tingkatLayanan}
+              peran={peran}
+              wajib={wajib.kategoriKeluhan}
+            />
           </>
         }
         className="mb-6"

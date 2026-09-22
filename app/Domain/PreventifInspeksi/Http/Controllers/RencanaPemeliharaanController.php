@@ -13,6 +13,7 @@ use App\Domain\PreventifInspeksi\Http\Requests\SimpanRencanaPemeliharaanRequest;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaan;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftarPeriksa;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -41,6 +42,7 @@ final class RencanaPemeliharaanController extends Controller
             ->get(['Id', 'Nama', 'Kode']);
 
         return Inertia::render('RencanaPemeliharaan/Index', [
+            'wajib' => ['rencana' => AturanWajib::untuk(SimpanRencanaPemeliharaanRequest::class)],
             'rencana' => $daftarRencana,
             'templatDaftarPeriksa' => $templatList,
         ]);
@@ -79,6 +81,7 @@ final class RencanaPemeliharaanController extends Controller
             ->get(['Id', 'Nama', 'Kode']);
 
         return Inertia::render('RencanaPemeliharaan/Show', [
+            'wajib' => ['aset' => AturanWajib::untuk(SimpanRencanaPemeliharaanAsetRequest::class)],
             'rencana' => $rencanaPemeliharaan,
             'asetTersedia' => $asetTersedia,
             'templatDaftarPeriksa' => $templatList,

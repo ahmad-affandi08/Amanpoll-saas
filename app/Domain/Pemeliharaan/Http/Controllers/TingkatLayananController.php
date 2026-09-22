@@ -12,6 +12,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -23,6 +24,7 @@ final class TingkatLayananController extends Controller
         $this->authorize('viewAny', TingkatLayanan::class);
 
         return Inertia::render('TingkatLayanan/Index', [
+            'wajib' => ['tingkatLayanan' => AturanWajib::untuk(SimpanTingkatLayananRequest::class)],
             'tingkatLayanan' => TingkatLayananResource::collection(
                 TingkatLayanan::query()
                     ->with(['aturan' => fn ($query) => $query->orderBy('MenitPenyelesaian'), 'eskalasi' => fn ($query) => $query->with(['peran', 'pengguna'])->orderBy('Tahap')])

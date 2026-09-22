@@ -14,13 +14,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { PerintahKerja, StatusPerintahKerja } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 export function DialogUbahStatus({
   perintahKerja,
   transisi,
+  wajib,
 }: {
   perintahKerja: PerintahKerja;
   transisi: StatusPerintahKerja[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -51,59 +54,61 @@ export function DialogUbahStatus({
         <DialogHeader>
           <DialogTitle>Ubah Status Perintah Kerja</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Status Baru</Label>
-            <Select
-              value={form.data.Status}
-              onValueChange={(val) => form.setData('Status', val as StatusPerintahKerja)}
-            >
-              <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {transisi.map((s) => (
-                  <SelectItem key={s} value={s} className="cursor-pointer">
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.Status && <p className="text-sm text-destructive">{form.errors.Status}</p>}
-          </div>
-
-          {butuhRingkasan && (
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Ringkasan Penyelesaian Pekerjaan</Label>
+              <Label nama="Status">Status Baru</Label>
+              <Select
+                value={form.data.Status}
+                onValueChange={(val) => form.setData('Status', val as StatusPerintahKerja)}
+              >
+                <SelectTrigger className="w-full cursor-pointer">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {transisi.map((s) => (
+                    <SelectItem key={s} value={s} className="cursor-pointer">
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.Status && <p className="text-sm text-destructive">{form.errors.Status}</p>}
+            </div>
+
+            {butuhRingkasan && (
+              <div className="space-y-1.5">
+                <Label nama="RingkasanPenyelesaian">Ringkasan Penyelesaian Pekerjaan</Label>
+                <Textarea
+                  rows={3}
+                  value={form.data.RingkasanPenyelesaian}
+                  onChange={(e) => form.setData('RingkasanPenyelesaian', e.target.value)}
+                  placeholder="Rangkum hasil perbaikan, penggantian komponen, atau pengujian yang dilakukan..."
+                />
+                {form.errors.RingkasanPenyelesaian && (
+                  <p className="text-sm text-destructive">{form.errors.RingkasanPenyelesaian}</p>
+                )}
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <Label nama="Catatan">Catatan Perubahan Status</Label>
               <Textarea
                 rows={3}
-                value={form.data.RingkasanPenyelesaian}
-                onChange={(e) => form.setData('RingkasanPenyelesaian', e.target.value)}
-                placeholder="Rangkum hasil perbaikan, penggantian komponen, atau pengujian yang dilakukan..."
+                value={form.data.Catatan}
+                onChange={(e) => form.setData('Catatan', e.target.value)}
+                placeholder="Catatan opsional mengenai status baru ini..."
               />
-              {form.errors.RingkasanPenyelesaian && (
-                <p className="text-sm text-destructive">{form.errors.RingkasanPenyelesaian}</p>
-              )}
+              {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
             </div>
-          )}
 
-          <div className="space-y-1.5">
-            <Label>Catatan Perubahan Status</Label>
-            <Textarea
-              rows={3}
-              value={form.data.Catatan}
-              onChange={(e) => form.setData('Catatan', e.target.value)}
-              placeholder="Catatan opsional mengenai status baru ini..."
-            />
-            {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
-          </div>
-
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing} className="cursor-pointer">
-              Simpan Perubahan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing} className="cursor-pointer">
+                Simpan Perubahan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

@@ -17,14 +17,17 @@ import type {
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   templat: TemplatDaftarPeriksa;
   kategoriAset: { Id: string; Nama: string }[];
   modelAset: { Id: string; Nama: string; KategoriAsetId?: string }[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function DaftarPeriksaTemplatShow({ templat, kategoriAset }: Props) {
+export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialogButir, setBukaDialogButir] = useState(false);
   const [butirDiedit, setButirDiedit] = useState<ButirTemplatDaftarPeriksa | null>(null);
@@ -315,164 +318,182 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset }: Prop
       {/* Modal Tambah / Edit Butir */}
       <Dialog open={bukaDialogButir} onOpenChange={setBukaDialogButir}>
         <DialogContent className="sm:max-w-lg">
-          <form onSubmit={simpanButir}>
-            <DialogHeader>
-              <DialogTitle>{butirDiedit ? 'Edit Butir Pertanyaan' : 'Tambah Butir Pertanyaan'}</DialogTitle>
-            </DialogHeader>
+          <AturanWajibProvider aturan={wajib.butir}>
+            <form onSubmit={simpanButir}>
+              <DialogHeader>
+                <DialogTitle>{butirDiedit ? 'Edit Butir Pertanyaan' : 'Tambah Butir Pertanyaan'}</DialogTitle>
+              </DialogHeader>
 
-            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-1">
-              <div className="space-y-1.5">
-                <Label htmlFor="Pertanyaan">
-                  Pertanyaan / Parameter Pemeriksaan <span className="text-rose-500">*</span>
-                </Label>
-                <Textarea
-                  id="Pertanyaan"
-                  placeholder="Misal: Periksa kebocoran oli pada seal motor"
-                  value={formButir.data.Pertanyaan}
-                  onChange={(e) => formButir.setData('Pertanyaan', e.target.value)}
-                  rows={2}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-1">
                 <div className="space-y-1.5">
-                  <Label htmlFor="Kode">Kode Parameter (Opsional)</Label>
-                  <Input
-                    id="Kode"
-                    placeholder="Misal: P1"
-                    value={formButir.data.Kode}
-                    onChange={(e) => formButir.setData('Kode', e.target.value)}
+                  <Label nama="Pertanyaan" htmlFor="Pertanyaan">
+                    Pertanyaan / Parameter Pemeriksaan <span className="text-rose-500">*</span>
+                  </Label>
+                  <Textarea
+                    id="Pertanyaan"
+                    placeholder="Misal: Periksa kebocoran oli pada seal motor"
+                    value={formButir.data.Pertanyaan}
+                    onChange={(e) => formButir.setData('Pertanyaan', e.target.value)}
+                    rows={2}
+                    required
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="TipeJawaban">Tipe Jawaban</Label>
-                  <Select
-                    value={formButir.data.TipeJawaban}
-                    onValueChange={(val) => formButir.setData('TipeJawaban', val as TipeJawabanDaftarPeriksa)}
-                  >
-                    <SelectTrigger id="TipeJawaban" className="cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="YaTidak">Ya / Tidak (Kesesuaian)</SelectItem>
-                      <SelectItem value="Angka">Angka (Nilai Terukur)</SelectItem>
-                      <SelectItem value="Pilihan">Pilihan Ganda (Dropdown)</SelectItem>
-                      <SelectItem value="Teks">Teks Bebas</SelectItem>
-                      <SelectItem value="Foto">Foto Dokumentasi</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label nama="Kode" htmlFor="Kode">
+                      Kode Parameter (Opsional)
+                    </Label>
+                    <Input
+                      id="Kode"
+                      placeholder="Misal: P1"
+                      value={formButir.data.Kode}
+                      onChange={(e) => formButir.setData('Kode', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label nama="TipeJawaban" htmlFor="TipeJawaban">
+                      Tipe Jawaban
+                    </Label>
+                    <Select
+                      value={formButir.data.TipeJawaban}
+                      onValueChange={(val) =>
+                        formButir.setData('TipeJawaban', val as TipeJawabanDaftarPeriksa)
+                      }
+                    >
+                      <SelectTrigger id="TipeJawaban" className="cursor-pointer">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="YaTidak">Ya / Tidak (Kesesuaian)</SelectItem>
+                        <SelectItem value="Angka">Angka (Nilai Terukur)</SelectItem>
+                        <SelectItem value="Pilihan">Pilihan Ganda (Dropdown)</SelectItem>
+                        <SelectItem value="Teks">Teks Bebas</SelectItem>
+                        <SelectItem value="Foto">Foto Dokumentasi</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {formButir.data.TipeJawaban === 'Angka' && (
+                  <div className="grid grid-cols-3 gap-3 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
+                    <div className="space-y-1">
+                      <Label nama="NilaiMinimum" htmlFor="NilaiMinimum">
+                        Nilai Minimum
+                      </Label>
+                      <Input
+                        id="NilaiMinimum"
+                        type="number"
+                        step="any"
+                        placeholder="Min"
+                        value={formButir.data.NilaiMinimum}
+                        onChange={(e) => formButir.setData('NilaiMinimum', e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label nama="NilaiMaksimum" htmlFor="NilaiMaksimum">
+                        Nilai Maksimum
+                      </Label>
+                      <Input
+                        id="NilaiMaksimum"
+                        type="number"
+                        step="any"
+                        placeholder="Max"
+                        value={formButir.data.NilaiMaksimum}
+                        onChange={(e) => formButir.setData('NilaiMaksimum', e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label nama="Satuan" htmlFor="Satuan">
+                        Satuan
+                      </Label>
+                      <Input
+                        id="Satuan"
+                        placeholder="bar, °C, dll"
+                        value={formButir.data.Satuan}
+                        onChange={(e) => formButir.setData('Satuan', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formButir.data.TipeJawaban === 'Pilihan' && (
+                  <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
+                    <Label nama="PilihanTeks" htmlFor="PilihanTeks">
+                      Daftar Pilihan (Pisahkan dengan koma)
+                    </Label>
+                    <Input
+                      id="PilihanTeks"
+                      placeholder="Normal, Aus Ringan, Rusak Berat"
+                      value={formButir.data.PilihanTeks}
+                      onChange={(e) => formButir.setData('PilihanTeks', e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {formButir.data.TipeJawaban === 'YaTidak' && (
+                  <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
+                    <Label nama="PemicuNilai" htmlFor="PemicuNilai">
+                      Nilai yang Memicu Temuan / Ketidaksesuaian
+                    </Label>
+                    <Select
+                      value={formButir.data.PemicuNilai}
+                      onValueChange={(val) => formButir.setData('PemicuNilai', val)}
+                    >
+                      <SelectTrigger id="PemicuNilai" className="cursor-pointer">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Tidak">Jawaban "Tidak" memicu temuan</SelectItem>
+                        <SelectItem value="Ya">Jawaban "Ya" memicu temuan</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-6 pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
+                      className="rounded border-permukaan-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
+                      checked={formButir.data.Wajib}
+                      onChange={(e) => formButir.setData('Wajib', e.target.checked)}
+                    />
+                    <span>Pertanyaan Wajib Dijawab</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
+                      className="rounded border-permukaan-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
+                      checked={formButir.data.BuktiFotoWajib}
+                      onChange={(e) => formButir.setData('BuktiFotoWajib', e.target.checked)}
+                    />
+                    <span>Wajib Unggah Foto</span>
+                  </label>
                 </div>
               </div>
 
-              {formButir.data.TipeJawaban === 'Angka' && (
-                <div className="grid grid-cols-3 gap-3 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
-                  <div className="space-y-1">
-                    <Label htmlFor="NilaiMinimum">Nilai Minimum</Label>
-                    <Input
-                      id="NilaiMinimum"
-                      type="number"
-                      step="any"
-                      placeholder="Min"
-                      value={formButir.data.NilaiMinimum}
-                      onChange={(e) => formButir.setData('NilaiMinimum', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="NilaiMaksimum">Nilai Maksimum</Label>
-                    <Input
-                      id="NilaiMaksimum"
-                      type="number"
-                      step="any"
-                      placeholder="Max"
-                      value={formButir.data.NilaiMaksimum}
-                      onChange={(e) => formButir.setData('NilaiMaksimum', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="Satuan">Satuan</Label>
-                    <Input
-                      id="Satuan"
-                      placeholder="bar, °C, dll"
-                      value={formButir.data.Satuan}
-                      onChange={(e) => formButir.setData('Satuan', e.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {formButir.data.TipeJawaban === 'Pilihan' && (
-                <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
-                  <Label htmlFor="PilihanTeks">Daftar Pilihan (Pisahkan dengan koma)</Label>
-                  <Input
-                    id="PilihanTeks"
-                    placeholder="Normal, Aus Ringan, Rusak Berat"
-                    value={formButir.data.PilihanTeks}
-                    onChange={(e) => formButir.setData('PilihanTeks', e.target.value)}
-                  />
-                </div>
-              )}
-
-              {formButir.data.TipeJawaban === 'YaTidak' && (
-                <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
-                  <Label htmlFor="PemicuNilai">Nilai yang Memicu Temuan / Ketidaksesuaian</Label>
-                  <Select
-                    value={formButir.data.PemicuNilai}
-                    onValueChange={(val) => formButir.setData('PemicuNilai', val)}
-                  >
-                    <SelectTrigger id="PemicuNilai" className="cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Tidak">Jawaban "Tidak" memicu temuan</SelectItem>
-                      <SelectItem value="Ya">Jawaban "Ya" memicu temuan</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              <div className="flex items-center gap-6 pt-2">
-                <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="checkbox"
-                    className="rounded border-permukaan-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
-                    checked={formButir.data.Wajib}
-                    onChange={(e) => formButir.setData('Wajib', e.target.checked)}
-                  />
-                  <span>Pertanyaan Wajib Dijawab</span>
-                </label>
-
-                <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="checkbox"
-                    className="rounded border-permukaan-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
-                    checked={formButir.data.BuktiFotoWajib}
-                    onChange={(e) => formButir.setData('BuktiFotoWajib', e.target.checked)}
-                  />
-                  <span>Wajib Unggah Foto</span>
-                </label>
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                className="cursor-pointer"
-                onClick={() => setBukaDialogButir(false)}
-              >
-                Batal
-              </Button>
-              <Button
-                type="submit"
-                className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                disabled={formButir.processing}
-              >
-                {formButir.processing ? 'Menyimpan...' : 'Simpan Butir'}
-              </Button>
-            </DialogFooter>
-          </form>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="cursor-pointer"
+                  onClick={() => setBukaDialogButir(false)}
+                >
+                  Batal
+                </Button>
+                <Button
+                  type="submit"
+                  className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                  disabled={formButir.processing}
+                >
+                  {formButir.processing ? 'Menyimpan...' : 'Simpan Butir'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </AturanWajibProvider>
         </DialogContent>
       </Dialog>
     </KerangkaAplikasi>

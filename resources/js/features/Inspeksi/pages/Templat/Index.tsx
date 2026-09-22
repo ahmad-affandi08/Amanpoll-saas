@@ -20,14 +20,17 @@ import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   templat: TemplatInspeksi[];
   kategoriAset: { Id: string; Nama: string }[];
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaftarPeriksa }: Props) {
+export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaftarPeriksa, wajib }: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
 
@@ -74,111 +77,117 @@ export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaf
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
-                  <form onSubmit={onSubmit}>
-                    <DialogHeader>
-                      <DialogTitle>Buat Templat Inspeksi</DialogTitle>
-                    </DialogHeader>
+                  <AturanWajibProvider aturan={wajib.templat}>
+                    <form onSubmit={onSubmit}>
+                      <DialogHeader>
+                        <DialogTitle>Buat Templat Inspeksi</DialogTitle>
+                      </DialogHeader>
 
-                    <div className="grid gap-4 py-4">
-                      <BidangKode
-                        nilai={form.data.Kode}
-                        onUbah={(nilai) => form.setData('Kode', nilai)}
-                        galat={form.errors.Kode}
-                        label="Kode Templat"
-                        contoh="Misal: INSP-HVAC-BULANAN"
-                      />
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="Nama">
-                          Nama Templat <span className="text-rose-500">*</span>
-                        </Label>
-                        <Input
-                          id="Nama"
-                          placeholder="Misal: Inspeksi Visual & Kelistrikan HVAC"
-                          value={form.data.Nama}
-                          onChange={(e) => form.setData('Nama', e.target.value)}
-                          required
+                      <div className="grid gap-4 py-4">
+                        <BidangKode
+                          nilai={form.data.Kode}
+                          onUbah={(nilai) => form.setData('Kode', nilai)}
+                          galat={form.errors.Kode}
+                          label="Kode Templat"
+                          contoh="Misal: INSP-HVAC-BULANAN"
                         />
-                        {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
+
+                        <div className="space-y-1.5">
+                          <Label nama="Nama" htmlFor="Nama">
+                            Nama Templat <span className="text-rose-500">*</span>
+                          </Label>
+                          <Input
+                            id="Nama"
+                            placeholder="Misal: Inspeksi Visual & Kelistrikan HVAC"
+                            value={form.data.Nama}
+                            onChange={(e) => form.setData('Nama', e.target.value)}
+                            required
+                          />
+                          {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label nama="KategoriAsetId" htmlFor="KategoriAsetId">
+                            Kategori Aset Terkait
+                          </Label>
+                          <Select
+                            value={form.data.KategoriAsetId || '__none__'}
+                            onValueChange={(val) =>
+                              form.setData('KategoriAsetId', val === '__none__' ? '' : val)
+                            }
+                          >
+                            <SelectTrigger id="KategoriAsetId" className="cursor-pointer">
+                              <SelectValue placeholder="Pilih Kategori..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__none__">-- Semua Kategori --</SelectItem>
+                              {kategoriAset.map((k) => (
+                                <SelectItem key={k.Id} value={k.Id}>
+                                  {k.Nama}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label nama="TemplatDaftarPeriksaId" htmlFor="TemplatDaftarPeriksaId">
+                            Hubungkan Checklist Lapangan
+                          </Label>
+                          <Select
+                            value={form.data.TemplatDaftarPeriksaId || '__none__'}
+                            onValueChange={(val) =>
+                              form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
+                            }
+                          >
+                            <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
+                              <SelectValue placeholder="Pilih Checklist..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__none__">-- Tanpa Lembar Checklist --</SelectItem>
+                              {templatDaftarPeriksa.map((t) => (
+                                <SelectItem key={t.Id} value={t.Id}>
+                                  {t.Kode} - {t.Nama}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label nama="IntervalHari" htmlFor="IntervalHari">
+                            Interval Siklus (Hari) <span className="text-rose-500">*</span>
+                          </Label>
+                          <Input
+                            id="IntervalHari"
+                            type="number"
+                            min={1}
+                            value={form.data.IntervalHari}
+                            onChange={(e) => form.setData('IntervalHari', Number(e.target.value))}
+                            required
+                          />
+                        </div>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label htmlFor="KategoriAsetId">Kategori Aset Terkait</Label>
-                        <Select
-                          value={form.data.KategoriAsetId || '__none__'}
-                          onValueChange={(val) =>
-                            form.setData('KategoriAsetId', val === '__none__' ? '' : val)
-                          }
+                      <DialogFooter>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="cursor-pointer"
+                          onClick={() => setBukaDialog(false)}
                         >
-                          <SelectTrigger id="KategoriAsetId" className="cursor-pointer">
-                            <SelectValue placeholder="Pilih Kategori..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="__none__">-- Semua Kategori --</SelectItem>
-                            {kategoriAset.map((k) => (
-                              <SelectItem key={k.Id} value={k.Id}>
-                                {k.Nama}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="TemplatDaftarPeriksaId">Hubungkan Checklist Lapangan</Label>
-                        <Select
-                          value={form.data.TemplatDaftarPeriksaId || '__none__'}
-                          onValueChange={(val) =>
-                            form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
-                          }
+                          Batal
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                          disabled={form.processing}
                         >
-                          <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
-                            <SelectValue placeholder="Pilih Checklist..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="__none__">-- Tanpa Lembar Checklist --</SelectItem>
-                            {templatDaftarPeriksa.map((t) => (
-                              <SelectItem key={t.Id} value={t.Id}>
-                                {t.Kode} - {t.Nama}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor="IntervalHari">
-                          Interval Siklus (Hari) <span className="text-rose-500">*</span>
-                        </Label>
-                        <Input
-                          id="IntervalHari"
-                          type="number"
-                          min={1}
-                          value={form.data.IntervalHari}
-                          onChange={(e) => form.setData('IntervalHari', Number(e.target.value))}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <DialogFooter>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="cursor-pointer"
-                        onClick={() => setBukaDialog(false)}
-                      >
-                        Batal
-                      </Button>
-                      <Button
-                        type="submit"
-                        className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                        disabled={form.processing}
-                      >
-                        {form.processing ? 'Menyimpan...' : 'Simpan Templat'}
-                      </Button>
-                    </DialogFooter>
-                  </form>
+                          {form.processing ? 'Menyimpan...' : 'Simpan Templat'}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </AturanWajibProvider>
                 </DialogContent>
               </Dialog>
             </>

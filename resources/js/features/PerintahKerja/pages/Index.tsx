@@ -22,6 +22,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { DialogBuatPerintahKerja } from '@/features/PerintahKerja/components/DialogBuatPerintahKerja';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   perintahKerja: Paginasi<PerintahKerja>;
@@ -30,6 +31,8 @@ interface Props {
   lokasi: LokasiRingkas[];
   filter: { status?: string; prioritas?: string };
   dapatMengelola: boolean;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const DAFTAR_STATUS: StatusPerintahKerja[] = [
@@ -73,6 +76,7 @@ export default function PerintahKerjaIndex({
   lokasi,
   filter,
   dapatMengelola,
+  wajib,
 }: Props) {
   const filterData = (kunci: 'status' | 'prioritas', nilai: string) => {
     router.get(
@@ -93,7 +97,16 @@ export default function PerintahKerjaIndex({
             : 'Daftar penugasan perintah kerja dan pencatatan operasional Anda.'
         }
         aksi={
-          <>{dapatMengelola && <DialogBuatPerintahKerja keluhan={keluhan} aset={aset} lokasi={lokasi} />}</>
+          <>
+            {dapatMengelola && (
+              <DialogBuatPerintahKerja
+                keluhan={keluhan}
+                aset={aset}
+                lokasi={lokasi}
+                wajib={wajib.perintahKerja}
+              />
+            )}
+          </>
         }
         className="mb-6"
       />

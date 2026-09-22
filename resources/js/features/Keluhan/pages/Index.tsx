@@ -23,6 +23,7 @@ import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Kelu
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface KategoriRingkas {
   Id: string;
@@ -47,13 +48,16 @@ interface Props {
   lokasi: Ringkas[];
   filter: { status?: string; prioritas?: string };
   dapatMengelola: boolean;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 function DialogBuatKeluhan({
   kategori,
   aset,
   lokasi,
   dapatMengelola,
-}: Pick<Props, 'kategori' | 'aset' | 'lokasi' | 'dapatMengelola'>) {
+  wajib,
+}: Pick<Props, 'kategori' | 'aset' | 'lokasi' | 'dapatMengelola'> & { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     KategoriKeluhanId: '',
@@ -85,126 +89,128 @@ function DialogBuatKeluhan({
         <DialogHeader>
           <DialogTitle>Buat Keluhan</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Kategori</Label>
-            <Select
-              value={form.data.KategoriKeluhanId}
-              onValueChange={(value) => {
-                form.setData('KategoriKeluhanId', value);
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih kategori" />
-              </SelectTrigger>
-              <SelectContent>
-                {kategori.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.KategoriKeluhanId && (
-              <p className="text-sm text-destructive">{form.errors.KategoriKeluhanId}</p>
-            )}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Aset {kategoriDipilih?.AsetWajib ? '(wajib)' : '(opsional)'}</Label>
-            <Select
-              value={form.data.AsetId}
-              onValueChange={(value) => {
-                const dipilih = aset.find((item) => item.Id === value);
-                form.setData((data) => ({
-                  ...data,
-                  AsetId: value,
-                  LokasiId: dipilih?.LokasiId ?? data.LokasiId,
-                }));
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tanpa aset</SelectItem>
-                {aset.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.KodeAset} · {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Lokasi</Label>
-              <Select value={form.data.LokasiId} onValueChange={(value) => form.setData('LokasiId', value)}>
+              <Label nama="KategoriKeluhanId">Kategori</Label>
+              <Select
+                value={form.data.KategoriKeluhanId}
+                onValueChange={(value) => {
+                  form.setData('KategoriKeluhanId', value);
+                }}
+              >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih lokasi" />
+                  <SelectValue placeholder="Pilih kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                  {lokasi.map((item) => (
+                  {kategori.map((item) => (
                     <SelectItem key={item.Id} value={item.Id}>
                       {item.Nama}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {form.errors.LokasiId && <p className="text-sm text-destructive">{form.errors.LokasiId}</p>}
+              {form.errors.KategoriKeluhanId && (
+                <p className="text-sm text-destructive">{form.errors.KategoriKeluhanId}</p>
+              )}
             </div>
-            {dapatMengelola && (
+            <div className="space-y-1.5">
+              <Label nama="AsetId">Aset {kategoriDipilih?.AsetWajib ? '(wajib)' : '(opsional)'}</Label>
+              <Select
+                value={form.data.AsetId}
+                onValueChange={(value) => {
+                  const dipilih = aset.find((item) => item.Id === value);
+                  form.setData((data) => ({
+                    ...data,
+                    AsetId: value,
+                    LokasiId: dipilih?.LokasiId ?? data.LokasiId,
+                  }));
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa aset</SelectItem>
+                  {aset.map((item) => (
+                    <SelectItem key={item.Id} value={item.Id}>
+                      {item.KodeAset} · {item.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label>Prioritas</Label>
-                <Select
-                  value={form.data.Prioritas}
-                  onValueChange={(value) => form.setData('Prioritas', value)}
-                >
+                <Label nama="LokasiId">Lokasi</Label>
+                <Select value={form.data.LokasiId} onValueChange={(value) => form.setData('LokasiId', value)}>
                   <SelectTrigger className="w-full">
-                    <SelectValue />
+                    <SelectValue placeholder="Pilih lokasi" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Gunakan bawaan kategori</SelectItem>
-                    {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
-                      <SelectItem key={p} value={p}>
-                        {p}
+                    {lokasi.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Nama}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {form.errors.LokasiId && <p className="text-sm text-destructive">{form.errors.LokasiId}</p>}
               </div>
-            )}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Judul</Label>
-            <Input value={form.data.Judul} onChange={(e) => form.setData('Judul', e.target.value)} />
-            {form.errors.Judul && <p className="text-sm text-destructive">{form.errors.Judul}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Deskripsi</Label>
-            <Textarea
-              rows={5}
-              value={form.data.Deskripsi}
-              onChange={(e) => form.setData('Deskripsi', e.target.value)}
-            />
-            {form.errors.Deskripsi && <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Lampiran bukti (maksimal 5)</Label>
-            <Input
-              type="file"
-              multiple
-              accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.csv,.txt"
-              onChange={(event) => form.setData('Lampiran', Array.from(event.target.files ?? []))}
-            />
-            {form.errors.Lampiran && <p className="text-sm text-destructive">{form.errors.Lampiran}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Kirim Keluhan
-            </Button>
-          </DialogFooter>
-        </form>
+              {dapatMengelola && (
+                <div className="space-y-1.5">
+                  <Label nama="Prioritas">Prioritas</Label>
+                  <Select
+                    value={form.data.Prioritas}
+                    onValueChange={(value) => form.setData('Prioritas', value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={TANPA_PILIHAN}>Gunakan bawaan kategori</SelectItem>
+                      {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
+                        <SelectItem key={p} value={p}>
+                          {p}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Judul">Judul</Label>
+              <Input value={form.data.Judul} onChange={(e) => form.setData('Judul', e.target.value)} />
+              {form.errors.Judul && <p className="text-sm text-destructive">{form.errors.Judul}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Deskripsi">Deskripsi</Label>
+              <Textarea
+                rows={5}
+                value={form.data.Deskripsi}
+                onChange={(e) => form.setData('Deskripsi', e.target.value)}
+              />
+              {form.errors.Deskripsi && <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Lampiran">Lampiran bukti (maksimal 5)</Label>
+              <Input
+                type="file"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.csv,.txt"
+                onChange={(event) => form.setData('Lampiran', Array.from(event.target.files ?? []))}
+              />
+              {form.errors.Lampiran && <p className="text-sm text-destructive">{form.errors.Lampiran}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Kirim Keluhan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -226,7 +232,15 @@ function filterAktif(filter: Props['filter']): Record<string, string> {
   );
 }
 
-export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, dapatMengelola }: Props) {
+export default function KeluhanIndex({
+  keluhan,
+  kategori,
+  aset,
+  lokasi,
+  filter,
+  dapatMengelola,
+  wajib,
+}: Props) {
   const filterData = (kunci: 'status' | 'prioritas', nilai: string) =>
     router.get(
       ruteKeluhan.index,
@@ -250,6 +264,7 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
               aset={aset}
               lokasi={lokasi}
               dapatMengelola={dapatMengelola}
+              wajib={wajib.keluhan}
             />
           </>
         }

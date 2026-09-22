@@ -14,13 +14,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { KodeKegagalan, PerintahKerja } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 export function DialogAnalisisKegagalan({
   perintahKerja,
   kodeKegagalan,
+  wajib,
 }: {
   perintahKerja: PerintahKerja;
   kodeKegagalan: KodeKegagalan[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const analisis = perintahKerja.AnalisisKegagalan;
@@ -63,100 +66,102 @@ export function DialogAnalisisKegagalan({
         <DialogHeader>
           <DialogTitle>Analisis Kegagalan (Problem / Cause / Remedy)</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Kode Masalah (Problem)</Label>
-            <Select
-              value={form.data.KodeMasalahId}
-              onValueChange={(val) => form.setData('KodeMasalahId', val)}
-            >
-              <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue placeholder="Pilih kode masalah" />
-              </SelectTrigger>
-              <SelectContent>
-                {daftarMasalah.map((k) => (
-                  <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                    {k.Kode} · {k.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="KodeMasalahId">Kode Masalah (Problem)</Label>
+              <Select
+                value={form.data.KodeMasalahId}
+                onValueChange={(val) => form.setData('KodeMasalahId', val)}
+              >
+                <SelectTrigger className="w-full cursor-pointer">
+                  <SelectValue placeholder="Pilih kode masalah" />
+                </SelectTrigger>
+                <SelectContent>
+                  {daftarMasalah.map((k) => (
+                    <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
+                      {k.Kode} · {k.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-1.5">
-            <Label>Kode Penyebab (Cause)</Label>
-            <Select
-              value={form.data.KodePenyebabId}
-              onValueChange={(val) => form.setData('KodePenyebabId', val)}
-            >
-              <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue placeholder="Pilih kode penyebab" />
-              </SelectTrigger>
-              <SelectContent>
-                {daftarPenyebab.map((k) => (
-                  <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                    {k.Kode} · {k.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-1.5">
+              <Label nama="KodePenyebabId">Kode Penyebab (Cause)</Label>
+              <Select
+                value={form.data.KodePenyebabId}
+                onValueChange={(val) => form.setData('KodePenyebabId', val)}
+              >
+                <SelectTrigger className="w-full cursor-pointer">
+                  <SelectValue placeholder="Pilih kode penyebab" />
+                </SelectTrigger>
+                <SelectContent>
+                  {daftarPenyebab.map((k) => (
+                    <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
+                      {k.Kode} · {k.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-1.5">
-            <Label>Kode Tindakan (Remedy)</Label>
-            <Select
-              value={form.data.KodeTindakanId}
-              onValueChange={(val) => form.setData('KodeTindakanId', val)}
-            >
-              <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue placeholder="Pilih kode tindakan" />
-              </SelectTrigger>
-              <SelectContent>
-                {daftarTindakan.map((k) => (
-                  <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                    {k.Kode} · {k.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-1.5">
+              <Label nama="KodeTindakanId">Kode Tindakan (Remedy)</Label>
+              <Select
+                value={form.data.KodeTindakanId}
+                onValueChange={(val) => form.setData('KodeTindakanId', val)}
+              >
+                <SelectTrigger className="w-full cursor-pointer">
+                  <SelectValue placeholder="Pilih kode tindakan" />
+                </SelectTrigger>
+                <SelectContent>
+                  {daftarTindakan.map((k) => (
+                    <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
+                      {k.Kode} · {k.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-1.5">
-            <Label>Akar Masalah (Root Cause)</Label>
-            <Textarea
-              rows={2}
-              value={form.data.AkarMasalah}
-              onChange={(e) => form.setData('AkarMasalah', e.target.value)}
-              placeholder="Uraian akar penyebab fisik, manusia, atau laten..."
-            />
-          </div>
+            <div className="space-y-1.5">
+              <Label nama="AkarMasalah">Akar Masalah (Root Cause)</Label>
+              <Textarea
+                rows={2}
+                value={form.data.AkarMasalah}
+                onChange={(e) => form.setData('AkarMasalah', e.target.value)}
+                placeholder="Uraian akar penyebab fisik, manusia, atau laten..."
+              />
+            </div>
 
-          <div className="space-y-1.5">
-            <Label>Tindakan Korektif</Label>
-            <Textarea
-              rows={2}
-              value={form.data.TindakanKorektif}
-              onChange={(e) => form.setData('TindakanKorektif', e.target.value)}
-              placeholder="Tindakan yang telah dilakukan untuk memulihkan aset..."
-            />
-          </div>
+            <div className="space-y-1.5">
+              <Label nama="TindakanKorektif">Tindakan Korektif</Label>
+              <Textarea
+                rows={2}
+                value={form.data.TindakanKorektif}
+                onChange={(e) => form.setData('TindakanKorektif', e.target.value)}
+                placeholder="Tindakan yang telah dilakukan untuk memulihkan aset..."
+              />
+            </div>
 
-          <div className="space-y-1.5">
-            <Label>Tindakan Pencegahan (Preventive Action)</Label>
-            <Textarea
-              rows={2}
-              value={form.data.TindakanPencegahan}
-              onChange={(e) => form.setData('TindakanPencegahan', e.target.value)}
-              placeholder="Rekomendasi inspeksi berkala, penggantian pelumas, atau SOP..."
-            />
-          </div>
+            <div className="space-y-1.5">
+              <Label nama="TindakanPencegahan">Tindakan Pencegahan (Preventive Action)</Label>
+              <Textarea
+                rows={2}
+                value={form.data.TindakanPencegahan}
+                onChange={(e) => form.setData('TindakanPencegahan', e.target.value)}
+                placeholder="Rekomendasi inspeksi berkala, penggantian pelumas, atau SOP..."
+              />
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing} className="cursor-pointer">
-              Simpan Analisis
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing} className="cursor-pointer">
+                Simpan Analisis
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

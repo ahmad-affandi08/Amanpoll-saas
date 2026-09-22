@@ -29,6 +29,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Ringkas {
   Id: string;
@@ -38,6 +39,8 @@ interface Props {
   tingkatLayanan: TingkatLayanan[];
   peran: Ringkas[];
   pengguna: Ringkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 const PRIORITAS: PrioritasKeluhan[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
 const HARI = [
@@ -63,10 +66,12 @@ function DialogTingkatLayanan({
   item,
   peran,
   pengguna,
+  wajib,
 }: {
   item: TingkatLayanan | null;
   peran: Ringkas[];
   pengguna: Ringkas[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -122,270 +127,274 @@ function DialogTingkatLayanan({
         <DialogHeader>
           <DialogTitle>{item ? 'Ubah' : 'Tambah'} Tingkat Layanan</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-1.5">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Deskripsi</Label>
-            <Textarea
-              value={form.data.Deskripsi}
-              onChange={(e) => form.setData('Deskripsi', e.target.value)}
-              rows={2}
-            />
-          </div>
-          <section className="space-y-3 rounded-[9px] border border-border p-4">
-            <div>
-              <h3 className="font-medium">Kalender kerja</h3>
-              <p className="text-xs text-muted-foreground">
-                Deadline yang menghitung jam kerja hanya berjalan pada hari dan rentang waktu ini.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {HARI.map((hari) => {
-                const aktif = form.data.HariKerja.includes(hari.nilai);
-                return (
-                  <Button
-                    key={hari.nilai}
-                    type="button"
-                    size="sm"
-                    variant={aktif ? 'default' : 'outline'}
-                    onClick={() =>
-                      form.setData(
-                        'HariKerja',
-                        aktif
-                          ? form.data.HariKerja.filter((h) => h !== hari.nilai)
-                          : [...form.data.HariKerja, hari.nilai].sort(),
-                      )
-                    }
-                  >
-                    {hari.label}
-                  </Button>
-                );
-              })}
-            </div>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
               <div className="space-y-1.5">
-                <Label>Jam mulai</Label>
-                <Input
-                  type="time"
-                  value={form.data.JamKerjaMulai}
-                  onChange={(e) => form.setData('JamKerjaMulai', e.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Jam selesai</Label>
-                <Input
-                  type="time"
-                  value={form.data.JamKerjaSelesai}
-                  onChange={(e) => form.setData('JamKerjaSelesai', e.target.value)}
-                />
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
               </div>
             </div>
-            <label className="flex items-center gap-2 text-sm">
-              <Switch
-                checked={form.data.MemperhitungkanHariLibur}
-                onCheckedChange={(v) => form.setData('MemperhitungkanHariLibur', v)}
-              />{' '}
-              Lewati hari libur organisasi/lokasi
-            </label>
-          </section>
-          <section className="space-y-3">
-            <div>
-              <h3 className="font-medium">Target per prioritas</h3>
-              <p className="text-xs text-muted-foreground">
-                Nilai dalam menit. Kosongkan target yang tidak digunakan.
-              </p>
+            <div className="space-y-1.5">
+              <Label nama="Deskripsi">Deskripsi</Label>
+              <Textarea
+                value={form.data.Deskripsi}
+                onChange={(e) => form.setData('Deskripsi', e.target.value)}
+                rows={2}
+              />
             </div>
-            {form.data.Aturan.map((aturan, indeks) => (
-              <div
-                key={aturan.Prioritas}
-                className="grid items-end gap-3 rounded-[9px] border border-border p-3 sm:grid-cols-[100px_1fr_1fr_auto]"
-              >
-                <div>
-                  <Label>Prioritas</Label>
-                  <div className="pt-2 text-sm font-medium">{aturan.Prioritas}</div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Respons</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={aturan.MenitRespons ?? ''}
-                    onChange={(e) =>
-                      ubahAturan(indeks, { MenitRespons: e.target.value ? Number(e.target.value) : null })
-                    }
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Penyelesaian</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={aturan.MenitPenyelesaian ?? ''}
-                    onChange={(e) =>
-                      ubahAturan(indeks, {
-                        MenitPenyelesaian: e.target.value ? Number(e.target.value) : null,
-                      })
-                    }
-                  />
-                </div>
-                <label className="flex items-center gap-2 pb-2 text-xs">
-                  <Switch
-                    checked={aturan.MenghitungJamKerja}
-                    onCheckedChange={(v) => ubahAturan(indeks, { MenghitungJamKerja: v })}
-                  />{' '}
-                  Jam kerja
-                </label>
-              </div>
-            ))}
-          </section>
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
+            <section className="space-y-3 rounded-[9px] border border-border p-4">
               <div>
-                <h3 className="font-medium">Eskalasi</h3>
+                <h3 className="font-medium">Kalender kerja</h3>
                 <p className="text-xs text-muted-foreground">
-                  Tahap mendekati batas atau setelah SLA terlewati.
+                  Deadline yang menghitung jam kerja hanya berjalan pada hari dan rentang waktu ini.
                 </p>
               </div>
-              <Button type="button" variant="outline" size="sm" onClick={tambahEskalasi}>
-                Tambah Tahap
-              </Button>
-            </div>
-            {form.data.Eskalasi.map((eskalasi, indeks) => (
-              <div key={indeks} className="space-y-3 rounded-[9px] border border-border p-3">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="space-y-1.5">
-                    <Label>Pemicu</Label>
-                    <Select
-                      value={eskalasi.Pemicu}
-                      onValueChange={(v) => ubahEskalasi(indeks, { Pemicu: v as PemicuEskalasi })}
+              <div className="flex flex-wrap gap-2">
+                {HARI.map((hari) => {
+                  const aktif = form.data.HariKerja.includes(hari.nilai);
+                  return (
+                    <Button
+                      key={hari.nilai}
+                      type="button"
+                      size="sm"
+                      variant={aktif ? 'default' : 'outline'}
+                      onClick={() =>
+                        form.setData(
+                          'HariKerja',
+                          aktif
+                            ? form.data.HariKerja.filter((h) => h !== hari.nilai)
+                            : [...form.data.HariKerja, hari.nilai].sort(),
+                        )
+                      }
                     >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Menjelang">Menjelang batas</SelectItem>
-                        <SelectItem value="Terlewati">Setelah terlewati</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      {hari.label}
+                    </Button>
+                  );
+                })}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label nama="JamKerjaMulai">Jam mulai</Label>
+                  <Input
+                    type="time"
+                    value={form.data.JamKerjaMulai}
+                    onChange={(e) => form.setData('JamKerjaMulai', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label nama="JamKerjaSelesai">Jam selesai</Label>
+                  <Input
+                    type="time"
+                    value={form.data.JamKerjaSelesai}
+                    onChange={(e) => form.setData('JamKerjaSelesai', e.target.value)}
+                  />
+                </div>
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <Switch
+                  checked={form.data.MemperhitungkanHariLibur}
+                  onCheckedChange={(v) => form.setData('MemperhitungkanHariLibur', v)}
+                />{' '}
+                Lewati hari libur organisasi/lokasi
+              </label>
+            </section>
+            <section className="space-y-3">
+              <div>
+                <h3 className="font-medium">Target per prioritas</h3>
+                <p className="text-xs text-muted-foreground">
+                  Nilai dalam menit. Kosongkan target yang tidak digunakan.
+                </p>
+              </div>
+              {form.data.Aturan.map((aturan, indeks) => (
+                <div
+                  key={aturan.Prioritas}
+                  className="grid items-end gap-3 rounded-[9px] border border-border p-3 sm:grid-cols-[100px_1fr_1fr_auto]"
+                >
+                  <div>
+                    <Label>Prioritas</Label>
+                    <div className="pt-2 text-sm font-medium">{aturan.Prioritas}</div>
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Menit</Label>
+                    <Label>Respons</Label>
                     <Input
                       type="number"
-                      min={0}
-                      value={eskalasi.SetelahMenit}
-                      onChange={(e) => ubahEskalasi(indeks, { SetelahMenit: Number(e.target.value) })}
+                      min={1}
+                      value={aturan.MenitRespons ?? ''}
+                      onChange={(e) =>
+                        ubahAturan(indeks, { MenitRespons: e.target.value ? Number(e.target.value) : null })
+                      }
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Kanal</Label>
-                    <Select
-                      value={eskalasi.Kanal.includes('Email') ? 'InApp,Email' : 'InApp'}
-                      onValueChange={(v) => ubahEskalasi(indeks, { Kanal: v.split(',') })}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="InApp">In-app</SelectItem>
-                        <SelectItem value="InApp,Email">In-app + Email</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label>Penyelesaian</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={aturan.MenitPenyelesaian ?? ''}
+                      onChange={(e) =>
+                        ubahAturan(indeks, {
+                          MenitPenyelesaian: e.target.value ? Number(e.target.value) : null,
+                        })
+                      }
+                    />
                   </div>
+                  <label className="flex items-center gap-2 pb-2 text-xs">
+                    <Switch
+                      checked={aturan.MenghitungJamKerja}
+                      onCheckedChange={(v) => ubahAturan(indeks, { MenghitungJamKerja: v })}
+                    />{' '}
+                    Jam kerja
+                  </label>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label>Peran penerima</Label>
-                    <Select
-                      value={eskalasi.PeranId ?? TANPA_PILIHAN}
-                      onValueChange={(v) => ubahEskalasi(indeks, { PeranId: v === TANPA_PILIHAN ? null : v })}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={TANPA_PILIHAN}>Tanpa peran</SelectItem>
-                        {peran.map((p) => (
-                          <SelectItem key={p.Id} value={p.Id}>
-                            {p.Nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+              ))}
+            </section>
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">Eskalasi</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Tahap mendekati batas atau setelah SLA terlewati.
+                  </p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={tambahEskalasi}>
+                  Tambah Tahap
+                </Button>
+              </div>
+              {form.data.Eskalasi.map((eskalasi, indeks) => (
+                <div key={indeks} className="space-y-3 rounded-[9px] border border-border p-3">
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="space-y-1.5">
+                      <Label>Pemicu</Label>
+                      <Select
+                        value={eskalasi.Pemicu}
+                        onValueChange={(v) => ubahEskalasi(indeks, { Pemicu: v as PemicuEskalasi })}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Menjelang">Menjelang batas</SelectItem>
+                          <SelectItem value="Terlewati">Setelah terlewati</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Menit</Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={eskalasi.SetelahMenit}
+                        onChange={(e) => ubahEskalasi(indeks, { SetelahMenit: Number(e.target.value) })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Kanal</Label>
+                      <Select
+                        value={eskalasi.Kanal.includes('Email') ? 'InApp,Email' : 'InApp'}
+                        onValueChange={(v) => ubahEskalasi(indeks, { Kanal: v.split(',') })}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="InApp">In-app</SelectItem>
+                          <SelectItem value="InApp,Email">In-app + Email</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label>Pengguna penerima</Label>
-                    <Select
-                      value={eskalasi.PenggunaId ?? TANPA_PILIHAN}
-                      onValueChange={(v) =>
-                        ubahEskalasi(indeks, { PenggunaId: v === TANPA_PILIHAN ? null : v })
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label>Peran penerima</Label>
+                      <Select
+                        value={eskalasi.PeranId ?? TANPA_PILIHAN}
+                        onValueChange={(v) =>
+                          ubahEskalasi(indeks, { PeranId: v === TANPA_PILIHAN ? null : v })
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={TANPA_PILIHAN}>Tanpa peran</SelectItem>
+                          {peran.map((p) => (
+                            <SelectItem key={p.Id} value={p.Id}>
+                              {p.Nama}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Pengguna penerima</Label>
+                      <Select
+                        value={eskalasi.PenggunaId ?? TANPA_PILIHAN}
+                        onValueChange={(v) =>
+                          ubahEskalasi(indeks, { PenggunaId: v === TANPA_PILIHAN ? null : v })
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={TANPA_PILIHAN}>Tanpa pengguna khusus</SelectItem>
+                          {pengguna.map((p) => (
+                            <SelectItem key={p.Id} value={p.Id}>
+                              {p.Nama}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        form.setData(
+                          'Eskalasi',
+                          form.data.Eskalasi.filter((_, i) => i !== indeks).map((e, i) => ({
+                            ...e,
+                            Tahap: i + 1,
+                          })),
+                        )
                       }
                     >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={TANPA_PILIHAN}>Tanpa pengguna khusus</SelectItem>
-                        {pengguna.map((p) => (
-                          <SelectItem key={p.Id} value={p.Id}>
-                            {p.Nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      Hapus tahap
+                    </Button>
                   </div>
                 </div>
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      form.setData(
-                        'Eskalasi',
-                        form.data.Eskalasi.filter((_, i) => i !== indeks).map((e, i) => ({
-                          ...e,
-                          Tahap: i + 1,
-                        })),
-                      )
-                    }
-                  >
-                    Hapus tahap
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </section>
-          <label className="flex items-center gap-2 text-sm">
-            <Switch checked={form.data.Aktif} onCheckedChange={(v) => form.setData('Aktif', v)} /> Tingkat
-            layanan aktif
-          </label>
-          {Object.values(form.errors).length > 0 && (
-            <p className="text-sm text-destructive">Periksa kembali isian target dan penerima eskalasi.</p>
-          )}
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+              ))}
+            </section>
+            <label className="flex items-center gap-2 text-sm">
+              <Switch checked={form.data.Aktif} onCheckedChange={(v) => form.setData('Aktif', v)} /> Tingkat
+              layanan aktif
+            </label>
+            {Object.values(form.errors).length > 0 && (
+              <p className="text-sm text-destructive">Periksa kembali isian target dan penerima eskalasi.</p>
+            )}
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }: Props) {
+export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   return (
     <KerangkaAplikasi>
@@ -395,7 +404,12 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }:
         deskripsi="Konfigurasi kalender, target respons dan penyelesaian, serta tahapan eskalasi."
         aksi={
           <>
-            <DialogTingkatLayanan item={null} peran={peran} pengguna={pengguna} />
+            <DialogTingkatLayanan
+              item={null}
+              peran={peran}
+              pengguna={pengguna}
+              wajib={wajib.tingkatLayanan}
+            />
           </>
         }
         className="mb-6"
@@ -433,7 +447,12 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }:
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{sla.Eskalasi.length} tahap eskalasi</span>
                 <div className="flex gap-2">
-                  <DialogTingkatLayanan item={sla} peran={peran} pengguna={pengguna} />
+                  <DialogTingkatLayanan
+                    item={sla}
+                    peran={peran}
+                    pengguna={pengguna}
+                    wajib={wajib.tingkatLayanan}
+                  />
                   <Button
                     variant="ghost"
                     size="sm"

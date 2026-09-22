@@ -19,14 +19,17 @@ import type { RencanaPemeliharaan } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   rencana: RencanaPemeliharaan;
   asetTersedia: { Id: string; KodeAset: string; Nama: string; LokasiId?: string | null }[];
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function RencanaPemeliharaanShow({ rencana, asetTersedia }: Props) {
+export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialogAset, setBukaDialogAset] = useState(false);
 
@@ -134,80 +137,84 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia }: Props
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
-                <form onSubmit={daftarkanAset}>
-                  <DialogHeader>
-                    <DialogTitle>Daftarkan Aset</DialogTitle>
-                  </DialogHeader>
+                <AturanWajibProvider aturan={wajib.aset}>
+                  <form onSubmit={daftarkanAset}>
+                    <DialogHeader>
+                      <DialogTitle>Daftarkan Aset</DialogTitle>
+                    </DialogHeader>
 
-                  <div className="grid gap-4 py-4">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="AsetId">
-                        Pilih Aset <span className="text-rose-500">*</span>
-                      </Label>
-                      <Select
-                        value={formAset.data.AsetId}
-                        onValueChange={(val) => formAset.setData('AsetId', val)}
-                        required
+                    <div className="grid gap-4 py-4">
+                      <div className="space-y-1.5">
+                        <Label nama="AsetId" htmlFor="AsetId">
+                          Pilih Aset <span className="text-rose-500">*</span>
+                        </Label>
+                        <Select
+                          value={formAset.data.AsetId}
+                          onValueChange={(val) => formAset.setData('AsetId', val)}
+                          required
+                        >
+                          <SelectTrigger id="AsetId" className="cursor-pointer">
+                            <SelectValue placeholder="Pilih unit aset..." />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            {asetBelumTerdaftar.map((a) => (
+                              <SelectItem key={a.Id} value={a.Id}>
+                                {a.KodeAset} - {a.Nama}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {formAset.errors.AsetId && (
+                          <p className="text-xs text-rose-500">{formAset.errors.AsetId}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label nama="TanggalMulai" htmlFor="TanggalMulai">
+                          Tanggal Mulai Berlaku <span className="text-rose-500">*</span>
+                        </Label>
+                        <DatePicker
+                          value={formAset.data.TanggalMulai}
+                          onChange={(val) => formAset.setData('TanggalMulai', val)}
+                          placeholder="Pilih tanggal mulai..."
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label nama="TanggalBerikutnya" htmlFor="TanggalBerikutnya">
+                          Tanggal Jatuh Tempo Pertama (Opsional)
+                        </Label>
+                        <DatePicker
+                          value={formAset.data.TanggalBerikutnya}
+                          onChange={(val) => formAset.setData('TanggalBerikutnya', val)}
+                          placeholder="Otomatis dihitung jika kosong"
+                        />
+                        <p className="text-[11px] text-permukaan-500">
+                          Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai}{' '}
+                          {rencana.IntervalSatuan}.
+                        </p>
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => setBukaDialogAset(false)}
                       >
-                        <SelectTrigger id="AsetId" className="cursor-pointer">
-                          <SelectValue placeholder="Pilih unit aset..." />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-60">
-                          {asetBelumTerdaftar.map((a) => (
-                            <SelectItem key={a.Id} value={a.Id}>
-                              {a.KodeAset} - {a.Nama}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {formAset.errors.AsetId && (
-                        <p className="text-xs text-rose-500">{formAset.errors.AsetId}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="TanggalMulai">
-                        Tanggal Mulai Berlaku <span className="text-rose-500">*</span>
-                      </Label>
-                      <DatePicker
-                        value={formAset.data.TanggalMulai}
-                        onChange={(val) => formAset.setData('TanggalMulai', val)}
-                        placeholder="Pilih tanggal mulai..."
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="TanggalBerikutnya">Tanggal Jatuh Tempo Pertama (Opsional)</Label>
-                      <DatePicker
-                        value={formAset.data.TanggalBerikutnya}
-                        onChange={(val) => formAset.setData('TanggalBerikutnya', val)}
-                        placeholder="Otomatis dihitung jika kosong"
-                      />
-                      <p className="text-[11px] text-permukaan-500">
-                        Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai}{' '}
-                        {rencana.IntervalSatuan}.
-                      </p>
-                    </div>
-                  </div>
-
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      onClick={() => setBukaDialogAset(false)}
-                    >
-                      Batal
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                      disabled={formAset.processing || !formAset.data.AsetId}
-                    >
-                      {formAset.processing ? 'Mendaftarkan...' : 'Daftarkan Aset'}
-                    </Button>
-                  </DialogFooter>
-                </form>
+                        Batal
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                        disabled={formAset.processing || !formAset.data.AsetId}
+                      >
+                        {formAset.processing ? 'Mendaftarkan...' : 'Daftarkan Aset'}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </AturanWajibProvider>
               </DialogContent>
             </Dialog>
           </div>

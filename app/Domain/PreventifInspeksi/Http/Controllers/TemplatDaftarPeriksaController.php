@@ -7,9 +7,11 @@ namespace App\Domain\PreventifInspeksi\Http\Controllers;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Domain\PreventifInspeksi\Application\Actions\KelolaTemplatDaftarPeriksa;
+use App\Domain\PreventifInspeksi\Http\Requests\SimpanButirTemplatDaftarPeriksaRequest;
 use App\Domain\PreventifInspeksi\Http\Requests\SimpanTemplatDaftarPeriksaRequest;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftarPeriksa;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,6 +34,7 @@ final class TemplatDaftarPeriksaController extends Controller
             ->get();
 
         return Inertia::render('DaftarPeriksa/Templat/Index', [
+            'wajib' => ['templat' => AturanWajib::untuk(SimpanTemplatDaftarPeriksaRequest::class)],
             'templat' => $daftarTemplat,
             'kategoriAset' => KategoriAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'modelAset' => ModelAset::query()->orderBy('Nama')->get(['Id', 'Nama', 'KategoriAsetId']),
@@ -62,6 +65,7 @@ final class TemplatDaftarPeriksaController extends Controller
         ]);
 
         return Inertia::render('DaftarPeriksa/Templat/Show', [
+            'wajib' => ['butir' => AturanWajib::untuk(SimpanButirTemplatDaftarPeriksaRequest::class)],
             'templat' => $templatDaftarPeriksa,
             'kategoriAset' => KategoriAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'modelAset' => ModelAset::query()->orderBy('Nama')->get(['Id', 'Nama', 'KategoriAsetId']),

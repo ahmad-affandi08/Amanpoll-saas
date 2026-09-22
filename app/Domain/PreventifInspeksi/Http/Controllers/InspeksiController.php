@@ -12,6 +12,7 @@ use App\Domain\PreventifInspeksi\Http\Requests\SimpanInspeksiRequest;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\Inspeksi;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatInspeksi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -59,6 +60,7 @@ final class InspeksiController extends Controller
         $inspektorList = Pengguna::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']);
 
         return Inertia::render('Inspeksi/Index', [
+            'wajib' => ['inspeksi' => AturanWajib::untuk(SimpanInspeksiRequest::class)],
             'inspeksi' => $daftarInspeksi,
             'templatInspeksi' => $templatList,
             'aset' => $asetList,

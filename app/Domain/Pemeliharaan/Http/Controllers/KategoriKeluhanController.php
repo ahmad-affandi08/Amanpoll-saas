@@ -13,6 +13,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,6 +34,7 @@ final class KategoriKeluhanController extends Controller
             ->faset(['PrioritasBawaan']);
 
         return Inertia::render('KategoriKeluhan/Index', [
+            'wajib' => ['kategoriKeluhan' => AturanWajib::untuk(SimpanKategoriKeluhanRequest::class)],
             'kategori' => KategoriKeluhanResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             // Pemilih induk harus memuat seluruh kategori, bukan hanya yang tampil di halaman ini.

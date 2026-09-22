@@ -24,6 +24,7 @@ import { DialogReservasiSukuCadang } from '@/features/PerintahKerja/components/D
 import { DialogCatatBiaya } from '@/features/PerintahKerja/components/DialogCatatBiaya';
 import { DialogAnalisisKegagalan } from '@/features/PerintahKerja/components/DialogAnalisisKegagalan';
 import { DialogDowntimeAset } from '@/features/PerintahKerja/components/DialogDowntimeAset';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface GudangOpsi {
   Id: string;
@@ -46,6 +47,8 @@ interface Props {
   gudang: GudangOpsi[];
   penyedia: PenyediaOpsi[];
   kodeKegagalan: KodeKegagalan[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 function formatTanggal(nilai: string | null): string {
@@ -70,6 +73,7 @@ export default function PerintahKerjaShow({
   teknisi,
   stok,
   kodeKegagalan,
+  wajib,
 }: Props) {
   // Aksi respon penugasan teknisi
   const formResponsPenugasan = useForm({
@@ -177,7 +181,11 @@ export default function PerintahKerjaShow({
               </div>
             )}
 
-            <DialogUbahStatus perintahKerja={perintahKerja} transisi={transisiDiizinkan} />
+            <DialogUbahStatus
+              perintahKerja={perintahKerja}
+              transisi={transisiDiizinkan}
+              wajib={wajib.status}
+            />
           </>
         }
       />
@@ -312,7 +320,13 @@ export default function PerintahKerjaShow({
                   Reservasi suku cadang dari gudang dan catat pemakaian aktualnya.
                 </p>
               </div>
-              {dapatMengoperasikan && <DialogReservasiSukuCadang perintahKerja={perintahKerja} stok={stok} />}
+              {dapatMengoperasikan && (
+                <DialogReservasiSukuCadang
+                  perintahKerja={perintahKerja}
+                  stok={stok}
+                  wajib={wajib.reservasi}
+                />
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               {/* TABEL RESERVASI */}
@@ -425,7 +439,11 @@ export default function PerintahKerjaShow({
                 </p>
               </div>
               {dapatMengoperasikan && (
-                <DialogAnalisisKegagalan perintahKerja={perintahKerja} kodeKegagalan={kodeKegagalan} />
+                <DialogAnalisisKegagalan
+                  perintahKerja={perintahKerja}
+                  kodeKegagalan={kodeKegagalan}
+                  wajib={wajib.analisis}
+                />
               )}
             </CardHeader>
             <CardContent>
@@ -472,7 +490,13 @@ export default function PerintahKerjaShow({
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-base font-semibold">Penugasan Teknisi</CardTitle>
-              {dapatMengelola && <DialogTugaskanTeknisi perintahKerja={perintahKerja} teknisi={teknisi} />}
+              {dapatMengelola && (
+                <DialogTugaskanTeknisi
+                  perintahKerja={perintahKerja}
+                  teknisi={teknisi}
+                  wajib={wajib.penugasan}
+                />
+              )}
             </CardHeader>
             <CardContent>
               {perintahKerja.Penugasan && perintahKerja.Penugasan.length > 0 ? (
@@ -560,7 +584,9 @@ export default function PerintahKerjaShow({
                   Total: {perintahKerja.TotalDowntimeMenit ?? 0} Menit
                 </div>
               </div>
-              {dapatMengoperasikan && <DialogDowntimeAset perintahKerja={perintahKerja} />}
+              {dapatMengoperasikan && (
+                <DialogDowntimeAset perintahKerja={perintahKerja} wajib={wajib.waktuHenti} />
+              )}
             </CardHeader>
             <CardContent>
               {perintahKerja.WaktuHenti && perintahKerja.WaktuHenti.length > 0 ? (
@@ -597,7 +623,7 @@ export default function PerintahKerjaShow({
                   Total: {formatRupiah(perintahKerja.TotalBiaya ?? 0)}
                 </div>
               </div>
-              {dapatMengelola && <DialogCatatBiaya perintahKerja={perintahKerja} />}
+              {dapatMengelola && <DialogCatatBiaya perintahKerja={perintahKerja} wajib={wajib.biaya} />}
             </CardHeader>
             <CardContent>
               {perintahKerja.Biaya && perintahKerja.Biaya.length > 0 ? (

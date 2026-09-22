@@ -10,6 +10,7 @@ use App\Domain\Pemeliharaan\Application\Actions\SimpanKodeKegagalan;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanKodeKegagalanRequest;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KodeKegagalan;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -24,6 +25,7 @@ final class KodeKegagalanController extends Controller
         $this->pastikanBerizin($request);
 
         return Inertia::render('KodeKegagalan/Index', [
+            'wajib' => ['kodeKegagalan' => AturanWajib::untuk(SimpanKodeKegagalanRequest::class)],
             'kodeKegagalan' => KodeKegagalan::query()->with('kategoriAset')->orderBy('Jenis')->orderBy('Kode')->get(),
             'kategoriAset' => KategoriAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);

@@ -21,13 +21,16 @@ import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa }: Props) {
+export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
@@ -117,143 +120,151 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-md">
-                    <form onSubmit={onSubmit}>
-                      <DialogHeader>
-                        <DialogTitle>Buat Rencana Pemeliharaan</DialogTitle>
-                      </DialogHeader>
+                    <AturanWajibProvider aturan={wajib.rencana}>
+                      <form onSubmit={onSubmit}>
+                        <DialogHeader>
+                          <DialogTitle>Buat Rencana Pemeliharaan</DialogTitle>
+                        </DialogHeader>
 
-                      <div className="grid gap-4 py-4">
-                        <BidangKode
-                          nilai={form.data.Kode}
-                          onUbah={(nilai) => form.setData('Kode', nilai)}
-                          galat={form.errors.Kode}
-                          label="Kode Rencana"
-                          contoh="Misal: PM-CHILLER-BULANAN"
-                        />
-
-                        <div className="space-y-1.5">
-                          <Label htmlFor="Nama">
-                            Nama Rencana <span className="text-rose-500">*</span>
-                          </Label>
-                          <Input
-                            id="Nama"
-                            placeholder="Misal: Servis Rutin Bulanan Chiller Utama"
-                            value={form.data.Nama}
-                            onChange={(e) => form.setData('Nama', e.target.value)}
-                            required
+                        <div className="grid gap-4 py-4">
+                          <BidangKode
+                            nilai={form.data.Kode}
+                            onUbah={(nilai) => form.setData('Kode', nilai)}
+                            galat={form.errors.Kode}
+                            label="Kode Rencana"
+                            contoh="Misal: PM-CHILLER-BULANAN"
                           />
-                          {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-1.5">
-                            <Label htmlFor="IntervalNilai">
-                              Interval <span className="text-rose-500">*</span>
+                            <Label nama="Nama" htmlFor="Nama">
+                              Nama Rencana <span className="text-rose-500">*</span>
                             </Label>
                             <Input
-                              id="IntervalNilai"
-                              type="number"
-                              min={1}
-                              value={form.data.IntervalNilai}
-                              onChange={(e) => form.setData('IntervalNilai', Number(e.target.value))}
+                              id="Nama"
+                              placeholder="Misal: Servis Rutin Bulanan Chiller Utama"
+                              value={form.data.Nama}
+                              onChange={(e) => form.setData('Nama', e.target.value)}
                               required
                             />
+                            {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
                           </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                              <Label nama="IntervalNilai" htmlFor="IntervalNilai">
+                                Interval <span className="text-rose-500">*</span>
+                              </Label>
+                              <Input
+                                id="IntervalNilai"
+                                type="number"
+                                min={1}
+                                value={form.data.IntervalNilai}
+                                onChange={(e) => form.setData('IntervalNilai', Number(e.target.value))}
+                                required
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label nama="IntervalSatuan" htmlFor="IntervalSatuan">
+                                Satuan Waktu
+                              </Label>
+                              <Select
+                                value={form.data.IntervalSatuan}
+                                onValueChange={(val) => form.setData('IntervalSatuan', val)}
+                              >
+                                <SelectTrigger id="IntervalSatuan" className="cursor-pointer">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Hari">Hari</SelectItem>
+                                  <SelectItem value="Minggu">Minggu</SelectItem>
+                                  <SelectItem value="Bulan">Bulan</SelectItem>
+                                  <SelectItem value="Tahun">Tahun</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
                           <div className="space-y-1.5">
-                            <Label htmlFor="IntervalSatuan">Satuan Waktu</Label>
+                            <Label nama="TemplatDaftarPeriksaId" htmlFor="TemplatDaftarPeriksaId">
+                              Hubungkan Templat Checklist (Opsional)
+                            </Label>
                             <Select
-                              value={form.data.IntervalSatuan}
-                              onValueChange={(val) => form.setData('IntervalSatuan', val)}
-                            >
-                              <SelectTrigger id="IntervalSatuan" className="cursor-pointer">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Hari">Hari</SelectItem>
-                                <SelectItem value="Minggu">Minggu</SelectItem>
-                                <SelectItem value="Bulan">Bulan</SelectItem>
-                                <SelectItem value="Tahun">Tahun</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <Label htmlFor="TemplatDaftarPeriksaId">
-                            Hubungkan Templat Checklist (Opsional)
-                          </Label>
-                          <Select
-                            value={form.data.TemplatDaftarPeriksaId || '__none__'}
-                            onValueChange={(val) =>
-                              form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
-                            }
-                          >
-                            <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
-                              <SelectValue placeholder="Pilih Templat Checklist" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">-- Tanpa Checklist Otomatis --</SelectItem>
-                              {templatDaftarPeriksa.map((t) => (
-                                <SelectItem key={t.Id} value={t.Id}>
-                                  {t.Kode} - {t.Nama}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <Label htmlFor="Prioritas">Prioritas Perintah Kerja</Label>
-                            <Select
-                              value={form.data.Prioritas}
-                              onValueChange={(val) => form.setData('Prioritas', val)}
-                            >
-                              <SelectTrigger id="Prioritas" className="cursor-pointer">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Rendah">Rendah</SelectItem>
-                                <SelectItem value="Normal">Normal</SelectItem>
-                                <SelectItem value="Tinggi">Tinggi</SelectItem>
-                                <SelectItem value="Darurat">Darurat</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <Label htmlFor="BuatHariSebelum">Buat WO (Hari Sebelum)</Label>
-                            <Input
-                              id="BuatHariSebelum"
-                              type="number"
-                              min={0}
-                              value={form.data.BuatPerintahKerjaHariSebelum}
-                              onChange={(e) =>
-                                form.setData('BuatPerintahKerjaHariSebelum', Number(e.target.value))
+                              value={form.data.TemplatDaftarPeriksaId || '__none__'}
+                              onValueChange={(val) =>
+                                form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
                               }
-                            />
+                            >
+                              <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
+                                <SelectValue placeholder="Pilih Templat Checklist" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="__none__">-- Tanpa Checklist Otomatis --</SelectItem>
+                                {templatDaftarPeriksa.map((t) => (
+                                  <SelectItem key={t.Id} value={t.Id}>
+                                    {t.Kode} - {t.Nama}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                              <Label nama="Prioritas" htmlFor="Prioritas">
+                                Prioritas Perintah Kerja
+                              </Label>
+                              <Select
+                                value={form.data.Prioritas}
+                                onValueChange={(val) => form.setData('Prioritas', val)}
+                              >
+                                <SelectTrigger id="Prioritas" className="cursor-pointer">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Rendah">Rendah</SelectItem>
+                                  <SelectItem value="Normal">Normal</SelectItem>
+                                  <SelectItem value="Tinggi">Tinggi</SelectItem>
+                                  <SelectItem value="Darurat">Darurat</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <Label nama="BuatPerintahKerjaHariSebelum" htmlFor="BuatHariSebelum">
+                                Buat WO (Hari Sebelum)
+                              </Label>
+                              <Input
+                                id="BuatHariSebelum"
+                                type="number"
+                                min={0}
+                                value={form.data.BuatPerintahKerjaHariSebelum}
+                                onChange={(e) =>
+                                  form.setData('BuatPerintahKerjaHariSebelum', Number(e.target.value))
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <DialogFooter>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="cursor-pointer"
-                          onClick={() => setBukaDialog(false)}
-                        >
-                          Batal
-                        </Button>
-                        <Button
-                          type="submit"
-                          className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                          disabled={form.processing}
-                        >
-                          {form.processing ? 'Menyimpan...' : 'Simpan Rencana'}
-                        </Button>
-                      </DialogFooter>
-                    </form>
+                        <DialogFooter>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                            onClick={() => setBukaDialog(false)}
+                          >
+                            Batal
+                          </Button>
+                          <Button
+                            type="submit"
+                            className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                            disabled={form.processing}
+                          >
+                            {form.processing ? 'Menyimpan...' : 'Simpan Rencana'}
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </AturanWajibProvider>
                   </DialogContent>
                 </Dialog>
               </div>

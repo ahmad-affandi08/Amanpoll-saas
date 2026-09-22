@@ -11,6 +11,10 @@ use App\Domain\Pemeliharaan\Application\Actions\BuatPerintahKerja;
 use App\Domain\Pemeliharaan\Application\Actions\UbahStatusPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
+use App\Domain\Pemeliharaan\Http\Requests\AksiWaktuHentiAsetRequest;
+use App\Domain\Pemeliharaan\Http\Requests\SimpanAnalisisKegagalanRequest;
+use App\Domain\Pemeliharaan\Http\Requests\SimpanBiayaPerintahKerjaRequest;
+use App\Domain\Pemeliharaan\Http\Requests\SimpanPenugasanPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\UbahStatusPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Resources\PerintahKerjaResource;
@@ -19,12 +23,14 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KodeKegagalan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Persediaan\Http\Requests\SimpanReservasiSukuCadangRequest;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -58,6 +64,7 @@ final class PerintahKerjaController extends Controller
             ->withQueryString();
 
         return Inertia::render('PerintahKerja/Index', [
+            'wajib' => ['perintahKerja' => AturanWajib::untuk(SimpanPerintahKerjaRequest::class), 'status' => AturanWajib::untuk(UbahStatusPerintahKerjaRequest::class)],
             'perintahKerja' => PerintahKerjaResource::collection($daftar),
             'keluhan' => Keluhan::query()->whereIn('Status', ['Diterima', 'Diproses'])->latest('DilaporkanPada')->get(['Id', 'Nomor', 'Judul', 'Prioritas', 'LokasiId', 'AsetId']),
             'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']),
@@ -116,6 +123,7 @@ final class PerintahKerjaController extends Controller
             ])->values();
 
         return Inertia::render('PerintahKerja/Show', [
+            'wajib' => ['perintahKerja' => AturanWajib::untuk(SimpanPerintahKerjaRequest::class), 'status' => AturanWajib::untuk(UbahStatusPerintahKerjaRequest::class), 'penugasan' => AturanWajib::untuk(SimpanPenugasanPerintahKerjaRequest::class), 'biaya' => AturanWajib::untuk(SimpanBiayaPerintahKerjaRequest::class), 'analisis' => AturanWajib::untuk(SimpanAnalisisKegagalanRequest::class), 'waktuHenti' => AturanWajib::untuk(AksiWaktuHentiAsetRequest::class), 'reservasi' => AturanWajib::untuk(SimpanReservasiSukuCadangRequest::class)],
             'perintahKerja' => new PerintahKerjaResource($perintahKerja),
             'dapatMengelola' => $dapatMengelola,
             'dapatMengoperasikan' => Gate::allows('operate', $perintahKerja),

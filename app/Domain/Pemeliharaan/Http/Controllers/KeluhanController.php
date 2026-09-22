@@ -22,6 +22,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -51,6 +52,7 @@ final class KeluhanController extends Controller
             ->withQueryString();
 
         return Inertia::render('Keluhan/Index', [
+            'wajib' => ['keluhan' => AturanWajib::untuk(SimpanKeluhanRequest::class)],
             'keluhan' => KeluhanResource::collection($keluhan),
             'kategori' => KategoriKeluhan::query()->where('Aktif', true)->orderBy('Nama')->get(['Id', 'Nama', 'PrioritasBawaan', 'AsetWajib']),
             'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']),
@@ -88,6 +90,7 @@ final class KeluhanController extends Controller
         $keluhan->load(['kategoriKeluhan', 'tingkatLayanan', 'aset', 'lokasi', 'pelapor', 'riwayatStatus.diubahOleh']);
 
         return Inertia::render('Keluhan/Show', [
+            'wajib' => ['status' => AturanWajib::untuk(UbahStatusKeluhanRequest::class), 'prioritas' => AturanWajib::untuk(UbahPrioritasKeluhanRequest::class)],
             'keluhan' => new KeluhanResource($keluhan),
             'dapatMengelola' => $this->izin->boleh((string) auth()->id(), 'Keluhan.Kelola'),
             'transisiDiizinkan' => array_map(fn (StatusKeluhan $status) => $status->value, StatusKeluhan::from($keluhan->Status)->tujuanYangDiizinkan()),
