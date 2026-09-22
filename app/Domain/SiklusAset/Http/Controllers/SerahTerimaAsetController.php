@@ -17,6 +17,7 @@ use App\Domain\SiklusAset\Http\Requests\TerimaSerahTerimaAsetRequest;
 use App\Domain\SiklusAset\Http\Resources\SerahTerimaAsetResource;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,7 +52,7 @@ final class SerahTerimaAsetController extends Controller
 
         return Inertia::render('SerahTerimaAset/Show', [
             'serahTerima' => new SerahTerimaAsetResource($serahTerimaAset),
-            'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->get()),
+            'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->limit(BatasDaftar::MAKS)->get()),
             'pengguna' => PenggunaResource::collection(Pengguna::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),
         ]);
     }

@@ -15,6 +15,7 @@ use App\Domain\Pemasaran\Http\Requests\SimpanDemoPemasaranRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\DemoPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiDemo;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -37,6 +38,7 @@ final class DemoPemasaranController extends Controller
         $sesi = SesiDemo::query()
             ->selectRaw('DemoPemasaranId, Status, COUNT(*) as Jumlah')
             ->groupBy('DemoPemasaranId', 'Status')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return Inertia::render('Pemasaran/Demo', [

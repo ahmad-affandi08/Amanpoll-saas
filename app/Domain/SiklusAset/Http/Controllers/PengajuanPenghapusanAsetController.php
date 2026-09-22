@@ -18,6 +18,7 @@ use App\Domain\SiklusAset\Http\Resources\PengajuanPenghapusanAsetResource;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -52,7 +53,7 @@ final class PengajuanPenghapusanAsetController extends Controller
 
         return Inertia::render('PenghapusanAset/Show', [
             'pengajuan' => new PengajuanPenghapusanAsetResource($pengajuanPenghapusanAset),
-            'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->get()),
+            'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->limit(BatasDaftar::MAKS)->get()),
         ]);
     }
 

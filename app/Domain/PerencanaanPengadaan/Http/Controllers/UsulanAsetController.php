@@ -18,6 +18,7 @@ use App\Domain\Persetujuan\Infrastructure\Persistence\Models\KeputusanPersetujua
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -72,6 +73,7 @@ final class UsulanAsetController extends Controller
             ->where('EntitasId', $usulanAset->Id)
             ->with(['keputusan.penyetuju'])
             ->orderByDesc('DimintaPada')
+            ->limit(BatasDaftar::MAKS)
             ->get()
             ->map(fn (PermintaanPersetujuan $item): array => [
                 'Id' => $item->Id,

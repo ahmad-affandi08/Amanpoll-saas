@@ -19,6 +19,7 @@ use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetuju
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\AksesDitolak;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -81,6 +82,7 @@ final class PermintaanPersetujuanController extends Controller
             ->with(['alurPersetujuan', 'dimintaOleh', 'keputusan.penyetuju'])
             ->where('DimintaOleh', $request->user('web')->Id)
             ->latest('DimintaPada')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return PermintaanPersetujuanResource::collection($permintaan);
@@ -93,6 +95,7 @@ final class PermintaanPersetujuanController extends Controller
         $menunggu = PermintaanPersetujuan::query()
             ->with(['alurPersetujuan', 'dimintaOleh'])
             ->where('Status', StatusPermintaanPersetujuan::Menunggu->value)
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         if ($menunggu->isEmpty()) {

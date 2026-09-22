@@ -10,6 +10,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -30,6 +31,7 @@ final class StokSukuCadangController extends Controller
             ->with(['gudang', 'lokasiGudang', 'sukuCadang', 'kelompokSukuCadang'])
             ->when($filter['gudangId'] ?? null, fn ($q, $v) => $q->where('GudangId', $v))
             ->when($filter['sukuCadangId'] ?? null, fn ($q, $v) => $q->where('SukuCadangId', $v))
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return Inertia::render('StokSukuCadang/Index', [

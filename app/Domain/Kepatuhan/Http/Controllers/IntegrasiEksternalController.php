@@ -19,6 +19,7 @@ use App\Domain\Kepatuhan\Http\Requests\SimpanPemetaanDataEksternalRequest;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PemetaanDataEksternal;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -35,6 +36,7 @@ final class IntegrasiEksternalController extends Controller
             'integrasi' => IntegrasiEksternal::query()
                 ->withCount(['pemetaan', 'sinkronisasi'])
                 ->orderBy('Kode')
+                ->limit(BatasDaftar::MAKS)
                 ->get()
                 ->map(fn (IntegrasiEksternal $item): array => $this->ringkas($item))
                 ->all(),

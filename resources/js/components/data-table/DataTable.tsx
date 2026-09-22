@@ -18,6 +18,7 @@ import { DataTableToolbar, FilterFasetKolom } from '@/components/data-table/Data
 import { DataTablePagination } from '@/components/data-table/DataTablePagination';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { DataTableKartu } from '@/components/data-table/DataTableKartu';
+import { BATAS_DAFTAR } from '@/lib/batas';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -63,8 +64,17 @@ export function DataTable<TData, TValue>({
     initialState: { pagination: { pageSize: 15 } },
   });
 
+  // Daftar yang tepat menyentuh batas server hampir pasti masih ada sisanya di belakang.
+  const mungkinTerpotong = data.length >= BATAS_DAFTAR;
+
   return (
     <div className="rounded-[9px] border border-border bg-card">
+      {mungkinTerpotong && (
+        <p className="border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
+          Daftar dibatasi {BATAS_DAFTAR.toLocaleString('id-ID')} baris teratas. Pakai pencarian atau
+          penyaring untuk mempersempit bila yang dicari belum tampak.
+        </p>
+      )}
       <DataTableToolbar
         table={table}
         pencarianPlaceholder={pencarianPlaceholder}

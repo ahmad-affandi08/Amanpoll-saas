@@ -13,6 +13,7 @@ use App\Domain\Persediaan\Http\Resources\SukuCadangResource;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KompatibilitasSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -51,6 +52,7 @@ final class KompatibilitasSukuCadangController extends Controller
             ->whereIn('Id', $sukuCadangId)
             ->where('Status', StatusSukuCadang::Aktif->value)
             ->orderBy('Nama')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return SukuCadangResource::collection($sukuCadang);

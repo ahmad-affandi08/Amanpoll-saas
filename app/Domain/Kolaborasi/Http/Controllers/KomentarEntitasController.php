@@ -14,6 +14,7 @@ use App\Domain\Kolaborasi\Http\Resources\KomentarEntitasResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\KomentarEntitas;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\AksesDitolak;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -37,6 +38,7 @@ final class KomentarEntitasController extends Controller
             ->where('JenisEntitas', $data['jenisEntitas'])
             ->where('EntitasId', $data['entitasId'])
             ->oldest('DibuatPada')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return KomentarEntitasResource::collection($komentar);

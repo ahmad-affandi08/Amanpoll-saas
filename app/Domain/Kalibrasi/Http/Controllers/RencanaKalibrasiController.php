@@ -13,6 +13,7 @@ use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,6 +42,7 @@ final class RencanaKalibrasiController extends Controller
             ->when($request->filled('jenisKalibrasiId'), fn ($q) => $q->where('JenisKalibrasiId', $request->input('jenisKalibrasiId')))
             ->when($request->has('aktif'), fn ($q) => $q->where('Aktif', $request->boolean('aktif')))
             ->orderBy('TanggalBerikutnya')
+            ->limit(BatasDaftar::MAKS)
             ->get()
             ->map(function ($rk) use ($hariIni) {
                 $tglBerikutnya = Carbon::parse($rk->TanggalBerikutnya);

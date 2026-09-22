@@ -12,6 +12,7 @@ use App\Domain\Sinkronisasi\Http\Requests\DaftarkanPerangkatRequest;
 use App\Domain\Sinkronisasi\Http\Resources\AntrianSinkronisasiResource;
 use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -49,6 +50,7 @@ final class OfflineTeknisiController extends Controller
                     ->where('PerangkatPenggunaId', $perangkat->Id)
                     ->whereIn('Status', ['Menunggu', 'Diproses', 'Gagal', 'Konflik'])
                     ->orderBy('DiterimaPada')
+                    ->limit(BatasDaftar::MAKS)
                     ->get()
             )->resolve(),
         ]);

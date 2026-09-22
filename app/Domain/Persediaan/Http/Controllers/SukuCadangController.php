@@ -22,6 +22,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KelompokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -33,7 +34,7 @@ final class SukuCadangController extends Controller
     {
         $this->authorize('viewAny', SukuCadang::class);
 
-        $sukuCadang = SukuCadang::query()->with('kategoriSukuCadang')->orderBy('Nama')->get();
+        $sukuCadang = SukuCadang::query()->with('kategoriSukuCadang')->orderBy('Nama')->limit(BatasDaftar::MAKS)->get();
 
         $agregatStok = DB::table('StokSukuCadang')
             ->select('SukuCadangId', DB::raw('SUM(JumlahTersedia) - SUM(JumlahDitahan) as bersih'))

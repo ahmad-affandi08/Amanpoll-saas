@@ -10,6 +10,7 @@ use App\Domain\Platform\Http\Requests\BuatKunciApiRequest;
 use App\Domain\Platform\Http\Resources\KunciApiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KunciApi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use DateTimeImmutable;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -21,7 +22,7 @@ final class KunciApiController extends Controller
     {
         $this->authorize('viewAny', KunciApi::class);
 
-        $kunciApi = KunciApi::query()->latest('DibuatPada')->get();
+        $kunciApi = KunciApi::query()->latest('DibuatPada')->limit(BatasDaftar::MAKS)->get();
 
         return Inertia::render('KunciApi/Index', [
             'kunciApi' => KunciApiResource::collection($kunciApi),

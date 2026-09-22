@@ -15,6 +15,7 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPem
 use App\Domain\Persediaan\Domain\Enums\StatusGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -48,6 +49,7 @@ final class PesananPembelianController extends Controller
                     ->whereDoesntHave('pesananPembelian')
                     ->with(['penyedia', 'permintaanPenawaran'])
                     ->orderByDesc('DibuatPada')
+                    ->limit(BatasDaftar::MAKS)
                     ->get()
             ),
             'filter' => $filter,

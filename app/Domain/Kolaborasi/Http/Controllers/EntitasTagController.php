@@ -11,6 +11,7 @@ use App\Domain\Kolaborasi\Http\Requests\SimpanEntitasTagRequest;
 use App\Domain\Kolaborasi\Http\Resources\EntitasTagResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\EntitasTag;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -34,6 +35,7 @@ final class EntitasTagController extends Controller
             ->where('JenisEntitas', $data['jenisEntitas'])
             ->where('EntitasId', $data['entitasId'])
             ->latest('DibuatPada')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return EntitasTagResource::collection($entitasTag);

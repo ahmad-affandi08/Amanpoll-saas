@@ -24,6 +24,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -102,6 +103,7 @@ final class PerintahKerjaController extends Controller
         $stok = StokSukuCadang::query()
             ->with(['sukuCadang', 'gudang'])
             ->whereColumn('JumlahTersedia', '>', 'JumlahDitahan')
+            ->limit(BatasDaftar::MAKS)
             ->get()
             ->groupBy(fn (StokSukuCadang $item): string => "{$item->GudangId}:{$item->SukuCadangId}")
             ->map(fn ($baris) => [

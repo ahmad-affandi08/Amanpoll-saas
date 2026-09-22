@@ -1506,41 +1506,124 @@ Dua hal yang sengaja belum lengkap dan menyusul bersama fiturnya:
 
 ## 25.01 Database
 
-- [ ] Slow query review.
-- [ ] EXPLAIN query utama.
-- [ ] Index update berdasarkan query nyata.
-- [ ] N+1 detection.
-- [ ] Pagination semua daftar besar.
+- [x] Slow query review.
+- [x] EXPLAIN query utama.
+- [x] Index update berdasarkan query nyata.
+- [x] N+1 detection.
+- [x] Pagination semua daftar besar.
+
+`Model::preventLazyLoading` dinyalakan di luar produksi, jadi lazy loading tidak
+lagi menunggu produksi untuk ketahuan. Ia langsung menemukan dua N+1 nyata:
+pendaftaran sequence email membaca template tiap langkah satu per satu, dan satu
+helper test menyusuri eksekusi otomasi tanpa memuat event-nya.
+
+EXPLAIN dijalankan di atas tabel terisi, bukan tabel kosong: optimizer memilih
+indeks dari statistik, dan tabel kosong tidak punya statistik sehingga rencana
+kuerinya tidak berarti apa-apa. Dengan tiga ribu baris, empat daftar terbukti
+menyortir di luar indeks karena indeksnya menutup penyaring tetapi berhenti
+sebelum kolom pengurut. Indeks barunya mengikuti kueri yang benar-benar
+dijalankan, dan filesort hilang setelahnya.
+
+Paginasi dikerjakan dua lapis, karena daftar besar di aplikasi ini ada dalam dua
+bentuk. Lima daftar yang merender sendiri — Keluhan, PerintahKerja, Inspeksi,
+MutasiStok, ReservasiSukuCadang — dipaginasi di server. Inspeksi menuntut lebih
+dari itu: kartu ringkasan dan kotak pencariannya menghitung di sisi klien di
+atas seluruh daftar, sehingga memenggal daftarnya akan membuat kartu itu
+diam-diam menghitung satu halaman saja. Keduanya dipindahkan ke server.
+
+Dua puluh satu halaman sisanya memakai komponen DataTable bersama yang
+memaginasi, mencari, dan mengurutkan di browser. Memindahkannya ke paginasi
+server berarti memindahkan pencarian, pengurutan, dan filter faset sekaligus,
+dan itu mengubah perilaku dua puluh satu halaman dalam satu tarikan. Atas
+keputusan pemilik produk, yang dipasang sekarang adalah batas aman: tiga puluh
+kueri pada tabel yang tumbuh dipotong pada `BatasDaftar::MAKS`, dan DataTable
+menyatakan di layar ketika daftarnya menyentuh batas itu. Batas ini bukan
+paginasi dan tidak berpura-pura menjadi paginasi — baris di luar batas memang
+tidak dikirim, dan itu dikatakan kepada pengguna. Konversi penuh ke paginasi
+server dijadwalkan terpisah.
 
 ## 25.02 Queue
 
-- [ ] Retry policy.
-- [ ] Failed job handling.
-- [ ] Idempotent jobs.
-- [ ] Cron overlap prevention.
-- [ ] Queue batch size sesuai shared hosting.
+- [x] Retry policy.
+- [x] Failed job handling.
+- [x] Idempotent jobs.
+- [x] Cron overlap prevention.
+- [x] Queue batch size sesuai shared hosting.
+
+Enam job tidak menyatakan `$tries` sehingga diam-diam memakai `--tries=3` dari
+baris perintah `queue:work`. Artinya kebijakan percobaan ulang tersimpan di satu
+string cron, bukan di job yang mengetahui apakah mengulang dirinya aman. Tiap
+job kini menyatakan sikapnya sendiri, dan sikapnya tidak seragam: yang memegang
+tangga percobaannya sendiri atau yang jadwalnya segera kembali memakai
+`tries = 1`, sisanya tiga kali karena benar-benar idempoten. Lima job pengirim
+yang sudah `tries = 3` ternyata tanpa jeda sama sekali, sehingga mereka
+menghantam penyedia tepat pada saat penyedia bermasalah.
+
+Kegagalan permanen sebelumnya hanya mengendap di tabel `PekerjaanGagal` yang
+tidak dibaca halaman mana pun lalu dipangkas seminggu kemudian; pekerjaan yang
+berhenti terlihat persis seperti pekerjaan yang tidak pernah diantrekan.
+`Queue::failing` kini menuliskannya ke log aplikasi.
 
 ## 25.03 Scheduler
 
-- [ ] `withoutOverlapping()` pada task relevan.
-- [ ] Preventive.
-- [ ] SLA.
-- [ ] Reminder.
-- [ ] Outbox.
-- [ ] Webhook retry.
-- [ ] Cleanup.
+- [x] `withoutOverlapping()` pada task relevan.
+- [x] Preventive.
+- [x] SLA.
+- [x] Reminder.
+- [x] Outbox.
+- [x] Webhook retry.
+- [x] Cleanup.
+
+Lima jadwal berjalan tanpa penjaga sama sekali, dua di antaranya berbahaya bila
+tumpang tindih: satu melepas hold suku cadang, satu lagi menyusuri seluruh
+organisasi sambil mengirim notifikasi.
+
+Yang lebih halus, dua belas jadwal memakai `withoutOverlapping()` tanpa argumen,
+yang berarti kunci 1440 menit. Shared hosting rutin membunuh proses yang
+kelamaan, dan kunci yang ditinggalkan proses mati menahan jalan berikutnya
+sampai kunci itu kedaluwarsa — untuk jadwal per jam berarti dua puluh empat kali
+jalan yang hilang diam-diam. Seluruh jadwal kini menyebut masa berlakunya
+sendiri, dan `JadwalTugasTest` menolak jadwal baru yang lupa memasangnya.
 
 ## 25.04 Backup
 
-- [ ] Database backup.
-- [ ] File backup.
-- [ ] Retention.
-- [ ] Restore test.
-- [ ] Dokumentasi recovery.
+- [x] Database backup.
+- [x] File backup.
+- [x] Retention.
+- [x] Restore test.
+- [x] Dokumentasi recovery.
+
+`cadangan:jalankan` berjalan harian, `cadangan:daftar` menampilkan isinya, dan
+`cadangan:pulihkan` memulihkan satu dump dengan konfirmasi yang di produksi
+menuntut nama basis data diketik ulang.
+
+Sabotase membuktikan pemeriksaan "berkas tidak kosong" tidak cukup: gzip atas
+masukan kosong tetap menghasilkan berkas belasan byte, sehingga dump yang sukses
+tanpa mengeluarkan apa pun lolos. Penjaganya diganti menjadi pemeriksaan isi —
+dump wajib memuat definisi tabel — dan diuji dengan mengarahkan `mysqldump` ke
+`true`, perintah yang selalu sukses tanpa keluaran.
+
+Runbook pemulihannya ada di `docs/RUNBOOK-PEMULIHAN.md`, termasuk yang tidak
+dijanjikan: tanpa replikasi, tanpa point-in-time recovery, dan cadangan tinggal
+di server yang sama dengan datanya.
 
 ### Gate 25
 
 Restore test dilakukan, bukan hanya backup job tersedia.
+
+Terpenuhi, dan dijalankan otomatis. `PemulihanCadanganTest` mencadangkan basis
+data, memulihkannya ke basis data lain, lalu membandingkan isinya — termasuk
+membuktikan bahwa baris yang lahir sesudah pencadangan tidak ikut terbawa,
+karena cadangan yang memulihkan keadaan yang salah lebih berbahaya daripada
+cadangan yang gagal terang-terangan. Sembilan sabotase atas penjaga cadangan
+seluruhnya tertangkap.
+
+Di luar butir FASE 25, `NomorDokumenKonkurensiTest` ditulis ulang di atas
+MariaDB. Ia sebelumnya menguji `lockForUpdate()` di atas SQLite, yang tidak
+mengenal klausa itu sama sekali dan mengompilasinya menjadi kosong; test itu
+gagal dengan `database is locked` saat suite penuh berjalan dan, ketika lulus,
+lulus karena alasan yang salah. Versi MariaDB-nya menangkap penghapusan
+`lockForUpdate()` tiga dari tiga kali.
 
 ---
 

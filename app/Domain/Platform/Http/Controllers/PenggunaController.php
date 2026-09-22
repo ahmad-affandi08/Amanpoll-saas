@@ -13,6 +13,7 @@ use App\Domain\Platform\Http\Resources\PenggunaResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -28,6 +29,7 @@ final class PenggunaController extends Controller
         $pengguna = Pengguna::query()
             ->with(['penggunaPeran.peran'])
             ->orderBy('Nama')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return Inertia::render('Pengguna/Index', [

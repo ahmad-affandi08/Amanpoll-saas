@@ -13,6 +13,7 @@ use App\Domain\Penyedia\Http\Resources\PenyediaResource;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,6 +27,7 @@ final class PenyediaController extends Controller
         $penyedia = Penyedia::query()
             ->with('kategoriPenyedia')
             ->orderBy('Nama')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return Inertia::render('Penyedia/Index', [

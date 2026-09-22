@@ -12,6 +12,7 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\PaketLangganan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -29,6 +30,7 @@ final class LanggananPlatformController extends Controller
             ->withoutGlobalScopes()
             ->with(['paketLangganan', 'organisasi'])
             ->orderByDesc('MulaiPada')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return Inertia::render('Platform/Langganan/Index', [

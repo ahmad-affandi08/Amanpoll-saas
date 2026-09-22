@@ -22,6 +22,7 @@ use App\Domain\SiklusAset\Http\Resources\PermintaanMutasiAsetResource;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -47,7 +48,7 @@ final class PermintaanMutasiAsetController extends Controller
         return Inertia::render('MutasiAset/Index', [
             'permintaan' => PermintaanMutasiAsetResource::collection($permintaan),
             'filter' => $filter,
-            'lokasi' => LokasiResource::collection(Lokasi::query()->orderBy('Nama')->get()),
+            'lokasi' => LokasiResource::collection(Lokasi::query()->orderBy('Nama')->limit(BatasDaftar::MAKS)->get()),
             'unitOrganisasi' => UnitOrganisasiResource::collection(UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),
         ]);
     }
@@ -60,7 +61,7 @@ final class PermintaanMutasiAsetController extends Controller
 
         return Inertia::render('MutasiAset/Show', [
             'permintaan' => new PermintaanMutasiAsetResource($permintaanMutasiAset),
-            'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->get()),
+            'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->limit(BatasDaftar::MAKS)->get()),
             'unitOrganisasi' => UnitOrganisasiResource::collection(UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),
             'lokasi' => LokasiResource::collection(Lokasi::query()->orderBy('Nama')->get()),
         ]);

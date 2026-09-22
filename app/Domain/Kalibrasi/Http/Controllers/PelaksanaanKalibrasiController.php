@@ -15,6 +15,7 @@ use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -40,6 +41,7 @@ final class PelaksanaanKalibrasiController extends Controller
             ->when($request->filled('asetId'), fn ($q) => $q->where('AsetId', $request->input('asetId')))
             ->when($request->filled('nomor'), fn ($q) => $q->where('Nomor', 'like', "%{$request->input('nomor')}%"))
             ->latest('TanggalKalibrasi')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         $asetList = Aset::query()

@@ -12,6 +12,7 @@ use App\Domain\Sinkronisasi\Http\Requests\DorongAntrianSinkronisasiRequest;
 use App\Domain\Sinkronisasi\Http\Resources\AntrianSinkronisasiResource;
 use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -39,6 +40,7 @@ final class AntrianSinkronisasiController extends Controller
                 AntrianSinkronisasi::query()
                     ->where('PerangkatPenggunaId', $perangkat->Id)
                     ->orderBy('DiterimaPada')
+                    ->limit(BatasDaftar::MAKS)
                     ->get()
             )->resolve(),
         ]);
@@ -53,6 +55,7 @@ final class AntrianSinkronisasiController extends Controller
                 AntrianSinkronisasi::query()
                     ->where('PerangkatPenggunaId', $perangkat->Id)
                     ->orderBy('DiterimaPada')
+                    ->limit(BatasDaftar::MAKS)
                     ->get()
             )->resolve(),
         ]);

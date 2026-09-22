@@ -15,6 +15,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\KategoriLokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -28,6 +29,7 @@ final class LokasiController extends Controller
         $lokasi = Lokasi::query()
             ->with(['kategoriLokasi', 'unitOrganisasi'])
             ->orderBy('Nama')
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return Inertia::render('Lokasi/Index', [

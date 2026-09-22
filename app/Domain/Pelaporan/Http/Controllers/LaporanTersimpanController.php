@@ -15,6 +15,7 @@ use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -35,6 +36,7 @@ final class LaporanTersimpanController extends Controller
             ->with('pemilik:Id,Nama')
             ->where(fn ($query) => $query->where('PemilikId', $pengguna->Id)->orWhere('Pribadi', false))
             ->orderBy('Nama')
+            ->limit(BatasDaftar::MAKS)
             ->get()
             ->filter(fn (LaporanTersimpan $satu): bool => $request->user('web')->can('view', $satu))
             ->values();

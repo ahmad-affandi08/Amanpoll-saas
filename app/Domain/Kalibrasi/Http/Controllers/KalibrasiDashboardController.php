@@ -8,6 +8,7 @@ use App\Domain\Kalibrasi\Application\Services\LayananPeringatanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -35,6 +36,7 @@ final class KalibrasiDashboardController extends Controller
             ->where('OrganisasiId', $organisasiId)
             ->where('Aktif', true)
             ->orderBy('TanggalBerikutnya')
+            ->limit(BatasDaftar::MAKS)
             ->get()
             ->map(function ($rk) use ($hariIni) {
                 $tglBerikutnya = Carbon::parse($rk->TanggalBerikutnya);

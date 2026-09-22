@@ -12,6 +12,7 @@ use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\DefinisiKolomKustom;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\NilaiKolomKustom;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -34,6 +35,7 @@ final class NilaiKolomKustomController extends Controller
             ->with('definisiKolomKustom')
             ->where('JenisEntitas', $data['jenisEntitas'])
             ->where('EntitasId', $data['entitasId'])
+            ->limit(BatasDaftar::MAKS)
             ->get();
 
         return NilaiKolomKustomResource::collection($nilai);
