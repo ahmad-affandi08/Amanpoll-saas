@@ -1,5 +1,6 @@
 <?php
 
+use App\Core\Host\PetaHost;
 use App\Http\Middleware\AutentikasiKunciApi;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PastikanAkunMasihAktif;
@@ -8,6 +9,7 @@ use App\Http\Middleware\PastikanFiturPaketAktif;
 use App\Http\Middleware\PastikanIdempoten;
 use App\Http\Middleware\PastikanLanggananMengizinkanTulis;
 use App\Http\Middleware\PastikanMemilikiIzin;
+use App\Http\Middleware\TandaiHostTidakTerindeks;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
 use App\Http\Middleware\TetapkanKorelasiId;
 use App\Shared\Domain\Exceptions\PengecualianDomain;
@@ -17,6 +19,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,6 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function (): void {
+            require __DIR__.'/../routes/publik.php';
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [HandleInertiaRequests::class]);
@@ -34,6 +40,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // sesi berumur panjang dan PemeriksaIzin hanya membaca peran, sehingga
         // tanpa ini penonaktifan pengguna atau organisasi tidak segera berlaku.
         $middleware->web(append: [PastikanAkunMasihAktif::class]);
+
+        // Hanya host publik yang boleh diindeks (MARKETING.md 1.2).
+        $middleware->web(append: [TandaiHostTidakTerindeks::class]);
+        $middleware->api(append: [TandaiHostTidakTerindeks::class]);
 
         // Penjaga langganan dipasang pada grup, bukan per rute, supaya tidak ada
         // rute yang dapat lupa dijaga — termasuk rute API yang ditembak langsung
@@ -97,6 +107,17 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Respons yang lahir dari pengecualian — pengalihan `auth`, 404, 500 —
+        // tidak melewati fase balik middleware, sehingga penanda noindex-nya
+        // dipasang di sini agar tidak ada halaman sistem yang lolos ke indeks.
+        $exceptions->respond(function (Response $response, Throwable $e, Request $request): Response {
+            if (! app(PetaHost::class)->adalahHostPublik($request->getHost())) {
+                $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+            }
+
+            return $response;
+        });
+
         $exceptions->render(function (PengecualianDomain $e, Request $request) {
             if ($request->expectsJson()) {
                 return response()->json([

@@ -22,6 +22,13 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- Host diuji dari konfigurasi, bukan dari host produksi. Dashboard
+             memakai host bawaan klien uji sehingga test yang sudah ada tetap
+             menembak rute sistem seperti biasa. -->
+        <env name="AMANPOLL_DOMAIN_DASHBOARD" value="localhost"/>
+        <env name="AMANPOLL_DOMAIN_PUBLIK" value="publik.localhost"/>
+        <env name="AMANPOLL_DOMAIN_PARTNER" value="partner.localhost"/>
+        <env name="AMANPOLL_DOMAIN_SKEMA" value="http"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

@@ -1433,56 +1433,72 @@ Dikerjakan sebagai satu perubahan tersendiri lengkap dengan test, bukan disisipk
 
 ## 24.5.01 Konfigurasi Host
 
-- [ ] `amanpoll.domain.publik`, `amanpoll.domain.dashboard`, `amanpoll.domain.partner` di `config/amanpoll.php`.
-- [ ] Nilai berasal dari environment, bukan literal di source.
-- [ ] Bentuk kanonik dipilih antara `amanpoll.com` dan `www.amanpoll.com`.
-- [ ] Host lokal/staging/produksi sesuai `MARKETING.md` 1.3.
-- [ ] Tidak ada host produksi yang ditulis di test.
+- [x] `amanpoll.domain.publik`, `amanpoll.domain.dashboard`, `amanpoll.domain.partner` di `config/amanpoll.php`.
+- [x] Nilai berasal dari environment, bukan literal di source.
+- [x] Bentuk kanonik dipilih antara `amanpoll.com` dan `www.amanpoll.com`.
+- [x] Host lokal/staging/produksi sesuai `MARKETING.md` 1.3.
+- [x] Tidak ada host produksi yang ditulis di test.
 
 ## 24.5.02 Grup Route per Host
 
-- [ ] Grup `Route::domain(...)` untuk host publik.
-- [ ] Grup `Route::domain(...)` untuk host dashboard.
-- [ ] Rute aplikasi yang kini di root dipindah ke host dashboard.
-- [ ] Rute autentikasi ikut pindah ke host dashboard.
-- [ ] Host publik tanpa middleware `auth` dan `organisasi`.
-- [ ] Root host publik membuka landing page placeholder.
-- [ ] Root host dashboard mengarahkan pengunjung anonim ke login.
-- [ ] Tidak ada pengecekan host di dalam controller.
+- [x] Grup `Route::domain(...)` untuk host publik.
+- [x] Grup `Route::domain(...)` untuk host dashboard.
+- [x] Rute aplikasi yang kini di root dipindah ke host dashboard.
+- [x] Rute autentikasi ikut pindah ke host dashboard.
+- [x] Host publik tanpa middleware `auth` dan `organisasi`.
+- [x] Root host publik membuka landing page placeholder.
+- [x] Root host dashboard mengarahkan pengunjung anonim ke login.
+- [x] Tidak ada pengecekan host di dalam controller.
 
 ## 24.5.03 Sesi dan Cookie Lintas Host
 
-- [ ] `SESSION_DOMAIN` memakai domain induk lewat environment.
-- [ ] `SESSION_SECURE_COOKIE` dari environment.
-- [ ] Cookie `SesiPengunjung` memakai domain induk.
-- [ ] Sesi login hanya berlaku pada host dashboard.
-- [ ] Host publik tidak pernah membaca sesi organisasi.
-- [ ] CSRF formulir publik tetap aktif dan tidak lintas host.
+- [x] `SESSION_DOMAIN` memakai domain induk lewat environment.
+- [x] `SESSION_SECURE_COOKIE` dari environment.
+- [x] Cookie `SesiPengunjung` memakai domain induk.
+- [x] Sesi login hanya berlaku pada host dashboard.
+- [x] Host publik tidak pernah membaca sesi organisasi.
+- [x] CSRF formulir publik tetap aktif dan tidak lintas host.
 
 ## 24.5.04 SEO dan Redirect Host
 
-- [ ] `X-Robots-Tag: noindex` pada host dashboard dan partner.
-- [ ] `robots.txt` melarang crawl pada host non-publik.
-- [ ] `canonical` selalu memakai host publik.
-- [ ] Redirect 301 dari bentuk non-kanonik.
-- [ ] `sitemap.xml` hanya berisi URL host publik.
+- [x] `X-Robots-Tag: noindex` pada host dashboard dan partner.
+- [x] `robots.txt` melarang crawl pada host non-publik.
+- [x] `canonical` selalu memakai host publik.
+- [x] Redirect 301 dari bentuk non-kanonik.
+- [x] `sitemap.xml` hanya berisi URL host publik.
 
 ## 24.5.05 Cache dan Rate Limit Host Publik
 
-- [ ] Rate limit rute publik.
-- [ ] Cache respons halaman publik.
-- [ ] Halaman publik tidak pernah memuat data tenant.
+- [x] Rate limit rute publik.
+- [x] Cache respons halaman publik.
+- [x] Halaman publik tidak pernah memuat data tenant.
 
 ## 24.5.06 Test Host
 
-- [ ] `RouteHostPublikTest`.
-- [ ] `RouteHostDashboardTest`.
-- [ ] `NoindexHostDashboardTest`.
-- [ ] Test menetapkan host dari konfigurasi.
+- [x] `RouteHostPublikTest`.
+- [x] `RouteHostDashboardTest`.
+- [x] `NoindexHostDashboardTest`.
+- [x] Test menetapkan host dari konfigurasi.
 
 ### Gate 24.5
 
-Landing page tampil di host publik dan tidak pernah di host dashboard; root host dashboard tidak pernah menampilkan landing page; tidak ada host yang ditulis langsung di source maupun di frontend; host non-publik terbukti tidak dapat diindeks.
+Landing page tampil di host publik dan tidak pernah di host dashboard; root host dashboard tidak pernah menampilkan landing page; tidak ada host yang ditulis langsung di source maupun di frontend; host non-publik terbukti tidak dapat diindeks. (Terpenuhi)
+
+Host dibaca hanya lewat `PetaHost`, dan larangan menuliskannya di source maupun
+di frontend ditegakkan tes arsitektur, bukan sekadar disepakati.
+
+Situs publik baru hidup setelah `AMANPOLL_DOMAIN_PUBLIK` diisi. Sebelum itu grup
+rutenya tidak didaftarkan sama sekali, sehingga root tetap milik dashboard dan
+tidak ada rute yang bertabrakan — itulah yang membuat 540 test yang sudah ada
+tidak perlu diubah satu pun.
+
+Dua hal yang sengaja belum lengkap dan menyusul bersama fiturnya:
+- Cache respons baru meliputi `robots.txt` dan `sitemap.xml`. Badan halaman
+  Inertia memuat token CSRF milik satu sesi, jadi menyajikannya ulang ke orang
+  lain tidak aman; pada FASE 32 yang di-cache adalah isi halaman terbitannya,
+  bukan respons HTTP-nya.
+- Belum ada formulir publik, sehingga "CSRF formulir publik tidak lintas host"
+  baru dapat diuji di FASE 32.
 
 ---
 

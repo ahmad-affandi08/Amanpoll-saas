@@ -36,6 +36,12 @@ final class BatasLajuServiceProvider extends ServiceProvider
         RateLimiter::for('ekspor', fn (Request $request): Limit => Limit::perMinute(6)
             ->by($this->kunciPemesan($request)));
 
+        // Halaman publik anonim: satu IP adalah satu-satunya identitas yang ada,
+        // dan batasnya longgar karena satu kunjungan wajar membuka banyak
+        // halaman berturut-turut.
+        RateLimiter::for('publik', fn (Request $request): Limit => Limit::perMinute(120)
+            ->by((string) $request->ip()));
+
         // Endpoint publik: keabsahannya baru terbukti setelah tanda tangan
         // diperiksa, sehingga banjir permintaan palsu harus berhenti lebih dulu
         // di sini.
