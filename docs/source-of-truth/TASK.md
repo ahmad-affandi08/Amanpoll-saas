@@ -1874,7 +1874,7 @@ Test bagian 36 yang dipenuhi di sini: `UtmTersimpanTest`,
 
 ## 31.03 Skor Prospek
 
-- [x] Tabel `SkorProspek`. Aturan bobotnya tidak dibuat sebagai tabel tersendiri melainkan hidup di `KonfigurasiPemasaran` — lihat catatan Gate.
+- [x] Tabel `SkorProspek` dan `AturanSkorProspek`.
 - [x] Aturan configurable, angka tidak di-hard-code.
 - [x] Job `HitungSkorProspek`.
 
@@ -1913,11 +1913,26 @@ Penggabungan hanya memakai sinyal kuat — alamat email yang sama atau pengenal
 pengunjung yang sama — sesuai larangan MARKETING.md 14. Menggabungkan dua orang
 berbeda jauh lebih mahal daripada menyimpan satu prospek ganda.
 
-Satu penyimpangan yang disengaja dari bagian 24: `AturanSkorProspek` tidak
-dibuat sebagai tabel. Bobot skor sudah hidup di `KonfigurasiPemasaran` sejak
-FASE 29, dan bagian 24 sendiri melarang membuat tabel baru bila fungsi setara
-sudah tersedia. Yang dituntut bagian 5.4 — aturan configurable, angka tidak
-di-hard-code — tetap terpenuhi dan diuji.
+Bobot skor sempat hidup sebagai satu objek JSON di `KonfigurasiPemasaran`.
+Bentuk itu memenuhi tuntutan bagian 5.4 di atas kertas, tetapi membawa
+kegagalan yang tidak bergejala: kunci yang salah ketik tersimpan tanpa keluhan
+lalu diabaikan diam-diam oleh penghitungnya. Domain ini sudah menolak kegagalan
+sejenis di tempat lain — `PerekamEventPemasaran` menolak jenis peristiwa asing —
+jadi aturannya dipindahkan ke tabel `AturanSkorProspek` yang kode sinyalnya
+divalidasi saat disimpan. Migrasinya membawa serta bobot yang sudah disetel
+operator dan membuang kunci yang tidak dikenal.
+
+Perpindahan itu memunculkan satu hal yang selama ini tidak terlihat: bobot
+bawaan `EmailBounce` (-10) tidak pernah berlaku, karena belum ada yang
+menghasilkan sinyal itu sampai domain email lahir di FASE 34. Sekarang
+`KatalogPeristiwaSkor` menyatakan asal tiap sinyal — dari peristiwa, turunan
+keadaan prospek, atau tertunda — dan konsol menandai aturan yang belum berlaku
+alih-alih membiarkannya tampak bekerja.
+
+Rincian `SkorProspek` menunjuk aturan yang menghasilkannya, sehingga pertanyaan
+"kenapa angkanya segini" dapat dijawab sampai ke barisnya. Penunjuknya boleh
+kosong: aturan yang dihapus tidak menghapus penjelasan skor yang terlanjur
+dihitung darinya.
 
 Skor disusun ulang dari nol setiap dihitung, bukan diakumulasi: skor yang
 ditambahkan akan ikut menyimpan setiap kesalahan sebelumnya dan tidak pernah
@@ -1926,7 +1941,8 @@ dijelaskan; skor yang tidak dapat dijelaskan akan diabaikan tim penjualan.
 
 Test bagian 36 yang dipenuhi di sini: `ProspekDibuatTest`, `PipelineProspekTest`,
 `SkorProspekTest`, `TransisiStatusProspekTest`, dan `PermissionPemasaranTest`
-(gerbang izin konsol diuji di `FondasiPemasaranTest` dan pada tiap rute CRM).
+(gerbang izin konsol diuji di `FondasiPemasaranTest` dan pada tiap rute CRM),
+ditambah `AturanSkorProspekTest` untuk tabel aturannya.
 
 ---
 

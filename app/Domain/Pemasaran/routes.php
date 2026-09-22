@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
+use App\Domain\Pemasaran\Http\Controllers\AturanSkorProspekController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
@@ -35,6 +36,31 @@ Route::middleware(['web', 'auth:platform'])
             ->prefix('prospek')
             ->name('prospek.')
             ->group(function (): void {
+                /*
+                 * Aturan bobot skor. Didaftarkan sebelum `/{prospek}` karena
+                 * jalurnya akan tertelan parameter itu — Laravel memilih rute
+                 * pertama yang cocok, dan `aturan-skor` adalah ULID yang sah
+                 * bagi pencocoknya.
+                 *
+                 * Mengubah bobot menggeser seluruh prioritas tim penjualan,
+                 * jadi haknya izin kelola dan setiap perubahannya tercatat di
+                 * audit.
+                 */
+                Route::prefix('aturan-skor')->name('aturanSkor.')->group(function (): void {
+                    Route::get('/', [AturanSkorProspekController::class, 'index'])
+                        ->middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_LIHAT)
+                        ->name('index');
+
+                    Route::middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_KELOLA)
+                        ->group(function (): void {
+                            Route::post('/', [AturanSkorProspekController::class, 'store'])->name('store');
+                            Route::put('/{aturan}', [AturanSkorProspekController::class, 'update'])
+                                ->name('update');
+                            Route::delete('/{aturan}', [AturanSkorProspekController::class, 'destroy'])
+                                ->name('destroy');
+                        });
+                });
+
                 Route::middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_LIHAT)->group(function (): void {
                     Route::get('/', [ProspekController::class, 'index'])->name('index');
                     Route::get('/{prospek}', [ProspekController::class, 'show'])->name('show');

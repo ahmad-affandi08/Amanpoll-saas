@@ -163,3 +163,22 @@ export interface Redirect {
   JumlahDipakai: number;
   TerakhirDipakaiPada: string | null;
 }
+
+export interface AturanSkor {
+  Id: string;
+  Peristiwa: string;
+  Bobot: number;
+  Aktif: boolean;
+  Keterangan: string | null;
+  /** Peristiwa, Turunan, atau Tertunda — lihat KatalogPeristiwaSkor. */
+  Asal: string | null;
+  /** Aktif dan sinyalnya punya penghasil. */
+  Berlaku: boolean;
+  JumlahDipakai: number;
+}
+
+export interface PilihanAturanSkor {
+  /** kode sinyal => asalnya. */
+  Peristiwa: Record<string, string>;
+  AsalTertunda: string;
+}

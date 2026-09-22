@@ -120,19 +120,29 @@ final class FondasiPemasaranTest extends KasusPemasaran
         app(LayananKonfigurasiPemasaran::class)->ambil('kunci.karangan');
     }
 
-    public function test_bobot_skor_dapat_diubah_tanpa_menyentuh_kode(): void
+    public function test_ambang_qualified_dapat_diubah_tanpa_menyentuh_kode(): void
     {
         $konfigurasi = app(LayananKonfigurasiPemasaran::class);
-        $bawaan = $konfigurasi->daftar(KatalogKonfigurasiPemasaran::SKOR_ATURAN);
 
-        $this->assertArrayHasKey('FormulirDikirim', $bawaan);
+        $this->assertSame(40, $konfigurasi->angka(KatalogKonfigurasiPemasaran::SKOR_AMBANG_QUALIFIED));
 
-        $konfigurasi->simpan(KatalogKonfigurasiPemasaran::SKOR_ATURAN, ['FormulirDikirim' => 99]);
+        $konfigurasi->simpan(KatalogKonfigurasiPemasaran::SKOR_AMBANG_QUALIFIED, 75);
 
-        $this->assertSame(
-            ['FormulirDikirim' => 99],
-            $konfigurasi->daftar(KatalogKonfigurasiPemasaran::SKOR_ATURAN),
-        );
+        $this->assertSame(75, $konfigurasi->angka(KatalogKonfigurasiPemasaran::SKOR_AMBANG_QUALIFIED));
+    }
+
+    /**
+     * Bobot skor pernah hidup di sini sebagai satu objek JSON. Ia dipindahkan ke
+     * tabel AturanSkorProspek karena bentuk lamanya menerima kode peristiwa apa
+     * pun lalu mengabaikannya diam-diam; kuncinya tidak boleh kembali.
+     */
+    public function test_bobot_skor_tidak_lagi_hidup_di_konfigurasi(): void
+    {
+        $this->assertNotContains('skor.aturan', KatalogKonfigurasiPemasaran::kunci());
+
+        $this->expectException(DataTidakDitemukan::class);
+
+        app(LayananKonfigurasiPemasaran::class)->ambil('skor.aturan');
     }
 
     public function test_menyimpan_konfigurasi_lewat_konsol_tercatat_di_audit(): void

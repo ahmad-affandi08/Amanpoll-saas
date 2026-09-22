@@ -205,6 +205,9 @@ export default function Index({ prospek, tahap, filter }: Props) {
         tanpaBreadcrumb
         aksi={
           <div className="flex flex-wrap gap-2">
+            <Button variant="ghost" asChild>
+              <Link href="/admin-platform/pemasaran/prospek/aturan-skor">Aturan Skor</Link>
+            </Button>
             <DialogImpor />
             <Button variant="outline" asChild>
               <a href="/admin-platform/pemasaran/prospek/ekspor/csv">

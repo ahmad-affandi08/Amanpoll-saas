@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Application\Services;
 
 use App\Domain\Pemasaran\Domain\KatalogKonfigurasiPemasaran;
+use App\Domain\Pemasaran\Domain\KatalogPeristiwaSkor;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SkorProspek;
@@ -14,8 +15,8 @@ use Carbon\CarbonImmutable;
 /**
  * Menghitung skor prospek dari peristiwanya (MARKETING.md 5.4).
  *
- * Bobotnya dibaca dari konfigurasi, tidak pernah ditulis di kode program.
- * Perhitungannya disusun ulang dari nol setiap kali dijalankan, bukan
+ * Bobotnya dibaca dari tabel AturanSkorProspek, tidak pernah ditulis di kode
+ * program. Perhitungannya disusun ulang dari nol setiap kali dijalankan, bukan
  * ditambahkan ke angka yang sudah ada — skor yang diakumulasi akan ikut menyimpan
  * setiap kesalahan sebelumnya dan tidak pernah dapat dikoreksi.
  *
@@ -24,24 +25,17 @@ use Carbon\CarbonImmutable;
  */
 final class PenghitungSkorProspek
 {
-    /**
-     * Peristiwa yang tidak datang dari EventPemasaran melainkan dari keadaan
-     * prospek itu sendiri.
-     */
-    private const PERISTIWA_TURUNAN = ['AktifTigaHari', 'TidakAktifEmpatBelasHari'];
-
     public function __construct(
         private readonly LayananKonfigurasiPemasaran $konfigurasi,
+        private readonly LayananAturanSkorProspek $aturanSkor,
         private readonly TransaksiDatabase $transaksi,
     ) {}
 
     public function hitungUlang(Prospek $prospek): int
     {
         return $this->transaksi->jalankan(function () use ($prospek): int {
-            /** @var array<string, int> $aturan */
-            $aturan = array_map(intval(...), $this->konfigurasi->daftar(
-                KatalogKonfigurasiPemasaran::SKOR_ATURAN,
-            ));
+            $aturan = $this->aturanSkor->bobotBerlaku();
+            $petaId = $this->aturanSkor->petaId();
 
             $sumbangan = [
                 ...$this->dariPeristiwa($prospek, $aturan),
@@ -54,6 +48,9 @@ final class PenghitungSkorProspek
             foreach ($sumbangan as $peristiwa => $bobot) {
                 SkorProspek::create([
                     'ProspekId' => $prospek->Id,
+                    // Menunjuk aturan yang menghasilkannya, supaya pertanyaan
+                    // "kenapa angkanya segini" dapat dijawab sampai ke barisnya.
+                    'AturanSkorProspekId' => $petaId[$peristiwa] ?? null,
                     'Peristiwa' => $peristiwa,
                     'Bobot' => $bobot,
                     'DihitungPada' => now(),
@@ -117,12 +114,12 @@ final class PenghitungSkorProspek
         $hari = CarbonImmutable::now()->diffInDays($terakhir, absolute: true);
         $sumbangan = [];
 
-        foreach (self::PERISTIWA_TURUNAN as $peristiwa) {
+        foreach (KatalogPeristiwaSkor::turunan() as $peristiwa) {
             if (! array_key_exists($peristiwa, $aturan)) {
                 continue;
             }
 
-            $berlaku = $peristiwa === 'AktifTigaHari' ? $hari <= 3 : $hari >= 14;
+            $berlaku = $peristiwa === KatalogPeristiwaSkor::AKTIF_TIGA_HARI ? $hari <= 3 : $hari >= 14;
 
             if ($berlaku) {
                 $sumbangan[$peristiwa] = $aturan[$peristiwa];

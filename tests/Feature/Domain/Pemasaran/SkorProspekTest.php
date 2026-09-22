@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Pemasaran;
 
 use App\Domain\Pemasaran\Application\Actions\CatatProspek;
+use App\Domain\Pemasaran\Application\Services\LayananAturanSkorProspek;
 use App\Domain\Pemasaran\Application\Services\LayananKonfigurasiPemasaran;
 use App\Domain\Pemasaran\Application\Services\PenghitungSkorProspek;
 use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
 use App\Domain\Pemasaran\Domain\KatalogKonfigurasiPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AturanSkorProspek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SkorProspek;
 use App\Domain\Pemasaran\Jobs\HitungSkorProspek;
@@ -55,15 +57,19 @@ final class SkorProspekTest extends KasusProspek
         );
     }
 
-    public function test_bobot_dibaca_dari_konfigurasi_bukan_dari_kode(): void
+    public function test_bobot_dibaca_dari_tabel_aturan_bukan_dari_kode(): void
     {
         [$prospek, $pengenal] = $this->buatProspek();
         $this->peristiwa($pengenal, KatalogPeristiwaPemasaran::HARGA_DILIHAT);
 
-        app(LayananKonfigurasiPemasaran::class)->simpan(
-            KatalogKonfigurasiPemasaran::SKOR_ATURAN,
-            [KatalogPeristiwaPemasaran::HARGA_DILIHAT => 99],
-        );
+        // Hanya menyisakan satu aturan supaya angkanya persis terbaca.
+        AturanSkorProspek::query()
+            ->where('Peristiwa', '!=', KatalogPeristiwaPemasaran::HARGA_DILIHAT)
+            ->update(['Aktif' => false]);
+        AturanSkorProspek::query()
+            ->where('Peristiwa', KatalogPeristiwaPemasaran::HARGA_DILIHAT)
+            ->update(['Bobot' => 99]);
+        app(LayananAturanSkorProspek::class)->buangCache();
 
         $this->assertSame(99, app(PenghitungSkorProspek::class)->hitungUlang($prospek));
     }

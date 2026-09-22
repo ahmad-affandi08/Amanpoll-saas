@@ -17,8 +17,6 @@ final class KatalogKonfigurasiPemasaran
 
     public const TRIAL_PERPANJANGAN_MAKS_HARI = 'trial.perpanjangan_maks_hari';
 
-    public const SKOR_ATURAN = 'skor.aturan';
-
     public const SKOR_AMBANG_QUALIFIED = 'skor.ambang_qualified';
 
     public const ATTRIBUTION_JENDELA_HARI = 'attribution.jendela_hari';
@@ -46,23 +44,6 @@ final class KatalogKonfigurasiPemasaran
             self::TRIAL_PERPANJANGAN_MAKS_HARI => [
                 'bawaan' => 14,
                 'keterangan' => 'Batas perpanjangan trial yang boleh diberikan otomasi.',
-            ],
-            self::SKOR_ATURAN => [
-                // Angka skor tidak pernah di-hard-code di kode program
-                // (MARKETING.md 5.4); inilah tempatnya diubah.
-                'bawaan' => [
-                    'HargaDilihat' => 5,
-                    'DemoDimulai' => 8,
-                    'FormulirDikirim' => 10,
-                    'TrialDimulai' => 15,
-                    'AsetPertamaDibuat' => 20,
-                    'PenggunaPertamaDiundang' => 15,
-                    'PerintahKerjaPertamaDibuat' => 15,
-                    'AktifTigaHari' => 10,
-                    'EmailBounce' => -10,
-                    'TidakAktifEmpatBelasHari' => -20,
-                ],
-                'keterangan' => 'Bobot skor per peristiwa prospek.',
             ],
             self::SKOR_AMBANG_QUALIFIED => [
                 'bawaan' => 40,

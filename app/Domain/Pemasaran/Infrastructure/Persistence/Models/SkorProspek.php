@@ -20,7 +20,7 @@ final class SkorProspek extends ModelDasar
 
     public $timestamps = false;
 
-    protected $fillable = ['ProspekId', 'Peristiwa', 'Bobot', 'DihitungPada'];
+    protected $fillable = ['ProspekId', 'AturanSkorProspekId', 'Peristiwa', 'Bobot', 'DihitungPada'];
 
     protected function casts(): array
     {
@@ -31,5 +31,16 @@ final class SkorProspek extends ModelDasar
     public function prospek(): BelongsTo
     {
         return $this->belongsTo(Prospek::class, 'ProspekId', 'Id');
+    }
+
+    /**
+     * Aturan yang menghasilkan sumbangan ini. Boleh kosong: aturan yang dihapus
+     * tidak ikut menghapus penjelasan skor yang terlanjur dihitung darinya.
+     *
+     * @return BelongsTo<AturanSkorProspek, $this>
+     */
+    public function aturan(): BelongsTo
+    {
+        return $this->belongsTo(AturanSkorProspek::class, 'AturanSkorProspekId', 'Id');
     }
 }
