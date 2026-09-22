@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Application\Services;
 
+use App\Domain\Pemasaran\Domain\ValueObjects\AsalKunjungan;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AttributionPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Kampanye;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiPengunjung;
@@ -13,8 +14,6 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 /** Menyusun ulang attribution dari sesi yang tersimpan (MARKETING.md 14). */
 final class PenyusunUlangAttribution
 {
-    private const SUMBER_LANGSUNG = 'direct';
-
     public function __construct(private readonly TransaksiDatabase $transaksi) {}
 
     public function susunUlang(string $pengenalPengunjung): ?AttributionPemasaran
@@ -63,12 +62,8 @@ final class PenyusunUlangAttribution
         $sumberUtm = $utm?->Source;
         $mediumUtm = $utm?->Medium;
 
-        $sumber = $sumberUtm !== null ? $sumberUtm : $this->sumberDariReferrer($sesi->Referrer);
-        $medium = match (true) {
-            $mediumUtm !== null => $mediumUtm,
-            $sumberUtm === null && $sesi->Referrer === null => self::SUMBER_LANGSUNG,
-            default => 'referral',
-        };
+        $sumber = AsalKunjungan::sumber($sumberUtm, $sesi->Referrer);
+        $medium = AsalKunjungan::medium($mediumUtm, $sumberUtm, $sesi->Referrer);
 
         return [
             'Sumber'.$akhiran => $sumber,
@@ -82,16 +77,5 @@ final class PenyusunUlangAttribution
             'Referrer'.$akhiran => $sesi->Referrer,
             'Sentuhan'.($akhiran === 'Pertama' ? 'Pertama' : 'Terakhir').'Pada' => $sesi->DimulaiPada,
         ];
-    }
-
-    private function sumberDariReferrer(?string $referrer): string
-    {
-        if ($referrer === null || $referrer === '') {
-            return self::SUMBER_LANGSUNG;
-        }
-
-        $host = parse_url($referrer, PHP_URL_HOST);
-
-        return is_string($host) && $host !== '' ? $host : self::SUMBER_LANGSUNG;
     }
 }

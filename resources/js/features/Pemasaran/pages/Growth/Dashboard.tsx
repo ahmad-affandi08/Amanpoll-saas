@@ -22,6 +22,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type Filter = Record<string, string | null>;
 
+interface ModelPerbandingan {
+  Model: string;
+  Label: string;
+  PerChannel: Record<string, number>;
+}
+
+interface Attribution {
+  Model: string;
+  Label: string;
+  Keterangan: string;
+  ParuhHari: number;
+  Perbandingan: ModelPerbandingan[];
+}
+
 interface TahapFunnel {
   Tahap: string;
   Jumlah: number;
@@ -90,6 +104,7 @@ interface Props {
   funnel: TahapFunnel[];
   kpi: KpiGrowth[];
   revenuePerChannel: Record<string, number>;
+  attribution: Attribution;
   cacPerChannel: BarisCac[];
   cacTakTerpecah: CacTakTerpecah;
   kampanye: BarisKampanye[];
@@ -121,6 +136,7 @@ export default function Dashboard({
   funnel,
   kpi,
   revenuePerChannel,
+  attribution,
   cacPerChannel,
   cacTakTerpecah,
   kampanye,
@@ -165,8 +181,12 @@ export default function Dashboard({
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Funnel funnel={funnel} />
-        <RevenueChannel revenue={revenuePerChannel} />
+        <RevenueChannel revenue={revenuePerChannel} attribution={attribution} />
       </div>
+
+      <section className="mt-6">
+        <PerbandinganModel attribution={attribution} />
+      </section>
 
       <section className="mt-6">
         <CacChannel baris={cacPerChannel} takTerpecah={cacTakTerpecah} />
@@ -340,7 +360,14 @@ function Funnel({ funnel }: { funnel: TahapFunnel[] }) {
   );
 }
 
-function RevenueChannel({ revenue }: { revenue: Record<string, number> }) {
+/** Angka revenue tidak berarti apa-apa tanpa menyebut model pembagiannya. */
+function RevenueChannel({
+  revenue,
+  attribution,
+}: {
+  revenue: Record<string, number>;
+  attribution: Attribution;
+}) {
   const baris = Object.entries(revenue);
   const puncak = Math.max(...baris.map(([, nilai]) => nilai), 1);
 
@@ -348,6 +375,11 @@ function RevenueChannel({ revenue }: { revenue: Record<string, number> }) {
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Revenue per Channel</CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Model {attribution.Label.toLowerCase()}
+          {attribution.Model === 'TimeDecay' ? ` · paruh ${attribution.ParuhHari} hari` : ''} ·{' '}
+          {attribution.Keterangan}
+        </p>
       </CardHeader>
       <CardContent className="space-y-3">
         {baris.length === 0 ? (
@@ -370,6 +402,60 @@ function RevenueChannel({ revenue }: { revenue: Record<string, number> }) {
             </div>
           ))
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** Model lain ditampilkan berdampingan supaya pilihan setelan dapat ditimbang, bukan ditebak. */
+function PerbandinganModel({ attribution }: { attribution: Attribution }) {
+  const channel = Array.from(
+    new Set(attribution.Perbandingan.flatMap((satu) => Object.keys(satu.PerChannel))),
+  ).sort();
+
+  if (channel.length === 0) {
+    return null;
+  }
+
+  const rupiah = (nilai: number) =>
+    new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(nilai);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Revenue menurut tiap model</CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Angka yang dipakai kartu di atas adalah kolom {attribution.Label.toLowerCase()}.
+        </p>
+      </CardHeader>
+      <CardContent className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b text-left text-xs text-muted-foreground">
+              <th className="py-2 pr-4 font-medium">Channel</th>
+              {attribution.Perbandingan.map((satu) => (
+                <th key={satu.Model} className="py-2 pr-4 text-right font-medium">
+                  {satu.Label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {channel.map((nama) => (
+              <tr key={nama} className="border-b last:border-0">
+                <td className="py-2 pr-4">{nama}</td>
+                {attribution.Perbandingan.map((satu) => (
+                  <td
+                    key={satu.Model}
+                    className={`py-2 pr-4 text-right font-mono ${satu.Model === attribution.Model ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}
+                  >
+                    {rupiah(satu.PerChannel[nama] ?? 0)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </CardContent>
     </Card>
   );

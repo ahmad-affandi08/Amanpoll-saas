@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
+use App\Domain\Pemasaran\Domain\Enums\ModelAttribution;
+
 /** Setelan domain Pemasaran beserta nilai bawaannya (MARKETING.md 30). */
 final class KatalogKonfigurasiPemasaran
 {
@@ -16,6 +18,10 @@ final class KatalogKonfigurasiPemasaran
     public const SKOR_AMBANG_QUALIFIED = 'skor.ambang_qualified';
 
     public const ATTRIBUTION_JENDELA_HARI = 'attribution.jendela_hari';
+
+    public const ATTRIBUTION_MODEL = 'attribution.model';
+
+    public const ATTRIBUTION_PARUH_HARI = 'attribution.paruh_hari';
 
     public const CONSENT_VERSI_KEBIJAKAN = 'consent.versi_kebijakan';
 
@@ -82,6 +88,14 @@ final class KatalogKonfigurasiPemasaran
             self::ATTRIBUTION_JENDELA_HARI => [
                 'bawaan' => 90,
                 'keterangan' => 'Umur maksimal first touch yang masih diperhitungkan.',
+            ],
+            self::ATTRIBUTION_MODEL => [
+                'bawaan' => ModelAttribution::Pertama->value,
+                'keterangan' => 'Model pembagian jasa antar sentuhan yang dipakai dashboard.',
+            ],
+            self::ATTRIBUTION_PARUH_HARI => [
+                'bawaan' => 7,
+                'keterangan' => 'Paruh waktu model peluruhan, dalam hari.',
             ],
             self::CONSENT_VERSI_KEBIJAKAN => [
                 'bawaan' => '2026-01',

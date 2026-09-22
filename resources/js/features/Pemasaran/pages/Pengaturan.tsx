@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -33,13 +34,20 @@ interface Konfigurasi {
   Bawaan: unknown;
 }
 
+interface PilihanKonfigurasi {
+  Nilai: string;
+  Label: string;
+  Keterangan: string;
+}
+
 interface Props {
   domain: Domain;
   fitur: Fitur[];
   konfigurasi: Konfigurasi[];
+  pilihanKonfigurasi: Record<string, PilihanKonfigurasi[]>;
 }
 
-export default function Pengaturan({ domain, fitur, konfigurasi }: Props) {
+export default function Pengaturan({ domain, fitur, konfigurasi, pilihanKonfigurasi }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Pengaturan Growth & Marketing" />
@@ -53,7 +61,7 @@ export default function Pengaturan({ domain, fitur, konfigurasi }: Props) {
       <div className="mt-6 grid gap-6">
         <KartuDomain domain={domain} />
         <KartuFitur fitur={fitur} />
-        <KartuKonfigurasi konfigurasi={konfigurasi} />
+        <KartuKonfigurasi konfigurasi={konfigurasi} pilihan={pilihanKonfigurasi} />
       </div>
     </KerangkaPlatform>
   );
@@ -136,7 +144,13 @@ function KartuFitur({ fitur }: { fitur: Fitur[] }) {
   );
 }
 
-function KartuKonfigurasi({ konfigurasi }: { konfigurasi: Konfigurasi[] }) {
+function KartuKonfigurasi({
+  konfigurasi,
+  pilihan,
+}: {
+  konfigurasi: Konfigurasi[];
+  pilihan: Record<string, PilihanKonfigurasi[]>;
+}) {
   return (
     <Card>
       <CardHeader>
@@ -144,14 +158,20 @@ function KartuKonfigurasi({ konfigurasi }: { konfigurasi: Konfigurasi[] }) {
       </CardHeader>
       <CardContent className="grid gap-4">
         {konfigurasi.map((satu) => (
-          <BarisKonfigurasi key={satu.Kunci} konfigurasi={satu} />
+          <BarisKonfigurasi key={satu.Kunci} konfigurasi={satu} pilihan={pilihan[satu.Kunci]} />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function BarisKonfigurasi({ konfigurasi }: { konfigurasi: Konfigurasi }) {
+function BarisKonfigurasi({
+  konfigurasi,
+  pilihan,
+}: {
+  konfigurasi: Konfigurasi;
+  pilihan?: PilihanKonfigurasi[];
+}) {
   const majemuk = typeof konfigurasi.Nilai === 'object' && konfigurasi.Nilai !== null;
   const awal = majemuk ? JSON.stringify(konfigurasi.Nilai, null, 2) : String(konfigurasi.Nilai ?? '');
   const [nilai, setNilai] = useState(awal);
@@ -188,7 +208,26 @@ function BarisKonfigurasi({ konfigurasi }: { konfigurasi: Konfigurasi }) {
         {konfigurasi.Kunci}
       </Label>
       <p className="text-sm text-muted-foreground">{konfigurasi.Keterangan}</p>
-      {majemuk ? (
+      {/* Setelan berdaftar tertutup tidak pernah ditawarkan sebagai kotak teks bebas. */}
+      {pilihan ? (
+        <>
+          <Select value={nilai} onValueChange={setNilai}>
+            <SelectTrigger id={idKolom}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {pilihan.map((satu) => (
+                <SelectItem key={satu.Nilai} value={satu.Nilai}>
+                  {satu.Label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {pilihan.find((satu) => satu.Nilai === nilai)?.Keterangan ?? ''}
+          </p>
+        </>
+      ) : majemuk ? (
         <Textarea id={idKolom} rows={10} value={nilai} onChange={(e) => setNilai(e.target.value)} />
       ) : (
         <Input id={idKolom} value={nilai} onChange={(e) => setNilai(e.target.value)} />

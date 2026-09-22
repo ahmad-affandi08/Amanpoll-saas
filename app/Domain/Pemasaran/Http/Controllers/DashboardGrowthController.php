@@ -6,7 +6,9 @@ namespace App\Domain\Pemasaran\Http\Controllers;
 
 use App\Domain\Pemasaran\Application\Services\PenghitungCacKampanye;
 use App\Domain\Pemasaran\Application\Services\PenghitungKpiPemasaran;
+use App\Domain\Pemasaran\Application\Services\PenghitungRevenueAttribution;
 use App\Domain\Pemasaran\Application\Services\PenyusunFunnelGrowth;
+use App\Domain\Pemasaran\Domain\Enums\ModelAttribution;
 use App\Domain\Pemasaran\Domain\Enums\TahapFunnelGrowth;
 use App\Domain\Pemasaran\Domain\KatalogAlertPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogKpiPemasaran;
@@ -29,6 +31,7 @@ final class DashboardGrowthController extends Controller
         private readonly PenyusunFunnelGrowth $funnel,
         private readonly PenghitungKpiPemasaran $kpi,
         private readonly PenghitungCacKampanye $cac,
+        private readonly PenghitungRevenueAttribution $revenue,
     ) {}
 
     public function index(Request $request): Response
@@ -44,6 +47,7 @@ final class DashboardGrowthController extends Controller
             'funnel' => $this->funnelUntukLayar($funnel),
             'kpi' => $this->kpiUntukLayar($filter, $funnel),
             'revenuePerChannel' => $this->kpi->revenuePerChannel($filter),
+            'attribution' => $this->attribution($filter),
             'cacPerChannel' => $this->cac->perChannel($filter),
             'cacTakTerpecah' => $this->cac->takTerpecah($filter),
             'kampanye' => $this->kampanye($filter),
@@ -51,6 +55,32 @@ final class DashboardGrowthController extends Controller
             'alert' => $this->alert(),
             'pilihan' => $this->pilihan(),
         ]);
+    }
+
+    /**
+     * Model yang sedang dipakai beserta pembandingnya, supaya pembaca tahu
+     * angka revenue di layar ini dihitung menurut model yang mana.
+     *
+     * @return array<string, mixed>
+     */
+    private function attribution(FilterGrowth $filter): array
+    {
+        $aktif = $this->revenue->modelAktif();
+
+        return [
+            'Model' => $aktif->value,
+            'Label' => $aktif->label(),
+            'Keterangan' => $aktif->keterangan(),
+            'ParuhHari' => $this->revenue->paruhHari(),
+            'Perbandingan' => array_map(
+                fn (ModelAttribution $satu): array => [
+                    'Model' => $satu->value,
+                    'Label' => $satu->label(),
+                    'PerChannel' => $this->revenue->perChannel($filter, $satu),
+                ],
+                ModelAttribution::cases(),
+            ),
+        ];
     }
 
     public function selesaikanAlert(AlertPemasaran $alert): RedirectResponse

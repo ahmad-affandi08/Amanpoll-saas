@@ -21,6 +21,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiPengunjung;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\UtmPemasaran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
@@ -81,13 +82,21 @@ abstract class KasusGrowth extends KasusPemasaran
         $pengenal = (string) Str::ulid();
         $waktu = $pada ?? $this->hariPerjalanan();
 
-        SesiPengunjung::create([
+        $sesi = SesiPengunjung::create([
             'PengenalPengunjung' => $pengenal,
             'Perangkat' => $perangkat,
             'LandingUrl' => $landing,
             'Host' => 'publik.test',
             'DimulaiPada' => $waktu,
             'TerakhirAktifPada' => $waktu,
+        ]);
+
+        // UTM ditulis bersama sesinya, persis seperti PerekamKunjungan di produksi.
+        UtmPemasaran::create([
+            'SesiPengunjungId' => $sesi->Id,
+            'KampanyeId' => $kampanyeId,
+            'Source' => $channel,
+            'Medium' => 'cpc',
         ]);
 
         AttributionPemasaran::create([

@@ -20,6 +20,7 @@ final class PenghitungKpiPemasaran
         private readonly PenyaringGrowth $penyaring,
         private readonly PenyusunFunnelGrowth $funnel,
         private readonly PenghitungCacKampanye $cac,
+        private readonly PenghitungRevenueAttribution $revenue,
     ) {}
 
     /**
@@ -66,38 +67,15 @@ final class PenghitungKpiPemasaran
     }
 
     /**
-     * Revenue per channel, dibaca dari sentuhan pertama pengunjung yang menjadi organisasinya.
+     * Revenue per channel menurut model attribution yang dipilih di setelan.
+     * Pembagiannya dilakukan per pembayaran, bukan lewat satu GROUP BY, karena
+     * satu pembayaran dapat terbagi ke beberapa sentuhan (MARKETING.md 14).
      *
      * @return array<string, float>
      */
     public function revenuePerChannel(FilterGrowth $filter): array
     {
-        $baris = DB::table('PembayaranLangganan')
-            ->join('Trial', 'Trial.OrganisasiId', '=', 'PembayaranLangganan.OrganisasiId')
-            ->leftJoin(
-                'AttributionPemasaran',
-                'AttributionPemasaran.PengenalPengunjung', '=', 'Trial.PengenalPengunjung',
-            )
-            ->where('PembayaranLangganan.Status', StatusPembayaranLangganan::Berhasil->value)
-            ->whereBetween('PembayaranLangganan.DibayarPada', [$filter->dari, $filter->sampai])
-            ->when(
-                $filter->channel !== null,
-                fn ($kueri) => $kueri->where('AttributionPemasaran.SumberPertama', $filter->channel),
-            )
-            ->groupBy('AttributionPemasaran.SumberPertama')
-            ->selectRaw('AttributionPemasaran.SumberPertama as channel, sum(PembayaranLangganan.Jumlah) as total')
-            ->get();
-
-        $hasil = [];
-
-        foreach ($baris as $satu) {
-            $channel = (string) ($satu->channel ?? 'Langsung');
-            $hasil[$channel] = round((float) $satu->total, 2);
-        }
-
-        arsort($hasil);
-
-        return $hasil;
+        return $this->revenue->perChannel($filter);
     }
 
     private function sesi(FilterGrowth $filter, ?Builder $pengunjung): int

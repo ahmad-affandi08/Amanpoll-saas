@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Application\Services;
 
 use App\Domain\Pemasaran\Domain\Enums\JenisPerangkat;
+use App\Domain\Pemasaran\Domain\ValueObjects\AsalKunjungan;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AttributionPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Kampanye;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiPengunjung;
@@ -15,8 +16,6 @@ use Illuminate\Http\Request;
 /** Merekam satu kedatangan beserta attribution-nya (MARKETING.md 14). */
 final class PerekamKunjungan
 {
-    private const SUMBER_LANGSUNG = 'direct';
-
     public function __construct(private readonly TransaksiDatabase $transaksi) {}
 
     public function rekam(Request $request, string $pengenalPengunjung): SesiPengunjung
@@ -62,8 +61,8 @@ final class PerekamKunjungan
             'PengenalPengunjung' => $sesi->PengenalPengunjung,
         ]);
 
-        $sumber = $utm->Source ?? $this->sumberDariReferrer($sesi->Referrer);
-        $medium = $utm->Medium ?? ($utm->Source === null && $sesi->Referrer === null ? self::SUMBER_LANGSUNG : 'referral');
+        $sumber = AsalKunjungan::sumber($utm->Source, $sesi->Referrer);
+        $medium = AsalKunjungan::medium($utm->Medium, $utm->Source, $sesi->Referrer);
 
         if (! $attribution->sudahAdaSentuhanPertama()) {
             $attribution->fill([
@@ -94,17 +93,6 @@ final class PerekamKunjungan
     private function kampanyeUntuk(string $kode): ?string
     {
         return Kampanye::query()->where('Kode', $kode)->value('Id');
-    }
-
-    private function sumberDariReferrer(?string $referrer): string
-    {
-        if ($referrer === null || $referrer === '') {
-            return self::SUMBER_LANGSUNG;
-        }
-
-        $host = parse_url($referrer, PHP_URL_HOST);
-
-        return is_string($host) && $host !== '' ? $host : self::SUMBER_LANGSUNG;
     }
 
     private function parameter(Request $request, string $nama): ?string

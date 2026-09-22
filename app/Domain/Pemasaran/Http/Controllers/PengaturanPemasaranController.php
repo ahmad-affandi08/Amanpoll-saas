@@ -8,6 +8,7 @@ use App\Core\Audit\LayananAudit;
 use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Application\Services\LayananKonfigurasiPemasaran;
 use App\Domain\Pemasaran\Application\Services\PemeriksaFiturPlatform;
+use App\Domain\Pemasaran\Domain\Enums\ModelAttribution;
 use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogKonfigurasiPemasaran;
 use App\Domain\Pemasaran\Http\Requests\SimpanKonfigurasiPemasaranRequest;
@@ -41,6 +42,7 @@ final class PengaturanPemasaranController extends Controller
             ],
             'fitur' => $this->ringkasFitur(),
             'konfigurasi' => $this->ringkasKonfigurasi(),
+            'pilihanKonfigurasi' => $this->pilihanKonfigurasi(),
         ]);
     }
 
@@ -102,6 +104,26 @@ final class PengaturanPemasaranController extends Controller
             ],
             KatalogFiturPlatform::kode(),
         );
+    }
+
+    /**
+     * Setelan berdaftar tertutup dikirim beserta pilihannya, supaya konsol
+     * tidak menawarkan kotak teks bebas untuk nilai yang sebenarnya terbatas.
+     *
+     * @return array<string, list<array<string, string>>>
+     */
+    private function pilihanKonfigurasi(): array
+    {
+        return [
+            KatalogKonfigurasiPemasaran::ATTRIBUTION_MODEL => array_map(
+                fn (ModelAttribution $satu): array => [
+                    'Nilai' => $satu->value,
+                    'Label' => $satu->label(),
+                    'Keterangan' => $satu->keterangan(),
+                ],
+                ModelAttribution::cases(),
+            ),
+        ];
     }
 
     /** @return list<array<string, mixed>> */

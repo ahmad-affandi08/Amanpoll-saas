@@ -2920,15 +2920,66 @@ dan angka kalkulator publik sama dengan angka KPI yang sama di dalam aplikasi.
 
 ## 38.10 Advanced Attribution
 
-- [ ] Model attribution di luar first dan last touch: linear, time decay, position based.
-- [ ] Model yang dipakai dashboard dapat dipilih lewat setelan.
-- [ ] Sentuhan disimpan lengkap, bukan hanya yang pertama dan terakhir.
-- [ ] Larangan merge identitas atas sinyal lemah tetap berlaku dan tetap diuji.
-- [ ] Revenue per channel dapat dibaca menurut model yang dipilih.
-- [ ] `ModelAttributionTest`, `BobotSentuhanTest`.
+- [x] Model attribution di luar first dan last touch: linear, time decay, position based.
+- [x] Model yang dipakai dashboard dapat dipilih lewat setelan.
+- [x] Sentuhan disimpan lengkap, bukan hanya yang pertama dan terakhir.
+- [x] Larangan merge identitas atas sinyal lemah tetap berlaku dan kini benar-benar diuji.
+- [x] Revenue per channel dapat dibaca menurut model yang dipilih.
+- [x] `ModelAttributionTest`, `BobotSentuhanTest`.
 
 First dan last touch tetap menjadi bawaan. Model lain ditambahkan di sampingnya,
 tidak menggantikannya, supaya angka lama tetap dapat dibandingkan.
+
+Tidak ada tabel sentuhan baru, dan itu bukan jalan pintas: tiap kunjungan sudah
+punya barisnya sendiri di `SesiPengunjung` beserta `UtmPemasaran`-nya sejak FASE
+30, jadi sentuhannya memang sudah tersimpan lengkap. Yang kurang hanya cara
+membacanya sebagai satu perjalanan, dan itulah `PembacaSentuhan`. Bagian 24
+melarang membuat tabel baru bila fungsinya sudah ada.
+
+Satu sentuhan bukan satu kunjungan. Tiap permintaan halaman melahirkan satu
+baris sesi, jadi kunjungan berurutan dari sumber, medium, dan kampanye yang
+sama disatukan menjadi satu sentuhan yang berlanjut. Tanpa itu satu orang yang
+membuka sepuluh halaman akan tampak sebagai sepuluh sentuhan.
+
+Bobot disimpan sebagai bilangan bulat berbasis sejuta dan sisa pembagiannya
+dibagikan dengan metode sisa terbesar. Jumlahnya karena itu tepat satu menurut
+konstruksinya, bukan menurut pembulatan pecahan. Konsekuensinya satu channel
+dapat meleset paling banyak satu per sejuta dari angka idealnya, dan itu harga
+yang dibayar supaya totalnya tidak pernah melebihi uang yang benar-benar masuk.
+
+`attribution.jendela_hari` sudah ada di katalog sejak awal tetapi tidak pernah
+dibaca siapa pun. Sekarang ia dipakai, jadi sentuhan yang lebih tua dari 90 hari
+tidak lagi diperhitungkan. Ini mengubah angka revenue untuk pengunjung berjarak
+panjang, dan disebutkan di sini karena perubahannya nyata, bukan sekadar
+penambahan fitur.
+
+Sumber dan medium satu kedatangan sebelumnya disimpulkan di tiga tempat
+terpisah: `PerekamKunjungan`, `PenyusunUlangAttribution`, dan pembaca sentuhan
+yang baru. Ketiganya kini memanggil `AsalKunjungan`, supaya sentuhan pertama
+yang tercatat saat kunjungan dan yang dibaca ulang tidak pernah berselisih.
+
+Pengunjung yang riwayat sesinya sudah tidak ada lagi tetap memakai sentuhan yang
+pernah tercatat di `AttributionPemasaran`. Yang jatuh ke cadangan ini hanya
+pengunjung tanpa satu pun baris sesi; yang sesinya ada tetapi seluruhnya di luar
+jendela memang bukan sentuhan yang boleh diperhitungkan, dan uangnya dilaporkan
+sebagai `Tanpa Sentuhan`, bukan dihilangkan.
+
+`SimpanKonfigurasiPemasaranRequest` sebelumnya menerima nilai apa pun untuk kunci
+apa pun. Setelan berdaftar tertutup kini divalidasi bentuknya, karena model asing
+akan diam-diam jatuh ke bawaannya saat dibaca dan angka dashboard berubah tanpa
+ada yang tahu sebabnya.
+
+Enam pembaca lain tetap memakai first touch: kampanye prospek, filter dashboard,
+CAC per kampanye, dan metrik kampanye harian. Itu disengaja — yang diminta butir
+ini hanya revenue per channel, dan mengubah yang lain sekaligus akan menggeser
+angka yang tidak diminta bergeser.
+
+Butir larangan merge identitas ternyata bukan sekadar verifikasi. Sabotase yang
+menambahkan pencocokan berdasarkan nama tidak menjatuhkan satu test pun: test
+lama membandingkan dua orang yang namanya memang berbeda, jadi larangannya tidak
+pernah benar-benar dijaga. Empat test baru kini menyatakannya langsung — nama
+sama, telepon dan perusahaan sama, tanpa sinyal kuat sama sekali, dan pengenal
+pengunjung berbeda — dan ketiga sabotase pencocokan lemah kini dijatuhkan.
 
 **Gate 38.10.** Jumlah bobot seluruh sentuhan satu konversi selalu tepat satu,
 pada model mana pun.

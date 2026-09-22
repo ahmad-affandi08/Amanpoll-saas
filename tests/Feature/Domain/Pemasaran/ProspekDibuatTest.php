@@ -57,6 +57,47 @@ final class ProspekDibuatTest extends KasusProspek
         $this->assertSame(2, Prospek::query()->count());
     }
 
+    /**
+     * Nama adalah sinyal lemah. Dua orang bernama sama, tanpa email dan tanpa
+     * pengenal pengunjung yang sama, tidak boleh dilebur menjadi satu orang.
+     */
+    public function test_nama_yang_sama_bukan_alasan_menggabungkan(): void
+    {
+        $this->catat(['Nama' => 'Budi Santoso', 'Email' => 'budi.a@contoh.test'], (string) Str::ulid());
+        $this->catat(['Nama' => 'Budi Santoso', 'Email' => 'budi.b@contoh.test'], (string) Str::ulid());
+
+        $this->assertSame(2, Prospek::query()->count());
+    }
+
+    /** Telepon dan perusahaan juga sinyal lemah; berbagi keduanya tetap dua orang. */
+    public function test_telepon_dan_perusahaan_yang_sama_bukan_alasan_menggabungkan(): void
+    {
+        $bersama = ['Telepon' => '081234567890', 'Perusahaan' => 'PT Pabrik'];
+
+        $this->catat(['Nama' => 'Budi', 'Email' => 'budi@pabrik.test', ...$bersama], (string) Str::ulid());
+        $this->catat(['Nama' => 'Siti', 'Email' => 'siti@pabrik.test', ...$bersama], (string) Str::ulid());
+
+        $this->assertSame(2, Prospek::query()->count());
+    }
+
+    /** Prospek tanpa email dan tanpa pengenal pengunjung tidak punya sinyal kuat apa pun. */
+    public function test_tanpa_sinyal_kuat_tidak_pernah_digabungkan(): void
+    {
+        $this->catat(['Nama' => 'Tanpa Jejak']);
+        $this->catat(['Nama' => 'Tanpa Jejak']);
+
+        $this->assertSame(2, Prospek::query()->count());
+    }
+
+    /** Pengenal pengunjung berbeda tidak boleh dilebur walau namanya identik. */
+    public function test_pengenal_pengunjung_berbeda_tetap_dua_prospek(): void
+    {
+        $this->catat(['Nama' => 'Anonim'], (string) Str::ulid());
+        $this->catat(['Nama' => 'Anonim'], (string) Str::ulid());
+
+        $this->assertSame(2, Prospek::query()->count());
+    }
+
     public function test_sumber_prospek_tidak_berubah_saat_ia_kembali(): void
     {
         $this->catat(['Nama' => 'Budi', 'Email' => 'budi@contoh.test'], sumber: SumberProspek::Website);
