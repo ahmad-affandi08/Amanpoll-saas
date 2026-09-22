@@ -144,13 +144,21 @@ class AturanWajibTest extends TestCase
      */
     public function test_halaman_yang_sudah_dipasangi_mengirim_peta_wajib(): void
     {
-        $pengguna = $this->buatPenggunaBerizin(['Aset.Lihat', 'Penyedia.Kelola', 'Stok.Kelola', 'Pengguna.Kelola']);
+        $pengguna = $this->buatPenggunaBerizin([
+            'Aset.Lihat', 'Penyedia.Kelola', 'Stok.Kelola',
+            'Pengguna.Kelola', 'Pengaturan.Kelola',
+        ]);
 
         $halaman = [
             '/aset' => 'aset',
             '/penyedia' => 'penyedia',
             '/gudang' => 'gudang',
             '/platform/pengguna' => 'pengguna',
+            '/aset-master/kategori' => 'kategoriAset',
+            '/aset-master/merek' => 'merek',
+            '/suku-cadang' => 'sukuCadang',
+            '/platform/unit-organisasi' => 'unit',
+            '/platform/lokasi' => 'lokasi',
         ];
 
         foreach ($halaman as $jalur => $kunciFormulir) {

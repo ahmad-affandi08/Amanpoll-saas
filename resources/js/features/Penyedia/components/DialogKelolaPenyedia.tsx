@@ -14,10 +14,12 @@ export function DialogKelolaPenyedia({
   penyedia,
   kategoriPenyedia,
   wajib,
+  wajibPenilaian,
 }: {
   penyedia: Penyedia;
   kategoriPenyedia: KategoriPenyedia[];
   wajib: AturanWajib;
+  wajibPenilaian: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
 
@@ -50,7 +52,7 @@ export function DialogKelolaPenyedia({
             <TabKontak penyedia={penyedia} />
           </TabsContent>
           <TabsContent value="penilaian">
-            <TabPenilaian penyedia={penyedia} />
+            <TabPenilaian penyedia={penyedia} wajib={wajibPenilaian} />
           </TabsContent>
           <TabsContent value="kolaborasi">
             <PanelKolaborasi jenisEntitas="Penyedia" entitasId={penyedia.Id} />

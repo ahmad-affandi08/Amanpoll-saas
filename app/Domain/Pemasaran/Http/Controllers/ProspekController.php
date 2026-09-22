@@ -62,6 +62,7 @@ final class ProspekController extends Controller
         $prospek->load(['tahap', 'organisasiProspek', 'kampanye', 'kontak', 'tag', 'rincianSkor']);
 
         return Inertia::render('Pemasaran/Prospek/Show', [
+            'wajib' => ['tahap' => AturanWajib::untuk(PindahkanTahapProspekRequest::class), 'aktivitas' => AturanWajib::untuk(SimpanAktivitasProspekRequest::class)],
             'prospek' => [
                 ...$this->ringkas($prospek),
                 'Telepon' => $prospek->Telepon,

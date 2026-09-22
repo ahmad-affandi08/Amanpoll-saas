@@ -20,17 +20,28 @@ import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluha
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   keluhan: Keluhan;
   dapatMengelola: boolean;
   transisiDiizinkan: StatusKeluhan[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 function formatTanggal(nilai: string | null): string {
   return nilai ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }) : '—';
 }
 
-function DialogStatus({ keluhan, transisi }: { keluhan: Keluhan; transisi: StatusKeluhan[] }) {
+function DialogStatus({
+  keluhan,
+  transisi,
+  wajib,
+}: {
+  keluhan: Keluhan;
+  transisi: StatusKeluhan[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Status: transisi[0] ?? keluhan.Status, Catatan: '', Versi: keluhan.Versi });
   const submit = (event: FormEvent) => {
@@ -49,48 +60,50 @@ function DialogStatus({ keluhan, transisi }: { keluhan: Keluhan; transisi: Statu
         <DialogHeader>
           <DialogTitle>Ubah Status Keluhan</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Status berikutnya</Label>
-            <Select
-              value={form.data.Status}
-              onValueChange={(v) => form.setData('Status', v as StatusKeluhan)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {transisi.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>
-              Catatan {(form.data.Status === 'Ditolak' || form.data.Status === 'Dibatalkan') && '(wajib)'}
-            </Label>
-            <Textarea
-              rows={4}
-              value={form.data.Catatan}
-              onChange={(e) => form.setData('Catatan', e.target.value)}
-            />
-            {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Status
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="Status">Status berikutnya</Label>
+              <Select
+                value={form.data.Status}
+                onValueChange={(v) => form.setData('Status', v as StatusKeluhan)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {transisi.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Status">
+                Catatan {(form.data.Status === 'Ditolak' || form.data.Status === 'Dibatalkan') && '(wajib)'}
+              </Label>
+              <Textarea
+                rows={4}
+                value={form.data.Catatan}
+                onChange={(e) => form.setData('Catatan', e.target.value)}
+              />
+              {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Status
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-function DialogPrioritas({ keluhan }: { keluhan: Keluhan }) {
+function DialogPrioritas({ keluhan, wajib }: { keluhan: Keluhan; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Prioritas: keluhan.Prioritas, Alasan: '', Versi: keluhan.Versi });
   const submit = (event: FormEvent) => {
@@ -109,42 +122,44 @@ function DialogPrioritas({ keluhan }: { keluhan: Keluhan }) {
         <DialogHeader>
           <DialogTitle>Ubah Prioritas</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Prioritas</Label>
-            <Select
-              value={form.data.Prioritas}
-              onValueChange={(v) => form.setData('Prioritas', v as PrioritasKeluhan)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
-                  <SelectItem key={p} value={p}>
-                    {p}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Alasan perubahan</Label>
-            <Textarea value={form.data.Alasan} onChange={(e) => form.setData('Alasan', e.target.value)} />
-            {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Terapkan
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="Prioritas">Prioritas</Label>
+              <Select
+                value={form.data.Prioritas}
+                onValueChange={(v) => form.setData('Prioritas', v as PrioritasKeluhan)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {p}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Alasan">Alasan perubahan</Label>
+              <Textarea value={form.data.Alasan} onChange={(e) => form.setData('Alasan', e.target.value)} />
+              {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Terapkan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan }: Props) {
+export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={keluhan.Nomor} />
@@ -171,12 +186,13 @@ export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan
         }
         aksi={
           <>
-            {dapatMengelola && <DialogPrioritas keluhan={keluhan} />}
+            {dapatMengelola && <DialogPrioritas keluhan={keluhan} wajib={wajib.prioritas} />}
             <DialogStatus
               keluhan={keluhan}
               transisi={
                 dapatMengelola ? transisiDiizinkan : transisiDiizinkan.filter((s) => s === 'Dibatalkan')
               }
+              wajib={wajib.status}
             />
           </>
         }

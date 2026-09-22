@@ -9,8 +9,9 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { http } from '@/lib/http';
 import type { Penyedia, PenilaianPenyedia, RekapPenilaianPenyedia } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function TabPenilaian({ penyedia }: { penyedia: Penyedia }) {
+export function TabPenilaian({ penyedia, wajib }: { penyedia: Penyedia; wajib: AturanWajib }) {
   const [histori, setHistori] = useState<PenilaianPenyedia[]>([]);
   const [rekap, setRekap] = useState<RekapPenilaianPenyedia | null>(null);
   const [memuat, setMemuat] = useState(true);
@@ -81,67 +82,73 @@ export function TabPenilaian({ penyedia }: { penyedia: Penyedia }) {
           </div>
         ))}
       </div>
-      <form onSubmit={submit} className="space-y-2 border-t border-border pt-4">
-        <div className="grid grid-cols-2 gap-2">
-          <div className="space-y-1">
-            <Label className="text-xs">Periode Mulai</Label>
-            <DatePicker
-              value={form.data.PeriodeMulai}
-              onChange={(val) => form.setData('PeriodeMulai', val)}
+      <AturanWajibProvider aturan={wajib}>
+        <form onSubmit={submit} className="space-y-2 border-t border-border pt-4">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label nama="PeriodeMulai" className="text-xs">
+                Periode Mulai
+              </Label>
+              <DatePicker
+                value={form.data.PeriodeMulai}
+                onChange={(val) => form.setData('PeriodeMulai', val)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label nama="PeriodeSelesai" className="text-xs">
+                Periode Selesai
+              </Label>
+              <DatePicker
+                value={form.data.PeriodeSelesai}
+                onChange={(val) => form.setData('PeriodeSelesai', val)}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            <Input
+              placeholder="Kualitas"
+              type="number"
+              min={0}
+              max={100}
+              value={form.data.SkorKualitas}
+              onChange={(e) => form.setData('SkorKualitas', e.target.value)}
+            />
+            <Input
+              placeholder="Ketepatan"
+              type="number"
+              min={0}
+              max={100}
+              value={form.data.SkorKetepatanWaktu}
+              onChange={(e) => form.setData('SkorKetepatanWaktu', e.target.value)}
+            />
+            <Input
+              placeholder="Harga"
+              type="number"
+              min={0}
+              max={100}
+              value={form.data.SkorHarga}
+              onChange={(e) => form.setData('SkorHarga', e.target.value)}
+            />
+            <Input
+              placeholder="Layanan"
+              type="number"
+              min={0}
+              max={100}
+              value={form.data.SkorLayanan}
+              onChange={(e) => form.setData('SkorLayanan', e.target.value)}
             />
           </div>
-          <div className="space-y-1">
-            <Label className="text-xs">Periode Selesai</Label>
-            <DatePicker
-              value={form.data.PeriodeSelesai}
-              onChange={(val) => form.setData('PeriodeSelesai', val)}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          <Input
-            placeholder="Kualitas"
-            type="number"
-            min={0}
-            max={100}
-            value={form.data.SkorKualitas}
-            onChange={(e) => form.setData('SkorKualitas', e.target.value)}
+          <Textarea
+            placeholder="Catatan (opsional)"
+            value={form.data.Catatan}
+            onChange={(e) => form.setData('Catatan', e.target.value)}
+            rows={2}
           />
-          <Input
-            placeholder="Ketepatan"
-            type="number"
-            min={0}
-            max={100}
-            value={form.data.SkorKetepatanWaktu}
-            onChange={(e) => form.setData('SkorKetepatanWaktu', e.target.value)}
-          />
-          <Input
-            placeholder="Harga"
-            type="number"
-            min={0}
-            max={100}
-            value={form.data.SkorHarga}
-            onChange={(e) => form.setData('SkorHarga', e.target.value)}
-          />
-          <Input
-            placeholder="Layanan"
-            type="number"
-            min={0}
-            max={100}
-            value={form.data.SkorLayanan}
-            onChange={(e) => form.setData('SkorLayanan', e.target.value)}
-          />
-        </div>
-        <Textarea
-          placeholder="Catatan (opsional)"
-          value={form.data.Catatan}
-          onChange={(e) => form.setData('Catatan', e.target.value)}
-          rows={2}
-        />
-        <Button type="submit" disabled={form.processing}>
-          Simpan Penilaian
-        </Button>
-      </form>
+          <Button type="submit" disabled={form.processing}>
+            Simpan Penilaian
+          </Button>
+        </form>
+      </AturanWajibProvider>
     </div>
   );
 }

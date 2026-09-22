@@ -103,6 +103,7 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter, waji
               penyedia={row.original}
               kategoriPenyedia={kategoriPenyedia}
               wajib={wajib.penyedia}
+              wajibPenilaian={wajib.penilaian}
             />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus

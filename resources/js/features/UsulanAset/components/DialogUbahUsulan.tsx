@@ -19,17 +19,20 @@ import type { PrioritasUsulanAset, Referensi, UsulanAset } from '@/features/Usul
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { PRIORITAS } from '@/features/UsulanAset/status';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 export function DialogUbahUsulan({
   usulan,
   unitOrganisasi,
   kategoriAset,
   modelAset,
+  wajib,
 }: {
   usulan: UsulanAset;
   unitOrganisasi: Referensi[];
   kategoriAset: Referensi[];
   modelAset: Referensi[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -73,141 +76,143 @@ export function DialogUbahUsulan({
             Usulan hanya dapat diubah selama berstatus draft atau ditolak.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Unit</Label>
-              <Select
-                value={form.data.UnitOrganisasiId}
-                onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {unitOrganisasi.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="UnitOrganisasiId">Unit</Label>
+                <Select
+                  value={form.data.UnitOrganisasiId}
+                  onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unitOrganisasi.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="Prioritas">Prioritas</Label>
+                <Select
+                  value={form.data.Prioritas}
+                  onValueChange={(value) => form.setData('Prioritas', value as PrioritasUsulanAset)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIORITAS.map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Prioritas</Label>
-              <Select
-                value={form.data.Prioritas}
-                onValueChange={(value) => form.setData('Prioritas', value as PrioritasUsulanAset)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PRIORITAS.map((item) => (
-                    <SelectItem key={item} value={item}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Nama Kebutuhan</Label>
-            <Input
-              value={form.data.NamaKebutuhan}
-              onChange={(event) => form.setData('NamaKebutuhan', event.target.value)}
-            />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Kategori</Label>
-              <Select
-                value={form.data.KategoriAsetId}
-                onValueChange={(value) => form.setData('KategoriAsetId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
-                  {kategoriAset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Model</Label>
-              <Select
-                value={form.data.ModelAsetId}
-                onValueChange={(value) => form.setData('ModelAsetId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
-                  {modelAset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label>Jumlah</Label>
+              <Label nama="NamaKebutuhan">Nama Kebutuhan</Label>
               <Input
-                type="number"
-                step="0.0001"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
+                value={form.data.NamaKebutuhan}
+                onChange={(event) => form.setData('NamaKebutuhan', event.target.value)}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="KategoriAsetId">Kategori</Label>
+                <Select
+                  value={form.data.KategoriAsetId}
+                  onValueChange={(value) => form.setData('KategoriAsetId', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
+                    {kategoriAset.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="ModelAsetId">Model</Label>
+                <Select
+                  value={form.data.ModelAsetId}
+                  onValueChange={(value) => form.setData('ModelAsetId', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
+                    {modelAset.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label nama="Jumlah">Jumlah</Label>
+                <Input
+                  type="number"
+                  step="0.0001"
+                  value={form.data.Jumlah}
+                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="EstimasiHargaSatuan">Harga / Unit</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={form.data.EstimasiHargaSatuan}
+                  onChange={(event) => form.setData('EstimasiHargaSatuan', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="TahunKebutuhan">Tahun</Label>
+                <Input
+                  type="number"
+                  value={form.data.TahunKebutuhan}
+                  onChange={(event) => form.setData('TahunKebutuhan', event.target.value)}
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="JenisKebutuhan">Jenis Kebutuhan</Label>
+              <Input
+                value={form.data.JenisKebutuhan}
+                onChange={(event) => form.setData('JenisKebutuhan', event.target.value)}
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Harga / Unit</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={form.data.EstimasiHargaSatuan}
-                onChange={(event) => form.setData('EstimasiHargaSatuan', event.target.value)}
+              <Label nama="Alasan">Alasan</Label>
+              <Textarea
+                rows={4}
+                value={form.data.Alasan}
+                onChange={(event) => form.setData('Alasan', event.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Tahun</Label>
-              <Input
-                type="number"
-                value={form.data.TahunKebutuhan}
-                onChange={(event) => form.setData('TahunKebutuhan', event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Jenis Kebutuhan</Label>
-            <Input
-              value={form.data.JenisKebutuhan}
-              onChange={(event) => form.setData('JenisKebutuhan', event.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Alasan</Label>
-            <Textarea
-              rows={4}
-              value={form.data.Alasan}
-              onChange={(event) => form.setData('Alasan', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Perubahan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Perubahan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

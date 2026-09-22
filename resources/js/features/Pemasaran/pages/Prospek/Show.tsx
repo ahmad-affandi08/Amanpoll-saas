@@ -17,6 +17,7 @@ import type {
   TahapRingkas,
 } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   prospek: ProspekDetail;
@@ -24,6 +25,8 @@ interface Props {
   riwayatTahap: EntriRiwayatTahap[];
   tahap: TahapRingkas[];
   jenisAktivitas: string[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 export default function PemasaranProspekShow({
@@ -32,6 +35,7 @@ export default function PemasaranProspekShow({
   riwayatTahap,
   tahap,
   jenisAktivitas,
+  wajib,
 }: Props) {
   return (
     <KerangkaPlatform>
@@ -70,8 +74,8 @@ export default function PemasaranProspekShow({
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="grid gap-6 lg:col-span-2">
-          <KartuTahap prospek={prospek} tahap={tahap} />
-          <KartuAktivitasBaru prospek={prospek} jenisAktivitas={jenisAktivitas} />
+          <KartuTahap prospek={prospek} tahap={tahap} wajib={wajib.tahap} />
+          <KartuAktivitasBaru prospek={prospek} jenisAktivitas={jenisAktivitas} wajib={wajib.aktivitas} />
 
           <Card>
             <CardHeader>
@@ -102,7 +106,15 @@ export default function PemasaranProspekShow({
   );
 }
 
-function KartuTahap({ prospek, tahap }: { prospek: ProspekDetail; tahap: TahapRingkas[] }) {
+function KartuTahap({
+  prospek,
+  tahap,
+  wajib,
+}: {
+  prospek: ProspekDetail;
+  tahap: TahapRingkas[];
+  wajib: AturanWajib;
+}) {
   const [kode, setKode] = useState(prospek.KodeTahap ?? tahap[0]?.Kode ?? '');
   const [alasan, setAlasan] = useState('');
 
@@ -121,30 +133,36 @@ function KartuTahap({ prospek, tahap }: { prospek: ProspekDetail; tahap: TahapRi
         <CardTitle className="text-base">Pindahkan Tahap</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={pindahkan} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]">
-          <div className="grid gap-2">
-            <Label htmlFor="tahap">Tahap</Label>
-            <Select value={kode} onValueChange={setKode}>
-              <SelectTrigger id="tahap">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {tahap.map((satu) => (
-                  <SelectItem key={satu.Kode} value={satu.Kode}>
-                    {satu.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="alasan">Alasan</Label>
-            <Input id="alasan" value={alasan} onChange={(e) => setAlasan(e.target.value)} />
-          </div>
-          <div className="flex items-end">
-            <Button type="submit">Pindahkan</Button>
-          </div>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={pindahkan} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]">
+            <div className="grid gap-2">
+              <Label nama="tahap" htmlFor="tahap">
+                Tahap
+              </Label>
+              <Select value={kode} onValueChange={setKode}>
+                <SelectTrigger id="tahap">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {tahap.map((satu) => (
+                    <SelectItem key={satu.Kode} value={satu.Kode}>
+                      {satu.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label nama="alasan" htmlFor="alasan">
+                Alasan
+              </Label>
+              <Input id="alasan" value={alasan} onChange={(e) => setAlasan(e.target.value)} />
+            </div>
+            <div className="flex items-end">
+              <Button type="submit">Pindahkan</Button>
+            </div>
+          </form>
+        </AturanWajibProvider>
       </CardContent>
     </Card>
   );
@@ -153,9 +171,11 @@ function KartuTahap({ prospek, tahap }: { prospek: ProspekDetail; tahap: TahapRi
 function KartuAktivitasBaru({
   prospek,
   jenisAktivitas,
+  wajib,
 }: {
   prospek: ProspekDetail;
   jenisAktivitas: string[];
+  wajib: AturanWajib;
 }) {
   const form = useForm({ Jenis: jenisAktivitas[0] ?? 'Catatan', Judul: '', Isi: '' });
 
@@ -173,49 +193,57 @@ function KartuAktivitasBaru({
         <CardTitle className="text-base">Catat Aktivitas</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={submit} className="grid gap-3">
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-            <div className="grid gap-2">
-              <Label htmlFor="jenis">Jenis</Label>
-              <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
-                <SelectTrigger id="jenis">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {jenisAktivitas.map((satu) => (
-                    <SelectItem key={satu} value={satu}>
-                      {satu}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="grid gap-3">
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+              <div className="grid gap-2">
+                <Label nama="jenis" htmlFor="jenis">
+                  Jenis
+                </Label>
+                <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
+                  <SelectTrigger id="jenis">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {jenisAktivitas.map((satu) => (
+                      <SelectItem key={satu} value={satu}>
+                        {satu}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label nama="judul" htmlFor="judul">
+                  Judul
+                </Label>
+                <Input
+                  id="judul"
+                  value={form.data.Judul}
+                  onChange={(e) => form.setData('Judul', e.target.value)}
+                  required
+                />
+                {form.errors.Judul ? <p className="text-sm text-destructive">{form.errors.Judul}</p> : null}
+              </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="judul">Judul</Label>
-              <Input
-                id="judul"
-                value={form.data.Judul}
-                onChange={(e) => form.setData('Judul', e.target.value)}
-                required
+              <Label nama="isi" htmlFor="isi">
+                Catatan
+              </Label>
+              <Textarea
+                id="isi"
+                rows={3}
+                value={form.data.Isi}
+                onChange={(e) => form.setData('Isi', e.target.value)}
               />
-              {form.errors.Judul ? <p className="text-sm text-destructive">{form.errors.Judul}</p> : null}
             </div>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="isi">Catatan</Label>
-            <Textarea
-              id="isi"
-              rows={3}
-              value={form.data.Isi}
-              onChange={(e) => form.setData('Isi', e.target.value)}
-            />
-          </div>
-          <div>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </div>
-        </form>
+            <div>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </div>
+          </form>
+        </AturanWajibProvider>
       </CardContent>
     </Card>
   );

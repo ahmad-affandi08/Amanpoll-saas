@@ -89,7 +89,7 @@ export default function PenyediaShow({ penyedia, kategoriPenyedia, ringkasan, wa
           <TabKontak penyedia={penyedia} />
         </TabsContent>
         <TabsContent value="penilaian">
-          <TabPenilaian penyedia={penyedia} />
+          <TabPenilaian penyedia={penyedia} wajib={wajib.penilaian} />
         </TabsContent>
         <TabsContent value="kategori">
           <TabKategori penyedia={penyedia} kategoriPenyedia={kategoriPenyedia} />

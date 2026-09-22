@@ -12,6 +12,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DialogUbahUsulan } from '@/features/UsulanAset/components/DialogUbahUsulan';
 import { DialogPenilaian } from '@/features/UsulanAset/components/DialogPenilaian';
 import type { Referensi } from '@/features/UsulanAset/types';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Keputusan {
   Keputusan: string;
@@ -42,6 +43,8 @@ interface Props {
   unitOrganisasi: Referensi[];
   kategoriAset: Referensi[];
   modelAset: Referensi[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const VARIAN_STATUS = {
@@ -59,6 +62,7 @@ export default function UsulanAsetShow({
   unitOrganisasi,
   kategoriAset,
   modelAset,
+  wajib,
 }: Props) {
   const konfirmasi = useKonfirmasi();
   const dapatUbah = usulan.Status === 'Draft' || usulan.Status === 'Ditolak';
@@ -125,6 +129,7 @@ export default function UsulanAsetShow({
                   unitOrganisasi={unitOrganisasi}
                   kategoriAset={kategoriAset}
                   modelAset={modelAset}
+                  wajib={wajib.usulan}
                 />
               )}
               {usulan.Status === 'Draft' && (
@@ -132,7 +137,7 @@ export default function UsulanAsetShow({
                   <Send /> Submit
                 </Button>
               )}
-              {dapatNilai && <DialogPenilaian usulan={usulan} />}
+              {dapatNilai && <DialogPenilaian usulan={usulan} wajib={wajib.penilaian} />}
               {dapatNilai && (usulan.Penilaian?.length ?? 0) > 0 && (
                 <Button size="sm" onClick={ajukanPersetujuan}>
                   <ShieldCheck /> Ajukan Persetujuan

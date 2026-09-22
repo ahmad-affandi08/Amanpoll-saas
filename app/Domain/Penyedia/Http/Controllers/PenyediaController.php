@@ -8,6 +8,7 @@ use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Penyedia\Application\Actions\BuatPenyedia;
 use App\Domain\Penyedia\Application\Actions\HapusPenyedia;
 use App\Domain\Penyedia\Application\Actions\UbahPenyedia;
+use App\Domain\Penyedia\Http\Requests\SimpanPenilaianPenyediaRequest;
 use App\Domain\Penyedia\Http\Requests\SimpanPenyediaRequest;
 use App\Domain\Penyedia\Http\Resources\KategoriPenyediaResource;
 use App\Domain\Penyedia\Http\Resources\PenyediaResource;
@@ -44,7 +45,10 @@ final class PenyediaController extends Controller
             'penyedia' => PenyediaResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             'kategoriPenyedia' => KategoriPenyediaResource::collection(KategoriPenyedia::query()->orderBy('Nama')->get()),
-            'wajib' => ['penyedia' => AturanWajib::untuk(SimpanPenyediaRequest::class)],
+            'wajib' => [
+                'penyedia' => AturanWajib::untuk(SimpanPenyediaRequest::class),
+                'penilaian' => AturanWajib::untuk(SimpanPenilaianPenyediaRequest::class),
+            ],
         ]);
     }
 
@@ -66,7 +70,10 @@ final class PenyediaController extends Controller
             'penyedia' => new PenyediaResource($penyedia),
             'kategoriPenyedia' => KategoriPenyediaResource::collection(KategoriPenyedia::query()->orderBy('Nama')->get()),
             'ringkasan' => $this->ringkasanPenyedia($penyedia),
-            'wajib' => ['penyedia' => AturanWajib::untuk(SimpanPenyediaRequest::class)],
+            'wajib' => [
+                'penyedia' => AturanWajib::untuk(SimpanPenyediaRequest::class),
+                'penilaian' => AturanWajib::untuk(SimpanPenilaianPenyediaRequest::class),
+            ],
         ]);
     }
 
