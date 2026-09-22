@@ -13,6 +13,7 @@ use App\Domain\Persediaan\Application\Actions\HapusKelompokSukuCadang;
 use App\Domain\Persediaan\Application\Actions\HapusSukuCadang;
 use App\Domain\Persediaan\Application\Actions\UbahKelompokSukuCadang;
 use App\Domain\Persediaan\Application\Actions\UbahSukuCadang;
+use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanKelompokSukuCadangRequest;
 use App\Domain\Persediaan\Http\Requests\SimpanSukuCadangRequest;
 use App\Domain\Persediaan\Http\Resources\KelompokSukuCadangResource;
@@ -20,6 +21,9 @@ use App\Domain\Persediaan\Http\Resources\KompatibilitasSukuCadangResource;
 use App\Domain\Persediaan\Http\Resources\SukuCadangResource;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KelompokSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\PemakaianSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
@@ -31,6 +35,9 @@ use Inertia\Response;
 
 final class SukuCadangController extends Controller
 {
+    /** Riwayat pemakaian dapat panjang; dipotong dan jumlah seluruhnya tetap disebut. */
+    private const MAKS_RIWAYAT = 50;
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', SukuCadang::class);
@@ -89,12 +96,96 @@ final class SukuCadangController extends Controller
 
         return Inertia::render('SukuCadang/Show', [
             'sukuCadang' => new SukuCadangResource($sukuCadang),
+            'stok' => $this->stokPerGudang($sukuCadang),
+            'pemakaian' => $this->pemakaianTerakhir($sukuCadang),
+            'reservasi' => $this->reservasiAktif($sukuCadang),
             'kelompokSukuCadang' => KelompokSukuCadangResource::collection($kelompok),
             'kompatibilitasSukuCadang' => KompatibilitasSukuCadangResource::collection($sukuCadang->kompatibilitasSukuCadang),
             'kategoriAset' => KategoriAsetModel::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'modelAset' => ModelAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'aset' => Aset::query()->orderBy('Nama')->get(['Id', 'Nama', 'KodeAset']),
         ]);
+    }
+
+    /**
+     * Saldo per gudang, lokasi rak, dan batch.
+     *
+     * Inilah angka yang dicari orang saat membuka suku cadang, dan justru itu
+     * yang selama ini tidak ada di halaman ini -- hanya stok minimumnya.
+     *
+     * @return array{baris: list<array<string, mixed>>, TotalTersedia: float, TotalDitahan: float, TotalBersih: float}
+     */
+    private function stokPerGudang(SukuCadang $sukuCadang): array
+    {
+        $baris = $sukuCadang->stok()
+            ->with(['gudang', 'lokasiGudang', 'kelompokSukuCadang'])
+            ->get()
+            ->map(fn (StokSukuCadang $satu): array => [
+                'Id' => $satu->Id,
+                'Gudang' => $satu->gudang?->Nama,
+                'LokasiGudang' => $satu->lokasiGudang?->Nama,
+                'NomorBatch' => $satu->kelompokSukuCadang?->NomorBatch,
+                'JumlahTersedia' => (float) $satu->JumlahTersedia,
+                'JumlahDitahan' => (float) $satu->JumlahDitahan,
+                'JumlahBersih' => (float) $satu->JumlahTersedia - (float) $satu->JumlahDitahan,
+            ])
+            ->all();
+
+        $baris = array_values($baris);
+
+        return [
+            'baris' => $baris,
+            'TotalTersedia' => (float) array_sum(array_column($baris, 'JumlahTersedia')),
+            'TotalDitahan' => (float) array_sum(array_column($baris, 'JumlahDitahan')),
+            'TotalBersih' => (float) array_sum(array_column($baris, 'JumlahBersih')),
+        ];
+    }
+
+    /**
+     * @return array{total: int, data: list<array<string, mixed>>}
+     */
+    private function pemakaianTerakhir(SukuCadang $sukuCadang): array
+    {
+        return [
+            'total' => (int) $sukuCadang->pemakaian()->count(),
+            'data' => array_values($sukuCadang->pemakaian()
+                ->with(['perintahKerja', 'gudang', 'dipakaiOleh'])
+                ->limit(self::MAKS_RIWAYAT)
+                ->get()
+                ->map(fn (PemakaianSukuCadang $satu): array => [
+                    'Id' => $satu->Id,
+                    'PerintahKerjaId' => $satu->PerintahKerjaId,
+                    'NomorPerintahKerja' => $satu->perintahKerja?->Nomor,
+                    'JudulPerintahKerja' => $satu->perintahKerja?->Judul,
+                    'Gudang' => $satu->gudang?->Nama,
+                    'Jumlah' => (float) $satu->Jumlah,
+                    'HargaSatuan' => $satu->HargaSatuan === null ? null : (float) $satu->HargaSatuan,
+                    'DipakaiOleh' => $satu->dipakaiOleh?->Nama,
+                    'DipakaiPada' => $satu->DipakaiPada->toIso8601String(),
+                ])
+                ->all()),
+        ];
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function reservasiAktif(SukuCadang $sukuCadang): array
+    {
+        return array_values($sukuCadang->reservasi()
+            ->where('Status', StatusReservasiSukuCadang::Aktif->value)
+            ->with(['perintahKerja', 'gudang'])
+            ->limit(self::MAKS_RIWAYAT)
+            ->get()
+            ->map(fn (ReservasiSukuCadang $satu): array => [
+                'Id' => $satu->Id,
+                'PerintahKerjaId' => $satu->PerintahKerjaId,
+                'NomorPerintahKerja' => $satu->perintahKerja?->Nomor,
+                'Gudang' => $satu->gudang?->Nama,
+                'Jumlah' => (float) $satu->Jumlah,
+                'KadaluarsaPada' => $satu->KadaluarsaPada?->toIso8601String(),
+            ])
+            ->all());
     }
 
     public function store(SimpanSukuCadangRequest $request, BuatSukuCadang $aksi): RedirectResponse

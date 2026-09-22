@@ -84,4 +84,28 @@ final class SukuCadang extends ModelDasar
     {
         return $this->hasMany(KompatibilitasSukuCadang::class, 'SukuCadangId', 'Id');
     }
+
+    /**
+     * @return HasMany<StokSukuCadang, $this>
+     */
+    public function stok(): HasMany
+    {
+        return $this->hasMany(StokSukuCadang::class, 'SukuCadangId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PemakaianSukuCadang, $this>
+     */
+    public function pemakaian(): HasMany
+    {
+        return $this->hasMany(PemakaianSukuCadang::class, 'SukuCadangId', 'Id')->latest('DipakaiPada');
+    }
+
+    /**
+     * @return HasMany<ReservasiSukuCadang, $this>
+     */
+    public function reservasi(): HasMany
+    {
+        return $this->hasMany(ReservasiSukuCadang::class, 'SukuCadangId', 'Id')->latest('DibuatPada');
+    }
 }

@@ -17,12 +17,20 @@ import {
 } from '@/components/ui/dialog';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { formatUang } from '@/lib/uang';
-import type { KelompokSukuCadang, KompatibilitasSukuCadang, SukuCadang } from '@/features/Persediaan/types';
+import type {
+  KelompokSukuCadang,
+  KompatibilitasSukuCadang,
+  PemakaianSukuCadangBaris,
+  ReservasiSukuCadangBaris,
+  StokSukuCadangRingkas,
+  SukuCadang,
+} from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { PanelPemakaian, PanelReservasi, PanelStok } from '@/features/SukuCadang/components/PanelStok';
 
 interface Ringkas {
   Id: string;
@@ -36,6 +44,14 @@ interface AsetRingkas {
 
 interface Props {
   sukuCadang: SukuCadang;
+  stok: {
+    baris: StokSukuCadangRingkas[];
+    TotalTersedia: number;
+    TotalDitahan: number;
+    TotalBersih: number;
+  };
+  pemakaian: { total: number; data: PemakaianSukuCadangBaris[] };
+  reservasi: ReservasiSukuCadangBaris[];
   kelompokSukuCadang: KelompokSukuCadang[];
   kompatibilitasSukuCadang: KompatibilitasSukuCadang[];
   kategoriAset: Ringkas[];
@@ -259,6 +275,9 @@ function DialogTambahKompatibilitas({
 
 export default function SukuCadangShow({
   sukuCadang,
+  stok,
+  pemakaian,
+  reservasi,
   kelompokSukuCadang,
   kompatibilitasSukuCadang,
   kategoriAset,
@@ -328,6 +347,16 @@ export default function SukuCadangShow({
             <p className="text-sm font-medium text-foreground">{sukuCadang.NomorBagian ?? '—'}</p>
           </div>
         </div>
+
+        <PanelStok
+          stok={stok}
+          satuan={sukuCadang.SatuanDasar}
+          stokMinimum={parseFloat(sukuCadang.StokMinimum)}
+        />
+
+        <PanelReservasi reservasi={reservasi} satuan={sukuCadang.SatuanDasar} />
+
+        <PanelPemakaian pemakaian={pemakaian} satuan={sukuCadang.SatuanDasar} />
 
         <div className="rounded-[9px] border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between">

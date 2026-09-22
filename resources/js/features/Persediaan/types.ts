@@ -150,3 +150,35 @@ export interface ReservasiSukuCadang {
   NamaDibuatOleh: string | null;
   DibuatPada: string;
 }
+
+/** Baris stok, pemakaian, dan reservasi di halaman detail suku cadang. */
+export interface StokSukuCadangRingkas {
+  Id: string;
+  Gudang: string | null;
+  LokasiGudang: string | null;
+  NomorBatch: string | null;
+  JumlahTersedia: number;
+  JumlahDitahan: number;
+  JumlahBersih: number;
+}
+
+export interface PemakaianSukuCadangBaris {
+  Id: string;
+  PerintahKerjaId: string | null;
+  NomorPerintahKerja: string | null;
+  JudulPerintahKerja: string | null;
+  Gudang: string | null;
+  Jumlah: number;
+  HargaSatuan: number | null;
+  DipakaiOleh: string | null;
+  DipakaiPada: string;
+}
+
+export interface ReservasiSukuCadangBaris {
+  Id: string;
+  PerintahKerjaId: string | null;
+  NomorPerintahKerja: string | null;
+  Gudang: string | null;
+  Jumlah: number;
+  KadaluarsaPada: string | null;
+}

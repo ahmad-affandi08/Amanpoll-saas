@@ -400,6 +400,41 @@ class PersediaanTest extends TestCase
     }
 
     /**
+     * Halaman detail suku cadang dulu hanya menampilkan stok minimumnya.
+     *
+     * Saldo sesungguhnya -- ada berapa dan di gudang mana -- justru yang paling
+     * dicari saat membuka satu suku cadang, dan itulah yang dulu tidak ada.
+     */
+    public function test_detail_suku_cadang_menampilkan_saldo_per_gudang(): void
+    {
+        $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $pengguna = $this->buatPengguna($organisasi, ['Stok.Kelola']);
+        $this->konteks()->tetapkan($organisasi->Id);
+
+        $gudangA = $this->buatGudang($organisasi, ['Nama' => 'Gudang A']);
+        $gudangB = $this->buatGudang($organisasi, ['Nama' => 'Gudang B']);
+        $sukuCadang = $this->buatSukuCadang($organisasi, ['Nama' => 'Bearing 6203', 'StokMinimum' => 5]);
+
+        StokSukuCadang::create([
+            'GudangId' => $gudangA->Id, 'SukuCadangId' => $sukuCadang->Id,
+            'JumlahTersedia' => 10, 'JumlahDipesan' => 0, 'JumlahDitahan' => 4,
+        ]);
+        StokSukuCadang::create([
+            'GudangId' => $gudangB->Id, 'SukuCadangId' => $sukuCadang->Id,
+            'JumlahTersedia' => 3, 'JumlahDipesan' => 0, 'JumlahDitahan' => 0,
+        ]);
+
+        $this->actingAs($pengguna)->get("/suku-cadang/{$sukuCadang->Id}")
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->has('stok.baris', 2)
+                ->where('stok.TotalTersedia', 13)
+                ->where('stok.TotalDitahan', 4)
+                ->where('stok.TotalBersih', 9)
+                ->etc());
+    }
+
+    /**
      * Nama suku cadang dan gudang datang dari tabel lain, jadi pencariannya
      * bergantung pada join di controller. Tanpa join itu kotak cari hanya
      * akan mencocokkan kolom StokSukuCadang dan tampak tidak menemukan apa pun.
