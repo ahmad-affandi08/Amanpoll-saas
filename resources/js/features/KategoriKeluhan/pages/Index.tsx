@@ -22,6 +22,7 @@ import type { KategoriKeluhan, PrioritasKeluhan } from '@/features/Keluhan/types
 import { ruteKategoriKeluhan } from '@/features/KategoriKeluhan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Ringkas {
   Id: string;
@@ -32,7 +33,6 @@ interface Props {
   tingkatLayanan: Ringkas[];
   peran: Ringkas[];
 }
-const TANPA = '__tanpa__';
 const PRIORITAS: PrioritasKeluhan[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
 
 function DialogKategori({
@@ -50,11 +50,11 @@ function DialogKategori({
   const form = useForm({
     Kode: item?.Kode ?? '',
     Nama: item?.Nama ?? '',
-    IndukId: item?.IndukId ?? TANPA,
-    TingkatLayananId: item?.TingkatLayananId ?? TANPA,
+    IndukId: item?.IndukId ?? TANPA_PILIHAN,
+    TingkatLayananId: item?.TingkatLayananId ?? TANPA_PILIHAN,
     PrioritasBawaan: item?.PrioritasBawaan ?? ('Normal' as PrioritasKeluhan),
     AsetWajib: item?.AsetWajib ?? false,
-    PeranPenanggungJawabId: item?.PeranPenanggungJawabId ?? TANPA,
+    PeranPenanggungJawabId: item?.PeranPenanggungJawabId ?? TANPA_PILIHAN,
     Aktif: item?.Aktif ?? true,
   });
 
@@ -63,9 +63,10 @@ function DialogKategori({
     const opsi = { preserveScroll: true, onSuccess: () => setBuka(false) };
     form.transform((data) => ({
       ...data,
-      IndukId: data.IndukId === TANPA ? null : data.IndukId,
-      TingkatLayananId: data.TingkatLayananId === TANPA ? null : data.TingkatLayananId,
-      PeranPenanggungJawabId: data.PeranPenanggungJawabId === TANPA ? null : data.PeranPenanggungJawabId,
+      IndukId: data.IndukId === TANPA_PILIHAN ? null : data.IndukId,
+      TingkatLayananId: data.TingkatLayananId === TANPA_PILIHAN ? null : data.TingkatLayananId,
+      PeranPenanggungJawabId:
+        data.PeranPenanggungJawabId === TANPA_PILIHAN ? null : data.PeranPenanggungJawabId,
     }));
     item ? form.put(ruteKategoriKeluhan.detail(item.Id), opsi) : form.post(ruteKategoriKeluhan.index, opsi);
   };
@@ -101,7 +102,7 @@ function DialogKategori({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tanpa induk</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tanpa induk</SelectItem>
                 {kategori
                   .filter((k) => k.Id !== item?.Id)
                   .map((k) => (
@@ -123,7 +124,7 @@ function DialogKategori({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Tanpa SLA</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa SLA</SelectItem>
                   {tingkatLayanan.map((sla) => (
                     <SelectItem key={sla.Id} value={sla.Id}>
                       {sla.Nama}
@@ -161,7 +162,7 @@ function DialogKategori({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tanpa routing</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tanpa routing</SelectItem>
                 {peran.map((p) => (
                   <SelectItem key={p.Id} value={p.Id}>
                     {p.Nama}

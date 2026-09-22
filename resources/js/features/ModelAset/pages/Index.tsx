@@ -21,14 +21,13 @@ import type { KategoriAset, Merek, ModelAset } from '@/features/Aset/types';
 import { ruteModelAset } from '@/features/ModelAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   modelAset: ModelAset[];
   kategoriAset: KategoriAset[];
   merek: Merek[];
 }
-
-const TANPA = '__tanpa__';
 
 function DialogFormModelAset({
   model,
@@ -45,7 +44,7 @@ function DialogFormModelAset({
     model
       ? {
           KategoriAsetId: model.KategoriAsetId,
-          MerekId: model.MerekId ?? TANPA,
+          MerekId: model.MerekId ?? TANPA_PILIHAN,
           KodeModel: model.KodeModel ?? '',
           Nama: model.Nama,
           Produsen: model.Produsen ?? '',
@@ -56,7 +55,7 @@ function DialogFormModelAset({
         }
       : {
           KategoriAsetId: kategoriAset[0]?.Id ?? '',
-          MerekId: TANPA,
+          MerekId: TANPA_PILIHAN,
           KodeModel: '',
           Nama: '',
           Produsen: '',
@@ -81,7 +80,7 @@ function DialogFormModelAset({
     setErrorSpesifikasi(null);
     const payload = {
       ...form.data,
-      MerekId: form.data.MerekId === TANPA ? null : form.data.MerekId,
+      MerekId: form.data.MerekId === TANPA_PILIHAN ? null : form.data.MerekId,
       Spesifikasi: spesifikasi,
     };
     const opsi = {
@@ -138,7 +137,7 @@ function DialogFormModelAset({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Tanpa merek</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa merek</SelectItem>
                   {merek.map((m) => (
                     <SelectItem key={m.Id} value={m.Id}>
                       {m.Nama}

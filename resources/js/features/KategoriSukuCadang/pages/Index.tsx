@@ -20,12 +20,11 @@ import type { KategoriSukuCadang } from '@/features/Persediaan/types';
 import { ruteKategoriSukuCadang } from '@/features/KategoriSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   kategoriSukuCadang: KategoriSukuCadang[];
 }
-
-const TANPA = '__tanpa__';
 
 function DialogFormKategori({
   kategori,
@@ -37,13 +36,13 @@ function DialogFormKategori({
   const [buka, setBuka] = useState(false);
   const form = useForm(
     kategori
-      ? { Kode: kategori.Kode, Nama: kategori.Nama, IndukId: kategori.IndukId ?? TANPA }
-      : { Kode: '', Nama: '', IndukId: TANPA },
+      ? { Kode: kategori.Kode, Nama: kategori.Nama, IndukId: kategori.IndukId ?? TANPA_PILIHAN }
+      : { Kode: '', Nama: '', IndukId: TANPA_PILIHAN },
   );
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const payload = { ...form.data, IndukId: form.data.IndukId === TANPA ? null : form.data.IndukId };
+    const payload = { ...form.data, IndukId: form.data.IndukId === TANPA_PILIHAN ? null : form.data.IndukId };
     const opsi = {
       onSuccess: () => {
         setBuka(false);
@@ -92,7 +91,7 @@ function DialogFormKategori({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tidak ada (kategori utama)</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tidak ada (kategori utama)</SelectItem>
                 {semuaKategori
                   .filter((k) => k.Id !== kategori?.Id)
                   .map((k) => (

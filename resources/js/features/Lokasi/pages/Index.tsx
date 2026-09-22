@@ -23,14 +23,13 @@ import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteLokasi } from '@/features/Lokasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   lokasi: Lokasi[];
   unitOrganisasi: UnitOrganisasi[];
   kategoriLokasi: KategoriLokasi[];
 }
-
-const TANPA = '__tanpa__';
 
 function DialogKelolaKategori({ kategoriLokasi }: { kategoriLokasi: KategoriLokasi[] }) {
   const konfirmasi = useKonfirmasi();
@@ -122,8 +121,8 @@ function DialogFormLokasi({
           Alamat: lokasi.Alamat ?? '',
           Lantai: lokasi.Lantai ?? '',
           Status: lokasi.Status,
-          UnitOrganisasiId: lokasi.UnitOrganisasiId ?? TANPA,
-          KategoriLokasiId: lokasi.KategoriLokasiId ?? TANPA,
+          UnitOrganisasiId: lokasi.UnitOrganisasiId ?? TANPA_PILIHAN,
+          KategoriLokasiId: lokasi.KategoriLokasiId ?? TANPA_PILIHAN,
         }
       : {
           Kode: '',
@@ -131,8 +130,8 @@ function DialogFormLokasi({
           Alamat: '',
           Lantai: '',
           Status: 'Aktif' as const,
-          UnitOrganisasiId: TANPA,
-          KategoriLokasiId: TANPA,
+          UnitOrganisasiId: TANPA_PILIHAN,
+          KategoriLokasiId: TANPA_PILIHAN,
         },
   );
 
@@ -140,8 +139,8 @@ function DialogFormLokasi({
     e.preventDefault();
     const payload = {
       ...form.data,
-      UnitOrganisasiId: form.data.UnitOrganisasiId === TANPA ? null : form.data.UnitOrganisasiId,
-      KategoriLokasiId: form.data.KategoriLokasiId === TANPA ? null : form.data.KategoriLokasiId,
+      UnitOrganisasiId: form.data.UnitOrganisasiId === TANPA_PILIHAN ? null : form.data.UnitOrganisasiId,
+      KategoriLokasiId: form.data.KategoriLokasiId === TANPA_PILIHAN ? null : form.data.KategoriLokasiId,
     };
     const opsi = {
       onSuccess: () => {
@@ -195,7 +194,7 @@ function DialogFormLokasi({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Tidak ditautkan</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Tidak ditautkan</SelectItem>
                   {unitOrganisasi.map((u) => (
                     <SelectItem key={u.Id} value={u.Id}>
                       {u.Nama}
@@ -214,7 +213,7 @@ function DialogFormLokasi({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Tanpa kategori</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa kategori</SelectItem>
                   {kategoriLokasi.map((k) => (
                     <SelectItem key={k.Id} value={k.Id}>
                       {k.Nama}

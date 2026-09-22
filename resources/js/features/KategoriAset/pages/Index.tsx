@@ -22,12 +22,11 @@ import type { KategoriAset } from '@/features/Aset/types';
 import { ruteKategoriAset } from '@/features/KategoriAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   kategoriAset: KategoriAset[];
 }
-
-const TANPA = '__tanpa__';
 
 function DialogFormKategoriAset({
   kategori,
@@ -42,7 +41,7 @@ function DialogFormKategoriAset({
       ? {
           Kode: kategori.Kode,
           Nama: kategori.Nama,
-          IndukId: kategori.IndukId ?? TANPA,
+          IndukId: kategori.IndukId ?? TANPA_PILIHAN,
           UmurManfaatBulan: kategori.UmurManfaatBulan?.toString() ?? '',
           MetodePenyusutanBawaan: kategori.MetodePenyusutanBawaan ?? '',
           PersentaseNilaiResidu: kategori.PersentaseNilaiResidu ?? '',
@@ -52,7 +51,7 @@ function DialogFormKategoriAset({
       : {
           Kode: '',
           Nama: '',
-          IndukId: TANPA,
+          IndukId: TANPA_PILIHAN,
           UmurManfaatBulan: '',
           MetodePenyusutanBawaan: '',
           PersentaseNilaiResidu: '',
@@ -63,7 +62,7 @@ function DialogFormKategoriAset({
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const payload = { ...form.data, IndukId: form.data.IndukId === TANPA ? null : form.data.IndukId };
+    const payload = { ...form.data, IndukId: form.data.IndukId === TANPA_PILIHAN ? null : form.data.IndukId };
     const opsi = {
       onSuccess: () => {
         setBuka(false);
@@ -112,7 +111,7 @@ function DialogFormKategoriAset({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tidak ada (kategori utama)</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tidak ada (kategori utama)</SelectItem>
                 {semuaKategori
                   .filter((k) => k.Id !== kategori?.Id)
                   .map((k) => (

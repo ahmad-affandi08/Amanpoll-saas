@@ -24,6 +24,7 @@ import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface GudangRingkas {
   Id: string;
@@ -44,7 +45,6 @@ interface BarisPenerimaan {
   Catatan: string;
 }
 
-const TANPA = '__tanpa__';
 const KONDISI: KondisiPenerimaan[] = ['Baik', 'RusakRingan', 'Rusak'];
 const VARIAN_STATUS = {
   Draft: 'netral',
@@ -73,7 +73,7 @@ function DialogCatatPenerimaan({ pesanan, gudang }: Props) {
   const perluGudang = detail.some((item) => item.JenisItem === 'SukuCadang');
   const form = useForm({
     Nomor: '',
-    GudangId: perluGudang && gudang.length > 0 ? gudang[0].Id : TANPA,
+    GudangId: perluGudang && gudang.length > 0 ? gudang[0].Id : TANPA_PILIHAN,
     TanggalTerima: new Date().toISOString().slice(0, 10),
     NomorSuratJalan: '',
     Catatan: '',
@@ -98,7 +98,7 @@ function DialogCatatPenerimaan({ pesanan, gudang }: Props) {
     form.transform((data) => ({
       ...data,
       Nomor: data.Nomor || null,
-      GudangId: data.GudangId === TANPA ? null : data.GudangId,
+      GudangId: data.GudangId === TANPA_PILIHAN ? null : data.GudangId,
       NomorSuratJalan: data.NomorSuratJalan || null,
       Catatan: data.Catatan || null,
       Detail: data.Detail.filter((baris) => Number(baris.JumlahDiterima) > 0).map((baris) => ({
@@ -159,7 +159,7 @@ function DialogCatatPenerimaan({ pesanan, gudang }: Props) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Tanpa gudang</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa gudang</SelectItem>
                   {gudang.map((item) => (
                     <SelectItem key={item.Id} value={item.Id}>
                       {item.Kode} — {item.Nama}
@@ -167,7 +167,7 @@ function DialogCatatPenerimaan({ pesanan, gudang }: Props) {
                   ))}
                 </SelectContent>
               </Select>
-              {perluGudang && form.data.GudangId === TANPA && (
+              {perluGudang && form.data.GudangId === TANPA_PILIHAN && (
                 <p className="text-sm text-destructive">Item suku cadang wajib memilih gudang tujuan.</p>
               )}
             </div>

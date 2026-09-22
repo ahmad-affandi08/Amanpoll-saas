@@ -24,6 +24,7 @@ import type { RencanaPengadaan, StatusRencanaPengadaan } from '@/features/Rencan
 import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface PosRingkas {
   Id: string;
@@ -43,7 +44,6 @@ interface Props {
   filter: { cari?: string; tahun?: number; status?: StatusRencanaPengadaan };
 }
 
-const TANPA = '__tanpa__';
 const SEMUA = '__semua__';
 const STATUS: StatusRencanaPengadaan[] = ['Draft', 'Direncanakan', 'Dibatalkan'];
 const VARIAN_STATUS = { Draft: 'netral', Direncanakan: 'sukses', Dibatalkan: 'bahaya' } as const;
@@ -53,7 +53,7 @@ function DialogBuatRencana({ posAnggaran, usulanDisetujui }: Pick<Props, 'posAng
   const form = useForm({
     Nama: '',
     Tahun: new Date().getFullYear().toString(),
-    PosAnggaranId: TANPA,
+    PosAnggaranId: TANPA_PILIHAN,
     UsulanAsetIds: [] as string[],
   });
   function pilihUsulan(id: string, dipilih: boolean): void {
@@ -66,7 +66,7 @@ function DialogBuatRencana({ posAnggaran, usulanDisetujui }: Pick<Props, 'posAng
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      PosAnggaranId: data.PosAnggaranId === TANPA ? null : data.PosAnggaranId,
+      PosAnggaranId: data.PosAnggaranId === TANPA_PILIHAN ? null : data.PosAnggaranId,
     }));
     form.post(ruteRencanaPengadaan.index, { onSuccess: () => setBuka(false) });
   }
@@ -112,7 +112,7 @@ function DialogBuatRencana({ posAnggaran, usulanDisetujui }: Pick<Props, 'posAng
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Pilih nanti</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Pilih nanti</SelectItem>
                 {posAnggaran.map((item) => (
                   <SelectItem key={item.Id} value={item.Id}>
                     {item.Label}

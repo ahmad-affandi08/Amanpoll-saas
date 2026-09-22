@@ -27,6 +27,7 @@ import type {
 import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Ringkas {
   Id: string;
@@ -47,8 +48,6 @@ const HARI = [
   { nilai: 6, label: 'Sab' },
   { nilai: 7, label: 'Min' },
 ];
-const TANPA = '__tanpa__';
-
 function aturanAwal(item: TingkatLayanan | null): AturanTingkatLayanan[] {
   if (item?.Aturan.length) return item.Aturan;
   return PRIORITAS.map((Prioritas) => ({
@@ -308,14 +307,14 @@ function DialogTingkatLayanan({
                   <div className="space-y-1.5">
                     <Label>Peran penerima</Label>
                     <Select
-                      value={eskalasi.PeranId ?? TANPA}
-                      onValueChange={(v) => ubahEskalasi(indeks, { PeranId: v === TANPA ? null : v })}
+                      value={eskalasi.PeranId ?? TANPA_PILIHAN}
+                      onValueChange={(v) => ubahEskalasi(indeks, { PeranId: v === TANPA_PILIHAN ? null : v })}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={TANPA}>Tanpa peran</SelectItem>
+                        <SelectItem value={TANPA_PILIHAN}>Tanpa peran</SelectItem>
                         {peran.map((p) => (
                           <SelectItem key={p.Id} value={p.Id}>
                             {p.Nama}
@@ -327,14 +326,16 @@ function DialogTingkatLayanan({
                   <div className="space-y-1.5">
                     <Label>Pengguna penerima</Label>
                     <Select
-                      value={eskalasi.PenggunaId ?? TANPA}
-                      onValueChange={(v) => ubahEskalasi(indeks, { PenggunaId: v === TANPA ? null : v })}
+                      value={eskalasi.PenggunaId ?? TANPA_PILIHAN}
+                      onValueChange={(v) =>
+                        ubahEskalasi(indeks, { PenggunaId: v === TANPA_PILIHAN ? null : v })
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={TANPA}>Tanpa pengguna khusus</SelectItem>
+                        <SelectItem value={TANPA_PILIHAN}>Tanpa pengguna khusus</SelectItem>
                         {pengguna.map((p) => (
                           <SelectItem key={p.Id} value={p.Id}>
                             {p.Nama}

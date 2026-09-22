@@ -23,6 +23,7 @@ import { VARIAN_BADGE_STATUS_GUDANG } from '@/features/Persediaan/status';
 import { ruteGudang } from '@/features/Gudang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface LokasiRingkas {
   Id: string;
@@ -35,19 +36,25 @@ interface Props {
   lokasi: LokasiRingkas[];
 }
 
-const TANPA = '__tanpa__';
-
 function DialogFormGudang({ gudang, lokasi }: { gudang: Gudang | null; lokasi: LokasiRingkas[] }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     gudang
-      ? { Kode: gudang.Kode, Nama: gudang.Nama, LokasiId: gudang.LokasiId ?? TANPA, Status: gudang.Status }
-      : { Kode: '', Nama: '', LokasiId: TANPA, Status: 'Aktif' as StatusGudang },
+      ? {
+          Kode: gudang.Kode,
+          Nama: gudang.Nama,
+          LokasiId: gudang.LokasiId ?? TANPA_PILIHAN,
+          Status: gudang.Status,
+        }
+      : { Kode: '', Nama: '', LokasiId: TANPA_PILIHAN, Status: 'Aktif' as StatusGudang },
   );
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const payload = { ...form.data, LokasiId: form.data.LokasiId === TANPA ? null : form.data.LokasiId };
+    const payload = {
+      ...form.data,
+      LokasiId: form.data.LokasiId === TANPA_PILIHAN ? null : form.data.LokasiId,
+    };
     const opsi = {
       onSuccess: () => {
         setBuka(false);
@@ -96,7 +103,7 @@ function DialogFormGudang({ gudang, lokasi }: { gudang: Gudang | null; lokasi: L
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tidak diisi</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
                 {lokasi.map((l) => (
                   <SelectItem key={l.Id} value={l.Id}>
                     {l.Nama}
@@ -131,13 +138,13 @@ function DialogFormGudang({ gudang, lokasi }: { gudang: Gudang | null; lokasi: L
 function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGudang: LokasiGudang[] }) {
   const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
-  const form = useForm({ Kode: '', Nama: '', IndukId: TANPA });
+  const form = useForm({ Kode: '', Nama: '', IndukId: TANPA_PILIHAN });
 
   const tambah = (e: FormEvent) => {
     e.preventDefault();
     router.post(
       ruteGudang.lokasi(gudang.Id),
-      { ...form.data, IndukId: form.data.IndukId === TANPA ? null : form.data.IndukId },
+      { ...form.data, IndukId: form.data.IndukId === TANPA_PILIHAN ? null : form.data.IndukId },
       {
         preserveScroll: true,
         onSuccess: () => form.reset(),

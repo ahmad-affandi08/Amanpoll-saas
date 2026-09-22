@@ -30,6 +30,7 @@ import {
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import type { Paginasi } from '@/types/global';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface KeluhanRingkas {
   Id: string;
@@ -61,8 +62,6 @@ interface Props {
   dapatMengelola: boolean;
 }
 
-const TANPA = '__tanpa__';
-
 const DAFTAR_STATUS: StatusPerintahKerja[] = [
   'Draf',
   'Terjadwal',
@@ -92,7 +91,7 @@ const DAFTAR_JENIS: JenisPerintahKerja[] = [
 function DialogBuatPerintahKerja({ keluhan, aset, lokasi }: Pick<Props, 'keluhan' | 'aset' | 'lokasi'>) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
-    KeluhanId: TANPA,
+    KeluhanId: TANPA_PILIHAN,
     Jenis: 'Korektif' as JenisPerintahKerja,
     Judul: '',
     Deskripsi: '',
@@ -106,10 +105,10 @@ function DialogBuatPerintahKerja({ keluhan, aset, lokasi }: Pick<Props, 'keluhan
   });
 
   const tanganiPilihKeluhan = (keluhanId: string) => {
-    if (keluhanId === TANPA) {
+    if (keluhanId === TANPA_PILIHAN) {
       form.setData({
         ...form.data,
-        KeluhanId: TANPA,
+        KeluhanId: TANPA_PILIHAN,
       });
       return;
     }
@@ -131,7 +130,7 @@ function DialogBuatPerintahKerja({ keluhan, aset, lokasi }: Pick<Props, 'keluhan
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      KeluhanId: data.KeluhanId === TANPA ? null : data.KeluhanId,
+      KeluhanId: data.KeluhanId === TANPA_PILIHAN ? null : data.KeluhanId,
       LokasiId: data.LokasiId ? data.LokasiId : null,
       DijadwalkanMulaiPada: data.DijadwalkanMulaiPada || null,
       DijadwalkanSelesaiPada: data.DijadwalkanSelesaiPada || null,
@@ -174,7 +173,7 @@ function DialogBuatPerintahKerja({ keluhan, aset, lokasi }: Pick<Props, 'keluhan
                   <SelectValue placeholder="Pilih keluhan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA} className="cursor-pointer">
+                  <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
                     Tanpa keluhan (Pekerjaan Mandiri)
                   </SelectItem>
                   {keluhan.map((k) => (
@@ -374,7 +373,7 @@ export default function PerintahKerjaIndex({
   const filterData = (kunci: 'status' | 'prioritas', nilai: string) => {
     router.get(
       rutePerintahKerja.index,
-      { ...filter, [kunci]: nilai === TANPA ? undefined : nilai },
+      { ...filter, [kunci]: nilai === TANPA_PILIHAN ? undefined : nilai },
       { preserveState: true, replace: true },
     );
   };
@@ -396,12 +395,12 @@ export default function PerintahKerjaIndex({
       />
 
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
-        <Select value={filter.status ?? TANPA} onValueChange={(val) => filterData('status', val)}>
+        <Select value={filter.status ?? TANPA_PILIHAN} onValueChange={(val) => filterData('status', val)}>
           <SelectTrigger className="w-full cursor-pointer">
             <SelectValue placeholder="Semua status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={TANPA} className="cursor-pointer">
+            <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
               Semua status
             </SelectItem>
             {DAFTAR_STATUS.map((s) => (
@@ -412,12 +411,15 @@ export default function PerintahKerjaIndex({
           </SelectContent>
         </Select>
 
-        <Select value={filter.prioritas ?? TANPA} onValueChange={(val) => filterData('prioritas', val)}>
+        <Select
+          value={filter.prioritas ?? TANPA_PILIHAN}
+          onValueChange={(val) => filterData('prioritas', val)}
+        >
           <SelectTrigger className="w-full cursor-pointer">
             <SelectValue placeholder="Semua prioritas" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={TANPA} className="cursor-pointer">
+            <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
               Semua prioritas
             </SelectItem>
             {DAFTAR_PRIORITAS.map((p) => (

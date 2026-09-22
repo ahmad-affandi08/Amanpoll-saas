@@ -21,6 +21,7 @@ import type { Paginasi } from '@/types/global';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Ringkas {
   Id: string;
@@ -32,8 +33,6 @@ interface Props {
   gudang: Ringkas[];
   filter: { status?: string; jenis?: string };
 }
-
-const TANPA = '__tanpa__';
 
 const LABEL_JENIS: Record<JenisMutasiStok, string> = {
   Penerimaan: 'Penerimaan',
@@ -55,8 +54,8 @@ function DialogBuatMutasi({ gudang }: { gudang: Ringkas[] }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Jenis: 'Penerimaan' as JenisMutasiStok,
-    GudangAsalId: TANPA,
-    GudangTujuanId: TANPA,
+    GudangAsalId: TANPA_PILIHAN,
+    GudangTujuanId: TANPA_PILIHAN,
     Catatan: '',
   });
 
@@ -66,8 +65,8 @@ function DialogBuatMutasi({ gudang }: { gudang: Ringkas[] }) {
       ruteMutasiStok.index,
       {
         Jenis: form.data.Jenis,
-        GudangAsalId: form.data.GudangAsalId === TANPA ? null : form.data.GudangAsalId,
-        GudangTujuanId: form.data.GudangTujuanId === TANPA ? null : form.data.GudangTujuanId,
+        GudangAsalId: form.data.GudangAsalId === TANPA_PILIHAN ? null : form.data.GudangAsalId,
+        GudangTujuanId: form.data.GudangTujuanId === TANPA_PILIHAN ? null : form.data.GudangTujuanId,
         Catatan: form.data.Catatan || null,
       },
       { onSuccess: () => setBuka(false) },

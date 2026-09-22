@@ -24,6 +24,7 @@ import type { PrioritasUsulanAset, StatusUsulanAset, UsulanAset } from '@/featur
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Referensi {
   Id: string;
@@ -37,7 +38,6 @@ interface Props {
   filter: { cari?: string; status?: StatusUsulanAset; prioritas?: PrioritasUsulanAset };
 }
 
-const TANPA = '__tanpa__';
 const SEMUA = '__semua__';
 const STATUS: StatusUsulanAset[] = ['Draft', 'Diajukan', 'MenungguPersetujuan', 'Disetujui', 'Ditolak'];
 const PRIORITAS: PrioritasUsulanAset[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
@@ -58,8 +58,8 @@ function DialogBuatUsulan({
   const [buka, setBuka] = useState(false);
   const form = useForm({
     UnitOrganisasiId: '',
-    KategoriAsetId: TANPA,
-    ModelAsetId: TANPA,
+    KategoriAsetId: TANPA_PILIHAN,
+    ModelAsetId: TANPA_PILIHAN,
     NamaKebutuhan: '',
     Jumlah: '1',
     EstimasiHargaSatuan: '',
@@ -73,8 +73,8 @@ function DialogBuatUsulan({
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      KategoriAsetId: data.KategoriAsetId === TANPA ? null : data.KategoriAsetId,
-      ModelAsetId: data.ModelAsetId === TANPA ? null : data.ModelAsetId,
+      KategoriAsetId: data.KategoriAsetId === TANPA_PILIHAN ? null : data.KategoriAsetId,
+      ModelAsetId: data.ModelAsetId === TANPA_PILIHAN ? null : data.ModelAsetId,
       EstimasiHargaSatuan: data.EstimasiHargaSatuan || null,
       JenisKebutuhan: data.JenisKebutuhan || null,
     }));
@@ -158,7 +158,7 @@ function DialogBuatUsulan({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Belum ditentukan</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
                   {kategoriAset.map((item) => (
                     <SelectItem key={item.Id} value={item.Id}>
                       {item.Nama}
@@ -177,7 +177,7 @@ function DialogBuatUsulan({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Belum ditentukan</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
                   {modelAset.map((item) => (
                     <SelectItem key={item.Id} value={item.Id}>
                       {item.Nama}

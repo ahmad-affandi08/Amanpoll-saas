@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -40,8 +41,6 @@ interface Props {
   kategoriAset: KategoriAsetRingkas[];
 }
 
-const TANPA = '__tanpa__';
-
 function DialogFormKodeKegagalan({
   kategoriAset,
   itemEdit,
@@ -58,7 +57,7 @@ function DialogFormKodeKegagalan({
     Jenis: itemEdit?.Jenis ?? ('Masalah' as 'Masalah' | 'Penyebab' | 'Tindakan'),
     Kode: itemEdit?.Kode ?? '',
     Nama: itemEdit?.Nama ?? '',
-    KategoriAsetId: itemEdit?.KategoriAsetId ?? TANPA,
+    KategoriAsetId: itemEdit?.KategoriAsetId ?? TANPA_PILIHAN,
     Keterangan: itemEdit?.Keterangan ?? '',
     Aktif: itemEdit?.Aktif ?? true,
   });
@@ -67,7 +66,7 @@ function DialogFormKodeKegagalan({
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      KategoriAsetId: data.KategoriAsetId === TANPA ? null : data.KategoriAsetId,
+      KategoriAsetId: data.KategoriAsetId === TANPA_PILIHAN ? null : data.KategoriAsetId,
     }));
 
     if (sedangEdit && itemEdit) {
@@ -141,7 +140,7 @@ function DialogFormKodeKegagalan({
                   <SelectValue placeholder="Semua kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA} className="cursor-pointer">
+                  <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
                     Semua Kategori Aset
                   </SelectItem>
                   {kategoriAset.map((k) => (

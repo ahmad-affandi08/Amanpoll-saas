@@ -24,6 +24,7 @@ import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteAlurPersetujuan } from '@/features/AlurPersetujuan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   alurPersetujuan: AlurPersetujuan[];
@@ -33,8 +34,6 @@ interface Props {
 }
 
 const JENIS_PENYETUJU: JenisPenyetuju[] = ['Pengguna', 'Peran', 'Unit'];
-const TANPA = '__tanpa__';
-
 function DialogFormAlur({
   alur,
   jenisEntitasTersedia,
@@ -196,8 +195,8 @@ function FormTahap({
         <div className="space-y-1.5">
           <Label>Pengguna</Label>
           <Select
-            value={form.data.PenggunaId || TANPA}
-            onValueChange={(v) => form.setData('PenggunaId', v === TANPA ? '' : v)}
+            value={form.data.PenggunaId || TANPA_PILIHAN}
+            onValueChange={(v) => form.setData('PenggunaId', v === TANPA_PILIHAN ? '' : v)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Pilih pengguna" />
@@ -216,14 +215,16 @@ function FormTahap({
         <div className="space-y-1.5">
           <Label>Peran {form.data.JenisPenyetuju === 'Unit' && '(opsional)'}</Label>
           <Select
-            value={form.data.PeranId || TANPA}
-            onValueChange={(v) => form.setData('PeranId', v === TANPA ? '' : v)}
+            value={form.data.PeranId || TANPA_PILIHAN}
+            onValueChange={(v) => form.setData('PeranId', v === TANPA_PILIHAN ? '' : v)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Pilih peran" />
             </SelectTrigger>
             <SelectContent>
-              {form.data.JenisPenyetuju === 'Unit' && <SelectItem value={TANPA}>Semua peran</SelectItem>}
+              {form.data.JenisPenyetuju === 'Unit' && (
+                <SelectItem value={TANPA_PILIHAN}>Semua peran</SelectItem>
+              )}
               {peran.map((p) => (
                 <SelectItem key={p.Id} value={p.Id}>
                   {p.Nama}

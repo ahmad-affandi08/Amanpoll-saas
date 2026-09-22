@@ -28,6 +28,7 @@ import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   anggaran: Anggaran;
@@ -35,7 +36,6 @@ interface Props {
   dapatMenyesuaikan: boolean;
 }
 
-const TANPA = '__tanpa__';
 const VARIAN_STATUS = {
   Draft: 'netral',
   MenungguPersetujuan: 'perhatian',
@@ -55,7 +55,7 @@ function DialogPos({
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
-    IndukId: pos?.IndukId ?? TANPA,
+    IndukId: pos?.IndukId ?? TANPA_PILIHAN,
     Kode: pos?.Kode ?? '',
     Nama: pos?.Nama ?? '',
     Jumlah: pos?.Jumlah ?? '',
@@ -63,7 +63,7 @@ function DialogPos({
 
   function submit(event: FormEvent): void {
     event.preventDefault();
-    form.transform((data) => ({ ...data, IndukId: data.IndukId === TANPA ? null : data.IndukId }));
+    form.transform((data) => ({ ...data, IndukId: data.IndukId === TANPA_PILIHAN ? null : data.IndukId }));
     const opsi = { preserveScroll: true, onSuccess: () => setBuka(false) };
     if (pos) form.put(ruteAnggaran.posDetail(pos.Id), opsi);
     else form.post(ruteAnggaran.pos(anggaran.Id), opsi);
@@ -97,7 +97,7 @@ function DialogPos({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Pos utama</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Pos utama</SelectItem>
                 {semuaPos
                   .filter((item) => item.Id !== pos?.Id)
                   .map((item) => (

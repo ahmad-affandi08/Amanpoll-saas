@@ -22,6 +22,7 @@ import type { Paginasi } from '@/types/global';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface KategoriRingkas {
   Id: string;
@@ -47,8 +48,6 @@ interface Props {
   filter: { status?: string; prioritas?: string };
   dapatMengelola: boolean;
 }
-const TANPA = '__tanpa__';
-
 function DialogBuatKeluhan({
   kategori,
   aset,
@@ -58,11 +57,11 @@ function DialogBuatKeluhan({
   const [buka, setBuka] = useState(false);
   const form = useForm({
     KategoriKeluhanId: '',
-    AsetId: TANPA,
+    AsetId: TANPA_PILIHAN,
     LokasiId: '',
     Judul: '',
     Deskripsi: '',
-    Prioritas: TANPA,
+    Prioritas: TANPA_PILIHAN,
     Lampiran: [] as File[],
   });
   const kategoriDipilih = kategori.find((item) => item.Id === form.data.KategoriKeluhanId);
@@ -71,8 +70,8 @@ function DialogBuatKeluhan({
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      AsetId: data.AsetId === TANPA ? null : data.AsetId,
-      Prioritas: data.Prioritas === TANPA ? null : data.Prioritas,
+      AsetId: data.AsetId === TANPA_PILIHAN ? null : data.AsetId,
+      Prioritas: data.Prioritas === TANPA_PILIHAN ? null : data.Prioritas,
     }));
     form.post(ruteKeluhan.index, { onSuccess: () => setBuka(false) });
   };
@@ -127,7 +126,7 @@ function DialogBuatKeluhan({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tanpa aset</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tanpa aset</SelectItem>
                 {aset.map((item) => (
                   <SelectItem key={item.Id} value={item.Id}>
                     {item.KodeAset} · {item.Nama}
@@ -165,7 +164,7 @@ function DialogBuatKeluhan({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={TANPA}>Gunakan bawaan kategori</SelectItem>
+                    <SelectItem value={TANPA_PILIHAN}>Gunakan bawaan kategori</SelectItem>
                     {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
                       <SelectItem key={p} value={p}>
                         {p}
@@ -231,7 +230,7 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
   const filterData = (kunci: 'status' | 'prioritas', nilai: string) =>
     router.get(
       ruteKeluhan.index,
-      { ...filter, [kunci]: nilai === TANPA ? undefined : nilai },
+      { ...filter, [kunci]: nilai === TANPA_PILIHAN ? undefined : nilai },
       { preserveState: true, replace: true },
     );
   return (
@@ -257,12 +256,12 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
         className="mb-6"
       />
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
-        <Select value={filter.status ?? TANPA} onValueChange={(value) => filterData('status', value)}>
+        <Select value={filter.status ?? TANPA_PILIHAN} onValueChange={(value) => filterData('status', value)}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Semua status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={TANPA}>Semua status</SelectItem>
+            <SelectItem value={TANPA_PILIHAN}>Semua status</SelectItem>
             {(
               [
                 'Baru',
@@ -281,12 +280,15 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
             ))}
           </SelectContent>
         </Select>
-        <Select value={filter.prioritas ?? TANPA} onValueChange={(value) => filterData('prioritas', value)}>
+        <Select
+          value={filter.prioritas ?? TANPA_PILIHAN}
+          onValueChange={(value) => filterData('prioritas', value)}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Semua prioritas" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={TANPA}>Semua prioritas</SelectItem>
+            <SelectItem value={TANPA_PILIHAN}>Semua prioritas</SelectItem>
             {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
               <SelectItem key={p} value={p}>
                 {p}

@@ -23,6 +23,7 @@ import type { Anggaran, StatusAnggaran } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Ringkas {
   Id: string;
@@ -35,7 +36,6 @@ interface Props {
   filter: { cari?: string; tahun?: number; status?: StatusAnggaran };
 }
 
-const TANPA = '__tanpa__';
 const SEMUA = '__semua__';
 const VARIAN_STATUS = {
   Draft: 'netral',
@@ -48,7 +48,7 @@ const VARIAN_STATUS = {
 function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
-    UnitOrganisasiId: TANPA,
+    UnitOrganisasiId: TANPA_PILIHAN,
     Kode: '',
     Nama: '',
     Tahun: new Date().getFullYear().toString(),
@@ -60,7 +60,7 @@ function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      UnitOrganisasiId: data.UnitOrganisasiId === TANPA ? null : data.UnitOrganisasiId,
+      UnitOrganisasiId: data.UnitOrganisasiId === TANPA_PILIHAN ? null : data.UnitOrganisasiId,
     }));
     form.post(ruteAnggaran.index, { onSuccess: () => setBuka(false) });
   }
@@ -122,7 +122,7 @@ function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Seluruh organisasi</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Seluruh organisasi</SelectItem>
                 {unitOrganisasi.map((unit) => (
                   <SelectItem key={unit.Id} value={unit.Id}>
                     {unit.Nama}

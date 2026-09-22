@@ -24,6 +24,7 @@ import type { JenisKontrak, Kontrak, RingkasanKontrak, StatusKontrak } from '@/f
 import { ruteKontrak } from '@/features/Kontrak/api';
 import { formatUang } from '@/lib/uang';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface PenyediaRingkas {
   Id: string;
@@ -42,7 +43,6 @@ interface Props {
   filter: { cari?: string; status?: StatusKontrak; penyedia?: string };
 }
 
-const TANPA = '__tanpa__';
 const SEMUA = '__semua__';
 const STATUS: StatusKontrak[] = ['Aktif', 'Berakhir', 'Dibatalkan'];
 const JENIS: JenisKontrak[] = ['Pemeliharaan', 'Layanan', 'Sewa', 'Pembelian', 'Lainnya'];
@@ -63,12 +63,12 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
     Nomor: '',
     Nama: '',
     Jenis: 'Pemeliharaan',
-    PenyediaId: TANPA,
+    PenyediaId: TANPA_PILIHAN,
     MulaiPada: new Date().toISOString().slice(0, 10),
     BerakhirPada: '',
     Nilai: '',
     MataUang: 'IDR',
-    TingkatLayananId: TANPA,
+    TingkatLayananId: TANPA_PILIHAN,
     PeringatanHariSebelum: '30',
     Catatan: '',
   });
@@ -77,8 +77,8 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      PenyediaId: data.PenyediaId === TANPA ? null : data.PenyediaId,
-      TingkatLayananId: data.TingkatLayananId === TANPA ? null : data.TingkatLayananId,
+      PenyediaId: data.PenyediaId === TANPA_PILIHAN ? null : data.PenyediaId,
+      TingkatLayananId: data.TingkatLayananId === TANPA_PILIHAN ? null : data.TingkatLayananId,
       Nilai: data.Nilai || null,
       Catatan: data.Catatan || null,
     }));
@@ -147,7 +147,7 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Tanpa penyedia</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa penyedia</SelectItem>
                   {penyedia.map((item) => (
                     <SelectItem key={item.Id} value={item.Id}>
                       {item.Kode} — {item.Nama}
@@ -228,7 +228,7 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tanpa SLA khusus</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tanpa SLA khusus</SelectItem>
                 {tingkatLayanan.map((item) => (
                   <SelectItem key={item.Id} value={item.Id}>
                     {item.Nama}

@@ -39,6 +39,7 @@ import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import { ruteAset } from '@/features/Aset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   aset: Aset;
@@ -49,14 +50,12 @@ interface Props {
   lokasi: Lokasi[];
 }
 
-const TANPA = '__tanpa__';
-
 function TabInfo({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi }: Props) {
   const form = useForm({
     KategoriAsetId: aset.KategoriAsetId,
-    ModelAsetId: aset.ModelAsetId ?? TANPA,
-    PenyediaId: aset.PenyediaId ?? TANPA,
-    UnitOrganisasiId: aset.UnitOrganisasiId ?? TANPA,
+    ModelAsetId: aset.ModelAsetId ?? TANPA_PILIHAN,
+    PenyediaId: aset.PenyediaId ?? TANPA_PILIHAN,
+    UnitOrganisasiId: aset.UnitOrganisasiId ?? TANPA_PILIHAN,
     KodeAset: aset.KodeAset,
     Nama: aset.Nama,
     NomorSeri: aset.NomorSeri ?? '',
@@ -84,9 +83,9 @@ function TabInfo({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi }: Pr
     e.preventDefault();
     const payload = {
       ...form.data,
-      ModelAsetId: form.data.ModelAsetId === TANPA ? null : form.data.ModelAsetId,
-      PenyediaId: form.data.PenyediaId === TANPA ? null : form.data.PenyediaId,
-      UnitOrganisasiId: form.data.UnitOrganisasiId === TANPA ? null : form.data.UnitOrganisasiId,
+      ModelAsetId: form.data.ModelAsetId === TANPA_PILIHAN ? null : form.data.ModelAsetId,
+      PenyediaId: form.data.PenyediaId === TANPA_PILIHAN ? null : form.data.PenyediaId,
+      UnitOrganisasiId: form.data.UnitOrganisasiId === TANPA_PILIHAN ? null : form.data.UnitOrganisasiId,
     };
     router.put(ruteAset.detail(aset.Id), payload, { preserveScroll: true });
   };
@@ -132,7 +131,7 @@ function TabInfo({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi }: Pr
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TANPA}>Tanpa model</SelectItem>
+              <SelectItem value={TANPA_PILIHAN}>Tanpa model</SelectItem>
               {modelAset.map((m) => (
                 <SelectItem key={m.Id} value={m.Id}>
                   {m.Nama}
@@ -148,7 +147,7 @@ function TabInfo({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi }: Pr
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TANPA}>Tanpa penyedia</SelectItem>
+              <SelectItem value={TANPA_PILIHAN}>Tanpa penyedia</SelectItem>
               {penyedia.map((p) => (
                 <SelectItem key={p.Id} value={p.Id}>
                   {p.Nama}
@@ -169,7 +168,7 @@ function TabInfo({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi }: Pr
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TANPA}>Tidak ditautkan</SelectItem>
+              <SelectItem value={TANPA_PILIHAN}>Tidak ditautkan</SelectItem>
               {unitOrganisasi.map((u) => (
                 <SelectItem key={u.Id} value={u.Id}>
                   {u.Nama}
@@ -318,7 +317,7 @@ function TabInfo({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi }: Pr
 function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
   const [data, setData] = useState<RiwayatLokasiAset[]>([]);
   const [memuat, setMemuat] = useState(true);
-  const form = useForm({ LokasiTujuanId: TANPA, Alasan: '' });
+  const form = useForm({ LokasiTujuanId: TANPA_PILIHAN, Alasan: '' });
 
   const muat = () => {
     setMemuat(true);
@@ -333,7 +332,7 @@ function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const payload = {
-      LokasiTujuanId: form.data.LokasiTujuanId === TANPA ? null : form.data.LokasiTujuanId,
+      LokasiTujuanId: form.data.LokasiTujuanId === TANPA_PILIHAN ? null : form.data.LokasiTujuanId,
       Alasan: form.data.Alasan || null,
     };
     router.post(ruteAset.riwayatLokasi(aset.Id), payload, { preserveScroll: true, onSuccess: muat });
@@ -353,7 +352,7 @@ function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TANPA}>Tidak ada (kosongkan lokasi)</SelectItem>
+              <SelectItem value={TANPA_PILIHAN}>Tidak ada (kosongkan lokasi)</SelectItem>
               {lokasi.map((l) => (
                 <SelectItem key={l.Id} value={l.Id}>
                   {l.Nama}
@@ -397,7 +396,7 @@ function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
 function TabPenanggungJawab({ aset, unitOrganisasi }: { aset: Aset; unitOrganisasi: UnitOrganisasi[] }) {
   const [data, setData] = useState<RiwayatPenanggungJawabAset[]>([]);
   const [memuat, setMemuat] = useState(true);
-  const form = useForm({ Jenis: 'unit' as 'unit', UnitOrganisasiId: TANPA, Catatan: '' });
+  const form = useForm({ Jenis: 'unit' as 'unit', UnitOrganisasiId: TANPA_PILIHAN, Catatan: '' });
 
   const muat = () => {
     setMemuat(true);
@@ -411,7 +410,7 @@ function TabPenanggungJawab({ aset, unitOrganisasi }: { aset: Aset; unitOrganisa
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (form.data.UnitOrganisasiId === TANPA) return;
+    if (form.data.UnitOrganisasiId === TANPA_PILIHAN) return;
     router.post(
       ruteAset.penanggungJawab(aset.Id),
       {
@@ -449,7 +448,7 @@ function TabPenanggungJawab({ aset, unitOrganisasi }: { aset: Aset; unitOrganisa
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TANPA}>Pilih unit</SelectItem>
+              <SelectItem value={TANPA_PILIHAN}>Pilih unit</SelectItem>
               {unitOrganisasi.map((u) => (
                 <SelectItem key={u.Id} value={u.Id}>
                   {u.Nama}
@@ -616,7 +615,7 @@ function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
   const [data, setData] = useState<GaransiAset[]>([]);
   const [memuat, setMemuat] = useState(true);
   const form = useForm({
-    PenyediaId: TANPA,
+    PenyediaId: TANPA_PILIHAN,
     NomorGaransi: '',
     MulaiPada: '',
     BerakhirPada: '',
@@ -637,7 +636,7 @@ function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
     e.preventDefault();
     const payload = {
       ...form.data,
-      PenyediaId: form.data.PenyediaId === TANPA ? null : form.data.PenyediaId,
+      PenyediaId: form.data.PenyediaId === TANPA_PILIHAN ? null : form.data.PenyediaId,
     };
     router.post(ruteAset.garansi(aset.Id), payload, {
       preserveScroll: true,
@@ -692,7 +691,7 @@ function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TANPA}>Tanpa penyedia</SelectItem>
+              <SelectItem value={TANPA_PILIHAN}>Tanpa penyedia</SelectItem>
               {penyedia.map((p) => (
                 <SelectItem key={p.Id} value={p.Id}>
                   {p.Nama}

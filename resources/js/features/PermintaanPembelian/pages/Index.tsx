@@ -27,6 +27,7 @@ import type {
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface UnitRingkas {
   Id: string;
@@ -51,7 +52,6 @@ interface Props {
   filter: { cari?: string; status?: StatusPermintaanPembelian };
 }
 
-const TANPA = '__tanpa__';
 const SEMUA = '__semua__';
 const STATUS: StatusPermintaanPembelian[] = ['Draft', 'MenungguPersetujuan', 'Disetujui', 'Ditolak'];
 const PRIORITAS: PrioritasPermintaanPembelian[] = ['Rendah', 'Normal', 'Tinggi', 'Mendesak'];
@@ -69,8 +69,8 @@ function DialogBuatPermintaan({
 }: Omit<Props, 'permintaan' | 'filter'>) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
-    UnitOrganisasiId: TANPA,
-    RencanaPengadaanId: TANPA,
+    UnitOrganisasiId: TANPA_PILIHAN,
+    RencanaPengadaanId: TANPA_PILIHAN,
     PosAnggaranId: '',
     TanggalPermintaan: new Date().toISOString().slice(0, 10),
     TanggalDibutuhkan: '',
@@ -90,8 +90,8 @@ function DialogBuatPermintaan({
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      UnitOrganisasiId: data.UnitOrganisasiId === TANPA ? null : data.UnitOrganisasiId,
-      RencanaPengadaanId: data.RencanaPengadaanId === TANPA ? null : data.RencanaPengadaanId,
+      UnitOrganisasiId: data.UnitOrganisasiId === TANPA_PILIHAN ? null : data.UnitOrganisasiId,
+      RencanaPengadaanId: data.RencanaPengadaanId === TANPA_PILIHAN ? null : data.RencanaPengadaanId,
       TanggalDibutuhkan: data.TanggalDibutuhkan || null,
       Alasan: data.Alasan || null,
     }));
@@ -167,7 +167,7 @@ function DialogBuatPermintaan({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tanpa rencana</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tanpa rencana</SelectItem>
                 {rencana.map((item) => (
                   <SelectItem key={item.Id} value={item.Id}>
                     {item.Nomor} — {item.Nama}
@@ -187,7 +187,7 @@ function DialogBuatPermintaan({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Tanpa unit</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa unit</SelectItem>
                   {unitOrganisasi.map((item) => (
                     <SelectItem key={item.Id} value={item.Id}>
                       {item.Nama}

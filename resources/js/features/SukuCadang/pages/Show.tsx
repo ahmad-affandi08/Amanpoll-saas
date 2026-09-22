@@ -22,6 +22,7 @@ import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Ringkas {
   Id: string;
@@ -41,8 +42,6 @@ interface Props {
   modelAset: Ringkas[];
   aset: AsetRingkas[];
 }
-
-const TANPA = '__tanpa__';
 
 function DialogTambahKelompok({ sukuCadang }: { sukuCadang: SukuCadang }) {
   const [buka, setBuka] = useState(false);
@@ -131,9 +130,9 @@ function DialogTambahKompatibilitas({
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Lingkup: 'aset',
-    KategoriAsetId: TANPA,
-    ModelAsetId: TANPA,
-    AsetId: TANPA,
+    KategoriAsetId: TANPA_PILIHAN,
+    ModelAsetId: TANPA_PILIHAN,
+    AsetId: TANPA_PILIHAN,
     Catatan: '',
   });
 
@@ -144,12 +143,14 @@ function DialogTambahKompatibilitas({
       {
         SukuCadangId: sukuCadang.Id,
         KategoriAsetId:
-          form.data.Lingkup === 'kategori' && form.data.KategoriAsetId !== TANPA
+          form.data.Lingkup === 'kategori' && form.data.KategoriAsetId !== TANPA_PILIHAN
             ? form.data.KategoriAsetId
             : null,
         ModelAsetId:
-          form.data.Lingkup === 'model' && form.data.ModelAsetId !== TANPA ? form.data.ModelAsetId : null,
-        AsetId: form.data.Lingkup === 'aset' && form.data.AsetId !== TANPA ? form.data.AsetId : null,
+          form.data.Lingkup === 'model' && form.data.ModelAsetId !== TANPA_PILIHAN
+            ? form.data.ModelAsetId
+            : null,
+        AsetId: form.data.Lingkup === 'aset' && form.data.AsetId !== TANPA_PILIHAN ? form.data.AsetId : null,
         Catatan: form.data.Catatan || null,
       },
       {

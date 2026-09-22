@@ -22,6 +22,7 @@ import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface PosRingkas {
   Id: string;
@@ -43,7 +44,6 @@ interface Props {
   usulanDisetujui: UsulanRingkas[];
   sukuCadang: SukuCadangRingkas[];
 }
-const TANPA = '__tanpa__';
 const MANUAL = '__manual__';
 const VARIAN_STATUS = { Draft: 'netral', Direncanakan: 'sukses', Dibatalkan: 'bahaya' } as const;
 const BULAN = [
@@ -66,13 +66,13 @@ function DialogUbahRencana({ rencana, posAnggaran }: Pick<Props, 'rencana' | 'po
   const form = useForm({
     Nama: rencana.Nama,
     Tahun: rencana.Tahun.toString(),
-    PosAnggaranId: rencana.PosAnggaranId ?? TANPA,
+    PosAnggaranId: rencana.PosAnggaranId ?? TANPA_PILIHAN,
   });
   function submit(event: FormEvent): void {
     event.preventDefault();
     form.transform((data) => ({
       ...data,
-      PosAnggaranId: data.PosAnggaranId === TANPA ? null : data.PosAnggaranId,
+      PosAnggaranId: data.PosAnggaranId === TANPA_PILIHAN ? null : data.PosAnggaranId,
     }));
     form.put(ruteRencanaPengadaan.detail(rencana.Id), {
       preserveScroll: true,
@@ -114,7 +114,7 @@ function DialogUbahRencana({ rencana, posAnggaran }: Pick<Props, 'rencana' | 'po
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Belum dipilih</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Belum dipilih</SelectItem>
                 {posAnggaran.map((item) => (
                   <SelectItem key={item.Id} value={item.Id}>
                     {item.Label}
@@ -142,12 +142,12 @@ function DialogTambahDetail({
   const [buka, setBuka] = useState(false);
   const form = useForm({
     UsulanAsetId: MANUAL,
-    SukuCadangId: TANPA,
+    SukuCadangId: TANPA_PILIHAN,
     Deskripsi: '',
     Jumlah: '1',
     Satuan: 'unit',
     HargaEstimasi: '',
-    BulanRencana: TANPA,
+    BulanRencana: TANPA_PILIHAN,
   });
   const manual = form.data.UsulanAsetId === MANUAL;
   function submit(event: FormEvent): void {
@@ -155,12 +155,12 @@ function DialogTambahDetail({
     form.transform((data) => ({
       ...data,
       UsulanAsetId: data.UsulanAsetId === MANUAL ? null : data.UsulanAsetId,
-      SukuCadangId: data.SukuCadangId === TANPA ? null : data.SukuCadangId,
+      SukuCadangId: data.SukuCadangId === TANPA_PILIHAN ? null : data.SukuCadangId,
       Deskripsi: data.Deskripsi || null,
       Jumlah: manual ? data.Jumlah : null,
       Satuan: manual ? data.Satuan : null,
       HargaEstimasi: data.HargaEstimasi || null,
-      BulanRencana: data.BulanRencana === TANPA ? null : data.BulanRencana,
+      BulanRencana: data.BulanRencana === TANPA_PILIHAN ? null : data.BulanRencana,
     }));
     form.post(ruteRencanaPengadaan.detail2(rencana.Id), {
       preserveScroll: true,
@@ -214,7 +214,7 @@ function DialogTambahDetail({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tidak terkait suku cadang</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tidak terkait suku cadang</SelectItem>
                 {sukuCadang.map((item) => (
                   <SelectItem key={item.Id} value={item.Id}>
                     {item.Kode} — {item.Nama}
@@ -276,7 +276,7 @@ function DialogTambahDetail({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA}>Belum ditentukan</SelectItem>
+                  <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
                   {BULAN.map((item, index) => (
                     <SelectItem key={item} value={(index + 1).toString()}>
                       {item}

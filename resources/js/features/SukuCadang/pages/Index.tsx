@@ -23,6 +23,7 @@ import type { KategoriSukuCadang, StatusSukuCadang, SukuCadang } from '@/feature
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface KategoriRingkas {
   Id: string;
@@ -34,14 +35,12 @@ interface Props {
   kategoriSukuCadang: KategoriRingkas[];
 }
 
-const TANPA = '__tanpa__';
-
 function DialogFormSukuCadang({ kategoriSukuCadang }: { kategoriSukuCadang: KategoriRingkas[] }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: '',
     Nama: '',
-    KategoriSukuCadangId: TANPA,
+    KategoriSukuCadangId: TANPA_PILIHAN,
     NomorBagian: '',
     KodeBatang: '',
     SatuanDasar: '',
@@ -58,7 +57,8 @@ function DialogFormSukuCadang({ kategoriSukuCadang }: { kategoriSukuCadang: Kate
     e.preventDefault();
     const payload = {
       ...form.data,
-      KategoriSukuCadangId: form.data.KategoriSukuCadangId === TANPA ? null : form.data.KategoriSukuCadangId,
+      KategoriSukuCadangId:
+        form.data.KategoriSukuCadangId === TANPA_PILIHAN ? null : form.data.KategoriSukuCadangId,
     };
     router.post(ruteSukuCadang.index, payload, { onSuccess: () => setBuka(false) });
   };
@@ -99,7 +99,7 @@ function DialogFormSukuCadang({ kategoriSukuCadang }: { kategoriSukuCadang: Kate
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={TANPA}>Tidak diisi</SelectItem>
+                <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
                 {kategoriSukuCadang.map((k) => (
                   <SelectItem key={k.Id} value={k.Id}>
                     {k.Nama}
