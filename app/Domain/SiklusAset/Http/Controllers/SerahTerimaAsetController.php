@@ -18,6 +18,7 @@ use App\Domain\SiklusAset\Http\Resources\SerahTerimaAsetResource;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -39,6 +40,7 @@ final class SerahTerimaAsetController extends Controller
             ->withQueryString();
 
         return Inertia::render('SerahTerimaAset/Index', [
+            'wajib' => ['serahTerima' => AturanWajib::untuk(SimpanSerahTerimaAsetRequest::class)],
             'serahTerima' => SerahTerimaAsetResource::collection($serahTerima),
             'filter' => $filter,
         ]);
@@ -51,6 +53,7 @@ final class SerahTerimaAsetController extends Controller
         $serahTerimaAset->load(['pihakMenyerahkan', 'pihakMenerima', 'detailSerahTerimaAset.aset']);
 
         return Inertia::render('SerahTerimaAset/Show', [
+            'wajib' => ['detail' => AturanWajib::untuk(SimpanDetailSerahTerimaAsetRequest::class), 'terima' => AturanWajib::untuk(TerimaSerahTerimaAsetRequest::class)],
             'serahTerima' => new SerahTerimaAsetResource($serahTerimaAset),
             'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->limit(BatasDaftar::MAKS)->get()),
             'pengguna' => PenggunaResource::collection(Pengguna::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),

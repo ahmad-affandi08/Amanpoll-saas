@@ -20,13 +20,24 @@ import type { Aset } from '@/features/Aset/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   permintaan: PermintaanMutasiAset;
   aset: Aset[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogTambahAset({ permintaan, aset }: { permintaan: PermintaanMutasiAset; aset: Aset[] }) {
+function DialogTambahAset({
+  permintaan,
+  aset,
+  wajib,
+}: {
+  permintaan: PermintaanMutasiAset;
+  aset: Aset[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ AsetId: '', Catatan: '' });
 
@@ -54,35 +65,37 @@ function DialogTambahAset({ permintaan, aset }: { permintaan: PermintaanMutasiAs
         <DialogHeader>
           <DialogTitle>Tambah Aset ke Mutasi</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Aset</Label>
-            <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih aset" />
-              </SelectTrigger>
-              <SelectContent>
-                {asetTersedia.map((a) => (
-                  <SelectItem key={a.Id} value={a.Id}>
-                    {a.Nama} ({a.KodeAset})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing || !form.data.AsetId}>
-              Tambah
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="AsetId">Aset</Label>
+              <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih aset" />
+                </SelectTrigger>
+                <SelectContent>
+                  {asetTersedia.map((a) => (
+                    <SelectItem key={a.Id} value={a.Id}>
+                      {a.Nama} ({a.KodeAset})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing || !form.data.AsetId}>
+                Tambah
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function MutasiAsetShow({ permintaan, aset }: Props) {
+export default function MutasiAsetShow({ permintaan, aset, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapusDetail = async (detailId: string) => {
     if (
@@ -179,7 +192,9 @@ export default function MutasiAsetShow({ permintaan, aset }: Props) {
         <div className="rounded-[9px] border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Daftar Aset</h2>
-            {permintaan.Status === 'Draft' && <DialogTambahAset permintaan={permintaan} aset={aset} />}
+            {permintaan.Status === 'Draft' && (
+              <DialogTambahAset permintaan={permintaan} aset={aset} wajib={wajib.detail} />
+            )}
           </div>
           {permintaan.DetailMutasiAset.length === 0 && (
             <KeadaanKosong

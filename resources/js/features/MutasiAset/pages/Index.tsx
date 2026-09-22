@@ -23,12 +23,15 @@ import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   permintaan: Paginasi<PermintaanMutasiAset>;
   filter: { status?: string };
   lokasi: Lokasi[];
   unitOrganisasi: UnitOrganisasi[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
@@ -38,9 +41,11 @@ const DAFTAR_JENIS = ['AntarLokasi', 'AntarUnit', 'Peminjaman', 'Pengembalian'];
 function DialogBuatMutasi({
   lokasi,
   unitOrganisasi,
+  wajib,
 }: {
   lokasi: Lokasi[];
   unitOrganisasi: UnitOrganisasi[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -69,72 +74,78 @@ function DialogBuatMutasi({
         <DialogHeader>
           <DialogTitle>Buat Permintaan Mutasi</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Jenis Mutasi</Label>
-            <Select value={form.data.JenisMutasi} onValueChange={(v) => form.setData('JenisMutasi', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DAFTAR_JENIS.map((j) => (
-                  <SelectItem key={j} value={j}>
-                    {j}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Lokasi Tujuan</Label>
-            <Select value={form.data.LokasiTujuanId} onValueChange={(v) => form.setData('LokasiTujuanId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
-                {lokasi.map((l) => (
-                  <SelectItem key={l.Id} value={l.Id}>
-                    {l.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Unit Tujuan</Label>
-            <Select value={form.data.UnitTujuanId} onValueChange={(v) => form.setData('UnitTujuanId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
-                {unitOrganisasi.map((u) => (
-                  <SelectItem key={u.Id} value={u.Id}>
-                    {u.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Minimal salah satu tujuan (lokasi/unit) harus diisi. Daftar aset dilengkapi setelah draft dibuat.
-          </p>
-          {form.errors.LokasiTujuanId && (
-            <p className="text-sm text-destructive">{form.errors.LokasiTujuanId}</p>
-          )}
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Buat Draft
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="JenisMutasi">Jenis Mutasi</Label>
+              <Select value={form.data.JenisMutasi} onValueChange={(v) => form.setData('JenisMutasi', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DAFTAR_JENIS.map((j) => (
+                    <SelectItem key={j} value={j}>
+                      {j}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="LokasiTujuanId">Lokasi Tujuan</Label>
+              <Select
+                value={form.data.LokasiTujuanId}
+                onValueChange={(v) => form.setData('LokasiTujuanId', v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
+                  {lokasi.map((l) => (
+                    <SelectItem key={l.Id} value={l.Id}>
+                      {l.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="UnitTujuanId">Unit Tujuan</Label>
+              <Select value={form.data.UnitTujuanId} onValueChange={(v) => form.setData('UnitTujuanId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
+                  {unitOrganisasi.map((u) => (
+                    <SelectItem key={u.Id} value={u.Id}>
+                      {u.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Minimal salah satu tujuan (lokasi/unit) harus diisi. Daftar aset dilengkapi setelah draft
+              dibuat.
+            </p>
+            {form.errors.LokasiTujuanId && (
+              <p className="text-sm text-destructive">{form.errors.LokasiTujuanId}</p>
+            )}
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Buat Draft
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrganisasi }: Props) {
+export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrganisasi, wajib }: Props) {
   const [status, setStatus] = useState(filter.status ?? SEMUA);
 
   const terapkanFilter = (v: string) => {
@@ -154,7 +165,7 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
           deskripsi="Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi."
           aksi={
             <>
-              <DialogBuatMutasi lokasi={lokasi} unitOrganisasi={unitOrganisasi} />
+              <DialogBuatMutasi lokasi={lokasi} unitOrganisasi={unitOrganisasi} wajib={wajib.mutasi} />
             </>
           }
         />

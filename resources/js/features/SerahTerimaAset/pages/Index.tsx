@@ -22,16 +22,19 @@ import type { SerahTerimaAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
 import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   serahTerima: Paginasi<SerahTerimaAset>;
   filter: { status?: string };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
 const DAFTAR_STATUS = ['Diserahkan', 'Diterima'];
 
-function DialogBuatSerahTerima() {
+function DialogBuatSerahTerima({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Jenis: '', Catatan: '' });
 
@@ -49,31 +52,33 @@ function DialogBuatSerahTerima() {
         <DialogHeader>
           <DialogTitle>Buat Dokumen Serah Terima</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Jenis</Label>
-            <Input
-              value={form.data.Jenis}
-              onChange={(e) => form.setData('Jenis', e.target.value)}
-              placeholder="Peminjaman, Pengembalian, dst."
-            />
-            {form.errors.Jenis && <p className="text-sm text-destructive">{form.errors.Jenis}</p>}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Daftar aset dan kondisi dilengkapi setelah dokumen dibuat.
-          </p>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Buat
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="Jenis">Jenis</Label>
+              <Input
+                value={form.data.Jenis}
+                onChange={(e) => form.setData('Jenis', e.target.value)}
+                placeholder="Peminjaman, Pengembalian, dst."
+              />
+              {form.errors.Jenis && <p className="text-sm text-destructive">{form.errors.Jenis}</p>}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Daftar aset dan kondisi dilengkapi setelah dokumen dibuat.
+            </p>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Buat
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
+export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Props) {
   const [status, setStatus] = useState(filter.status ?? SEMUA);
 
   const terapkanFilter = (v: string) => {
@@ -93,7 +98,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
           deskripsi="Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi."
           aksi={
             <>
-              <DialogBuatSerahTerima />
+              <DialogBuatSerahTerima wajib={wajib.serahTerima} />
             </>
           }
         />

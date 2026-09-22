@@ -19,6 +19,7 @@ use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailPenghapusanAse
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -40,6 +41,7 @@ final class PengajuanPenghapusanAsetController extends Controller
             ->withQueryString();
 
         return Inertia::render('PenghapusanAset/Index', [
+            'wajib' => ['pengajuan' => AturanWajib::untuk(SimpanPengajuanPenghapusanAsetRequest::class)],
             'pengajuan' => PengajuanPenghapusanAsetResource::collection($pengajuan),
             'filter' => $filter,
         ]);
@@ -52,6 +54,7 @@ final class PengajuanPenghapusanAsetController extends Controller
         $pengajuanPenghapusanAset->load(['diajukanOleh', 'detailPenghapusanAset.aset' => fn ($q) => $q->withTrashed()]);
 
         return Inertia::render('PenghapusanAset/Show', [
+            'wajib' => ['detail' => AturanWajib::untuk(SimpanDetailPenghapusanAsetRequest::class)],
             'pengajuan' => new PengajuanPenghapusanAsetResource($pengajuanPenghapusanAset),
             'aset' => AsetResource::collection(Aset::query()->orderBy('Nama')->limit(BatasDaftar::MAKS)->get()),
         ]);

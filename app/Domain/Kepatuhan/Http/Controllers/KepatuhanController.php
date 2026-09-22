@@ -26,6 +26,7 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PersyaratanKepatuhan;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\StandarKepatuhan;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -162,6 +163,7 @@ final class KepatuhanController extends Controller
             ->withQueryString();
 
         return Inertia::render('Sertifikasi/Index', [
+            'wajib' => ['terbitkan' => AturanWajib::untuk(SimpanSertifikasiAsetRequest::class), 'cabut' => AturanWajib::untuk(CabutSertifikasiRequest::class)],
             'sertifikasi' => SertifikasiAsetResource::collection($sertifikasi),
             'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
             'filter' => $filter,

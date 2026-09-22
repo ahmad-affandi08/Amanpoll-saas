@@ -19,6 +19,7 @@ use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetuju
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -49,6 +50,7 @@ final class UsulanAsetController extends Controller
             ->withQueryString();
 
         return Inertia::render('UsulanAset/Index', [
+            'wajib' => ['usulan' => AturanWajib::untuk(SimpanUsulanAsetRequest::class), 'penilaian' => AturanWajib::untuk(SimpanPenilaianUsulanAsetRequest::class)],
             'usulan' => UsulanAsetResource::collection($usulan),
             'filter' => $filter,
             'unitOrganisasi' => UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
@@ -96,6 +98,7 @@ final class UsulanAsetController extends Controller
             ->get(['Id', 'Aksi', 'PenggunaId', 'DataSebelum', 'DataSesudah', 'DibuatPada']);
 
         return Inertia::render('UsulanAset/Show', [
+            'wajib' => ['usulan' => AturanWajib::untuk(SimpanUsulanAsetRequest::class), 'penilaian' => AturanWajib::untuk(SimpanPenilaianUsulanAsetRequest::class)],
             'usulan' => new UsulanAsetResource($usulanAset),
             'persetujuan' => $persetujuan,
             'audit' => $audit,

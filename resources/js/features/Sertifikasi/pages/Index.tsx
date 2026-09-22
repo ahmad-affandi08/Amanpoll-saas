@@ -23,6 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { SertifikasiAset, StatusSertifikasi } from '@/features/Sertifikasi/types';
 import { ruteSertifikasi } from '@/features/Sertifikasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface AsetRingkas {
   Id: string;
@@ -33,13 +34,15 @@ interface Props {
   sertifikasi: Paginasi<SertifikasiAset>;
   aset: AsetRingkas[];
   filter: { cari?: string; status?: StatusSertifikasi };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
 const STATUS: StatusSertifikasi[] = ['Aktif', 'Kedaluwarsa', 'Dicabut'];
 const VARIAN_STATUS = { Aktif: 'sukses', Kedaluwarsa: 'perhatian', Dicabut: 'bahaya' } as const;
 
-function DialogTerbitkan({ aset }: { aset: AsetRingkas[] }) {
+function DialogTerbitkan({ aset, wajib }: { aset: AsetRingkas[]; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     AsetId: '',
@@ -82,87 +85,99 @@ function DialogTerbitkan({ aset }: { aset: AsetRingkas[] }) {
             lewat.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Aset</Label>
-            <Select value={form.data.AsetId} onValueChange={(value) => form.setData('AsetId', value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih aset" />
-              </SelectTrigger>
-              <SelectContent>
-                {aset.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.KodeAset} — {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="JenisSertifikasi">Jenis sertifikat</Label>
-              <Input
-                id="JenisSertifikasi"
-                value={form.data.JenisSertifikasi}
-                onChange={(event) => form.setData('JenisSertifikasi', event.target.value)}
-              />
-              {form.errors.JenisSertifikasi && (
-                <p className="text-sm text-destructive">{form.errors.JenisSertifikasi}</p>
-              )}
+              <Label nama="AsetId">Aset</Label>
+              <Select value={form.data.AsetId} onValueChange={(value) => form.setData('AsetId', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih aset" />
+                </SelectTrigger>
+                <SelectContent>
+                  {aset.map((item) => (
+                    <SelectItem key={item.Id} value={item.Id}>
+                      {item.KodeAset} — {item.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="JenisSertifikasi" htmlFor="JenisSertifikasi">
+                  Jenis sertifikat
+                </Label>
+                <Input
+                  id="JenisSertifikasi"
+                  value={form.data.JenisSertifikasi}
+                  onChange={(event) => form.setData('JenisSertifikasi', event.target.value)}
+                />
+                {form.errors.JenisSertifikasi && (
+                  <p className="text-sm text-destructive">{form.errors.JenisSertifikasi}</p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="NomorSertifikat" htmlFor="NomorSertifikat">
+                  Nomor sertifikat
+                </Label>
+                <Input
+                  id="NomorSertifikat"
+                  value={form.data.NomorSertifikat}
+                  onChange={(event) => form.setData('NomorSertifikat', event.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="NomorSertifikat">Nomor sertifikat</Label>
+              <Label nama="Penerbit" htmlFor="PenerbitSertifikat">
+                Penerbit
+              </Label>
               <Input
-                id="NomorSertifikat"
-                value={form.data.NomorSertifikat}
-                onChange={(event) => form.setData('NomorSertifikat', event.target.value)}
+                id="PenerbitSertifikat"
+                value={form.data.Penerbit}
+                onChange={(event) => form.setData('Penerbit', event.target.value)}
               />
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="PenerbitSertifikat">Penerbit</Label>
-            <Input
-              id="PenerbitSertifikat"
-              value={form.data.Penerbit}
-              onChange={(event) => form.setData('Penerbit', event.target.value)}
-            />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="TerbitPada">Terbit pada</Label>
-              <Input
-                id="TerbitPada"
-                type="date"
-                value={form.data.TerbitPada}
-                onChange={(event) => form.setData('TerbitPada', event.target.value)}
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="TerbitPada" htmlFor="TerbitPada">
+                  Terbit pada
+                </Label>
+                <Input
+                  id="TerbitPada"
+                  type="date"
+                  value={form.data.TerbitPada}
+                  onChange={(event) => form.setData('TerbitPada', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="BerlakuSampai" htmlFor="BerlakuSampaiSertifikat">
+                  Berlaku sampai
+                </Label>
+                <Input
+                  id="BerlakuSampaiSertifikat"
+                  type="date"
+                  value={form.data.BerlakuSampai}
+                  onChange={(event) => form.setData('BerlakuSampai', event.target.value)}
+                />
+                {form.errors.BerlakuSampai && (
+                  <p className="text-sm text-destructive">{form.errors.BerlakuSampai}</p>
+                )}
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="BerlakuSampaiSertifikat">Berlaku sampai</Label>
-              <Input
-                id="BerlakuSampaiSertifikat"
-                type="date"
-                value={form.data.BerlakuSampai}
-                onChange={(event) => form.setData('BerlakuSampai', event.target.value)}
-              />
-              {form.errors.BerlakuSampai && (
-                <p className="text-sm text-destructive">{form.errors.BerlakuSampai}</p>
-              )}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Sertifikat
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Sertifikat
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-function DialogCabut({ sertifikat }: { sertifikat: SertifikasiAset }) {
+function DialogCabut({ sertifikat, wajib }: { sertifikat: SertifikasiAset; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Alasan: '' });
 
@@ -190,29 +205,33 @@ function DialogCabut({ sertifikat }: { sertifikat: SertifikasiAset }) {
             Sertifikat yang dicabut tidak dapat diubah lagi dan berhenti diingatkan.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="AlasanCabut">Alasan pencabutan</Label>
-            <Textarea
-              id="AlasanCabut"
-              rows={3}
-              value={form.data.Alasan}
-              onChange={(event) => form.setData('Alasan', event.target.value)}
-            />
-            {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" variant="destructive" disabled={form.processing}>
-              Cabut Sertifikat
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="Alasan" htmlFor="AlasanCabut">
+                Alasan pencabutan
+              </Label>
+              <Textarea
+                id="AlasanCabut"
+                rows={3}
+                value={form.data.Alasan}
+                onChange={(event) => form.setData('Alasan', event.target.value)}
+              />
+              {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" variant="destructive" disabled={form.processing}>
+                Cabut Sertifikat
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
+export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
   const [status, setStatus] = useState<string>(filter.status ?? SEMUA);
 
@@ -234,7 +253,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
           deskripsi="Sertifikat aset beserta penerbit, masa berlaku, dan statusnya."
           aksi={
             <>
-              <DialogTerbitkan aset={aset} />
+              <DialogTerbitkan aset={aset} wajib={wajib.terbitkan} />
             </>
           }
         />
@@ -315,7 +334,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
                         <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {item.Status !== 'Dicabut' && <DialogCabut sertifikat={item} />}
+                        {item.Status !== 'Dicabut' && <DialogCabut sertifikat={item} wajib={wajib.cabut} />}
                       </td>
                     </tr>
                   ))}
@@ -338,7 +357,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
                     </div>
                     <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
                   </div>
-                  {item.Status !== 'Dicabut' && <DialogCabut sertifikat={item} />}
+                  {item.Status !== 'Dicabut' && <DialogCabut sertifikat={item} wajib={wajib.cabut} />}
                 </div>
               ))}
             </div>

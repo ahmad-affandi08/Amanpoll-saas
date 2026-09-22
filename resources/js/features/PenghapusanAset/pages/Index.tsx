@@ -22,17 +22,20 @@ import type { PengajuanPenghapusanAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_PENGHAPUSAN } from '@/features/SiklusAset/status';
 import { rutePenghapusanAset } from '@/features/PenghapusanAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   pengajuan: Paginasi<PengajuanPenghapusanAset>;
   filter: { status?: string };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
 const DAFTAR_STATUS = ['Draft', 'Menunggu', 'Disetujui', 'Ditolak', 'Dibatalkan', 'Selesai'];
 const DAFTAR_METODE = ['Dijual', 'Dimusnahkan', 'Hibah', 'Hilang', 'Lainnya'];
 
-function DialogBuatPengajuan() {
+function DialogBuatPengajuan({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Alasan: '', MetodePenghapusan: 'Dimusnahkan' });
 
@@ -50,47 +53,49 @@ function DialogBuatPengajuan() {
         <DialogHeader>
           <DialogTitle>Ajukan Penghapusan Aset</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Alasan</Label>
-            <Textarea
-              value={form.data.Alasan}
-              onChange={(e) => form.setData('Alasan', e.target.value)}
-              rows={3}
-            />
-            {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Metode Penghapusan</Label>
-            <Select
-              value={form.data.MetodePenghapusan}
-              onValueChange={(v) => form.setData('MetodePenghapusan', v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DAFTAR_METODE.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <p className="text-sm text-muted-foreground">Daftar aset dilengkapi setelah draft dibuat.</p>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Buat Draft
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="Alasan">Alasan</Label>
+              <Textarea
+                value={form.data.Alasan}
+                onChange={(e) => form.setData('Alasan', e.target.value)}
+                rows={3}
+              />
+              {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="MetodePenghapusan">Metode Penghapusan</Label>
+              <Select
+                value={form.data.MetodePenghapusan}
+                onValueChange={(v) => form.setData('MetodePenghapusan', v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DAFTAR_METODE.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-sm text-muted-foreground">Daftar aset dilengkapi setelah draft dibuat.</p>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Buat Draft
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function PenghapusanAsetIndex({ pengajuan, filter }: Props) {
+export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props) {
   const [status, setStatus] = useState(filter.status ?? SEMUA);
 
   const terapkanFilter = (v: string) => {
@@ -110,7 +115,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter }: Props) {
           deskripsi="Pengajuan pelepasan aset -- draft, persetujuan, sampai eksekusi."
           aksi={
             <>
-              <DialogBuatPengajuan />
+              <DialogBuatPengajuan wajib={wajib.pengajuan} />
             </>
           }
         />

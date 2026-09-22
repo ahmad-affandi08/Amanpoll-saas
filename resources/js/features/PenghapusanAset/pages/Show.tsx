@@ -22,13 +22,24 @@ import type { Aset } from '@/features/Aset/types';
 import { rutePenghapusanAset } from '@/features/PenghapusanAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   pengajuan: PengajuanPenghapusanAset;
   aset: Aset[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogTambahAset({ pengajuan, aset }: { pengajuan: PengajuanPenghapusanAset; aset: Aset[] }) {
+function DialogTambahAset({
+  pengajuan,
+  aset,
+  wajib,
+}: {
+  pengajuan: PengajuanPenghapusanAset;
+  aset: Aset[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ AsetId: '', NilaiBukuSaatPenghapusan: '', HasilPelepasan: '' });
 
@@ -56,54 +67,56 @@ function DialogTambahAset({ pengajuan, aset }: { pengajuan: PengajuanPenghapusan
         <DialogHeader>
           <DialogTitle>Tambah Aset ke Pengajuan</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Aset</Label>
-            <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih aset" />
-              </SelectTrigger>
-              <SelectContent>
-                {asetTersedia.map((a) => (
-                  <SelectItem key={a.Id} value={a.Id}>
-                    {a.Nama} ({a.KodeAset})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Nilai Buku Saat Ini</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.NilaiBukuSaatPenghapusan}
-                onChange={(e) => form.setData('NilaiBukuSaatPenghapusan', e.target.value)}
-              />
+              <Label nama="AsetId">Aset</Label>
+              <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih aset" />
+                </SelectTrigger>
+                <SelectContent>
+                  {asetTersedia.map((a) => (
+                    <SelectItem key={a.Id} value={a.Id}>
+                      {a.Nama} ({a.KodeAset})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label>Estimasi Hasil Pelepasan</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.HasilPelepasan}
-                onChange={(e) => form.setData('HasilPelepasan', e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label nama="NilaiBukuSaatPenghapusan">Nilai Buku Saat Ini</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.NilaiBukuSaatPenghapusan}
+                  onChange={(e) => form.setData('NilaiBukuSaatPenghapusan', e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="HasilPelepasan">Estimasi Hasil Pelepasan</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.HasilPelepasan}
+                  onChange={(e) => form.setData('HasilPelepasan', e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing || !form.data.AsetId}>
-              Tambah
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing || !form.data.AsetId}>
+                Tambah
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function PenghapusanAsetShow({ pengajuan, aset }: Props) {
+export default function PenghapusanAsetShow({ pengajuan, aset, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapusDetail = async (detailId: string) => {
     if (
@@ -197,7 +210,9 @@ export default function PenghapusanAsetShow({ pengajuan, aset }: Props) {
         <div className="rounded-[9px] border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Daftar Aset</h2>
-            {pengajuan.Status === 'Draft' && <DialogTambahAset pengajuan={pengajuan} aset={aset} />}
+            {pengajuan.Status === 'Draft' && (
+              <DialogTambahAset pengajuan={pengajuan} aset={aset} wajib={wajib.detail} />
+            )}
           </div>
           {pengajuan.DetailPenghapusanAset.length === 0 && (
             <KeadaanKosong

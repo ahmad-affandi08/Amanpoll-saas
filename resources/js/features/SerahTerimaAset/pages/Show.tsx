@@ -19,15 +19,26 @@ import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   serahTerima: SerahTerimaAset;
   aset: Aset[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const KONDISI = ['Baik', 'PerluPerhatian', 'Rusak'];
 
-function DialogTambahAset({ serahTerima, aset }: { serahTerima: SerahTerimaAset; aset: Aset[] }) {
+function DialogTambahAset({
+  serahTerima,
+  aset,
+  wajib,
+}: {
+  serahTerima: SerahTerimaAset;
+  aset: Aset[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ AsetId: '', KondisiSaatDiserahkan: 'Baik' });
 
@@ -52,52 +63,54 @@ function DialogTambahAset({ serahTerima, aset }: { serahTerima: SerahTerimaAset;
         <DialogHeader>
           <DialogTitle>Tambah Aset</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Aset</Label>
-            <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih aset" />
-              </SelectTrigger>
-              <SelectContent>
-                {asetTersedia.map((a) => (
-                  <SelectItem key={a.Id} value={a.Id}>
-                    {a.Nama} ({a.KodeAset})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Kondisi Saat Diserahkan</Label>
-            <Select
-              value={form.data.KondisiSaatDiserahkan}
-              onValueChange={(v) => form.setData('KondisiSaatDiserahkan', v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {KONDISI.map((k) => (
-                  <SelectItem key={k} value={k}>
-                    {k}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing || !form.data.AsetId}>
-              Tambah
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="AsetId">Aset</Label>
+              <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih aset" />
+                </SelectTrigger>
+                <SelectContent>
+                  {asetTersedia.map((a) => (
+                    <SelectItem key={a.Id} value={a.Id}>
+                      {a.Nama} ({a.KodeAset})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="KondisiSaatDiserahkan">Kondisi Saat Diserahkan</Label>
+              <Select
+                value={form.data.KondisiSaatDiserahkan}
+                onValueChange={(v) => form.setData('KondisiSaatDiserahkan', v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {KONDISI.map((k) => (
+                    <SelectItem key={k} value={k}>
+                      {k}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing || !form.data.AsetId}>
+                Tambah
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-function DialogTerima({ serahTerima }: { serahTerima: SerahTerimaAset }) {
+function DialogTerima({ serahTerima, wajib }: { serahTerima: SerahTerimaAset; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const [kondisi, setKondisi] = useState<Record<string, string>>(() =>
     Object.fromEntries(
@@ -134,41 +147,43 @@ function DialogTerima({ serahTerima }: { serahTerima: SerahTerimaAset }) {
         <DialogHeader>
           <DialogTitle>Konfirmasi Penerimaan</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          {serahTerima.DetailSerahTerimaAset.map((d) => (
-            <div key={d.Id} className="space-y-1.5">
-              <Label>
-                {d.NamaAset} ({d.KodeAset})
-              </Label>
-              <Select
-                value={kondisi[d.AsetId]}
-                onValueChange={(v) => setKondisi((k) => ({ ...k, [d.AsetId]: v }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {KONDISI.map((k) => (
-                    <SelectItem key={k} value={k}>
-                      {k}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          ))}
-          <DialogFooter>
-            <Button type="submit" disabled={memproses}>
-              Konfirmasi Diterima
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            {serahTerima.DetailSerahTerimaAset.map((d) => (
+              <div key={d.Id} className="space-y-1.5">
+                <Label>
+                  {d.NamaAset} ({d.KodeAset})
+                </Label>
+                <Select
+                  value={kondisi[d.AsetId]}
+                  onValueChange={(v) => setKondisi((k) => ({ ...k, [d.AsetId]: v }))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {KONDISI.map((k) => (
+                      <SelectItem key={k} value={k}>
+                        {k}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+            <DialogFooter>
+              <Button type="submit" disabled={memproses}>
+                Konfirmasi Diterima
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function SerahTerimaAsetShow({ serahTerima, aset }: Props) {
+export default function SerahTerimaAsetShow({ serahTerima, aset, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={serahTerima.Nomor} />
@@ -187,7 +202,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset }: Props) {
           }
           aksi={
             serahTerima.Status === 'Diserahkan' && serahTerima.DetailSerahTerimaAset.length > 0 ? (
-              <DialogTerima serahTerima={serahTerima} />
+              <DialogTerima serahTerima={serahTerima} wajib={wajib.terima} />
             ) : undefined
           }
         />
@@ -213,7 +228,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset }: Props) {
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Daftar Aset</h2>
             {serahTerima.Status === 'Diserahkan' && (
-              <DialogTambahAset serahTerima={serahTerima} aset={aset} />
+              <DialogTambahAset serahTerima={serahTerima} aset={aset} wajib={wajib.detail} />
             )}
           </div>
           {serahTerima.DetailSerahTerimaAset.length === 0 && (
