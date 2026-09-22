@@ -11,20 +11,25 @@ use App\Domain\Platform\Http\Requests\SimpanKategoriLokasiRequest;
 use App\Domain\Platform\Http\Resources\KategoriLokasiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KategoriLokasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class KategoriLokasiController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', KategoriLokasi::class);
 
-        $kategoriLokasi = KategoriLokasi::query()->orderBy('Nama')->get();
+        $daftar = DaftarTersaring::untuk($request, KategoriLokasi::query())
+            ->cari(['Kode', 'Nama', 'Keterangan'])
+            ->urut(['Nama', 'Kode'], bawaan: 'Nama');
 
         return Inertia::render('KategoriLokasi/Index', [
-            'kategoriLokasi' => KategoriLokasiResource::collection($kategoriLokasi),
+            'kategoriLokasi' => KategoriLokasiResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

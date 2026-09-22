@@ -11,20 +11,27 @@ use App\Domain\Aset\Http\Requests\SimpanKategoriAsetRequest;
 use App\Domain\Aset\Http\Resources\KategoriAsetResource;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class KategoriAsetController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', KategoriAset::class);
 
-        $kategoriAset = KategoriAset::query()->with('induk')->orderBy('Nama')->get();
+        $daftar = DaftarTersaring::untuk($request, KategoriAset::query()->with('induk'))
+            ->cari(['Kode', 'Nama'])
+            ->urut(['Nama', 'Kode'], bawaan: 'Nama');
 
         return Inertia::render('KategoriAset/Index', [
-            'kategoriAset' => KategoriAsetResource::collection($kategoriAset),
+            'kategoriAset' => KategoriAsetResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
+            // Pemilih induk harus memuat seluruh kategori, bukan hanya yang tampil di halaman ini.
+            'pilihanInduk' => KategoriAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }
 

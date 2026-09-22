@@ -10,8 +10,10 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DaftarTersaringTest extends TestCase
@@ -134,6 +136,47 @@ class DaftarTersaringTest extends TestCase
         $this->assertSame(0, $this->daftar(['cari' => '%'])->halaman()->total());
         $this->assertSame(0, $this->daftar(['cari' => '_aut'])->halaman()->total());
         $this->assertSame(1, $this->daftar(['cari' => 'Baut'])->halaman()->total());
+    }
+
+    /**
+     * Paginasi menuntut urutan total yang pasti.
+     *
+     * Kalau kolom pengurut punya nilai kembar dan tidak ada pemutus seri, MySQL
+     * boleh menukar posisi baris kembar antar permintaan. Akibatnya satu baris
+     * muncul di dua halaman sementara baris lain tidak pernah muncul -- dan
+     * pengguna tidak akan pernah tahu bahwa ada data yang tidak ia lihat.
+     */
+    public function test_seluruh_baris_muncul_tepat_sekali_walau_kunci_urutnya_kembar(): void
+    {
+        for ($i = 1; $i <= 60; $i++) {
+            // Nama sengaja dibuat kembar semua: hanya pemutus seri yang menyelamatkannya.
+            $this->buatSukuCadang('Baut Seragam', sprintf('SC-%03d', $i));
+        }
+
+        $terkumpul = [];
+        $sql = [];
+        DB::listen(function (QueryExecuted $kueri) use (&$sql): void {
+            $sql[] = $kueri->sql;
+        });
+
+        for ($halaman = 1; $halaman <= 3; $halaman++) {
+            $hasil = $this->daftar(['page' => (string) $halaman])->halaman();
+            foreach ($hasil->getCollection() as $baris) {
+                $terkumpul[] = $baris->Id;
+            }
+        }
+
+        $this->assertCount(60, $terkumpul);
+        $this->assertCount(60, array_unique($terkumpul), 'Ada baris yang muncul di lebih dari satu halaman.');
+
+        // Urutan yang dihasilkan MySQL untuk baris kembar tidak dijanjikan stabil, jadi
+        // pemeriksaan di atas saja bisa lolos secara kebetulan. Yang benar-benar dijaga
+        // adalah keberadaan pemutus serinya di dalam kueri.
+        $pengurut = array_values(array_filter($sql, static fn (string $satu): bool => str_contains($satu, 'order by')));
+        $this->assertNotEmpty($pengurut);
+        foreach ($pengurut as $satu) {
+            $this->assertStringContainsString('`SukuCadang`.`Id` asc', $satu);
+        }
     }
 
     public function test_filter_berlaku_hanya_memuat_yang_benar_benar_dipakai(): void

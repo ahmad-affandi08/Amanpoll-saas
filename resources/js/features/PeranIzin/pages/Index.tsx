@@ -24,10 +24,13 @@ import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { http } from '@/lib/http';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
-  peran: Peran[];
+  peran: Paginasi<Peran>;
+  filter: FilterDaftar;
 }
 
 function DialogFormPeran({ peran }: { peran: Peran | null }) {
@@ -158,7 +161,7 @@ function DialogKelolaIzin({ peran }: { peran: Peran }) {
   );
 }
 
-export default function PeranIzinIndex({ peran }: Props) {
+export default function PeranIzinIndex({ peran, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
@@ -196,11 +199,14 @@ export default function PeranIzinIndex({ peran }: Props) {
       },
       {
         accessorKey: 'JumlahIzin',
+        // Hasil hitung relasi, bukan kolom Peran.
+        enableSorting: false,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Izin" />,
         meta: { label: 'Izin' },
       },
       {
         accessorKey: 'JumlahPengguna',
+        enableSorting: false,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Pengguna" />,
         meta: { label: 'Pengguna' },
       },
@@ -242,9 +248,10 @@ export default function PeranIzinIndex({ peran }: Props) {
 
       <DataTable
         columns={columns}
-        data={peran}
+        data={peran.data}
+        server={{ meta: peran.meta, filter }}
         pencarianPlaceholder="Cari nama atau kode peran..."
-        pesanKosong="Belum ada peran."
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada peran yang cocok.' : 'Belum ada peran.'}
         ilustrasiKosong="/assets/3d/peran-izin.webp"
       />
     </KerangkaAplikasi>

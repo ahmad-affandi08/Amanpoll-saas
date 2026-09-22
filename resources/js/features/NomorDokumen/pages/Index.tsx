@@ -21,9 +21,12 @@ import type { NomorDokumen } from '@/features/NomorDokumen/types';
 import { ruteNomorDokumen } from '@/features/NomorDokumen/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  nomorDokumen: NomorDokumen[];
+  nomorDokumen: Paginasi<NomorDokumen>;
+  filter: FilterDaftar;
 }
 
 function DialogFormPola({ pola }: { pola: NomorDokumen | null }) {
@@ -133,7 +136,7 @@ function DialogFormPola({ pola }: { pola: NomorDokumen | null }) {
   );
 }
 
-export default function NomorDokumenIndex({ nomorDokumen }: Props) {
+export default function NomorDokumenIndex({ nomorDokumen, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (pola: NomorDokumen) => {
     if (
@@ -209,8 +212,9 @@ export default function NomorDokumenIndex({ nomorDokumen }: Props) {
 
       <DataTable
         columns={columns}
-        data={nomorDokumen}
-        pencarianPlaceholder="Cari jenis dokumen atau format..."
+        data={nomorDokumen.data}
+        server={{ meta: nomorDokumen.meta, filter }}
+        pencarianPlaceholder="Cari jenis dokumen atau awalan..."
         facetedFilters={[
           {
             columnId: 'ResetPeriode',

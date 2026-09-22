@@ -17,6 +17,8 @@ import {
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { ruteKategoriLokasi } from '@/features/KategoriLokasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { BidangKode } from '@/components/shared/BidangKode';
@@ -30,7 +32,8 @@ interface KategoriLokasi {
 }
 
 interface Props {
-  kategoriLokasi: KategoriLokasi[];
+  kategoriLokasi: Paginasi<KategoriLokasi>;
+  filter: FilterDaftar;
 }
 
 function DialogFormKategoriLokasi({ kategori }: { kategori: KategoriLokasi | null }) {
@@ -111,7 +114,7 @@ function DialogFormKategoriLokasi({ kategori }: { kategori: KategoriLokasi | nul
   );
 }
 
-export default function KategoriLokasiIndex({ kategoriLokasi }: Props) {
+export default function KategoriLokasiIndex({ kategoriLokasi, filter }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (kategori: KategoriLokasi) => {
@@ -180,9 +183,12 @@ export default function KategoriLokasiIndex({ kategoriLokasi }: Props) {
 
       <DataTable
         columns={columns}
-        data={kategoriLokasi}
+        data={kategoriLokasi.data}
+        server={{ meta: kategoriLokasi.meta, filter }}
         pencarianPlaceholder="Cari nama atau kode kategori..."
-        pesanKosong="Belum ada kategori lokasi."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada kategori yang cocok.' : 'Belum ada kategori lokasi.'
+        }
       />
     </KerangkaAplikasi>
   );

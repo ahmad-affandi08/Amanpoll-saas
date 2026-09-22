@@ -22,6 +22,8 @@ import type { KategoriKeluhan, PrioritasKeluhan } from '@/features/Keluhan/types
 import { ruteKategoriKeluhan } from '@/features/KategoriKeluhan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 
@@ -30,9 +32,12 @@ interface Ringkas {
   Nama: string;
 }
 interface Props {
-  kategori: KategoriKeluhan[];
+  kategori: Paginasi<KategoriKeluhan>;
+  // Pemilih induk memuat seluruh kategori, bukan hanya baris di halaman ini.
+  pilihanInduk: Ringkas[];
   tingkatLayanan: Ringkas[];
   peran: Ringkas[];
+  filter: FilterDaftar;
 }
 const PRIORITAS: PrioritasKeluhan[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
 
@@ -43,7 +48,7 @@ function DialogKategori({
   peran,
 }: {
   item: KategoriKeluhan | null;
-  kategori: KategoriKeluhan[];
+  kategori: Ringkas[];
   tingkatLayanan: Ringkas[];
   peran: Ringkas[];
 }) {
@@ -192,7 +197,7 @@ function DialogKategori({
   );
 }
 
-export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }: Props) {
+export default function KategoriKeluhanIndex({ kategori, pilihanInduk, tingkatLayanan, peran, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const columns = useMemo<ColumnDef<KategoriKeluhan>[]>(
     () => [
@@ -248,7 +253,7 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
           <div className="flex justify-end gap-2">
             <DialogKategori
               item={row.original}
-              kategori={kategori}
+              kategori={pilihanInduk}
               tingkatLayanan={tingkatLayanan}
               peran={peran}
             />
@@ -271,7 +276,7 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
         ),
       },
     ],
-    [kategori, tingkatLayanan, peran],
+    [pilihanInduk, tingkatLayanan, peran],
   );
 
   return (
@@ -282,16 +287,26 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
         deskripsi="Atur prioritas bawaan, kebutuhan aset, SLA, dan routing triage."
         aksi={
           <>
-            <DialogKategori item={null} kategori={kategori} tingkatLayanan={tingkatLayanan} peran={peran} />
+            <DialogKategori item={null} kategori={pilihanInduk} tingkatLayanan={tingkatLayanan} peran={peran} />
           </>
         }
         className="mb-6"
       />
       <DataTable
         columns={columns}
-        data={kategori}
-        pencarianPlaceholder="Cari kategori..."
-        pesanKosong="Belum ada kategori keluhan."
+        data={kategori.data}
+        server={{ meta: kategori.meta, filter }}
+        facetedFilters={[
+          {
+            columnId: 'PrioritasBawaan',
+            title: 'Prioritas',
+            options: PRIORITAS.map((satu) => ({ label: satu, value: satu })),
+          },
+        ]}
+        pencarianPlaceholder="Cari nama atau kode kategori..."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada kategori yang cocok.' : 'Belum ada kategori keluhan.'
+        }
       />
     </KerangkaAplikasi>
   );

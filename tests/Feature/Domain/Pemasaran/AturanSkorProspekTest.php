@@ -104,12 +104,22 @@ final class AturanSkorProspekTest extends KasusProspek
             ->viewData('page')['props'];
 
         $tertunda = array_values(array_filter(
-            $props['aturan'],
+            $props['aturan']['data'],
             fn (array $satu): bool => $satu['Peristiwa'] === KatalogPeristiwaSkor::EMAIL_BOUNCE,
         ));
 
         $this->assertCount(1, $tertunda);
         $this->assertFalse($tertunda[0]['Berlaku']);
+
+        // Spanduknya menghitung seluruh aturan, bukan yang kebetulan ada di halaman ini.
+        $this->assertContains(
+            KatalogPeristiwaSkor::EMAIL_BOUNCE,
+            $props['jumlahBelumBerlaku']['peristiwa'],
+        );
+        $this->assertSame(
+            count($props['jumlahBelumBerlaku']['peristiwa']),
+            $props['jumlahBelumBerlaku']['jumlah'],
+        );
     }
 
     public function test_rincian_skor_menunjuk_aturan_yang_menghasilkannya(): void

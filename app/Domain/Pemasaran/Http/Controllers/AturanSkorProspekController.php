@@ -9,7 +9,9 @@ use App\Domain\Pemasaran\Domain\KatalogPeristiwaSkor;
 use App\Domain\Pemasaran\Http\Requests\SimpanAturanSkorProspekRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AturanSkorProspek;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,15 +20,36 @@ final class AturanSkorProspekController extends Controller
 {
     public function __construct(private readonly LayananAturanSkorProspek $layanan) {}
 
-    public function index(): Response
+    /**
+     * Dihitung di basis data, bukan dari baris yang kebetulan tampil.
+     *
+     * Spanduk peringatannya berbicara tentang seluruh aturan; menghitungnya dari
+     * satu halaman akan membuat angkanya menyusut saat pengguna berpindah halaman.
+     *
+     * @return array{jumlah: int, peristiwa: list<string>}
+     */
+    private function jumlahBelumBerlaku(): array
     {
-        $aturan = AturanSkorProspek::query()
-            ->withCount('rincianSkor')
-            ->orderByDesc('Bobot')
-            ->get();
+        $peristiwa = AturanSkorProspek::query()
+            ->where('Aktif', true)
+            ->get()
+            ->filter(fn (AturanSkorProspek $satu): bool => ! $satu->berlaku())
+            ->map(fn (AturanSkorProspek $satu): string => $satu->Peristiwa)
+            ->all();
+
+        $daftar = array_values($peristiwa);
+
+        return ['jumlah' => count($daftar), 'peristiwa' => $daftar];
+    }
+
+    public function index(Request $request): Response
+    {
+        $daftar = DaftarTersaring::untuk($request, AturanSkorProspek::query()->withCount('rincianSkor'))
+            ->cari(['Peristiwa', 'Keterangan'])
+            ->urut(['Peristiwa', 'Bobot'], bawaan: 'Bobot', arahBawaan: 'desc');
 
         return Inertia::render('Pemasaran/AturanSkor/Index', [
-            'aturan' => $aturan->map(fn (AturanSkorProspek $satu): array => [
+            'aturan' => $daftar->halamanTerpeta(fn (AturanSkorProspek $satu): array => [
                 'Id' => $satu->Id,
                 'Peristiwa' => $satu->Peristiwa,
                 'Bobot' => $satu->Bobot,
@@ -35,7 +58,9 @@ final class AturanSkorProspekController extends Controller
                 'Asal' => $satu->asal(),
                 'Berlaku' => $satu->berlaku(),
                 'JumlahDipakai' => (int) ($satu->rincian_skor_count ?? 0),
-            ])->all(),
+            ]),
+            'filter' => $daftar->filterBerlaku(),
+            'jumlahBelumBerlaku' => $this->jumlahBelumBerlaku(),
             'pilihan' => [
                 'Peristiwa' => KatalogPeristiwaSkor::semua(),
                 'AsalTertunda' => KatalogPeristiwaSkor::ASAL_TERTUNDA,

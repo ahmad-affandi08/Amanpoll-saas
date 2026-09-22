@@ -11,20 +11,28 @@ use App\Domain\Platform\Http\Requests\SimpanUnitOrganisasiRequest;
 use App\Domain\Platform\Http\Resources\UnitOrganisasiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class UnitOrganisasiController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', UnitOrganisasi::class);
 
-        $unit = UnitOrganisasi::query()->orderBy('Urutan')->orderBy('Nama')->get();
+        $daftar = DaftarTersaring::untuk($request, UnitOrganisasi::query())
+            ->cari(['Kode', 'Nama', 'Email'])
+            ->urut(['Urutan', 'Nama', 'Kode', 'Jenis', 'Status'], bawaan: 'Urutan')
+            ->faset(['Jenis', 'Status']);
 
         return Inertia::render('UnitOrganisasi/Index', [
-            'unitOrganisasi' => UnitOrganisasiResource::collection($unit),
+            'unitOrganisasi' => UnitOrganisasiResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
+            // Pemilih induk harus memuat seluruh unit, bukan hanya yang tampil di halaman ini.
+            'pilihanInduk' => UnitOrganisasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }
 

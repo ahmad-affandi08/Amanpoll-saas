@@ -134,9 +134,49 @@ class UnitOrganisasiControllerTest extends TestCase
         UnitOrganisasi::create(['Kode' => 'UNIT-NONAKTIF', 'Nama' => 'Nonaktif', 'Jenis' => 'Divisi', 'Status' => 'Nonaktif']);
         $konteks->bersihkan();
 
-        $response = $this->actingAs($admin)->get('/platform/unit-organisasi?status=Aktif');
+        $response = $this->actingAs($admin)->get('/platform/unit-organisasi?Status=Aktif');
 
         $response->assertOk();
+        $response->assertInertia(fn ($halaman) => $halaman
+            ->has('unitOrganisasi.data', 1)
+            ->where('unitOrganisasi.data.0.Nama', 'Aktif')
+            ->where('unitOrganisasi.meta.total', 1)
+            ->etc());
+    }
+
+    /**
+     * Pemilih induk tidak boleh ikut terpaginasi.
+     *
+     * Daftarnya dipaginasi 25 baris, tetapi form-nya harus tetap dapat memilih
+     * unit mana pun sebagai induk. Kalau pemilihnya ikut terpotong, unit ke-26
+     * dan seterusnya hilang dari pilihan tanpa satu pun pesan galat.
+     */
+    public function test_pemilih_induk_memuat_seluruh_unit_meski_daftarnya_terpaginasi(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $admin = $this->buatAdmin($organisasi);
+
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+        for ($ke = 1; $ke <= 30; $ke++) {
+            UnitOrganisasi::create([
+                'Kode' => sprintf('UNIT-%02d', $ke),
+                'Nama' => sprintf('Unit %02d', $ke),
+                'Jenis' => 'Divisi',
+                'Status' => 'Aktif',
+                'Urutan' => $ke,
+            ]);
+        }
+        $konteks->bersihkan();
+
+        $response = $this->actingAs($admin)->get('/platform/unit-organisasi');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($halaman) => $halaman
+            ->has('unitOrganisasi.data', 25)
+            ->where('unitOrganisasi.meta.total', 30)
+            ->has('pilihanInduk', 30)
+            ->etc());
     }
 
     public function test_organisasi_a_tidak_dapat_mengubah_unit_organisasi_b(): void

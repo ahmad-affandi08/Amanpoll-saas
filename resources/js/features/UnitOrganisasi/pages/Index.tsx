@@ -21,15 +21,25 @@ import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteUnitOrganisasi } from '@/features/UnitOrganisasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { BidangKode } from '@/components/shared/BidangKode';
 
+/** Hanya Id dan Nama: pemilih induk memuat seluruh unit, bukan barisnya. */
+interface IndukRingkas {
+  Id: string;
+  Nama: string;
+}
+
 interface Props {
-  unitOrganisasi: UnitOrganisasi[];
+  unitOrganisasi: Paginasi<UnitOrganisasi>;
+  pilihanInduk: IndukRingkas[];
+  filter: FilterDaftar;
 }
 
 const TANPA_INDUK = '__tanpa_induk__';
 
-function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semuaUnit: UnitOrganisasi[] }) {
+function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semuaUnit: IndukRingkas[] }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     unit
@@ -138,12 +148,13 @@ function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semu
   );
 }
 
-export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
+export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filter }: Props) {
   const konfirmasi = useKonfirmasi();
+  // Dipetakan dari daftar penuh: induk sebuah unit bisa saja ada di halaman lain.
   const namaIndukDari = useMemo(() => {
-    const peta = new Map(unitOrganisasi.map((u) => [u.Id, u.Nama]));
+    const peta = new Map(pilihanInduk.map((u) => [u.Id, u.Nama]));
     return (indukId: string | null) => (indukId ? (peta.get(indukId) ?? '—') : '—');
-  }, [unitOrganisasi]);
+  }, [pilihanInduk]);
 
   const hapus = async (unit: UnitOrganisasi) => {
     if (
@@ -197,7 +208,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormUnit unit={row.original} semuaUnit={unitOrganisasi} />
+            <DialogFormUnit unit={row.original} semuaUnit={pilihanInduk} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -219,7 +230,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
         deskripsi="Kelola struktur divisi dan hierarki organisasi."
         aksi={
           <>
-            <DialogFormUnit unit={null} semuaUnit={unitOrganisasi} />
+            <DialogFormUnit unit={null} semuaUnit={pilihanInduk} />
           </>
         }
         className="mb-6"
@@ -227,8 +238,9 @@ export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
 
       <DataTable
         columns={columns}
-        data={unitOrganisasi}
-        pencarianPlaceholder="Cari nama, kode, atau jenis unit..."
+        data={unitOrganisasi.data}
+        server={{ meta: unitOrganisasi.meta, filter }}
+        pencarianPlaceholder="Cari nama, kode, atau email unit..."
         facetedFilters={[
           {
             columnId: 'Status',
@@ -239,7 +251,9 @@ export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
             ],
           },
         ]}
-        pesanKosong="Belum ada unit organisasi."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada unit yang cocok.' : 'Belum ada unit organisasi.'
+        }
       />
     </KerangkaAplikasi>
   );

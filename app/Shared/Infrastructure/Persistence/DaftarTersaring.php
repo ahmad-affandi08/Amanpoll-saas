@@ -203,7 +203,16 @@ final class DaftarTersaring
 
         $kueri->orderBy($this->kolomUrut[$this->kunciUrut()] ?? $this->kunciUrut(), $this->arahUrut());
 
-        return $kueri->paginate($perHalaman)->withQueryString();
+        // Kunci utama sebagai pemutus seri. Tanpa urutan total yang pasti, dua baris
+        // dengan nilai urut yang sama boleh ditukar MySQL antar permintaan, sehingga
+        // satu baris muncul di dua halaman sementara baris lain tidak muncul sama sekali.
+        $kueri->orderBy($kueri->getModel()->getQualifiedKeyName());
+
+        // Nomor halaman dibaca dari permintaan yang diserahkan ke kelas ini, bukan dari
+        // resolver global Laravel, supaya hasilnya hanya bergantung pada apa yang dioper.
+        $halaman = max(1, (int) $this->permintaan->query('page', '1'));
+
+        return $kueri->paginate($perHalaman, ['*'], 'page', $halaman)->withQueryString();
     }
 
     /**

@@ -18,25 +18,35 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\LokasiGudang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class GudangController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Gudang::class);
 
-        $gudang = Gudang::query()
-            ->with(['lokasi', 'penanggungJawab', 'lokasiGudang'])
-            ->withCount('lokasiGudang')
-            ->orderBy('Nama')
-            ->get();
+        $daftar = DaftarTersaring::untuk(
+            $request,
+            Gudang::query()->with(['lokasi', 'penanggungJawab', 'lokasiGudang'])->withCount('lokasiGudang'),
+        )
+            ->cari(['Kode', 'Nama'])
+            ->urut(['Nama', 'Kode', 'Status'], bawaan: 'Nama')
+            ->faset(['Status', 'LokasiId']);
+
+        $halaman = $daftar->halaman();
 
         return Inertia::render('Gudang/Index', [
-            'gudang' => GudangResource::collection($gudang),
-            'lokasiGudangPerGudang' => $gudang->mapWithKeys(fn (Gudang $g) => [$g->Id => LokasiGudangResource::collection($g->lokasiGudang)]),
+            'gudang' => GudangResource::collection($halaman),
+            // Hanya untuk baris yang tampil; dialog lokasi tidak pernah dibuka dari baris lain.
+            'lokasiGudangPerGudang' => $halaman->getCollection()->mapWithKeys(
+                fn (Gudang $satu) => [$satu->Id => LokasiGudangResource::collection($satu->lokasiGudang)],
+            ),
+            'filter' => $daftar->filterBerlaku(),
             'lokasi' => Lokasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }

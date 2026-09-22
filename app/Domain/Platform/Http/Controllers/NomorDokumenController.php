@@ -11,20 +11,26 @@ use App\Domain\Platform\Http\Requests\SimpanNomorDokumenRequest;
 use App\Domain\Platform\Http\Resources\NomorDokumenResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\NomorDokumen;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class NomorDokumenController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', NomorDokumen::class);
 
-        $nomorDokumen = NomorDokumen::query()->orderBy('JenisDokumen')->get();
+        $daftar = DaftarTersaring::untuk($request, NomorDokumen::query())
+            ->cari(['JenisDokumen', 'Awalan'])
+            ->urut(['JenisDokumen', 'Awalan', 'ResetPeriode'], bawaan: 'JenisDokumen')
+            ->faset(['ResetPeriode']);
 
         return Inertia::render('NomorDokumen/Index', [
-            'nomorDokumen' => NomorDokumenResource::collection($nomorDokumen),
+            'nomorDokumen' => NomorDokumenResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

@@ -22,9 +22,12 @@ import type { HariLibur } from '@/features/HariLibur/types';
 import { ruteHariLibur } from '@/features/HariLibur/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  hariLibur: HariLibur[];
+  hariLibur: Paginasi<HariLibur>;
+  filter: FilterDaftar;
 }
 
 function DialogTambahHariLibur() {
@@ -92,7 +95,7 @@ function formatTanggal(tanggal: string): string {
   });
 }
 
-export default function HariLiburIndex({ hariLibur }: Props) {
+export default function HariLiburIndex({ hariLibur, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (libur: HariLibur) => {
     if (
@@ -122,7 +125,7 @@ export default function HariLiburIndex({ hariLibur }: Props) {
       },
       {
         id: 'BerulangTahunan',
-        accessorFn: (row) => (row.BerulangTahunan ? 'Setiap Tahun' : 'Sekali'),
+        accessorFn: (row) => (row.BerulangTahunan ? '1' : '0'),
         header: ({ column }) => <DataTableColumnHeader column={column} title="Berulang" />,
         cell: ({ row }) =>
           row.original.BerulangTahunan ? (
@@ -167,15 +170,16 @@ export default function HariLiburIndex({ hariLibur }: Props) {
 
       <DataTable
         columns={columns}
-        data={hariLibur}
+        data={hariLibur.data}
+        server={{ meta: hariLibur.meta, filter }}
         pencarianPlaceholder="Cari nama hari libur..."
         facetedFilters={[
           {
             columnId: 'BerulangTahunan',
             title: 'Berulang',
             options: [
-              { label: 'Setiap Tahun', value: 'Setiap Tahun' },
-              { label: 'Sekali', value: 'Sekali' },
+              { label: 'Setiap Tahun', value: '1' },
+              { label: 'Sekali', value: '0' },
             ],
           },
         ]}

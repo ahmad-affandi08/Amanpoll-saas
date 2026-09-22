@@ -10,22 +10,27 @@ use App\Domain\Platform\Http\Requests\BuatKunciApiRequest;
 use App\Domain\Platform\Http\Resources\KunciApiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KunciApi;
 use App\Http\Controllers\Controller;
-use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use DateTimeImmutable;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class KunciApiController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', KunciApi::class);
 
-        $kunciApi = KunciApi::query()->latest('DibuatPada')->limit(BatasDaftar::MAKS)->get();
+        $daftar = DaftarTersaring::untuk($request, KunciApi::query())
+            ->cari(['Nama', 'AwalanKunci'])
+            ->urut(['Nama', 'Status', 'DibuatPada'], bawaan: 'DibuatPada', arahBawaan: 'desc')
+            ->faset(['Status']);
 
         return Inertia::render('KunciApi/Index', [
-            'kunciApi' => KunciApiResource::collection($kunciApi),
+            'kunciApi' => KunciApiResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

@@ -20,11 +20,21 @@ import type { KategoriSukuCadang } from '@/features/Persediaan/types';
 import { ruteKategoriSukuCadang } from '@/features/KategoriSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 
+/** Hanya Id dan Nama: pemilih induk memuat seluruh kategori, bukan barisnya. */
+interface IndukRingkas {
+  Id: string;
+  Nama: string;
+}
+
 interface Props {
-  kategoriSukuCadang: KategoriSukuCadang[];
+  kategoriSukuCadang: Paginasi<KategoriSukuCadang>;
+  pilihanInduk: IndukRingkas[];
+  filter: FilterDaftar;
 }
 
 function DialogFormKategori({
@@ -32,7 +42,7 @@ function DialogFormKategori({
   semuaKategori,
 }: {
   kategori: KategoriSukuCadang | null;
-  semuaKategori: KategoriSukuCadang[];
+  semuaKategori: IndukRingkas[];
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
@@ -110,7 +120,7 @@ function DialogFormKategori({
   );
 }
 
-export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
+export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInduk, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: KategoriSukuCadang) => {
     if (
@@ -150,7 +160,7 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormKategori kategori={row.original} semuaKategori={kategoriSukuCadang} />
+            <DialogFormKategori kategori={row.original} semuaKategori={pilihanInduk} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -172,7 +182,7 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
         deskripsi="Klasifikasi suku cadang, mendukung hierarki sub-kategori."
         aksi={
           <>
-            <DialogFormKategori kategori={null} semuaKategori={kategoriSukuCadang} />
+            <DialogFormKategori kategori={null} semuaKategori={pilihanInduk} />
           </>
         }
         className="mb-6"
@@ -180,9 +190,14 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
 
       <DataTable
         columns={columns}
-        data={kategoriSukuCadang}
+        data={kategoriSukuCadang.data}
+        server={{ meta: kategoriSukuCadang.meta, filter }}
         pencarianPlaceholder="Cari nama atau kode kategori..."
-        pesanKosong="Belum ada kategori suku cadang."
+        pesanKosong={
+          adaPenyaringAktif(filter)
+            ? 'Tidak ada kategori yang cocok.'
+            : 'Belum ada kategori suku cadang.'
+        }
       />
     </KerangkaAplikasi>
   );

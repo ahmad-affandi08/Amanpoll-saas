@@ -27,9 +27,12 @@ import { http } from '@/lib/http';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  kunciApi: KunciApi[];
+  kunciApi: Paginasi<KunciApi>;
+  filter: FilterDaftar;
 }
 
 function DialogTampilkanToken({ token, onTutup }: { token: string; onTutup: () => void }) {
@@ -179,7 +182,7 @@ function DialogBuatKunci() {
   );
 }
 
-export default function KunciApiIndex({ kunciApi }: Props) {
+export default function KunciApiIndex({ kunciApi, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const { flash } = usePage<PageProps>().props;
   const [tokenTampil, setTokenTampil] = useState<string | null>(null);
@@ -295,8 +298,9 @@ export default function KunciApiIndex({ kunciApi }: Props) {
 
       <DataTable
         columns={columns}
-        data={kunciApi}
-        pencarianPlaceholder="Cari nama atau cakupan..."
+        data={kunciApi.data}
+        server={{ meta: kunciApi.meta, filter }}
+        pencarianPlaceholder="Cari nama atau awalan kunci..."
         facetedFilters={[
           {
             columnId: 'Status',
@@ -307,7 +311,9 @@ export default function KunciApiIndex({ kunciApi }: Props) {
             ],
           },
         ]}
-        pesanKosong="Belum ada kunci API."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada kunci yang cocok.' : 'Belum ada kunci API.'
+        }
         ilustrasiKosong="/assets/3d/integrasi.webp"
       />
     </KerangkaAplikasi>

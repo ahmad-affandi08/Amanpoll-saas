@@ -11,20 +11,26 @@ use App\Domain\Notifikasi\Http\Requests\SimpanTemplatNotifikasiRequest;
 use App\Domain\Notifikasi\Http\Resources\TemplatNotifikasiResource;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class TemplatNotifikasiController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', TemplatNotifikasi::class);
 
-        $templat = TemplatNotifikasi::query()->orderBy('Kode')->orderBy('Kanal')->get();
+        $daftar = DaftarTersaring::untuk($request, TemplatNotifikasi::query())
+            ->cari(['Kode', 'JudulTemplat'])
+            ->urut(['Kode', 'Kanal'], bawaan: 'Kode')
+            ->faset(['Kanal']);
 
         return Inertia::render('TemplatNotifikasi/Index', [
-            'templatNotifikasi' => TemplatNotifikasiResource::collection($templat),
+            'templatNotifikasi' => TemplatNotifikasiResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

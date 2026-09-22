@@ -22,11 +22,21 @@ import type { KategoriAset } from '@/features/Aset/types';
 import { ruteKategoriAset } from '@/features/KategoriAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 
+/** Hanya Id dan Nama: pemilih induk memuat seluruh kategori, bukan barisnya. */
+interface IndukRingkas {
+  Id: string;
+  Nama: string;
+}
+
 interface Props {
-  kategoriAset: KategoriAset[];
+  kategoriAset: Paginasi<KategoriAset>;
+  pilihanInduk: IndukRingkas[];
+  filter: FilterDaftar;
 }
 
 function DialogFormKategoriAset({
@@ -34,7 +44,7 @@ function DialogFormKategoriAset({
   semuaKategori,
 }: {
   kategori: KategoriAset | null;
-  semuaKategori: KategoriAset[];
+  semuaKategori: IndukRingkas[];
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
@@ -176,7 +186,7 @@ function DialogFormKategoriAset({
   );
 }
 
-export default function KategoriAsetIndex({ kategoriAset }: Props) {
+export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: KategoriAset) => {
     if (
@@ -227,7 +237,7 @@ export default function KategoriAsetIndex({ kategoriAset }: Props) {
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormKategoriAset kategori={row.original} semuaKategori={kategoriAset} />
+            <DialogFormKategoriAset kategori={row.original} semuaKategori={pilihanInduk} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -249,7 +259,7 @@ export default function KategoriAsetIndex({ kategoriAset }: Props) {
         deskripsi="Klasifikasi aset beserta default penyusutan dan kebutuhan pemeliharaan/kalibrasi."
         aksi={
           <>
-            <DialogFormKategoriAset kategori={null} semuaKategori={kategoriAset} />
+            <DialogFormKategoriAset kategori={null} semuaKategori={pilihanInduk} />
           </>
         }
         className="mb-6"
@@ -257,9 +267,12 @@ export default function KategoriAsetIndex({ kategoriAset }: Props) {
 
       <DataTable
         columns={columns}
-        data={kategoriAset}
+        data={kategoriAset.data}
+        server={{ meta: kategoriAset.meta, filter }}
         pencarianPlaceholder="Cari nama atau kode kategori..."
-        pesanKosong="Belum ada kategori aset."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada kategori yang cocok.' : 'Belum ada kategori aset.'
+        }
       />
     </KerangkaAplikasi>
   );

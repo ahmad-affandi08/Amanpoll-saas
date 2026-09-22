@@ -11,20 +11,26 @@ use App\Domain\Platform\Http\Requests\SimpanHariLiburRequest;
 use App\Domain\Platform\Http\Resources\HariLiburResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\HariLibur;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class HariLiburController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', HariLibur::class);
 
-        $hariLibur = HariLibur::query()->orderBy('Tanggal')->get();
+        $daftar = DaftarTersaring::untuk($request, HariLibur::query())
+            ->cari(['Nama'])
+            ->urut(['Tanggal', 'Nama'], bawaan: 'Tanggal', arahBawaan: 'desc')
+            ->faset(['BerulangTahunan']);
 
         return Inertia::render('HariLibur/Index', [
-            'hariLibur' => HariLiburResource::collection($hariLibur),
+            'hariLibur' => HariLiburResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

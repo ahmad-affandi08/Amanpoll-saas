@@ -11,20 +11,27 @@ use App\Domain\Persediaan\Http\Requests\SimpanKategoriSukuCadangRequest;
 use App\Domain\Persediaan\Http\Resources\KategoriSukuCadangResource;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class KategoriSukuCadangController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', KategoriSukuCadang::class);
 
-        $kategoriSukuCadang = KategoriSukuCadang::query()->with('induk')->orderBy('Nama')->get();
+        $daftar = DaftarTersaring::untuk($request, KategoriSukuCadang::query()->with('induk'))
+            ->cari(['Kode', 'Nama'])
+            ->urut(['Nama', 'Kode'], bawaan: 'Nama');
 
         return Inertia::render('KategoriSukuCadang/Index', [
-            'kategoriSukuCadang' => KategoriSukuCadangResource::collection($kategoriSukuCadang),
+            'kategoriSukuCadang' => KategoriSukuCadangResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
+            // Pemilih induk harus memuat seluruh kategori, bukan hanya yang tampil di halaman ini.
+            'pilihanInduk' => KategoriSukuCadang::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }
 

@@ -23,6 +23,8 @@ import { VARIAN_BADGE_STATUS_GUDANG } from '@/features/Persediaan/status';
 import { ruteGudang } from '@/features/Gudang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 
@@ -32,9 +34,10 @@ interface LokasiRingkas {
 }
 
 interface Props {
-  gudang: Gudang[];
+  gudang: Paginasi<Gudang>;
   lokasiGudangPerGudang: Record<string, LokasiGudang[]>;
   lokasi: LokasiRingkas[];
+  filter: FilterDaftar;
 }
 
 function DialogFormGudang({ gudang, lokasi }: { gudang: Gudang | null; lokasi: LokasiRingkas[] }) {
@@ -206,7 +209,7 @@ function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGu
   );
 }
 
-export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: Props) {
+export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Gudang) => {
     if (
@@ -294,7 +297,7 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: P
         className="mb-6"
       />
 
-      {gudang.length === 0 ? (
+      {gudang.meta.total === 0 && !adaPenyaringAktif(filter) ? (
         <KeadaanKosong
           ilustrasi="/assets/3d/gudang.webp"
           judul="Belum ada gudang."
@@ -303,9 +306,25 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: P
       ) : (
         <DataTable
           columns={columns}
-          data={gudang}
+          data={gudang.data}
+          server={{ meta: gudang.meta, filter }}
+          facetedFilters={[
+            {
+              columnId: 'Status',
+              title: 'Status',
+              options: [
+                { label: 'Aktif', value: 'Aktif' },
+                { label: 'Nonaktif', value: 'Nonaktif' },
+              ],
+            },
+            {
+              columnId: 'LokasiId',
+              title: 'Lokasi',
+              options: lokasi.map((satu) => ({ label: satu.Nama, value: satu.Id })),
+            },
+          ]}
           pencarianPlaceholder="Cari nama atau kode gudang..."
-          pesanKosong="Belum ada gudang."
+          pesanKosong="Tidak ada gudang yang cocok."
         />
       )}
     </KerangkaAplikasi>

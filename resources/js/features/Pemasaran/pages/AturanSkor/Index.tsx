@@ -22,15 +22,25 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { AturanSkor, PilihanAturanSkor } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  aturan: AturanSkor[];
+  aturan: Paginasi<AturanSkor>;
   pilihan: PilihanAturanSkor;
+  filter: FilterDaftar;
+  /** Dihitung di server: spanduknya berbicara tentang seluruh aturan, bukan satu halaman. */
+  jumlahBelumBerlaku: { jumlah: number; peristiwa: string[] };
 }
 
 const AKAR = rutePemasaran.aturanSkor;
 
-export default function PemasaranAturanSkorIndex({ aturan, pilihan }: Props) {
+export default function PemasaranAturanSkorIndex({
+  aturan,
+  pilihan,
+  filter,
+  jumlahBelumBerlaku,
+}: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (satu: AturanSkor) => {
@@ -105,6 +115,8 @@ export default function PemasaranAturanSkorIndex({ aturan, pilihan }: Props) {
       {
         id: 'JumlahDipakai',
         accessorFn: (row) => row.JumlahDipakai,
+        // Hasil hitung relasi, bukan kolom AturanSkorProspek.
+        enableSorting: false,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Dipakai" />,
         cell: ({ row }) => <span className="font-mono text-xs">{row.original.JumlahDipakai}</span>,
         meta: { label: 'Dipakai' },
@@ -129,8 +141,6 @@ export default function PemasaranAturanSkorIndex({ aturan, pilihan }: Props) {
     [pilihan],
   );
 
-  const belumBerlaku = aturan.filter((satu) => satu.Aktif && !satu.Berlaku);
-
   return (
     <KerangkaPlatform>
       <Head title="Aturan Skor Prospek" />
@@ -143,21 +153,23 @@ export default function PemasaranAturanSkorIndex({ aturan, pilihan }: Props) {
         className="mb-6"
       />
 
-      {belumBerlaku.length > 0 ? (
+      {jumlahBelumBerlaku.jumlah > 0 ? (
         <div className="mb-4 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-          {belumBerlaku.length} aturan aktif belum berlaku karena belum ada yang menghasilkan
-          sinyalnya:{' '}
-          <span className="font-mono">{belumBerlaku.map((satu) => satu.Peristiwa).join(', ')}</span>.
+          {jumlahBelumBerlaku.jumlah} aturan aktif belum berlaku karena belum ada yang menghasilkan
+          sinyalnya: <span className="font-mono">{jumlahBelumBerlaku.peristiwa.join(', ')}</span>.
           Bobotnya tersimpan dan akan terpakai begitu sumbernya ada.
         </div>
       ) : null}
 
       <DataTable
         columns={columns}
-        data={aturan}
+        data={aturan.data}
+        server={{ meta: aturan.meta, filter }}
         kartuDiPonsel
-        pencarianPlaceholder="Cari sinyal..."
-        pesanKosong="Belum ada aturan skor."
+        pencarianPlaceholder="Cari sinyal atau keterangan..."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada aturan yang cocok.' : 'Belum ada aturan skor.'
+        }
       />
     </KerangkaPlatform>
   );

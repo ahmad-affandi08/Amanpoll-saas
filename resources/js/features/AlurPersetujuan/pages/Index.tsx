@@ -24,11 +24,14 @@ import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteAlurPersetujuan } from '@/features/AlurPersetujuan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
-  alurPersetujuan: AlurPersetujuan[];
+  alurPersetujuan: Paginasi<AlurPersetujuan>;
+  filter: FilterDaftar;
   jenisEntitasTersedia: string[];
   peran: Peran[];
   pengguna: Pengguna[];
@@ -351,6 +354,7 @@ function DialogKelolaTahap({
 
 export default function AlurPersetujuanIndex({
   alurPersetujuan,
+  filter,
   jenisEntitasTersedia,
   peran,
   pengguna,
@@ -401,7 +405,7 @@ export default function AlurPersetujuanIndex({
       },
       {
         id: 'Aktif',
-        accessorFn: (row) => (row.Aktif ? 'Aktif' : 'Nonaktif'),
+        accessorFn: (row) => (row.Aktif ? '1' : '0'),
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
           <Badge variant={row.original.Aktif ? 'default' : 'outline'}>
@@ -450,19 +454,27 @@ export default function AlurPersetujuanIndex({
 
       <DataTable
         columns={columns}
-        data={alurPersetujuan}
+        data={alurPersetujuan.data}
+        server={{ meta: alurPersetujuan.meta, filter }}
         pencarianPlaceholder="Cari nama atau kode alur..."
         facetedFilters={[
           {
             columnId: 'Aktif',
             title: 'Status',
             options: [
-              { label: 'Aktif', value: 'Aktif' },
-              { label: 'Nonaktif', value: 'Nonaktif' },
+              { label: 'Aktif', value: '1' },
+              { label: 'Nonaktif', value: '0' },
             ],
           },
+          {
+            columnId: 'JenisEntitas',
+            title: 'Jenis Entitas',
+            options: jenisEntitasTersedia.map((satu) => ({ label: satu, value: satu })),
+          },
         ]}
-        pesanKosong="Belum ada alur persetujuan."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada alur yang cocok.' : 'Belum ada alur persetujuan.'
+        }
         ilustrasiKosong="/assets/3d/persetujuan-kepatuhan.webp"
       />
     </KerangkaAplikasi>

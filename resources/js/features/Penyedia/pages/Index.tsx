@@ -10,16 +10,19 @@ import type { Penyedia, KategoriPenyedia } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { DialogKelolaKategori } from '@/features/Penyedia/components/DialogKelolaKategori';
 import { DialogKelolaPenyedia } from '@/features/Penyedia/components/DialogKelolaPenyedia';
 import { DialogTambahPenyedia } from '@/features/Penyedia/components/DialogTambahPenyedia';
 
 interface Props {
-  penyedia: Penyedia[];
+  penyedia: Paginasi<Penyedia>;
   kategoriPenyedia: KategoriPenyedia[];
+  filter: FilterDaftar;
 }
 
-export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
+export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Penyedia) => {
     if (
@@ -61,10 +64,8 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
             ))}
           </div>
         ),
-        filterFn: (row, id, value: string[]) => {
-          const idsTerpilih = kategoriPenyedia.filter((k) => value.includes(k.Nama)).map((k) => k.Id);
-          return row.original.KategoriPenyediaId.some((kid) => idsTerpilih.includes(kid));
-        },
+        // Relasi banyak-ke-banyak; penyaringannya dijalankan server lewat faset KategoriPenyediaId.
+        enableSorting: false,
         meta: { label: 'Kategori' },
       },
       {
@@ -128,8 +129,9 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
 
       <DataTable
         columns={columns}
-        data={penyedia}
-        pencarianPlaceholder="Cari nama atau kode penyedia..."
+        data={penyedia.data}
+        server={{ meta: penyedia.meta, filter }}
+        pencarianPlaceholder="Cari nama, kode, atau email penyedia..."
         facetedFilters={[
           {
             columnId: 'Status',
@@ -140,12 +142,14 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
             ],
           },
           {
-            columnId: 'NamaKategoriPenyedia',
+            columnId: 'KategoriPenyediaId',
             title: 'Kategori',
-            options: kategoriPenyedia.map((k) => ({ label: k.Nama, value: k.Nama })),
+            options: kategoriPenyedia.map((k) => ({ label: k.Nama, value: k.Id })),
           },
         ]}
-        pesanKosong="Belum ada penyedia."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada penyedia yang cocok.' : 'Belum ada penyedia.'
+        }
         ilustrasiKosong="/assets/3d/penyedia-kontrak.webp"
       />
     </KerangkaAplikasi>

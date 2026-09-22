@@ -23,9 +23,12 @@ import type { TemplatNotifikasi } from '@/features/Notifikasi/types';
 import { ruteTemplatNotifikasi } from '@/features/TemplatNotifikasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  templatNotifikasi: TemplatNotifikasi[];
+  templatNotifikasi: Paginasi<TemplatNotifikasi>;
+  filter: FilterDaftar;
 }
 
 function DialogFormTemplat({ templat }: { templat: TemplatNotifikasi | null }) {
@@ -116,7 +119,7 @@ function DialogFormTemplat({ templat }: { templat: TemplatNotifikasi | null }) {
   );
 }
 
-export default function TemplatNotifikasiIndex({ templatNotifikasi }: Props) {
+export default function TemplatNotifikasiIndex({ templatNotifikasi, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: TemplatNotifikasi) => {
     if (
@@ -188,9 +191,22 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi }: Props) {
 
       <DataTable
         columns={columns}
-        data={templatNotifikasi}
-        pencarianPlaceholder="Cari kode templat..."
-        pesanKosong="Belum ada templat notifikasi."
+        data={templatNotifikasi.data}
+        server={{ meta: templatNotifikasi.meta, filter }}
+        facetedFilters={[
+          {
+            columnId: 'Kanal',
+            title: 'Kanal',
+            options: [
+              { label: 'InApp', value: 'InApp' },
+              { label: 'Email', value: 'Email' },
+            ],
+          },
+        ]}
+        pencarianPlaceholder="Cari kode atau judul templat..."
+        pesanKosong={
+          adaPenyaringAktif(filter) ? 'Tidak ada templat yang cocok.' : 'Belum ada templat notifikasi.'
+        }
         ilustrasiKosong="/assets/3d/notifikasi.webp"
       />
     </KerangkaAplikasi>

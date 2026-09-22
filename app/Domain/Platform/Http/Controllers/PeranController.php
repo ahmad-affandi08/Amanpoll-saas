@@ -13,6 +13,7 @@ use App\Domain\Platform\Http\Requests\SimpanPeranRequest;
 use App\Domain\Platform\Http\Resources\PeranResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,18 +21,20 @@ use Inertia\Response;
 
 final class PeranController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Peran::class);
 
-        $peran = Peran::query()
-            ->withCount(['penggunaPeran', 'peranIzin'])
-            ->with('peranIzin')
-            ->orderBy('Nama')
-            ->get();
+        $daftar = DaftarTersaring::untuk(
+            $request,
+            Peran::query()->withCount(['penggunaPeran', 'peranIzin'])->with('peranIzin'),
+        )
+            ->cari(['Kode', 'Nama', 'Keterangan'])
+            ->urut(['Nama', 'Kode'], bawaan: 'Nama');
 
         return Inertia::render('PeranIzin/Index', [
-            'peran' => PeranResource::collection($peran),
+            'peran' => PeranResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

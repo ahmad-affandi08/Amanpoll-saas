@@ -18,7 +18,9 @@ use App\Domain\Platform\Http\Resources\PeranResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,17 +28,21 @@ final class AlurPersetujuanController extends Controller
 {
     public function __construct(private readonly RegistriEntitas $registriEntitas) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', AlurPersetujuan::class);
 
-        $alur = AlurPersetujuan::query()
-            ->with(['tahapPersetujuan.peran', 'tahapPersetujuan.pengguna'])
-            ->orderBy('Nama')
-            ->get();
+        $daftar = DaftarTersaring::untuk(
+            $request,
+            AlurPersetujuan::query()->with(['tahapPersetujuan.peran', 'tahapPersetujuan.pengguna']),
+        )
+            ->cari(['Kode', 'Nama'])
+            ->urut(['Nama', 'Kode', 'JenisEntitas'], bawaan: 'Nama')
+            ->faset(['JenisEntitas', 'Aktif']);
 
         return Inertia::render('AlurPersetujuan/Index', [
-            'alurPersetujuan' => AlurPersetujuanResource::collection($alur),
+            'alurPersetujuan' => AlurPersetujuanResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
             'jenisEntitasTersedia' => $this->registriEntitas->jenisDikenal(),
             'peran' => PeranResource::collection(Peran::query()->orderBy('Nama')->get()),
             'pengguna' => PenggunaResource::collection(Pengguna::query()->orderBy('Nama')->get()),
