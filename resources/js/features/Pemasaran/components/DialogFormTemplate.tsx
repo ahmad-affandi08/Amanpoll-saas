@@ -14,13 +14,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
-import type { Template } from '@/features/Pemasaran/types';
+import type { TemplateWhatsApp } from '@/features/Pemasaran/types';
 
 export function DialogFormTemplate({
   template,
   variabel,
 }: {
-  template: Template | null;
+  template: TemplateWhatsApp | null;
   variabel: string[];
 }) {
   const [buka, setBuka] = useState(false);

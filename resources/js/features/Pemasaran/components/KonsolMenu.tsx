@@ -7,12 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
-import type { Menu } from '@/features/Pemasaran/types';
+import type { MenuWhatsApp } from '@/features/Pemasaran/types';
 
-export function KonsolMenu({ menu, pratinjau }: { menu: Menu[]; pratinjau: string }) {
-  const [baris, setBaris] = useState<Menu[]>(menu);
+export function KonsolMenu({ menu, pratinjau }: { menu: MenuWhatsApp[]; pratinjau: string }) {
+  const [baris, setBaris] = useState<MenuWhatsApp[]>(menu);
 
-  const ubah = (indeks: number, kunci: keyof Menu, nilai: string | boolean) =>
+  const ubah = (indeks: number, kunci: keyof MenuWhatsApp, nilai: string | boolean) =>
     setBaris((lama) => lama.map((satu, ke) => (ke === indeks ? { ...satu, [kunci]: nilai } : satu)));
 
   const tambah = () =>

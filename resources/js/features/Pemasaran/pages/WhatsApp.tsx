@@ -5,18 +5,15 @@ import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { rutePemasaran } from '@/features/Pemasaran/api';
-import type { Template } from '@/features/Pemasaran/types';
+import type { MenuWhatsApp, TemplateWhatsApp } from '@/features/Pemasaran/types';
 import { DialogFormTemplate } from '@/features/Pemasaran/components/DialogFormTemplate';
 import { DialogKeputusan } from '@/features/Pemasaran/components/DialogKeputusan';
 import { KonsolMenu } from '@/features/Pemasaran/components/KonsolMenu';
-import type { Menu } from '@/features/Pemasaran/types';
-
 interface Props {
-  template: Template[];
-  menu: Menu[];
+  template: TemplateWhatsApp[];
+  menu: MenuWhatsApp[];
   pratinjauMenu: string;
   kataBerhenti: string[];
   ringkasanKiriman: Record<string, number>;
@@ -133,7 +130,7 @@ function KartuTemplate({
   variabel,
   pilihan,
 }: {
-  template: Template;
+  template: TemplateWhatsApp;
   variabel: string[];
   pilihan: { Status: string[] };
 }) {

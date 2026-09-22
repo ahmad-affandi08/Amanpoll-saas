@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
-import type { Konten, Pilihan } from '@/features/Pemasaran/types';
+import type { KontenSosial, PilihanSosial } from '@/features/Pemasaran/types';
 
 function PilihRelasi({
   id,
@@ -49,7 +49,13 @@ function PilihRelasi({
   );
 }
 
-export function DialogFormKonten({ konten, pilihan }: { konten: Konten | null; pilihan: Pilihan }) {
+export function DialogFormKonten({
+  konten,
+  pilihan,
+}: {
+  konten: KontenSosial | null;
+  pilihan: PilihanSosial;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: konten?.Kode ?? '',

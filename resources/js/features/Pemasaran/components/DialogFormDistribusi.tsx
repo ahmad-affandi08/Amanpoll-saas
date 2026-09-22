@@ -14,16 +14,16 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
-import type { Distribusi, Konten, Pilihan } from '@/features/Pemasaran/types';
+import type { DistribusiSosial, KontenSosial, PilihanSosial } from '@/features/Pemasaran/types';
 
 export function DialogFormDistribusi({
   konten,
   distribusi,
   pilihan,
 }: {
-  konten: Konten;
-  distribusi: Distribusi | null;
-  pilihan: Pilihan;
+  konten: KontenSosial;
+  distribusi: DistribusiSosial | null;
+  pilihan: PilihanSosial;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({

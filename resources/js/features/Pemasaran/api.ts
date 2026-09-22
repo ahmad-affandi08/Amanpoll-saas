@@ -24,6 +24,8 @@ export const rutePemasaran = {
   halaman: `${AKAR}/halaman`,
   halamanBaru: `${AKAR}/halaman/baru`,
   halamanDetail: (id: string) => `${AKAR}/halaman/${id}`,
+  halamanPratinjau: (id: string, versiId: string) => `${AKAR}/halaman/${id}/pratinjau/${versiId}`,
+  halamanKembalikan: (id: string, versiId: string) => `${AKAR}/halaman/${id}/kembalikan/${versiId}`,
 
   konten: `${AKAR}/konten`,
   kontenDetail: (id: string) => `${AKAR}/konten/${id}`,
@@ -64,6 +66,7 @@ export const rutePemasaran = {
   whatsappTemplatePeriksa: (id: string) => `${AKAR}/whatsapp/template/${id}/periksa`,
   whatsappTemplateKeputusan: (id: string) => `${AKAR}/whatsapp/template/${id}/keputusan`,
   growth: `${AKAR}/growth`,
+  growthAlertSelesai: (id: string) => `${AKAR}/growth/alert/${id}/selesai`,
 
   emailKonsen: `${AKAR}/email/konsen`,
   emailSequence: `${AKAR}/email/sequence`,

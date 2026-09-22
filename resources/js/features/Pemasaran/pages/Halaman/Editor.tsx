@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
@@ -10,19 +10,19 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import type { BlokDisunting, HalamanDetail, PilihanHalaman, VersiHalaman } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { KartuBlok } from '@/features/Pemasaran/components/KartuBlok';
+import { PanelPenerbitan } from '@/features/Pemasaran/components/PanelPenerbitan';
+import { DaftarVersi } from '@/features/Pemasaran/components/DaftarVersi';
 
 interface Props {
   halaman: HalamanDetail | null;
   versi: VersiHalaman[];
   pilihan: PilihanHalaman;
 }
-
-const AKAR = rutePemasaran.halaman;
 
 let penghitungKunci = 0;
 
@@ -64,9 +64,9 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
     }));
 
     if (halaman) {
-      form.put(`${AKAR}/${halaman.Id}`, { preserveScroll: true });
+      form.put(rutePemasaran.halamanDetail(halaman.Id), { preserveScroll: true });
     } else {
-      form.post(AKAR);
+      form.post(rutePemasaran.halaman);
     }
   };
 
@@ -112,7 +112,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
         aksi={
           <div className="flex flex-wrap gap-2">
             <Button variant="ghost" asChild>
-              <Link href={AKAR}>Kembali</Link>
+              <Link href={rutePemasaran.halaman}>Kembali</Link>
             </Button>
             <Button onClick={simpan} disabled={form.processing}>
               Simpan Draf
@@ -312,310 +312,15 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
 
         <TabsContent value="versi" className="pt-4">
           {halaman === null || versi.length === 0 ? (
-            <KeadaanKosong judul="Belum ada versi" deskripsi="Setiap penyimpanan draf melahirkan satu versi." />
+            <KeadaanKosong
+              judul="Belum ada versi"
+              deskripsi="Setiap penyimpanan draf melahirkan satu versi."
+            />
           ) : (
             <DaftarVersi halaman={halaman} versi={versi} />
           )}
         </TabsContent>
       </Tabs>
     </KerangkaPlatform>
-  );
-}
-
-function KartuBlok({
-  blok,
-  urutan,
-  total,
-  pilihan,
-  ubah,
-  hapus,
-  pindah,
-}: {
-  blok: BlokDisunting;
-  urutan: number;
-  total: number;
-  pilihan: PilihanHalaman;
-  ubah: (ubahan: Partial<BlokDisunting>) => void;
-  hapus: () => void;
-  pindah: (arah: -1 | 1) => void;
-}) {
-  /* Isi blok disunting sebagai JSON. */
-  const [naskah, setNaskah] = useState(() => JSON.stringify(blok.Isi ?? {}, null, 2));
-  const [galat, setGalat] = useState<string | null>(null);
-
-  const ubahNaskah = (nilai: string) => {
-    setNaskah(nilai);
-
-    try {
-      const terurai: unknown = JSON.parse(nilai === '' ? '{}' : nilai);
-
-      if (typeof terurai !== 'object' || terurai === null || Array.isArray(terurai)) {
-        setGalat('Isi blok harus berupa objek JSON.');
-
-        return;
-      }
-
-      setGalat(null);
-      ubah({ Isi: terurai as BlokDisunting['Isi'] });
-    } catch {
-      setGalat('JSON belum sah, perubahan terakhir belum disimpan ke draf.');
-    }
-  };
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
-        <CardTitle className="text-base">
-          {urutan + 1}. {blok.Jenis}
-        </CardTitle>
-        <div className="flex gap-1">
-          <Button variant="ghost" size="sm" disabled={urutan === 0} onClick={() => pindah(-1)}>
-            Naik
-          </Button>
-          <Button variant="ghost" size="sm" disabled={urutan === total - 1} onClick={() => pindah(1)}>
-            Turun
-          </Button>
-          <Button variant="ghost" size="sm" onClick={hapus}>
-            Hapus
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="grid gap-2">
-            <Label>Jenis</Label>
-            <Select value={blok.Jenis} onValueChange={(v) => ubah({ Jenis: v })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {pilihan.Blok.map((satu) => (
-                  <SelectItem key={satu} value={satu}>
-                    {satu}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {blok.Jenis === 'Formulir' ? (
-            <div className="grid gap-2">
-              <Label>Formulir</Label>
-              <Select
-                value={blok.FormulirKode ?? ''}
-                onValueChange={(v) => ubah({ FormulirKode: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih formulir" />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.Formulir.map((satu) => (
-                    <SelectItem key={satu.Kode} value={satu.Kode}>
-                      {satu.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="grid gap-2">
-          <Label>Isi (JSON)</Label>
-          <Textarea
-            rows={8}
-            className="font-mono text-xs"
-            value={naskah}
-            onChange={(e) => ubahNaskah(e.target.value)}
-          />
-          {galat ? <p className="text-sm text-destructive">{galat}</p> : null}
-          {blok.Jenis === 'Harga' || blok.Jenis === 'Perbandingan' ? (
-            <BantuanHarga jenis={blok.Jenis} pilihan={pilihan} />
-          ) : null}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-/** Blok harga hanya menyebut kode paket; angkanya selalu dibaca dari domain Langganan. */
-function BantuanHarga({ jenis, pilihan }: { jenis: string; pilihan: PilihanHalaman }) {
-  const contoh =
-    jenis === 'Harga'
-      ? {
-          judul: 'Harga',
-          siklus: pilihan.SiklusHarga[0] ?? 'Bulanan',
-          catatanPromo: '',
-          paket: pilihan.Paket.slice(0, 3).map((satu, urutan) => ({
-            kode: satu.Kode,
-            disorot: urutan === 1,
-            badge: urutan === 1 ? 'Paling dipilih' : '',
-            ringkasan: '',
-            ctaTeks: 'Coba gratis',
-            ctaUrl: '/daftar',
-          })),
-        }
-      : {
-          judul: 'Perbandingan paket',
-          paket: pilihan.Paket.map((satu) => satu.Kode),
-          fitur: pilihan.FiturPaket,
-        };
-
-  return (
-    <div className="grid gap-2 rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
-      <p>
-        Blok ini hanya menyebut kode paket. Nama, harga, dan daftar fiturnya dibaca dari domain
-        Langganan saat halaman tampil, jadi harga di sini tidak pernah basi.
-      </p>
-      <p>
-        Kode paket tersedia:{' '}
-        {pilihan.Paket.length === 0 ? (
-          <span className="text-destructive">belum ada paket aktif.</span>
-        ) : (
-          <span className="font-mono">{pilihan.Paket.map((satu) => satu.Kode).join(', ')}</span>
-        )}
-      </p>
-      <pre className="overflow-x-auto rounded bg-muted p-2 font-mono">
-        {JSON.stringify(contoh, null, 2)}
-      </pre>
-    </div>
-  );
-}
-
-function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; pilihan: PilihanHalaman }) {
-  const [status, setStatus] = useState(halaman.Status);
-  const [terbitPada, setTerbitPada] = useState(halaman.TerbitPada?.slice(0, 16) ?? '');
-  const [tarikPada, setTarikPada] = useState(halaman.TarikPada?.slice(0, 16) ?? '');
-
-  const akar = `${AKAR}/${halaman.Id}`;
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Penerbitan</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={() => router.post(`${akar}/terbitkan`, {}, { preserveScroll: true })}>
-            Terbitkan Draf Sekarang
-          </Button>
-          {halaman.VersiDrafId ? (
-            <Button variant="outline" asChild>
-              <a href={`${akar}/pratinjau/${halaman.VersiDrafId}`} target="_blank" rel="noreferrer">
-                Pratinjau Draf
-              </a>
-            </Button>
-          ) : null}
-        </div>
-
-        <Separator />
-
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="grid gap-2">
-            <Label>Status</Label>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {pilihan.Status.filter((satu) => satu !== 'Terbit').map((satu) => (
-                  <SelectItem key={satu} value={satu}>
-                    {satu}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="TerbitPada">Terbit pada</Label>
-            <Input
-              id="TerbitPada"
-              type="datetime-local"
-              value={terbitPada}
-              onChange={(e) => setTerbitPada(e.target.value)}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="TarikPada">Tarik pada</Label>
-            <Input
-              id="TarikPada"
-              type="datetime-local"
-              value={tarikPada}
-              onChange={(e) => setTarikPada(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div>
-          <Button
-            variant="outline"
-            onClick={() =>
-              router.post(
-                `${akar}/status`,
-                {
-                  Status: status,
-                  TerbitPada: terbitPada === '' ? null : terbitPada,
-                  TarikPada: tarikPada === '' ? null : tarikPada,
-                },
-                { preserveScroll: true },
-              )
-            }
-          >
-            Simpan Status
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function DaftarVersi({ halaman, versi }: { halaman: HalamanDetail; versi: VersiHalaman[] }) {
-  return (
-    <div className="grid gap-3">
-      {versi.map((satu) => (
-        <Card key={satu.Id}>
-          <CardContent className="flex flex-wrap items-center justify-between gap-4 pt-6">
-            <div className="grid gap-1">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Versi {satu.Nomor}</span>
-                {satu.Terbit ? <Badge>Terbit</Badge> : null}
-                {satu.Draf ? <Badge variant="secondary">Draf</Badge> : null}
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {satu.Judul}
-                {satu.Catatan ? ` · ${satu.Catatan}` : ''}
-              </span>
-              <span className="font-mono text-xs text-muted-foreground">
-                {new Date(satu.DibuatPada).toLocaleString('id-ID')}
-              </span>
-            </div>
-
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" asChild>
-                <a
-                  href={`${AKAR}/${halaman.Id}/pratinjau/${satu.Id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Pratinjau
-                </a>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={satu.Terbit}
-                onClick={() =>
-                  router.post(`${AKAR}/${halaman.Id}/kembalikan/${satu.Id}`, {}, { preserveScroll: true })
-                }
-              >
-                Kembalikan
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
   );
 }

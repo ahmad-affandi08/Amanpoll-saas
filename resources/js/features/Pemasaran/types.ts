@@ -436,7 +436,7 @@ export interface PilihanKonten {
   Kampanye: Record<string, string>;
 }
 
-export interface Distribusi {
+export interface DistribusiSosial {
   Id: string;
   Channel: string;
   Caption: string;
@@ -457,7 +457,7 @@ export interface Distribusi {
   JadwalPada: string | null;
 }
 
-export interface Konten {
+export interface KontenSosial {
   Id: string;
   Kode: string;
   Judul: string;
@@ -467,17 +467,17 @@ export interface Konten {
   KampanyeId: string | null;
   KampanyeKode: string | null;
   HalamanSlug: string | null;
-  Distribusi: Distribusi[];
+  Distribusi: DistribusiSosial[];
 }
 
-export interface Pilihan {
+export interface PilihanSosial {
   Channel: string[];
   ChannelWajibMedia: string[];
   Kampanye: Record<string, string>;
   Halaman: Record<string, string>;
 }
 
-export interface Template {
+export interface TemplateWhatsApp {
   Id: string;
   Kode: string;
   Nama: string;
@@ -493,11 +493,158 @@ export interface Template {
   TujuanStatus: string[];
 }
 
-export interface Menu {
+export interface MenuWhatsApp {
   Id: string;
   Kunci: string;
   Urutan: number;
   Label: string;
   Balasan: string;
   Aktif: boolean;
+}
+
+export interface PilihanKampanye {
+  Status: string[];
+  Objective: string[];
+  Channel: string[];
+  Metrik: string[];
+  JenisKonten: string[];
+  Halaman: Record<string, string>;
+  Formulir: Record<string, string>;
+}
+
+export interface Kampanye {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Objective: string;
+  Status: string;
+  Budget: number | null;
+  Audience: string | null;
+  Offer: string | null;
+  HalamanId: string | null;
+  FormulirId: string | null;
+  UtmSource: string | null;
+  UtmMedium: string | null;
+  UtmTerm: string | null;
+  UtmContent: string | null;
+  MulaiPada: string | null;
+  SelesaiPada: string | null;
+  Catatan: string | null;
+  Channel: string[];
+  TujuanStatus: string[];
+}
+
+export interface BiayaKampanye {
+  Id: string;
+  Channel: string;
+  Tanggal: string;
+  Jumlah: number;
+  Catatan: string | null;
+}
+
+export interface TargetKampanye {
+  Id: string;
+  Metrik: string;
+  Nilai: number;
+  SatuanUang: boolean;
+  Realisasi: number;
+}
+
+export interface KontenKampanye {
+  Id: string;
+  Jenis: string;
+  Judul: string;
+  Tautan: string | null;
+  Catatan: string | null;
+  Urutan: number;
+}
+
+export interface PilihanGrowth {
+  Channel: string[];
+  Kampanye: string[];
+  Industri: string[];
+  Perangkat: string[];
+  Paket: string[];
+  Referral: string[];
+  AlertBelumTersedia: string[];
+}
+
+/** Nilai filter dashboard growth, seluruhnya dari query string. */
+export type FilterGrowth = Record<string, string | null>;
+
+export interface ModelPerbandingan {
+  Model: string;
+  Label: string;
+  PerChannel: Record<string, number>;
+}
+
+export interface Attribution {
+  Model: string;
+  Label: string;
+  Keterangan: string;
+  ParuhHari: number;
+  Perbandingan: ModelPerbandingan[];
+}
+
+export interface TahapFunnel {
+  Tahap: string;
+  Jumlah: number;
+  Sumber: string;
+  PersenDariSebelumnya: number | null;
+}
+
+export interface KpiGrowth {
+  Kunci: string;
+  Nama: string;
+  Kelompok: string;
+  LabelKelompok: string;
+  Satuan: string;
+  Desimal: number;
+  Formula: string;
+  Sumber: string;
+  Tersedia: boolean;
+  BelumTersedia: string | null;
+  Nilai: number | null;
+}
+
+export interface BarisKampanye {
+  KampanyeId: string;
+  Kode: string;
+  Nama: string;
+  Visitor: number;
+  Lead: number;
+  Trial: number;
+  Bayar: number;
+  Revenue: number;
+  Biaya: number;
+}
+
+export interface BarisCac {
+  Channel: string;
+  Biaya: number;
+  Pelanggan: number;
+  Cac: number | null;
+  Alasan: string | null;
+}
+
+export interface CacTakTerpecah {
+  Biaya: number;
+  Pelanggan: number;
+  Kampanye: string[];
+}
+
+export interface BarisHalaman {
+  Landing: string;
+  Pengunjung: number;
+  Lead: number;
+  Konversi: number;
+}
+
+export interface AlertGrowth {
+  Id: string;
+  Kode: string;
+  Tingkat: string;
+  Judul: string;
+  Isi: string;
+  DibuatPada: string;
 }

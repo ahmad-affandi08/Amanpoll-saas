@@ -14,14 +14,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
-import type { Template } from '@/features/Pemasaran/types';
+import type { TemplateWhatsApp } from '@/features/Pemasaran/types';
 
 /** Jalur manual untuk penyedia tanpa API: keputusannya tetap milik penyedia, operator hanya menyalin. */
 export function DialogKeputusan({
   template,
   pilihan,
 }: {
-  template: Template;
+  template: TemplateWhatsApp;
   pilihan: { Status: string[] };
 }) {
   const [buka, setBuka] = useState(false);

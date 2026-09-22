@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { formatAngka } from '@/lib/angka';
 
 interface Kampanye {
   Id: string;
@@ -389,11 +390,7 @@ export default function PemasaranKampanye({ kampanye, pilihan }: Props) {
         id: 'TotalBiaya',
         accessorFn: (row) => row.TotalBiaya,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Biaya" />,
-        cell: ({ row }) => (
-          <span className="font-mono">
-            {new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(row.original.TotalBiaya)}
-          </span>
-        ),
+        cell: ({ row }) => <span className="font-mono">{formatAngka(row.original.TotalBiaya)}</span>,
         meta: { label: 'Biaya' },
       },
       {

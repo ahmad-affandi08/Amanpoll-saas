@@ -5,14 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { rutePemasaran } from '@/features/Pemasaran/api';
-import type { Distribusi, Konten, Pilihan } from '@/features/Pemasaran/types';
+import type { DistribusiSosial, KontenSosial, PilihanSosial } from '@/features/Pemasaran/types';
 import { DialogFormKonten } from '@/features/Pemasaran/components/DialogFormKonten';
 import { DialogFormDistribusi } from '@/features/Pemasaran/components/DialogFormDistribusi';
 import { DialogJadwal } from '@/features/Pemasaran/components/DialogJadwal';
 
 interface Props {
-  konten: Konten[];
-  pilihan: Pilihan;
+  konten: KontenSosial[];
+  pilihan: PilihanSosial;
 }
 
 const WARNA_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
@@ -50,7 +50,7 @@ export default function PemasaranSosial({ konten, pilihan }: Props) {
   );
 }
 
-function KartuKonten({ konten, pilihan }: { konten: Konten; pilihan: Pilihan }) {
+function KartuKonten({ konten, pilihan }: { konten: KontenSosial; pilihan: PilihanSosial }) {
   return (
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
@@ -90,9 +90,9 @@ function BarisDistribusi({
   distribusi,
   pilihan,
 }: {
-  konten: Konten;
-  distribusi: Distribusi;
-  pilihan: Pilihan;
+  konten: KontenSosial;
+  distribusi: DistribusiSosial;
+  pilihan: PilihanSosial;
 }) {
   const akar = rutePemasaran.sosialDistribusiDetail(konten.Id, distribusi.Id);
 
