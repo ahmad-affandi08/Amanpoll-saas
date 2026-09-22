@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
@@ -230,10 +230,10 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
         accessorFn: (row) => `${row.Nama} ${row.Kode}`,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
         cell: ({ row }) => (
-          <div>
+          <Link href={ruteGudang.detail(row.original.Id)} className="hover:underline">
             <div className="font-medium text-foreground">{row.original.Nama}</div>
             <div className="font-mono text-xs text-muted-foreground">{row.original.Kode}</div>
-          </div>
+          </Link>
         ),
         meta: { label: 'Nama' },
       },

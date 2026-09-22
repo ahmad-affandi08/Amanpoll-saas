@@ -477,4 +477,110 @@ class PersediaanTest extends TestCase
                 ->where('stok.data.0.NamaSukuCadang', 'Oli Hidrolik')
                 ->etc());
     }
+
+    /**
+     * Gudang dulu hanya punya daftar, sehingga tidak ada layar yang menjawab
+     * "gudang ini isinya apa". Ringkasannya dihitung di basis data, bukan dari
+     * halaman yang kebetulan tampil, jadi angkanya harus tetap benar meski
+     * barisnya terpotong paginasi.
+     */
+    public function test_detail_gudang_menampilkan_isi_dan_ringkasan_lintas_halaman(): void
+    {
+        $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $pengguna = $this->buatPengguna($organisasi, ['Stok.Kelola']);
+        $this->konteks()->tetapkan($organisasi->Id);
+
+        $gudang = $this->buatGudang($organisasi, ['Nama' => 'Gudang Pusat']);
+        $rak = LokasiGudang::create(['GudangId' => $gudang->Id, 'Kode' => 'RAK-A', 'Nama' => 'Rak A']);
+
+        foreach (range(1, 30) as $urutan) {
+            $sukuCadang = $this->buatSukuCadang($organisasi, ['Nama' => sprintf('Komponen %02d', $urutan)]);
+            StokSukuCadang::create([
+                'GudangId' => $gudang->Id, 'SukuCadangId' => $sukuCadang->Id, 'LokasiGudangId' => $rak->Id,
+                'JumlahTersedia' => 5, 'JumlahDipesan' => 0, 'JumlahDitahan' => 1,
+            ]);
+        }
+
+        $this->actingAs($pengguna)->get("/gudang/{$gudang->Id}")
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->component('Gudang/Show')
+                ->where('gudang.Nama', 'Gudang Pusat')
+                ->has('lokasiGudang', 1)
+                ->has('stok.data', 25)
+                ->where('stok.meta.total', 30)
+                ->where('stok.data.0.NamaSukuCadang', 'Komponen 01')
+                ->where('stok.data.0.LokasiGudang', 'Rak A')
+                ->where('stok.data.0.JumlahBersih', 4)
+                // Ringkasan dihitung di basis data: 30 jenis dan 150 unit meski
+                // halaman pertama hanya memuat 25 baris.
+                ->where('ringkasan.JenisSukuCadang', 30)
+                ->where('ringkasan.TotalUnit', 150)
+                ->where('ringkasan.JumlahLokasi', 1)
+                ->etc());
+
+        $this->actingAs($pengguna)->get("/gudang/{$gudang->Id}?page=2")
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->has('stok.data', 5)
+                ->where('stok.data.0.NamaSukuCadang', 'Komponen 26')
+                ->etc());
+    }
+
+    /**
+     * Nama suku cadang datang dari tabel lain; tanpa join di controller kotak
+     * cari dan pengurutan di halaman gudang hanya melihat kolom StokSukuCadang.
+     */
+    public function test_isi_gudang_dapat_dicari_lewat_nama_suku_cadang(): void
+    {
+        $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $pengguna = $this->buatPengguna($organisasi, ['Stok.Kelola']);
+        $this->konteks()->tetapkan($organisasi->Id);
+
+        $gudang = $this->buatGudang($organisasi);
+        foreach (['Baut Hexagonal', 'Oli Hidrolik'] as $nama) {
+            $sukuCadang = $this->buatSukuCadang($organisasi, ['Nama' => $nama]);
+            StokSukuCadang::create([
+                'GudangId' => $gudang->Id, 'SukuCadangId' => $sukuCadang->Id,
+                'JumlahTersedia' => 2, 'JumlahDipesan' => 0, 'JumlahDitahan' => 0,
+            ]);
+        }
+
+        $this->actingAs($pengguna)->get("/gudang/{$gudang->Id}?cari=Hidrolik")
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->has('stok.data', 1)
+                ->where('stok.data.0.NamaSukuCadang', 'Oli Hidrolik')
+                ->etc());
+
+        $this->actingAs($pengguna)->get("/gudang/{$gudang->Id}?urut=NamaSukuCadang&arah=desc")
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->where('stok.data.0.NamaSukuCadang', 'Oli Hidrolik')
+                ->etc());
+    }
+
+    /**
+     * Stok gudang organisasi lain tidak boleh bocor lewat rute detail ini.
+     */
+    public function test_detail_gudang_organisasi_lain_tidak_dapat_dibuka(): void
+    {
+        $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $pengguna = $this->buatPengguna($organisasi, ['Stok.Kelola']);
+
+        $lain = Organisasi::create(['Nama' => 'Lain', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $gudangLain = $this->buatGudang($lain, ['Nama' => 'Gudang Tetangga']);
+        $this->konteks()->bersihkan();
+
+        $this->actingAs($pengguna)->get("/gudang/{$gudangLain->Id}")->assertNotFound();
+    }
+
+    public function test_detail_gudang_ditolak_tanpa_izin_stok(): void
+    {
+        $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $gudang = $this->buatGudang($organisasi);
+        $tanpaIzin = $this->buatPengguna($organisasi);
+
+        $this->actingAs($tanpaIzin)->get("/gudang/{$gudang->Id}")->assertForbidden();
+    }
 }

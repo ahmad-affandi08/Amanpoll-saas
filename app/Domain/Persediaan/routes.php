@@ -15,6 +15,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::prefix('gudang')->name('gudang.')->group(function (): void {
         Route::get('/', [GudangController::class, 'index'])->name('index');
         Route::post('/', [GudangController::class, 'store'])->name('store');
+        Route::get('/{gudang}', [GudangController::class, 'show'])->name('show');
         Route::put('/{gudang}', [GudangController::class, 'update'])->name('update');
         Route::delete('/{gudang}', [GudangController::class, 'destroy'])->name('destroy');
         Route::post('/{gudang}/lokasi', [GudangController::class, 'storeLokasi'])->name('lokasi.store');

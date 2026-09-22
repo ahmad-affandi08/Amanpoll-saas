@@ -10,12 +10,15 @@ use App\Domain\Persediaan\Application\Actions\HapusGudang;
 use App\Domain\Persediaan\Application\Actions\HapusLokasiGudang;
 use App\Domain\Persediaan\Application\Actions\UbahGudang;
 use App\Domain\Persediaan\Application\Actions\UbahLokasiGudang;
+use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanGudangRequest;
 use App\Domain\Persediaan\Http\Requests\SimpanLokasiGudangRequest;
 use App\Domain\Persediaan\Http\Resources\GudangResource;
 use App\Domain\Persediaan\Http\Resources\LokasiGudangResource;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\LokasiGudang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
+use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
@@ -49,6 +52,75 @@ final class GudangController extends Controller
             'filter' => $daftar->filterBerlaku(),
             'lokasi' => Lokasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
+    }
+
+    /**
+     * Isi gudang: apa saja yang tersimpan di dalamnya dan di rak mana.
+     *
+     * Sebelumnya gudang hanya punya daftar, sehingga tidak ada satu layar pun
+     * yang menjawab "gudang ini isinya apa". Stoknya dipaginasi server karena
+     * satu gudang besar dapat menyimpan ribuan baris.
+     */
+    public function show(Request $request, Gudang $gudang): Response
+    {
+        $this->authorize('view', $gudang);
+
+        $gudang->load(['lokasi', 'penanggungJawab']);
+
+        $kueri = StokSukuCadang::query()
+            ->where('StokSukuCadang.GudangId', $gudang->Id)
+            ->with(['sukuCadang', 'lokasiGudang', 'kelompokSukuCadang'])
+            ->select('StokSukuCadang.*')
+            ->leftJoin('SukuCadang', 'SukuCadang.Id', '=', 'StokSukuCadang.SukuCadangId');
+
+        $daftar = DaftarTersaring::untuk($request, $kueri)
+            ->cari(['SukuCadang.Nama', 'SukuCadang.Kode'])
+            ->urut([
+                'NamaSukuCadang' => 'SukuCadang.Nama',
+                'JumlahTersedia' => 'StokSukuCadang.JumlahTersedia',
+            ], bawaan: 'NamaSukuCadang')
+            ->faset(['LokasiGudangId' => 'StokSukuCadang.LokasiGudangId']);
+
+        return Inertia::render('Gudang/Show', [
+            'gudang' => new GudangResource($gudang),
+            'lokasiGudang' => LokasiGudangResource::collection(
+                LokasiGudang::query()->where('GudangId', $gudang->Id)->with('induk')->orderBy('Nama')->get(),
+            ),
+            'stok' => $daftar->halamanTerpeta(fn (StokSukuCadang $satu): array => [
+                'Id' => $satu->Id,
+                'SukuCadangId' => $satu->SukuCadangId,
+                'NamaSukuCadang' => $satu->sukuCadang?->Nama,
+                'KodeSukuCadang' => $satu->sukuCadang?->Kode,
+                'SatuanDasar' => $satu->sukuCadang?->SatuanDasar,
+                'LokasiGudang' => $satu->lokasiGudang?->Nama,
+                'NomorBatch' => $satu->kelompokSukuCadang?->NomorBatch,
+                'JumlahTersedia' => (float) $satu->JumlahTersedia,
+                'JumlahDitahan' => (float) $satu->JumlahDitahan,
+                'JumlahBersih' => (float) $satu->JumlahTersedia - (float) $satu->JumlahDitahan,
+            ]),
+            'filter' => $daftar->filterBerlaku(),
+            'ringkasan' => $this->ringkasanGudang($gudang),
+        ]);
+    }
+
+    /**
+     * Dihitung di basis data, bukan dari halaman yang kebetulan tampil.
+     *
+     * @return array{JenisSukuCadang: int, TotalUnit: float, JumlahLokasi: int, ReservasiAktif: int}
+     */
+    private function ringkasanGudang(Gudang $gudang): array
+    {
+        $stok = StokSukuCadang::query()->where('GudangId', $gudang->Id);
+
+        return [
+            'JenisSukuCadang' => (int) (clone $stok)->distinct()->count('SukuCadangId'),
+            'TotalUnit' => (float) (clone $stok)->sum('JumlahTersedia'),
+            'JumlahLokasi' => (int) LokasiGudang::query()->where('GudangId', $gudang->Id)->count(),
+            'ReservasiAktif' => (int) ReservasiSukuCadang::query()
+                ->where('GudangId', $gudang->Id)
+                ->where('Status', StatusReservasiSukuCadang::Aktif->value)
+                ->count(),
+        ];
     }
 
     public function store(SimpanGudangRequest $request, BuatGudang $aksi): RedirectResponse
