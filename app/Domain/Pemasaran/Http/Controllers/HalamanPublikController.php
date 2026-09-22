@@ -7,6 +7,10 @@ namespace App\Domain\Pemasaran\Http\Controllers;
 use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Application\Services\PenautHostPengunjung;
 use App\Domain\Pemasaran\Application\Services\PenyimpanIsiHalaman;
+use App\Domain\Pemasaran\Application\Services\PenyusunPresentasiHarga;
+use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
+use App\Domain\Pemasaran\Domain\Enums\JenisBlokHalaman;
+use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\VersiHalamanPemasaran;
 use App\Http\Controllers\Controller;
@@ -22,6 +26,8 @@ final class HalamanPublikController extends Controller
         private readonly PenyimpanIsiHalaman $isi,
         private readonly PetaHost $host,
         private readonly PenautHostPengunjung $penaut,
+        private readonly PenyusunPresentasiHarga $harga,
+        private readonly PerekamEventPemasaran $event,
     ) {}
 
     /** Akar situs. */
@@ -67,10 +73,50 @@ final class HalamanPublikController extends Controller
     /** @param array<string, mixed> $isi */
     private function render(Request $request, array $isi): Response
     {
+        // Harga disusun di luar cache isi halaman, supaya yang tampil selalu harga paket hari ini.
+        $isi = $this->harga->terapkan($isi);
+
+        $this->catatHargaDilihat($request, $isi);
+
         return Inertia::render('Publik/Halaman', [
             ...$this->propsBersama($request),
             'halaman' => $isi,
         ]);
+    }
+
+    /**
+     * Halaman yang benar-benar memuat blok harga menghitung satu HargaDilihat.
+     *
+     * @param  array<string, mixed>  $isi
+     */
+    private function catatHargaDilihat(Request $request, array $isi): void
+    {
+        $blok = $isi['Blok'] ?? [];
+
+        if (! is_array($blok) || ! $this->memuatBlokHarga($blok)) {
+            return;
+        }
+
+        $pengenal = $request->attributes->get('pengenalPengunjung');
+
+        $this->event->catat(
+            KatalogPeristiwaPemasaran::HARGA_DILIHAT,
+            pengenalPengunjung: is_string($pengenal) ? $pengenal : null,
+            url: $request->fullUrl(),
+            dataTambahan: ['Slug' => $isi['Slug'] ?? null],
+        );
+    }
+
+    /** @param array<mixed> $blok */
+    private function memuatBlokHarga(array $blok): bool
+    {
+        foreach ($blok as $satu) {
+            if (is_array($satu) && ($satu['Jenis'] ?? null) === JenisBlokHalaman::Harga->value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

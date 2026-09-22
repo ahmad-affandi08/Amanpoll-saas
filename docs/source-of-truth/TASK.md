@@ -2643,7 +2643,8 @@ yang menuliskannya. Ini bukan utang tersembunyi: taxonomy-nya memang ditulis
 lebih dulu, dan tiap butir di bawah menyebut mana yang ia hidupkan.
 
 ```text
-CTA_DIKLIK, FORMULIR_DIMULAI, HARGA_DILIHAT     38.07 dan blok halaman
+CTA_DIKLIK, HARGA_DILIHAT                       38.07 — sudah punya produsen
+FORMULIR_DIMULAI                                blok formulir, belum ada produsen
 DEMO_DIMULAI, DEMO_SELESAI                      38.03 — sudah punya produsen
 ARTIKEL_DILIHAT                                 38.04 — sudah punya produsen
 TEMPLATE_DIUNDUH                                38.05 — sudah punya produsen
@@ -2986,11 +2987,44 @@ pada model mana pun.
 
 ## 38.07 Pricing dan Offer Presentation
 
-- [ ] Urutan paket, highlight, badge, CTA, comparison, dan FAQ diatur dari konsol.
-- [ ] Harga dibaca dari domain Langganan; domain Pemasaran tidak pernah menyimpan angkanya.
-- [ ] Presentasi promo tidak mengubah transaksi Billing.
-- [ ] `HARGA_DILIHAT` dan `CTA_DIKLIK` ditulis ke `EventPemasaran`.
-- [ ] `PresentasiHargaTest` membuktikan harga yang tampil sama dengan harga paket.
+- [x] Urutan paket, highlight, badge, CTA, comparison, dan FAQ diatur dari konsol.
+- [x] Harga dibaca dari domain Langganan; domain Pemasaran tidak pernah menyimpan angkanya.
+- [x] Presentasi promo tidak mengubah transaksi Billing.
+- [x] `HARGA_DILIHAT` dan `CTA_DIKLIK` ditulis ke `EventPemasaran`.
+- [x] `PresentasiHargaTest` membuktikan harga yang tampil sama dengan harga paket.
+
+Tidak ada tabel baru dan tidak ada halaman harga tersendiri. Blok `Harga`,
+`Perbandingan`, dan `Faq` sudah ada di `JenisBlokHalaman` sejak FASE 32; yang
+salah adalah blok harganya menerima angka yang diketik tangan sebagai teks
+bebas. Itulah yang diperbaiki butir ini.
+
+Blok harga kini hanya menyebut kode paket beserta urutan, sorotan, badge,
+ringkasan, dan CTA-nya. Nama, harga, mata uang, dan daftar fiturnya disusun
+`PenyusunPresentasiHarga` dari `PaketLangganan` dan `PaketFitur` saat halaman
+tampil. Presentasinya ikut berversi bersama halamannya dan ikut terjaring audit
+penerbitan halaman, jadi "change pricing presentation" bagian 30 tercatat tanpa
+mekanisme audit kedua.
+
+Penyusunannya sengaja berjalan di luar cache isi halaman. Isi halaman disimpan
+lima menit; kalau harga ikut tersimpan di sana, halaman akan memasang harga lama
+selama lima menit setelah paketnya berubah. Gate ini menuntut harga yang tampil
+selalu harga paket, jadi angkanya diambil setiap kali halaman dirender.
+
+Tabel perbandingan disusun dari `PaketFitur`, bukan diketik ulang. Satu-satunya
+sumber untuk "paket ini punya fitur itu" tetap domain Langganan. Blok
+perbandingan yang tidak menyebut kode paket dibiarkan memakai isinya sendiri,
+supaya perbandingan dengan produk lain tetap mungkin.
+
+Presentasi tidak pernah menyentuh Billing: seluruh jalurnya membaca, dan tidak
+ada satu pun tulisan ke domain Langganan. Promo hanya catatan teks di blok
+harga. Kupon, perpanjangan trial, dan imbalan lain tetap milik jalur yang sudah
+ada di FASE 36 lewat `PemberiImbalanLangganan`.
+
+`HARGA_DILIHAT` dicatat hanya pada halaman yang benar-benar memuat blok harga,
+dan `CTA_DIKLIK` lewat endpoint publik yang tunduk pada honeypot dan rate limit
+yang sama. Keduanya langsung menghidupkan dua hal yang selama ini menunggu:
+bobot skor prospek di `KatalogPeristiwaSkor` dan pemicu otomasi
+`HalamanHargaDilihat`.
 
 **Gate 38.07.** Mengubah presentasi harga tidak pernah mengubah angka yang
 ditagihkan, dan harga yang tampil selalu sama dengan harga paket di Langganan.

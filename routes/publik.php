@@ -9,6 +9,7 @@ use App\Domain\Pemasaran\Http\Controllers\BerhentiLanggananController;
 use App\Domain\Pemasaran\Http\Controllers\DemoPublikController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPublikController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPublikController;
+use App\Domain\Pemasaran\Http\Controllers\KlikCtaController;
 use App\Domain\Pemasaran\Http\Controllers\KlikReferralController;
 use App\Domain\Pemasaran\Http\Controllers\KontenPublikController;
 use App\Domain\Pemasaran\Http\Controllers\RobotsController;
@@ -79,6 +80,11 @@ if ($host->situsPublikAktif()) {
                     Route::post('/sesi/{sesi}/event', [DemoPublikController::class, 'catat'])->name('event');
                     Route::post('/sesi/{sesi}/selesai', [DemoPublikController::class, 'selesai'])->name('selesai');
                 });
+
+            // Klik CTA dicatat sebelum pengunjung berpindah; tautannya tetap tautan biasa.
+            Route::post('/cta', KlikCtaController::class)
+                ->middleware(['throttle:publik', TandaiTidakTerindeks::class])
+                ->name('cta');
 
             // Unduhan lead magnet: tanda tangannya lahir dari satu pengiriman formulir yang nyata.
             Route::get('/unduh/{pengiriman}', UnduhanLeadMagnetController::class)

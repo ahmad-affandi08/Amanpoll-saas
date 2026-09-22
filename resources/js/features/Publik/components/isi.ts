@@ -30,6 +30,16 @@ export function daftarObjek(isi: Record<string, unknown>, kunci: string): Record
   );
 }
 
+export function angka(isi: Record<string, unknown>, kunci: string): number | null {
+  const nilai = isi[kunci];
+
+  return typeof nilai === 'number' && Number.isFinite(nilai) ? nilai : null;
+}
+
+export function benar(isi: Record<string, unknown>, kunci: string): boolean {
+  return isi[kunci] === true;
+}
+
 /** Hanya `http`, `https`, dan alamat relatif yang diloloskan. */
 export function urlAman(nilai: string | null): string | null {
   if (nilai === null || nilai === '') {

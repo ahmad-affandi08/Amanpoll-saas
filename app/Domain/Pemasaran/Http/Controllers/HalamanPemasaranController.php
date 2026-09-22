@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Http\Controllers;
 
 use App\Core\Host\PetaHost;
+use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Pemasaran\Application\Actions\KembalikanVersiHalaman;
 use App\Domain\Pemasaran\Application\Actions\SimpanDrafHalaman;
 use App\Domain\Pemasaran\Application\Actions\TerbitkanHalaman;
 use App\Domain\Pemasaran\Application\Actions\UbahStatusHalaman;
+use App\Domain\Pemasaran\Application\Services\PenyusunPresentasiHarga;
 use App\Domain\Pemasaran\Domain\Enums\JenisBlokHalaman;
+use App\Domain\Pemasaran\Domain\Enums\SiklusHarga;
 use App\Domain\Pemasaran\Domain\Enums\StatusHalamanPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\TipeHalamanPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogSegmenHalaman;
@@ -34,7 +37,10 @@ final class HalamanPemasaranController extends Controller
     /** Umur tautan pratinjau. Cukup untuk ditinjau, terlalu pendek untuk beredar. */
     private const PRATINJAU_MENIT = 60;
 
-    public function __construct(private readonly PetaHost $host) {}
+    public function __construct(
+        private readonly PetaHost $host,
+        private readonly PenyusunPresentasiHarga $harga,
+    ) {}
 
     public function index(): Response
     {
@@ -228,6 +234,10 @@ final class HalamanPemasaranController extends Controller
             'Tipe' => array_column(TipeHalamanPemasaran::cases(), 'value'),
             'Status' => array_column(StatusHalamanPemasaran::cases(), 'value'),
             'Blok' => array_column(JenisBlokHalaman::cases(), 'value'),
+            // Blok harga menyebut kode paket, jadi editor tidak perlu menebaknya.
+            'Paket' => $this->harga->paketTersedia(),
+            'SiklusHarga' => array_column(SiklusHarga::cases(), 'value'),
+            'FiturPaket' => KatalogFitur::kode(),
             'Segmen' => KatalogSegmenHalaman::semua(),
             'Formulir' => FormulirPemasaran::query()
                 ->orderBy('Nama')

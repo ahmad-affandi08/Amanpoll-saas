@@ -428,9 +428,56 @@ function KartuBlok({
             onChange={(e) => ubahNaskah(e.target.value)}
           />
           {galat ? <p className="text-sm text-destructive">{galat}</p> : null}
+          {blok.Jenis === 'Harga' || blok.Jenis === 'Perbandingan' ? (
+            <BantuanHarga jenis={blok.Jenis} pilihan={pilihan} />
+          ) : null}
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+/** Blok harga hanya menyebut kode paket; angkanya selalu dibaca dari domain Langganan. */
+function BantuanHarga({ jenis, pilihan }: { jenis: string; pilihan: PilihanHalaman }) {
+  const contoh =
+    jenis === 'Harga'
+      ? {
+          judul: 'Harga',
+          siklus: pilihan.SiklusHarga[0] ?? 'Bulanan',
+          catatanPromo: '',
+          paket: pilihan.Paket.slice(0, 3).map((satu, urutan) => ({
+            kode: satu.Kode,
+            disorot: urutan === 1,
+            badge: urutan === 1 ? 'Paling dipilih' : '',
+            ringkasan: '',
+            ctaTeks: 'Coba gratis',
+            ctaUrl: '/daftar',
+          })),
+        }
+      : {
+          judul: 'Perbandingan paket',
+          paket: pilihan.Paket.map((satu) => satu.Kode),
+          fitur: pilihan.FiturPaket,
+        };
+
+  return (
+    <div className="grid gap-2 rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
+      <p>
+        Blok ini hanya menyebut kode paket. Nama, harga, dan daftar fiturnya dibaca dari domain
+        Langganan saat halaman tampil, jadi harga di sini tidak pernah basi.
+      </p>
+      <p>
+        Kode paket tersedia:{' '}
+        {pilihan.Paket.length === 0 ? (
+          <span className="text-destructive">belum ada paket aktif.</span>
+        ) : (
+          <span className="font-mono">{pilihan.Paket.map((satu) => satu.Kode).join(', ')}</span>
+        )}
+      </p>
+      <pre className="overflow-x-auto rounded bg-muted p-2 font-mono">
+        {JSON.stringify(contoh, null, 2)}
+      </pre>
+    </div>
   );
 }
 

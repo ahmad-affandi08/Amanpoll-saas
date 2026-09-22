@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { FormulirPemasaran } from './FormulirPemasaran';
-import { daftarObjek, daftarTeks, teks, teksOpsional, urlAman } from './isi';
+import { angka, benar, daftarObjek, daftarTeks, teks, teksOpsional, urlAman } from './isi';
+import { lacakCta } from './lacakCta';
 import type { BlokHalaman } from '../types';
 
 /** Perender satu blok halaman pemasaran (MARKETING.md 8). */
@@ -73,7 +74,7 @@ function JudulBagian({ isi }: { isi: Isi }) {
   );
 }
 
-function TombolCta({ isi }: { isi: Isi }) {
+function TombolCta({ isi, sumber }: { isi: Isi; sumber: string }) {
   const url = urlAman(teksOpsional(isi, 'ctaUrl'));
   const label = teksOpsional(isi, 'ctaTeks');
 
@@ -83,7 +84,9 @@ function TombolCta({ isi }: { isi: Isi }) {
 
   return (
     <Button size="lg" asChild>
-      <a href={url}>{label}</a>
+      <a href={url} onClick={() => lacakCta(label, url, sumber)}>
+        {label}
+      </a>
     </Button>
   );
 }
@@ -101,7 +104,7 @@ function Hero({ isi }: { isi: Isi }) {
             <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">{teks(isi, 'subjudul')}</p>
           ) : null}
           <div className="flex flex-wrap gap-3">
-            <TombolCta isi={isi} />
+            <TombolCta isi={isi} sumber="Hero" />
           </div>
         </div>
         {gambar ? (
@@ -339,40 +342,79 @@ function Faq({ isi }: { isi: Isi }) {
   );
 }
 
+/**
+ * Kartu paket. Nama, harga, dan daftar fiturnya datang dari domain Langganan
+ * lewat kunci `Paket` yang disusun server; blok ini tidak pernah menyimpan
+ * angkanya sendiri (MARKETING.md 19).
+ */
 function Harga({ isi }: { isi: Isi }) {
-  const paket = daftarObjek(isi, 'paket');
+  const paket = daftarObjek(isi, 'Paket');
+  const promo = teksOpsional(isi, 'catatanPromo');
+
+  if (paket.length === 0) {
+    return null;
+  }
 
   return (
     <Bagian>
       <JudulBagian isi={isi} />
+      {promo ? (
+        <p className="mb-6 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">{promo}</p>
+      ) : null}
       <div className="grid gap-4 lg:grid-cols-3">
-        {paket.map((satu, urutan) => {
-          const url = urlAman(teksOpsional(satu, 'ctaUrl'));
-
-          return (
-            <Card key={urutan}>
-              <CardHeader className="grid gap-1">
-                <CardTitle className="text-base">{teks(satu, 'nama')}</CardTitle>
-                <span className="font-mono text-2xl font-semibold">{teks(satu, 'harga')}</span>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <ul className="grid gap-2 text-sm text-muted-foreground">
-                  {daftarTeks(satu, 'fitur').map((fitur) => (
-                    <li key={fitur}>{fitur}</li>
-                  ))}
-                </ul>
-                {url ? (
-                  <Button asChild>
-                    <a href={url}>{teks(satu, 'ctaTeks', 'Pilih paket')}</a>
-                  </Button>
-                ) : null}
-              </CardContent>
-            </Card>
-          );
-        })}
+        {paket.map((satu) => (
+          <KartuPaket key={teks(satu, 'Kode')} paket={satu} />
+        ))}
       </div>
     </Bagian>
   );
+}
+
+function KartuPaket({ paket }: { paket: Isi }) {
+  const url = urlAman(teksOpsional(paket, 'CtaUrl'));
+  const label = teks(paket, 'CtaTeks', 'Pilih paket');
+  const nama = teks(paket, 'Nama');
+  const nilai = angka(paket, 'Harga');
+  const badge = teksOpsional(paket, 'Badge');
+  const ringkasan = teksOpsional(paket, 'Ringkasan');
+
+  return (
+    <Card className={benar(paket, 'Disorot') ? 'border-foreground shadow-sm' : undefined}>
+      <CardHeader className="grid gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base">{nama}</CardTitle>
+          {badge ? <Badge>{badge}</Badge> : null}
+        </div>
+        <span className="font-mono text-2xl font-semibold">
+          {nilai === null ? '—' : rupiah(nilai, teks(paket, 'MataUang', 'IDR'))}
+        </span>
+        <span className="text-xs text-muted-foreground">{teks(paket, 'LabelSiklus')}</span>
+        {ringkasan ? <p className="text-sm text-muted-foreground">{ringkasan}</p> : null}
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <ul className="grid gap-2 text-sm text-muted-foreground">
+          {daftarTeks(paket, 'Fitur').map((fitur, urutan) => (
+            <li key={`${fitur}-${urutan}`}>{fitur}</li>
+          ))}
+        </ul>
+        {url ? (
+          <Button asChild variant={benar(paket, 'Disorot') ? 'default' : 'outline'}>
+            <a href={url} onClick={() => lacakCta(`${nama}: ${label}`, url, 'Harga')}>
+              {label}
+            </a>
+          </Button>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+function rupiah(nilai: number, mataUang: string): string {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: mataUang,
+    maximumFractionDigits: 0,
+  }).format(nilai);
 }
 
 function Cta({ isi }: { isi: Isi }) {
@@ -384,7 +426,7 @@ function Cta({ isi }: { isi: Isi }) {
           <p className="mx-auto max-w-2xl text-muted-foreground">{teks(isi, 'deskripsi')}</p>
         ) : null}
         <div className="flex justify-center">
-          <TombolCta isi={isi} />
+          <TombolCta isi={isi} sumber="Cta" />
         </div>
       </div>
     </Bagian>

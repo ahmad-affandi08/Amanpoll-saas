@@ -98,6 +98,10 @@ export interface PilihanHalaman {
   Segmen: Record<string, string>;
   Formulir: Array<{ Kode: string; Nama: string }>;
   Kampanye: Array<{ Id: string; Nama: string }>;
+  /** Kode paket yang boleh disebut blok harga; angkanya milik domain Langganan. */
+  Paket: Array<{ Kode: string; Nama: string }>;
+  SiklusHarga: string[];
+  FiturPaket: string[];
 }
 
 /** Type alias, dengan alasan yang sama seperti BlokEditor. */
