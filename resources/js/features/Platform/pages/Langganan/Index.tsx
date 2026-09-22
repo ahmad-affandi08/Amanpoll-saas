@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -25,6 +24,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { rutePlatform } from '@/features/Platform/api';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface PilihanSiklus {
   Nilai: string;
@@ -257,11 +257,10 @@ function DialogLangganan({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="mulai-pada">Mulai pada</Label>
-              <Input
-                id="mulai-pada"
-                type="date"
+              <DatePicker
                 value={form.data.MulaiPada}
-                onChange={(e) => form.setData('MulaiPada', e.target.value)}
+                onChange={(nilai) => form.setData('MulaiPada', nilai)}
+                id="mulai-pada"
               />
             </div>
           </div>

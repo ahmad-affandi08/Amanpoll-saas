@@ -19,6 +19,7 @@ import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { DatePicker } from '@/components/ui/date-picker';
 
 const TANPA_JENIS = '__none__';
 const INTERNAL = '__internal__';
@@ -201,20 +202,19 @@ export function DialogFormRencana({
                 <Label nama="TanggalMulai" htmlFor="TanggalMulai">
                   Tanggal Mulai *
                 </Label>
-                <Input
-                  id="TanggalMulai"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalMulai}
-                  onChange={(e) => {
-                    const tanggalMulai = e.target.value;
+                  onChange={(nilai) => {
+                    const tanggalMulai = nilai;
                     form.setData({
                       ...form.data,
                       TanggalMulai: tanggalMulai,
                       TanggalBerikutnya: hitungTanggalBerikutnya(tanggalMulai, form.data.IntervalHari),
                     });
                   }}
-                  required
+                  id="TanggalMulai"
                   className="h-9 text-xs"
+                  required
                 />
               </div>
 
@@ -222,13 +222,12 @@ export function DialogFormRencana({
                 <Label nama="TanggalBerikutnya" htmlFor="TanggalBerikutnya">
                   Jatuh Tempo Berikutnya *
                 </Label>
-                <Input
-                  id="TanggalBerikutnya"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalBerikutnya}
-                  onChange={(e) => form.setData('TanggalBerikutnya', e.target.value)}
-                  required
+                  onChange={(nilai) => form.setData('TanggalBerikutnya', nilai)}
+                  id="TanggalBerikutnya"
                   className="h-9 text-xs"
+                  required
                 />
               </div>
             </div>

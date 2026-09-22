@@ -26,6 +26,7 @@ import { formatUang } from '@/lib/uang';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { Combobox } from '@/components/ui/combobox';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface PenyediaRingkas {
   Id: string;
@@ -160,11 +161,10 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               <Label nama="MulaiPada" htmlFor="MulaiPada">
                 Mulai
               </Label>
-              <Input
-                id="MulaiPada"
-                type="date"
+              <DatePicker
                 value={form.data.MulaiPada}
-                onChange={(event) => form.setData('MulaiPada', event.target.value)}
+                onChange={(nilai) => form.setData('MulaiPada', nilai)}
+                id="MulaiPada"
               />
               {form.errors.MulaiPada && <p className="text-sm text-destructive">{form.errors.MulaiPada}</p>}
             </div>
@@ -172,11 +172,10 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               <Label nama="BerakhirPada" htmlFor="BerakhirPada">
                 Berakhir
               </Label>
-              <Input
-                id="BerakhirPada"
-                type="date"
+              <DatePicker
                 value={form.data.BerakhirPada}
-                onChange={(event) => form.setData('BerakhirPada', event.target.value)}
+                onChange={(nilai) => form.setData('BerakhirPada', nilai)}
+                id="BerakhirPada"
               />
               {form.errors.BerakhirPada && (
                 <p className="text-sm text-destructive">{form.errors.BerakhirPada}</p>

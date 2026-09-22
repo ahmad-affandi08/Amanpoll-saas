@@ -10,13 +10,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { KepatuhanAset } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { DatePicker } from '@/components/ui/date-picker';
 
 export function DialogPemeriksaan({ kewajiban, wajib }: { kewajiban: KepatuhanAset; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
@@ -75,11 +75,10 @@ export function DialogPemeriksaan({ kewajiban, wajib }: { kewajiban: KepatuhanAs
                 <Label nama="TanggalPemeriksaan" htmlFor="TanggalPemeriksaan">
                   Tanggal periksa
                 </Label>
-                <Input
-                  id="TanggalPemeriksaan"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalPemeriksaan}
-                  onChange={(event) => form.setData('TanggalPemeriksaan', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalPemeriksaan', nilai)}
+                  id="TanggalPemeriksaan"
                 />
                 {form.errors.TanggalPemeriksaan && (
                   <p className="text-sm text-destructive">{form.errors.TanggalPemeriksaan}</p>
@@ -89,11 +88,10 @@ export function DialogPemeriksaan({ kewajiban, wajib }: { kewajiban: KepatuhanAs
                 <Label nama="BerlakuSampai" htmlFor="BerlakuSampai">
                   Berlaku sampai
                 </Label>
-                <Input
-                  id="BerlakuSampai"
-                  type="date"
+                <DatePicker
                   value={form.data.BerlakuSampai}
-                  onChange={(event) => form.setData('BerlakuSampai', event.target.value)}
+                  onChange={(nilai) => form.setData('BerlakuSampai', nilai)}
+                  id="BerlakuSampai"
                 />
                 {form.errors.BerlakuSampai && (
                   <p className="text-sm text-destructive">{form.errors.BerlakuSampai}</p>

@@ -18,6 +18,7 @@ import type { JenisTransaksiAnggaran, PosAnggaran } from '@/features/Anggaran/ty
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { DatePicker } from '@/components/ui/date-picker';
 
 export function DialogTransaksi({
   pos,
@@ -112,11 +113,10 @@ export function DialogTransaksi({
                 <Label nama="Tanggal" htmlFor={`tanggal-${pos.Id}`}>
                   Tanggal
                 </Label>
-                <Input
-                  id={`tanggal-${pos.Id}`}
-                  type="date"
+                <DatePicker
                   value={form.data.Tanggal}
-                  onChange={(event) => form.setData('Tanggal', event.target.value)}
+                  onChange={(nilai) => form.setData('Tanggal', nilai)}
+                  id={`tanggal-${pos.Id}`}
                 />
               </div>
             </div>

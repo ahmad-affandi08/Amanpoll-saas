@@ -25,6 +25,7 @@ import type { Paginasi } from '@/types/global';
 import { formatAngka } from '@/lib/angka';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface Kampanye {
   Id: string;
@@ -203,22 +204,20 @@ function DialogFormKampanye({
                 <Label nama="MulaiPada" htmlFor="MulaiPada">
                   Mulai
                 </Label>
-                <Input
-                  id="MulaiPada"
-                  type="date"
+                <DatePicker
                   value={form.data.MulaiPada}
-                  onChange={(e) => form.setData('MulaiPada', e.target.value)}
+                  onChange={(nilai) => form.setData('MulaiPada', nilai)}
+                  id="MulaiPada"
                 />
               </div>
               <div className="grid gap-2">
                 <Label nama="SelesaiPada" htmlFor="SelesaiPada">
                   Selesai
                 </Label>
-                <Input
-                  id="SelesaiPada"
-                  type="date"
+                <DatePicker
                   value={form.data.SelesaiPada}
-                  onChange={(e) => form.setData('SelesaiPada', e.target.value)}
+                  onChange={(nilai) => form.setData('SelesaiPada', nilai)}
+                  id="SelesaiPada"
                 />
                 {form.errors.SelesaiPada ? (
                   <p className="text-sm text-destructive">{form.errors.SelesaiPada}</p>

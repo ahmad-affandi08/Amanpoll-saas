@@ -23,6 +23,7 @@ import type { GudangRingkas } from '@/features/PesananPembelian/types';
 import { hitungSisa } from '@/features/PesananPembelian/perhitungan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { DatePicker } from '@/components/ui/date-picker';
 
 const KONDISI: KondisiPenerimaan[] = ['Baik', 'RusakRingan', 'Rusak'];
 
@@ -113,11 +114,10 @@ export function DialogCatatPenerimaan({
                 <Label nama="TanggalTerima" htmlFor="TanggalTerima">
                   Tanggal Terima
                 </Label>
-                <Input
-                  id="TanggalTerima"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalTerima}
-                  onChange={(event) => form.setData('TanggalTerima', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalTerima', nilai)}
+                  id="TanggalTerima"
                 />
                 {form.errors.TanggalTerima && (
                   <p className="text-sm text-destructive">{form.errors.TanggalTerima}</p>

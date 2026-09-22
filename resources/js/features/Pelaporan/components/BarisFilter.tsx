@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import type { FilterMetrik, PilihanDimensi } from '@/features/Pelaporan/types';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 
 const PRESET = [
   { label: '7 hari', hari: 7 },
@@ -71,33 +72,14 @@ export function BarisFilter({
         ))}
       </div>
 
-      <div className="flex items-end gap-2">
-        <div className="space-y-1">
-          <Label htmlFor="filter-dari" className="text-xs">
-            Dari
-          </Label>
-          <Input
-            id="filter-dari"
-            type="date"
-            value={dari}
-            max={sampai}
-            onChange={(e) => terapkan({ Dari: e.target.value })}
-            className="w-[9.5rem]"
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="filter-sampai" className="text-xs">
-            Sampai
-          </Label>
-          <Input
-            id="filter-sampai"
-            type="date"
-            value={sampai}
-            min={dari}
-            onChange={(e) => terapkan({ Sampai: e.target.value })}
-            className="w-[9.5rem]"
-          />
-        </div>
+      <div className="space-y-1">
+        <Label className="text-xs">Rentang tanggal</Label>
+        <DateRangePicker
+          dari={dari}
+          sampai={sampai}
+          onChange={(rentang) => terapkan({ Dari: rentang.dari ?? '', Sampai: rentang.sampai ?? '' })}
+          className="w-[19rem]"
+        />
       </div>
 
       <div className="space-y-1">

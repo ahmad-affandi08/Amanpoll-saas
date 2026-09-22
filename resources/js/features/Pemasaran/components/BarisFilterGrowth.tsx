@@ -6,12 +6,20 @@ import { Label } from '@/components/ui/label';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import type { FilterGrowth, PilihanGrowth } from '@/features/Pemasaran/types';
 import { Combobox } from '@/components/ui/combobox';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 
 export function BarisFilterGrowth({ filter, pilihan }: { filter: FilterGrowth; pilihan: PilihanGrowth }) {
   const [nilai, setNilai] = useState<FilterGrowth>(filter);
 
   const ubah = (kunci: string, isi: string) =>
     setNilai((lama) => ({ ...lama, [kunci]: isi === '' ? null : isi }));
+
+  const ubahRentang = (rentang: { dari?: string; sampai?: string }) =>
+    setNilai((lama) => ({
+      ...lama,
+      dari: rentang.dari || null,
+      sampai: rentang.sampai || null,
+    }));
 
   const terapkan = (e: FormEvent) => {
     e.preventDefault();
@@ -33,24 +41,12 @@ export function BarisFilterGrowth({ filter, pilihan }: { filter: FilterGrowth; p
   return (
     <form onSubmit={terapkan} className="flex flex-wrap items-end gap-3 rounded-lg border p-4">
       <div className="grid gap-1.5">
-        <Label htmlFor="dari">Dari</Label>
-        <Input
-          id="dari"
-          type="date"
-          value={nilai.dari ?? ''}
-          onChange={(e) => ubah('dari', e.target.value)}
-          className="w-40"
-        />
-      </div>
-
-      <div className="grid gap-1.5">
-        <Label htmlFor="sampai">Sampai</Label>
-        <Input
-          id="sampai"
-          type="date"
-          value={nilai.sampai ?? ''}
-          onChange={(e) => ubah('sampai', e.target.value)}
-          className="w-40"
+        <Label>Rentang tanggal</Label>
+        <DateRangePicker
+          dari={nilai.dari ?? ''}
+          sampai={nilai.sampai ?? ''}
+          onChange={(rentang) => ubahRentang(rentang)}
+          className="w-64"
         />
       </div>
 

@@ -18,6 +18,7 @@ import {
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { DatePicker } from '@/components/ui/date-picker';
 
 function kondisi(pelaksanaan: PelaksanaanKalibrasi, kunci: string, bawaan: string): string {
   const nilai = pelaksanaan.KondisiLingkungan?.[kunci];
@@ -126,13 +127,12 @@ export function DialogFinalisasiKalibrasi({
                 <Label nama="TglKalibrasi" htmlFor="TglKalibrasi">
                   Tanggal Pengujian *
                 </Label>
-                <Input
-                  id="TglKalibrasi"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalKalibrasi}
-                  onChange={(e) => form.setData('TanggalKalibrasi', e.target.value)}
-                  required
+                  onChange={(nilai) => form.setData('TanggalKalibrasi', nilai)}
+                  id="TglKalibrasi"
                   className="h-9 text-xs font-mono"
+                  required
                 />
               </div>
 
@@ -140,11 +140,10 @@ export function DialogFinalisasiKalibrasi({
                 <Label nama="TglBerlaku" htmlFor="TglBerlaku">
                   Berlaku Sampai (Jatuh Tempo)
                 </Label>
-                <Input
-                  id="TglBerlaku"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalBerlakuSampai}
-                  onChange={(e) => form.setData('TanggalBerlakuSampai', e.target.value)}
+                  onChange={(nilai) => form.setData('TanggalBerlakuSampai', nilai)}
+                  id="TglBerlaku"
                   className="h-9 text-xs font-mono"
                 />
                 <p className="text-[10px] text-muted-foreground">

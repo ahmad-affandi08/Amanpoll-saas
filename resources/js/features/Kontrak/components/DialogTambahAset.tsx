@@ -19,6 +19,7 @@ import type { AsetRingkas } from '@/features/Kontrak/types';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { DatePicker } from '@/components/ui/date-picker';
 
 export function DialogTambahAset({
   kontrak,
@@ -81,22 +82,20 @@ export function DialogTambahAset({
                 <Label nama="MulaiCakupan" htmlFor="MulaiCakupan">
                   Mulai
                 </Label>
-                <Input
-                  id="MulaiCakupan"
-                  type="date"
+                <DatePicker
                   value={form.data.MulaiPada}
-                  onChange={(event) => form.setData('MulaiPada', event.target.value)}
+                  onChange={(nilai) => form.setData('MulaiPada', nilai)}
+                  id="MulaiCakupan"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label nama="BerakhirCakupan" htmlFor="BerakhirCakupan">
                   Berakhir
                 </Label>
-                <Input
-                  id="BerakhirCakupan"
-                  type="date"
+                <DatePicker
                   value={form.data.BerakhirPada}
-                  onChange={(event) => form.setData('BerakhirPada', event.target.value)}
+                  onChange={(nilai) => form.setData('BerakhirPada', nilai)}
+                  id="BerakhirCakupan"
                 />
                 {form.errors.BerakhirPada && (
                   <p className="text-sm text-destructive">{form.errors.BerakhirPada}</p>

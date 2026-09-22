@@ -25,6 +25,7 @@ import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface Props {
   tagihan: TagihanPenyedia;
@@ -92,11 +93,10 @@ function DialogCatatPembayaran({ tagihan, wajib }: { tagihan: Props['tagihan']; 
                 <Label nama="TanggalBayar" htmlFor="TanggalBayar">
                   Tanggal Bayar
                 </Label>
-                <Input
-                  id="TanggalBayar"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalBayar}
-                  onChange={(event) => form.setData('TanggalBayar', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalBayar', nilai)}
+                  id="TanggalBayar"
                 />
               </div>
               <div className="space-y-1.5">

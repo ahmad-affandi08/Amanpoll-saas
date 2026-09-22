@@ -26,6 +26,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface AsetRingkas {
   Id: string;
@@ -139,22 +140,20 @@ function DialogTerbitkan({ aset, wajib }: { aset: AsetRingkas[]; wajib: AturanWa
                 <Label nama="TerbitPada" htmlFor="TerbitPada">
                   Terbit pada
                 </Label>
-                <Input
-                  id="TerbitPada"
-                  type="date"
+                <DatePicker
                   value={form.data.TerbitPada}
-                  onChange={(event) => form.setData('TerbitPada', event.target.value)}
+                  onChange={(nilai) => form.setData('TerbitPada', nilai)}
+                  id="TerbitPada"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label nama="BerlakuSampai" htmlFor="BerlakuSampaiSertifikat">
                   Berlaku sampai
                 </Label>
-                <Input
-                  id="BerlakuSampaiSertifikat"
-                  type="date"
+                <DatePicker
                   value={form.data.BerlakuSampai}
-                  onChange={(event) => form.setData('BerlakuSampai', event.target.value)}
+                  onChange={(nilai) => form.setData('BerlakuSampai', nilai)}
+                  id="BerlakuSampaiSertifikat"
                 />
                 {form.errors.BerlakuSampai && (
                   <p className="text-sm text-destructive">{form.errors.BerlakuSampai}</p>

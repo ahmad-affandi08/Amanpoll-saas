@@ -24,6 +24,7 @@ import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface Props {
   pelaksanaanKalibrasi: PelaksanaanKalibrasi[];
@@ -341,13 +342,12 @@ export default function KalibrasiPelaksanaanIndex({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="TanggalKalibrasi">Tanggal Kalibrasi *</Label>
-                <Input
-                  id="TanggalKalibrasi"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalKalibrasi}
-                  onChange={(e) => form.setData('TanggalKalibrasi', e.target.value)}
-                  required
+                  onChange={(nilai) => form.setData('TanggalKalibrasi', nilai)}
+                  id="TanggalKalibrasi"
                   className="h-9 text-xs"
+                  required
                 />
               </div>
 

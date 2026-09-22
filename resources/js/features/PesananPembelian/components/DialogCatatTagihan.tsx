@@ -17,6 +17,7 @@ import type { PesananPembelian } from '@/features/PesananPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { DatePicker } from '@/components/ui/date-picker';
 
 export function DialogCatatTagihan({ pesanan, wajib }: { pesanan: PesananPembelian; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
@@ -72,22 +73,20 @@ export function DialogCatatTagihan({ pesanan, wajib }: { pesanan: PesananPembeli
                 <Label nama="TanggalTagihan" htmlFor="TanggalTagihan">
                   Tanggal Tagihan
                 </Label>
-                <Input
-                  id="TanggalTagihan"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalTagihan}
-                  onChange={(event) => form.setData('TanggalTagihan', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalTagihan', nilai)}
+                  id="TanggalTagihan"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label nama="JatuhTempo" htmlFor="JatuhTempo">
                   Jatuh Tempo
                 </Label>
-                <Input
-                  id="JatuhTempo"
-                  type="date"
+                <DatePicker
                   value={form.data.JatuhTempo}
-                  onChange={(event) => form.setData('JatuhTempo', event.target.value)}
+                  onChange={(nilai) => form.setData('JatuhTempo', nilai)}
+                  id="JatuhTempo"
                 />
                 {form.errors.JatuhTempo && (
                   <p className="text-sm text-destructive">{form.errors.JatuhTempo}</p>

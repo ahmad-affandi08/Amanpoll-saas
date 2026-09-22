@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { formatAngka } from '@/lib/angka';
 import type { BiayaKampanye, Kampanye } from '@/features/Pemasaran/types';
 import { Combobox } from '@/components/ui/combobox';
+import { DatePicker } from '@/components/ui/date-picker';
 
 /** Biaya dicatat per channel per hari, sehingga CAC terbaca pada rentang tanggal mana pun. */
 export function KonsolBiaya({
@@ -58,12 +59,11 @@ export function KonsolBiaya({
 
         <div className="grid gap-1.5">
           <Label htmlFor="Tanggal">Tanggal</Label>
-          <Input
-            id="Tanggal"
-            type="date"
-            className="w-40"
+          <DatePicker
             value={form.data.Tanggal}
-            onChange={(e) => form.setData('Tanggal', e.target.value)}
+            onChange={(nilai) => form.setData('Tanggal', nilai)}
+            id="Tanggal"
+            className="w-40"
             required
           />
         </div>

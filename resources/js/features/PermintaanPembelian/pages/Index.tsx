@@ -30,6 +30,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface UnitRingkas {
   Id: string;
@@ -124,11 +125,10 @@ function DialogBuatPermintaan({
                 <Label nama="TanggalPermintaan" htmlFor="TanggalPermintaan">
                   Tanggal Permintaan
                 </Label>
-                <Input
-                  id="TanggalPermintaan"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalPermintaan}
-                  onChange={(event) => form.setData('TanggalPermintaan', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalPermintaan', nilai)}
+                  id="TanggalPermintaan"
                 />
                 {form.errors.TanggalPermintaan && (
                   <p className="text-sm text-destructive">{form.errors.TanggalPermintaan}</p>
@@ -138,11 +138,10 @@ function DialogBuatPermintaan({
                 <Label nama="TanggalDibutuhkan" htmlFor="TanggalDibutuhkan">
                   Dibutuhkan
                 </Label>
-                <Input
-                  id="TanggalDibutuhkan"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalDibutuhkan}
-                  onChange={(event) => form.setData('TanggalDibutuhkan', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalDibutuhkan', nilai)}
+                  id="TanggalDibutuhkan"
                 />
                 {form.errors.TanggalDibutuhkan && (
                   <p className="text-sm text-destructive">{form.errors.TanggalDibutuhkan}</p>

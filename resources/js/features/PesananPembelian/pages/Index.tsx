@@ -26,6 +26,7 @@ import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface Props {
   pesanan: Paginasi<PesananPembelian>;
@@ -95,11 +96,10 @@ function DialogBuatPesanan({ penawaran, wajib }: { penawaran: PenawaranPenyedia;
                 <Label nama="TanggalPesanan" htmlFor="TanggalPesanan">
                   Tanggal Pesanan
                 </Label>
-                <Input
-                  id="TanggalPesanan"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalPesanan}
-                  onChange={(event) => form.setData('TanggalPesanan', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalPesanan', nilai)}
+                  id="TanggalPesanan"
                 />
                 {form.errors.TanggalPesanan && (
                   <p className="text-sm text-destructive">{form.errors.TanggalPesanan}</p>
@@ -109,11 +109,10 @@ function DialogBuatPesanan({ penawaran, wajib }: { penawaran: PenawaranPenyedia;
                 <Label nama="TanggalKirimRencana" htmlFor="TanggalKirimRencana">
                   Rencana Kirim
                 </Label>
-                <Input
-                  id="TanggalKirimRencana"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalKirimRencana}
-                  onChange={(event) => form.setData('TanggalKirimRencana', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalKirimRencana', nilai)}
+                  id="TanggalKirimRencana"
                 />
                 {form.errors.TanggalKirimRencana && (
                   <p className="text-sm text-destructive">{form.errors.TanggalKirimRencana}</p>

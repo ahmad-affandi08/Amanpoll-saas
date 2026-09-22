@@ -25,6 +25,7 @@ import { formatUang } from '@/lib/uang';
 import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface Props {
   rfq: PermintaanPenawaran;
@@ -149,11 +150,10 @@ function DialogCatatPenawaran({ rfq, wajib }: { rfq: Props['rfq']; wajib: Aturan
                 <Label nama="TanggalPenawaran" htmlFor="TanggalPenawaran">
                   Tanggal
                 </Label>
-                <Input
-                  id="TanggalPenawaran"
-                  type="date"
+                <DatePicker
                   value={form.data.TanggalPenawaran}
-                  onChange={(event) => form.setData('TanggalPenawaran', event.target.value)}
+                  onChange={(nilai) => form.setData('TanggalPenawaran', nilai)}
+                  id="TanggalPenawaran"
                 />
                 {form.errors.TanggalPenawaran && (
                   <p className="text-sm text-destructive">{form.errors.TanggalPenawaran}</p>

@@ -16,7 +16,8 @@ import {
   addDays,
   subDays,
 } from 'date-fns';
-import { id } from 'date-fns/locale';
+// Dialias karena komponen ini juga menerima prop bernama id.
+import { id as lokalId } from 'date-fns/locale';
 import { CalendarIcon, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,6 +33,17 @@ export interface DatePickerProps {
   maxDate?: string;
   showShortcuts?: boolean;
   align?: 'start' | 'center' | 'end';
+  /** Menyambungkan Label htmlFor ke pemicunya. */
+  id?: string;
+  /**
+   * Menghidupkan kembali penjagaan submit bawaan browser.
+   *
+   * Pemicunya sebuah tombol, dan tombol tidak pernah menahan submit. Tanpa
+   * cerminan tersembunyi di bawah ini, mengganti <input type="date" required>
+   * dengan DatePicker diam-diam melepas penjagaan yang tadinya ada.
+   */
+  required?: boolean;
+  name?: string;
 }
 
 export function DatePicker({
@@ -44,6 +56,9 @@ export function DatePicker({
   maxDate,
   showShortcuts = true,
   align = 'start',
+  id,
+  required = false,
+  name,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -101,6 +116,7 @@ export function DatePicker({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
+          id={id}
           type="button"
           disabled={disabled}
           className={cn(
@@ -117,7 +133,7 @@ export function DatePicker({
                 parsedValue ? 'text-foreground' : 'text-muted-foreground',
               )}
             >
-              {parsedValue ? format(parsedValue, 'd MMMM yyyy', { locale: id }) : placeholder}
+              {parsedValue ? format(parsedValue, 'd MMMM yyyy', { locale: lokalId }) : placeholder}
             </span>
           </div>
           {parsedValue && !disabled ? (
@@ -135,6 +151,18 @@ export function DatePicker({
           )}
         </button>
       </PopoverTrigger>
+
+      {required && (
+        <input
+          tabIndex={-1}
+          aria-hidden="true"
+          required
+          name={name}
+          value={value ?? ''}
+          onChange={() => {}}
+          className="pointer-events-none absolute size-0 opacity-0"
+        />
+      )}
 
       <PopoverContent
         className="w-[288px] p-0 shadow-2xl border border-permukaan-200 bg-card rounded-2xl overflow-hidden"
@@ -202,7 +230,7 @@ export function DatePicker({
               <ChevronLeft className="size-4" />
             </Button>
             <span className="text-sm font-bold text-permukaan-900 tracking-tight capitalize select-none">
-              {format(viewDate, 'MMMM yyyy', { locale: id })}
+              {format(viewDate, 'MMMM yyyy', { locale: lokalId })}
             </span>
             <Button
               type="button"
@@ -268,7 +296,7 @@ export function DatePicker({
           <div className="text-xs text-permukaan-600 font-medium truncate">
             {parsedValue ? (
               <span className="font-semibold text-permukaan-900">
-                {format(parsedValue, 'd MMM yyyy', { locale: id })}
+                {format(parsedValue, 'd MMM yyyy', { locale: lokalId })}
               </span>
             ) : (
               <span className="text-permukaan-400 text-[11px]">Belum dipilih</span>
