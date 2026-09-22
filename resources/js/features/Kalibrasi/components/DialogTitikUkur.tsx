@@ -16,8 +16,9 @@ import {
 import type { JenisKalibrasi, TitikUkurKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogTitikUkur({ jenis }: { jenis: JenisKalibrasi }) {
+export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib: AturanWajib }) {
   const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
   const [titikDiedit, setTitikDiedit] = useState<TitikUkurKalibrasi | null>(null);
@@ -119,114 +120,116 @@ export function DialogTitikUkur({ jenis }: { jenis: JenisKalibrasi }) {
         </DialogHeader>
 
         <div className="space-y-6 pt-2">
-          <form onSubmit={simpan} className="p-4 rounded-lg bg-zinc-50 border border-border space-y-3">
-            <div className="font-semibold text-xs text-zinc-900 flex items-center justify-between">
-              <span>{titikDiedit ? 'Edit Titik Ukur' : 'Tambah Titik Ukur Baru'}</span>
-              {titikDiedit && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => kosongkan(titikUkur.length + 1)}
-                  className="h-6 text-[11px] text-zinc-500"
-                >
-                  Batal Edit
+          <AturanWajibProvider aturan={wajib}>
+            <form onSubmit={simpan} className="p-4 rounded-lg bg-zinc-50 border border-border space-y-3">
+              <div className="font-semibold text-xs text-zinc-900 flex items-center justify-between">
+                <span>{titikDiedit ? 'Edit Titik Ukur' : 'Tambah Titik Ukur Baru'}</span>
+                {titikDiedit && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => kosongkan(titikUkur.length + 1)}
+                    className="h-6 text-[11px] text-zinc-500"
+                  >
+                    Batal Edit
+                  </Button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label nama="TitikNama" htmlFor="TitikNama" className="text-xs">
+                    Nama Titik Uji *
+                  </Label>
+                  <Input
+                    id="TitikNama"
+                    placeholder="mis. Suhu Titik Didih Air"
+                    value={form.data.Nama}
+                    onChange={(e) => form.setData('Nama', e.target.value)}
+                    required
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label nama="TitikSatuan" htmlFor="TitikSatuan" className="text-xs">
+                    Satuan
+                  </Label>
+                  <Input
+                    id="TitikSatuan"
+                    placeholder="mis. °C, bar, psi, mm, V"
+                    value={form.data.Satuan}
+                    onChange={(e) => form.setData('Satuan', e.target.value)}
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div className="space-y-1">
+                  <Label nama="NilaiReferensi" htmlFor="NilaiReferensi" className="text-xs">
+                    Nilai Referensi
+                  </Label>
+                  <Input
+                    id="NilaiReferensi"
+                    type="number"
+                    step="any"
+                    placeholder="100"
+                    value={form.data.NilaiReferensi}
+                    onChange={(e) => form.setData('NilaiReferensi', e.target.value)}
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label nama="ToleransiMinus" htmlFor="ToleransiMinus" className="text-xs">
+                    Toleransi (-) *
+                  </Label>
+                  <Input
+                    id="ToleransiMinus"
+                    type="number"
+                    step="any"
+                    placeholder="0.5"
+                    value={form.data.ToleransiMinus}
+                    onChange={(e) => form.setData('ToleransiMinus', e.target.value)}
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label nama="ToleransiPlus" htmlFor="ToleransiPlus" className="text-xs">
+                    Toleransi (+) *
+                  </Label>
+                  <Input
+                    id="ToleransiPlus"
+                    type="number"
+                    step="any"
+                    placeholder="0.5"
+                    value={form.data.ToleransiPlus}
+                    onChange={(e) => form.setData('ToleransiPlus', e.target.value)}
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label nama="TitikUrutan" htmlFor="TitikUrutan" className="text-xs">
+                    Urutan
+                  </Label>
+                  <Input
+                    id="TitikUrutan"
+                    type="number"
+                    value={form.data.Urutan}
+                    onChange={(e) => form.setData('Urutan', Number(e.target.value))}
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <Button type="submit" size="sm" className="h-8 text-xs gap-1" disabled={form.processing}>
+                  <Plus className="h-3.5 w-3.5" />
+                  {titikDiedit ? 'Perbarui Titik' : 'Tambahkan ke Daftar'}
                 </Button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="TitikNama" className="text-xs">
-                  Nama Titik Uji *
-                </Label>
-                <Input
-                  id="TitikNama"
-                  placeholder="mis. Suhu Titik Didih Air"
-                  value={form.data.Nama}
-                  onChange={(e) => form.setData('Nama', e.target.value)}
-                  required
-                  className="h-8 text-xs"
-                />
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="TitikSatuan" className="text-xs">
-                  Satuan
-                </Label>
-                <Input
-                  id="TitikSatuan"
-                  placeholder="mis. °C, bar, psi, mm, V"
-                  value={form.data.Satuan}
-                  onChange={(e) => form.setData('Satuan', e.target.value)}
-                  className="h-8 text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="NilaiReferensi" className="text-xs">
-                  Nilai Referensi
-                </Label>
-                <Input
-                  id="NilaiReferensi"
-                  type="number"
-                  step="any"
-                  placeholder="100"
-                  value={form.data.NilaiReferensi}
-                  onChange={(e) => form.setData('NilaiReferensi', e.target.value)}
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="ToleransiMinus" className="text-xs">
-                  Toleransi (-) *
-                </Label>
-                <Input
-                  id="ToleransiMinus"
-                  type="number"
-                  step="any"
-                  placeholder="0.5"
-                  value={form.data.ToleransiMinus}
-                  onChange={(e) => form.setData('ToleransiMinus', e.target.value)}
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="ToleransiPlus" className="text-xs">
-                  Toleransi (+) *
-                </Label>
-                <Input
-                  id="ToleransiPlus"
-                  type="number"
-                  step="any"
-                  placeholder="0.5"
-                  value={form.data.ToleransiPlus}
-                  onChange={(e) => form.setData('ToleransiPlus', e.target.value)}
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="TitikUrutan" className="text-xs">
-                  Urutan
-                </Label>
-                <Input
-                  id="TitikUrutan"
-                  type="number"
-                  value={form.data.Urutan}
-                  onChange={(e) => form.setData('Urutan', Number(e.target.value))}
-                  className="h-8 text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-1">
-              <Button type="submit" size="sm" className="h-8 text-xs gap-1" disabled={form.processing}>
-                <Plus className="h-3.5 w-3.5" />
-                {titikDiedit ? 'Perbarui Titik' : 'Tambahkan ke Daftar'}
-              </Button>
-            </div>
-          </form>
+            </form>
+          </AturanWajibProvider>
 
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-zinc-700">

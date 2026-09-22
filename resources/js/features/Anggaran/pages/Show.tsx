@@ -13,11 +13,14 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DialogPos } from '@/features/Anggaran/components/DialogPos';
 import { DialogTransaksi } from '@/features/Anggaran/components/DialogTransaksi';
 import { DialogUbahAnggaran } from '@/features/Anggaran/components/DialogUbahAnggaran';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   anggaran: Anggaran;
   transaksi: TransaksiAnggaran[];
   dapatMenyesuaikan: boolean;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const VARIAN_STATUS = {
@@ -28,7 +31,7 @@ const VARIAN_STATUS = {
   Ditutup: 'netral',
 } as const;
 
-export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }: Props) {
+export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const posisi = anggaran.PosAnggaran ?? [];
   const ringkasan = useMemo(
@@ -97,7 +100,7 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
           }
           aksi={
             <>
-              {dapatUbah && <DialogUbahAnggaran anggaran={anggaran} />}
+              {dapatUbah && <DialogUbahAnggaran anggaran={anggaran} wajib={wajib.anggaran} />}
               {anggaran.Status === 'Draft' && (
                 <Button size="sm" onClick={ajukan}>
                   <Send /> Ajukan
@@ -138,7 +141,7 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
                 Saldo proyeksi selalu direkonsiliasi dari transaksi ledger.
               </p>
             </div>
-            {dapatUbah && <DialogPos anggaran={anggaran} semuaPos={posisi} />}
+            {dapatUbah && <DialogPos anggaran={anggaran} semuaPos={posisi} wajib={wajib.pos} />}
           </div>
           {posisi.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">Belum ada pos anggaran.</div>
@@ -180,9 +183,15 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
                           {anggaran.Status === 'Aktif' && (
-                            <DialogTransaksi pos={pos} dapatMenyesuaikan={dapatMenyesuaikan} />
+                            <DialogTransaksi
+                              pos={pos}
+                              dapatMenyesuaikan={dapatMenyesuaikan}
+                              wajib={wajib.transaksi}
+                            />
                           )}
-                          {dapatUbah && <DialogPos anggaran={anggaran} pos={pos} semuaPos={posisi} />}
+                          {dapatUbah && (
+                            <DialogPos anggaran={anggaran} pos={pos} semuaPos={posisi} wajib={wajib.pos} />
+                          )}
                           {dapatUbah && (
                             <Button
                               variant="ghost"

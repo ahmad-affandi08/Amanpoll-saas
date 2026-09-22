@@ -78,7 +78,9 @@ function DialogTambahPersyaratan({ standar }: Props) {
               galat={form.errors.Kode}
             />
             <div className="space-y-1.5">
-              <Label htmlFor="NamaPersyaratan">Nama</Label>
+              <Label nama="NamaPersyaratan" htmlFor="NamaPersyaratan">
+                Nama
+              </Label>
               <Input
                 id="NamaPersyaratan"
                 value={form.data.Nama}
@@ -88,7 +90,9 @@ function DialogTambahPersyaratan({ standar }: Props) {
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="DeskripsiPersyaratan">Deskripsi</Label>
+            <Label nama="DeskripsiPersyaratan" htmlFor="DeskripsiPersyaratan">
+              Deskripsi
+            </Label>
             <Textarea
               id="DeskripsiPersyaratan"
               rows={2}
@@ -97,7 +101,9 @@ function DialogTambahPersyaratan({ standar }: Props) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="BuktiYangDiperlukan">Bukti yang diperlukan</Label>
+            <Label nama="BuktiYangDiperlukan" htmlFor="BuktiYangDiperlukan">
+              Bukti yang diperlukan
+            </Label>
             <Textarea
               id="BuktiYangDiperlukan"
               rows={2}
@@ -107,7 +113,9 @@ function DialogTambahPersyaratan({ standar }: Props) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="IntervalHari">Interval pemeriksaan (hari)</Label>
+            <Label nama="IntervalHari" htmlFor="IntervalHari">
+              Interval pemeriksaan (hari)
+            </Label>
             <Input
               id="IntervalHari"
               type="number"

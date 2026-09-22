@@ -24,15 +24,18 @@ import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   tagihan: TagihanPenyedia;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const METODE = ['Transfer', 'Tunai', 'Giro', 'KartuKredit'];
 const VARIAN_STATUS = { BelumDibayar: 'perhatian', DibayarSebagian: 'proses', Dibayar: 'sukses' } as const;
 
-function DialogCatatPembayaran({ tagihan }: Props) {
+function DialogCatatPembayaran({ tagihan, wajib }: { tagihan: Props['tagihan']; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     NomorPembayaran: '',
@@ -69,78 +72,88 @@ function DialogCatatPembayaran({ tagihan }: Props) {
             {formatUang(tagihan.Sisa)}.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="NomorPembayaran">Nomor Pembayaran</Label>
-            <Input
-              id="NomorPembayaran"
-              value={form.data.NomorPembayaran}
-              onChange={(event) => form.setData('NomorPembayaran', event.target.value)}
-            />
-            {form.errors.NomorPembayaran && (
-              <p className="text-sm text-destructive">{form.errors.NomorPembayaran}</p>
-            )}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="TanggalBayar">Tanggal Bayar</Label>
+              <Label nama="NomorPembayaran" htmlFor="NomorPembayaran">
+                Nomor Pembayaran
+              </Label>
               <Input
-                id="TanggalBayar"
-                type="date"
-                value={form.data.TanggalBayar}
-                onChange={(event) => form.setData('TanggalBayar', event.target.value)}
+                id="NomorPembayaran"
+                value={form.data.NomorPembayaran}
+                onChange={(event) => form.setData('NomorPembayaran', event.target.value)}
               />
+              {form.errors.NomorPembayaran && (
+                <p className="text-sm text-destructive">{form.errors.NomorPembayaran}</p>
+              )}
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="Jumlah">Jumlah</Label>
-              <Input
-                id="Jumlah"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
-              />
-              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="TanggalBayar" htmlFor="TanggalBayar">
+                  Tanggal Bayar
+                </Label>
+                <Input
+                  id="TanggalBayar"
+                  type="date"
+                  value={form.data.TanggalBayar}
+                  onChange={(event) => form.setData('TanggalBayar', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="Jumlah" htmlFor="Jumlah">
+                  Jumlah
+                </Label>
+                <Input
+                  id="Jumlah"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={form.data.Jumlah}
+                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                />
+                {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              </div>
             </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Metode</Label>
-              <Select value={form.data.Metode} onValueChange={(value) => form.setData('Metode', value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {METODE.map((item) => (
-                    <SelectItem key={item} value={item}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="Metode">Metode</Label>
+                <Select value={form.data.Metode} onValueChange={(value) => form.setData('Metode', value)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {METODE.map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="Referensi" htmlFor="Referensi">
+                  Referensi
+                </Label>
+                <Input
+                  id="Referensi"
+                  value={form.data.Referensi}
+                  onChange={(event) => form.setData('Referensi', event.target.value)}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="Referensi">Referensi</Label>
-              <Input
-                id="Referensi"
-                value={form.data.Referensi}
-                onChange={(event) => form.setData('Referensi', event.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Pembayaran
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Pembayaran
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function TagihanPenyediaShow({ tagihan }: Props) {
+export default function TagihanPenyediaShow({ tagihan, wajib }: Props) {
   const pembayaran = tagihan.Pembayaran ?? [];
 
   return (
@@ -173,7 +186,11 @@ export default function TagihanPenyediaShow({ tagihan }: Props) {
               )}
             </>
           }
-          aksi={tagihan.Status !== 'Dibayar' ? <DialogCatatPembayaran tagihan={tagihan} /> : undefined}
+          aksi={
+            tagihan.Status !== 'Dibayar' ? (
+              <DialogCatatPembayaran tagihan={tagihan} wajib={wajib.pembayaran} />
+            ) : undefined
+          }
         />
 
         <Card>

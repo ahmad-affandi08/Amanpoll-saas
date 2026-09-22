@@ -17,15 +17,18 @@ import { DialogTambahAset } from '@/features/Kontrak/components/DialogTambahAset
 import { DialogTambahLayanan } from '@/features/Kontrak/components/DialogTambahLayanan';
 import { DialogPemakaian } from '@/features/Kontrak/components/DialogPemakaian';
 import { DialogBatalkan } from '@/features/Kontrak/components/DialogBatalkan';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   kontrak: Kontrak;
   aset: AsetRingkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const VARIAN_STATUS = { Aktif: 'sukses', Berakhir: 'netral', Dibatalkan: 'bahaya' } as const;
 
-export default function KontrakShow({ kontrak, aset }: Props) {
+export default function KontrakShow({ kontrak, aset, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const daftarAset = kontrak.Aset ?? [];
   const daftarLayanan = kontrak.Layanan ?? [];
@@ -69,7 +72,7 @@ export default function KontrakShow({ kontrak, aset }: Props) {
               {kontrak.Nomor} · {kontrak.Jenis} · {kontrak.NamaPenyedia ?? 'Tanpa penyedia'}
             </span>
           }
-          aksi={aktif ? <DialogBatalkan kontrak={kontrak} /> : undefined}
+          aksi={aktif ? <DialogBatalkan kontrak={kontrak} wajib={wajib.batalkan} /> : undefined}
         />
 
         {aktif && kontrak.SisaHari >= 0 && kontrak.SisaHari <= kontrak.PeringatanHariSebelum && (
@@ -122,7 +125,7 @@ export default function KontrakShow({ kontrak, aset }: Props) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Aset Tercakup</CardTitle>
-            {aktif && <DialogTambahAset kontrak={kontrak} aset={aset} />}
+            {aktif && <DialogTambahAset kontrak={kontrak} aset={aset} wajib={wajib.aset} />}
           </CardHeader>
           <CardContent className="space-y-3">
             {daftarAset.length === 0 ? (
@@ -162,7 +165,7 @@ export default function KontrakShow({ kontrak, aset }: Props) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Layanan</CardTitle>
-            {aktif && <DialogTambahLayanan kontrak={kontrak} />}
+            {aktif && <DialogTambahLayanan kontrak={kontrak} wajib={wajib.layanan} />}
           </CardHeader>
           <CardContent className="space-y-3">
             {daftarLayanan.length === 0 ? (
@@ -182,7 +185,9 @@ export default function KontrakShow({ kontrak, aset }: Props) {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      {aktif && <DialogPemakaian kontrak={kontrak} layanan={layanan} />}
+                      {aktif && (
+                        <DialogPemakaian kontrak={kontrak} layanan={layanan} wajib={wajib.pemakaian} />
+                      )}
                       {aktif && (
                         <Button
                           size="icon"

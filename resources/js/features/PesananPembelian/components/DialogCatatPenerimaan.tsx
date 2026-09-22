@@ -21,6 +21,7 @@ import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import type { GudangRingkas } from '@/features/PesananPembelian/types';
 import { hitungSisa } from '@/features/PesananPembelian/perhitungan';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 const KONDISI: KondisiPenerimaan[] = ['Baik', 'RusakRingan', 'Rusak'];
 
@@ -36,9 +37,11 @@ interface BarisPenerimaan {
 export function DialogCatatPenerimaan({
   pesanan,
   gudang,
+  wajib,
 }: {
   pesanan: PesananPembelian;
   gudang: GudangRingkas[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const detail = pesanan.Detail ?? [];
@@ -102,121 +105,135 @@ export function DialogCatatPenerimaan({
             koma.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="TanggalTerima">Tanggal Terima</Label>
-              <Input
-                id="TanggalTerima"
-                type="date"
-                value={form.data.TanggalTerima}
-                onChange={(event) => form.setData('TanggalTerima', event.target.value)}
-              />
-              {form.errors.TanggalTerima && (
-                <p className="text-sm text-destructive">{form.errors.TanggalTerima}</p>
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="NomorSuratJalan">Nomor Surat Jalan</Label>
-              <Input
-                id="NomorSuratJalan"
-                value={form.data.NomorSuratJalan}
-                onChange={(event) => form.setData('NomorSuratJalan', event.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Gudang</Label>
-              <Select value={form.data.GudangId} onValueChange={(value) => form.setData('GudangId', value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa gudang</SelectItem>
-                  {gudang.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Kode} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {perluGudang && form.data.GudangId === TANPA_PILIHAN && (
-                <p className="text-sm text-destructive">Item suku cadang wajib memilih gudang tujuan.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {detail.map((item, indeks) => (
-              <div key={item.Id} className="space-y-3 rounded-[9px] border border-border p-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium">{item.Deskripsi}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.JenisItem} · dipesan {item.Jumlah} {item.Satuan} · sisa{' '}
-                      {hitungSisa(pesanan, item)}
-                    </p>
-                  </div>
-                  <Badge variant="netral">{item.JenisItem}</Badge>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-[repeat(3,minmax(0,1fr))]">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Diterima</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.0001"
-                      value={form.data.Detail[indeks].JumlahDiterima}
-                      onChange={(event) => ubahBaris(indeks, 'JumlahDiterima', event.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Ditolak</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.0001"
-                      value={form.data.Detail[indeks].JumlahDitolak}
-                      onChange={(event) => ubahBaris(indeks, 'JumlahDitolak', event.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Kondisi</Label>
-                    <Select
-                      value={form.data.Detail[indeks].Kondisi}
-                      onValueChange={(value) => ubahBaris(indeks, 'Kondisi', value)}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {KONDISI.map((nilai) => (
-                          <SelectItem key={nilai} value={nilai}>
-                            {nilai}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                {item.JenisItem === 'Aset' && (
-                  <div className="space-y-1">
-                    <Label className="text-xs">Nomor Seri (pisahkan dengan koma)</Label>
-                    <Input
-                      value={form.data.Detail[indeks].NomorSeri}
-                      onChange={(event) => ubahBaris(indeks, 'NomorSeri', event.target.value)}
-                    />
-                  </div>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label nama="TanggalTerima" htmlFor="TanggalTerima">
+                  Tanggal Terima
+                </Label>
+                <Input
+                  id="TanggalTerima"
+                  type="date"
+                  value={form.data.TanggalTerima}
+                  onChange={(event) => form.setData('TanggalTerima', event.target.value)}
+                />
+                {form.errors.TanggalTerima && (
+                  <p className="text-sm text-destructive">{form.errors.TanggalTerima}</p>
                 )}
               </div>
-            ))}
-          </div>
+              <div className="space-y-1.5">
+                <Label nama="NomorSuratJalan" htmlFor="NomorSuratJalan">
+                  Nomor Surat Jalan
+                </Label>
+                <Input
+                  id="NomorSuratJalan"
+                  value={form.data.NomorSuratJalan}
+                  onChange={(event) => form.setData('NomorSuratJalan', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="GudangId">Gudang</Label>
+                <Select value={form.data.GudangId} onValueChange={(value) => form.setData('GudangId', value)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Tanpa gudang</SelectItem>
+                    {gudang.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Kode} — {item.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {perluGudang && form.data.GudangId === TANPA_PILIHAN && (
+                  <p className="text-sm text-destructive">Item suku cadang wajib memilih gudang tujuan.</p>
+                )}
+              </div>
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Penerimaan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-3">
+              {detail.map((item, indeks) => (
+                <div key={item.Id} className="space-y-3 rounded-[9px] border border-border p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">{item.Deskripsi}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.JenisItem} · dipesan {item.Jumlah} {item.Satuan} · sisa{' '}
+                        {hitungSisa(pesanan, item)}
+                      </p>
+                    </div>
+                    <Badge variant="netral">{item.JenisItem}</Badge>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-[repeat(3,minmax(0,1fr))]">
+                    <div className="space-y-1">
+                      <Label nama="Detail" className="text-xs">
+                        Diterima
+                      </Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.0001"
+                        value={form.data.Detail[indeks].JumlahDiterima}
+                        onChange={(event) => ubahBaris(indeks, 'JumlahDiterima', event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label nama="Detail" className="text-xs">
+                        Ditolak
+                      </Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.0001"
+                        value={form.data.Detail[indeks].JumlahDitolak}
+                        onChange={(event) => ubahBaris(indeks, 'JumlahDitolak', event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label nama="Detail" className="text-xs">
+                        Kondisi
+                      </Label>
+                      <Select
+                        value={form.data.Detail[indeks].Kondisi}
+                        onValueChange={(value) => ubahBaris(indeks, 'Kondisi', value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {KONDISI.map((nilai) => (
+                            <SelectItem key={nilai} value={nilai}>
+                              {nilai}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {item.JenisItem === 'Aset' && (
+                    <div className="space-y-1">
+                      <Label nama="Detail" className="text-xs">
+                        Nomor Seri (pisahkan dengan koma)
+                      </Label>
+                      <Input
+                        value={form.data.Detail[indeks].NomorSeri}
+                        onChange={(event) => ubahBaris(indeks, 'NomorSeri', event.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Penerimaan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

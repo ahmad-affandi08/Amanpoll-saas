@@ -14,6 +14,7 @@ import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DialogFormRencana } from '@/features/Kalibrasi/components/DialogFormRencana';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   rencanaKalibrasi: RencanaKalibrasi[];
@@ -25,6 +26,8 @@ interface Props {
     jenisKalibrasiId?: string;
     status?: string;
   };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 export default function KalibrasiRencanaIndex({
@@ -33,6 +36,7 @@ export default function KalibrasiRencanaIndex({
   jenisKalibrasi,
   penyedia,
   filter,
+  wajib,
 }: Props) {
   const konfirmasi = useKonfirmasi();
   const [pencarian, setPencarian] = useState('');
@@ -88,6 +92,7 @@ export default function KalibrasiRencanaIndex({
               aset={aset}
               jenisKalibrasi={jenisKalibrasi}
               penyedia={penyedia}
+              wajib={wajib.rencana}
             />
           }
         />
@@ -251,6 +256,7 @@ export default function KalibrasiRencanaIndex({
                                 aset={aset}
                                 jenisKalibrasi={jenisKalibrasi}
                                 penyedia={penyedia}
+                                wajib={wajib.rencana}
                               />
                               <Button
                                 variant="ghost"

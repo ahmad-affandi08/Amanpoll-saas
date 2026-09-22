@@ -15,8 +15,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Kontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogBatalkan({ kontrak }: { kontrak: Kontrak }) {
+export function DialogBatalkan({ kontrak, wajib }: { kontrak: Kontrak; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Alasan: '' });
 
@@ -40,23 +41,27 @@ export function DialogBatalkan({ kontrak }: { kontrak: Kontrak }) {
             riwayat.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="AlasanBatal">Alasan pembatalan</Label>
-            <Textarea
-              id="AlasanBatal"
-              rows={3}
-              value={form.data.Alasan}
-              onChange={(event) => form.setData('Alasan', event.target.value)}
-            />
-            {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" variant="destructive" disabled={form.processing}>
-              Batalkan Kontrak
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="AlasanBatal" htmlFor="AlasanBatal">
+                Alasan pembatalan
+              </Label>
+              <Textarea
+                id="AlasanBatal"
+                rows={3}
+                value={form.data.Alasan}
+                onChange={(event) => form.setData('Alasan', event.target.value)}
+              />
+              {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" variant="destructive" disabled={form.processing}>
+                Batalkan Kontrak
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

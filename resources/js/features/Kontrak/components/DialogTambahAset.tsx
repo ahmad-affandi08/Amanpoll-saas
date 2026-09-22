@@ -17,8 +17,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Kontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
 import type { AsetRingkas } from '@/features/Kontrak/types';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogTambahAset({ kontrak, aset }: { kontrak: Kontrak; aset: AsetRingkas[] }) {
+export function DialogTambahAset({
+  kontrak,
+  aset,
+  wajib,
+}: {
+  kontrak: Kontrak;
+  aset: AsetRingkas[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     AsetId: '',
@@ -54,60 +63,68 @@ export function DialogTambahAset({ kontrak, aset }: { kontrak: Kontrak; aset: As
             {kontrak.BerakhirPada}.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Aset</Label>
-            <Select value={form.data.AsetId} onValueChange={(value) => form.setData('AsetId', value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih aset" />
-              </SelectTrigger>
-              <SelectContent>
-                {aset.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.KodeAset} — {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="MulaiCakupan">Mulai</Label>
-              <Input
-                id="MulaiCakupan"
-                type="date"
-                value={form.data.MulaiPada}
-                onChange={(event) => form.setData('MulaiPada', event.target.value)}
-              />
+              <Label nama="AsetId">Aset</Label>
+              <Select value={form.data.AsetId} onValueChange={(value) => form.setData('AsetId', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih aset" />
+                </SelectTrigger>
+                <SelectContent>
+                  {aset.map((item) => (
+                    <SelectItem key={item.Id} value={item.Id}>
+                      {item.KodeAset} — {item.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="MulaiCakupan" htmlFor="MulaiCakupan">
+                  Mulai
+                </Label>
+                <Input
+                  id="MulaiCakupan"
+                  type="date"
+                  value={form.data.MulaiPada}
+                  onChange={(event) => form.setData('MulaiPada', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="BerakhirCakupan" htmlFor="BerakhirCakupan">
+                  Berakhir
+                </Label>
+                <Input
+                  id="BerakhirCakupan"
+                  type="date"
+                  value={form.data.BerakhirPada}
+                  onChange={(event) => form.setData('BerakhirPada', event.target.value)}
+                />
+                {form.errors.BerakhirPada && (
+                  <p className="text-sm text-destructive">{form.errors.BerakhirPada}</p>
+                )}
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="BerakhirCakupan">Berakhir</Label>
+              <Label nama="CatatanCakupan" htmlFor="CatatanCakupan">
+                Catatan
+              </Label>
               <Input
-                id="BerakhirCakupan"
-                type="date"
-                value={form.data.BerakhirPada}
-                onChange={(event) => form.setData('BerakhirPada', event.target.value)}
+                id="CatatanCakupan"
+                value={form.data.Catatan}
+                onChange={(event) => form.setData('Catatan', event.target.value)}
               />
-              {form.errors.BerakhirPada && (
-                <p className="text-sm text-destructive">{form.errors.BerakhirPada}</p>
-              )}
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="CatatanCakupan">Catatan</Label>
-            <Input
-              id="CatatanCakupan"
-              value={form.data.Catatan}
-              onChange={(event) => form.setData('Catatan', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Tambahkan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Tambahkan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

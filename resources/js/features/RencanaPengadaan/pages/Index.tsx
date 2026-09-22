@@ -25,6 +25,7 @@ import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface PosRingkas {
   Id: string;
@@ -42,13 +43,19 @@ interface Props {
   posAnggaran: PosRingkas[];
   usulanDisetujui: UsulanRingkas[];
   filter: { cari?: string; tahun?: number; status?: StatusRencanaPengadaan };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
 const STATUS: StatusRencanaPengadaan[] = ['Draft', 'Direncanakan', 'Dibatalkan'];
 const VARIAN_STATUS = { Draft: 'netral', Direncanakan: 'sukses', Dibatalkan: 'bahaya' } as const;
 
-function DialogBuatRencana({ posAnggaran, usulanDisetujui }: Pick<Props, 'posAnggaran' | 'usulanDisetujui'>) {
+function DialogBuatRencana({
+  posAnggaran,
+  usulanDisetujui,
+  wajib,
+}: Pick<Props, 'posAnggaran' | 'usulanDisetujui'> & { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Nama: '',
@@ -84,86 +91,97 @@ function DialogBuatRencana({ posAnggaran, usulanDisetujui }: Pick<Props, 'posAng
             Usulan yang dipilih langsung menjadi detail. Estimasi total dihitung di server.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-[1fr_9rem]">
-            <div className="space-y-1.5">
-              <Label>Nama Rencana</Label>
-              <Input value={form.data.Nama} onChange={(event) => form.setData('Nama', event.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-            </div>
-            <div className="space-y-1.5">
-              <Label>Tahun</Label>
-              <Input
-                type="number"
-                min="2000"
-                max="2100"
-                value={form.data.Tahun}
-                onChange={(event) => form.setData('Tahun', event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Pos Anggaran</Label>
-            <Select
-              value={form.data.PosAnggaranId}
-              onValueChange={(value) => form.setData('PosAnggaranId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Pilih nanti</SelectItem>
-                {posAnggaran.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Usulan Disetujui</Label>
-            {usulanDisetujui.length === 0 ? (
-              <p className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-                Belum ada usulan disetujui yang tersedia.
-              </p>
-            ) : (
-              <div className="max-h-60 space-y-2 overflow-y-auto rounded-md border border-border p-3">
-                {usulanDisetujui.map((item) => (
-                  <label
-                    key={item.Id}
-                    className="flex min-h-11 cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-muted/40"
-                  >
-                    <Checkbox
-                      checked={form.data.UsulanAsetIds.includes(item.Id)}
-                      onCheckedChange={(value) => pilihUsulan(item.Id, value === true)}
-                    />
-                    <span className="flex-1 text-sm">
-                      <span className="block font-medium">{item.NamaKebutuhan}</span>
-                      <span className="font-mono text-xs text-muted-foreground">
-                        {item.Nomor} ·{' '}
-                        {item.EstimasiHargaSatuan
-                          ? formatUang(Number(item.Jumlah) * Number(item.EstimasiHargaSatuan))
-                          : 'tanpa estimasi'}
-                      </span>
-                    </span>
-                  </label>
-                ))}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-[1fr_9rem]">
+              <div className="space-y-1.5">
+                <Label nama="Nama">Nama Rencana</Label>
+                <Input
+                  value={form.data.Nama}
+                  onChange={(event) => form.setData('Nama', event.target.value)}
+                />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
               </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Draft
-            </Button>
-          </DialogFooter>
-        </form>
+              <div className="space-y-1.5">
+                <Label nama="Tahun">Tahun</Label>
+                <Input
+                  type="number"
+                  min="2000"
+                  max="2100"
+                  value={form.data.Tahun}
+                  onChange={(event) => form.setData('Tahun', event.target.value)}
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="PosAnggaranId">Pos Anggaran</Label>
+              <Select
+                value={form.data.PosAnggaranId}
+                onValueChange={(value) => form.setData('PosAnggaranId', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Pilih nanti</SelectItem>
+                  {posAnggaran.map((item) => (
+                    <SelectItem key={item.Id} value={item.Id}>
+                      {item.Label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Usulan Disetujui</Label>
+              {usulanDisetujui.length === 0 ? (
+                <p className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+                  Belum ada usulan disetujui yang tersedia.
+                </p>
+              ) : (
+                <div className="max-h-60 space-y-2 overflow-y-auto rounded-md border border-border p-3">
+                  {usulanDisetujui.map((item) => (
+                    <label
+                      key={item.Id}
+                      className="flex min-h-11 cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-muted/40"
+                    >
+                      <Checkbox
+                        checked={form.data.UsulanAsetIds.includes(item.Id)}
+                        onCheckedChange={(value) => pilihUsulan(item.Id, value === true)}
+                      />
+                      <span className="flex-1 text-sm">
+                        <span className="block font-medium">{item.NamaKebutuhan}</span>
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {item.Nomor} ·{' '}
+                          {item.EstimasiHargaSatuan
+                            ? formatUang(Number(item.Jumlah) * Number(item.EstimasiHargaSatuan))
+                            : 'tanpa estimasi'}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Draft
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDisetujui, filter }: Props) {
+export default function RencanaPengadaanIndex({
+  rencana,
+  posAnggaran,
+  usulanDisetujui,
+  filter,
+  wajib,
+}: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
   const [tahun, setTahun] = useState(filter.tahun?.toString() ?? '');
   const [status, setStatus] = useState(filter.status ?? SEMUA);
@@ -184,7 +202,11 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
           deskripsi="Konsolidasikan usulan disetujui ke rencana dan pos anggaran."
           aksi={
             <>
-              <DialogBuatRencana posAnggaran={posAnggaran} usulanDisetujui={usulanDisetujui} />
+              <DialogBuatRencana
+                posAnggaran={posAnggaran}
+                usulanDisetujui={usulanDisetujui}
+                wajib={wajib.rencana}
+              />
             </>
           }
         />

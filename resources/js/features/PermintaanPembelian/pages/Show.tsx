@@ -22,6 +22,7 @@ import type { JenisItemPengadaan, PermintaanPembelian } from '@/features/Permint
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface AsetRingkas {
   Id: string;
@@ -37,6 +38,8 @@ interface Props {
   permintaan: PermintaanPembelian;
   aset: AsetRingkas[];
   sukuCadang: SukuCadangRingkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const JENIS_ITEM: JenisItemPengadaan[] = ['Aset', 'SukuCadang', 'Jasa', 'Lainnya'];
@@ -47,7 +50,7 @@ const VARIAN_STATUS = {
   Ditolak: 'bahaya',
 } as const;
 
-function DialogTambahItem({ permintaan, aset, sukuCadang }: Props) {
+function DialogTambahItem({ permintaan, aset, sukuCadang, wajib }: Props) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     JenisItem: 'Lainnya',
@@ -91,127 +94,139 @@ function DialogTambahItem({ permintaan, aset, sukuCadang }: Props) {
             Item aset wajib memilih aset referensi agar kategori dapat diwariskan saat penerimaan.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Jenis Item</Label>
-            <Select value={form.data.JenisItem} onValueChange={(value) => form.setData('JenisItem', value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {JENIS_ITEM.map((item) => (
-                  <SelectItem key={item} value={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {form.data.JenisItem === 'Aset' && (
+        <AturanWajibProvider aturan={wajib.detail}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Aset Referensi</Label>
-              <Select
-                value={form.data.AsetReferensiId}
-                onValueChange={(value) => form.setData('AsetReferensiId', value)}
-              >
+              <Label nama="JenisItem">Jenis Item</Label>
+              <Select value={form.data.JenisItem} onValueChange={(value) => form.setData('JenisItem', value)}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih aset sejenis" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {aset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.KodeAset} — {item.Nama}
+                  {JENIS_ITEM.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {form.errors.AsetReferensiId && (
-                <p className="text-sm text-destructive">{form.errors.AsetReferensiId}</p>
-              )}
             </div>
-          )}
-          {form.data.JenisItem === 'SukuCadang' && (
+            {form.data.JenisItem === 'Aset' && (
+              <div className="space-y-1.5">
+                <Label nama="AsetReferensiId">Aset Referensi</Label>
+                <Select
+                  value={form.data.AsetReferensiId}
+                  onValueChange={(value) => form.setData('AsetReferensiId', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih aset sejenis" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {aset.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.KodeAset} — {item.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {form.errors.AsetReferensiId && (
+                  <p className="text-sm text-destructive">{form.errors.AsetReferensiId}</p>
+                )}
+              </div>
+            )}
+            {form.data.JenisItem === 'SukuCadang' && (
+              <div className="space-y-1.5">
+                <Label nama="SukuCadangId">Suku Cadang</Label>
+                <Select
+                  value={form.data.SukuCadangId}
+                  onValueChange={(value) => form.setData('SukuCadangId', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih suku cadang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sukuCadang.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Kode} — {item.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {form.errors.SukuCadangId && (
+                  <p className="text-sm text-destructive">{form.errors.SukuCadangId}</p>
+                )}
+              </div>
+            )}
             <div className="space-y-1.5">
-              <Label>Suku Cadang</Label>
-              <Select
-                value={form.data.SukuCadangId}
-                onValueChange={(value) => form.setData('SukuCadangId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih suku cadang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {sukuCadang.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Kode} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {form.errors.SukuCadangId && (
-                <p className="text-sm text-destructive">{form.errors.SukuCadangId}</p>
-              )}
-            </div>
-          )}
-          <div className="space-y-1.5">
-            <Label htmlFor="Deskripsi">Deskripsi</Label>
-            <Input
-              id="Deskripsi"
-              value={form.data.Deskripsi}
-              onChange={(event) => form.setData('Deskripsi', event.target.value)}
-            />
-            {form.errors.Deskripsi && <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="Jumlah">Jumlah</Label>
+              <Label nama="Deskripsi" htmlFor="Deskripsi">
+                Deskripsi
+              </Label>
               <Input
-                id="Jumlah"
-                type="number"
-                min="0.0001"
-                step="0.0001"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
+                id="Deskripsi"
+                value={form.data.Deskripsi}
+                onChange={(event) => form.setData('Deskripsi', event.target.value)}
               />
-              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              {form.errors.Deskripsi && <p className="text-sm text-destructive">{form.errors.Deskripsi}</p>}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label nama="Jumlah" htmlFor="Jumlah">
+                  Jumlah
+                </Label>
+                <Input
+                  id="Jumlah"
+                  type="number"
+                  min="0.0001"
+                  step="0.0001"
+                  value={form.data.Jumlah}
+                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                />
+                {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="Satuan" htmlFor="Satuan">
+                  Satuan
+                </Label>
+                <Input
+                  id="Satuan"
+                  value={form.data.Satuan}
+                  onChange={(event) => form.setData('Satuan', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="HargaEstimasi" htmlFor="HargaEstimasi">
+                  Harga Estimasi
+                </Label>
+                <Input
+                  id="HargaEstimasi"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.data.HargaEstimasi}
+                  onChange={(event) => form.setData('HargaEstimasi', event.target.value)}
+                />
+                {form.errors.HargaEstimasi && (
+                  <p className="text-sm text-destructive">{form.errors.HargaEstimasi}</p>
+                )}
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="Satuan">Satuan</Label>
+              <Label nama="Spesifikasi" htmlFor="Spesifikasi">
+                Spesifikasi
+              </Label>
               <Input
-                id="Satuan"
-                value={form.data.Satuan}
-                onChange={(event) => form.setData('Satuan', event.target.value)}
+                id="Spesifikasi"
+                value={form.data.Spesifikasi}
+                onChange={(event) => form.setData('Spesifikasi', event.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="HargaEstimasi">Harga Estimasi</Label>
-              <Input
-                id="HargaEstimasi"
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.data.HargaEstimasi}
-                onChange={(event) => form.setData('HargaEstimasi', event.target.value)}
-              />
-              {form.errors.HargaEstimasi && (
-                <p className="text-sm text-destructive">{form.errors.HargaEstimasi}</p>
-              )}
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="Spesifikasi">Spesifikasi</Label>
-            <Input
-              id="Spesifikasi"
-              value={form.data.Spesifikasi}
-              onChange={(event) => form.setData('Spesifikasi', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Tambahkan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Tambahkan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

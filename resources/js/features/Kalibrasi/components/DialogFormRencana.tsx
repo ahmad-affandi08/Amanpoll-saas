@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 const TANPA_JENIS = '__none__';
 const INTERNAL = '__internal__';
@@ -63,11 +64,13 @@ export function DialogFormRencana({
   aset,
   jenisKalibrasi,
   penyedia,
+  wajib,
 }: {
   rencana: RencanaKalibrasi | null;
   aset: { Id: string; KodeAset: string; Nama: string }[];
   jenisKalibrasi: { Id: string; Kode: string; Nama: string }[];
   penyedia: { Id: string; Kode: string; Nama: string }[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(nilaiAwal(rencana));
@@ -119,160 +122,178 @@ export function DialogFormRencana({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={simpan} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="AsetId">Pilih Aset / Instrumen *</Label>
-            <Select value={form.data.AsetId} onValueChange={(val) => form.setData('AsetId', val)} required>
-              <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Pilih Aset" />
-              </SelectTrigger>
-              <SelectContent className="max-h-56">
-                {aset.map((a) => (
-                  <SelectItem key={a.Id} value={a.Id}>
-                    {a.KodeAset} - {a.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={simpan} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="JenisKalibrasiId">Jenis Kalibrasi</Label>
-              <Select
-                value={form.data.JenisKalibrasiId || TANPA_JENIS}
-                onValueChange={(val) => form.setData('JenisKalibrasiId', val === TANPA_JENIS ? '' : val)}
-              >
+              <Label nama="AsetId" htmlFor="AsetId">
+                Pilih Aset / Instrumen *
+              </Label>
+              <Select value={form.data.AsetId} onValueChange={(val) => form.setData('AsetId', val)} required>
                 <SelectTrigger className="h-9 text-xs">
-                  <SelectValue placeholder="Pilih Jenis (Opsional)" />
+                  <SelectValue placeholder="Pilih Aset" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_JENIS}>Tanpa Spesifikasi Jenis</SelectItem>
-                  {jenisKalibrasi.map((jk) => (
-                    <SelectItem key={jk.Id} value={jk.Id}>
-                      {jk.Nama}
+                <SelectContent className="max-h-56">
+                  {aset.map((a) => (
+                    <SelectItem key={a.Id} value={a.Id}>
+                      {a.KodeAset} - {a.Nama}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label nama="JenisKalibrasiId" htmlFor="JenisKalibrasiId">
+                  Jenis Kalibrasi
+                </Label>
+                <Select
+                  value={form.data.JenisKalibrasiId || TANPA_JENIS}
+                  onValueChange={(val) => form.setData('JenisKalibrasiId', val === TANPA_JENIS ? '' : val)}
+                >
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder="Pilih Jenis (Opsional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_JENIS}>Tanpa Spesifikasi Jenis</SelectItem>
+                    {jenisKalibrasi.map((jk) => (
+                      <SelectItem key={jk.Id} value={jk.Id}>
+                        {jk.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label nama="PenyediaId" htmlFor="PenyediaId">
+                  Penyedia / Laboratorium Rekanan
+                </Label>
+                <Select
+                  value={form.data.PenyediaId || INTERNAL}
+                  onValueChange={(val) => form.setData('PenyediaId', val === INTERNAL ? '' : val)}
+                >
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder="Internal / Rekanan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={INTERNAL}>Internal Perusahaan</SelectItem>
+                    {penyedia.map((p) => (
+                      <SelectItem key={p.Id} value={p.Id}>
+                        {p.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <Label nama="IntervalHari" htmlFor="IntervalHari">
+                  Interval (Hari) *
+                </Label>
+                <Input
+                  id="IntervalHari"
+                  type="number"
+                  min={1}
+                  placeholder="365"
+                  value={form.data.IntervalHari}
+                  onChange={(e) => {
+                    const interval = Number(e.target.value);
+                    form.setData({
+                      ...form.data,
+                      IntervalHari: interval,
+                      TanggalBerikutnya: hitungTanggalBerikutnya(form.data.TanggalMulai, interval),
+                    });
+                  }}
+                  required
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label nama="TanggalMulai" htmlFor="TanggalMulai">
+                  Tanggal Mulai *
+                </Label>
+                <Input
+                  id="TanggalMulai"
+                  type="date"
+                  value={form.data.TanggalMulai}
+                  onChange={(e) => {
+                    const tanggalMulai = e.target.value;
+                    form.setData({
+                      ...form.data,
+                      TanggalMulai: tanggalMulai,
+                      TanggalBerikutnya: hitungTanggalBerikutnya(tanggalMulai, form.data.IntervalHari),
+                    });
+                  }}
+                  required
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label nama="TanggalBerikutnya" htmlFor="TanggalBerikutnya">
+                  Jatuh Tempo Berikutnya *
+                </Label>
+                <Input
+                  id="TanggalBerikutnya"
+                  type="date"
+                  value={form.data.TanggalBerikutnya}
+                  onChange={(e) => form.setData('TanggalBerikutnya', e.target.value)}
+                  required
+                  className="h-9 text-xs"
+                />
+              </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="PenyediaId">Penyedia / Laboratorium Rekanan</Label>
-              <Select
-                value={form.data.PenyediaId || INTERNAL}
-                onValueChange={(val) => form.setData('PenyediaId', val === INTERNAL ? '' : val)}
-              >
-                <SelectTrigger className="h-9 text-xs">
-                  <SelectValue placeholder="Internal / Rekanan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={INTERNAL}>Internal Perusahaan</SelectItem>
-                  {penyedia.map((p) => (
-                    <SelectItem key={p.Id} value={p.Id}>
-                      {p.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="IntervalHari">Interval (Hari) *</Label>
+              <Label nama="PeringatanHariSebelum" htmlFor="PeringatanHariSebelum">
+                Jendela Pengingat Peringatan (Hari Sebelum)
+              </Label>
               <Input
-                id="IntervalHari"
+                id="PeringatanHariSebelum"
                 type="number"
                 min={1}
-                placeholder="365"
-                value={form.data.IntervalHari}
-                onChange={(e) => {
-                  const interval = Number(e.target.value);
-                  form.setData({
-                    ...form.data,
-                    IntervalHari: interval,
-                    TanggalBerikutnya: hitungTanggalBerikutnya(form.data.TanggalMulai, interval),
-                  });
-                }}
-                required
+                placeholder="30"
+                value={form.data.PeringatanHariSebelum}
+                onChange={(e) => form.setData('PeringatanHariSebelum', Number(e.target.value))}
                 className="h-9 text-xs"
               />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="TanggalMulai">Tanggal Mulai *</Label>
-              <Input
-                id="TanggalMulai"
-                type="date"
-                value={form.data.TanggalMulai}
-                onChange={(e) => {
-                  const tanggalMulai = e.target.value;
-                  form.setData({
-                    ...form.data,
-                    TanggalMulai: tanggalMulai,
-                    TanggalBerikutnya: hitungTanggalBerikutnya(tanggalMulai, form.data.IntervalHari),
-                  });
-                }}
-                required
-                className="h-9 text-xs"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="TanggalBerikutnya">Jatuh Tempo Berikutnya *</Label>
-              <Input
-                id="TanggalBerikutnya"
-                type="date"
-                value={form.data.TanggalBerikutnya}
-                onChange={(e) => form.setData('TanggalBerikutnya', e.target.value)}
-                required
-                className="h-9 text-xs"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="PeringatanHariSebelum">Jendela Pengingat Peringatan (Hari Sebelum)</Label>
-            <Input
-              id="PeringatanHariSebelum"
-              type="number"
-              min={1}
-              placeholder="30"
-              value={form.data.PeringatanHariSebelum}
-              onChange={(e) => form.setData('PeringatanHariSebelum', Number(e.target.value))}
-              className="h-9 text-xs"
-            />
-            <p className="text-[11px] text-zinc-500">
-              Sistem akan memicu status "Segera Jatuh Tempo" dan mengirim notifikasi saat waktu tersisa
-              mencapai nilai ini.
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
-            <div className="space-y-0.5">
-              <Label htmlFor="AktifRencana">Status Aktif</Label>
-              <p className="text-xs text-zinc-500">
-                Rencana aktif diperhitungkan dalam kepatuhan dan notifikasi.
+              <p className="text-[11px] text-zinc-500">
+                Sistem akan memicu status "Segera Jatuh Tempo" dan mengirim notifikasi saat waktu tersisa
+                mencapai nilai ini.
               </p>
             </div>
-            <Switch
-              id="AktifRencana"
-              checked={form.data.Aktif}
-              onCheckedChange={(checked) => form.setData('Aktif', checked)}
-            />
-          </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setBuka(false)}>
-              Batal
-            </Button>
-            <Button type="submit" disabled={form.processing}>
-              {form.processing ? 'Menyimpan...' : 'Simpan Rencana'}
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
+              <div className="space-y-0.5">
+                <Label nama="AktifRencana" htmlFor="AktifRencana">
+                  Status Aktif
+                </Label>
+                <p className="text-xs text-zinc-500">
+                  Rencana aktif diperhitungkan dalam kepatuhan dan notifikasi.
+                </p>
+              </div>
+              <Switch
+                id="AktifRencana"
+                checked={form.data.Aktif}
+                onCheckedChange={(checked) => form.setData('Aktif', checked)}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setBuka(false)}>
+                Batal
+              </Button>
+              <Button type="submit" disabled={form.processing}>
+                {form.processing ? 'Menyimpan...' : 'Simpan Rencana'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

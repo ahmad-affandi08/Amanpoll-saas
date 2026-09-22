@@ -17,6 +17,7 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPen
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,6 +49,7 @@ final class RencanaPengadaanController extends Controller
             ->withQueryString();
 
         return Inertia::render('RencanaPengadaan/Index', [
+            'wajib' => ['rencana' => AturanWajib::untuk(SimpanRencanaPengadaanRequest::class)],
             'rencana' => RencanaPengadaanResource::collection($rencana),
             'posAnggaran' => $this->daftarPosAktif(),
             'usulanDisetujui' => UsulanAset::query()
@@ -65,6 +67,7 @@ final class RencanaPengadaanController extends Controller
         $rencanaPengadaan->load(['posAnggaran.anggaran', 'dibuatOleh', 'detail.usulanAset', 'detail.sukuCadang']);
 
         return Inertia::render('RencanaPengadaan/Show', [
+            'wajib' => ['rencana' => AturanWajib::untuk(SimpanRencanaPengadaanRequest::class), 'detail' => AturanWajib::untuk(SimpanDetailRencanaPengadaanRequest::class)],
             'rencana' => new RencanaPengadaanResource($rencanaPengadaan),
             'posAnggaran' => $this->daftarPosAktif(),
             'usulanDisetujui' => UsulanAset::query()

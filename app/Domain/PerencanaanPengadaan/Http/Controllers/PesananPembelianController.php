@@ -7,7 +7,9 @@ namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 use App\Domain\PerencanaanPengadaan\Application\Actions\KelolaPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPenawaranPenyedia;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
+use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPenerimaanPembelianRequest;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPesananPembelianRequest;
+use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanTagihanPenyediaRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\PenawaranPenyediaResource;
 use App\Domain\PerencanaanPengadaan\Http\Resources\PesananPembelianResource;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
@@ -16,6 +18,7 @@ use App\Domain\Persediaan\Domain\Enums\StatusGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -42,6 +45,7 @@ final class PesananPembelianController extends Controller
             ->withQueryString();
 
         return Inertia::render('PesananPembelian/Index', [
+            'wajib' => ['pesanan' => AturanWajib::untuk(SimpanPesananPembelianRequest::class)],
             'pesanan' => PesananPembelianResource::collection($pesanan),
             'penawaranTerpilih' => PenawaranPenyediaResource::collection(
                 PenawaranPenyedia::query()
@@ -82,6 +86,7 @@ final class PesananPembelianController extends Controller
         ]);
 
         return Inertia::render('PesananPembelian/Show', [
+            'wajib' => ['penerimaan' => AturanWajib::untuk(SimpanPenerimaanPembelianRequest::class), 'tagihan' => AturanWajib::untuk(SimpanTagihanPenyediaRequest::class)],
             'pesanan' => new PesananPembelianResource($pesananPembelian),
             'gudang' => Gudang::query()->where('Status', StatusGudang::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
         ]);

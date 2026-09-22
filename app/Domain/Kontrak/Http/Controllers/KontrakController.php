@@ -24,6 +24,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -54,6 +55,7 @@ final class KontrakController extends Controller
             ->withQueryString();
 
         return Inertia::render('Kontrak/Index', [
+            'wajib' => ['kontrak' => AturanWajib::untuk(SimpanKontrakRequest::class)],
             'kontrak' => KontrakResource::collection($kontrak),
             'penyedia' => Penyedia::query()->where('Status', StatusPenyedia::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
             'tingkatLayanan' => TingkatLayanan::query()->orderBy('Nama')->get(['Id', 'Nama']),
@@ -78,6 +80,7 @@ final class KontrakController extends Controller
         $kontrak->load(['penyedia', 'tingkatLayanan', 'kontrakAset.aset', 'layanan']);
 
         return Inertia::render('Kontrak/Show', [
+            'wajib' => ['batalkan' => AturanWajib::untuk(BatalkanKontrakRequest::class), 'aset' => AturanWajib::untuk(SimpanKontrakAsetRequest::class), 'layanan' => AturanWajib::untuk(SimpanLayananKontrakRequest::class), 'pemakaian' => AturanWajib::untuk(CatatPemakaianLayananRequest::class)],
             'kontrak' => new KontrakResource($kontrak),
             'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
         ]);

@@ -22,6 +22,7 @@ use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,6 +50,7 @@ final class PermintaanPembelianController extends Controller
             ->withQueryString();
 
         return Inertia::render('PermintaanPembelian/Index', [
+            'wajib' => ['permintaan' => AturanWajib::untuk(SimpanPermintaanPembelianRequest::class)],
             'permintaan' => PermintaanPembelianResource::collection($permintaan),
             'unitOrganisasi' => UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
             'rencana' => RencanaPengadaan::query()
@@ -83,6 +85,7 @@ final class PermintaanPembelianController extends Controller
         ]);
 
         return Inertia::render('PermintaanPembelian/Show', [
+            'wajib' => ['detail' => AturanWajib::untuk(SimpanDetailPermintaanPembelianRequest::class)],
             'permintaan' => new PermintaanPembelianResource($permintaanPembelian),
             'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama']),
             'sukuCadang' => SukuCadang::query()->where('Status', StatusSukuCadang::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),

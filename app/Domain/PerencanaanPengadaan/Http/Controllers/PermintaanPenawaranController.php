@@ -17,6 +17,7 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranP
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPenawaran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -43,6 +44,7 @@ final class PermintaanPenawaranController extends Controller
             ->withQueryString();
 
         return Inertia::render('PermintaanPenawaran/Index', [
+            'wajib' => ['permintaan' => AturanWajib::untuk(SimpanPermintaanPenawaranRequest::class)],
             'rfq' => PermintaanPenawaranResource::collection($rfq),
             'permintaanDisetujui' => PermintaanPembelian::query()
                 ->where('Status', StatusPermintaanPembelian::Disetujui->value)
@@ -77,6 +79,7 @@ final class PermintaanPenawaranController extends Controller
         ]);
 
         return Inertia::render('PermintaanPenawaran/Show', [
+            'wajib' => ['penawaran' => AturanWajib::untuk(SimpanPenawaranPenyediaRequest::class)],
             'rfq' => new PermintaanPenawaranResource($permintaanPenawaran),
         ]);
     }

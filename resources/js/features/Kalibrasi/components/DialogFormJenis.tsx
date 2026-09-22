@@ -18,6 +18,7 @@ import {
 import type { JenisKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 function nilaiAwal(jenis: JenisKalibrasi | null) {
   return {
@@ -28,7 +29,7 @@ function nilaiAwal(jenis: JenisKalibrasi | null) {
   };
 }
 
-export function DialogFormJenis({ jenis }: { jenis: JenisKalibrasi | null }) {
+export function DialogFormJenis({ jenis, wajib }: { jenis: JenisKalibrasi | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(nilaiAwal(jenis));
 
@@ -79,61 +80,69 @@ export function DialogFormJenis({ jenis }: { jenis: JenisKalibrasi | null }) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={simpan} className="space-y-4">
-          <BidangKode
-            nilai={form.data.Kode}
-            onUbah={(nilai) => form.setData('Kode', nilai)}
-            galat={form.errors.Kode}
-            label="Kode Jenis"
-            contoh="mis. CAL-TEMP, CAL-PRESS"
-          />
-
-          <div className="space-y-1.5">
-            <Label htmlFor="Nama">Nama Jenis Kalibrasi *</Label>
-            <Input
-              id="Nama"
-              placeholder="mis. Kalibrasi Suhu dan Thermocouple"
-              value={form.data.Nama}
-              onChange={(e) => form.setData('Nama', e.target.value)}
-              required
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={simpan} className="space-y-4">
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+              label="Kode Jenis"
+              contoh="mis. CAL-TEMP, CAL-PRESS"
             />
-            {form.errors.Nama && <p className="text-xs text-rose-600">{form.errors.Nama}</p>}
-          </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="Deskripsi">Deskripsi & Standar Acuan Metrologi</Label>
-            <Textarea
-              id="Deskripsi"
-              placeholder="mis. Acuan SNI/ISO 17025. Satuan acuan Celsius (°C), rentang 0 - 500 °C."
-              rows={3}
-              value={form.data.Deskripsi}
-              onChange={(e) => form.setData('Deskripsi', e.target.value)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
-            <div className="space-y-0.5">
-              <Label htmlFor="Aktif">Status Aktif</Label>
-              <p className="text-xs text-zinc-500">
-                Jenis ini dapat dipilih saat membuat rencana kalibrasi baru.
-              </p>
+            <div className="space-y-1.5">
+              <Label nama="Nama" htmlFor="Nama">
+                Nama Jenis Kalibrasi *
+              </Label>
+              <Input
+                id="Nama"
+                placeholder="mis. Kalibrasi Suhu dan Thermocouple"
+                value={form.data.Nama}
+                onChange={(e) => form.setData('Nama', e.target.value)}
+                required
+              />
+              {form.errors.Nama && <p className="text-xs text-rose-600">{form.errors.Nama}</p>}
             </div>
-            <Switch
-              id="Aktif"
-              checked={form.data.Aktif}
-              onCheckedChange={(checked) => form.setData('Aktif', checked)}
-            />
-          </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setBuka(false)}>
-              Batal
-            </Button>
-            <Button type="submit" disabled={form.processing}>
-              {form.processing ? 'Menyimpan...' : 'Simpan'}
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-1.5">
+              <Label nama="Deskripsi" htmlFor="Deskripsi">
+                Deskripsi & Standar Acuan Metrologi
+              </Label>
+              <Textarea
+                id="Deskripsi"
+                placeholder="mis. Acuan SNI/ISO 17025. Satuan acuan Celsius (°C), rentang 0 - 500 °C."
+                rows={3}
+                value={form.data.Deskripsi}
+                onChange={(e) => form.setData('Deskripsi', e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
+              <div className="space-y-0.5">
+                <Label nama="Aktif" htmlFor="Aktif">
+                  Status Aktif
+                </Label>
+                <p className="text-xs text-zinc-500">
+                  Jenis ini dapat dipilih saat membuat rencana kalibrasi baru.
+                </p>
+              </div>
+              <Switch
+                id="Aktif"
+                checked={form.data.Aktif}
+                onCheckedChange={(checked) => form.setData('Aktif', checked)}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setBuka(false)}>
+                Batal
+              </Button>
+              <Button type="submit" disabled={form.processing}>
+                {form.processing ? 'Menyimpan...' : 'Simpan'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

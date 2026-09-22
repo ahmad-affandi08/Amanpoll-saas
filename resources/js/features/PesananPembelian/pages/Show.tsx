@@ -15,10 +15,13 @@ import type { GudangRingkas } from '@/features/PesananPembelian/types';
 import { hitungSisa } from '@/features/PesananPembelian/perhitungan';
 import { DialogCatatPenerimaan } from '@/features/PesananPembelian/components/DialogCatatPenerimaan';
 import { DialogCatatTagihan } from '@/features/PesananPembelian/components/DialogCatatTagihan';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   pesanan: PesananPembelian;
   gudang: GudangRingkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const VARIAN_STATUS = {
@@ -33,7 +36,7 @@ const VARIAN_STATUS = {
 const VARIAN_TAGIHAN = { BelumDibayar: 'perhatian', DibayarSebagian: 'proses', Dibayar: 'sukses' } as const;
 
 export default function PesananPembelianShow(props: Props) {
-  const { pesanan, gudang } = props;
+  const { pesanan, gudang, wajib } = props;
   const [memproses, setMemproses] = useState(false);
   const detail = pesanan.Detail ?? [];
   const penerimaan = pesanan.Penerimaan ?? [];
@@ -96,8 +99,8 @@ export default function PesananPembelianShow(props: Props) {
                   <Truck /> Kirim ke Penyedia
                 </Button>
               )}
-              {bolehTerima && <DialogCatatPenerimaan {...props} />}
-              {bolehTagih && <DialogCatatTagihan pesanan={pesanan} />}
+              {bolehTerima && <DialogCatatPenerimaan {...props} wajib={wajib.penerimaan} />}
+              {bolehTagih && <DialogCatatTagihan pesanan={pesanan} wajib={wajib.tagihan} />}
             </>
           }
         />

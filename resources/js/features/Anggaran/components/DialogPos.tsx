@@ -18,15 +18,18 @@ import type { Anggaran, PosAnggaran } from '@/features/Anggaran/types';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 export function DialogPos({
   anggaran,
   pos,
   semuaPos,
+  wajib,
 }: {
   anggaran: Anggaran;
   pos?: PosAnggaran;
   semuaPos: PosAnggaran[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -64,59 +67,65 @@ export function DialogPos({
             Nilai anak tidak boleh melebihi pos induk; pos utama tidak boleh melampaui total anggaran.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Pos Induk</Label>
-            <Select value={form.data.IndukId} onValueChange={(value) => form.setData('IndukId', value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Pos utama</SelectItem>
-                {semuaPos
-                  .filter((item) => item.Id !== pos?.Id)
-                  .map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Kode} — {item.Nama}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="nilai-pos">Nilai</Label>
-              <Input
-                id="nilai-pos"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
-              />
-              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              <Label nama="IndukId">Pos Induk</Label>
+              <Select value={form.data.IndukId} onValueChange={(value) => form.setData('IndukId', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Pos utama</SelectItem>
+                  {semuaPos
+                    .filter((item) => item.Id !== pos?.Id)
+                    .map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Kode} — {item.Nama}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="nama-pos">Nama</Label>
-            <Input
-              id="nama-pos"
-              value={form.data.Nama}
-              onChange={(event) => form.setData('Nama', event.target.value)}
-            />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              {pos ? 'Simpan Perubahan' : 'Tambah Pos'}
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
+              <div className="space-y-1.5">
+                <Label nama="Jumlah" htmlFor="nilai-pos">
+                  Nilai
+                </Label>
+                <Input
+                  id="nilai-pos"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={form.data.Jumlah}
+                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                />
+                {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Nama" htmlFor="nama-pos">
+                Nama
+              </Label>
+              <Input
+                id="nama-pos"
+                value={form.data.Nama}
+                onChange={(event) => form.setData('Nama', event.target.value)}
+              />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                {pos ? 'Simpan Perubahan' : 'Tambah Pos'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

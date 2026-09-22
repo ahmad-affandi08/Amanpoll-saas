@@ -24,6 +24,7 @@ import type { PermintaanPenawaran, StatusPermintaanPenawaran } from '@/features/
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface PermintaanRingkas {
   Id: string;
@@ -40,13 +41,19 @@ interface Props {
   permintaanDisetujui: PermintaanRingkas[];
   penyedia: PenyediaRingkas[];
   filter: { cari?: string; status?: StatusPermintaanPenawaran };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
 const STATUS: StatusPermintaanPenawaran[] = ['Draft', 'Dibuka', 'Ditutup'];
 const VARIAN_STATUS = { Draft: 'netral', Dibuka: 'proses', Ditutup: 'sukses' } as const;
 
-function DialogBuatRfq({ permintaanDisetujui, penyedia }: Pick<Props, 'permintaanDisetujui' | 'penyedia'>) {
+function DialogBuatRfq({
+  permintaanDisetujui,
+  penyedia,
+  wajib,
+}: Pick<Props, 'permintaanDisetujui' | 'penyedia'> & { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     PermintaanPembelianId: '',
@@ -82,84 +89,98 @@ function DialogBuatRfq({ permintaanDisetujui, penyedia }: Pick<Props, 'permintaa
             Pilih permintaan pembelian yang telah disetujui, tetapkan batas waktu, lalu undang penyedia.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Permintaan Pembelian</Label>
-            <Select
-              value={form.data.PermintaanPembelianId}
-              onValueChange={(value) => form.setData('PermintaanPembelianId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih permintaan disetujui" />
-              </SelectTrigger>
-              <SelectContent>
-                {permintaanDisetujui.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Nomor} — {formatUang(item.TotalEstimasi)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.PermintaanPembelianId && (
-              <p className="text-sm text-destructive">{form.errors.PermintaanPembelianId}</p>
-            )}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="BatasPenawaran">Batas Penawaran</Label>
-            <Input
-              id="BatasPenawaran"
-              type="datetime-local"
-              value={form.data.BatasPenawaran}
-              onChange={(event) => form.setData('BatasPenawaran', event.target.value)}
-            />
-            {form.errors.BatasPenawaran && (
-              <p className="text-sm text-destructive">{form.errors.BatasPenawaran}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label>Penyedia Diundang</Label>
-            {penyedia.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Belum ada penyedia aktif yang dapat diundang.</p>
-            ) : (
-              <div className="max-h-56 space-y-1 overflow-y-auto rounded-[9px] border border-border p-2">
-                {penyedia.map((item) => (
-                  <label
-                    key={item.Id}
-                    className="flex min-h-11 items-center gap-3 rounded-[5px] p-2 hover:bg-muted"
-                  >
-                    <Checkbox
-                      checked={form.data.PenyediaIds.includes(item.Id)}
-                      onCheckedChange={(nilai) => pilihPenyedia(item.Id, nilai === true)}
-                    />
-                    <span className="text-sm">
-                      {item.Kode} — {item.Nama}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            )}
-            {form.errors.PenyediaIds && <p className="text-sm text-destructive">{form.errors.PenyediaIds}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="Catatan">Catatan</Label>
-            <Input
-              id="Catatan"
-              value={form.data.Catatan}
-              onChange={(event) => form.setData('Catatan', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Draft
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="PermintaanPembelianId">Permintaan Pembelian</Label>
+              <Select
+                value={form.data.PermintaanPembelianId}
+                onValueChange={(value) => form.setData('PermintaanPembelianId', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih permintaan disetujui" />
+                </SelectTrigger>
+                <SelectContent>
+                  {permintaanDisetujui.map((item) => (
+                    <SelectItem key={item.Id} value={item.Id}>
+                      {item.Nomor} — {formatUang(item.TotalEstimasi)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.PermintaanPembelianId && (
+                <p className="text-sm text-destructive">{form.errors.PermintaanPembelianId}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="BatasPenawaran" htmlFor="BatasPenawaran">
+                Batas Penawaran
+              </Label>
+              <Input
+                id="BatasPenawaran"
+                type="datetime-local"
+                value={form.data.BatasPenawaran}
+                onChange={(event) => form.setData('BatasPenawaran', event.target.value)}
+              />
+              {form.errors.BatasPenawaran && (
+                <p className="text-sm text-destructive">{form.errors.BatasPenawaran}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>Penyedia Diundang</Label>
+              {penyedia.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Belum ada penyedia aktif yang dapat diundang.</p>
+              ) : (
+                <div className="max-h-56 space-y-1 overflow-y-auto rounded-[9px] border border-border p-2">
+                  {penyedia.map((item) => (
+                    <label
+                      key={item.Id}
+                      className="flex min-h-11 items-center gap-3 rounded-[5px] p-2 hover:bg-muted"
+                    >
+                      <Checkbox
+                        checked={form.data.PenyediaIds.includes(item.Id)}
+                        onCheckedChange={(nilai) => pilihPenyedia(item.Id, nilai === true)}
+                      />
+                      <span className="text-sm">
+                        {item.Kode} — {item.Nama}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+              {form.errors.PenyediaIds && (
+                <p className="text-sm text-destructive">{form.errors.PenyediaIds}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Catatan" htmlFor="Catatan">
+                Catatan
+              </Label>
+              <Input
+                id="Catatan"
+                value={form.data.Catatan}
+                onChange={(event) => form.setData('Catatan', event.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Draft
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function PermintaanPenawaranIndex({ rfq, permintaanDisetujui, penyedia, filter }: Props) {
+export default function PermintaanPenawaranIndex({
+  rfq,
+  permintaanDisetujui,
+  penyedia,
+  filter,
+  wajib,
+}: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
   const [status, setStatus] = useState<string>(filter.status ?? SEMUA);
 
@@ -181,7 +202,11 @@ export default function PermintaanPenawaranIndex({ rfq, permintaanDisetujui, pen
           deskripsi="Undang penyedia, catat penawaran masuk, dan pilih hasil evaluasi."
           aksi={
             <>
-              <DialogBuatRfq permintaanDisetujui={permintaanDisetujui} penyedia={penyedia} />
+              <DialogBuatRfq
+                permintaanDisetujui={permintaanDisetujui}
+                penyedia={penyedia}
+                wajib={wajib.permintaan}
+              />
             </>
           }
         />

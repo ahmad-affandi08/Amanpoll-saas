@@ -10,14 +10,17 @@ import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 import { DialogFinalisasiKalibrasi } from '@/features/Kalibrasi/components/DialogFinalisasiKalibrasi';
 import { EditorTitikUkur } from '@/features/Kalibrasi/components/EditorTitikUkur';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   pelaksanaan: PelaksanaanKalibrasi;
   teknisi: { Id: string; Nama: string }[];
   penyedia: { Id: string; Kode: string; Nama: string }[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function KalibrasiPelaksanaanShow({ pelaksanaan }: Props) {
+export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) {
   const badgeHasil = hasilKalibrasiBadge(pelaksanaan.Hasil);
   const sudahVerifikasi = Boolean(pelaksanaan.DiverifikasiPada);
 
@@ -59,7 +62,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan }: Props) {
           </div>
 
           <div className="flex items-center gap-2">
-            {!sudahVerifikasi && <DialogFinalisasiKalibrasi pelaksanaan={pelaksanaan} />}
+            {!sudahVerifikasi && <DialogFinalisasiKalibrasi pelaksanaan={pelaksanaan} wajib={wajib.hasil} />}
           </div>
         </div>
 

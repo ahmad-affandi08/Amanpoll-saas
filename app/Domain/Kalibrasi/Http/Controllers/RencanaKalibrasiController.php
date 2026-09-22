@@ -14,6 +14,7 @@ use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -88,6 +89,7 @@ final class RencanaKalibrasiController extends Controller
             ->get(['Id', 'Kode', 'Nama']);
 
         return Inertia::render('Kalibrasi/Rencana/Index', [
+            'wajib' => ['rencana' => AturanWajib::untuk(SimpanRencanaKalibrasiRequest::class)],
             'rencanaKalibrasi' => $daftarRencana,
             'aset' => $asetList,
             'jenisKalibrasi' => $jenisList,

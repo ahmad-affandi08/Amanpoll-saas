@@ -102,7 +102,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-[12rem_1fr]">
             <div className="space-y-1.5">
-              <Label htmlFor="Nomor">Nomor</Label>
+              <Label nama="Nomor" htmlFor="Nomor">
+                Nomor
+              </Label>
               <Input
                 id="Nomor"
                 value={form.data.Nomor}
@@ -111,7 +113,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               {form.errors.Nomor && <p className="text-sm text-destructive">{form.errors.Nomor}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="Nama">Nama Kontrak</Label>
+              <Label nama="Nama" htmlFor="Nama">
+                Nama Kontrak
+              </Label>
               <Input
                 id="Nama"
                 value={form.data.Nama}
@@ -123,7 +127,7 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Jenis</Label>
+              <Label nama="Jenis">Jenis</Label>
               <Select value={form.data.Jenis} onValueChange={(value) => form.setData('Jenis', value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -138,7 +142,7 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Penyedia</Label>
+              <Label nama="PenyediaId">Penyedia</Label>
               <Select
                 value={form.data.PenyediaId}
                 onValueChange={(value) => form.setData('PenyediaId', value)}
@@ -160,7 +164,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="MulaiPada">Mulai</Label>
+              <Label nama="MulaiPada" htmlFor="MulaiPada">
+                Mulai
+              </Label>
               <Input
                 id="MulaiPada"
                 type="date"
@@ -170,7 +176,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               {form.errors.MulaiPada && <p className="text-sm text-destructive">{form.errors.MulaiPada}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="BerakhirPada">Berakhir</Label>
+              <Label nama="BerakhirPada" htmlFor="BerakhirPada">
+                Berakhir
+              </Label>
               <Input
                 id="BerakhirPada"
                 type="date"
@@ -185,7 +193,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
 
           <div className="grid gap-4 sm:grid-cols-[1fr_7rem_9rem]">
             <div className="space-y-1.5">
-              <Label htmlFor="Nilai">Nilai Kontrak</Label>
+              <Label nama="Nilai" htmlFor="Nilai">
+                Nilai Kontrak
+              </Label>
               <Input
                 id="Nilai"
                 type="number"
@@ -197,7 +207,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               {form.errors.Nilai && <p className="text-sm text-destructive">{form.errors.Nilai}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="MataUang">Mata Uang</Label>
+              <Label nama="MataUang" htmlFor="MataUang">
+                Mata Uang
+              </Label>
               <Input
                 id="MataUang"
                 maxLength={3}
@@ -206,7 +218,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="PeringatanHariSebelum">Ingatkan (hari)</Label>
+              <Label nama="PeringatanHariSebelum" htmlFor="PeringatanHariSebelum">
+                Ingatkan (hari)
+              </Label>
               <Input
                 id="PeringatanHariSebelum"
                 type="number"
@@ -219,7 +233,7 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
           </div>
 
           <div className="space-y-1.5">
-            <Label>Tingkat Layanan</Label>
+            <Label nama="TingkatLayananId">Tingkat Layanan</Label>
             <Select
               value={form.data.TingkatLayananId}
               onValueChange={(value) => form.setData('TingkatLayananId', value)}
@@ -239,7 +253,9 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="Catatan">Catatan</Label>
+            <Label nama="Catatan" htmlFor="Catatan">
+              Catatan
+            </Label>
             <Textarea
               id="Catatan"
               rows={2}

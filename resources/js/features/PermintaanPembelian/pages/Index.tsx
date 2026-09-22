@@ -28,6 +28,7 @@ import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface UnitRingkas {
   Id: string;
@@ -50,6 +51,8 @@ interface Props {
   rencana: RencanaRingkas[];
   posAnggaran: PosRingkas[];
   filter: { cari?: string; status?: StatusPermintaanPembelian };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
@@ -66,7 +69,8 @@ function DialogBuatPermintaan({
   unitOrganisasi,
   rencana,
   posAnggaran,
-}: Omit<Props, 'permintaan' | 'filter'>) {
+  wajib,
+}: Omit<Props, 'permintaan' | 'filter' | 'wajib'> & { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     UnitOrganisasiId: TANPA_PILIHAN,
@@ -112,121 +116,132 @@ function DialogBuatPermintaan({
             Simpan header sebagai draft; item dan total ditambahkan pada halaman detail.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="TanggalPermintaan">Tanggal Permintaan</Label>
-              <Input
-                id="TanggalPermintaan"
-                type="date"
-                value={form.data.TanggalPermintaan}
-                onChange={(event) => form.setData('TanggalPermintaan', event.target.value)}
-              />
-              {form.errors.TanggalPermintaan && (
-                <p className="text-sm text-destructive">{form.errors.TanggalPermintaan}</p>
-              )}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="TanggalPermintaan" htmlFor="TanggalPermintaan">
+                  Tanggal Permintaan
+                </Label>
+                <Input
+                  id="TanggalPermintaan"
+                  type="date"
+                  value={form.data.TanggalPermintaan}
+                  onChange={(event) => form.setData('TanggalPermintaan', event.target.value)}
+                />
+                {form.errors.TanggalPermintaan && (
+                  <p className="text-sm text-destructive">{form.errors.TanggalPermintaan}</p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="TanggalDibutuhkan" htmlFor="TanggalDibutuhkan">
+                  Dibutuhkan
+                </Label>
+                <Input
+                  id="TanggalDibutuhkan"
+                  type="date"
+                  value={form.data.TanggalDibutuhkan}
+                  onChange={(event) => form.setData('TanggalDibutuhkan', event.target.value)}
+                />
+                {form.errors.TanggalDibutuhkan && (
+                  <p className="text-sm text-destructive">{form.errors.TanggalDibutuhkan}</p>
+                )}
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="TanggalDibutuhkan">Dibutuhkan</Label>
-              <Input
-                id="TanggalDibutuhkan"
-                type="date"
-                value={form.data.TanggalDibutuhkan}
-                onChange={(event) => form.setData('TanggalDibutuhkan', event.target.value)}
-              />
-              {form.errors.TanggalDibutuhkan && (
-                <p className="text-sm text-destructive">{form.errors.TanggalDibutuhkan}</p>
-              )}
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Pos Anggaran</Label>
-            <Select
-              value={form.data.PosAnggaranId}
-              onValueChange={(value) => form.setData('PosAnggaranId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih pos anggaran aktif" />
-              </SelectTrigger>
-              <SelectContent>
-                {posAnggaran.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Kode} — {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.PosAnggaranId && (
-              <p className="text-sm text-destructive">{form.errors.PosAnggaranId}</p>
-            )}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Rencana Pengadaan</Label>
-            <Select value={form.data.RencanaPengadaanId} onValueChange={pilihRencana}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tanpa rencana</SelectItem>
-                {rencana.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Nomor} — {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Unit Organisasi</Label>
+              <Label nama="PosAnggaranId">Pos Anggaran</Label>
               <Select
-                value={form.data.UnitOrganisasiId}
-                onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
+                value={form.data.PosAnggaranId}
+                onValueChange={(value) => form.setData('PosAnggaranId', value)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue placeholder="Pilih pos anggaran aktif" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa unit</SelectItem>
-                  {unitOrganisasi.map((item) => (
+                  {posAnggaran.map((item) => (
                     <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
+                      {item.Kode} — {item.Nama}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {form.errors.PosAnggaranId && (
+                <p className="text-sm text-destructive">{form.errors.PosAnggaranId}</p>
+              )}
             </div>
             <div className="space-y-1.5">
-              <Label>Prioritas</Label>
-              <Select value={form.data.Prioritas} onValueChange={(value) => form.setData('Prioritas', value)}>
+              <Label nama="RencanaPengadaanId">Rencana Pengadaan</Label>
+              <Select value={form.data.RencanaPengadaanId} onValueChange={pilihRencana}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PRIORITAS.map((item) => (
-                    <SelectItem key={item} value={item}>
-                      {item}
+                  <SelectItem value={TANPA_PILIHAN}>Tanpa rencana</SelectItem>
+                  {rencana.map((item) => (
+                    <SelectItem key={item.Id} value={item.Id}>
+                      {item.Nomor} — {item.Nama}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="Alasan">Alasan</Label>
-            <Input
-              id="Alasan"
-              value={form.data.Alasan}
-              onChange={(event) => form.setData('Alasan', event.target.value)}
-            />
-            {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Draft
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="UnitOrganisasiId">Unit Organisasi</Label>
+                <Select
+                  value={form.data.UnitOrganisasiId}
+                  onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Tanpa unit</SelectItem>
+                    {unitOrganisasi.map((item) => (
+                      <SelectItem key={item.Id} value={item.Id}>
+                        {item.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="Prioritas">Prioritas</Label>
+                <Select
+                  value={form.data.Prioritas}
+                  onValueChange={(value) => form.setData('Prioritas', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIORITAS.map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Alasan" htmlFor="Alasan">
+                Alasan
+              </Label>
+              <Input
+                id="Alasan"
+                value={form.data.Alasan}
+                onChange={(event) => form.setData('Alasan', event.target.value)}
+              />
+              {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Draft
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -238,6 +253,7 @@ export default function PermintaanPembelianIndex({
   rencana,
   posAnggaran,
   filter,
+  wajib,
 }: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
   const [status, setStatus] = useState<string>(filter.status ?? SEMUA);
@@ -264,6 +280,7 @@ export default function PermintaanPembelianIndex({
                 unitOrganisasi={unitOrganisasi}
                 rencana={rencana}
                 posAnggaran={posAnggaran}
+                wajib={wajib.permintaan}
               />
             </>
           }

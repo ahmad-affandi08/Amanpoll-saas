@@ -23,6 +23,7 @@ import { DialogBuatStandar } from '@/features/Kepatuhan/components/DialogBuatSta
 import { DialogTugaskan } from '@/features/Kepatuhan/components/DialogTugaskan';
 import { DialogPemeriksaan } from '@/features/Kepatuhan/components/DialogPemeriksaan';
 import type { AsetRingkas } from '@/features/Kepatuhan/types';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   kewajiban: Paginasi<KepatuhanAset>;
@@ -30,6 +31,8 @@ interface Props {
   aset: AsetRingkas[];
   ringkasan: RingkasanKepatuhan;
   filter: { cari?: string; status?: StatusKepatuhan };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
@@ -41,7 +44,7 @@ const VARIAN_STATUS = {
   Kedaluwarsa: 'perhatian',
 } as const;
 
-export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, filter }: Props) {
+export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const [cari, setCari] = useState(filter.cari ?? '');
   const [status, setStatus] = useState<string>(filter.status ?? SEMUA);
@@ -74,8 +77,8 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           aksi={
             <>
               <div className="flex flex-wrap gap-2">
-                <DialogTugaskan standar={standar} aset={aset} />
-                <DialogBuatStandar />
+                <DialogTugaskan standar={standar} aset={aset} wajib={wajib.tugaskan} />
+                <DialogBuatStandar wajib={wajib.standar} />
               </div>
             </>
           }
@@ -208,7 +211,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
-                          <DialogPemeriksaan kewajiban={item} />
+                          <DialogPemeriksaan kewajiban={item} wajib={wajib.pemeriksaan} />
                           <Button
                             size="icon"
                             variant="ghost"
@@ -241,7 +244,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
                     <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
                   </div>
                   <div className="flex gap-2">
-                    <DialogPemeriksaan kewajiban={item} />
+                    <DialogPemeriksaan kewajiban={item} wajib={wajib.pemeriksaan} />
                     <Button
                       size="icon"
                       variant="ghost"

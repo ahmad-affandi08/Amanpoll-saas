@@ -19,6 +19,7 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggara
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TransaksiAnggaran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -51,6 +52,7 @@ final class AnggaranController extends Controller
             ->withQueryString();
 
         return Inertia::render('Anggaran/Index', [
+            'wajib' => ['anggaran' => AturanWajib::untuk(SimpanAnggaranRequest::class)],
             'anggaran' => AnggaranResource::collection($anggaran),
             'filter' => $filter,
             'unitOrganisasi' => UnitOrganisasi::query()
@@ -77,6 +79,7 @@ final class AnggaranController extends Controller
             ->get();
 
         return Inertia::render('Anggaran/Show', [
+            'wajib' => ['anggaran' => AturanWajib::untuk(SimpanAnggaranRequest::class), 'pos' => AturanWajib::untuk(SimpanPosAnggaranRequest::class), 'transaksi' => AturanWajib::untuk(SimpanTransaksiAnggaranRequest::class)],
             'anggaran' => new AnggaranResource($anggaran),
             'transaksi' => TransaksiAnggaranResource::collection($transaksi),
             'dapatMenyesuaikan' => Gate::allows('adjust', $anggaran),

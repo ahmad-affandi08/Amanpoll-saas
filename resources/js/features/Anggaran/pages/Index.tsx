@@ -25,6 +25,7 @@ import { ruteAnggaran } from '@/features/Anggaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Ringkas {
   Id: string;
@@ -35,6 +36,8 @@ interface Props {
   anggaran: Paginasi<Anggaran>;
   unitOrganisasi: Ringkas[];
   filter: { cari?: string; tahun?: number; status?: StatusAnggaran };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
@@ -46,7 +49,7 @@ const VARIAN_STATUS = {
   Ditutup: 'netral',
 } as const;
 
-function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
+function DialogBuatAnggaran({ unitOrganisasi, wajib }: { unitOrganisasi: Ringkas[]; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     UnitOrganisasiId: TANPA_PILIHAN,
@@ -80,89 +83,99 @@ function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
             Siapkan periode dan pagu. Pos anggaran ditambahkan setelah draft dibuat.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-1.5">
-              <Label htmlFor="tahun-anggaran">Periode Tahun</Label>
-              <Input
-                id="tahun-anggaran"
-                type="number"
-                min={2000}
-                max={2100}
-                value={form.data.Tahun}
-                onChange={(event) => form.setData('Tahun', event.target.value)}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
               />
-              {form.errors.Tahun && <p className="text-sm text-destructive">{form.errors.Tahun}</p>}
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="nama-anggaran">Nama</Label>
-            <Input
-              id="nama-anggaran"
-              value={form.data.Nama}
-              onChange={(event) => form.setData('Nama', event.target.value)}
-            />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Scope Unit</Label>
-            <Select
-              value={form.data.UnitOrganisasiId}
-              onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Seluruh organisasi</SelectItem>
-                {unitOrganisasi.map((unit) => (
-                  <SelectItem key={unit.Id} value={unit.Id}>
-                    {unit.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="jumlah-anggaran">Total Anggaran</Label>
-              <Input
-                id="jumlah-anggaran"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
-              />
-              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              <div className="space-y-1.5">
+                <Label nama="Tahun" htmlFor="tahun-anggaran">
+                  Periode Tahun
+                </Label>
+                <Input
+                  id="tahun-anggaran"
+                  type="number"
+                  min={2000}
+                  max={2100}
+                  value={form.data.Tahun}
+                  onChange={(event) => form.setData('Tahun', event.target.value)}
+                />
+                {form.errors.Tahun && <p className="text-sm text-destructive">{form.errors.Tahun}</p>}
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="mata-uang">Mata Uang</Label>
+              <Label nama="Nama" htmlFor="nama-anggaran">
+                Nama
+              </Label>
               <Input
-                id="mata-uang"
-                maxLength={3}
-                value={form.data.MataUang}
-                onChange={(event) => form.setData('MataUang', event.target.value.toUpperCase())}
+                id="nama-anggaran"
+                value={form.data.Nama}
+                onChange={(event) => form.setData('Nama', event.target.value)}
               />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Buat Draft
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-1.5">
+              <Label nama="UnitOrganisasiId">Scope Unit</Label>
+              <Select
+                value={form.data.UnitOrganisasiId}
+                onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Seluruh organisasi</SelectItem>
+                  {unitOrganisasi.map((unit) => (
+                    <SelectItem key={unit.Id} value={unit.Id}>
+                      {unit.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label nama="Jumlah" htmlFor="jumlah-anggaran">
+                  Total Anggaran
+                </Label>
+                <Input
+                  id="jumlah-anggaran"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={form.data.Jumlah}
+                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                />
+                {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="MataUang" htmlFor="mata-uang">
+                  Mata Uang
+                </Label>
+                <Input
+                  id="mata-uang"
+                  maxLength={3}
+                  value={form.data.MataUang}
+                  onChange={(event) => form.setData('MataUang', event.target.value.toUpperCase())}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Buat Draft
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Props) {
+export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib }: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
   const [status, setStatus] = useState(filter.status ?? SEMUA);
 
@@ -184,7 +197,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
           deskripsi="Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi."
           aksi={
             <>
-              <DialogBuatAnggaran unitOrganisasi={unitOrganisasi} />
+              <DialogBuatAnggaran unitOrganisasi={unitOrganisasi} wajib={wajib.anggaran} />
             </>
           }
         />

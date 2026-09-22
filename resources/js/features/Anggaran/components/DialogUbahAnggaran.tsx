@@ -16,8 +16,9 @@ import { Label } from '@/components/ui/label';
 import type { Anggaran } from '@/features/Anggaran/types';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogUbahAnggaran({ anggaran }: { anggaran: Anggaran }) {
+export function DialogUbahAnggaran({ anggaran, wajib }: { anggaran: Anggaran; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: anggaran.Kode,
@@ -45,51 +46,53 @@ export function DialogUbahAnggaran({ anggaran }: { anggaran: Anggaran }) {
           <DialogTitle>Ubah Anggaran</DialogTitle>
           <DialogDescription>Total tidak dapat diturunkan melewati alokasi pos utama.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-1.5">
-              <Label>Tahun</Label>
-              <Input
-                type="number"
-                value={form.data.Tahun}
-                onChange={(event) => form.setData('Tahun', event.target.value)}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
               />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(event) => form.setData('Nama', event.target.value)} />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label>Total</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
-              />
+              <div className="space-y-1.5">
+                <Label nama="Tahun">Tahun</Label>
+                <Input
+                  type="number"
+                  value={form.data.Tahun}
+                  onChange={(event) => form.setData('Tahun', event.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Mata Uang</Label>
-              <Input
-                maxLength={3}
-                value={form.data.MataUang}
-                onChange={(event) => form.setData('MataUang', event.target.value.toUpperCase())}
-              />
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(event) => form.setData('Nama', event.target.value)} />
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Perubahan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label nama="Jumlah">Total</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={form.data.Jumlah}
+                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="MataUang">Mata Uang</Label>
+                <Input
+                  maxLength={3}
+                  value={form.data.MataUang}
+                  onChange={(event) => form.setData('MataUang', event.target.value.toUpperCase())}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Perubahan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

@@ -13,6 +13,7 @@ use App\Domain\PerencanaanPengadaan\Http\Resources\TagihanPenyediaResource;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -60,6 +61,7 @@ final class TagihanPenyediaController extends Controller
         $tagihanPenyedia->load(['penyedia', 'pesananPembelian', 'pembayaran.dibuatOleh']);
 
         return Inertia::render('TagihanPenyedia/Show', [
+            'wajib' => ['pembayaran' => AturanWajib::untuk(SimpanPembayaranPenyediaRequest::class)],
             'tagihan' => new TagihanPenyediaResource($tagihanPenyedia),
         ]);
     }

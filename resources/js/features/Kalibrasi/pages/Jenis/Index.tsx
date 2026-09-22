@@ -13,12 +13,15 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DialogFormJenis } from '@/features/Kalibrasi/components/DialogFormJenis';
 import { DialogTitikUkur } from '@/features/Kalibrasi/components/DialogTitikUkur';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   jenisKalibrasi: JenisKalibrasi[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function KalibrasiJenisIndex({ jenisKalibrasi }: Props) {
+export default function KalibrasiJenisIndex({ jenisKalibrasi, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const [pencarian, setPencarian] = useState('');
 
@@ -50,7 +53,7 @@ export default function KalibrasiJenisIndex({ jenisKalibrasi }: Props) {
         <KepalaHalaman
           judul="Jenis Kalibrasi"
           deskripsi="Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji."
-          aksi={<DialogFormJenis jenis={null} />}
+          aksi={<DialogFormJenis jenis={null} wajib={wajib.jenis} />}
         />
 
         {/* List Card */}
@@ -102,7 +105,7 @@ export default function KalibrasiJenisIndex({ jenisKalibrasi }: Props) {
                           )}
                         </td>
                         <td className="px-3 py-3 text-center whitespace-nowrap">
-                          <DialogTitikUkur jenis={jk} />
+                          <DialogTitikUkur jenis={jk} wajib={wajib.titikUkur} />
                         </td>
                         <td className="px-3 py-3 text-center whitespace-nowrap">
                           {jk.Aktif ? (
@@ -120,7 +123,7 @@ export default function KalibrasiJenisIndex({ jenisKalibrasi }: Props) {
                         </td>
                         <td className="px-4 py-3 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-1">
-                            <DialogFormJenis jenis={jk} />
+                            <DialogFormJenis jenis={jk} wajib={wajib.jenis} />
                             <Button
                               variant="ghost"
                               size="icon"

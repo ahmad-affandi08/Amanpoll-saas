@@ -14,8 +14,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Kontrak, LayananKontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogPemakaian({ kontrak, layanan }: { kontrak: Kontrak; layanan: LayananKontrak }) {
+export function DialogPemakaian({
+  kontrak,
+  layanan,
+  wajib,
+}: {
+  kontrak: Kontrak;
+  layanan: LayananKontrak;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Jumlah: '1' });
 
@@ -45,25 +54,29 @@ export function DialogPemakaian({ kontrak, layanan }: { kontrak: Kontrak; layana
             {layanan.Kuota ? ` dari kuota ${layanan.Kuota}` : ''} {layanan.Satuan ?? ''}.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="JumlahPemakaian">Jumlah</Label>
-            <Input
-              id="JumlahPemakaian"
-              type="number"
-              min="0.0001"
-              step="0.0001"
-              value={form.data.Jumlah}
-              onChange={(event) => form.setData('Jumlah', event.target.value)}
-            />
-            {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Catat
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="JumlahPemakaian" htmlFor="JumlahPemakaian">
+                Jumlah
+              </Label>
+              <Input
+                id="JumlahPemakaian"
+                type="number"
+                min="0.0001"
+                step="0.0001"
+                value={form.data.Jumlah}
+                onChange={(event) => form.setData('Jumlah', event.target.value)}
+              />
+              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Catat
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

@@ -55,6 +55,7 @@ final class KepatuhanController extends Controller
             ->withQueryString();
 
         return Inertia::render('Kepatuhan/Index', [
+            'wajib' => ['standar' => AturanWajib::untuk(SimpanStandarKepatuhanRequest::class), 'tugaskan' => AturanWajib::untuk(TugaskanStandarRequest::class), 'pemeriksaan' => AturanWajib::untuk(SimpanKepatuhanAsetRequest::class)],
             'kewajiban' => KepatuhanAsetResource::collection($kewajiban),
             'standar' => StandarKepatuhanResource::collection(
                 StandarKepatuhan::query()->withCount('persyaratan')->orderBy('Kode')->get()
@@ -81,6 +82,7 @@ final class KepatuhanController extends Controller
         $standarKepatuhan->load(['persyaratan' => fn ($query) => $query->withCount('kepatuhanAset')->orderBy('Kode')]);
 
         return Inertia::render('Kepatuhan/Standar', [
+            'wajib' => ['persyaratan' => AturanWajib::untuk(SimpanPersyaratanKepatuhanRequest::class)],
             'standar' => new StandarKepatuhanResource($standarKepatuhan),
         ]);
     }

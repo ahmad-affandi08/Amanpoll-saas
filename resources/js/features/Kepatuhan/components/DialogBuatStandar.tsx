@@ -17,8 +17,9 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogBuatStandar() {
+export function DialogBuatStandar({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: '',
@@ -57,73 +58,85 @@ export function DialogBuatStandar() {
             organisasi Anda beserta versinya.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-1.5">
-              <Label htmlFor="NamaStandar">Nama</Label>
-              <Input
-                id="NamaStandar"
-                value={form.data.Nama}
-                onChange={(event) => form.setData('Nama', event.target.value)}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
               />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              <div className="space-y-1.5">
+                <Label nama="NamaStandar" htmlFor="NamaStandar">
+                  Nama
+                </Label>
+                <Input
+                  id="NamaStandar"
+                  value={form.data.Nama}
+                  onChange={(event) => form.setData('Nama', event.target.value)}
+                />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label nama="Penerbit" htmlFor="Penerbit">
+                  Penerbit
+                </Label>
+                <Input
+                  id="Penerbit"
+                  value={form.data.Penerbit}
+                  onChange={(event) => form.setData('Penerbit', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="VersiStandar" htmlFor="VersiStandar">
+                  Versi
+                </Label>
+                <Input
+                  id="VersiStandar"
+                  value={form.data.VersiStandar}
+                  onChange={(event) => form.setData('VersiStandar', event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="JenisIndustri" htmlFor="JenisIndustri">
+                  Lingkup / Industri
+                </Label>
+                <Input
+                  id="JenisIndustri"
+                  value={form.data.JenisIndustri}
+                  onChange={(event) => form.setData('JenisIndustri', event.target.value)}
+                />
+              </div>
+            </div>
             <div className="space-y-1.5">
-              <Label htmlFor="Penerbit">Penerbit</Label>
-              <Input
-                id="Penerbit"
-                value={form.data.Penerbit}
-                onChange={(event) => form.setData('Penerbit', event.target.value)}
+              <Label nama="DeskripsiStandar" htmlFor="DeskripsiStandar">
+                Deskripsi
+              </Label>
+              <Textarea
+                id="DeskripsiStandar"
+                rows={2}
+                value={form.data.Deskripsi}
+                onChange={(event) => form.setData('Deskripsi', event.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="VersiStandar">Versi</Label>
-              <Input
-                id="VersiStandar"
-                value={form.data.VersiStandar}
-                onChange={(event) => form.setData('VersiStandar', event.target.value)}
-              />
+            <div className="flex items-center justify-between rounded-[9px] border border-border p-3">
+              <div>
+                <p className="text-sm font-medium">Standar aktif</p>
+                <p className="text-xs text-muted-foreground">
+                  Standar nonaktif tidak dapat ditugaskan ke aset baru.
+                </p>
+              </div>
+              <Switch checked={form.data.Aktif} onCheckedChange={(nilai) => form.setData('Aktif', nilai)} />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="JenisIndustri">Lingkup / Industri</Label>
-              <Input
-                id="JenisIndustri"
-                value={form.data.JenisIndustri}
-                onChange={(event) => form.setData('JenisIndustri', event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="DeskripsiStandar">Deskripsi</Label>
-            <Textarea
-              id="DeskripsiStandar"
-              rows={2}
-              value={form.data.Deskripsi}
-              onChange={(event) => form.setData('Deskripsi', event.target.value)}
-            />
-          </div>
-          <div className="flex items-center justify-between rounded-[9px] border border-border p-3">
-            <div>
-              <p className="text-sm font-medium">Standar aktif</p>
-              <p className="text-xs text-muted-foreground">
-                Standar nonaktif tidak dapat ditugaskan ke aset baru.
-              </p>
-            </div>
-            <Switch checked={form.data.Aktif} onCheckedChange={(nilai) => form.setData('Aktif', nilai)} />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Standar
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Standar
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

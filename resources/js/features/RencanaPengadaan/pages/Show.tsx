@@ -93,11 +93,11 @@ function DialogUbahRencana({ rencana, posAnggaran }: Pick<Props, 'rencana' | 'po
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label>Nama</Label>
+            <Label nama="Nama">Nama</Label>
             <Input value={form.data.Nama} onChange={(event) => form.setData('Nama', event.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label>Tahun</Label>
+            <Label nama="Tahun">Tahun</Label>
             <Input
               type="number"
               value={form.data.Tahun}
@@ -105,7 +105,7 @@ function DialogUbahRencana({ rencana, posAnggaran }: Pick<Props, 'rencana' | 'po
             />
           </div>
           <div className="space-y-1.5">
-            <Label>Pos Anggaran</Label>
+            <Label nama="PosAnggaranId">Pos Anggaran</Label>
             <Select
               value={form.data.PosAnggaranId}
               onValueChange={(value) => form.setData('PosAnggaranId', value)}
@@ -186,7 +186,7 @@ function DialogTambahDetail({
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label>Sumber Usulan</Label>
+            <Label nama="UsulanAsetId">Sumber Usulan</Label>
             <Select
               value={form.data.UsulanAsetId}
               onValueChange={(value) => form.setData('UsulanAsetId', value)}
@@ -205,7 +205,7 @@ function DialogTambahDetail({
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label>Suku Cadang (opsional)</Label>
+            <Label nama="SukuCadangId">Suku Cadang (opsional)</Label>
             <Select
               value={form.data.SukuCadangId}
               onValueChange={(value) => form.setData('SukuCadangId', value)}
@@ -226,7 +226,7 @@ function DialogTambahDetail({
           {manual && (
             <>
               <div className="space-y-1.5">
-                <Label>Deskripsi</Label>
+                <Label nama="Deskripsi">Deskripsi</Label>
                 <Input
                   value={form.data.Deskripsi}
                   onChange={(event) => form.setData('Deskripsi', event.target.value)}
@@ -235,7 +235,7 @@ function DialogTambahDetail({
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label>Jumlah</Label>
+                  <Label nama="Jumlah">Jumlah</Label>
                   <Input
                     type="number"
                     min="0.0001"
@@ -245,7 +245,7 @@ function DialogTambahDetail({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Satuan</Label>
+                  <Label nama="Satuan">Satuan</Label>
                   <Input
                     value={form.data.Satuan}
                     onChange={(event) => form.setData('Satuan', event.target.value)}
@@ -256,7 +256,7 @@ function DialogTambahDetail({
           )}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Harga Estimasi</Label>
+              <Label nama="HargaEstimasi">Harga Estimasi</Label>
               <Input
                 type="number"
                 min="0"
@@ -267,7 +267,7 @@ function DialogTambahDetail({
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Bulan Rencana</Label>
+              <Label nama="BulanRencana">Bulan Rencana</Label>
               <Select
                 value={form.data.BulanRencana}
                 onValueChange={(value) => form.setData('BulanRencana', value)}

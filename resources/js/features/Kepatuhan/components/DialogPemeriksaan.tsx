@@ -16,8 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { KepatuhanAset } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogPemeriksaan({ kewajiban }: { kewajiban: KepatuhanAset }) {
+export function DialogPemeriksaan({ kewajiban, wajib }: { kewajiban: KepatuhanAset; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Status: 'Patuh',
@@ -55,60 +56,68 @@ export function DialogPemeriksaan({ kewajiban }: { kewajiban: KepatuhanAset }) {
               : 'Masa berlaku dihitung otomatis dari interval persyaratan bila dikosongkan.'}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Hasil</Label>
-            <Select value={form.data.Status} onValueChange={(value) => form.setData('Status', value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Patuh">Patuh</SelectItem>
-                <SelectItem value="TidakPatuh">Tidak patuh</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="TanggalPemeriksaan">Tanggal periksa</Label>
-              <Input
-                id="TanggalPemeriksaan"
-                type="date"
-                value={form.data.TanggalPemeriksaan}
-                onChange={(event) => form.setData('TanggalPemeriksaan', event.target.value)}
-              />
-              {form.errors.TanggalPemeriksaan && (
-                <p className="text-sm text-destructive">{form.errors.TanggalPemeriksaan}</p>
-              )}
+              <Label nama="Status">Hasil</Label>
+              <Select value={form.data.Status} onValueChange={(value) => form.setData('Status', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Patuh">Patuh</SelectItem>
+                  <SelectItem value="TidakPatuh">Tidak patuh</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="TanggalPemeriksaan" htmlFor="TanggalPemeriksaan">
+                  Tanggal periksa
+                </Label>
+                <Input
+                  id="TanggalPemeriksaan"
+                  type="date"
+                  value={form.data.TanggalPemeriksaan}
+                  onChange={(event) => form.setData('TanggalPemeriksaan', event.target.value)}
+                />
+                {form.errors.TanggalPemeriksaan && (
+                  <p className="text-sm text-destructive">{form.errors.TanggalPemeriksaan}</p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="BerlakuSampai" htmlFor="BerlakuSampai">
+                  Berlaku sampai
+                </Label>
+                <Input
+                  id="BerlakuSampai"
+                  type="date"
+                  value={form.data.BerlakuSampai}
+                  onChange={(event) => form.setData('BerlakuSampai', event.target.value)}
+                />
+                {form.errors.BerlakuSampai && (
+                  <p className="text-sm text-destructive">{form.errors.BerlakuSampai}</p>
+                )}
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="BerlakuSampai">Berlaku sampai</Label>
-              <Input
-                id="BerlakuSampai"
-                type="date"
-                value={form.data.BerlakuSampai}
-                onChange={(event) => form.setData('BerlakuSampai', event.target.value)}
+              <Label nama="CatatanPemeriksaan" htmlFor="CatatanPemeriksaan">
+                Catatan
+              </Label>
+              <Textarea
+                id="CatatanPemeriksaan"
+                rows={2}
+                value={form.data.Catatan}
+                onChange={(event) => form.setData('Catatan', event.target.value)}
               />
-              {form.errors.BerlakuSampai && (
-                <p className="text-sm text-destructive">{form.errors.BerlakuSampai}</p>
-              )}
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="CatatanPemeriksaan">Catatan</Label>
-            <Textarea
-              id="CatatanPemeriksaan"
-              rows={2}
-              value={form.data.Catatan}
-              onChange={(event) => form.setData('Catatan', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Hasil
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Hasil
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

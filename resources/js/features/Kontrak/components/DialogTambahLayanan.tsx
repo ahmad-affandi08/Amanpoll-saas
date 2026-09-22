@@ -16,8 +16,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Kontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
-export function DialogTambahLayanan({ kontrak }: { kontrak: Kontrak }) {
+export function DialogTambahLayanan({ kontrak, wajib }: { kontrak: Kontrak; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Nama: '', Deskripsi: '', Kuota: '', Satuan: '' });
 
@@ -52,54 +53,64 @@ export function DialogTambahLayanan({ kontrak }: { kontrak: Kontrak }) {
             Isi kuota bila layanan dibatasi; pemakaian yang melampaui kuota akan ditolak server.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="NamaLayanan">Nama Layanan</Label>
-            <Input
-              id="NamaLayanan"
-              value={form.data.Nama}
-              onChange={(event) => form.setData('Nama', event.target.value)}
-            />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="Kuota">Kuota</Label>
+              <Label nama="NamaLayanan" htmlFor="NamaLayanan">
+                Nama Layanan
+              </Label>
               <Input
-                id="Kuota"
-                type="number"
-                min="0"
-                step="0.0001"
-                value={form.data.Kuota}
-                onChange={(event) => form.setData('Kuota', event.target.value)}
+                id="NamaLayanan"
+                value={form.data.Nama}
+                onChange={(event) => form.setData('Nama', event.target.value)}
               />
-              {form.errors.Kuota && <p className="text-sm text-destructive">{form.errors.Kuota}</p>}
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="Kuota" htmlFor="Kuota">
+                  Kuota
+                </Label>
+                <Input
+                  id="Kuota"
+                  type="number"
+                  min="0"
+                  step="0.0001"
+                  value={form.data.Kuota}
+                  onChange={(event) => form.setData('Kuota', event.target.value)}
+                />
+                {form.errors.Kuota && <p className="text-sm text-destructive">{form.errors.Kuota}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="Satuan" htmlFor="Satuan">
+                  Satuan
+                </Label>
+                <Input
+                  id="Satuan"
+                  placeholder="mis. kunjungan"
+                  value={form.data.Satuan}
+                  onChange={(event) => form.setData('Satuan', event.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="Satuan">Satuan</Label>
-              <Input
-                id="Satuan"
-                placeholder="mis. kunjungan"
-                value={form.data.Satuan}
-                onChange={(event) => form.setData('Satuan', event.target.value)}
+              <Label nama="DeskripsiLayanan" htmlFor="DeskripsiLayanan">
+                Deskripsi
+              </Label>
+              <Textarea
+                id="DeskripsiLayanan"
+                rows={2}
+                value={form.data.Deskripsi}
+                onChange={(event) => form.setData('Deskripsi', event.target.value)}
               />
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="DeskripsiLayanan">Deskripsi</Label>
-            <Textarea
-              id="DeskripsiLayanan"
-              rows={2}
-              value={form.data.Deskripsi}
-              onChange={(event) => form.setData('Deskripsi', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Tambahkan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Tambahkan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

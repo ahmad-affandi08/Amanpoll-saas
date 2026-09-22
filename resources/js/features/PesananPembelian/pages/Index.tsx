@@ -25,11 +25,14 @@ import type { PesananPembelian, StatusPesananPembelian } from '@/features/Pesana
 import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   pesanan: Paginasi<PesananPembelian>;
   penawaranTerpilih: PenawaranPenyedia[];
   filter: { cari?: string; status?: StatusPesananPembelian };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
@@ -52,7 +55,7 @@ const VARIAN_STATUS = {
   DiterimaPenuh: 'sukses',
 } as const;
 
-function DialogBuatPesanan({ penawaran }: { penawaran: PenawaranPenyedia }) {
+function DialogBuatPesanan({ penawaran, wajib }: { penawaran: PenawaranPenyedia; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     TanggalPesanan: new Date().toISOString().slice(0, 10),
@@ -85,53 +88,61 @@ function DialogBuatPesanan({ penawaran }: { penawaran: PenawaranPenyedia }) {
             {formatUang(penawaran.Total)}.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="TanggalPesanan">Tanggal Pesanan</Label>
-              <Input
-                id="TanggalPesanan"
-                type="date"
-                value={form.data.TanggalPesanan}
-                onChange={(event) => form.setData('TanggalPesanan', event.target.value)}
-              />
-              {form.errors.TanggalPesanan && (
-                <p className="text-sm text-destructive">{form.errors.TanggalPesanan}</p>
-              )}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="TanggalPesanan" htmlFor="TanggalPesanan">
+                  Tanggal Pesanan
+                </Label>
+                <Input
+                  id="TanggalPesanan"
+                  type="date"
+                  value={form.data.TanggalPesanan}
+                  onChange={(event) => form.setData('TanggalPesanan', event.target.value)}
+                />
+                {form.errors.TanggalPesanan && (
+                  <p className="text-sm text-destructive">{form.errors.TanggalPesanan}</p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="TanggalKirimRencana" htmlFor="TanggalKirimRencana">
+                  Rencana Kirim
+                </Label>
+                <Input
+                  id="TanggalKirimRencana"
+                  type="date"
+                  value={form.data.TanggalKirimRencana}
+                  onChange={(event) => form.setData('TanggalKirimRencana', event.target.value)}
+                />
+                {form.errors.TanggalKirimRencana && (
+                  <p className="text-sm text-destructive">{form.errors.TanggalKirimRencana}</p>
+                )}
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="TanggalKirimRencana">Rencana Kirim</Label>
+              <Label nama="Catatan" htmlFor="Catatan">
+                Catatan
+              </Label>
               <Input
-                id="TanggalKirimRencana"
-                type="date"
-                value={form.data.TanggalKirimRencana}
-                onChange={(event) => form.setData('TanggalKirimRencana', event.target.value)}
+                id="Catatan"
+                value={form.data.Catatan}
+                onChange={(event) => form.setData('Catatan', event.target.value)}
               />
-              {form.errors.TanggalKirimRencana && (
-                <p className="text-sm text-destructive">{form.errors.TanggalKirimRencana}</p>
-              )}
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="Catatan">Catatan</Label>
-            <Input
-              id="Catatan"
-              value={form.data.Catatan}
-              onChange={(event) => form.setData('Catatan', event.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Buat Pesanan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Buat Pesanan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filter }: Props) {
+export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filter, wajib }: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
   const [status, setStatus] = useState<string>(filter.status ?? SEMUA);
 
@@ -170,7 +181,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
                       {item.NomorPenawaran ?? 'Tanpa nomor'} · {formatUang(item.Total)}
                     </p>
                   </div>
-                  <DialogBuatPesanan penawaran={item} />
+                  <DialogBuatPesanan penawaran={item} wajib={wajib.pesanan} />
                 </div>
               ))}
             </CardContent>

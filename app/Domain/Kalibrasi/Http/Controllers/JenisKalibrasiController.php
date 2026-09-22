@@ -10,6 +10,7 @@ use App\Domain\Kalibrasi\Http\Requests\SimpanTitikUkurKalibrasiRequest;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\TitikUkurKalibrasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,6 +33,7 @@ final class JenisKalibrasiController extends Controller
             ->get();
 
         return Inertia::render('Kalibrasi/Jenis/Index', [
+            'wajib' => ['jenis' => AturanWajib::untuk(SimpanJenisKalibrasiRequest::class), 'titikUkur' => AturanWajib::untuk(SimpanTitikUkurKalibrasiRequest::class)],
             'jenisKalibrasi' => $daftarJenis,
         ]);
     }

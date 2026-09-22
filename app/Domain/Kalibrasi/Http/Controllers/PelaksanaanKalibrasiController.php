@@ -16,6 +16,7 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -73,6 +74,7 @@ final class PelaksanaanKalibrasiController extends Controller
             ->get(['Id', 'Nama']);
 
         return Inertia::render('Kalibrasi/Pelaksanaan/Index', [
+            'wajib' => ['pelaksanaan' => AturanWajib::untuk(SimpanPelaksanaanKalibrasiRequest::class)],
             'pelaksanaanKalibrasi' => $daftarPelaksanaan,
             'aset' => $asetList,
             'jenisKalibrasi' => $jenisList,
@@ -128,6 +130,7 @@ final class PelaksanaanKalibrasiController extends Controller
             ->get(['Id', 'Kode', 'Nama']);
 
         return Inertia::render('Kalibrasi/Pelaksanaan/Show', [
+            'wajib' => ['pelaksanaan' => AturanWajib::untuk(SimpanPelaksanaanKalibrasiRequest::class), 'hasil' => AturanWajib::untuk(SimpanHasilTitikUkurKalibrasiRequest::class)],
             'pelaksanaan' => $pelaksanaanKalibrasi,
             'teknisi' => $teknisiList,
             'penyedia' => $penyediaList,

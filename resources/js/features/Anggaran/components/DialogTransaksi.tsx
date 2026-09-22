@@ -17,13 +17,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { JenisTransaksiAnggaran, PosAnggaran } from '@/features/Anggaran/types';
 import { ruteAnggaran } from '@/features/Anggaran/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 export function DialogTransaksi({
   pos,
   dapatMenyesuaikan,
+  wajib,
 }: {
   pos: PosAnggaran;
   dapatMenyesuaikan: boolean;
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -73,86 +76,92 @@ export function DialogTransaksi({
             yang tersedia.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Jenis</Label>
-            <Select
-              value={form.data.Jenis}
-              onValueChange={(value) => form.setData('Jenis', value as JenisTransaksiAnggaran)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {jenis.map((item) => (
-                  <SelectItem key={item} value={item}>
-                    {item === 'PelepasanKomitmen'
-                      ? 'Pelepasan Komitmen'
-                      : item === 'Penyesuaian'
-                        ? 'Penyesuaian (izin khusus)'
-                        : item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor={`jumlah-${pos.Id}`}>Jumlah</Label>
-              <Input
-                id={`jumlah-${pos.Id}`}
-                type="number"
-                step="0.01"
-                value={form.data.Jumlah}
-                onChange={(event) => form.setData('Jumlah', event.target.value)}
-              />
-              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              <Label nama="Jenis">Jenis</Label>
+              <Select
+                value={form.data.Jenis}
+                onValueChange={(value) => form.setData('Jenis', value as JenisTransaksiAnggaran)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {jenis.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item === 'PelepasanKomitmen'
+                        ? 'Pelepasan Komitmen'
+                        : item === 'Penyesuaian'
+                          ? 'Penyesuaian (izin khusus)'
+                          : item}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="Jumlah" htmlFor={`jumlah-${pos.Id}`}>
+                  Jumlah
+                </Label>
+                <Input
+                  id={`jumlah-${pos.Id}`}
+                  type="number"
+                  step="0.01"
+                  value={form.data.Jumlah}
+                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                />
+                {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="Tanggal" htmlFor={`tanggal-${pos.Id}`}>
+                  Tanggal
+                </Label>
+                <Input
+                  id={`tanggal-${pos.Id}`}
+                  type="date"
+                  value={form.data.Tanggal}
+                  onChange={(event) => form.setData('Tanggal', event.target.value)}
+                />
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="ReferensiJenis">Jenis Referensi</Label>
+                <Input
+                  value={form.data.ReferensiJenis}
+                  onChange={(event) => form.setData('ReferensiJenis', event.target.value)}
+                  placeholder="Contoh: RencanaPengadaan"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="ReferensiId">ID Referensi</Label>
+                <Input
+                  value={form.data.ReferensiId}
+                  onChange={(event) => form.setData('ReferensiId', event.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor={`tanggal-${pos.Id}`}>Tanggal</Label>
-              <Input
-                id={`tanggal-${pos.Id}`}
-                type="date"
-                value={form.data.Tanggal}
-                onChange={(event) => form.setData('Tanggal', event.target.value)}
+              <Label nama="Jenis" htmlFor={`keterangan-${pos.Id}`}>
+                Keterangan {form.data.Jenis === 'Penyesuaian' && '(wajib)'}
+              </Label>
+              <Textarea
+                id={`keterangan-${pos.Id}`}
+                rows={3}
+                value={form.data.Keterangan}
+                onChange={(event) => form.setData('Keterangan', event.target.value)}
               />
+              {form.errors.Keterangan && <p className="text-sm text-destructive">{form.errors.Keterangan}</p>}
             </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Jenis Referensi</Label>
-              <Input
-                value={form.data.ReferensiJenis}
-                onChange={(event) => form.setData('ReferensiJenis', event.target.value)}
-                placeholder="Contoh: RencanaPengadaan"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>ID Referensi</Label>
-              <Input
-                value={form.data.ReferensiId}
-                onChange={(event) => form.setData('ReferensiId', event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor={`keterangan-${pos.Id}`}>
-              Keterangan {form.data.Jenis === 'Penyesuaian' && '(wajib)'}
-            </Label>
-            <Textarea
-              id={`keterangan-${pos.Id}`}
-              rows={3}
-              value={form.data.Keterangan}
-              onChange={(event) => form.setData('Keterangan', event.target.value)}
-            />
-            {form.errors.Keterangan && <p className="text-sm text-destructive">{form.errors.Keterangan}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Catat Transaksi
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Catat Transaksi
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
