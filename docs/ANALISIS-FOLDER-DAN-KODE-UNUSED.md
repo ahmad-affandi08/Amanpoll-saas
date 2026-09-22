@@ -1,5 +1,23 @@
 # Laporan Audit: Analisis Folder dan Kode Unused (FASE 01 - FASE 10)
 
+> **Catatan status — dokumen ini rekaman masa lalu, bukan keadaan sekarang.**
+>
+> Angka di bawah menggambarkan kondisi saat audit FASE 01–10 dijalankan.
+> Sebagian besar temuannya sudah ditindaklanjuti. Keadaan yang terhitung
+> sekarang:
+>
+> | Temuan | Saat audit | Sekarang |
+> | --- | --- | --- |
+> | Berkas repository | 112 mati dari 124 | 24 berkas tersisa seluruhnya |
+> | Berkas DTO | 53 mati dari 68 | 2 berkas tersisa |
+> | Folder `app/Http/Controllers/Domain/` nyasar | ada | sudah tidak ada |
+> | Folder hanya berisi `.gitkeep` | 117 | **295** |
+>
+> Yang belum beres justru bertambah: folder scaffold kosong. Keberadaannya
+> bukan tanda polanya dipakai — Amanpoll memakai Action tunggal di atas
+> Eloquent, dan lapisan repository sengaja ditinggalkan. Lihat
+> `.ai/rules/app.md`.
+
 | Metadata | Nilai |
 | :--- | :--- |
 | **Project** | Amanpoll SaaS |

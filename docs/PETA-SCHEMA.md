@@ -1,137 +1,141 @@
 # Peta Schema Amanpoll
 
-Total tabel: **136**
+Total tabel: **215**, ditambah 4 view.
+
+Pengelompokan diturunkan dari domain pemilik modelnya (`protected $table` di tiap model),
+bukan disusun manual. Tabel yang tidak dimiliki domain mana pun ada di bagian Infrastruktur.
 
 ## Platform
 
-- `Organisasi`
-- `UnitOrganisasi`
-- `KategoriLokasi`
-- `Lokasi`
-- `Pengguna`
-- `Peran`
+- `AdminPlatform`
+- `HariLibur`
 - `Izin`
+- `KategoriLokasi`
+- `KonfigurasiOrganisasi`
+- `KunciApi`
+- `Lokasi`
+- `NomorDokumen`
+- `Organisasi`
+- `Pengguna`
 - `PenggunaPeran`
+- `Peran`
 - `PeranIzin`
 - `PerangkatPengguna`
-- `KunciApi`
-- `KonfigurasiOrganisasi`
-- `NomorDokumen`
-- `HariLibur`
+- `UnitOrganisasi`
 
 ## Kolaborasi
 
 - `Berkas`
-- `LampiranEntitas`
-- `Tag`
-- `EntitasTag`
 - `DefinisiKolomKustom`
-- `NilaiKolomKustom`
+- `EntitasTag`
 - `KomentarEntitas`
+- `LampiranEntitas`
+- `NilaiKolomKustom`
+- `Tag`
 
 ## Penyedia
 
 - `KategoriPenyedia`
-- `Penyedia`
-- `PenyediaKategori`
 - `KontakPenyedia`
 - `PenilaianPenyedia`
+- `Penyedia`
+- `PenyediaKategori`
 
 ## Aset
 
+- `Aset`
+- `GaransiAset`
 - `KategoriAset`
 - `Merek`
+- `MeterAset`
 - `ModelAset`
-- `Aset`
+- `NilaiAset`
+- `PembacaanMeterAset`
 - `RelasiAset`
 - `RiwayatLokasiAset`
 - `RiwayatPenanggungJawabAset`
-- `GaransiAset`
-- `NilaiAset`
-- `MeterAset`
-- `PembacaanMeterAset`
 
 ## SiklusAset
 
-- `PermintaanMutasiAset`
 - `DetailMutasiAset`
-- `SerahTerimaAset`
+- `DetailPenghapusanAset`
 - `DetailSerahTerimaAset`
 - `PengajuanPenghapusanAset`
-- `DetailPenghapusanAset`
+- `PermintaanMutasiAset`
+- `SerahTerimaAset`
 
 ## Pemeliharaan
 
-- `TingkatLayanan`
+- `AnalisisKegagalan`
 - `AturanTingkatLayanan`
+- `BiayaPerintahKerja`
 - `KategoriKeluhan`
 - `Keluhan`
-- `RiwayatStatusKeluhan`
+- `KodeKegagalan`
+- `PenugasanPerintahKerja`
 - `PerintahKerja`
 - `PerintahKerjaAset`
-- `PenugasanPerintahKerja`
+- `RiwayatStatusKeluhan`
 - `RiwayatStatusPerintahKerja`
-- `WaktuKerja`
+- `TingkatLayanan`
 - `WaktuHentiAset`
-- `BiayaPerintahKerja`
-- `KodeKegagalan`
-- `AnalisisKegagalan`
+- `WaktuKerja`
 
 ## PreventifInspeksi
 
-- `TemplatDaftarPeriksa`
 - `ButirTemplatDaftarPeriksa`
-- `PelaksanaanDaftarPeriksa`
+- `Inspeksi`
+- `JadwalPemeliharaan`
 - `JawabanDaftarPeriksa`
+- `PelaksanaanDaftarPeriksa`
 - `RencanaPemeliharaan`
 - `RencanaPemeliharaanAset`
-- `JadwalPemeliharaan`
+- `TemplatDaftarPeriksa`
 - `TemplatInspeksi`
-- `Inspeksi`
 
 ## Kalibrasi
 
-- `JenisKalibrasi`
-- `RencanaKalibrasi`
-- `PelaksanaanKalibrasi`
-- `TitikUkurKalibrasi`
 - `HasilTitikUkurKalibrasi`
+- `JenisKalibrasi`
+- `PelaksanaanKalibrasi`
+- `RencanaKalibrasi`
+- `TitikUkurKalibrasi`
 
 ## Persediaan
 
-- `Gudang`
-- `LokasiGudang`
-- `KategoriSukuCadang`
-- `SukuCadang`
-- `KompatibilitasSukuCadang`
-- `KelompokSukuCadang`
-- `StokSukuCadang`
-- `MutasiStok`
 - `DetailMutasiStok`
+- `Gudang`
+- `KategoriSukuCadang`
+- `KelompokSukuCadang`
+- `KompatibilitasSukuCadang`
+- `LokasiGudang`
+- `MutasiStok`
 - `PemakaianSukuCadang`
 - `ReservasiSukuCadang`
+- `StokSukuCadang`
+- `SukuCadang`
 
 ## PerencanaanPengadaan
 
 - `Anggaran`
+- `DetailPenawaranPenyedia`
+- `DetailPenerimaanPembelian`
+- `DetailPermintaanPembelian`
+- `DetailPesananPembelian`
+- `DetailRencanaPengadaan`
+- `PembayaranPenyedia`
+- `PenawaranPenyedia`
+- `PenerimaanPembelian`
+- `PenilaianUsulanAset`
+- `PenyediaPermintaanPenawaran`
+- `PermintaanPembelian`
+- `PermintaanPenawaran`
+- `PesananPembelian`
 - `PosAnggaran`
+- `RencanaPengadaan`
+- `TagihanPenyedia`
 - `TransaksiAnggaran`
 - `UsulanAset`
-- `PenilaianUsulanAset`
-- `RencanaPengadaan`
-- `DetailRencanaPengadaan`
-- `PermintaanPembelian`
-- `DetailPermintaanPembelian`
-- `PermintaanPenawaran`
-- `PenyediaPermintaanPenawaran`
-- `PenawaranPenyedia`
-- `DetailPenawaranPenyedia`
-- `PesananPembelian`
-- `DetailPesananPembelian`
-- `PenerimaanPembelian`
-- `DetailPenerimaanPembelian`
-- `TagihanPenyedia`
-- `PembayaranPenyedia`
 
 ## Kontrak
 
@@ -141,36 +145,36 @@ Total tabel: **136**
 
 ## Kepatuhan
 
-- `StandarKepatuhan`
-- `PersyaratanKepatuhan`
-- `KepatuhanAset`
-- `SertifikasiAset`
 - `IntegrasiEksternal`
+- `KepatuhanAset`
 - `PemetaanDataEksternal`
+- `PersyaratanKepatuhan`
+- `SertifikasiAset`
 - `SinkronisasiEksternal`
+- `StandarKepatuhan`
 
 ## Persetujuan
 
 - `AlurPersetujuan`
-- `TahapPersetujuan`
-- `PermintaanPersetujuan`
 - `KeputusanPersetujuan`
+- `PermintaanPersetujuan`
+- `TahapPersetujuan`
 
 ## Notifikasi
 
-- `TemplatNotifikasi`
-- `PreferensiNotifikasi`
-- `Notifikasi`
 - `EskalasiTingkatLayanan`
+- `Notifikasi`
+- `PreferensiNotifikasi`
+- `TemplatNotifikasi`
 
 ## IntegrasiAudit
 
-- `PanggilanBalikWeb`
-- `PengirimanPanggilanBalikWeb`
+- `CatatanAkses`
+- `CatatanAudit`
 - `KotakKeluarPeristiwa`
 - `KunciIdempotensi`
-- `CatatanAudit`
-- `CatatanAkses`
+- `PanggilanBalikWeb`
+- `PengirimanPanggilanBalikWeb`
 
 ## Sinkronisasi
 
@@ -179,22 +183,106 @@ Total tabel: **136**
 
 ## Pelaporan
 
-- `LaporanTersimpan`
 - `DasborTersimpan`
 - `KomponenDasbor`
+- `LaporanTersimpan`
 
 ## Langganan
 
 - `FiturPaket`
-- `PaketLangganan`
-- `PaketFitur`
 - `Langganan`
-- `TagihanLangganan`
+- `PaketFitur`
+- `PaketLangganan`
 - `PembayaranLangganan`
+- `TagihanLangganan`
+
+## Pemasaran
+
+- `AktivitasProspek`
+- `AlertPemasaran`
+- `AttributionPemasaran`
+- `AturanKomisiPartner`
+- `AturanSkorProspek`
+- `BlokHalamanPemasaran`
+- `ButirAktivasiTrial`
+- `ClusterSeo`
+- `DaftarSupresi`
+- `DemoPemasaran`
+- `DistribusiKontenSosial`
+- `EksekusiOtomasiPemasaran`
+- `EksperimenPemasaran`
+- `EventDemo`
+- `EventPemasaran`
+- `FieldFormulirPemasaran`
+- `FiturPlatform`
+- `FormulirPemasaran`
+- `HalamanPemasaran`
+- `HasilEksperimen`
+- `JadwalKontenSosial`
+- `Kampanye`
+- `KampanyeBiaya`
+- `KampanyeChannel`
+- `KampanyeKonten`
+- `KampanyeTarget`
+- `KeywordSeo`
+- `KodeReferral`
+- `KomisiPartner`
+- `KonfigurasiPemasaran`
+- `KonsenPemasaran`
+- `KontakProspek`
+- `KontenKeywordSeo`
+- `KontenPemasaran`
+- `KontenSosial`
+- `LangkahOtomasiPemasaran`
+- `LangkahSequenceEmail`
+- `LeadPartner`
+- `LogEksekusiOtomasi`
+- `MenuWhatsAppPemasaran`
+- `MetrikKampanye`
+- `OrganisasiProspek`
+- `OtomasiPemasaran`
+- `PartisipasiEksperimen`
+- `Partner`
+- `PayoutPartner`
+- `PendaftaranSequence`
+- `PengirimanEmailPemasaran`
+- `PengirimanFormulir`
+- `PengirimanWhatsAppPemasaran`
+- `PermintaanDataProspek`
+- `ProgramPartner`
+- `ProgramReferral`
+- `Prospek`
+- `ProspekTag`
+- `RedirectPemasaran`
+- `Referral`
+- `RewardReferral`
+- `RiwayatTahapProspek`
+- `SequenceEmailPemasaran`
+- `SesiDemo`
+- `SesiPengunjung`
+- `SkorProspek`
+- `TagProspek`
+- `TahapPipeline`
+- `TemplateEmailPemasaran`
+- `TemplateWhatsAppPemasaran`
+- `Trial`
+- `UtmPemasaran`
+- `VarianEksperimen`
+- `VersiHalamanPemasaran`
+- `VersiKontenPemasaran`
+- `VersiOtomasiPemasaran`
+
+## Infrastruktur
+
+- `AntrianPekerjaan`
+- `KelompokAntrianPekerjaan`
+- `PekerjaanGagal`
+- `TokenResetKataSandi`
+- `UrutanKode`
 
 ## View
 
+- `ViewKepatuhanKalibrasi`
+- `ViewKinerjaPerintahKerja`
 - `ViewRingkasanAset`
 - `ViewStokSukuCadang`
-- `ViewKinerjaPerintahKerja`
-- `ViewKepatuhanKalibrasi`
