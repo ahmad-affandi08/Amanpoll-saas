@@ -14,6 +14,7 @@ use App\Http\Middleware\PastikanMemilikiIzin;
 use App\Http\Middleware\TandaiHostTidakTerindeks;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
 use App\Http\Middleware\TetapkanKorelasiId;
+use App\Http\Middleware\TetapkanSesiPengunjung;
 use App\Shared\Domain\Exceptions\PengecualianDomain;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -42,6 +43,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // sesi berumur panjang dan PemeriksaIzin hanya membaca peran, sehingga
         // tanpa ini penonaktifan pengguna atau organisasi tidak segera berlaku.
         $middleware->web(append: [PastikanAkunMasihAktif::class]);
+
+        // Identitas pengunjung juga dibawa di host dashboard: pendaftaran trial
+        // terjadi di sini, dan tanpa pengenalnya seluruh konversi akan tercatat
+        // sebagai `direct` (MARKETING.md 1.1).
+        $middleware->web(append: [TetapkanSesiPengunjung::class]);
 
         // Hanya host publik yang boleh diindeks (MARKETING.md 1.2).
         $middleware->web(append: [TandaiHostTidakTerindeks::class]);

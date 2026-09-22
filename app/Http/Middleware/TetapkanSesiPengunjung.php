@@ -30,9 +30,22 @@ final class TetapkanSesiPengunjung
 
     public function __construct(private readonly PetaHost $host) {}
 
+    /**
+     * Parameter serah terima antar host. Dipakai hanya ketika cookie berdomain
+     * induk belum ada — lingkungan yang hostnya tidak berbagi induk, misalnya
+     * pengembangan lokal (MARKETING.md 14).
+     */
+    public const PARAMETER_SERAH_TERIMA = '_p';
+
     public function handle(Request $request, Closure $next): Response
     {
         $pengenal = $this->pengenalSah($request->cookie(self::NAMA_COOKIE));
+
+        // Serah terima hanya diterima bila belum ada cookie. Dengan begitu
+        // pengenal orang lain tidak dapat ditempelkan lewat tautan kepada
+        // pengunjung yang riwayatnya sudah terbentuk.
+        $pengenal ??= $this->pengenalSah($request->query(self::PARAMETER_SERAH_TERIMA));
+
         $baru = $pengenal === null;
         $pengenal ??= (string) Str::ulid();
 
@@ -40,7 +53,9 @@ final class TetapkanSesiPengunjung
 
         $respons = $next($request);
 
-        if ($baru) {
+        // Pengenal hasil serah terima ikut dituliskan ke cookie, supaya
+        // parameter URL-nya cukup dipakai sekali.
+        if ($baru || $request->cookie(self::NAMA_COOKIE) === null) {
             $respons->headers->setCookie(Cookie::make(
                 name: self::NAMA_COOKIE,
                 value: $pengenal,

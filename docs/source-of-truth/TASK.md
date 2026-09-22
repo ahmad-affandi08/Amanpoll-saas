@@ -1787,58 +1787,73 @@ membukanya.
 
 ## 30.01 Sesi Pengunjung
 
-- [ ] Tabel `SesiPengunjung`.
-- [ ] Cookie berdomain induk.
-- [ ] Pengunjung anonim tidak pernah membaca sesi organisasi.
+- [x] Tabel `SesiPengunjung`.
+- [x] Cookie berdomain induk.
+- [x] Pengunjung anonim tidak pernah membaca sesi organisasi.
 
 ## 30.02 Event Pemasaran
 
-- [ ] Tabel `EventPemasaran`.
-- [ ] Event publik sesuai `MARKETING.md` bagian 23.
-- [ ] Collector menolak event di luar taxonomy.
+- [x] Tabel `EventPemasaran`.
+- [x] Event publik sesuai `MARKETING.md` bagian 23.
+- [x] Collector menolak event di luar taxonomy.
 
 ## 30.03 UTM
 
-- [ ] Tabel `UtmPemasaran`.
-- [ ] Capture `utm_*`, referrer, landing URL, first page, session ID, device.
+- [x] Tabel `UtmPemasaran`.
+- [x] Capture `utm_*`, referrer, landing URL, first page, session ID, device.
 
 ## 30.04 Attribution
 
-- [ ] Tabel `AttributionPemasaran`.
-- [ ] First touch dan last touch.
-- [ ] First touch ditetapkan di host publik dan tidak dapat ditimpa host dashboard.
-- [ ] Last touch dapat diperbarui.
-- [ ] Kunjungan langsung ke host dashboard tanpa riwayat publik dicatat `direct`.
+- [x] Tabel `AttributionPemasaran`.
+- [x] First touch dan last touch.
+- [x] First touch ditetapkan di host publik dan tidak dapat ditimpa host dashboard.
+- [x] Last touch dapat diperbarui.
+- [x] Kunjungan langsung ke host dashboard tanpa riwayat publik dicatat `direct`.
 
 ## 30.05 Identity Merge
 
-- [ ] Pengunjung anonim di-merge setelah form submit, login, atau trial register.
-- [ ] Merge tidak dilakukan berdasarkan sinyal lemah.
-- [ ] UTM boleh diteruskan sekali lewat parameter CTA lintas host, lalu segera dipindah ke cookie.
+- [x] Pengunjung anonim di-merge setelah form submit, login, atau trial register.
+- [x] Merge tidak dilakukan berdasarkan sinyal lemah.
+- [x] UTM boleh diteruskan sekali lewat parameter CTA lintas host, lalu segera dipindah ke cookie.
 
 ## 30.06 Kampanye
 
-- [ ] Tabel `Kampanye`, `KampanyeChannel`.
-- [ ] Field, status, channel, dan objective sesuai `MARKETING.md` bagian 13.
-- [ ] Event dan attribution menunjuk kampanye, bukan sekadar string `utm_campaign`.
-- [ ] Biaya, audience, dan target kampanye menyusul di FASE 38; tanpa biaya, CAC per channel belum dapat dihitung.
+- [x] Tabel `Kampanye`, `KampanyeChannel`.
+- [x] Field, status, channel, dan objective sesuai `MARKETING.md` bagian 13.
+- [x] Event dan attribution menunjuk kampanye, bukan sekadar string `utm_campaign`.
+- [x] Biaya, audience, dan target kampanye menyusul di FASE 38; tanpa biaya, CAC per channel belum dapat dihitung.
 
 ## 30.07 Job
 
-- [ ] Job `HitungAttribution` di database queue.
-- [ ] Job `SinkronkanStatusProvider` untuk status kiriman yang datang belakangan.
+- [x] Job `HitungAttribution` di database queue.
+- [x] Job `SinkronkanStatusProvider` dipindah ke FASE 34 bersama penyedia emailnya; tanpa penyedia, kelasnya hanya kerangka kosong.
 
 ## 30.08 Test
 
-- [ ] `UtmTersimpanTest`.
-- [ ] `AttributionPertamaTerjagaTest`.
-- [ ] `AttributionTerakhirDiperbaruiTest`.
-- [ ] `AttributionLintasHostTest`.
-- [ ] `HitungAttributionTest`.
+- [x] `UtmTersimpanTest`.
+- [x] `AttributionPertamaTerjagaTest`.
+- [x] `AttributionTerakhirDiperbaruiTest`.
+- [x] `AttributionLintasHostTest`.
+- [x] `HitungAttributionTest`.
 
 ### Gate 30
 
-Pengunjung yang datang dari kampanye di host publik lalu mendaftar trial di host dashboard tetap membawa first touch aslinya.
+Pengunjung yang datang dari kampanye di host publik lalu mendaftar trial di host dashboard tetap membawa first touch aslinya. (Terpenuhi)
+
+Attribution ditulis saat kunjungan terjadi, dan tiga aturannya ditegakkan di
+satu tempat supaya tidak ada pemanggil yang dapat melewatinya: first touch
+ditulis sekali saja, last touch selalu diperbarui, dan kedatangan tanpa riwayat
+dicatat `direct` alih-alih dibiarkan kosong.
+
+Penyeberangan identitas antar host memakai cookie berdomain induk bila kedua
+host memang berbagi induk. Bila tidak — pengembangan lokal, staging terpisah —
+pengenalnya dititipkan sekali lewat parameter tautan, dan titipan itu hanya
+diterima ketika cookie belum ada, sehingga pengenal orang lain tidak dapat
+ditempelkan kepada pengunjung yang riwayatnya sudah terbentuk.
+
+Test bagian 36 yang dipenuhi di sini: `UtmTersimpanTest`,
+`AttributionPertamaTerjagaTest`, `AttributionTerakhirDiperbaruiTest`,
+`AttributionLintasHostTest`, dan `HitungAttributionTest`.
 
 ---
 
@@ -2005,6 +2020,7 @@ Perjalanan satu pengunjung dari kunjungan pertama sampai berlangganan terbaca ut
 - [ ] Status `TERJADWAL`, `DIKIRIM`, `TERKIRIM`, `DIBUKA`, `DIKLIK`, `BOUNCE`, `GAGAL`, `UNSUBSCRIBE`.
 - [ ] Kontrak `PenyediaEmailPemasaran`.
 - [ ] Job `KirimEmailPemasaran` idempoten; retry tidak menghasilkan kiriman ganda.
+- [ ] Job `SinkronkanStatusProvider` untuk status kiriman yang datang belakangan (dipindah dari FASE 30).
 - [ ] Rate limit pengiriman.
 
 ## 34.04 Penegakan

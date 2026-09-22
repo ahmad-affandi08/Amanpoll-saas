@@ -7,6 +7,7 @@ use App\Domain\Pemasaran\Http\Controllers\BerandaPublikController;
 use App\Domain\Pemasaran\Http\Controllers\RobotsController;
 use App\Http\Middleware\AlihkanKeHostKanonik;
 use App\Http\Middleware\CacheResponsPublik;
+use App\Http\Middleware\RekamKunjunganPemasaran;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,12 @@ if ($host->situsPublikAktif()) {
         ->name('publik.kanonik');
 
     Route::domain((string) $host->publikKanonik())
-        ->middleware(['web', AlihkanKeHostKanonik::class, TetapkanSesiPengunjung::class])
+        ->middleware([
+            'web',
+            AlihkanKeHostKanonik::class,
+            TetapkanSesiPengunjung::class,
+            RekamKunjunganPemasaran::class,
+        ])
         ->name('publik.')
         ->group(function (): void {
             Route::get('/', BerandaPublikController::class)
