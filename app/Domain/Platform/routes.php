@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Platform\Http\Controllers\DokumentasiController;
 use App\Domain\Platform\Http\Controllers\HariLiburController;
 use App\Domain\Platform\Http\Controllers\IzinController;
 use App\Domain\Platform\Http\Controllers\KategoriLokasiController;
@@ -80,3 +81,9 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::put('/hari-libur/{hariLibur}', [HariLiburController::class, 'update'])->name('hari-libur.update');
         Route::delete('/hari-libur/{hariLibur}', [HariLiburController::class, 'destroy'])->name('hari-libur.destroy');
     });
+
+// Panduan pemakaian; di luar prefix platform karena bukan halaman pengaturan.
+Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
+    Route::get('/dokumentasi', DokumentasiController::class)->name('dokumentasi.index');
+    Route::get('/dokumentasi/{halaman}', DokumentasiController::class)->name('dokumentasi.halaman');
+});

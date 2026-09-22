@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ruteAuth } from '@/features/Auth/api';
+import { ruteDokumentasi } from '@/features/Dokumentasi/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +47,7 @@ import {
   Settings,
   CircleUserRound,
   BellRing,
+  BookOpen,
   ChevronRight,
   ChevronsUpDown,
   LogOut,
@@ -351,6 +353,12 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                     <Link href="/notifikasi/preferensi" className="flex items-center gap-2 cursor-pointer">
                       <BellRing className="size-4" />
                       <span>Preferensi Notifikasi</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={ruteDokumentasi.index} className="flex items-center gap-2 cursor-pointer">
+                      <BookOpen className="size-4" />
+                      <span>Dokumentasi</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
