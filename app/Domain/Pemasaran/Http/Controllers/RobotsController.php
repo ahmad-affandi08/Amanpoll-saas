@@ -7,6 +7,7 @@ namespace App\Domain\Pemasaran\Http\Controllers;
 use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Domain\Enums\StatusHalamanPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KontenPemasaran;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 
@@ -29,7 +30,7 @@ final class RobotsController extends Controller
         return $this->teks("User-agent: *\nDisallow: /\n");
     }
 
-    /** Peta situs berisi akar dan setiap halaman yang benar-benar terbit. */
+    /** Peta situs berisi akar dan setiap halaman maupun konten yang benar-benar terbit. */
     public function sitemap(): Response
     {
         $jalur = HalamanPemasaran::query()
@@ -40,7 +41,16 @@ final class RobotsController extends Controller
             ->pluck('Slug')
             ->all();
 
-        $url = array_values(array_unique(['/', ...$jalur]));
+        // Syarat konten sama persis dengan halaman: terbit, terkunci pada satu versi, dan tidak noindex.
+        $konten = KontenPemasaran::query()
+            ->where('Status', StatusHalamanPemasaran::Terbit->value)
+            ->whereNotNull('VersiTerbitId')
+            ->where('NoIndex', false)
+            ->orderBy('Slug')
+            ->pluck('Slug')
+            ->all();
+
+        $url = array_values(array_unique(['/', ...$jalur, ...$konten]));
 
         $baris = array_map(
             fn (string $satu): string => '  <url><loc>'.e((string) $this->host->urlKanonik($satu)).'</loc></url>',

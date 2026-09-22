@@ -2644,8 +2644,8 @@ lebih dulu, dan tiap butir di bawah menyebut mana yang ia hidupkan.
 
 ```text
 CTA_DIKLIK, FORMULIR_DIMULAI, HARGA_DILIHAT     38.07 dan blok halaman
-DEMO_DIMULAI, DEMO_SELESAI                      38.03
-ARTIKEL_DILIHAT                                 38.04
+DEMO_DIMULAI, DEMO_SELESAI                      38.03 — sudah punya produsen
+ARTIKEL_DILIHAT                                 38.04 — sudah punya produsen
 TEMPLATE_DIUNDUH                                38.05
 PARTNER_MENGIRIM_LEAD, KOMISI_PARTNER_DIBUAT    38.09
 CHECKOUT_DIMULAI                                domain Langganan, di luar FASE 38
@@ -2832,15 +2832,38 @@ pemenang tidak dapat dinyatakan sebelum sampel minimum tercapai.
 
 ## 38.04 CMS Konten dan SEO Manager
 
-- [ ] Tabel `KontenPemasaran`, `VersiKontenPemasaran`, `KeywordSeo`, `ClusterSeo`, `KontenKeywordSeo`.
-- [ ] Jenis konten sesuai daftar bagian 9.
-- [ ] Metadata SEO: slug, title, meta description, canonical, Open Graph, schema type, noindex.
-- [ ] Intent `INFORMATIONAL`, `COMMERCIAL`, `TRANSACTIONAL`, `NAVIGATIONAL`.
-- [ ] Sitemap memuat konten terbit; yang noindex tidak ikut.
-- [ ] Redirect mendukung 301, 302, dan 410 — `RedirectPemasaran` kini hanya 301 dan 302.
-- [ ] `ARTIKEL_DILIHAT` ditulis ke `EventPemasaran`.
-- [ ] Konten berversi seperti halaman pemasaran, dengan versi aktif yang terkunci.
-- [ ] `SitemapKontenTest`, `RedirectKontenTest`.
+- [x] Tabel `KontenPemasaran`, `VersiKontenPemasaran`, `KeywordSeo`, `ClusterSeo`, `KontenKeywordSeo`.
+- [x] Jenis konten sesuai daftar bagian 9.
+- [x] Metadata SEO: slug, title, meta description, canonical, Open Graph, schema type, noindex.
+- [x] Intent `INFORMATIONAL`, `COMMERCIAL`, `TRANSACTIONAL`, `NAVIGATIONAL`.
+- [x] Sitemap memuat konten terbit; yang noindex tidak ikut.
+- [x] Redirect 301, 302, dan 410 diverifikasi ulang untuk jalur konten. Catatan
+      butir ini keliru: `KodeRedirect::Hilang` beserta `abort(410)` sudah ada
+      sejak peta redirect dibuat, lengkap dengan `RedirectPemasaranTest::
+      test_redirect_hilang_menjawab_410`. Tidak ada kode 410 yang ditambahkan di
+      sini, hanya dibuktikan lagi lewat `RedirectKontenTest`.
+- [x] `ARTIKEL_DILIHAT` ditulis ke `EventPemasaran`.
+- [x] Konten berversi seperti halaman pemasaran, dengan versi aktif yang terkunci.
+- [x] `SitemapKontenTest`, `RedirectKontenTest`, `KonsolKontenTest`.
+
+Jalur publik konten lahir dari jenisnya: `JenisKontenPemasaran::awalanJalur()`
+menetapkan raknya, dan slug yang tersimpan adalah alamat lengkapnya. Rutenya dua
+ruas (`/{rak}/{ruas}`) dengan daftar rak tertutup, bukan penampung `/{jalur}`
+seperti halaman pemasaran, karena dua rute berpola sama akan saling menimpa di
+tabel rute.
+
+Satu jalur hanya boleh punya satu pemilik, dan rute konten dikenali sebelum
+penampung halaman, jadi jalur kembar dijaga di dua lapis: pesan ramah di
+`SimpanKontenPemasaranRequest` dan penjaga domain di `SimpanDrafKonten`.
+
+Memindahkan slug konten yang pernah terbit membuat redirect 301 dari alamat
+lamanya secara otomatis, dan menghuni kembali sebuah alamat mematikan redirect
+yang berangkat dari sana. Tanpa yang kedua, peta redirect yang berjalan lebih
+dulu akan menyembunyikan konten yang kembali ke alamat lamanya.
+
+Status konten memakai `StatusHalamanPemasaran` yang sudah ada, bukan enum baru
+yang nyaris sama. Judul, ringkasan, naskah, dan metadata SEO berversi; slug,
+jenis, penulis, dan noindex melekat pada kontennya sehingga berlaku seketika.
 
 **Gate 38.04.** Artikel terbit muncul di sitemap dengan metadata lengkap, dan
 yang ditandai noindex tidak pernah muncul di sana.

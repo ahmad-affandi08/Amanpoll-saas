@@ -69,6 +69,12 @@ const PINTASAN = [
     izin: 'platform.halaman.lihat',
   },
   {
+    label: 'Konten & SEO',
+    href: '/admin-platform/pemasaran/konten',
+    keterangan: 'Artikel berversi, keyword manager, dan metadata situs publik.',
+    izin: 'platform.konten.lihat',
+  },
+  {
     label: 'Redirect',
     href: '/admin-platform/pemasaran/redirect',
     keterangan: 'Peta alih alamat situs publik.',

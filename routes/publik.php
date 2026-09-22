@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use App\Core\Host\PetaHost;
+use App\Domain\Pemasaran\Domain\Enums\JenisKontenPemasaran;
 use App\Domain\Pemasaran\Http\Controllers\BerhentiLanggananController;
 use App\Domain\Pemasaran\Http\Controllers\DemoPublikController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPublikController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPublikController;
 use App\Domain\Pemasaran\Http\Controllers\KlikReferralController;
+use App\Domain\Pemasaran\Http\Controllers\KontenPublikController;
 use App\Domain\Pemasaran\Http\Controllers\RobotsController;
 use App\Http\Middleware\AlihkanKeHostKanonik;
 use App\Http\Middleware\CacheResponsPublik;
@@ -74,6 +76,17 @@ if ($host->situsPublikAktif()) {
                     Route::post('/sesi/{sesi}/event', [DemoPublikController::class, 'catat'])->name('event');
                     Route::post('/sesi/{sesi}/selesai', [DemoPublikController::class, 'selesai'])->name('selesai');
                 });
+
+            // Konten CMS tinggal di rak jenisnya sendiri, jadi jalurnya dua ruas, bukan penampung.
+            Route::get('/{rak}/{ruas}', [KontenPublikController::class, 'tampil'])
+                ->where('rak', JenisKontenPemasaran::polaRak())
+                ->where('ruas', '[^/]+')
+                ->middleware('throttle:publik')
+                ->name('konten');
+
+            Route::get('/pratinjau-konten/{konten}/{versi}', [KontenPublikController::class, 'pratinjau'])
+                ->middleware(['signed', 'throttle:publik', TandaiTidakTerindeks::class])
+                ->name('konten.pratinjau');
 
             // Penampung terakhir: seluruh halaman pemasaran dilayani dari satu rute.
             Route::get('/{jalur}', [HalamanPublikController::class, 'tampil'])

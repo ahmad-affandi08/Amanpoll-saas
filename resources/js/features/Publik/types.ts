@@ -55,6 +55,21 @@ export interface IsiHalaman {
   Pratinjau?: boolean;
 }
 
+export interface IsiKonten {
+  Slug: string;
+  Jenis: string;
+  Judul: string;
+  Ringkasan: string | null;
+  IsiMarkdown: string;
+  PenulisNama: string | null;
+  NoIndex: boolean;
+  VersiNomor: number;
+  TerbitPada: string | null;
+  Meta: MetaHalaman;
+  /** Hanya terisi pada pratinjau draf. */
+  Pratinjau?: boolean;
+}
+
 export interface PropsPublik {
   kanonik: string | null;
   urlMasuk: string;

@@ -355,3 +355,79 @@ export interface RewardReferralRingkas {
   DibuatPada: string;
   DiberikanPada: string | null;
 }
+
+export interface KeywordTertaut {
+  Id: string;
+  Keyword: string;
+  Utama: boolean;
+}
+
+export interface KontenPemasaran {
+  Id: string;
+  Slug: string;
+  Ruas: string;
+  Jenis: string;
+  Judul: string;
+  Status: string;
+  PenulisNama: string | null;
+  KampanyeId: string | null;
+  Kampanye: string | null;
+  NoIndex: boolean;
+  DiSitemap: boolean;
+  TerbitPada: string | null;
+  VersiTerbitNomor: number | null;
+  VersiDrafNomor: number | null;
+  VersiDrafId: string | null;
+  UrlPublik: string | null;
+  Keyword: KeywordTertaut[];
+  Ringkasan?: string | null;
+  IsiMarkdown?: string;
+  MetaJudul?: string | null;
+  MetaDeskripsi?: string | null;
+  Kanonik?: string | null;
+  OgJudul?: string | null;
+  OgDeskripsi?: string | null;
+  OgGambar?: string | null;
+  SkemaTipe?: string | null;
+}
+
+export interface VersiKonten {
+  Id: string;
+  Nomor: number;
+  Judul: string;
+  Catatan: string | null;
+  DibuatPada: string;
+  Terbit: boolean;
+  Draf: boolean;
+}
+
+export interface KeywordSeo {
+  Id: string;
+  Keyword: string;
+  ClusterSeoId: string | null;
+  Cluster: string | null;
+  Intent: string;
+  IntentLabel: string;
+  TargetUrl: string | null;
+  Prioritas: string;
+  Urutan: number;
+  Status: string;
+  Catatan: string | null;
+}
+
+export interface ClusterSeo {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Keterangan: string | null;
+}
+
+export interface PilihanKonten {
+  Jenis: string[];
+  AwalanJalur: Record<string, string>;
+  Status: string[];
+  Intent: Record<string, string>;
+  Prioritas: string[];
+  StatusKeyword: string[];
+  Kampanye: Record<string, string>;
+}

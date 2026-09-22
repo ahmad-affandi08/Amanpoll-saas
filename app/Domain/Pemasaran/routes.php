@@ -14,6 +14,7 @@ use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeKonsolController;
 use App\Domain\Pemasaran\Http\Controllers\KonsenPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\KontenPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\KontenSosialController;
 use App\Domain\Pemasaran\Http\Controllers\OtomasiPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
@@ -224,6 +225,42 @@ Route::middleware(['web', 'auth:platform'])
                         Route::post('/{halaman}/kembalikan/{versi}', [
                             HalamanPemasaranController::class, 'kembalikan',
                         ])->name('kembalikan');
+                    });
+            });
+
+            // CMS konten dan keyword manager (MARKETING.md 9).
+            Route::prefix('konten')->name('konten.')->group(function (): void {
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::KONTEN_LIHAT)->group(function (): void {
+                    Route::get('/', [KontenPemasaranController::class, 'index'])->name('index');
+                    Route::get('/{konten}', [KontenPemasaranController::class, 'show'])->name('show');
+                });
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::KONTEN_KELOLA)->group(function (): void {
+                    // Keyword manager didaftarkan lebih dulu; `seo` bukan pengenal konten.
+                    Route::post('/seo/keyword', [KontenPemasaranController::class, 'simpanKeyword'])
+                        ->name('keyword.store');
+                    Route::put('/seo/keyword/{keyword}', [KontenPemasaranController::class, 'perbaruiKeyword'])
+                        ->name('keyword.update');
+                    Route::post('/seo/cluster', [KontenPemasaranController::class, 'simpanCluster'])
+                        ->name('cluster.store');
+
+                    Route::post('/', [KontenPemasaranController::class, 'store'])->name('store');
+                    Route::put('/{konten}', [KontenPemasaranController::class, 'update'])->name('update');
+                    Route::get('/{konten}/pratinjau/{versi}', [KontenPemasaranController::class, 'pratinjau'])
+                        ->name('pratinjau');
+                    Route::post('/{konten}/keyword', [KontenPemasaranController::class, 'tautkanKeyword'])
+                        ->name('keyword.tautkan');
+                    Route::delete('/{konten}/keyword/{keyword}', [KontenPemasaranController::class, 'lepasKeyword'])
+                        ->name('keyword.lepas');
+                });
+
+                // Menerbitkan dan menarik konten mengubah isi situs publik.
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::KONTEN_TERBITKAN)
+                    ->group(function (): void {
+                        Route::post('/{konten}/terbitkan', [KontenPemasaranController::class, 'terbitkan'])
+                            ->name('terbitkan');
+                        Route::post('/{konten}/status', [KontenPemasaranController::class, 'ubahStatus'])
+                            ->name('status');
                     });
             });
 
