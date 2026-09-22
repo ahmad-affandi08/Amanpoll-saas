@@ -2646,7 +2646,7 @@ lebih dulu, dan tiap butir di bawah menyebut mana yang ia hidupkan.
 CTA_DIKLIK, FORMULIR_DIMULAI, HARGA_DILIHAT     38.07 dan blok halaman
 DEMO_DIMULAI, DEMO_SELESAI                      38.03 — sudah punya produsen
 ARTIKEL_DILIHAT                                 38.04 — sudah punya produsen
-TEMPLATE_DIUNDUH                                38.05
+TEMPLATE_DIUNDUH                                38.05 — sudah punya produsen
 PARTNER_MENGIRIM_LEAD, KOMISI_PARTNER_DIBUAT    38.09
 CHECKOUT_DIMULAI                                domain Langganan, di luar FASE 38
 ```
@@ -2870,17 +2870,50 @@ yang ditandai noindex tidak pernah muncul di sana.
 
 ## 38.05 Lead Magnet dan Tools Publik
 
-- [ ] Berkas unduhan tertaut ke formulir; unduhan hanya setelah formulir terkirim.
-- [ ] `TEMPLATE_DIUNDUH` ditulis ke `EventPemasaran`.
-- [ ] Kalkulator MTTR, MTBF, dan downtime sebagai halaman publik.
-- [ ] Generator QR aset sebagai halaman publik.
-- [ ] Tools publik tetap tunduk pada rate limit dan anti-spam yang sama dengan formulir.
-- [ ] Rumus kalkulator bersumber dari `KatalogKpi` FASE 21, bukan ditulis ulang di frontend.
-- [ ] `UnduhanLeadMagnetTest`, `KalkulatorPublikTest`.
+- [x] Berkas unduhan tertaut ke formulir; unduhan hanya setelah formulir terkirim.
+- [x] `TEMPLATE_DIUNDUH` ditulis ke `EventPemasaran`.
+- [x] Kalkulator MTTR, MTBF, dan downtime sebagai halaman publik.
+- [x] Generator QR aset sebagai halaman publik.
+- [x] Tools publik tetap tunduk pada rate limit dan anti-spam yang sama dengan formulir.
+- [x] Rumus kalkulator bersumber dari `KatalogKpi` FASE 21, bukan ditulis ulang di frontend.
+- [x] `UnduhanLeadMagnetTest`, `KalkulatorPublikTest`, `KonsolBerkasLeadMagnetTest`,
+      `RumusKeandalanDipakaiBersamaTest`.
 
 Tidak ada tabel baru: form builder bagian 10 sudah lengkap sejak FASE 32, yang
 kurang hanya berkas unduhan dan halaman toolsnya. Rumus MTTR dan MTBF sudah ada
 di domain Pelaporan; menuliskannya ulang berarti dua rumus yang kelak berbeda.
+
+Berkas lead magnet menjadi empat kolom di `FormulirPemasaran`, bukan tabel
+sendiri, dan hidup di disk privat tanpa URL publik. Gerbangnya adalah tanda
+tangan yang hanya dapat lahir dari satu `PengirimanFormulir` yang benar-benar
+ada, berumur satu jam: tanpa mengisi formulir tidak ada yang dapat
+ditandatangani, dan berkas yang dicabut menutup tautan yang sudah terbit.
+
+Rumus keandalan dipindahkan ke `RumusKeandalan`, dan `QueryKeandalan` kini
+membacanya dari sana. Kalkulator publik memanggil kelas yang sama, jadi
+angkanya bukan mirip melainkan identik; `RumusKeandalanDipakaiBersamaTest`
+membandingkan keduanya langsung atas data downtime sungguhan. Angka yang tidak
+punya penyebut dinyatakan belum tersedia beserta alasannya, tidak dijawab nol.
+
+Ketiga kalkulator berbagi satu rumus dan satu halaman; yang berbeda hanya
+jalur, judul, dan angka yang disorot. Tiga jalur tetap ada karena bagian 10
+menyebutnya sebagai tiga lead magnet, tetapi tidak ada tiga perhitungan.
+
+Perhitungan dan pembuatan QR dilakukan di server, bukan di frontend: itulah
+satu-satunya cara rumusnya benar-benar satu, dan itu pula yang membuat tools
+tunduk pada `throttle:formulir` serta honeypot yang sama dengan formulir.
+Honeypot dipindahkan ke `PerangkapSpam` supaya formulir dan tools memakai
+perangkap yang sama persis.
+
+`bacon/bacon-qr-code` ditambahkan atas persetujuan pemilik produk. Repo belum
+punya encoder QR sama sekali; aset hanya menyimpan `KodeQr` berupa ULID yang
+tidak pernah dirender. QR ditulis sebagai SVG yang hanya berisi `rect`, `g`,
+dan `path`, jadi kode yang dimasukkan tidak pernah muncul sebagai markup.
+
+Jalur `/tools` dipakai bersama oleh tool publik dan konten berjenis FreeTool.
+Rute tool didaftarkan lebih dulu, jadi konten yang menempati jalur yang sama
+akan tersembunyi; `SimpanDrafKonten` dan `SimpanKontenPemasaranRequest`
+menolaknya di dua lapis.
 
 **Gate 38.05.** Berkas lead magnet tidak dapat diunduh tanpa mengisi formulir,
 dan angka kalkulator publik sama dengan angka KPI yang sama di dalam aplikasi.

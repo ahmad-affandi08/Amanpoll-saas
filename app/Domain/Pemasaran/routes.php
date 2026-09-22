@@ -273,6 +273,12 @@ Route::middleware(['web', 'auth:platform'])
                 Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_KELOLA)->group(function (): void {
                     Route::post('/', [FormulirPemasaranController::class, 'store'])->name('store');
                     Route::put('/{formulir}', [FormulirPemasaranController::class, 'update'])->name('update');
+
+                    // Berkas lead magnet mengubah apa yang dijanjikan formulir kepada publik.
+                    Route::post('/{formulir}/berkas', [FormulirPemasaranController::class, 'simpanBerkas'])
+                        ->name('berkas.simpan');
+                    Route::delete('/{formulir}/berkas', [FormulirPemasaranController::class, 'hapusBerkas'])
+                        ->name('berkas.hapus');
                 });
             });
 

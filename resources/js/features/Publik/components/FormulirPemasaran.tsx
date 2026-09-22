@@ -1,5 +1,5 @@
 import { FormEvent } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,9 @@ function nilaiAwal(field: FieldPublik): NilaiField {
 
 /** Formulir pemasaran yang bentuknya datang dari server (MARKETING.md 10). */
 export function FormulirPemasaran({ formulir, judul, deskripsi }: Props) {
+  const { props } = usePage<{ unduhan?: string | null }>();
+  const unduhan = props.unduhan ?? null;
+
   const awal: Record<string, NilaiField> = { [FIELD_HONEYPOT]: '' };
   formulir.Field.forEach((field) => {
     awal[field.Kode] = nilaiAwal(field);
@@ -105,6 +108,16 @@ export function FormulirPemasaran({ formulir, judul, deskripsi }: Props) {
           {form.processing ? 'Mengirim...' : 'Kirim'}
         </Button>
       </div>
+
+      {/* Tautan unduhan baru ada setelah formulirnya benar-benar terkirim. */}
+      {unduhan ? (
+        <div className="rounded-lg border p-4">
+          <p className="text-sm">Terima kasih. Berkas Anda siap diunduh.</p>
+          <Button asChild variant="outline" size="sm" className="mt-3">
+            <a href={unduhan}>Unduh berkas</a>
+          </Button>
+        </div>
+      ) : null}
     </form>
   );
 }

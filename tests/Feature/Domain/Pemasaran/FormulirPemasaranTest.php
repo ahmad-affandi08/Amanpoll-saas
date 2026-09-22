@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Pemasaran;
 
 use App\Domain\Pemasaran\Application\Actions\KirimFormulirPemasaran;
+use App\Domain\Pemasaran\Application\Services\PerangkapSpam;
 use App\Domain\Pemasaran\Domain\Enums\JenisBlokHalaman;
 use App\Domain\Pemasaran\Domain\Enums\JenisFieldFormulir;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
@@ -93,7 +94,7 @@ final class FormulirPemasaranTest extends KasusHalaman
             'Nama' => 'Bot',
             'Email' => 'bot@spam.test',
             'Setuju' => true,
-            KirimFormulirPemasaran::FIELD_HONEYPOT => 'http://spam.test',
+            PerangkapSpam::FIELD => 'http://spam.test',
         ])->assertRedirect();
 
         $this->assertSame(0, Prospek::query()->count());

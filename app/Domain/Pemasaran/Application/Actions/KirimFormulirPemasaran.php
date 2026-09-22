@@ -8,6 +8,7 @@ use App\Domain\Pemasaran\Application\Services\LayananKonsen;
 use App\Domain\Pemasaran\Application\Services\PemeriksaCaptcha;
 use App\Domain\Pemasaran\Application\Services\PemvalidasiFormulirPemasaran;
 use App\Domain\Pemasaran\Application\Services\PenempelTagProspek;
+use App\Domain\Pemasaran\Application\Services\PerangkapSpam;
 use App\Domain\Pemasaran\Domain\Enums\JenisFieldFormulir;
 use App\Domain\Pemasaran\Domain\Enums\SumberKonsen;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
@@ -24,9 +25,6 @@ use Carbon\CarbonImmutable;
 /** Menerima satu pengiriman formulir publik (MARKETING.md 10). */
 final class KirimFormulirPemasaran
 {
-    /** Nama field perangkap. */
-    public const FIELD_HONEYPOT = 'situs_perusahaan';
-
     public function __construct(
         private readonly TransaksiDatabase $transaksi,
         private readonly PemvalidasiFormulirPemasaran $pemvalidasi,
@@ -34,6 +32,7 @@ final class KirimFormulirPemasaran
         private readonly PenempelTagProspek $tag,
         private readonly PemeriksaCaptcha $captcha,
         private readonly LayananKonsen $konsen,
+        private readonly PerangkapSpam $perangkap,
     ) {}
 
     /**
@@ -50,7 +49,7 @@ final class KirimFormulirPemasaran
             throw new AturanBisnisDilanggar('Formulir ini sedang tidak menerima pengiriman.');
         }
 
-        if ($this->terperangkap($masukan)) {
+        if ($this->perangkap->terperangkap($masukan)) {
             return HasilPengirimanFormulir::spam();
         }
 
@@ -124,14 +123,6 @@ final class KirimFormulirPemasaran
             $alamatIp,
             $agenPengguna,
         );
-    }
-
-    /** @param array<string, mixed> $masukan */
-    private function terperangkap(array $masukan): bool
-    {
-        $nilai = $masukan[self::FIELD_HONEYPOT] ?? null;
-
-        return is_string($nilai) && trim($nilai) !== '';
     }
 
     /** @param array<string, mixed> $jawaban */

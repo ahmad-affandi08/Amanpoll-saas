@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Http\Controllers;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Pemasaran\Application\Services\BerkasLeadMagnet;
 use App\Domain\Pemasaran\Domain\Enums\JenisFieldFormulir;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
+use App\Domain\Pemasaran\Http\Requests\SimpanBerkasLeadMagnetRequest;
 use App\Domain\Pemasaran\Http\Requests\SimpanFormulirPemasaranRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FieldFormulirPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FormulirPemasaran;
@@ -101,6 +103,37 @@ final class FormulirPemasaranController extends Controller
         return back()->with('sukses', 'Formulir berhasil diperbarui.');
     }
 
+    public function simpanBerkas(
+        SimpanBerkasLeadMagnetRequest $request,
+        FormulirPemasaran $formulir,
+        BerkasLeadMagnet $berkas,
+    ): RedirectResponse {
+        $berkas->simpan($formulir, $request->berkas());
+
+        $this->audit->catat('FormulirPemasaran.BerkasDiunggah', 'FormulirPemasaran', $formulir->Id, dataSesudah: [
+            'Kode' => $formulir->Kode,
+            'NamaBerkas' => $formulir->BerkasNamaAsli,
+            'UkuranByte' => $formulir->BerkasUkuranByte,
+        ]);
+
+        return back()->with('sukses', 'Berkas lead magnet berhasil diunggah.');
+    }
+
+    public function hapusBerkas(FormulirPemasaran $formulir, BerkasLeadMagnet $berkas): RedirectResponse
+    {
+        $sebelum = $formulir->BerkasNamaAsli;
+        $berkas->hapus($formulir);
+
+        $this->audit->catat(
+            'FormulirPemasaran.BerkasDihapus',
+            'FormulirPemasaran',
+            $formulir->Id,
+            dataSebelum: ['NamaBerkas' => $sebelum],
+        );
+
+        return back()->with('sukses', 'Berkas lead magnet dihapus.');
+    }
+
     /**
      * Field ditulis ulang seluruhnya setiap penyimpanan. Aman karena jawaban
      * yang sudah masuk disimpan terpisah pada `PengirimanFormulir`: menghapus
@@ -172,6 +205,9 @@ final class FormulirPemasaranController extends Controller
             'WajibPersetujuan' => $formulir->WajibPersetujuan,
             'CaptchaAktif' => $formulir->CaptchaAktif,
             'Aktif' => $formulir->Aktif,
+            'BerkasNamaAsli' => $formulir->BerkasNamaAsli,
+            'BerkasUkuranByte' => $formulir->BerkasUkuranByte,
+            'PunyaBerkas' => $formulir->punyaBerkas(),
             'JumlahPengiriman' => (int) ($formulir->pengiriman_count ?? 0),
             'Field' => $formulir->field
                 ->map(fn (FieldFormulirPemasaran $field): array => [

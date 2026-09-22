@@ -89,12 +89,12 @@ final class SitemapKontenTest extends KasusKonten
 
     public function test_setiap_jenis_konten_punya_raknya_sendiri(): void
     {
-        $this->buatTerbit('kalkulator-mttr', 'Kalkulator MTTR', JenisKontenPemasaran::FreeTool);
+        $this->buatTerbit('template-audit-aset', 'Template Audit Aset', JenisKontenPemasaran::FreeTool);
         $this->buatTerbit('pabrik-x', 'Pabrik X', JenisKontenPemasaran::CaseStudy);
 
         $isi = $this->isiSitemap();
 
-        $this->assertStringContainsString('/tools/kalkulator-mttr</loc>', $isi);
+        $this->assertStringContainsString('/tools/template-audit-aset</loc>', $isi);
         $this->assertStringContainsString('/studi-kasus/pabrik-x</loc>', $isi);
     }
 
@@ -296,11 +296,11 @@ final class SitemapKontenTest extends KasusKonten
 
     public function test_slug_lahir_dari_jenisnya(): void
     {
-        $konten = $this->buatDraf('kalkulator-mttr', 'Kalkulator', JenisKontenPemasaran::FreeTool);
+        $konten = $this->buatDraf('template-audit-aset', 'Template Audit', JenisKontenPemasaran::FreeTool);
 
-        $this->assertSame('/tools/kalkulator-mttr', $konten->Slug);
+        $this->assertSame('/tools/template-audit-aset', $konten->Slug);
         $this->assertSame(
-            '/tools/kalkulator-mttr',
+            '/tools/template-audit-aset',
             KontenPemasaran::query()->whereKey($konten->Id)->value('Slug'),
         );
     }

@@ -1,0 +1,108 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Pemasaran\Http\Controllers;
+
+use App\Core\Host\PetaHost;
+use App\Domain\Pemasaran\Application\Services\KalkulatorKeandalanPublik;
+use App\Domain\Pemasaran\Application\Services\PembuatQrAset;
+use App\Domain\Pemasaran\Application\Services\PenautHostPengunjung;
+use App\Domain\Pemasaran\Application\Services\PerangkapSpam;
+use App\Domain\Pemasaran\Domain\Enums\ToolPublik;
+use App\Domain\Pemasaran\Http\Requests\BuatQrAsetRequest;
+use App\Domain\Pemasaran\Http\Requests\HitungKeandalanPublikRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+
+/** Tools publik: kalkulator keandalan dan generator QR aset (MARKETING.md 10). */
+final class ToolsPublikController extends Controller
+{
+    public function __construct(
+        private readonly PetaHost $host,
+        private readonly PenautHostPengunjung $penaut,
+        private readonly PerangkapSpam $perangkap,
+    ) {}
+
+    public function kalkulator(Request $request, ToolPublik $tool): Response
+    {
+        return Inertia::render('Publik/Kalkulator', [
+            ...$this->propsBersama($request),
+            'tool' => $this->ringkasTool($tool),
+        ]);
+    }
+
+    /** Dihitung di server supaya rumusnya satu dengan KPI di dalam aplikasi. */
+    public function hitung(
+        HitungKeandalanPublikRequest $request,
+        KalkulatorKeandalanPublik $kalkulator,
+    ): RedirectResponse {
+        if ($this->perangkap->terperangkap($request->validated())) {
+            return back();
+        }
+
+        /** @var array{JumlahAset: int, HariRentang: int, JumlahKegagalan: int, MenitDowntime: int} $sah */
+        $sah = $request->validated();
+
+        $hasil = $kalkulator->hitung(
+            $sah['JumlahAset'],
+            $sah['HariRentang'],
+            $sah['JumlahKegagalan'],
+            $sah['MenitDowntime'],
+        );
+
+        return back()->with('hasil', $hasil->keArray());
+    }
+
+    public function qr(Request $request): Response
+    {
+        return Inertia::render('Publik/QrAset', [
+            ...$this->propsBersama($request),
+            'tool' => $this->ringkasTool(ToolPublik::QrAset),
+            'batas' => [
+                'MaksKode' => PembuatQrAset::MAKS_KODE,
+                'MaksPanjangKode' => PembuatQrAset::MAKS_PANJANG_KODE,
+            ],
+        ]);
+    }
+
+    public function buatQr(BuatQrAsetRequest $request, PembuatQrAset $pembuat): RedirectResponse
+    {
+        if ($this->perangkap->terperangkap($request->validated())) {
+            return back();
+        }
+
+        /** @var array{Kode: list<string>} $sah */
+        $sah = $request->validated();
+
+        return back()->with('qr', $pembuat->untuk($sah['Kode']));
+    }
+
+    /** @return array<string, mixed> */
+    private function ringkasTool(ToolPublik $tool): array
+    {
+        return [
+            'Kode' => $tool->value,
+            'Judul' => $tool->judul(),
+            'Jalur' => $tool->jalur(),
+            'MetrikSorotan' => $tool->metrikSorotan(),
+            'FieldPerangkap' => PerangkapSpam::FIELD,
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function propsBersama(Request $request): array
+    {
+        $pengenal = $request->attributes->get('pengenalPengunjung');
+        $pengenal = is_string($pengenal) ? $pengenal : null;
+
+        return [
+            'kanonik' => $this->host->urlKanonik($request->path()),
+            'urlMasuk' => $this->penaut->tautan(route('login'), $pengenal),
+            'urlDaftar' => $this->penaut->tautan(route('daftar'), $pengenal),
+        ];
+    }
+}

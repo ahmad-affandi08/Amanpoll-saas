@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Domain\Enums\JenisKontenPemasaran;
+use App\Domain\Pemasaran\Domain\Enums\ToolPublik;
 use App\Domain\Pemasaran\Http\Controllers\BerhentiLanggananController;
 use App\Domain\Pemasaran\Http\Controllers\DemoPublikController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPublikController;
@@ -11,6 +12,8 @@ use App\Domain\Pemasaran\Http\Controllers\HalamanPublikController;
 use App\Domain\Pemasaran\Http\Controllers\KlikReferralController;
 use App\Domain\Pemasaran\Http\Controllers\KontenPublikController;
 use App\Domain\Pemasaran\Http\Controllers\RobotsController;
+use App\Domain\Pemasaran\Http\Controllers\ToolsPublikController;
+use App\Domain\Pemasaran\Http\Controllers\UnduhanLeadMagnetController;
 use App\Http\Middleware\AlihkanKeHostKanonik;
 use App\Http\Middleware\CacheResponsPublik;
 use App\Http\Middleware\RekamKunjunganPemasaran;
@@ -75,6 +78,31 @@ if ($host->situsPublikAktif()) {
                     Route::post('/{demo:Kode}/mulai', [DemoPublikController::class, 'mulai'])->name('mulai');
                     Route::post('/sesi/{sesi}/event', [DemoPublikController::class, 'catat'])->name('event');
                     Route::post('/sesi/{sesi}/selesai', [DemoPublikController::class, 'selesai'])->name('selesai');
+                });
+
+            // Unduhan lead magnet: tanda tangannya lahir dari satu pengiriman formulir yang nyata.
+            Route::get('/unduh/{pengiriman}', UnduhanLeadMagnetController::class)
+                ->middleware(['signed', 'throttle:formulir', TandaiTidakTerindeks::class])
+                ->name('unduhan');
+
+            // Tools menempati rak /tools yang sama dengan konten FreeTool, jadi didaftarkan lebih dulu.
+            Route::middleware('throttle:formulir')->prefix('tools')->name('tools.')
+                ->group(function (): void {
+                    foreach (ToolPublik::cases() as $tool) {
+                        if ($tool === ToolPublik::QrAset) {
+                            continue;
+                        }
+
+                        // Nilai string, bukan instance enum: pengikatan enum implisit yang mengubahnya.
+                        Route::get('/'.$tool->value, [ToolsPublikController::class, 'kalkulator'])
+                            ->defaults('tool', $tool->value)
+                            ->name($tool->value);
+                    }
+
+                    Route::post('/kalkulator', [ToolsPublikController::class, 'hitung'])->name('hitung');
+                    Route::get('/'.ToolPublik::QrAset->value, [ToolsPublikController::class, 'qr'])
+                        ->name(ToolPublik::QrAset->value);
+                    Route::post('/qr', [ToolsPublikController::class, 'buatQr'])->name('qr.buat');
                 });
 
             // Konten CMS tinggal di rak jenisnya sendiri, jadi jalurnya dua ruas, bukan penampung.

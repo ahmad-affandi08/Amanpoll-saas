@@ -27,6 +27,10 @@ final class FormulirPemasaran extends ModelDasar
         'Tag',
         'PemicuOtomasi',
         'UrlWebhook',
+        'BerkasLokasi',
+        'BerkasNamaAsli',
+        'BerkasMime',
+        'BerkasUkuranByte',
         'WajibPersetujuan',
         'CaptchaAktif',
         'Aktif',
@@ -36,12 +40,19 @@ final class FormulirPemasaran extends ModelDasar
     {
         return [
             'Tag' => 'array',
+            'BerkasUkuranByte' => 'integer',
             'WajibPersetujuan' => 'boolean',
             'CaptchaAktif' => 'boolean',
             'Aktif' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    /** Formulir lead magnet adalah formulir biasa yang kebetulan menjanjikan berkas. */
+    public function punyaBerkas(): bool
+    {
+        return $this->BerkasLokasi !== null;
     }
 
     public function getRouteKeyName(): string

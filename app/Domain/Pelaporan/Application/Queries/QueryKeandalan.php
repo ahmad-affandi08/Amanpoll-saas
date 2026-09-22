@@ -7,6 +7,7 @@ namespace App\Domain\Pelaporan\Application\Queries;
 use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
+use App\Domain\Pelaporan\Domain\ValueObjects\RumusKeandalan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuHentiAset;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,9 +54,9 @@ final class QueryKeandalan implements PenyediaKpi
         $totalMenit = array_sum($perJenis);
 
         return new HasilKpi(
-            round($totalMenit / 60, 1),
-            $this->deretBulanan($filter, array_map(fn (int $menit): float => round($menit / 60, 1), $perBulan)),
-            ['PerJenisJam' => array_map(fn (int $menit): float => round($menit / 60, 1), $perJenis)],
+            RumusKeandalan::totalJam($totalMenit),
+            $this->deretBulanan($filter, array_map(RumusKeandalan::totalJam(...), $perBulan)),
+            ['PerJenisJam' => array_map(RumusKeandalan::totalJam(...), $perJenis)],
         );
     }
 
@@ -69,12 +70,14 @@ final class QueryKeandalan implements PenyediaKpi
         $totalMenit = $sesi->sum(fn (WaktuHentiAset $satu): int => $this->menitEfektif($satu, $filter));
         $menitTersedia = $this->menitOperasional($filter, $sesi->pluck('AsetId')->unique()->count());
 
+        $menitAktif = RumusKeandalan::menitAktif($menitTersedia, $totalMenit);
+
         return HasilKpi::persen(
-            max(0.0, $menitTersedia - $totalMenit),
+            $menitAktif,
             $menitTersedia,
             [
-                ['Label' => 'Tersedia', 'Nilai' => round(max(0.0, $menitTersedia - $totalMenit) / 60, 1)],
-                ['Label' => 'Downtime', 'Nilai' => round($totalMenit / 60, 1)],
+                ['Label' => 'Tersedia', 'Nilai' => RumusKeandalan::totalJam((int) $menitAktif)],
+                ['Label' => 'Downtime', 'Nilai' => RumusKeandalan::totalJam($totalMenit)],
             ],
         );
     }
@@ -92,7 +95,7 @@ final class QueryKeandalan implements PenyediaKpi
         $totalMenit = $selesai->sum(fn (WaktuHentiAset $satu): int => $this->menitEfektif($satu, $filter));
 
         return new HasilKpi(
-            round($totalMenit / $selesai->count() / 60, 1),
+            RumusKeandalan::mttr($totalMenit, $selesai->count()),
             [],
             ['AdaData' => true, 'Penyebut' => $selesai->count(), 'TotalMenit' => $totalMenit],
         );
@@ -107,10 +110,9 @@ final class QueryKeandalan implements PenyediaKpi
 
         $menitDowntime = $kegagalan->sum(fn (WaktuHentiAset $satu): int => $this->menitEfektif($satu, $filter));
         $menitOperasional = $this->menitOperasional($filter, $kegagalan->pluck('AsetId')->unique()->count());
-        $menitAktif = max(0.0, $menitOperasional - $menitDowntime);
 
         return new HasilKpi(
-            round($menitAktif / $kegagalan->count() / 60, 1),
+            RumusKeandalan::mtbf($menitOperasional, $menitDowntime, $kegagalan->count()),
             [],
             [
                 'AdaData' => true,
@@ -142,7 +144,10 @@ final class QueryKeandalan implements PenyediaKpi
 
     private function menitOperasional(FilterMetrik $filter, int $jumlahAset): float
     {
-        return (float) $jumlahAset * max(1, (int) $filter->dari->diffInMinutes($filter->sampai));
+        return RumusKeandalan::menitOperasional(
+            $jumlahAset,
+            (int) $filter->dari->diffInMinutes($filter->sampai),
+        );
     }
 
     /** @return Builder<WaktuHentiAset> */

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Http\Requests;
 
 use App\Domain\Pemasaran\Domain\Enums\JenisKontenPemasaran;
+use App\Domain\Pemasaran\Domain\Enums\ToolPublik;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KontenPemasaran;
 use Illuminate\Contracts\Validation\Validator;
@@ -73,6 +74,12 @@ final class SimpanKontenPemasaranRequest extends FormRequest
                 // Rute konten dikenali sebelum penampung halaman, jadi jalur kembar menyembunyikan halamannya.
                 if (HalamanPemasaran::query()->where('Slug', $jalur)->exists()) {
                     $validator->errors()->add('Slug', "Jalur {$jalur} sudah dipakai halaman pemasaran.");
+
+                    return;
+                }
+
+                if (ToolPublik::menempati($jalur)) {
+                    $validator->errors()->add('Slug', "Jalur {$jalur} sudah dipakai tool publik.");
                 }
             },
         ];

@@ -75,3 +75,28 @@ export interface PropsPublik {
   urlMasuk: string;
   urlDaftar: string;
 }
+
+export interface ToolPublik {
+  Kode: string;
+  Judul: string;
+  Jalur: string;
+  MetrikSorotan: string | null;
+  FieldPerangkap: string;
+}
+
+export interface HasilKeandalan {
+  MenitOperasional: number;
+  TotalJam: number;
+  Mttr: number | null;
+  Mtbf: number | null;
+  Ketersediaan: number | null;
+  AlasanMttr: string | null;
+  AlasanMtbf: string | null;
+  AlasanKetersediaan: string | null;
+  Peringatan: string | null;
+}
+
+export interface LabelQr {
+  Kode: string;
+  Svg: string;
+}

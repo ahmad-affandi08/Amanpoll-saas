@@ -9,6 +9,7 @@ use App\Domain\Pemasaran\Application\Services\PenyimpanIsiKonten;
 use App\Domain\Pemasaran\Domain\Enums\JenisKontenPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\KodeRedirect;
 use App\Domain\Pemasaran\Domain\Enums\StatusHalamanPemasaran;
+use App\Domain\Pemasaran\Domain\Enums\ToolPublik;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KontenPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RedirectPemasaran;
@@ -121,6 +122,11 @@ final class SimpanDrafKonten
 
         if (HalamanPemasaran::query()->where('Slug', $slug)->exists()) {
             throw new AturanBisnisDilanggar("Jalur {$slug} sudah dipakai halaman pemasaran.");
+        }
+
+        // Tools publik berbagi rak /tools dengan konten FreeTool dan didaftarkan lebih dulu.
+        if (ToolPublik::menempati($slug)) {
+            throw new AturanBisnisDilanggar("Jalur {$slug} sudah dipakai tool publik.");
         }
     }
 
