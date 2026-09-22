@@ -41,10 +41,22 @@ use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporPdf;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
+use App\Domain\Pemasaran\Application\Services\RegistriTindakanOtomasi;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaEmailPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Listeners\CatatPeristiwaRevenue;
+use App\Domain\Pemasaran\Infrastructure\Listeners\PemicuOtomasiPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Listeners\PerekamAktivasiTrial;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaEmailLaravel;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanDaftarkanSequence;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHentikanSequence;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHitungUlangSkor;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanKirimEmail;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanNotifikasiInternal;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanPerpanjangTrial;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanPindahTahap;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanTambahTag;
+use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanWebhook;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -169,6 +181,19 @@ final class AmanpollServiceProvider extends ServiceProvider
                 default => $app->make(PenyediaEmailLaravel::class),
             };
         });
+
+        // Daftar aksi otomasi disusun sekali; mesinnya hanya mengenal apa yang terdaftar di sini.
+        $this->app->singleton(RegistriTindakanOtomasi::class, fn ($app): RegistriTindakanOtomasi => new RegistriTindakanOtomasi([
+            $app->make(TindakanKirimEmail::class),
+            $app->make(TindakanTambahTag::class),
+            $app->make(TindakanHitungUlangSkor::class),
+            $app->make(TindakanPindahTahap::class),
+            $app->make(TindakanDaftarkanSequence::class),
+            $app->make(TindakanHentikanSequence::class),
+            $app->make(TindakanNotifikasiInternal::class),
+            $app->make(TindakanPerpanjangTrial::class),
+            $app->make(TindakanWebhook::class),
+        ]));
     }
 
     public function boot(): void
@@ -216,5 +241,8 @@ final class AmanpollServiceProvider extends ServiceProvider
         }
 
         Event::listen(PeristiwaLangganan::class, CatatPeristiwaRevenue::class);
+
+        // Otomasi menyala dari peristiwa yang ditulis, bukan dari pemanggil yang harus ingat memicunya.
+        EventPemasaran::observe(PemicuOtomasiPemasaran::class);
     }
 }

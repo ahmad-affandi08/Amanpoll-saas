@@ -52,6 +52,9 @@ return [
     'pemasaran' => [
         'penyedia_email' => env('AMANPOLL_PEMASARAN_PENYEDIA_EMAIL', 'Laravel'),
 
+        // Rahasia dari environment, bukan dari konfigurasi langkah yang tersimpan terbaca di konsol.
+        'webhook_rahasia' => env('AMANPOLL_PEMASARAN_WEBHOOK_RAHASIA', ''),
+
         'captcha' => [
             'endpoint' => env(
                 'AMANPOLL_CAPTCHA_ENDPOINT',

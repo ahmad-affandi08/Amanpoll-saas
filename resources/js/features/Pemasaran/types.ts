@@ -263,3 +263,61 @@ export interface PermintaanData {
   DimintaPada: string | null;
   DiprosesPada: string | null;
 }
+
+export interface RingkasanOtomasi {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Keterangan: string | null;
+  Pemicu: string;
+  PemicuBerlaku: boolean;
+  Aktif: boolean;
+  NomorVersiAktif: number | null;
+  JumlahBerjalan: number;
+  JumlahDlq: number;
+}
+
+export interface LangkahOtomasi {
+  Id: string;
+  Urutan: number;
+  Jenis: string;
+  Konfigurasi: Record<string, unknown>;
+}
+
+export interface VersiOtomasi {
+  Id: string;
+  Nomor: number;
+  Status: string;
+  DiterbitkanPada: string | null;
+  Langkah: LangkahOtomasi[];
+}
+
+export interface LogOtomasi {
+  Urutan: number;
+  Jenis: string;
+  Hasil: string;
+  Ringkasan: string | null;
+}
+
+export interface EksekusiOtomasi {
+  Id: string;
+  Prospek: string | null;
+  Status: string;
+  LangkahBerikutnya: number;
+  Percobaan: number;
+  LanjutPada: string | null;
+  Galat: string | null;
+  DimulaiPada: string;
+  Log: LogOtomasi[];
+}
+
+export interface DetailOtomasi {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Keterangan: string | null;
+  Pemicu: string;
+  PemicuBerlaku: boolean;
+  Aktif: boolean;
+  VersiAktifId: string | null;
+}

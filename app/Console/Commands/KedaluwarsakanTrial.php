@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Domain\Pemasaran\Application\Actions\PindahkanStatusTrial;
+use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\StatusTrial;
+use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
 use Illuminate\Console\Command;
 use Throwable;
@@ -17,8 +19,10 @@ final class KedaluwarsakanTrial extends Command
 
     protected $description = 'Tandai trial yang sudah melewati BerakhirPada sebagai kedaluwarsa';
 
-    public function __construct(private readonly PindahkanStatusTrial $pindahkanStatus)
-    {
+    public function __construct(
+        private readonly PindahkanStatusTrial $pindahkanStatus,
+        private readonly PerekamEventPemasaran $event,
+    ) {
         parent::__construct();
     }
 
@@ -34,6 +38,14 @@ final class KedaluwarsakanTrial extends Command
         foreach ($trial as $satu) {
             try {
                 $this->pindahkanStatus->jalankan($satu, StatusTrial::Kadaluarsa, 'Masa trial berakhir.');
+
+                $this->event->catat(
+                    KatalogPeristiwaPemasaran::TRIAL_BERAKHIR,
+                    pengenalPengunjung: $satu->PengenalPengunjung,
+                    dataTambahan: ['TrialId' => $satu->Id, 'ProspekId' => $satu->ProspekId],
+                    organisasiId: $satu->OrganisasiId,
+                );
+
                 $berhasil++;
             } catch (Throwable $galat) {
                 $this->error("Trial {$satu->Id} gagal ditutup: {$galat->getMessage()}");

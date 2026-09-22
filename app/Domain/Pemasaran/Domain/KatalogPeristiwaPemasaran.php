@@ -26,6 +26,8 @@ final class KatalogPeristiwaPemasaran
 
     public const TEMPLATE_DIUNDUH = 'TemplateDiunduh';
 
+    public const PROSPEK_DIBUAT = 'ProspekDibuat';
+
     // Trial
     public const TRIAL_DIMULAI = 'TrialDimulai';
 
@@ -40,6 +42,10 @@ final class KatalogPeristiwaPemasaran
     public const PREVENTIVE_PERTAMA_DIBUAT = 'PreventivePertamaDibuat';
 
     public const TRIAL_TERAKTIVASI = 'TrialTeraktivasi';
+
+    public const TRIAL_AKAN_BERAKHIR = 'TrialAkanBerakhir';
+
+    public const TRIAL_BERAKHIR = 'TrialBerakhir';
 
     // Revenue
     public const CHECKOUT_DIMULAI = 'CheckoutDimulai';

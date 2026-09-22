@@ -63,6 +63,12 @@ const PINTASAN = [
     izin: 'platform.halaman.lihat',
   },
   {
+    label: 'Otomasi',
+    href: '/admin-platform/pemasaran/otomasi',
+    keterangan: 'Pemicu, kondisi, jeda, dan aksi beserta eksekusinya.',
+    izin: 'platform.otomasi.lihat',
+  },
+  {
     label: 'Template Email',
     href: '/admin-platform/pemasaran/email/template',
     keterangan: 'Naskah email pemasaran dan variabelnya.',

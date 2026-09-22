@@ -63,6 +63,14 @@ final class CatatProspek
                 $this->pindahkanTahap->catatTahapAwal($prospek);
             }
 
+            if ($baru) {
+                $this->event->catat(
+                    KatalogPeristiwaPemasaran::PROSPEK_DIBUAT,
+                    pengenalPengunjung: $prospek->PengenalPengunjung,
+                    dataTambahan: ['ProspekId' => $prospek->Id, 'Sumber' => $sumber->value],
+                );
+            }
+
             $this->event->catat(
                 KatalogPeristiwaPemasaran::FORMULIR_DIKIRIM,
                 pengenalPengunjung: $prospek->PengenalPengunjung,

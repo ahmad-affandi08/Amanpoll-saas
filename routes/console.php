@@ -88,3 +88,14 @@ Schedule::command('pemasaran:kirim-antrian-email')
 Schedule::job(new SinkronkanStatusProvider)
     ->hourly()
     ->withoutOverlapping();
+
+// Eksekusi otomasi yang jedanya lewat atau menunggu dicoba lagi (MARKETING.md 17).
+Schedule::command('pemasaran:proses-antrian-otomasi')
+    ->everyFiveMinutes()
+    ->withoutOverlapping(5);
+
+// Peringatan trial mendekati akhir, sehari sekali (MARKETING.md 17).
+Schedule::command('pemasaran:peringatkan-trial-akan-berakhir')
+    ->dailyAt('07:00')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();

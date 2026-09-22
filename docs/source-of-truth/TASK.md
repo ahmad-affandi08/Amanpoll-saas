@@ -2277,36 +2277,110 @@ positif — hanya daftar supresi yang menghentikannya.
 
 ## 35.01 Struktur
 
-- [ ] Tabel `OtomasiPemasaran`, `VersiOtomasiPemasaran`, `LangkahOtomasiPemasaran`.
-- [ ] Bentuk `Trigger → Condition → Delay → Action`.
+- [x] Tabel `OtomasiPemasaran`, `VersiOtomasiPemasaran`, `LangkahOtomasiPemasaran`.
+- [x] Bentuk `Trigger → Condition → Delay → Action`.
+
+Pemicu melekat pada otomasinya, sedangkan langkah-langkahnya milik satu versi.
+Versi dikunci ke eksekusi saat eksekusi itu lahir, sehingga menyunting otomasi
+tidak mengubah apa yang sedang berjalan di tengah jalan. Versi aktif tidak dapat
+disunting sama sekali; perubahan selalu lewat draf baru yang boleh menyalin
+langkah versi aktifnya.
 
 ## 35.02 Trigger dan Condition
 
-- [ ] Trigger sesuai `MARKETING.md` bagian 17.
-- [ ] Condition sesuai `MARKETING.md` bagian 17, termasuk consent.
+- [x] Trigger sesuai `MARKETING.md` bagian 17.
+- [x] Condition sesuai `MARKETING.md` bagian 17, termasuk consent.
+
+`KatalogPemicuOtomasi` memetakan tiap pemicu ke kode `EventPemasaran` yang
+menyalakannya. Pemicu yang belum ada sumbernya — `ReferralTerdaftar` menunggu
+FASE 36, `LeadTidakAktif` menunggu pekerjaan terjadwalnya — tetap boleh dipilih,
+tetapi konsol menyatakan terus terang bahwa otomasi itu tidak akan pernah
+berjalan. Perlakuannya sama seperti aturan skor di FASE 31: daftar tertutup yang
+jujur soal apa yang belum berlaku, bukan daftar yang diam-diam tidak menyala.
+
+Tiga peristiwa dilahirkan supaya pemicunya bukan janji kosong: `ProspekDibuat`
+dari `CatatProspek`, `TrialBerakhir` dari `KedaluwarsakanTrial`, dan
+`TrialAkanBerakhir` dari pekerjaan harian yang memeriksa peristiwa sebelumnya
+agar satu trial tidak diperingatkan setiap pagi sampai masanya habis.
+
+Kondisi membaca dari satu tempat, `PembacaBidangKondisi`, dan nilai yang tidak
+diketahui tidak pernah cocok: otomasi lebih baik diam daripada salah sasaran.
+Bidang angka dibandingkan sebagai angka, bukan sebagai teks — kalau tidak, skor
+9 akan terbaca lebih besar dari 10.
 
 ## 35.03 Action
 
-- [ ] Action dasar: kirim email, tambah tag, update skor, update status, enroll/remove sequence, notifikasi internal, webhook.
-- [ ] Action yang menyentuh Langganan lewat domain contract.
+- [x] Action dasar: kirim email, tambah tag, update skor, update status, enroll/remove sequence, notifikasi internal, webhook.
+- [x] Action yang menyentuh Langganan lewat domain contract.
+
+Sembilan aksi di balik kontrak `TindakanOtomasi` dan satu registri tertutup;
+kode yang tidak terdaftar ditolak saat langkahnya disimpan, bukan saat
+peristiwanya sudah lewat dan tidak dapat diulang. Konfigurasi tiap aksi
+divalidasi dengan aturan yang aksinya sendiri umumkan.
+
+Perpanjangan trial lewat aksi domain `PerpanjangTrial`, yang memegang batas
+kebijakan dan memanggil `KelolaLangganan`. Otomasi tidak diberi jalur pintas ke
+tabel langganan, sebab batas perpanjangan justru ada untuk menahan pemberian
+otomatis.
+
+Webhook memakai tanda tangan HMAC yang sama dengan FASE 19, dengan rahasia dari
+environment, bukan dari konfigurasi langkah — konfigurasi langkah tersimpan
+sebagai JSON biasa dan terbaca siapa pun yang membuka konsol.
 
 ## 35.04 Eksekusi
 
-- [ ] Tabel `EksekusiOtomasiPemasaran`, `LogEksekusiOtomasi`.
-- [ ] Setiap eksekusi idempoten.
-- [ ] Execution cap, daily message cap, retry cap.
-- [ ] DLQ memakai mekanisme FASE 19.
-- [ ] Job `ProsesOtomasiPemasaran` di database queue.
+- [x] Tabel `EksekusiOtomasiPemasaran`, `LogEksekusiOtomasi`.
+- [x] Setiap eksekusi idempoten.
+- [x] Execution cap, daily message cap, retry cap.
+- [x] DLQ memakai mekanisme FASE 19.
+- [x] Job `ProsesOtomasiPemasaran` di database queue.
+
+Idempotensinya berlapis dua, dan keduanya diperlukan. Lapis pertama adalah
+kunci unik `otomasi:{versi}:event:{peristiwa}`, yang menahan peristiwa yang sama
+melahirkan eksekusi kedua sekalipun dua pekerja berjalan bersamaan. Lapis kedua
+adalah log per langkah: langkah yang sudah punya baris sukses dilewati, sehingga
+pekerja yang mati setelah aksinya berjalan tetapi sebelum kemajuannya tersimpan
+tidak mengulang aksi itu saat dicoba lagi.
+
+DLQ mengikuti bentuk FASE 19: percobaan dihitung di baris eksekusinya, mundur
+makin lama tiap kali gagal, lalu berhenti permanen di `GagalPermanen` yang tetap
+terbaca di konsol lengkap dengan galat dan jejak langkahnya.
+
+Cap eksekusi membatasi berapa yang diantrekan sekali jalan, cap percobaan
+menentukan kapan menyerah, dan cap pesan harian tetap dipegang pengirim email
+FASE 34 — otomasi tidak diberi jalan memutarinya.
 
 ## 35.05 Test
 
-- [ ] `AutomationTriggerTest`.
-- [ ] `AutomationIdempotencyTest`.
-- [ ] `EvaluasiKondisiOtomasiTest`.
+- [x] `AutomationTriggerTest`.
+- [x] `AutomationIdempotencyTest`.
+- [x] `EvaluasiKondisiOtomasiTest`.
 
 ### Gate 35
 
 Otomasi yang dijalankan dua kali atas peristiwa yang sama tidak menghasilkan aksi ganda, dan kegagalan penyedia berhenti di DLQ tanpa mengulang tanpa batas.
+
+**Terpenuhi.** `AutomationIdempotencyTest::test_menjalankan_pekerjaan_dua_kali_tidak_menggandakan_aksinya`
+menjalankan job yang sama dua kali dan hanya satu email yang terjadwal;
+`test_kegagalan_berulang_berhenti_di_dlq` membiarkan webhook gagal sampai cap
+percobaan habis, lalu membuktikan barisnya berhenti di `GagalPermanen` dan
+dijalankan lagi tidak menambah panggilan keempat.
+
+Satu lubang ditemukan justru lewat sabotase, bukan lewat test. Mematikan
+pelewatan langkah berbasis log tidak menggagalkan satu test pun, karena penanda
+`LangkahBerikutnya` sudah menutupi kasus yang diuji. Yang tidak tertutup adalah
+pekerja yang mati di antara aksinya berjalan dan kemajuannya tersimpan — persis
+kasus yang membuat lapis kedua itu ada.
+`test_aksi_tidak_terulang_walau_penanda_kemajuannya_hilang` kini memerankannya
+dengan aksi yang sengaja tidak punya kunci uniknya sendiri, sehingga
+pengulangan benar-benar akan terlihat.
+
+Enam sabotase lain menggigit: kunci idempotensi yang memakai waktu alih-alih
+peristiwanya melahirkan eksekusi kembar; cap percobaan yang diabaikan mengulang
+tanpa batas; nilai kosong yang dianggap cocok membuat kondisi menyasar orang
+yang datanya tidak diketahui; kondisi gagal yang tidak menghentikan eksekusi
+mengirim email yang seharusnya tidak berangkat; dan validasi langkah yang
+dimatikan meloloskan bidang serta operator yang tidak ada.
 
 ---
 

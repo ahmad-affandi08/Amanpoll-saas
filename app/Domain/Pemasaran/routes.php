@@ -10,6 +10,7 @@ use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeController;
 use App\Domain\Pemasaran\Http\Controllers\KonsenPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\OtomasiPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ProspekController;
 use App\Domain\Pemasaran\Http\Controllers\RedirectPemasaranController;
@@ -153,6 +154,39 @@ Route::middleware(['web', 'auth:platform'])
                         Route::delete('/{redirect}', [RedirectPemasaranController::class, 'destroy'])
                             ->name('destroy');
                     });
+            });
+        });
+
+        // Otomasi pemasaran: Trigger → Condition → Delay → Action.
+        Route::prefix('otomasi')->name('otomasi.')->group(function (): void {
+            Route::middleware('izin.platform:'.KatalogIzinPemasaran::OTOMASI_LIHAT)->group(function (): void {
+                Route::get('/', [OtomasiPemasaranController::class, 'index'])->name('index');
+                Route::get('/{otomasi}', [OtomasiPemasaranController::class, 'show'])->name('show');
+            });
+
+            Route::middleware('izin.platform:'.KatalogIzinPemasaran::OTOMASI_KELOLA)->group(function (): void {
+                Route::post('/', [OtomasiPemasaranController::class, 'store'])->name('store');
+                Route::put('/{otomasi}', [OtomasiPemasaranController::class, 'update'])->name('update');
+                Route::post('/{otomasi}/versi', [OtomasiPemasaranController::class, 'buatVersi'])
+                    ->name('versi.store');
+                Route::post('/{otomasi}/versi/{versi}/langkah', [
+                    OtomasiPemasaranController::class, 'simpanLangkah',
+                ])->name('langkah.store');
+                Route::put('/{otomasi}/versi/{versi}/langkah/{langkah}', [
+                    OtomasiPemasaranController::class, 'simpanLangkah',
+                ])->name('langkah.update');
+                Route::delete('/{otomasi}/versi/{versi}/langkah/{langkah}', [
+                    OtomasiPemasaranController::class, 'hapusLangkah',
+                ])->name('langkah.destroy');
+            });
+
+            // Mengaktifkan otomasi mulai mengirim pesan ke orang sungguhan, jadi haknya sendiri.
+            Route::middleware('izin.platform:'.KatalogIzinPemasaran::OTOMASI_AKTIFKAN)->group(function (): void {
+                Route::post('/{otomasi}/versi/{versi}/aktifkan', [
+                    OtomasiPemasaranController::class, 'aktifkanVersi',
+                ])->name('versi.aktifkan');
+                Route::post('/{otomasi}/aktif', [OtomasiPemasaranController::class, 'ubahAktif'])
+                    ->name('aktif');
             });
         });
 
