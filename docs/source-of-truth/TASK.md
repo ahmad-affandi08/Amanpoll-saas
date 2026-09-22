@@ -2753,13 +2753,27 @@ dan template tanpa persetujuan penyedia tidak dapat berangkat.
 
 ## 38.02 Social Media Scheduler
 
-- [ ] Tabel `KontenSosial`, `DistribusiKontenSosial`, `JadwalKontenSosial`.
-- [ ] Kontrak `PenyediaSosial`; adapter nyata menyusul, penyedia palsu untuk test.
-- [ ] State `DRAF → REVIEW → TERJADWAL → DIPROSES → TERBIT → GAGAL` dengan peta transisi.
-- [ ] Satu konten utama dengan banyak distribusi, tiap distribusi punya channel, caption, media, jadwal, CTA, dan UTM sendiri.
-- [ ] UTM distribusi tertaut ke kampanye, sehingga trafiknya terbaca di attribution.
-- [ ] Job `TerbitkanKontenSosial` idempoten.
-- [ ] `DistribusiSosialTest`, `JadwalSosialTest`.
+- [x] Tabel `KontenSosial`, `DistribusiKontenSosial`, `JadwalKontenSosial`.
+- [x] Kontrak `PenyediaSosial`; adapter nyata menyusul, penyedia palsu untuk test.
+- [x] State `DRAF → REVIEW → TERJADWAL → DIPROSES → TERBIT → GAGAL` dengan peta transisi.
+- [x] Satu konten utama dengan banyak distribusi, tiap distribusi punya channel, caption, media, jadwal, CTA, dan UTM sendiri.
+- [x] UTM distribusi tertaut ke kampanye, sehingga trafiknya terbaca di attribution.
+- [x] Job `TerbitkanKontenSosial` idempoten.
+- [x] `DistribusiSosialTest`, `JadwalSosialTest`.
+
+Peta transisi dipasang pada distribusinya, bukan pada konten utamanya. Yang
+berpindah dari terjadwal ke terbit atau gagal adalah satu posting di satu
+channel; konten utama hanyalah wadah bersama. Memberi wadah itu status yang
+sama hanya akan melahirkan angka yang tidak pernah berarti apa-apa.
+
+Idempotensinya bukan kunci unik melainkan klaim atomik: satu pernyataan
+`UPDATE ... WHERE Status = 'Terjadwal'`, dan hanya proses yang mendapat satu
+baris terpengaruh yang boleh memanggil penyedia. Memeriksa lalu menulis akan
+lolos begitu dua pekerja berjalan bersamaan.
+
+`JadwalKontenSosial` menyimpan tiap rencana sebagai barisnya sendiri, dan
+menjadwalkan ulang membatalkan rencana lama lebih dulu. Dua rencana menunggu
+untuk satu distribusi berarti dua posting.
 
 **Gate 38.02.** Satu artikel dapat dijadwalkan ke lebih dari satu channel, dan
 menjalankan ulang penerbitannya tidak menghasilkan posting ganda.

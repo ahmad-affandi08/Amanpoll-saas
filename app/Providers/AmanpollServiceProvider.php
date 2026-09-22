@@ -46,6 +46,7 @@ use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
 use App\Domain\Pemasaran\Application\Services\RegistriDatasetDemo;
 use App\Domain\Pemasaran\Application\Services\RegistriTindakanOtomasi;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaEmailPemasaran;
+use App\Domain\Pemasaran\Domain\Contracts\PenyediaSosial;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaWhatsApp;
 use App\Domain\Pemasaran\Infrastructure\Listeners\CatatPeristiwaRevenue;
 use App\Domain\Pemasaran\Infrastructure\Listeners\PemicuOtomasiPemasaran;
@@ -53,6 +54,7 @@ use App\Domain\Pemasaran\Infrastructure\Listeners\PerekamAktivasiTrial;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Services\DatasetDemoManufaktur;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaEmailLaravel;
+use App\Domain\Pemasaran\Infrastructure\Services\PenyediaSosialLog;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaWhatsAppLog;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanDaftarkanSequence;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHentikanSequence;
@@ -195,6 +197,15 @@ final class AmanpollServiceProvider extends ServiceProvider
 
             return match ($kode) {
                 default => $app->make(PenyediaWhatsAppLog::class),
+            };
+        });
+
+        // Penyedia penjadwal sosial; bawaannya hanya menulis ke log sampai adapter nyatanya ada.
+        $this->app->bind(PenyediaSosial::class, function ($app): PenyediaSosial {
+            $kode = (string) config('amanpoll.pemasaran.penyedia_sosial', 'Log');
+
+            return match ($kode) {
+                default => $app->make(PenyediaSosialLog::class),
             };
         });
 

@@ -13,6 +13,7 @@ use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeController;
 use App\Domain\Pemasaran\Http\Controllers\KampanyeKonsolController;
 use App\Domain\Pemasaran\Http\Controllers\KonsenPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\KontenSosialController;
 use App\Domain\Pemasaran\Http\Controllers\OtomasiPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ProspekController;
@@ -103,6 +104,35 @@ Route::middleware(['web', 'auth:platform'])
                     Route::post('/{demo}/reset', [DemoPemasaranController::class, 'reset'])->name('reset');
                 });
             });
+
+        // Penjadwal sosial di balik flagnya sendiri (MARKETING.md 18).
+        Route::middleware([
+            'izin.platform:'.KatalogIzinPemasaran::KONTEN_LIHAT,
+            'fitur.platform:'.KatalogFiturPlatform::SOSIAL,
+        ])->prefix('sosial')->name('sosial.')->group(function (): void {
+            Route::get('/', [KontenSosialController::class, 'index'])->name('index');
+
+            Route::middleware('izin.platform:'.KatalogIzinPemasaran::KONTEN_KELOLA)->group(function (): void {
+                Route::post('/', [KontenSosialController::class, 'store'])->name('store');
+                Route::put('/{konten}', [KontenSosialController::class, 'update'])->name('update');
+                Route::post('/{konten}/distribusi', [KontenSosialController::class, 'simpanDistribusi'])
+                    ->name('distribusi.store');
+                Route::put('/{konten}/distribusi/{distribusi}', [KontenSosialController::class, 'perbaruiDistribusi'])
+                    ->name('distribusi.update');
+                Route::post('/{konten}/distribusi/{distribusi}/status', [KontenSosialController::class, 'pindahkanStatus'])
+                    ->name('distribusi.status');
+            });
+
+            // Menerbitkan mengubah isi kanal publik, jadi ia izin tersendiri.
+            Route::middleware('izin.platform:'.KatalogIzinPemasaran::KONTEN_TERBITKAN)->group(function (): void {
+                Route::post('/{konten}/distribusi/{distribusi}/jadwal', [KontenSosialController::class, 'jadwalkan'])
+                    ->name('distribusi.jadwal');
+                Route::delete('/{konten}/distribusi/{distribusi}/jadwal', [KontenSosialController::class, 'batalkanJadwal'])
+                    ->name('distribusi.batal');
+                Route::post('/{konten}/distribusi/{distribusi}/terbitkan', [KontenSosialController::class, 'terbitkanSekarang'])
+                    ->name('distribusi.terbitkan');
+            });
+        });
 
         // Kanal WhatsApp di balik flagnya sendiri: tanpa akun bisnis, tidak ada yang dapat berangkat.
         Route::middleware([

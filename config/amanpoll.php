@@ -52,6 +52,7 @@ return [
     'pemasaran' => [
         'penyedia_email' => env('AMANPOLL_PEMASARAN_PENYEDIA_EMAIL', 'Laravel'),
         'penyedia_whatsapp' => env('AMANPOLL_PEMASARAN_PENYEDIA_WHATSAPP', 'Log'),
+        'penyedia_sosial' => env('AMANPOLL_PEMASARAN_PENYEDIA_SOSIAL', 'Log'),
 
         // Rahasia dari environment, bukan dari konfigurasi langkah yang tersimpan terbaca di konsol.
         'webhook_rahasia' => env('AMANPOLL_PEMASARAN_WEBHOOK_RAHASIA', ''),

@@ -99,6 +99,12 @@ const PINTASAN = [
     izin: 'platform.whatsapp.lihat',
   },
   {
+    label: 'Konten Sosial',
+    href: '/admin-platform/pemasaran/sosial',
+    keterangan: 'Satu konten, banyak distribusi, beserta jadwal terbitnya.',
+    izin: 'platform.konten.lihat',
+  },
+  {
     label: 'Referral',
     href: '/admin-platform/pemasaran/referral',
     keterangan: 'Program referral, kode pelanggan, dan imbalannya.',

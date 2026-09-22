@@ -89,6 +89,11 @@ Schedule::command('pemasaran:kirim-antrian-whatsapp')
     ->everyFiveMinutes()
     ->withoutOverlapping(5);
 
+// Penerbitan konten sosial yang jatuh tempo diantrekan tiap lima menit (MARKETING.md 18).
+Schedule::command('pemasaran:terbitkan-sosial')
+    ->everyFiveMinutes()
+    ->withoutOverlapping(5);
+
 // Status kiriman yang datang belakangan ditarik tiap jam (MARKETING.md 15).
 Schedule::job(new SinkronkanStatusProvider)
     ->hourly()
