@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { TemplateEmail } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   template: TemplateEmail[];
@@ -109,7 +110,7 @@ function DialogTemplate({
   const form = useForm({
     Kode: template?.Kode ?? '',
     Nama: template?.Nama ?? '',
-    Jenis: template?.Jenis ?? (pilihan.Jenis[0] ?? ''),
+    Jenis: template?.Jenis ?? pilihan.Jenis[0] ?? '',
     Subjek: template?.Subjek ?? '',
     IsiHtml: template?.IsiHtml ?? '',
     IsiTeks: template?.IsiTeks ?? '',
@@ -148,17 +149,12 @@ function DialogTemplate({
 
         <form onSubmit={kirim} className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="Kode">Kode</Label>
-              <Input
-                id="Kode"
-                value={form.data.Kode}
-                onChange={(e) => form.setData('Kode', e.target.value)}
-                placeholder="trial-hari-1"
-                required
-              />
-              {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+              contoh="trial-hari-1"
+            />
 
             <div className="grid gap-2">
               <Label htmlFor="Jenis">Jenis</Label>
@@ -209,9 +205,7 @@ function DialogTemplate({
               onChange={(e) => form.setData('IsiHtml', e.target.value)}
               required
             />
-            {form.errors.IsiHtml ? (
-              <p className="text-sm text-destructive">{form.errors.IsiHtml}</p>
-            ) : null}
+            {form.errors.IsiHtml ? <p className="text-sm text-destructive">{form.errors.IsiHtml}</p> : null}
           </div>
 
           <div className="grid gap-2">

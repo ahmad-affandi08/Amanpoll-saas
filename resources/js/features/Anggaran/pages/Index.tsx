@@ -24,6 +24,7 @@ import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Ringkas {
   Id: string;
@@ -81,15 +82,11 @@ function DialogBuatAnggaran({ unitOrganisasi }: { unitOrganisasi: Ringkas[] }) {
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="kode-anggaran">Kode</Label>
-              <Input
-                id="kode-anggaran"
-                value={form.data.Kode}
-                onChange={(event) => form.setData('Kode', event.target.value)}
-              />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="space-y-1.5">
               <Label htmlFor="tahun-anggaran">Periode Tahun</Label>
               <Input

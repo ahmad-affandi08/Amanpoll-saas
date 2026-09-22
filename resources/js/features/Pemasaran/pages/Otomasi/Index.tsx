@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { RingkasanOtomasi } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   otomasi: RingkasanOtomasi[];
@@ -46,9 +47,8 @@ export default function PemasaranOtomasiIndex({ otomasi, pilihan }: Props) {
 
       {belumBerlaku.length > 0 ? (
         <div className="mb-4 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-          {belumBerlaku.length} otomasi menyala tetapi pemicunya belum ada sumbernya, jadi tidak akan
-          pernah berjalan:{' '}
-          <span className="font-mono">{belumBerlaku.map((satu) => satu.Kode).join(', ')}</span>.
+          {belumBerlaku.length} otomasi menyala tetapi pemicunya belum ada sumbernya, jadi tidak akan pernah
+          berjalan: <span className="font-mono">{belumBerlaku.map((satu) => satu.Kode).join(', ')}</span>.
         </div>
       ) : null}
 
@@ -83,9 +83,7 @@ export default function PemasaranOtomasiIndex({ otomasi, pilihan }: Props) {
                     <span className="text-destructive"> · {satu.JumlahDlq} di DLQ</span>
                   ) : null}
                 </p>
-                {satu.Keterangan ? (
-                  <p className="text-muted-foreground">{satu.Keterangan}</p>
-                ) : null}
+                {satu.Keterangan ? <p className="text-muted-foreground">{satu.Keterangan}</p> : null}
                 <div className="flex justify-end">
                   <Button asChild variant="outline" size="sm">
                     <Link href={`${AKAR}/${satu.Kode}`}>Buka</Link>
@@ -129,17 +127,12 @@ function DialogOtomasi({ pilihan }: { pilihan: { Pemicu: Record<string, string> 
         </DialogHeader>
 
         <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="KodeOtomasi">Kode</Label>
-            <Input
-              id="KodeOtomasi"
-              value={form.data.Kode}
-              onChange={(e) => form.setData('Kode', e.target.value)}
-              placeholder="sapa-prospek-baru"
-              required
-            />
-            {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-          </div>
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+            contoh="sapa-prospek-baru"
+          />
 
           <div className="grid gap-2">
             <Label htmlFor="NamaOtomasi">Nama</Label>
@@ -168,13 +161,11 @@ function DialogOtomasi({ pilihan }: { pilihan: { Pemicu: Record<string, string> 
             </Select>
             {sumberTerpilih === BELUM_ADA_SUMBER ? (
               <p className="text-sm text-muted-foreground">
-                Belum ada yang menghasilkan pemicu ini. Otomasinya tersimpan tetapi tidak akan
-                berjalan sampai sumbernya ada.
+                Belum ada yang menghasilkan pemicu ini. Otomasinya tersimpan tetapi tidak akan berjalan sampai
+                sumbernya ada.
               </p>
             ) : null}
-            {form.errors.Pemicu ? (
-              <p className="text-sm text-destructive">{form.errors.Pemicu}</p>
-            ) : null}
+            {form.errors.Pemicu ? <p className="text-sm text-destructive">{form.errors.Pemicu}</p> : null}
           </div>
 
           <div className="grid gap-2">

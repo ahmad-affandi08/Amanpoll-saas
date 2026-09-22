@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import type { JenisKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 function nilaiAwal(jenis: JenisKalibrasi | null) {
   return {
@@ -79,17 +80,13 @@ export function DialogFormJenis({ jenis }: { jenis: JenisKalibrasi | null }) {
         </DialogHeader>
 
         <form onSubmit={simpan} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="Kode">Kode Jenis *</Label>
-            <Input
-              id="Kode"
-              placeholder="mis. CAL-TEMP, CAL-PRESS"
-              value={form.data.Kode}
-              onChange={(e) => form.setData('Kode', e.target.value)}
-              required
-            />
-            {form.errors.Kode && <p className="text-xs text-rose-600">{form.errors.Kode}</p>}
-          </div>
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+            label="Kode Jenis"
+            contoh="mis. CAL-TEMP, CAL-PRESS"
+          />
 
           <div className="space-y-1.5">
             <Label htmlFor="Nama">Nama Jenis Kalibrasi *</Label>

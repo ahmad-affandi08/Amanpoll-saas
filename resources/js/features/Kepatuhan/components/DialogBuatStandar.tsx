@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 export function DialogBuatStandar() {
   const [buka, setBuka] = useState(false);
@@ -58,15 +59,11 @@ export function DialogBuatStandar() {
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
-            <div className="space-y-1.5">
-              <Label htmlFor="KodeStandar">Kode</Label>
-              <Input
-                id="KodeStandar"
-                value={form.data.Kode}
-                onChange={(event) => form.setData('Kode', event.target.value)}
-              />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="space-y-1.5">
               <Label htmlFor="NamaStandar">Nama</Label>
               <Input

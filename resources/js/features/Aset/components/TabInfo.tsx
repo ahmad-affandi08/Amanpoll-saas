@@ -11,6 +11,7 @@ import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { ruteAset } from '@/features/Aset/api';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 export function TabInfo({
   aset,
@@ -67,15 +68,13 @@ export function TabInfo({
   return (
     <form onSubmit={submit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Kode Aset</Label>
-          <Input
-            value={form.data.KodeAset}
-            onChange={(e) => form.setData('KodeAset', e.target.value)}
-            className="font-mono"
-          />
-          {form.errors.KodeAset && <p className="text-sm text-destructive">{form.errors.KodeAset}</p>}
-        </div>
+        <BidangKode
+          nilai={form.data.KodeAset}
+          onUbah={(nilai) => form.setData('KodeAset', nilai)}
+          galat={form.errors.KodeAset}
+          label="Kode Aset"
+          id="KodeAset"
+        />
         <div className="space-y-2">
           <Label>Nama</Label>
           <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />

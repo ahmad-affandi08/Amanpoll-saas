@@ -22,6 +22,7 @@ import { ruteModelAset } from '@/features/ModelAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   modelAset: ModelAset[];
@@ -148,14 +149,13 @@ function DialogFormModelAset({
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Kode Model</Label>
-              <Input
-                value={form.data.KodeModel}
-                onChange={(e) => form.setData('KodeModel', e.target.value)}
-                className="font-mono"
-              />
-            </div>
+            <BidangKode
+              nilai={form.data.KodeModel}
+              onUbah={(nilai) => form.setData('KodeModel', nilai)}
+              galat={form.errors.KodeModel}
+              label="Kode Model"
+              id="KodeModel"
+            />
             <div className="space-y-2">
               <Label>Nama</Label>
               <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />

@@ -8,6 +8,7 @@ import { DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 export function FormInfoPenyedia({
   penyedia,
@@ -66,15 +67,11 @@ export function FormInfoPenyedia({
   return (
     <form onSubmit={submit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Kode</Label>
-          <Input
-            value={form.data.Kode}
-            onChange={(e) => form.setData('Kode', e.target.value)}
-            className="font-mono"
-          />
-          {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-        </div>
+        <BidangKode
+          nilai={form.data.Kode}
+          onUbah={(nilai) => form.setData('Kode', nilai)}
+          galat={form.errors.Kode}
+        />
         <div className="space-y-2">
           <Label>Nama</Label>
           <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />

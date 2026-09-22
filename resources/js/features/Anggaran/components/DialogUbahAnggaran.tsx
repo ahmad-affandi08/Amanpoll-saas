@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Anggaran } from '@/features/Anggaran/types';
 import { ruteAnggaran } from '@/features/Anggaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 export function DialogUbahAnggaran({ anggaran }: { anggaran: Anggaran }) {
   const [buka, setBuka] = useState(false);
@@ -46,10 +47,11 @@ export function DialogUbahAnggaran({ anggaran }: { anggaran: Anggaran }) {
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Kode</Label>
-              <Input value={form.data.Kode} onChange={(event) => form.setData('Kode', event.target.value)} />
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="space-y-1.5">
               <Label>Tahun</Label>
               <Input

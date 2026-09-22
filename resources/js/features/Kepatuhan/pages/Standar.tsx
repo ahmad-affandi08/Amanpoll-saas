@@ -22,6 +22,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import type { PersyaratanKepatuhan, StandarKepatuhan } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   standar: StandarKepatuhan;
@@ -71,15 +72,11 @@ function DialogTambahPersyaratan({ standar }: Props) {
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
-            <div className="space-y-1.5">
-              <Label htmlFor="KodePersyaratan">Kode</Label>
-              <Input
-                id="KodePersyaratan"
-                value={form.data.Kode}
-                onChange={(event) => form.setData('Kode', event.target.value)}
-              />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="space-y-1.5">
               <Label htmlFor="NamaPersyaratan">Nama</Label>
               <Input

@@ -19,6 +19,7 @@ import { Plus, Search, Layers, ArrowRight } from 'lucide-react';
 import type { TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   templat: TemplatDaftarPeriksa[];
@@ -79,19 +80,13 @@ export default function DaftarPeriksaTemplatIndex({ templat, kategoriAset, model
                     </DialogHeader>
 
                     <div className="grid gap-4 py-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="Kode">
-                          Kode Templat <span className="text-rose-500">*</span>
-                        </Label>
-                        <Input
-                          id="Kode"
-                          placeholder="Misal: CK-POMPA-01"
-                          value={form.data.Kode}
-                          onChange={(e) => form.setData('Kode', e.target.value)}
-                          required
-                        />
-                        {form.errors.Kode && <p className="text-xs text-rose-500">{form.errors.Kode}</p>}
-                      </div>
+                      <BidangKode
+                        nilai={form.data.Kode}
+                        onUbah={(nilai) => form.setData('Kode', nilai)}
+                        galat={form.errors.Kode}
+                        label="Kode Templat"
+                        contoh="Misal: CK-POMPA-01"
+                      />
 
                       <div className="space-y-1.5">
                         <Label htmlFor="Nama">

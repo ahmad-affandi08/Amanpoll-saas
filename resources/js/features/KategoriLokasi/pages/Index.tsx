@@ -19,6 +19,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { ruteKategoriLokasi } from '@/features/KategoriLokasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface KategoriLokasi {
   Id: string;
@@ -69,16 +70,11 @@ function DialogFormKategoriLokasi({ kategori }: { kategori: KategoriLokasi | nul
         </DialogHeader>
 
         <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Kode">Kode</Label>
-            <Input
-              id="Kode"
-              value={form.data.Kode}
-              onChange={(e) => form.setData('Kode', e.target.value)}
-              required
-            />
-            {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-          </div>
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+          />
 
           <div className="grid gap-2">
             <Label htmlFor="Nama">Nama</Label>

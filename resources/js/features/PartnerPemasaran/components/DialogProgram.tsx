@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import type { Program } from '@/features/PartnerPemasaran/types';
 import { Bidang } from '@/features/PartnerPemasaran/components/Bidang';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 export function DialogProgram({ program }: { program: Program | null }) {
   const [buka, setBuka] = useState(false);
@@ -49,9 +50,11 @@ export function DialogProgram({ program }: { program: Program | null }) {
           <DialogTitle>{program ? 'Ubah program partner' : 'Program partner baru'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={kirim} className="space-y-4">
-          <Bidang label="Kode" galat={form.errors.Kode}>
-            <Input value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} />
-          </Bidang>
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+          />
           <Bidang label="Nama" galat={form.errors.Nama}>
             <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
           </Bidang>

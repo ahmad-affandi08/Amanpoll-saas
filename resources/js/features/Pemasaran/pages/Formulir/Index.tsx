@@ -22,6 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import type { FieldFormulir, Formulir, PilihanFormulir } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   formulir: Formulir[];
@@ -174,17 +175,12 @@ function DialogFormulir({ formulir, pilihan }: { formulir: Formulir | null; pili
 
         <form onSubmit={kirim} className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="Kode">Kode</Label>
-              <Input
-                id="Kode"
-                value={form.data.Kode}
-                onChange={(e) => form.setData('Kode', e.target.value)}
-                placeholder="demo-manufaktur"
-                required
-              />
-              {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+              contoh="demo-manufaktur"
+            />
 
             <div className="grid gap-2">
               <Label htmlFor="Nama">Nama</Label>

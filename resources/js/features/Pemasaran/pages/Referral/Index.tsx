@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import type { ProgramReferral, RewardReferralRingkas } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 type Pilihan = { Jenis: string[]; JenisDidukung: string[] };
 
@@ -93,8 +94,8 @@ function Corong({ corong }: { corong: Record<string, number> }) {
 
       {ditolak > 0 || kedaluwarsa > 0 ? (
         <p className="text-sm text-muted-foreground">
-          {ditolak} ditolak karena mereferensikan diri sendiri, {kedaluwarsa} lewat jendelanya tanpa
-          pernah dibayar.
+          {ditolak} ditolak karena mereferensikan diri sendiri, {kedaluwarsa} lewat jendelanya tanpa pernah
+          dibayar.
         </p>
       ) : null}
     </div>
@@ -120,8 +121,8 @@ function KartuProgram({ program, pilihan }: { program: ProgramReferral; pilihan:
 
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          Imbalan {program.JenisReward} sebesar {program.NilaiReward} · jendela{' '}
-          {program.HariKedaluwarsa} hari · {program.JumlahReferral} referral
+          Imbalan {program.JenisReward} sebesar {program.NilaiReward} · jendela {program.HariKedaluwarsa} hari
+          · {program.JumlahReferral} referral
         </p>
 
         {program.Kodenya.length === 0 ? (
@@ -132,9 +133,7 @@ function KartuProgram({ program, pilihan }: { program: ProgramReferral; pilihan:
               <li key={kode.Id} className="flex flex-wrap items-center justify-between gap-2 p-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{kode.Organisasi}</p>
-                  <p className="break-all font-mono text-xs text-muted-foreground">
-                    {kode.Url ?? kode.Kode}
-                  </p>
+                  <p className="break-all font-mono text-xs text-muted-foreground">{kode.Url ?? kode.Kode}</p>
                 </div>
                 {kode.Aktif ? null : <Badge variant="secondary">Nonaktif</Badge>}
               </li>
@@ -150,20 +149,14 @@ function KartuProgram({ program, pilihan }: { program: ProgramReferral; pilihan:
   );
 }
 
-function DialogProgram({
-  program,
-  pilihan,
-}: {
-  program: ProgramReferral | null;
-  pilihan: Pilihan;
-}) {
+function DialogProgram({ program, pilihan }: { program: ProgramReferral | null; pilihan: Pilihan }) {
   const [buka, setBuka] = useState(false);
 
   const form = useForm({
     Kode: program?.Kode ?? '',
     Nama: program?.Nama ?? '',
     Keterangan: program?.Keterangan ?? '',
-    JenisReward: program?.JenisReward ?? (pilihan.JenisDidukung[0] ?? ''),
+    JenisReward: program?.JenisReward ?? pilihan.JenisDidukung[0] ?? '',
     NilaiReward: String(program?.NilaiReward ?? 0),
     HariKedaluwarsa: String(program?.HariKedaluwarsa ?? 90),
     Aktif: program?.Aktif ?? false,
@@ -208,17 +201,12 @@ function DialogProgram({
         </DialogHeader>
 
         <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="KodeProgram">Kode</Label>
-            <Input
-              id="KodeProgram"
-              value={form.data.Kode}
-              onChange={(e) => form.setData('Kode', e.target.value)}
-              placeholder="ajak-teman"
-              required
-            />
-            {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-          </div>
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+            contoh="ajak-teman"
+          />
 
           <div className="grid gap-2">
             <Label htmlFor="NamaProgram">Nama</Label>
@@ -234,10 +222,7 @@ function DialogProgram({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="JenisReward">Jenis imbalan</Label>
-              <Select
-                value={form.data.JenisReward}
-                onValueChange={(v) => form.setData('JenisReward', v)}
-              >
+              <Select value={form.data.JenisReward} onValueChange={(v) => form.setData('JenisReward', v)}>
                 <SelectTrigger id="JenisReward">
                   <SelectValue />
                 </SelectTrigger>
@@ -409,9 +394,7 @@ function DaftarReward({ reward }: { reward: RewardReferralRingkas[] }) {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Badge variant={satu.Status === 'Gagal' ? 'destructive' : 'outline'}>
-                  {satu.Status}
-                </Badge>
+                <Badge variant={satu.Status === 'Gagal' ? 'destructive' : 'outline'}>{satu.Status}</Badge>
                 {satu.Status === 'Tertunda' || satu.Status === 'Gagal' ? (
                   <>
                     <Button
@@ -432,9 +415,7 @@ function DaftarReward({ reward }: { reward: RewardReferralRingkas[] }) {
             </div>
 
             {satu.Galat ? <p className="text-xs text-destructive">{satu.Galat}</p> : null}
-            {satu.Ringkasan ? (
-              <p className="text-xs text-muted-foreground">{satu.Ringkasan}</p>
-            ) : null}
+            {satu.Ringkasan ? <p className="text-xs text-muted-foreground">{satu.Ringkasan}</p> : null}
           </CardContent>
         </Card>
       ))}

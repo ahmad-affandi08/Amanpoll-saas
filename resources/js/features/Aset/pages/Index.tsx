@@ -27,6 +27,7 @@ import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 import { ruteAset } from '@/features/Aset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -158,15 +159,13 @@ function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Kode Aset</Label>
-              <Input
-                value={form.data.KodeAset}
-                onChange={(e) => form.setData('KodeAset', e.target.value)}
-                className="font-mono"
-              />
-              {form.errors.KodeAset && <p className="text-sm text-destructive">{form.errors.KodeAset}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.KodeAset}
+              onUbah={(nilai) => form.setData('KodeAset', nilai)}
+              galat={form.errors.KodeAset}
+              label="Kode Aset"
+              id="KodeAset"
+            />
             <div className="space-y-2">
               <Label>Nama</Label>
               <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />

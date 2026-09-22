@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Demo {
   Id: string;
@@ -90,9 +91,7 @@ function KartuDemo({ demo, pilihan }: { demo: Demo; pilihan: Pilihan }) {
           <p className="font-mono text-xs text-muted-foreground">{demo.Kode}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Badge variant={demo.Aktif ? 'default' : 'secondary'}>
-            {demo.Aktif ? 'Aktif' : 'Dimatikan'}
-          </Badge>
+          <Badge variant={demo.Aktif ? 'default' : 'secondary'}>{demo.Aktif ? 'Aktif' : 'Dimatikan'}</Badge>
           <DialogFormDemo demo={demo} pilihan={pilihan} />
           <Button
             variant="outline"
@@ -127,11 +126,10 @@ function KartuDemo({ demo, pilihan }: { demo: Demo; pilihan: Pilihan }) {
           label="Modul tampil"
           isi={<DaftarBadge nilai={demo.ModulTampil} kosong="Belum ada modul dipilih" />}
         />
-        <Butir
-          label="Fitur dibatasi"
-          isi={<DaftarBadge nilai={demo.FiturDibatasi} kosong="Tidak ada" />}
-        />
-        {demo.CtaUrl ? <Butir label="CTA" isi={`${demo.CtaLabel ?? 'Tanpa label'} → ${demo.CtaUrl}`} /> : null}
+        <Butir label="Fitur dibatasi" isi={<DaftarBadge nilai={demo.FiturDibatasi} kosong="Tidak ada" />} />
+        {demo.CtaUrl ? (
+          <Butir label="CTA" isi={`${demo.CtaLabel ?? 'Tanpa label'} → ${demo.CtaUrl}`} />
+        ) : null}
       </CardContent>
     </Card>
   );
@@ -179,11 +177,7 @@ function PeristiwaDemo({ peristiwa }: { peristiwa: Record<string, number> }) {
               <span className="text-foreground">{jenis}</span>
               <span className="font-mono text-foreground">{jumlah.toLocaleString('id-ID')}</span>
             </div>
-            <div
-              className="mt-1 h-2 rounded-sm bg-muted"
-              role="img"
-              aria-label={`${jenis}: ${jumlah}`}
-            >
+            <div className="mt-1 h-2 rounded-sm bg-muted" role="img" aria-label={`${jenis}: ${jumlah}`}>
               <div
                 className="h-2 rounded-sm"
                 style={{
@@ -195,8 +189,8 @@ function PeristiwaDemo({ peristiwa }: { peristiwa: Record<string, number> }) {
           </div>
         ))}
         <p className="text-xs text-muted-foreground">
-          DemoDimulai, DemoSelesai, dan CtaDiklik juga tercatat di funnel growth; sisanya hanya
-          hidup di dalam demo.
+          DemoDimulai, DemoSelesai, dan CtaDiklik juga tercatat di funnel growth; sisanya hanya hidup di dalam
+          demo.
         </p>
       </CardContent>
     </Card>
@@ -258,16 +252,11 @@ function DialogFormDemo({ demo, pilihan }: { demo: Demo | null; pilihan: Pilihan
 
         <form onSubmit={submit} className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="Kode">Kode</Label>
-              <Input
-                id="Kode"
-                value={form.data.Kode}
-                onChange={(e) => form.setData('Kode', e.target.value)}
-                required
-              />
-              {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="grid gap-2">
               <Label htmlFor="Nama">Nama</Label>
               <Input
@@ -301,9 +290,7 @@ function DialogFormDemo({ demo, pilihan }: { demo: Demo | null; pilihan: Pilihan
                 ))}
               </SelectContent>
             </Select>
-            {form.errors.Dataset ? (
-              <p className="text-sm text-destructive">{form.errors.Dataset}</p>
-            ) : null}
+            {form.errors.Dataset ? <p className="text-sm text-destructive">{form.errors.Dataset}</p> : null}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -389,9 +376,7 @@ function DialogFormDemo({ demo, pilihan }: { demo: Demo | null; pilihan: Pilihan
                 value={form.data.CtaUrl}
                 onChange={(e) => form.setData('CtaUrl', e.target.value)}
               />
-              {form.errors.CtaUrl ? (
-                <p className="text-sm text-destructive">{form.errors.CtaUrl}</p>
-              ) : null}
+              {form.errors.CtaUrl ? <p className="text-sm text-destructive">{form.errors.CtaUrl}</p> : null}
             </div>
           </div>
 

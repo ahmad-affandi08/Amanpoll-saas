@@ -21,6 +21,7 @@ import type { DefinisiKolomKustom, TipeDataKolomKustom } from '@/features/Kolabo
 import { ruteKolomKustom } from '@/features/KolomKustom/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   jenisEntitasTersedia: string[];
@@ -86,16 +87,11 @@ function DialogFormDefinisi({
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Kode</Label>
-              <Input
-                value={form.data.Kode}
-                onChange={(e) => form.setData('Kode', e.target.value)}
-                className="font-mono"
-                disabled={!!definisi}
-              />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="space-y-2">
               <Label>Label</Label>
               <Input value={form.data.Label} onChange={(e) => form.setData('Label', e.target.value)} />

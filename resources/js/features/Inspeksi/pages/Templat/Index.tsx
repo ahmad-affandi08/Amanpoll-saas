@@ -19,6 +19,7 @@ import { Plus, Search } from 'lucide-react';
 import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
   templat: TemplatInspeksi[];
@@ -79,19 +80,13 @@ export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaf
                     </DialogHeader>
 
                     <div className="grid gap-4 py-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="Kode">
-                          Kode Templat <span className="text-rose-500">*</span>
-                        </Label>
-                        <Input
-                          id="Kode"
-                          placeholder="Misal: INSP-HVAC-BULANAN"
-                          value={form.data.Kode}
-                          onChange={(e) => form.setData('Kode', e.target.value)}
-                          required
-                        />
-                        {form.errors.Kode && <p className="text-xs text-rose-500">{form.errors.Kode}</p>}
-                      </div>
+                      <BidangKode
+                        nilai={form.data.Kode}
+                        onUbah={(nilai) => form.setData('Kode', nilai)}
+                        galat={form.errors.Kode}
+                        label="Kode Templat"
+                        contoh="Misal: INSP-HVAC-BULANAN"
+                      />
 
                       <div className="space-y-1.5">
                         <Label htmlFor="Nama">

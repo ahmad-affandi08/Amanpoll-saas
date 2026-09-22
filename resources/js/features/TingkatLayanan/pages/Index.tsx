@@ -28,6 +28,7 @@ import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Ringkas {
   Id: string;
@@ -123,11 +124,11 @@ function DialogTingkatLayanan({
         </DialogHeader>
         <form onSubmit={submit} className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Kode</Label>
-              <Input value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="space-y-1.5">
               <Label>Nama</Label>
               <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />

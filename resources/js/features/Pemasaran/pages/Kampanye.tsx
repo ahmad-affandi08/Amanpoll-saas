@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { formatAngka } from '@/lib/angka';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Kampanye {
   Id: string;
@@ -117,19 +118,11 @@ function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; 
         </DialogHeader>
 
         <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Kode">Kode</Label>
-            <Input
-              id="Kode"
-              value={form.data.Kode}
-              onChange={(e) => form.setData('Kode', e.target.value)}
-              required
-            />
-            <p className="text-sm text-muted-foreground">
-              Dipakai sebagai <code className="font-mono">utm_campaign</code> pada tautan iklan.
-            </p>
-            {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-          </div>
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+          />
 
           <div className="grid gap-2">
             <Label htmlFor="Nama">Nama</Label>

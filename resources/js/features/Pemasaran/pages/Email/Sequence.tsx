@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { LangkahSequence, SequenceEmail } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 type PilihanTemplate = { Id: string; Nama: string; Kode: string };
 
@@ -63,13 +64,7 @@ export default function PemasaranEmailSequence({ sequence, template, kodeSequenc
   );
 }
 
-function KartuSequence({
-  sequence,
-  template,
-}: {
-  sequence: SequenceEmail;
-  template: PilihanTemplate[];
-}) {
+function KartuSequence({ sequence, template }: { sequence: SequenceEmail; template: PilihanTemplate[] }) {
   const konfirmasi = useKonfirmasi();
   const terkunci = sequence.JumlahBerjalan > 0;
 
@@ -104,8 +99,8 @@ function KartuSequence({
       <CardContent className="space-y-3">
         {terkunci ? (
           <p className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
-            {sequence.JumlahBerjalan} pendaftaran masih berjalan. Kirimannya sudah terjadwal, jadi
-            langkah tidak dapat diubah — nonaktifkan sequence ini lalu buat versi barunya.
+            {sequence.JumlahBerjalan} pendaftaran masih berjalan. Kirimannya sudah terjadwal, jadi langkah
+            tidak dapat diubah — nonaktifkan sequence ini lalu buat versi barunya.
           </p>
         ) : null}
 
@@ -188,17 +183,12 @@ function DialogSequence({ sequence }: { sequence: SequenceEmail | null }) {
         </DialogHeader>
 
         <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="KodeSequence">Kode</Label>
-            <Input
-              id="KodeSequence"
-              value={form.data.Kode}
-              onChange={(e) => form.setData('Kode', e.target.value)}
-              placeholder="onboarding-trial"
-              required
-            />
-            {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-          </div>
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+            contoh="onboarding-trial"
+          />
 
           <div className="grid gap-2">
             <Label htmlFor="NamaSequence">Nama</Label>
@@ -253,7 +243,7 @@ function DialogLangkah({
   const urutanBerikut = sequence.Langkah.reduce((maks, satu) => Math.max(maks, satu.Urutan + 1), 0);
 
   const form = useForm({
-    TemplateEmailPemasaranId: langkah?.TemplateEmailPemasaranId ?? (template[0]?.Id ?? ''),
+    TemplateEmailPemasaranId: langkah?.TemplateEmailPemasaranId ?? template[0]?.Id ?? '',
     Urutan: String(langkah?.Urutan ?? urutanBerikut),
     HariKe: String(langkah?.HariKe ?? 0),
     Aktif: langkah?.Aktif ?? true,
@@ -334,9 +324,7 @@ function DialogLangkah({
                   onChange={(e) => form.setData('Urutan', e.target.value)}
                   required
                 />
-                {form.errors.Urutan ? (
-                  <p className="text-sm text-destructive">{form.errors.Urutan}</p>
-                ) : null}
+                {form.errors.Urutan ? <p className="text-sm text-destructive">{form.errors.Urutan}</p> : null}
               </div>
 
               <div className="grid gap-2">
@@ -349,9 +337,7 @@ function DialogLangkah({
                   onChange={(e) => form.setData('HariKe', e.target.value)}
                   required
                 />
-                {form.errors.HariKe ? (
-                  <p className="text-sm text-destructive">{form.errors.HariKe}</p>
-                ) : null}
+                {form.errors.HariKe ? <p className="text-sm text-destructive">{form.errors.HariKe}</p> : null}
               </div>
             </div>
 

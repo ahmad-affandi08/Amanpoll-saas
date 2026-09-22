@@ -59,12 +59,6 @@ export function DialogKelolaKategori({ kategoriPenyedia }: { kategoriPenyedia: K
         </div>
         <form onSubmit={submit} className="flex gap-2 border-t border-border pt-4">
           <Input
-            placeholder="Kode"
-            value={form.data.Kode}
-            onChange={(e) => form.setData('Kode', e.target.value)}
-            className="w-28 font-mono"
-          />
-          <Input
             placeholder="Nama kategori"
             value={form.data.Nama}
             onChange={(e) => form.setData('Nama', e.target.value)}

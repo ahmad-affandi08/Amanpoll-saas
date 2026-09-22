@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Anggaran, PosAnggaran } from '@/features/Anggaran/types';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 export function DialogPos({
   anggaran,
@@ -83,15 +84,11 @@ export function DialogPos({
             </Select>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="kode-pos">Kode</Label>
-              <Input
-                id="kode-pos"
-                value={form.data.Kode}
-                onChange={(event) => form.setData('Kode', event.target.value)}
-              />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="space-y-1.5">
               <Label htmlFor="nilai-pos">Nilai</Label>
               <Input

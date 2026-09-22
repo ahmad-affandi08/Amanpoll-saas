@@ -19,6 +19,7 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -120,15 +121,12 @@ function DialogFormKodeKegagalan({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Kode</Label>
-              <Input
-                value={form.data.Kode}
-                onChange={(e) => form.setData('Kode', e.target.value.toUpperCase())}
-                placeholder="Misal: MSL-001"
-              />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+              contoh="Misal: MSL-001"
+            />
 
             <div className="space-y-1.5">
               <Label>Kategori Aset (Opsional)</Label>

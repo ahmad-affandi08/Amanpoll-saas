@@ -20,6 +20,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Angka {
   Pembilang: number;
@@ -112,12 +113,8 @@ function KartuEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen; pili
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Badge variant={eksperimen.Status === 'Aktif' ? 'default' : 'secondary'}>
-            {eksperimen.Status}
-          </Badge>
-          {eksperimen.Pemenang ? (
-            <Badge variant="outline">Pemenang {eksperimen.Pemenang}</Badge>
-          ) : null}
+          <Badge variant={eksperimen.Status === 'Aktif' ? 'default' : 'secondary'}>{eksperimen.Status}</Badge>
+          {eksperimen.Pemenang ? <Badge variant="outline">Pemenang {eksperimen.Pemenang}</Badge> : null}
           <DialogFormEksperimen eksperimen={eksperimen} pilihan={pilihan} />
           {eksperimen.TujuanStatus.map((tujuan) => (
             <Button
@@ -156,7 +153,9 @@ function KartuEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen; pili
                 <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
                   <span className="text-foreground">
                     {satu.Kode} · {satu.Nama}
-                    {satu.Kontrol ? <span className="ml-2 text-xs text-muted-foreground">kontrol</span> : null}
+                    {satu.Kontrol ? (
+                      <span className="ml-2 text-xs text-muted-foreground">kontrol</span>
+                    ) : null}
                   </span>
                   <span className="font-mono text-foreground">
                     {angka ? persen(angka.Rasio) : '—'}
@@ -211,13 +210,7 @@ function KartuEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen; pili
   );
 }
 
-function DialogFormEksperimen({
-  eksperimen,
-  pilihan,
-}: {
-  eksperimen: Eksperimen | null;
-  pilihan: Pilihan;
-}) {
+function DialogFormEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen | null; pilihan: Pilihan }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: eksperimen?.Kode ?? '',
@@ -226,20 +219,22 @@ function DialogFormEksperimen({
     MetrikUtama: eksperimen?.MetrikUtama ?? pilihan.Metrik[0]?.Kunci,
     Hipotesis: eksperimen?.Hipotesis ?? '',
     MinimumSampel: String(eksperimen?.MinimumSampel ?? pilihan.MinimumSampelBawaan),
-    Varian:
-      eksperimen?.Varian.map((satu) => ({
-        Kode: satu.Kode,
-        Nama: satu.Nama,
-        Bobot: String(satu.Bobot),
-        Kontrol: satu.Kontrol,
-      })) ??
-      [
-        { Kode: 'A', Nama: 'Kontrol', Bobot: '1', Kontrol: true },
-        { Kode: 'B', Nama: 'Varian', Bobot: '1', Kontrol: false },
-      ],
+    Varian: eksperimen?.Varian.map((satu) => ({
+      Kode: satu.Kode,
+      Nama: satu.Nama,
+      Bobot: String(satu.Bobot),
+      Kontrol: satu.Kontrol,
+    })) ?? [
+      { Kode: 'A', Nama: 'Kontrol', Bobot: '1', Kontrol: true },
+      { Kode: 'B', Nama: 'Varian', Bobot: '1', Kontrol: false },
+    ],
   });
 
-  const ubahVarian = (indeks: number, kunci: 'Kode' | 'Nama' | 'Bobot' | 'Kontrol', nilai: string | boolean) =>
+  const ubahVarian = (
+    indeks: number,
+    kunci: 'Kode' | 'Nama' | 'Bobot' | 'Kontrol',
+    nilai: string | boolean,
+  ) =>
     form.setData(
       'Varian',
       form.data.Varian.map((satu, ke) =>
@@ -286,16 +281,11 @@ function DialogFormEksperimen({
 
         <form onSubmit={submit} className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="Kode">Kode</Label>
-              <Input
-                id="Kode"
-                value={form.data.Kode}
-                onChange={(e) => form.setData('Kode', e.target.value)}
-                required
-              />
-              {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
-            </div>
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
             <div className="grid gap-2">
               <Label htmlFor="Nama">Nama</Label>
               <Input
@@ -361,8 +351,8 @@ function DialogFormEksperimen({
               required
             />
             <p className="text-sm text-muted-foreground">
-              Selama satu varian pun belum mencapai angka ini, pemenang tidak akan pernah dinyatakan,
-              sebesar apa pun selisihnya.
+              Selama satu varian pun belum mencapai angka ini, pemenang tidak akan pernah dinyatakan, sebesar
+              apa pun selisihnya.
             </p>
           </div>
 
