@@ -22,6 +22,7 @@ import { VARIAN_BADGE_STATUS_RESERVASI } from '@/features/Persediaan/status';
 import { ruteReservasiSukuCadang } from '@/features/ReservasiSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Ringkas {
   Id: string;
@@ -38,9 +39,19 @@ interface Props {
   gudang: Ringkas[];
   sukuCadang: SukuCadangRingkas[];
   filter: { status?: string };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogBuatReservasi({ gudang, sukuCadang }: { gudang: Ringkas[]; sukuCadang: SukuCadangRingkas[] }) {
+function DialogBuatReservasi({
+  gudang,
+  sukuCadang,
+  wajib,
+}: {
+  gudang: Ringkas[];
+  sukuCadang: SukuCadangRingkas[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ GudangId: '', SukuCadangId: '', Jumlah: '', KadaluarsaPada: '' });
 
@@ -67,66 +78,68 @@ function DialogBuatReservasi({ gudang, sukuCadang }: { gudang: Ringkas[]; sukuCa
         <DialogHeader>
           <DialogTitle>Reservasi Suku Cadang</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Gudang</Label>
-            <Select value={form.data.GudangId} onValueChange={(v) => form.setData('GudangId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih gudang" />
-              </SelectTrigger>
-              <SelectContent>
-                {gudang.map((g) => (
-                  <SelectItem key={g.Id} value={g.Id}>
-                    {g.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Suku Cadang</Label>
-            <Select value={form.data.SukuCadangId} onValueChange={(v) => form.setData('SukuCadangId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih suku cadang" />
-              </SelectTrigger>
-              <SelectContent>
-                {sukuCadang.map((s) => (
-                  <SelectItem key={s.Id} value={s.Id}>
-                    {s.Nama} ({s.Kode})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Jumlah</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.Jumlah}
-                onChange={(e) => form.setData('Jumlah', e.target.value)}
-              />
-              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              <Label nama="GudangId">Gudang</Label>
+              <Select value={form.data.GudangId} onValueChange={(v) => form.setData('GudangId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih gudang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {gudang.map((g) => (
+                    <SelectItem key={g.Id} value={g.Id}>
+                      {g.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Kadaluarsa Pada (opsional)</Label>
-              <Input
-                type="datetime-local"
-                value={form.data.KadaluarsaPada}
-                onChange={(e) => form.setData('KadaluarsaPada', e.target.value)}
-              />
+              <Label nama="SukuCadangId">Suku Cadang</Label>
+              <Select value={form.data.SukuCadangId} onValueChange={(v) => form.setData('SukuCadangId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih suku cadang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sukuCadang.map((s) => (
+                    <SelectItem key={s.Id} value={s.Id}>
+                      {s.Nama} ({s.Kode})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="submit"
-              disabled={form.processing || !form.data.GudangId || !form.data.SukuCadangId}
-            >
-              Reservasi
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label nama="Jumlah">Jumlah</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.Jumlah}
+                  onChange={(e) => form.setData('Jumlah', e.target.value)}
+                />
+                {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="KadaluarsaPada">Kadaluarsa Pada (opsional)</Label>
+                <Input
+                  type="datetime-local"
+                  value={form.data.KadaluarsaPada}
+                  onChange={(e) => form.setData('KadaluarsaPada', e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="submit"
+                disabled={form.processing || !form.data.GudangId || !form.data.SukuCadangId}
+              >
+                Reservasi
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -139,7 +152,7 @@ function filterAktif(filter: Props['filter']): Record<string, string> {
   );
 }
 
-export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang, filter }: Props) {
+export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const lepaskan = async (item: ReservasiSukuCadang) => {
     if (
@@ -174,7 +187,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
         deskripsi="Menahan stok tersedia untuk kebutuhan mendatang tanpa mengurangi stok fisik."
         aksi={
           <>
-            <DialogBuatReservasi gudang={gudang} sukuCadang={sukuCadang} />
+            <DialogBuatReservasi gudang={gudang} sukuCadang={sukuCadang} wajib={wajib.reservasi} />
           </>
         }
         className="mb-6"

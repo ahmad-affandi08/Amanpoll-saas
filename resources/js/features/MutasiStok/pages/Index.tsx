@@ -22,6 +22,7 @@ import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Ringkas {
   Id: string;
@@ -32,6 +33,8 @@ interface Props {
   mutasiStok: Paginasi<MutasiStok>;
   gudang: Ringkas[];
   filter: { status?: string; jenis?: string };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const LABEL_JENIS: Record<JenisMutasiStok, string> = {
@@ -50,7 +53,7 @@ function butuhGudangTujuan(jenis: JenisMutasiStok): boolean {
   return jenis === 'Penerimaan' || jenis === 'Return' || jenis === 'Transfer';
 }
 
-function DialogBuatMutasi({ gudang }: { gudang: Ringkas[] }) {
+function DialogBuatMutasi({ gudang, wajib }: { gudang: Ringkas[]; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Jenis: 'Penerimaan' as JenisMutasiStok,
@@ -82,77 +85,81 @@ function DialogBuatMutasi({ gudang }: { gudang: Ringkas[] }) {
         <DialogHeader>
           <DialogTitle>Buat Mutasi Stok</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Jenis</Label>
-            <Select
-              value={form.data.Jenis}
-              onValueChange={(v) => form.setData('Jenis', v as JenisMutasiStok)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(LABEL_JENIS) as JenisMutasiStok[]).map((j) => (
-                  <SelectItem key={j} value={j}>
-                    {LABEL_JENIS[j]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {butuhGudangAsal(form.data.Jenis) && (
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Gudang Asal</Label>
-              <Select value={form.data.GudangAsalId} onValueChange={(v) => form.setData('GudangAsalId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih gudang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {gudang.map((g) => (
-                    <SelectItem key={g.Id} value={g.Id}>
-                      {g.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          {butuhGudangTujuan(form.data.Jenis) && (
-            <div className="space-y-1.5">
-              <Label>Gudang Tujuan</Label>
+              <Label nama="Jenis">Jenis</Label>
               <Select
-                value={form.data.GudangTujuanId}
-                onValueChange={(v) => form.setData('GudangTujuanId', v)}
+                value={form.data.Jenis}
+                onValueChange={(v) => form.setData('Jenis', v as JenisMutasiStok)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih gudang" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {gudang.map((g) => (
-                    <SelectItem key={g.Id} value={g.Id}>
-                      {g.Nama}
+                  {(Object.keys(LABEL_JENIS) as JenisMutasiStok[]).map((j) => (
+                    <SelectItem key={j} value={j}>
+                      {LABEL_JENIS[j]}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-          )}
-          <div className="space-y-1.5">
-            <Label>Catatan {form.data.Jenis === 'Adjustment' && '(alasan penyesuaian, wajib)'}</Label>
-            <Textarea
-              value={form.data.Catatan}
-              onChange={(e) => form.setData('Catatan', e.target.value)}
-              rows={3}
-            />
-            {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Buat Draft
-            </Button>
-          </DialogFooter>
-        </form>
+            {butuhGudangAsal(form.data.Jenis) && (
+              <div className="space-y-1.5">
+                <Label nama="GudangAsalId">Gudang Asal</Label>
+                <Select value={form.data.GudangAsalId} onValueChange={(v) => form.setData('GudangAsalId', v)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih gudang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {gudang.map((g) => (
+                      <SelectItem key={g.Id} value={g.Id}>
+                        {g.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {butuhGudangTujuan(form.data.Jenis) && (
+              <div className="space-y-1.5">
+                <Label nama="GudangTujuanId">Gudang Tujuan</Label>
+                <Select
+                  value={form.data.GudangTujuanId}
+                  onValueChange={(v) => form.setData('GudangTujuanId', v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih gudang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {gudang.map((g) => (
+                      <SelectItem key={g.Id} value={g.Id}>
+                        {g.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label nama="Catatan">
+                Catatan {form.data.Jenis === 'Adjustment' && '(alasan penyesuaian, wajib)'}
+              </Label>
+              <Textarea
+                value={form.data.Catatan}
+                onChange={(e) => form.setData('Catatan', e.target.value)}
+                rows={3}
+              />
+              {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Buat Draft
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -165,7 +172,7 @@ function filterAktif(filter: Props['filter']): Record<string, string> {
   );
 }
 
-export default function MutasiStokIndex({ mutasiStok, gudang, filter }: Props) {
+export default function MutasiStokIndex({ mutasiStok, gudang, filter, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title="Mutasi Stok" />
@@ -174,7 +181,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter }: Props) {
         deskripsi="Penerimaan, pengeluaran, transfer, penyesuaian, dan retur -- draf, posting, sampai audit."
         aksi={
           <>
-            <DialogBuatMutasi gudang={gudang} />
+            <DialogBuatMutasi gudang={gudang} wajib={wajib.mutasi} />
           </>
         }
         className="mb-6"

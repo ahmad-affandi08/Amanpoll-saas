@@ -15,6 +15,7 @@ use App\Domain\Persediaan\Application\Actions\UbahKelompokSukuCadang;
 use App\Domain\Persediaan\Application\Actions\UbahSukuCadang;
 use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanKelompokSukuCadangRequest;
+use App\Domain\Persediaan\Http\Requests\SimpanKompatibilitasSukuCadangRequest;
 use App\Domain\Persediaan\Http\Requests\SimpanSukuCadangRequest;
 use App\Domain\Persediaan\Http\Resources\KelompokSukuCadangResource;
 use App\Domain\Persediaan\Http\Resources\KompatibilitasSukuCadangResource;
@@ -27,6 +28,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +64,7 @@ final class SukuCadangController extends Controller
         });
 
         return Inertia::render('SukuCadang/Index', [
+            'wajib' => ['sukuCadang' => AturanWajib::untuk(SimpanSukuCadangRequest::class)],
             'sukuCadang' => SukuCadangResource::collection($halaman),
             'filter' => $daftar->filterBerlaku(),
             'jumlahDibawahMinimum' => $this->jumlahDibawahMinimum(),
@@ -95,6 +98,7 @@ final class SukuCadangController extends Controller
         $kelompok = KelompokSukuCadang::query()->where('SukuCadangId', $sukuCadang->Id)->orderByDesc('DibuatPada')->get();
 
         return Inertia::render('SukuCadang/Show', [
+            'wajib' => ['kelompok' => AturanWajib::untuk(SimpanKelompokSukuCadangRequest::class), 'kompatibilitas' => AturanWajib::untuk(SimpanKompatibilitasSukuCadangRequest::class)],
             'sukuCadang' => new SukuCadangResource($sukuCadang),
             'stok' => $this->stokPerGudang($sukuCadang),
             'pemakaian' => $this->pemakaianTerakhir($sukuCadang),

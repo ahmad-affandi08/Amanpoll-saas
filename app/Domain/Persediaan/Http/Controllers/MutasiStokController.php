@@ -18,6 +18,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -40,6 +41,7 @@ final class MutasiStokController extends Controller
             ->withQueryString();
 
         return Inertia::render('MutasiStok/Index', [
+            'wajib' => ['mutasi' => AturanWajib::untuk(SimpanMutasiStokRequest::class)],
             'mutasiStok' => MutasiStokResource::collection($mutasiStok),
             'gudang' => Gudang::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'filter' => $filter,
@@ -53,6 +55,7 @@ final class MutasiStokController extends Controller
         $mutasiStok->load(['gudangAsal', 'gudangTujuan', 'dibuatOleh', 'detailMutasiStok.sukuCadang', 'detailMutasiStok.kelompokSukuCadang', 'detailMutasiStok.lokasiGudangAsal', 'detailMutasiStok.lokasiGudangTujuan']);
 
         return Inertia::render('MutasiStok/Show', [
+            'wajib' => ['detail' => AturanWajib::untuk(SimpanDetailMutasiStokRequest::class)],
             'mutasiStok' => new MutasiStokResource($mutasiStok),
             'sukuCadang' => SukuCadang::query()->where('Status', StatusSukuCadang::Aktif->value)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']),
         ]);

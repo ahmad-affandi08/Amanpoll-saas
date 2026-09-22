@@ -27,6 +27,7 @@ import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface KategoriRingkas {
   Id: string;
@@ -38,9 +39,17 @@ interface Props {
   kategoriSukuCadang: KategoriRingkas[];
   filter: FilterDaftar;
   jumlahDibawahMinimum: number;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogFormSukuCadang({ kategoriSukuCadang }: { kategoriSukuCadang: KategoriRingkas[] }) {
+function DialogFormSukuCadang({
+  kategoriSukuCadang,
+  wajib,
+}: {
+  kategoriSukuCadang: KategoriRingkas[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: '',
@@ -77,127 +86,129 @@ function DialogFormSukuCadang({ kategoriSukuCadang }: { kategoriSukuCadang: Kate
         <DialogHeader>
           <DialogTitle>Tambah Suku Cadang</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Kategori</Label>
-            <Select
-              value={form.data.KategoriSukuCadangId}
-              onValueChange={(v) => form.setData('KategoriSukuCadangId', v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
-                {kategoriSukuCadang.map((k) => (
-                  <SelectItem key={k.Id} value={k.Id}>
-                    {k.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Nomor Bagian</Label>
-              <Input
-                value={form.data.NomorBagian}
-                onChange={(e) => form.setData('NomorBagian', e.target.value)}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
               />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Kode Batang/SKU</Label>
-              <Input
-                value={form.data.KodeBatang}
-                onChange={(e) => form.setData('KodeBatang', e.target.value)}
-              />
+              <Label nama="KategoriSukuCadangId">Kategori</Label>
+              <Select
+                value={form.data.KategoriSukuCadangId}
+                onValueChange={(v) => form.setData('KategoriSukuCadangId', v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
+                  {kategoriSukuCadang.map((k) => (
+                    <SelectItem key={k.Id} value={k.Id}>
+                      {k.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Satuan Dasar</Label>
-              <Input
-                value={form.data.SatuanDasar}
-                onChange={(e) => form.setData('SatuanDasar', e.target.value)}
-                placeholder="mis. Pcs, Liter"
-              />
-              {form.errors.SatuanDasar && (
-                <p className="text-sm text-destructive">{form.errors.SatuanDasar}</p>
-              )}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="NomorBagian">Nomor Bagian</Label>
+                <Input
+                  value={form.data.NomorBagian}
+                  onChange={(e) => form.setData('NomorBagian', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="KodeBatang">Kode Batang/SKU</Label>
+                <Input
+                  value={form.data.KodeBatang}
+                  onChange={(e) => form.setData('KodeBatang', e.target.value)}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Harga Rata-rata</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.HargaRataRata}
-                onChange={(e) => form.setData('HargaRataRata', e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="SatuanDasar">Satuan Dasar</Label>
+                <Input
+                  value={form.data.SatuanDasar}
+                  onChange={(e) => form.setData('SatuanDasar', e.target.value)}
+                  placeholder="mis. Pcs, Liter"
+                />
+                {form.errors.SatuanDasar && (
+                  <p className="text-sm text-destructive">{form.errors.SatuanDasar}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label nama="HargaRataRata">Harga Rata-rata</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.HargaRataRata}
+                  onChange={(e) => form.setData('HargaRataRata', e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label>Stok Minimum</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.StokMinimum}
-                onChange={(e) => form.setData('StokMinimum', e.target.value)}
-              />
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label nama="StokMinimum">Stok Minimum</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.StokMinimum}
+                  onChange={(e) => form.setData('StokMinimum', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="StokMaksimum">Stok Maksimum</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.StokMaksimum}
+                  onChange={(e) => form.setData('StokMaksimum', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="TitikPesanUlang">Titik Pesan Ulang</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.TitikPesanUlang}
+                  onChange={(e) => form.setData('TitikPesanUlang', e.target.value)}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Stok Maksimum</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.StokMaksimum}
-                onChange={(e) => form.setData('StokMaksimum', e.target.value)}
-              />
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.MemakaiBatch}
+                  onCheckedChange={(v) => form.setData('MemakaiBatch', v === true)}
+                />
+                Memakai Batch
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.MemakaiKadaluarsa}
+                  onCheckedChange={(v) => form.setData('MemakaiKadaluarsa', v === true)}
+                />
+                Memakai Kadaluarsa
+              </label>
             </div>
-            <div className="space-y-2">
-              <Label>Titik Pesan Ulang</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.TitikPesanUlang}
-                onChange={(e) => form.setData('TitikPesanUlang', e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.MemakaiBatch}
-                onCheckedChange={(v) => form.setData('MemakaiBatch', v === true)}
-              />
-              Memakai Batch
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.MemakaiKadaluarsa}
-                onCheckedChange={(v) => form.setData('MemakaiKadaluarsa', v === true)}
-              />
-              Memakai Kadaluarsa
-            </label>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -208,6 +219,7 @@ export default function SukuCadangIndex({
   kategoriSukuCadang,
   filter,
   jumlahDibawahMinimum,
+  wajib,
 }: Props) {
   const columns = useMemo<ColumnDef<SukuCadang>[]>(
     () => [
@@ -264,7 +276,7 @@ export default function SukuCadangIndex({
         meta: { label: 'Status' },
       },
     ],
-    [],
+    [wajib],
   );
 
   // Keadaan kosong menyembunyikan kotak cari, jadi ia hanya boleh muncul saat memang belum ada isinya.
@@ -278,7 +290,7 @@ export default function SukuCadangIndex({
         deskripsi="Master data suku cadang beserta saldo stok bersih lintas gudang."
         aksi={
           <>
-            <DialogFormSukuCadang kategoriSukuCadang={kategoriSukuCadang} />
+            <DialogFormSukuCadang kategoriSukuCadang={kategoriSukuCadang} wajib={wajib.sukuCadang} />
           </>
         }
         className="mb-6"

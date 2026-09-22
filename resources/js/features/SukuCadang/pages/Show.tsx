@@ -31,6 +31,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { PanelPemakaian, PanelReservasi, PanelStok } from '@/features/SukuCadang/components/PanelStok';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Ringkas {
   Id: string;
@@ -57,9 +58,11 @@ interface Props {
   kategoriAset: Ringkas[];
   modelAset: Ringkas[];
   aset: AsetRingkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogTambahKelompok({ sukuCadang }: { sukuCadang: SukuCadang }) {
+function DialogTambahKelompok({ sukuCadang, wajib }: { sukuCadang: SukuCadang; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ NomorBatch: '', TanggalProduksi: '', TanggalKadaluarsa: '', HargaPerolehan: '' });
 
@@ -85,48 +88,50 @@ function DialogTambahKelompok({ sukuCadang }: { sukuCadang: SukuCadang }) {
         <DialogHeader>
           <DialogTitle>Tambah Kelompok/Batch</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Nomor Batch</Label>
-            <Input
-              value={form.data.NomorBatch}
-              onChange={(e) => form.setData('NomorBatch', e.target.value)}
-              className="font-mono"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Tanggal Produksi</Label>
-              <DatePicker
-                value={form.data.TanggalProduksi}
-                onChange={(val) => form.setData('TanggalProduksi', val)}
-                placeholder="Pilih tanggal..."
+              <Label nama="NomorBatch">Nomor Batch</Label>
+              <Input
+                value={form.data.NomorBatch}
+                onChange={(e) => form.setData('NomorBatch', e.target.value)}
+                className="font-mono"
               />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label nama="TanggalProduksi">Tanggal Produksi</Label>
+                <DatePicker
+                  value={form.data.TanggalProduksi}
+                  onChange={(val) => form.setData('TanggalProduksi', val)}
+                  placeholder="Pilih tanggal..."
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="TanggalKadaluarsa">Tanggal Kadaluarsa</Label>
+                <DatePicker
+                  value={form.data.TanggalKadaluarsa}
+                  onChange={(val) => form.setData('TanggalKadaluarsa', val)}
+                  placeholder="Pilih tanggal..."
+                />
+              </div>
+            </div>
             <div className="space-y-1.5">
-              <Label>Tanggal Kadaluarsa</Label>
-              <DatePicker
-                value={form.data.TanggalKadaluarsa}
-                onChange={(val) => form.setData('TanggalKadaluarsa', val)}
-                placeholder="Pilih tanggal..."
+              <Label nama="HargaPerolehan">Harga Perolehan</Label>
+              <Input
+                type="number"
+                min={0}
+                value={form.data.HargaPerolehan}
+                onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
               />
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Harga Perolehan</Label>
-            <Input
-              type="number"
-              min={0}
-              value={form.data.HargaPerolehan}
-              onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing || !form.data.NomorBatch}>
-              Tambah
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing || !form.data.NomorBatch}>
+                Tambah
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -137,11 +142,13 @@ function DialogTambahKompatibilitas({
   kategoriAset,
   modelAset,
   aset,
+  wajib,
 }: {
   sukuCadang: SukuCadang;
   kategoriAset: Ringkas[];
   modelAset: Ringkas[];
   aset: AsetRingkas[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -190,84 +197,86 @@ function DialogTambahKompatibilitas({
         <DialogHeader>
           <DialogTitle>Tambah Kompatibilitas</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Lingkup</Label>
-            <Select value={form.data.Lingkup} onValueChange={(v) => form.setData('Lingkup', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="aset">Aset spesifik</SelectItem>
-                <SelectItem value="model">Model aset</SelectItem>
-                <SelectItem value="kategori">Kategori aset</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {form.data.Lingkup === 'aset' && (
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Aset</Label>
-              <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
+              <Label>Lingkup</Label>
+              <Select value={form.data.Lingkup} onValueChange={(v) => form.setData('Lingkup', v)}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih aset" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {aset.map((a) => (
-                    <SelectItem key={a.Id} value={a.Id}>
-                      {a.Nama} ({a.KodeAset})
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="aset">Aset spesifik</SelectItem>
+                  <SelectItem value="model">Model aset</SelectItem>
+                  <SelectItem value="kategori">Kategori aset</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          )}
-          {form.data.Lingkup === 'model' && (
+            {form.data.Lingkup === 'aset' && (
+              <div className="space-y-1.5">
+                <Label nama="AsetId">Aset</Label>
+                <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih aset" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {aset.map((a) => (
+                      <SelectItem key={a.Id} value={a.Id}>
+                        {a.Nama} ({a.KodeAset})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {form.data.Lingkup === 'model' && (
+              <div className="space-y-1.5">
+                <Label nama="ModelAsetId">Model Aset</Label>
+                <Select value={form.data.ModelAsetId} onValueChange={(v) => form.setData('ModelAsetId', v)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih model aset" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modelAset.map((m) => (
+                      <SelectItem key={m.Id} value={m.Id}>
+                        {m.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {form.data.Lingkup === 'kategori' && (
+              <div className="space-y-1.5">
+                <Label nama="KategoriAsetId">Kategori Aset</Label>
+                <Select
+                  value={form.data.KategoriAsetId}
+                  onValueChange={(v) => form.setData('KategoriAsetId', v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih kategori aset" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {kategoriAset.map((k) => (
+                      <SelectItem key={k.Id} value={k.Id}>
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-1.5">
-              <Label>Model Aset</Label>
-              <Select value={form.data.ModelAsetId} onValueChange={(v) => form.setData('ModelAsetId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih model aset" />
-                </SelectTrigger>
-                <SelectContent>
-                  {modelAset.map((m) => (
-                    <SelectItem key={m.Id} value={m.Id}>
-                      {m.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label nama="Catatan">Catatan</Label>
+              <Input value={form.data.Catatan} onChange={(e) => form.setData('Catatan', e.target.value)} />
             </div>
-          )}
-          {form.data.Lingkup === 'kategori' && (
-            <div className="space-y-1.5">
-              <Label>Kategori Aset</Label>
-              <Select
-                value={form.data.KategoriAsetId}
-                onValueChange={(v) => form.setData('KategoriAsetId', v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih kategori aset" />
-                </SelectTrigger>
-                <SelectContent>
-                  {kategoriAset.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          <div className="space-y-1.5">
-            <Label>Catatan</Label>
-            <Input value={form.data.Catatan} onChange={(e) => form.setData('Catatan', e.target.value)} />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Tambah
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Tambah
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -283,6 +292,7 @@ export default function SukuCadangShow({
   kategoriAset,
   modelAset,
   aset,
+  wajib,
 }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapusKelompok = async (item: KelompokSukuCadang) => {
@@ -361,7 +371,7 @@ export default function SukuCadangShow({
         <div className="rounded-[9px] border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Kelompok/Batch</h2>
-            <DialogTambahKelompok sukuCadang={sukuCadang} />
+            <DialogTambahKelompok sukuCadang={sukuCadang} wajib={wajib.kelompok} />
           </div>
           {kelompokSukuCadang.length === 0 ? (
             <KeadaanKosong
@@ -400,6 +410,7 @@ export default function SukuCadangShow({
               kategoriAset={kategoriAset}
               modelAset={modelAset}
               aset={aset}
+              wajib={wajib.kompatibilitas}
             />
           </div>
           {kompatibilitasSukuCadang.length === 0 ? (

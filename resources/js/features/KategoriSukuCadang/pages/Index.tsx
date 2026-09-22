@@ -24,6 +24,7 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 /** Hanya Id dan Nama: pemilih induk memuat seluruh kategori, bukan barisnya. */
 interface IndukRingkas {
@@ -35,14 +36,18 @@ interface Props {
   kategoriSukuCadang: Paginasi<KategoriSukuCadang>;
   pilihanInduk: IndukRingkas[];
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 function DialogFormKategori({
   kategori,
   semuaKategori,
+  wajib,
 }: {
   kategori: KategoriSukuCadang | null;
   semuaKategori: IndukRingkas[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
@@ -78,49 +83,51 @@ function DialogFormKategori({
         <DialogHeader>
           <DialogTitle>{kategori ? 'Ubah Kategori Suku Cadang' : 'Tambah Kategori Suku Cadang'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Kategori Induk</Label>
-            <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tidak ada (kategori utama)</SelectItem>
-                {semuaKategori
-                  .filter((k) => k.Id !== kategori?.Id)
-                  .map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-2">
+              <Label nama="IndukId">Kategori Induk</Label>
+              <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Tidak ada (kategori utama)</SelectItem>
+                  {semuaKategori
+                    .filter((k) => k.Id !== kategori?.Id)
+                    .map((k) => (
+                      <SelectItem key={k.Id} value={k.Id}>
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInduk, filter }: Props) {
+export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInduk, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: KategoriSukuCadang) => {
     if (
@@ -160,7 +167,11 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInd
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormKategori kategori={row.original} semuaKategori={pilihanInduk} />
+            <DialogFormKategori
+              kategori={row.original}
+              semuaKategori={pilihanInduk}
+              wajib={wajib.kategoriSukuCadang}
+            />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -171,7 +182,7 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInd
         meta: { label: 'Aksi' },
       },
     ],
-    [kategoriSukuCadang],
+    [kategoriSukuCadang, wajib],
   );
 
   return (
@@ -182,7 +193,11 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInd
         deskripsi="Klasifikasi suku cadang, mendukung hierarki sub-kategori."
         aksi={
           <>
-            <DialogFormKategori kategori={null} semuaKategori={pilihanInduk} />
+            <DialogFormKategori
+              kategori={null}
+              semuaKategori={pilihanInduk}
+              wajib={wajib.kategoriSukuCadang}
+            />
           </>
         }
         className="mb-6"
@@ -194,9 +209,7 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInd
         server={{ meta: kategoriSukuCadang.meta, filter }}
         pencarianPlaceholder="Cari nama atau kode kategori..."
         pesanKosong={
-          adaPenyaringAktif(filter)
-            ? 'Tidak ada kategori yang cocok.'
-            : 'Belum ada kategori suku cadang.'
+          adaPenyaringAktif(filter) ? 'Tidak ada kategori yang cocok.' : 'Belum ada kategori suku cadang.'
         }
       />
     </KerangkaAplikasi>

@@ -14,6 +14,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -35,6 +36,7 @@ final class ReservasiSukuCadangController extends Controller
             ->withQueryString();
 
         return Inertia::render('ReservasiSukuCadang/Index', [
+            'wajib' => ['reservasi' => AturanWajib::untuk(SimpanReservasiSukuCadangRequest::class)],
             'reservasi' => ReservasiSukuCadangResource::collection($reservasi),
             'gudang' => Gudang::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'sukuCadang' => SukuCadang::query()->where('Status', StatusSukuCadang::Aktif->value)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']),

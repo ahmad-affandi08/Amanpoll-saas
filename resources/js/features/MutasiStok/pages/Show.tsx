@@ -20,6 +20,7 @@ import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface SukuCadangRingkas {
   Id: string;
@@ -30,14 +31,18 @@ interface SukuCadangRingkas {
 interface Props {
   mutasiStok: MutasiStok;
   sukuCadang: SukuCadangRingkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 function DialogTambahDetail({
   mutasiStok,
   sukuCadang,
+  wajib,
 }: {
   mutasiStok: MutasiStok;
   sukuCadang: SukuCadangRingkas[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ SukuCadangId: '', Jumlah: '', HargaSatuan: '' });
@@ -64,54 +69,56 @@ function DialogTambahDetail({
         <DialogHeader>
           <DialogTitle>Tambah Baris Detail</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Suku Cadang</Label>
-            <Select value={form.data.SukuCadangId} onValueChange={(v) => form.setData('SukuCadangId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih suku cadang" />
-              </SelectTrigger>
-              <SelectContent>
-                {sukuCadang.map((s) => (
-                  <SelectItem key={s.Id} value={s.Id}>
-                    {s.Nama} ({s.Kode})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Jumlah {mutasiStok.Jenis === 'Adjustment' && '(boleh negatif)'}</Label>
-              <Input
-                type="number"
-                value={form.data.Jumlah}
-                onChange={(e) => form.setData('Jumlah', e.target.value)}
-              />
-              {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              <Label nama="SukuCadangId">Suku Cadang</Label>
+              <Select value={form.data.SukuCadangId} onValueChange={(v) => form.setData('SukuCadangId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih suku cadang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sukuCadang.map((s) => (
+                    <SelectItem key={s.Id} value={s.Id}>
+                      {s.Nama} ({s.Kode})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label>Harga Satuan</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.HargaSatuan}
-                onChange={(e) => form.setData('HargaSatuan', e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label nama="Jumlah">Jumlah {mutasiStok.Jenis === 'Adjustment' && '(boleh negatif)'}</Label>
+                <Input
+                  type="number"
+                  value={form.data.Jumlah}
+                  onChange={(e) => form.setData('Jumlah', e.target.value)}
+                />
+                {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="HargaSatuan">Harga Satuan</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.HargaSatuan}
+                  onChange={(e) => form.setData('HargaSatuan', e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing || !form.data.SukuCadangId}>
-              Tambah
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing || !form.data.SukuCadangId}>
+                Tambah
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
+export default function MutasiStokShow({ mutasiStok, sukuCadang, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapusDetail = async (detailId: string) => {
     if (
@@ -188,7 +195,7 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Detail Baris</h2>
             {mutasiStok.Status === 'Draft' && (
-              <DialogTambahDetail mutasiStok={mutasiStok} sukuCadang={sukuCadang} />
+              <DialogTambahDetail mutasiStok={mutasiStok} sukuCadang={sukuCadang} wajib={wajib.detail} />
             )}
           </div>
           {mutasiStok.DetailMutasiStok.length === 0 ? (
