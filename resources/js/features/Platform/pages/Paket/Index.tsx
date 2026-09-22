@@ -23,6 +23,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { labelBatas, rupiah } from '@/features/Langganan/format';
 import type { DefinisiFitur, PaketItem } from '@/features/Langganan/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { rutePlatform } from '@/features/Platform/api';
 
 interface Props {
   paket: PaketItem[];
@@ -52,7 +53,7 @@ export default function PlatformPaketIndex({ paket, katalogFitur }: Props) {
     });
 
     if (setuju) {
-      router.delete(`/admin-platform/paket/${item.Id}`, { preserveScroll: true });
+      router.delete(rutePlatform.paketDetail(item.Id), { preserveScroll: true });
     }
   };
 
@@ -199,9 +200,9 @@ function DialogPaket({
     const opsi = { preserveScroll: true, onSuccess: onTutup };
 
     if (paket) {
-      form.put(`/admin-platform/paket/${paket.Id}`, opsi);
+      form.put(rutePlatform.paketDetail(paket.Id), opsi);
     } else {
-      form.post('/admin-platform/paket', opsi);
+      form.post(rutePlatform.paket, opsi);
     }
   };
 

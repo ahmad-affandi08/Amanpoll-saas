@@ -21,13 +21,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { AturanSkor, PilihanAturanSkor } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   aturan: AturanSkor[];
   pilihan: PilihanAturanSkor;
 }
 
-const AKAR = '/admin-platform/pemasaran/prospek/aturan-skor';
+const AKAR = rutePemasaran.aturanSkor;
 
 export default function PemasaranAturanSkorIndex({ aturan, pilihan }: Props) {
   const konfirmasi = useKonfirmasi();

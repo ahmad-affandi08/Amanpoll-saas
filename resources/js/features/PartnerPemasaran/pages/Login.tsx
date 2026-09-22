@@ -4,6 +4,7 @@ import { Handshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { rutePartner } from '@/features/PartnerPemasaran/api';
 
 /** Masuk portal partner. */
 export default function PartnerPemasaranLogin() {
@@ -11,7 +12,7 @@ export default function PartnerPemasaranLogin() {
 
   const kirim = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/masuk', { onFinish: () => form.reset('KataSandi') });
+    form.post(rutePartner.masuk, { onFinish: () => form.reset('KataSandi') });
   };
 
   return (

@@ -31,6 +31,8 @@ import type { Inspeksi } from '@/features/PreventifInspeksi/types';
 import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { rutePerintahKerja } from '@/features/PerintahKerja/api';
+import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 
 interface Props {
   inspeksi: Inspeksi;
@@ -143,7 +145,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
               {inspeksi.PerintahKerjaId ? (
                 <Link
-                  href={`/pemeliharaan/perintah-kerja/${inspeksi.PerintahKerjaId}`}
+                  href={rutePerintahKerja.detail(inspeksi.PerintahKerjaId)}
                   className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-teknisi-50 text-teknisi-700 border border-teknisi-200 hover:bg-teknisi-100 cursor-pointer"
                 >
                   <Wrench className="h-3.5 w-3.5" />
@@ -180,7 +182,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
             </div>
 
             <Link
-              href={`/preventif-inspeksi/pelaksanaan-daftar-periksa/${inspeksi.PelaksanaanDaftarPeriksaId}`}
+              href={ruteDaftarPeriksa.pelaksanaanDetail(inspeksi.PelaksanaanDaftarPeriksaId)}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-sky-700 border border-sky-300 hover:bg-sky-50 shadow-sm cursor-pointer"
             >
               <span>Buka Checklist</span>

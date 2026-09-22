@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { KerangkaPublik } from '../components/KerangkaPublik';
 import type { LabelQr, PropsPublik, ToolPublik } from '../types';
+import { rutePublik } from '@/features/Publik/api';
 
 interface Props extends PropsPublik {
   tool: ToolPublik;
@@ -29,7 +30,7 @@ export default function PublikQrAset({ tool, batas, kanonik, urlMasuk, urlDaftar
     e.preventDefault();
     setMengirim(true);
     router.post(
-      '/tools/qr',
+      rutePublik.toolsQr,
       { Kode: kode, [tool.FieldPerangkap]: perangkap },
       { preserveScroll: true, onFinish: () => setMengirim(false) },
     );

@@ -23,6 +23,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { tanggal } from '@/features/Langganan/format';
 import type { LanggananPlatformItem, PilihanRingkas, StatusLangganan } from '@/features/Langganan/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { rutePlatform } from '@/features/Platform/api';
 
 interface PilihanSiklus {
   Nilai: string;
@@ -56,7 +57,7 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
     });
 
     if (setuju) {
-      router.post(`/admin-platform/langganan/${item.Id}/batalkan`, {}, { preserveScroll: true });
+      router.post(rutePlatform.langgananBatalkan(item.Id), {}, { preserveScroll: true });
     }
   };
 
@@ -132,7 +133,7 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
                             variant="ghost"
                             onClick={() =>
                               router.post(
-                                `/admin-platform/langganan/${item.Id}/perpanjang`,
+                                rutePlatform.langgananPerpanjang(item.Id),
                                 {},
                                 { preserveScroll: true },
                               )
@@ -146,7 +147,7 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
                             variant="ghost"
                             onClick={() =>
                               router.post(
-                                `/admin-platform/langganan/${item.Id}/tagihan`,
+                                rutePlatform.langgananTagihan(item.Id),
                                 {},
                                 { preserveScroll: true },
                               )
@@ -203,7 +204,7 @@ function DialogLangganan({
 
   const kirim = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/admin-platform/langganan', { preserveScroll: true, onSuccess: onTutup });
+    form.post(rutePlatform.langganan, { preserveScroll: true, onSuccess: onTutup });
   };
 
   return (

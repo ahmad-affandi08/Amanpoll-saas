@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Boxes, LogOut, Package, ShieldCheck, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { rutePlatform } from '@/features/Platform/api';
 
 const MENU = [
   { label: 'Paket', href: '/admin-platform/paket', ikon: Package, kodeIzin: null },
@@ -69,7 +70,7 @@ export function KerangkaPlatform({ children }: PropsWithChildren) {
             variant="ghost"
             size="sm"
             className="ms-auto"
-            onClick={() => router.post('/admin-platform/logout')}
+            onClick={() => router.post(rutePlatform.logout)}
           >
             <LogOut aria-hidden="true" className="size-4" />
             Keluar

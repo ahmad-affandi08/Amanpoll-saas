@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { KonfigurasiTrial, PilihanTrial, Trial } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   trial: Trial[];
@@ -27,7 +28,7 @@ interface Props {
   pilihan: PilihanTrial;
 }
 
-const AKAR = '/admin-platform/pemasaran/trial';
+const AKAR = rutePemasaran.trial;
 
 const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
   Konversi: 'default',
@@ -52,7 +53,7 @@ export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan }: Pro
             <div className="font-medium text-foreground">{row.original.Organisasi ?? '—'}</div>
             {row.original.ProspekId ? (
               <Link
-                href={`/admin-platform/pemasaran/prospek/${row.original.ProspekId}`}
+                href={rutePemasaran.prospekDetail(row.original.ProspekId)}
                 className="text-xs text-muted-foreground hover:underline"
               >
                 {row.original.Prospek}

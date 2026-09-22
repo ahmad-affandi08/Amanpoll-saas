@@ -20,6 +20,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { LangkahSequence, SequenceEmail } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 type PilihanTemplate = { Id: string; Nama: string; Kode: string };
 
@@ -29,7 +30,7 @@ interface Props {
   kodeSequenceTrial: string;
 }
 
-const AKAR = '/admin-platform/pemasaran/email/sequence';
+const AKAR = rutePemasaran.emailSequence;
 
 export default function PemasaranEmailSequence({ sequence, template, kodeSequenceTrial }: Props) {
   return (

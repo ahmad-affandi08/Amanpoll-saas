@@ -21,13 +21,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Redirect } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   redirect: Redirect[];
   pilihan: { Kode: string[] };
 }
 
-const AKAR = '/admin-platform/pemasaran/redirect';
+const AKAR = rutePemasaran.redirect;
 
 export default function PemasaranRedirectIndex({ redirect, pilihan }: Props) {
   const konfirmasi = useKonfirmasi();

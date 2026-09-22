@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { BarisSupresi, PermintaanData, RiwayatKonsen } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   cari: string;
@@ -28,7 +29,7 @@ interface Props {
   pilihan: { Alasan: string[]; Jenis: string[] };
 }
 
-const AKAR = '/admin-platform/pemasaran/email/konsen';
+const AKAR = rutePemasaran.emailKonsen;
 
 const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString('id-ID') : '—');
 

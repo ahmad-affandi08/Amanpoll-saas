@@ -8,6 +8,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { HalamanRingkas, PilihanHalaman } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   halaman: HalamanRingkas[];
@@ -32,7 +33,7 @@ export default function PemasaranHalamanIndex({ halaman }: Props) {
         cell: ({ row }) => (
           <div>
             <Link
-              href={`/admin-platform/pemasaran/halaman/${row.original.Id}`}
+              href={rutePemasaran.halamanDetail(row.original.Id)}
               className="font-medium text-foreground hover:underline"
             >
               {row.original.Judul}
@@ -84,7 +85,7 @@ export default function PemasaranHalamanIndex({ halaman }: Props) {
               </Button>
             ) : null}
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/admin-platform/pemasaran/halaman/${row.original.Id}`}>Sunting</Link>
+              <Link href={rutePemasaran.halamanDetail(row.original.Id)}>Sunting</Link>
             </Button>
           </div>
         ),
@@ -106,7 +107,7 @@ export default function PemasaranHalamanIndex({ halaman }: Props) {
         tanpaBreadcrumb
         aksi={
           <Button asChild>
-            <Link href="/admin-platform/pemasaran/halaman/baru">Halaman Baru</Link>
+            <Link href={rutePemasaran.halamanBaru}>Halaman Baru</Link>
           </Button>
         }
         className="mb-6"

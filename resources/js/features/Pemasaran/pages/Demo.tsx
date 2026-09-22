@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Demo {
   Id: string;
@@ -50,7 +51,7 @@ interface Props {
   pilihan: Pilihan;
 }
 
-const AKAR = '/admin-platform/pemasaran/demo';
+const AKAR = rutePemasaran.demo;
 
 export default function PemasaranDemo({ demo, peristiwa, pilihan }: Props) {
   return (

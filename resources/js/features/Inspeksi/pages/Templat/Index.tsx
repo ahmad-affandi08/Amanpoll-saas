@@ -18,6 +18,7 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ClipboardCheck, Plus, Search, Calendar, FolderTree } from 'lucide-react';
 import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { ruteInspeksi } from '@/features/Inspeksi/api';
 
 interface Props {
   templat: TemplatInspeksi[];
@@ -40,7 +41,7 @@ export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaf
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/preventif-inspeksi/templat-inspeksi', {
+    form.post(ruteInspeksi.templat, {
       onSuccess: () => {
         setBukaDialog(false);
         form.reset();

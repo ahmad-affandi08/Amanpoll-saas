@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 type Program = {
   Id: string;
@@ -111,7 +112,7 @@ interface Props {
   hostPartner: string | null;
 }
 
-const AKAR = '/admin-platform/pemasaran/partner';
+const AKAR = rutePemasaran.partner;
 
 const rupiah = (nilai: number) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(nilai);

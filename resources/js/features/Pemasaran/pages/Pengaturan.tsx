@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Domain {
   publik: string | null;
@@ -131,7 +132,7 @@ function KartuFitur({ fitur }: { fitur: Fitur[] }) {
               aria-label={`Aktifkan ${satu.Nama}`}
               onCheckedChange={(aktif) =>
                 router.post(
-                  '/admin-platform/pemasaran/pengaturan/fitur',
+                  rutePemasaran.pengaturanFitur,
                   { Kode: satu.Kode, Aktif: aktif },
                   { preserveScroll: true },
                 )
@@ -194,7 +195,7 @@ function BarisKonfigurasi({
 
     setGalat(null);
     router.post(
-      '/admin-platform/pemasaran/pengaturan/konfigurasi',
+      rutePemasaran.pengaturanKonfigurasi,
       { Kunci: konfigurasi.Kunci, Nilai: muatan },
       { preserveScroll: true },
     );

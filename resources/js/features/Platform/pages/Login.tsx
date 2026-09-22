@@ -4,6 +4,7 @@ import { ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { rutePlatform } from '@/features/Platform/api';
 
 /** Masuk konsol platform. */
 export default function PlatformLogin() {
@@ -11,7 +12,7 @@ export default function PlatformLogin() {
 
   const kirim = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/admin-platform/login', { onFinish: () => form.reset('KataSandi') });
+    form.post(rutePlatform.login, { onFinish: () => form.reset('KataSandi') });
   };
 
   return (

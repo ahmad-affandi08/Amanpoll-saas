@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Formulir, PengirimanFormulir } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   formulir: Formulir;
@@ -24,7 +25,7 @@ export default function PemasaranFormulirShow({ formulir, pengiriman }: Props) {
         lencana={formulir.Aktif ? <Badge>Aktif</Badge> : <Badge variant="outline">Nonaktif</Badge>}
         aksi={
           <Button variant="ghost" asChild>
-            <Link href="/admin-platform/pemasaran/formulir">Kembali</Link>
+            <Link href={rutePemasaran.formulir}>Kembali</Link>
           </Button>
         }
         className="mb-6"
@@ -48,7 +49,7 @@ export default function PemasaranFormulirShow({ formulir, pengiriman }: Props) {
                     {satu.Persetujuan ? <Badge variant="secondary">Setuju</Badge> : null}
                     {satu.ProspekId ? (
                       <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/admin-platform/pemasaran/prospek/${satu.ProspekId}`}>
+                        <Link href={rutePemasaran.prospekDetail(satu.ProspekId)}>
                           {satu.ProspekNama ?? 'Prospek'}
                         </Link>
                       </Button>

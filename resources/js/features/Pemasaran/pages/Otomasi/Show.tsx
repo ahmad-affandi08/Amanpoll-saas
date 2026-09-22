@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 import type {
   DetailOtomasi,
   EksekusiOtomasi,
@@ -39,7 +40,7 @@ interface Props {
   pilihan: Pilihan;
 }
 
-const AKAR = '/admin-platform/pemasaran/otomasi';
+const AKAR = rutePemasaran.otomasi;
 
 const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString('id-ID') : '—');
 

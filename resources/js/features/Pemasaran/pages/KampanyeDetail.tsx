@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Kampanye {
   Id: string;
@@ -79,7 +80,7 @@ const rupiah = (nilai: number) =>
   new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(nilai);
 
 export default function PemasaranKampanyeDetail({ kampanye, biaya, target, konten, pilihan }: Props) {
-  const akar = `/admin-platform/pemasaran/kampanye/${kampanye.Id}`;
+  const akar = rutePemasaran.kampanyeDetail(kampanye.Id);
   const totalBiaya = biaya.reduce((jumlah, satu) => jumlah + satu.Jumlah, 0);
 
   return (
@@ -92,7 +93,7 @@ export default function PemasaranKampanyeDetail({ kampanye, biaya, target, konte
         tanpaBreadcrumb
         aksi={
           <Button variant="outline" asChild>
-            <Link href="/admin-platform/pemasaran/kampanye">Kembali ke daftar</Link>
+            <Link href={rutePemasaran.kampanye}>Kembali ke daftar</Link>
           </Button>
         }
         className="mb-6"

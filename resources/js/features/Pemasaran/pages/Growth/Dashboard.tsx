@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 type Filter = Record<string, string | null>;
 
@@ -121,7 +122,7 @@ interface Props {
   };
 }
 
-const AKAR = '/admin-platform/pemasaran/growth';
+const AKAR = rutePemasaran.growth;
 
 const angka = (nilai: number, satuan: string, desimal: number) => {
   if (satuan === 'Uang') {

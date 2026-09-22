@@ -21,13 +21,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import type { FieldFormulir, Formulir, PilihanFormulir } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   formulir: Formulir[];
   pilihan: PilihanFormulir;
 }
 
-const AKAR = '/admin-platform/pemasaran/formulir';
+const AKAR = rutePemasaran.formulir;
 
 const FIELD_BARU: FieldFormulir = {
   Kode: '',

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { rutePartner } from '@/features/PartnerPemasaran/api';
 
 type Partner = {
   Kode: string;
@@ -84,7 +85,7 @@ export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komis
 
   const kirimLead = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/lead', { preserveScroll: true, onSuccess: () => form.reset() });
+    form.post(rutePartner.lead, { preserveScroll: true, onSuccess: () => form.reset() });
   };
 
   return (
@@ -101,7 +102,7 @@ export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komis
             </p>
             <p className="text-sm text-muted-foreground">PIC: {partner.NamaPic}</p>
           </div>
-          <Button variant="outline" onClick={() => router.post('/keluar')}>
+          <Button variant="outline" onClick={() => router.post(rutePartner.keluar)}>
             Keluar
           </Button>
         </header>

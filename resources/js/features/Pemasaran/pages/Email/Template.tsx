@@ -20,13 +20,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { TemplateEmail } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   template: TemplateEmail[];
   pilihan: { Jenis: string[]; Variabel: string[] };
 }
 
-const AKAR = '/admin-platform/pemasaran/email/template';
+const AKAR = rutePemasaran.emailTemplate;
 
 export default function PemasaranEmailTemplate({ template, pilihan }: Props) {
   const konfirmasi = useKonfirmasi();

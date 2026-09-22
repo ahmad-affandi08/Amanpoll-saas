@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { FieldPublik, FormulirPublik, KonfigurasiCaptcha } from '../types';
+import { rutePublik } from '@/features/Publik/api';
 
 /** Nama field perangkap. */
 const FIELD_HONEYPOT = 'situs_perusahaan';
@@ -42,7 +43,7 @@ export function FormulirPemasaran({ formulir, judul, deskripsi }: Props) {
 
   const kirim = (e: FormEvent) => {
     e.preventDefault();
-    form.post(`/formulir/${formulir.Kode}`, {
+    form.post(rutePublik.formulir(formulir.Kode), {
       preserveScroll: true,
       onSuccess: () => form.reset(),
     });

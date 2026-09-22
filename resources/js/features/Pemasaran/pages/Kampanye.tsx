@@ -19,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Kampanye {
   Id: string;
@@ -89,9 +90,9 @@ function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; 
     };
 
     if (kampanye) {
-      router.put(`/admin-platform/pemasaran/kampanye/${kampanye.Id}`, form.data, opsi);
+      router.put(rutePemasaran.kampanyeDetail(kampanye.Id), form.data, opsi);
     } else {
-      router.post('/admin-platform/pemasaran/kampanye', form.data, opsi);
+      router.post(rutePemasaran.kampanye, form.data, opsi);
     }
   };
 
@@ -401,7 +402,7 @@ export default function PemasaranKampanye({ kampanye, pilihan }: Props) {
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
             <Button variant="ghost" size="sm" asChild>
-              <Link href={`/admin-platform/pemasaran/kampanye/${row.original.Id}`}>Detail</Link>
+              <Link href={rutePemasaran.kampanyeDetail(row.original.Id)}>Detail</Link>
             </Button>
             <DialogFormKampanye kampanye={row.original} pilihan={pilihan} />
           </div>

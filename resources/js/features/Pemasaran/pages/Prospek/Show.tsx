@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { EntriTimeline, ProspekDetail, TahapRingkas } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   prospek: ProspekDetail;
@@ -95,7 +96,7 @@ function KartuTahap({ prospek, tahap }: { prospek: ProspekDetail; tahap: TahapRi
   const pindahkan = (e: FormEvent) => {
     e.preventDefault();
     router.post(
-      `/admin-platform/pemasaran/prospek/${prospek.Id}/tahap`,
+      rutePemasaran.prospekTahap(prospek.Id),
       { Kode: kode, Alasan: alasan || null },
       { preserveScroll: true, onSuccess: () => setAlasan('') },
     );
@@ -147,7 +148,7 @@ function KartuAktivitasBaru({
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.post(`/admin-platform/pemasaran/prospek/${prospek.Id}/aktivitas`, {
+    form.post(rutePemasaran.prospekAktivitas(prospek.Id), {
       preserveScroll: true,
       onSuccess: () => form.reset('Judul', 'Isi'),
     });

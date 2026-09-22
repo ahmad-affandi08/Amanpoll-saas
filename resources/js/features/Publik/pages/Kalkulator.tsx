@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { KerangkaPublik } from '../components/KerangkaPublik';
 import type { HasilKeandalan, PropsPublik, ToolPublik } from '../types';
+import { rutePublik } from '@/features/Publik/api';
 
 interface Props extends PropsPublik {
   tool: ToolPublik;
@@ -50,7 +51,7 @@ export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar }:
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/tools/kalkulator', { preserveScroll: true });
+    form.post(rutePublik.toolsKalkulator, { preserveScroll: true });
   };
 
   return (

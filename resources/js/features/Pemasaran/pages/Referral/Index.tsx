@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import type { ProgramReferral, RewardReferralRingkas } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 type Pilihan = { Jenis: string[]; JenisDidukung: string[] };
 
@@ -32,7 +33,7 @@ interface Props {
   pilihan: Pilihan;
 }
 
-const AKAR = '/admin-platform/pemasaran/referral';
+const AKAR = rutePemasaran.referral;
 
 const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString('id-ID') : '—');
 

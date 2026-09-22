@@ -19,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Prospek, TahapRingkas } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   prospek: Prospek[];
@@ -32,7 +33,7 @@ function DialogProspekBaru() {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/admin-platform/pemasaran/prospek', {
+    form.post(rutePemasaran.prospek, {
       preserveScroll: true,
       onSuccess: () => {
         setBuka(false);
@@ -90,7 +91,7 @@ function DialogImpor() {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/admin-platform/pemasaran/prospek/impor', {
+    form.post(rutePemasaran.prospekImpor, {
       forceFormData: true,
       onSuccess: () => setBuka(false),
     });
@@ -140,7 +141,7 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
 
   const saring = (tahapKode: string | null) => {
     router.get(
-      '/admin-platform/pemasaran/prospek',
+      rutePemasaran.prospek,
       { tahap: tahapKode ?? undefined, cari: cari || undefined },
       { preserveState: true, preserveScroll: true },
     );
@@ -154,7 +155,7 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
         header: ({ column }) => <DataTableColumnHeader column={column} title="Prospek" />,
         cell: ({ row }) => (
           <Link
-            href={`/admin-platform/pemasaran/prospek/${row.original.Id}`}
+            href={rutePemasaran.prospekDetail(row.original.Id)}
             className="block hover:underline"
           >
             <div className="font-medium text-foreground">{row.original.Nama}</div>
@@ -206,11 +207,11 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
         aksi={
           <div className="flex flex-wrap gap-2">
             <Button variant="ghost" asChild>
-              <Link href="/admin-platform/pemasaran/prospek/aturan-skor">Aturan Skor</Link>
+              <Link href={rutePemasaran.aturanSkor}>Aturan Skor</Link>
             </Button>
             <DialogImpor />
             <Button variant="outline" asChild>
-              <a href="/admin-platform/pemasaran/prospek/ekspor/csv">
+              <a href={rutePemasaran.prospekEksporCsv}>
                 <Download aria-hidden="true" className="size-4" />
                 Ekspor
               </a>

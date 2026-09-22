@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Modul {
   Kode: string;
@@ -143,7 +144,7 @@ export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Prop
         tanpaBreadcrumb
         aksi={
           <Button asChild>
-            <Link href="/admin-platform/pemasaran/pengaturan">
+            <Link href={rutePemasaran.pengaturan}>
               <Settings aria-hidden="true" className="size-4" />
               Pengaturan
             </Link>

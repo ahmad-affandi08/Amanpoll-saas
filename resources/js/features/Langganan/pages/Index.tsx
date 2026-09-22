@@ -16,6 +16,7 @@ import type {
   TagihanItem,
 } from '@/features/Langganan/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { ruteLangganan } from '@/features/Langganan/api';
 
 interface Props {
   entitlement: Entitlement;
@@ -222,11 +223,7 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
                             size="sm"
                             variant="outline"
                             onClick={() =>
-                              router.post(
-                                `/langganan/tagihan/${baris.Id}/bayar`,
-                                {},
-                                { preserveScroll: true },
-                              )
+                              router.post(ruteLangganan.tagihanBayar(baris.Id), {}, { preserveScroll: true })
                             }
                           >
                             <CreditCard aria-hidden="true" className="size-4" />

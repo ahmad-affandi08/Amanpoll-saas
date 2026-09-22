@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import type { BlokDisunting, HalamanDetail, PilihanHalaman, VersiHalaman } from '@/features/Pemasaran/types';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Props {
   halaman: HalamanDetail | null;
@@ -21,7 +22,7 @@ interface Props {
   pilihan: PilihanHalaman;
 }
 
-const AKAR = '/admin-platform/pemasaran/halaman';
+const AKAR = rutePemasaran.halaman;
 
 let penghitungKunci = 0;
 

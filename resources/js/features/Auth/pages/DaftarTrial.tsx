@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LogoLambang } from '@/components/shared/Logo';
+import { ruteAuth } from '@/features/Auth/api';
 
 interface Props {
   durasiHari: number;
@@ -29,7 +30,7 @@ export default function AuthDaftarTrial({ durasiHari, namaPaket, kartuDiminta, p
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    form.post('/daftar', { onFinish: () => form.reset('KataSandi', 'KataSandi_confirmation') });
+    form.post(ruteAuth.daftar, { onFinish: () => form.reset('KataSandi', 'KataSandi_confirmation') });
   };
 
   return (
@@ -164,7 +165,7 @@ export default function AuthDaftarTrial({ durasiHari, namaPaket, kartuDiminta, p
 
         <p className="text-center text-sm text-muted-foreground">
           Sudah punya akun?{' '}
-          <Link href="/login" className="underline">
+          <Link href={ruteAuth.login} className="underline">
             Masuk
           </Link>
         </p>

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { LogoLambang } from '@/components/shared/Logo';
 import { Button } from '@/components/ui/button';
+import { rutePublik } from '@/features/Publik/api';
 
 interface Props {
   urlMasuk: string;
@@ -14,7 +15,7 @@ export function KerangkaPublik({ urlMasuk, urlDaftar, children }: Props) {
     <div className="flex min-h-screen flex-col bg-background">
       <header className="border-b">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4">
-          <a href="/" aria-label="Beranda Amanpoll">
+          <a href={rutePublik.beranda} aria-label="Beranda Amanpoll">
             <LogoLambang />
           </a>
           <nav className="flex items-center gap-2">

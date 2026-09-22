@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { rutePemasaran } from '@/features/Pemasaran/api';
 
 interface Distribusi {
   Id: string;
@@ -64,7 +65,7 @@ interface Props {
   pilihan: Pilihan;
 }
 
-const AKAR = '/admin-platform/pemasaran/sosial';
+const AKAR = rutePemasaran.sosial;
 
 const WARNA_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
   Draf: 'outline',
