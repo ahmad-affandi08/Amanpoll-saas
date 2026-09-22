@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import { ClipboardCheck, Plus, Search, Layers, ArrowRight } from 'lucide-react';
+import { Plus, Search, Layers, ArrowRight } from 'lucide-react';
 import type { TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';

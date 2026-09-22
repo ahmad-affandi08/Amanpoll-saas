@@ -11,11 +11,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
-import { ArrowLeft, Plus, Trash2, Calendar, Building, Wrench, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Calendar, Wrench, Clock } from 'lucide-react';
 import type { RencanaPemeliharaan } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';

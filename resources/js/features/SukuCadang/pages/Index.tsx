@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import type { KategoriSukuCadang, StatusSukuCadang, SukuCadang } from '@/features/Persediaan/types';
+import type { StatusSukuCadang, SukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';

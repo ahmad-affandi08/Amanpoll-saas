@@ -5,7 +5,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -123,9 +123,7 @@ function DaftarSupresiTabel({ supresi }: { supresi: BarisSupresi[] }) {
 function RiwayatKonsenTabel({ riwayat, cari }: { riwayat: RiwayatKonsen[]; cari: string }) {
   if (cari === '') {
     return (
-      <p className="text-sm text-muted-foreground">
-        Cari satu alamat untuk membaca riwayat persetujuannya.
-      </p>
+      <p className="text-sm text-muted-foreground">Cari satu alamat untuk membaca riwayat persetujuannya.</p>
     );
   }
 
@@ -358,8 +356,7 @@ function DialogPermintaan({ pilihan }: { pilihan: { Jenis: string[] } }) {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            Alamatnya langsung disupresi begitu permintaan dicatat, sebelum siapa pun sempat
-            memprosesnya.
+            Alamatnya langsung disupresi begitu permintaan dicatat, sebelum siapa pun sempat memprosesnya.
           </p>
 
           <DialogFooter>

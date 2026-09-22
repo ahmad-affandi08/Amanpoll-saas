@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -17,19 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import {
-  FileCheck2,
-  Plus,
-  Search,
-  ArrowRight,
-  Filter,
-  Building2,
-  Calendar,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
-  FileBadge,
-} from 'lucide-react';
+import { Plus, Search, ArrowRight, Filter, FileBadge } from 'lucide-react';
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';

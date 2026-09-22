@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import { ClipboardCheck, Plus, Search, Calendar, FolderTree } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { ruteInspeksi } from '@/features/Inspeksi/api';

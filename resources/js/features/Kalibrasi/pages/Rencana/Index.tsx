@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -17,19 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import {
-  Calendar,
-  Plus,
-  Pencil,
-  Trash2,
-  ArrowRight,
-  Filter,
-  Search,
-  CheckCircle2,
-  AlertTriangle,
-  Clock,
-  FileCheck2,
-} from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowRight, Filter, Search } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';

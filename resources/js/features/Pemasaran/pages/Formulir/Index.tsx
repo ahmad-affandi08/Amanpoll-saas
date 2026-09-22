@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
@@ -214,11 +214,7 @@ function DialogFormulir({ formulir, pilihan }: { formulir: Formulir | null; pili
 
             <div className="grid gap-2">
               <Label htmlFor="Tag">Tag (dipisah koma)</Label>
-              <Input
-                id="Tag"
-                value={form.data.Tag}
-                onChange={(e) => form.setData('Tag', e.target.value)}
-              />
+              <Input id="Tag" value={form.data.Tag} onChange={(e) => form.setData('Tag', e.target.value)} />
             </div>
 
             <div className="grid gap-2 sm:col-span-2">
@@ -312,10 +308,7 @@ function DialogFormulir({ formulir, pilihan }: { formulir: Formulir | null; pili
                 </div>
                 <div className="grid gap-2">
                   <Label>Label</Label>
-                  <Input
-                    value={satu.Label}
-                    onChange={(e) => ubahField(urutan, { Label: e.target.value })}
-                  />
+                  <Input value={satu.Label} onChange={(e) => ubahField(urutan, { Label: e.target.value })} />
                 </div>
                 <div className="grid gap-2">
                   <Label>Jenis</Label>

@@ -18,7 +18,6 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import {
-  ClipboardCheck,
   Plus,
   Search,
   Filter,
@@ -50,7 +49,14 @@ function filterAktif(filter: Props['filter']): Record<string, string> {
   );
 }
 
-export default function InspeksiIndex({ inspeksi, templatInspeksi, aset, inspektor, ringkasan, filter }: Props) {
+export default function InspeksiIndex({
+  inspeksi,
+  templatInspeksi,
+  aset,
+  inspektor,
+  ringkasan,
+  filter,
+}: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState(filter.cari ?? '');
 

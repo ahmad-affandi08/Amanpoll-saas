@@ -1,32 +1,14 @@
 import { FormEvent, useState } from 'react';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  ArrowLeft,
-  Calendar,
-  Building,
-  Wrench,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
-  FileCheck,
-  PlusCircle,
-  ExternalLink,
-} from 'lucide-react';
+import { ArrowLeft, Calendar, Building, Wrench, FileCheck, PlusCircle, ExternalLink } from 'lucide-react';
 import type { Inspeksi } from '@/features/PreventifInspeksi/types';
 import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
