@@ -2583,22 +2583,229 @@ suite itu sendiri.
 
 # FASE 38 — Pemasaran Lanjutan
 
-Garis besar `MARKETING.md` bagian 32 butir 11–17. Checklist rinci disusun setelah Gate 37 lulus.
+Garis besar `MARKETING.md` bagian 32 butir 11–17, ditambah tiga butir yang
+bagian 32 tidak sebut. Checklist rinci disusun setelah Gate 37 lulus.
 
-- [ ] 38.01 WhatsApp automation — `MARKETING.md` bagian 16. Wajib opt-in, template approval provider, frequency cap, STOP, suppression list.
-- [ ] 38.02 Social media scheduler — bagian 18. Adapter penyedia, satu konten utama dengan banyak distribusi.
-- [ ] 38.03 Demo management — bagian 11. Dataset, reset terjadwal, modul terlihat, tracking event demo.
-- [ ] 38.04 CMS konten dan SEO manager — bagian 9. Artikel, keyword, cluster, intent, sitemap, schema.
-- [ ] 38.05 Lead magnet dan tools publik — bagian 10. Template, checklist, kalkulator MTTR/MTBF, QR generator.
-- [ ] 38.06 Eksperimen A/B — bagian 22. Tanpa auto-declare winner sebelum sampel minimum.
-- [ ] 38.07 Pricing dan offer presentation — bagian 19. Harga tetap bersumber dari Langganan/Billing.
-- [ ] 38.08 Kampanye lanjutan — bagian 13 dan 24. `KampanyeBiaya`, `KampanyeTarget`, `KampanyeKonten`; membuka CAC dan revenue per channel di Dashboard Growth.
-- [ ] 38.09 Partner program — bagian 21, termasuk host `partner.amanpoll.com` dan komisi.
-- [ ] 38.10 Advanced attribution — bagian 14 di luar first/last touch.
+## Urutan pengerjaan
+
+`MARKETING.md` bagian 32 sudah menetapkan urutan untuk tujuh butir, dan urutan
+itu dipakai apa adanya. Tiga butir sisanya — 38.03, 38.07, dan 38.08 — tidak
+disebut di sana, jadi penempatannya ditentukan ketergantungan, bukan selera:
+
+```text
+1.  38.08 Kampanye lanjutan     tanpa ketergantungan; membuka CAC yang kini kosong
+2.  38.03 Demo management       membuka tahap Demo di funnel yang kini selalu nol
+3.  38.01 WhatsApp automation   bagian 32 butir 11
+4.  38.02 Social scheduler      bagian 32 butir 12
+5.  38.09 Partner program       bagian 32 butir 13
+6.  38.06 Eksperimen A/B        bagian 32 butir 14
+7.  38.04 SEO manager           bagian 32 butir 15
+8.  38.05 Lead magnet           bagian 32 butir 16
+9.  38.10 Advanced attribution  bagian 32 butir 17
+10. 38.07 Pricing presentation  presentasi saja, tidak menghalangi apa pun
+```
+
+Tiap butir dikerjakan dan di-commit sendiri, dengan gate-nya sendiri. Satu gate
+untuk sepuluh modul yang saling lepas berarti tidak ada yang dapat diverifikasi
+sampai semuanya selesai, dan itu bertentangan dengan cara FASE 29–37 dikerjakan.
+
+## Yang sudah tersedia dan tidak perlu dibuat ulang
+
+Diperiksa terhadap kode yang ada, bukan diasumsikan:
+
+- sepuluh feature flag `marketing.*` sudah lengkap, termasuk whatsapp, social,
+  partner, dan experiment;
+- izin `platform.{whatsapp,partner,konten,eksperimen}.{lihat,kelola}` sudah ada
+  di `KatalogIzinPemasaran`;
+- form builder sudah mendukung sebelas jenis field, persis daftar bagian 10;
+- `KatalogKpiPemasaran` sudah menyediakan slot `cac_per_channel` dan
+  `revenue_partner` beserta alasan kekosongannya;
+- `KatalogAlertPemasaran` sudah menyediakan slot `whatsapp_gagal_kirim` dan
+  `komisi_partner_tertunda`;
+- pemicu otomasi `PartnerMengirimLead` sudah terdaftar dan menunggu sumbernya;
+- host `partner.amanpoll.com` sudah ada di `PetaHost` sejak FASE 24.5;
+- kontrak penyedia, registri aksi otomasi, dan pola DLQ sudah terbukti di
+  FASE 34 dan 35, jadi kanal baru mengikuti bentuk yang sama.
+
+## Peristiwa yang masih menunggu produsennya
+
+Sepuluh kode sudah terdaftar di `KatalogPeristiwaPemasaran` tetapi belum ada
+yang menuliskannya. Ini bukan utang tersembunyi: taxonomy-nya memang ditulis
+lebih dulu, dan tiap butir di bawah menyebut mana yang ia hidupkan.
+
+```text
+CTA_DIKLIK, FORMULIR_DIMULAI, HARGA_DILIHAT     38.07 dan blok halaman
+DEMO_DIMULAI, DEMO_SELESAI                      38.03
+ARTIKEL_DILIHAT                                 38.04
+TEMPLATE_DIUNDUH                                38.05
+PARTNER_MENGIRIM_LEAD, KOMISI_PARTNER_DIBUAT    38.09
+CHECKOUT_DIMULAI                                domain Langganan, di luar FASE 38
+```
+
+## 38.08 Kampanye Lanjutan
+
+- [ ] Tabel `KampanyeBiaya`, `KampanyeTarget`, `KampanyeKonten`.
+- [ ] Field kampanye lengkap sesuai bagian 13: budget, audience, landing page, form, offer, UTM.
+- [ ] State `DRAF → SIAP → AKTIF → DIJEDA → SELESAI → DIARSIPKAN` dengan peta transisi.
+- [ ] Channel sesuai daftar tertutup bagian 13, bukan teks bebas.
+- [ ] `cac_per_channel` dihidupkan di `KatalogKpiPemasaran`; alasan kekosongannya dihapus.
+- [ ] `HitungMetrikKampanye` ikut menjumlahkan biaya per hari.
+- [ ] Konsol biaya dan target di halaman kampanye.
+- [ ] `KampanyeBiayaTest`, `HitungCacTest`.
+
+Biaya dicatat per hari per kampanye, bukan satu angka total, supaya CAC dapat
+dibaca pada rentang tanggal mana pun tanpa membagi rata biaya sebulan.
+
+**Gate 38.08.** CAC per channel terbaca di dashboard dan angkanya sama dengan
+biaya dibagi pelanggan baru yang dihitung ulang langsung dari tabelnya.
+
+## 38.03 Demo Management
+
+- [ ] Tabel `DemoPemasaran`, `SesiDemo`, `EventDemo`.
+- [ ] Setelan: demo enabled, dataset, reset interval, visible modules, restricted features, CTA, max session.
+- [ ] Event demo sesuai bagian 11: started, feature opened, asset viewed, work order created, QR viewed, preventive viewed, completed, CTA clicked.
+- [ ] `DEMO_DIMULAI` dan `DEMO_SELESAI` ditulis ke `EventPemasaran`, sehingga tahap Demo di funnel berhenti bernilai nol.
+- [ ] Job terjadwal `ResetDatasetDemo`.
+- [ ] Batas sesi ditegakkan, bukan sekadar disetel.
+- [ ] `SesiDemoTest`, `ResetDemoTest`.
+
+Reset menghapus data demo dan membuatnya ulang dari dataset; ia tidak boleh
+dapat menyentuh tenant sungguhan, dan test yang membuktikannya wajib ada.
+
+**Gate 38.03.** Satu sesi demo terbaca utuh dari mulai sampai selesai di funnel
+growth, dan reset terjadwal tidak pernah menghapus data di luar dataset demo.
+
+## 38.01 WhatsApp Automation
+
+- [ ] Tabel `TemplateWhatsAppPemasaran`, `PengirimanWhatsAppPemasaran`.
+- [ ] Kontrak `PenyediaWhatsApp` beserta penyedia palsu untuk test.
+- [ ] Status template mengikuti approval penyedia; template belum disetujui tidak dapat dikirim.
+- [ ] Opt-in dibaca dari `LayananKonsen` yang sama dengan email, bukan daftar kedua.
+- [ ] STOP dan daftar supresi dihormati, diperiksa lagi pada saat kirim.
+- [ ] Frequency cap per nomor per rentang waktu, dari setelan.
+- [ ] Menu dan respons configurable sesuai bagian 16, bukan ditulis di kode.
+- [ ] Aksi otomasi `KirimWhatsApp` masuk registri.
+- [ ] Alert `whatsapp_gagal_kirim` dihidupkan.
+- [ ] `WhatsAppConsentTest`, `WhatsAppIdempotencyTest`.
+
+Pengiriman nyata menunggu akun bisnis dan template yang disetujui Meta. Yang
+dibangun di fase ini adalah seluruh jalurnya dengan penyedia palsu, sama seperti
+email di FASE 34; tanpa itu, kanal ini tidak dapat diuji sama sekali.
+
+**Gate 38.01.** Nomor yang mengirim STOP tidak pernah menerima pesan berikutnya,
+dan template tanpa persetujuan penyedia tidak dapat berangkat.
+
+## 38.02 Social Media Scheduler
+
+- [ ] Tabel `KontenSosial`, `DistribusiKontenSosial`, `JadwalKontenSosial`.
+- [ ] Kontrak `PenyediaSosial`; adapter nyata menyusul, penyedia palsu untuk test.
+- [ ] State `DRAF → REVIEW → TERJADWAL → DIPROSES → TERBIT → GAGAL` dengan peta transisi.
+- [ ] Satu konten utama dengan banyak distribusi, tiap distribusi punya channel, caption, media, jadwal, CTA, dan UTM sendiri.
+- [ ] UTM distribusi tertaut ke kampanye, sehingga trafiknya terbaca di attribution.
+- [ ] Job `TerbitkanKontenSosial` idempoten.
+- [ ] `DistribusiSosialTest`, `JadwalSosialTest`.
+
+**Gate 38.02.** Satu artikel dapat dijadwalkan ke lebih dari satu channel, dan
+menjalankan ulang penerbitannya tidak menghasilkan posting ganda.
+
+## 38.09 Partner Program
+
+- [ ] Tabel `ProgramPartner`, `Partner`, `LeadPartner`, `AturanKomisiPartner`, `KomisiPartner`, `PayoutPartner`.
+- [ ] Jenis partner sesuai daftar tertutup bagian 21.
+- [ ] Host `partner.amanpoll.com` beserta rute dan autentikasinya.
+- [ ] Portal partner: lead, trial, paid customer, komisi, payout, materi pemasaran.
+- [ ] Host partner tidak dapat diindeks, sama seperti host dashboard.
+- [ ] Komisi lewat kontrak domain Langganan, bukan mutasi Billing langsung.
+- [ ] `PARTNER_MENGIRIM_LEAD` dan `KOMISI_PARTNER_DIBUAT` ditulis ke `EventPemasaran`.
+- [ ] `revenue_partner` dihidupkan di `KatalogKpiPemasaran`; alert `komisi_partner_tertunda` dihidupkan.
+- [ ] Partner hanya melihat lead miliknya sendiri, dan ada test yang membuktikannya.
+- [ ] `PartnerLeadTest`, `KomisiPartnerTest`, `IsolasiPortalPartnerTest`.
+
+Butir terbesar di FASE 38: enam tabel, satu host baru, dan satu batas akses
+baru. Isolasi antar partner setara isolasi antar tenant dan diuji seketat itu.
+
+**Gate 38.09.** Satu partner tidak dapat melihat lead partner lain, dan komisi
+hanya lahir dari pembayaran yang benar-benar terjadi.
+
+## 38.06 Eksperimen A/B
+
+- [ ] Tabel `EksperimenPemasaran`, `VarianEksperimen`, `PartisipasiEksperimen`, `HasilEksperimen`.
+- [ ] Target uji sesuai bagian 22: headline, CTA, landing section, panjang form, pricing, onboarding copy, subjek email.
+- [ ] State `DRAF → AKTIF → DIJEDA → SELESAI`.
+- [ ] Penetapan varian per pengunjung bersifat tetap; pengunjung yang sama tidak berpindah varian.
+- [ ] Metric sesuai bagian 22, dibaca dari funnel yang sudah ada.
+- [ ] Minimum sample dari setelan; tanpa mencapainya pemenang tidak pernah dinyatakan.
+- [ ] `EksperimenPenetapanTest`, `MinimumSampelTest`.
+
+Larangan auto-declare winner adalah inti butir ini. Yang diuji bukan bahwa
+tombolnya ada, melainkan bahwa eksperimen di bawah sampel minimum menolak
+menyatakan pemenang sekalipun selisihnya besar.
+
+**Gate 38.06.** Pengunjung yang sama selalu melihat varian yang sama, dan
+pemenang tidak dapat dinyatakan sebelum sampel minimum tercapai.
+
+## 38.04 CMS Konten dan SEO Manager
+
+- [ ] Tabel `KontenPemasaran`, `VersiKontenPemasaran`, `KeywordSeo`, `ClusterSeo`, `KontenKeywordSeo`.
+- [ ] Jenis konten sesuai daftar bagian 9.
+- [ ] Metadata SEO: slug, title, meta description, canonical, Open Graph, schema type, noindex.
+- [ ] Intent `INFORMATIONAL`, `COMMERCIAL`, `TRANSACTIONAL`, `NAVIGATIONAL`.
+- [ ] Sitemap memuat konten terbit; yang noindex tidak ikut.
+- [ ] Redirect mendukung 301, 302, dan 410 — `RedirectPemasaran` kini hanya 301 dan 302.
+- [ ] `ARTIKEL_DILIHAT` ditulis ke `EventPemasaran`.
+- [ ] Konten berversi seperti halaman pemasaran, dengan versi aktif yang terkunci.
+- [ ] `SitemapKontenTest`, `RedirectKontenTest`.
+
+**Gate 38.04.** Artikel terbit muncul di sitemap dengan metadata lengkap, dan
+yang ditandai noindex tidak pernah muncul di sana.
+
+## 38.05 Lead Magnet dan Tools Publik
+
+- [ ] Berkas unduhan tertaut ke formulir; unduhan hanya setelah formulir terkirim.
+- [ ] `TEMPLATE_DIUNDUH` ditulis ke `EventPemasaran`.
+- [ ] Kalkulator MTTR, MTBF, dan downtime sebagai halaman publik.
+- [ ] Generator QR aset sebagai halaman publik.
+- [ ] Tools publik tetap tunduk pada rate limit dan anti-spam yang sama dengan formulir.
+- [ ] Rumus kalkulator bersumber dari `KatalogKpi` FASE 21, bukan ditulis ulang di frontend.
+- [ ] `UnduhanLeadMagnetTest`, `KalkulatorPublikTest`.
+
+Tidak ada tabel baru: form builder bagian 10 sudah lengkap sejak FASE 32, yang
+kurang hanya berkas unduhan dan halaman toolsnya. Rumus MTTR dan MTBF sudah ada
+di domain Pelaporan; menuliskannya ulang berarti dua rumus yang kelak berbeda.
+
+**Gate 38.05.** Berkas lead magnet tidak dapat diunduh tanpa mengisi formulir,
+dan angka kalkulator publik sama dengan angka KPI yang sama di dalam aplikasi.
+
+## 38.10 Advanced Attribution
+
+- [ ] Model attribution di luar first dan last touch: linear, time decay, position based.
+- [ ] Model yang dipakai dashboard dapat dipilih lewat setelan.
+- [ ] Sentuhan disimpan lengkap, bukan hanya yang pertama dan terakhir.
+- [ ] Larangan merge identitas atas sinyal lemah tetap berlaku dan tetap diuji.
+- [ ] Revenue per channel dapat dibaca menurut model yang dipilih.
+- [ ] `ModelAttributionTest`, `BobotSentuhanTest`.
+
+First dan last touch tetap menjadi bawaan. Model lain ditambahkan di sampingnya,
+tidak menggantikannya, supaya angka lama tetap dapat dibandingkan.
+
+**Gate 38.10.** Jumlah bobot seluruh sentuhan satu konversi selalu tepat satu,
+pada model mana pun.
+
+## 38.07 Pricing dan Offer Presentation
+
+- [ ] Urutan paket, highlight, badge, CTA, comparison, dan FAQ diatur dari konsol.
+- [ ] Harga dibaca dari domain Langganan; domain Pemasaran tidak pernah menyimpan angkanya.
+- [ ] Presentasi promo tidak mengubah transaksi Billing.
+- [ ] `HARGA_DILIHAT` dan `CTA_DIKLIK` ditulis ke `EventPemasaran`.
+- [ ] `PresentasiHargaTest` membuktikan harga yang tampil sama dengan harga paket.
+
+**Gate 38.07.** Mengubah presentasi harga tidak pernah mengubah angka yang
+ditagihkan, dan harga yang tampil selalu sama dengan harga paket di Langganan.
 
 ### Gate 38
 
-Ditetapkan saat checklist rincinya disusun.
+Seluruh gate 38.01 sampai 38.10 terpenuhi. Tiap butir dikerjakan, diuji, dan
+di-commit sendiri; gate ini hanya menyatakan bahwa kesepuluhnya sudah lulus.
 
 ---
 
