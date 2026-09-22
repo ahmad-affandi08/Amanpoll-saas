@@ -11,12 +11,17 @@
 > | Berkas repository | 112 mati dari 124 | 24 berkas tersisa seluruhnya |
 > | Berkas DTO | 53 mati dari 68 | 2 berkas tersisa |
 > | Folder `app/Http/Controllers/Domain/` nyasar | ada | sudah tidak ada |
-> | Folder hanya berisi `.gitkeep` | 117 | **295** |
+> | Folder hanya berisi `.gitkeep` | 117 | 0 — sudah dibersihkan |
 >
-> Yang belum beres justru bertambah: folder scaffold kosong. Keberadaannya
-> bukan tanda polanya dipakai — Amanpoll memakai Action tunggal di atas
-> Eloquent, dan lapisan repository sengaja ditinggalkan. Lihat
-> `.ai/rules/app.md`.
+> Folder scaffold kosong sempat bertambah menjadi 295 sebelum akhirnya
+> dihapus seluruhnya (335 folder di `app/` dan `tests/`, beserta 159 berkas
+> `.gitkeep` yang tersisa). Sisa `app/Core` yang benar-benar terpakai ada
+> sepuluh; berkas, notifikasi, persetujuan, integrasi, dan sinkronisasi
+> ternyata tinggal di `app/Domain`, bukan di `app/Core` seperti yang dulu
+> tertulis di ARSITEKTUR.md.
+>
+> Pelajarannya tetap berlaku: Amanpoll memakai Action tunggal di atas
+> Eloquent, dan lapisan repository sengaja ditinggalkan.
 
 | Metadata | Nilai |
 | :--- | :--- |

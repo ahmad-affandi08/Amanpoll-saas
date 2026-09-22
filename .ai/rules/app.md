@@ -5,9 +5,11 @@ paths:
 
 # App
 
-## Jangan menyimpulkan konvensi dari folder scaffold kosong
-295 folder di `app/` hanya berisi `.gitkeep` — sisa generator scaffolding di awal proyek. Di antaranya `Domain/Repositories`, `Domain/Rules`, `Domain/Policies`, `Jobs`, `Support`, `Notifications` di hampir tiap domain.
+## Folder yang ada adalah folder yang dipakai
+Folder scaffold kosong sudah dihapus seluruhnya (dulu 295 folder berisi `.gitkeep` saja), jadi setiap folder di `app/` sekarang benar-benar berisi kode. Jangan menghidupkan kembali lapisan yang sengaja ditinggalkan.
 
-Keberadaannya **bukan** tanda bahwa polanya dipakai. Amanpoll memakai Action tunggal di atas Eloquent langsung; lapisan repository sengaja ditinggalkan. Jangan membuat repository atau DTO baru hanya karena foldernya ada.
+Amanpoll memakai **Action tunggal di atas Eloquent langsung**. Tidak ada lapisan repository, dan DTO hanya dipakai di dua tempat. Jangan membuat `Domain/Repositories`, `Domain/Rules`, atau folder sejenis hanya karena pola itu lazim di proyek lain.
 
-Lihat pola domain yang benar-benar terpakai di `app/Domain/Persediaan/` atau `app/Domain/Pemeliharaan/`, bukan di daftar folder.
+Jangan pula menambahkan `.gitkeep` untuk folder baru: bila belum ada kodenya, foldernya memang belum perlu ada.
+
+Lihat pola yang benar-benar terpakai di `app/Domain/Persediaan/` atau `app/Domain/Pemeliharaan/`.
