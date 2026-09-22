@@ -23,6 +23,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Qr\PembuatQrAset;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -64,6 +65,7 @@ final class AsetController extends Controller
             'filter' => $filter,
             // Dikirim dari server supaya batas di tombol cetak tidak pernah beda dengan validasinya.
             'maksLabel' => CetakLabelAsetRequest::MAKS_LABEL,
+            'wajib' => ['aset' => AturanWajib::untuk(SimpanAsetRequest::class)],
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
             'lokasi' => LokasiResource::collection(Lokasi::query()->orderBy('Nama')->get()),
         ]);
@@ -79,6 +81,7 @@ final class AsetController extends Controller
             'aset' => new AsetResource($aset),
             // KodeQr dulu hanya ditampilkan sebagai teks, jadi tidak pernah bisa dipindai.
             'qr' => $aset->KodeQr === null ? null : $pembuat->untuk([$aset->KodeQr], 1)[0]['Svg'],
+            'wajib' => ['aset' => AturanWajib::untuk(SimpanAsetRequest::class)],
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
             'modelAset' => ModelAsetResource::collection(ModelAset::query()->orderBy('Nama')->get()),
             'penyedia' => PenyediaResource::collection(Penyedia::query()->orderBy('Nama')->get()),

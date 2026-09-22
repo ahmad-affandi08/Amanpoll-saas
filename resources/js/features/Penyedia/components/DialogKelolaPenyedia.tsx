@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import type { Penyedia, KategoriPenyedia } from '@/features/Penyedia/types';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 import { FormInfoPenyedia } from '@/features/Penyedia/components/FormInfoPenyedia';
 import { TabKategori } from '@/features/Penyedia/components/TabKategori';
 import { TabKontak } from '@/features/Penyedia/components/TabKontak';
@@ -12,9 +13,11 @@ import { TabPenilaian } from '@/features/Penyedia/components/TabPenilaian';
 export function DialogKelolaPenyedia({
   penyedia,
   kategoriPenyedia,
+  wajib,
 }: {
   penyedia: Penyedia;
   kategoriPenyedia: KategoriPenyedia[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
 
@@ -38,7 +41,7 @@ export function DialogKelolaPenyedia({
             <TabsTrigger value="kolaborasi">Kolaborasi</TabsTrigger>
           </TabsList>
           <TabsContent value="info">
-            <FormInfoPenyedia penyedia={penyedia} />
+            <FormInfoPenyedia penyedia={penyedia} wajib={wajib} />
           </TabsContent>
           <TabsContent value="kategori">
             <TabKategori penyedia={penyedia} kategoriPenyedia={kategoriPenyedia} />

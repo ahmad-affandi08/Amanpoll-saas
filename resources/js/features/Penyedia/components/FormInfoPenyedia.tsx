@@ -9,12 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Penyedia } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 export function FormInfoPenyedia({
   penyedia,
+  wajib,
   onSukses,
 }: {
   penyedia: Penyedia | null;
+  wajib: AturanWajib;
   onSukses?: () => void;
 }) {
   const form = useForm(
@@ -65,98 +68,100 @@ export function FormInfoPenyedia({
   };
 
   return (
-    <form onSubmit={submit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <BidangKode
-          nilai={form.data.Kode}
-          onUbah={(nilai) => form.setData('Kode', nilai)}
-          galat={form.errors.Kode}
-        />
-        <div className="space-y-2">
-          <Label>Nama</Label>
-          <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-          {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+    <AturanWajibProvider aturan={wajib}>
+      <form onSubmit={submit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <BidangKode
+            nilai={form.data.Kode}
+            onUbah={(nilai) => form.setData('Kode', nilai)}
+            galat={form.errors.Kode}
+          />
+          <div className="space-y-2">
+            <Label nama="Nama">Nama</Label>
+            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+          </div>
         </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Nama Legal</Label>
-          <Input value={form.data.NamaLegal} onChange={(e) => form.setData('NamaLegal', e.target.value)} />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label nama="NamaLegal">Nama Legal</Label>
+            <Input value={form.data.NamaLegal} onChange={(e) => form.setData('NamaLegal', e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label nama="NomorIdentitasPajak">NPWP</Label>
+            <Input
+              value={form.data.NomorIdentitasPajak}
+              onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label nama="Email">Email</Label>
+            <Input
+              type="email"
+              value={form.data.Email}
+              onChange={(e) => form.setData('Email', e.target.value)}
+            />
+            {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label nama="Telepon">Telepon</Label>
+            <Input value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
+          </div>
         </div>
         <div className="space-y-2">
-          <Label>NPWP</Label>
+          <Label nama="Website">Website</Label>
           <Input
-            value={form.data.NomorIdentitasPajak}
-            onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)}
+            value={form.data.Website}
+            onChange={(e) => form.setData('Website', e.target.value)}
+            placeholder="https://"
+          />
+          {form.errors.Website && <p className="text-sm text-destructive">{form.errors.Website}</p>}
+        </div>
+        <div className="space-y-2">
+          <Label nama="Alamat">Alamat</Label>
+          <Textarea
+            value={form.data.Alamat}
+            onChange={(e) => form.setData('Alamat', e.target.value)}
+            rows={2}
           />
         </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Email</Label>
-          <Input
-            type="email"
-            value={form.data.Email}
-            onChange={(e) => form.setData('Email', e.target.value)}
-          />
-          {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label nama="Kota">Kota</Label>
+            <Input value={form.data.Kota} onChange={(e) => form.setData('Kota', e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label nama="Provinsi">Provinsi</Label>
+            <Input value={form.data.Provinsi} onChange={(e) => form.setData('Provinsi', e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label nama="Negara">Negara</Label>
+            <Input value={form.data.Negara} onChange={(e) => form.setData('Negara', e.target.value)} />
+          </div>
         </div>
         <div className="space-y-2">
-          <Label>Telepon</Label>
-          <Input value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
+          <Label nama="Status">Status</Label>
+          <Select
+            value={form.data.Status}
+            onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Aktif">Aktif</SelectItem>
+              <SelectItem value="Nonaktif">Nonaktif</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      </div>
-      <div className="space-y-2">
-        <Label>Website</Label>
-        <Input
-          value={form.data.Website}
-          onChange={(e) => form.setData('Website', e.target.value)}
-          placeholder="https://"
-        />
-        {form.errors.Website && <p className="text-sm text-destructive">{form.errors.Website}</p>}
-      </div>
-      <div className="space-y-2">
-        <Label>Alamat</Label>
-        <Textarea
-          value={form.data.Alamat}
-          onChange={(e) => form.setData('Alamat', e.target.value)}
-          rows={2}
-        />
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label>Kota</Label>
-          <Input value={form.data.Kota} onChange={(e) => form.setData('Kota', e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Provinsi</Label>
-          <Input value={form.data.Provinsi} onChange={(e) => form.setData('Provinsi', e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Negara</Label>
-          <Input value={form.data.Negara} onChange={(e) => form.setData('Negara', e.target.value)} />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label>Status</Label>
-        <Select
-          value={form.data.Status}
-          onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}
-        >
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Aktif">Aktif</SelectItem>
-            <SelectItem value="Nonaktif">Nonaktif</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <DialogFooter>
-        <Button type="submit" disabled={form.processing}>
-          Simpan
-        </Button>
-      </DialogFooter>
-    </form>
+        <DialogFooter>
+          <Button type="submit" disabled={form.processing}>
+            Simpan
+          </Button>
+        </DialogFooter>
+      </form>
+    </AturanWajibProvider>
   );
 }

@@ -19,10 +19,13 @@ import { TabMeter } from '@/features/Aset/components/TabMeter';
 import { TabPemeliharaan } from '@/features/Aset/components/TabPemeliharaan';
 import { TabKalibrasi } from '@/features/Aset/components/TabKalibrasi';
 import { KartuQr } from '@/features/Aset/components/KartuQr';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   aset: Aset;
   qr: string | null;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
   kategoriAset: KategoriAset[];
   modelAset: ModelAset[];
   penyedia: Penyedia[];
@@ -33,6 +36,7 @@ interface Props {
 export default function AsetShow({
   aset,
   qr,
+  wajib,
   kategoriAset,
   modelAset,
   penyedia,
@@ -77,6 +81,7 @@ export default function AsetShow({
             modelAset={modelAset}
             penyedia={penyedia}
             unitOrganisasi={unitOrganisasi}
+            wajib={wajib.aset}
           />
         </TabsContent>
         <TabsContent value="lokasi">

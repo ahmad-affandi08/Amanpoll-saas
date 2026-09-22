@@ -11,6 +11,7 @@ import { rutePenyedia } from '@/features/Penyedia/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 import type { Paginasi } from '@/types/global';
 import { DialogKelolaKategori } from '@/features/Penyedia/components/DialogKelolaKategori';
 import { DialogKelolaPenyedia } from '@/features/Penyedia/components/DialogKelolaPenyedia';
@@ -20,9 +21,11 @@ interface Props {
   penyedia: Paginasi<Penyedia>;
   kategoriPenyedia: KategoriPenyedia[];
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter }: Props) {
+export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Penyedia) => {
     if (
@@ -96,7 +99,11 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter }: Pr
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogKelolaPenyedia penyedia={row.original} kategoriPenyedia={kategoriPenyedia} />
+            <DialogKelolaPenyedia
+              penyedia={row.original}
+              kategoriPenyedia={kategoriPenyedia}
+              wajib={wajib.penyedia}
+            />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -107,7 +114,7 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter }: Pr
         meta: { label: 'Aksi' },
       },
     ],
-    [kategoriPenyedia],
+    [kategoriPenyedia, wajib],
   );
 
   return (
@@ -120,7 +127,7 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter }: Pr
           <>
             <div className="flex gap-2">
               <DialogKelolaKategori kategoriPenyedia={kategoriPenyedia} />
-              <DialogTambahPenyedia />
+              <DialogTambahPenyedia wajib={wajib.penyedia} />
             </div>
           </>
         }

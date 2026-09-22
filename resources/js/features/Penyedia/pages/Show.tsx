@@ -7,6 +7,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KartuAngka } from '@/components/shared/riwayat';
 import { formatUang } from '@/lib/uang';
 import type { KategoriPenyedia, Penyedia, RingkasanPenyedia } from '@/features/Penyedia/types';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 import { FormInfoPenyedia } from '@/features/Penyedia/components/FormInfoPenyedia';
 import { TabKategori } from '@/features/Penyedia/components/TabKategori';
 import { TabKontak } from '@/features/Penyedia/components/TabKontak';
@@ -18,9 +19,11 @@ interface Props {
   penyedia: Penyedia;
   kategoriPenyedia: KategoriPenyedia[];
   ringkasan: RingkasanPenyedia;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-export default function PenyediaShow({ penyedia, kategoriPenyedia, ringkasan }: Props) {
+export default function PenyediaShow({ penyedia, kategoriPenyedia, ringkasan, wajib }: Props) {
   const alamat = [penyedia.Kota, penyedia.Provinsi, penyedia.Negara].filter(Boolean).join(', ');
 
   return (
@@ -92,7 +95,7 @@ export default function PenyediaShow({ penyedia, kategoriPenyedia, ringkasan }: 
           <TabKategori penyedia={penyedia} kategoriPenyedia={kategoriPenyedia} />
         </TabsContent>
         <TabsContent value="info">
-          <FormInfoPenyedia penyedia={penyedia} />
+          <FormInfoPenyedia penyedia={penyedia} wajib={wajib.penyedia} />
         </TabsContent>
         <TabsContent value="kolaborasi">
           <PanelKolaborasi jenisEntitas="Penyedia" entitasId={penyedia.Id} />

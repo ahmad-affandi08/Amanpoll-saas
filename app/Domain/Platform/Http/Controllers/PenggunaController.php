@@ -14,6 +14,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -35,6 +36,7 @@ final class PenggunaController extends Controller
             'pengguna' => PenggunaResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             'peranTersedia' => Peran::query()->orderBy('Nama')->get(['Id', 'Nama']),
+            'wajib' => ['pengguna' => AturanWajib::untuk(SimpanPenggunaRequest::class)],
         ]);
     }
 

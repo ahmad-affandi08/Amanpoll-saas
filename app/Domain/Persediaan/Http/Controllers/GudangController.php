@@ -22,6 +22,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,6 +52,10 @@ final class GudangController extends Controller
             ),
             'filter' => $daftar->filterBerlaku(),
             'lokasi' => Lokasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
+            'wajib' => [
+                'gudang' => AturanWajib::untuk(SimpanGudangRequest::class),
+                'lokasiGudang' => AturanWajib::untuk(SimpanLokasiGudangRequest::class),
+            ],
         ]);
     }
 

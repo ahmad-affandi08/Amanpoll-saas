@@ -29,12 +29,15 @@ import type { Lokasi } from '@/features/Lokasi/types';
 import { ruteAset } from '@/features/Aset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   aset: Paginasi<Aset>;
   filter: FilterAset;
   /** Batas sekali cetak, datang dari CetakLabelAsetRequest supaya tidak pernah berbeda. */
   maksLabel: number;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
   kategoriAset: KategoriAset[];
   lokasi: Lokasi[];
 }
@@ -131,7 +134,15 @@ function jumlahFilterAktif(filter: FilterAset): number {
   return [filter.cari, filter.kategoriAsetId, filter.lokasiId, filter.status].filter(Boolean).length;
 }
 
-function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset[]; lokasi: Lokasi[] }) {
+function DialogTambahAset({
+  kategoriAset,
+  lokasi,
+  wajib,
+}: {
+  kategoriAset: KategoriAset[];
+  lokasi: Lokasi[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     KategoriAsetId: kategoriAset[0]?.Id ?? '',
@@ -160,90 +171,92 @@ function DialogTambahAset({ kategoriAset, lokasi }: { kategoriAset: KategoriAset
         <DialogHeader>
           <DialogTitle>Daftarkan Aset</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.KodeAset}
-              onUbah={(nilai) => form.setData('KodeAset', nilai)}
-              galat={form.errors.KodeAset}
-              label="Kode Aset"
-              id="KodeAset"
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Kategori</Label>
-              <Select
-                value={form.data.KategoriAsetId}
-                onValueChange={(v) => form.setData('KategoriAsetId', v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {kategoriAset.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {form.errors.KategoriAsetId && (
-                <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label>Lokasi Awal</Label>
-              <Select value={form.data.LokasiId} onValueChange={(v) => form.setData('LokasiId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={SEMUA}>Belum ditentukan</SelectItem>
-                  {lokasi.map((l) => (
-                    <SelectItem key={l.Id} value={l.Id}>
-                      {l.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Nomor Seri</Label>
-              <Input
-                value={form.data.NomorSeri}
-                onChange={(e) => form.setData('NomorSeri', e.target.value)}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.KodeAset}
+                onUbah={(nilai) => form.setData('KodeAset', nilai)}
+                galat={form.errors.KodeAset}
+                label="Kode Aset"
+                id="KodeAset"
               />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Harga Perolehan</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.data.HargaPerolehan}
-                onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="KategoriAsetId">Kategori</Label>
+                <Select
+                  value={form.data.KategoriAsetId}
+                  onValueChange={(v) => form.setData('KategoriAsetId', v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {kategoriAset.map((k) => (
+                      <SelectItem key={k.Id} value={k.Id}>
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {form.errors.KategoriAsetId && (
+                  <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label nama="LokasiId">Lokasi Awal</Label>
+                <Select value={form.data.LokasiId} onValueChange={(v) => form.setData('LokasiId', v)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={SEMUA}>Belum ditentukan</SelectItem>
+                    {lokasi.map((l) => (
+                      <SelectItem key={l.Id} value={l.Id}>
+                        {l.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="NomorSeri">Nomor Seri</Label>
+                <Input
+                  value={form.data.NomorSeri}
+                  onChange={(e) => form.setData('NomorSeri', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="HargaPerolehan">Harga Perolehan</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.data.HargaPerolehan}
+                  onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function AsetIndex({ aset, filter, maksLabel, kategoriAset, lokasi }: Props) {
+export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset, lokasi }: Props) {
   const [form, setForm] = useState<FilterAset>(filter);
   const [sheetFilterBuka, setSheetFilterBuka] = useState(false);
   // Paginasi memakai preserveState, jadi pilihan bertahan saat berpindah halaman.
@@ -288,7 +301,7 @@ export default function AsetIndex({ aset, filter, maksLabel, kategoriAset, lokas
           deskripsi="Daftar induk aset organisasi -- identitas, lokasi, dan status."
           aksi={
             <>
-              <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} />
+              <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} wajib={wajib.aset} />
             </>
           }
         />

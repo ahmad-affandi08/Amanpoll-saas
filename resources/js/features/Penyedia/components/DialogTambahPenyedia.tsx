@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import type { Penyedia } from '@/features/Penyedia/types';
+import type { AturanWajib } from '@/lib/aturan-wajib';
 import { FormInfoPenyedia } from '@/features/Penyedia/components/FormInfoPenyedia';
 
-export function DialogTambahPenyedia() {
+export function DialogTambahPenyedia({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
 
   return (
@@ -16,7 +16,7 @@ export function DialogTambahPenyedia() {
         <DialogHeader>
           <DialogTitle>Tambah Penyedia</DialogTitle>
         </DialogHeader>
-        <FormInfoPenyedia penyedia={null} onSukses={() => setBuka(false)} />
+        <FormInfoPenyedia penyedia={null} wajib={wajib} onSukses={() => setBuka(false)} />
       </DialogContent>
     </Dialog>
   );

@@ -15,6 +15,7 @@ use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,6 +44,7 @@ final class PenyediaController extends Controller
             'penyedia' => PenyediaResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             'kategoriPenyedia' => KategoriPenyediaResource::collection(KategoriPenyedia::query()->orderBy('Nama')->get()),
+            'wajib' => ['penyedia' => AturanWajib::untuk(SimpanPenyediaRequest::class)],
         ]);
     }
 
@@ -64,6 +66,7 @@ final class PenyediaController extends Controller
             'penyedia' => new PenyediaResource($penyedia),
             'kategoriPenyedia' => KategoriPenyediaResource::collection(KategoriPenyedia::query()->orderBy('Nama')->get()),
             'ringkasan' => $this->ringkasanPenyedia($penyedia),
+            'wajib' => ['penyedia' => AturanWajib::untuk(SimpanPenyediaRequest::class)],
         ]);
     }
 

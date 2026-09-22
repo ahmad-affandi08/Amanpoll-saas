@@ -20,6 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import { useIzin } from '@/hooks/use-izin';
 import type { Pengguna, PeranRingkas } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
@@ -29,6 +30,8 @@ interface Props {
   pengguna: Paginasi<Pengguna>;
   filter: FilterDaftar;
   peranTersedia: PeranRingkas[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const kosong = {
@@ -41,7 +44,7 @@ const kosong = {
   JenisPengguna: 'Internal' as const,
 };
 
-function DialogFormPengguna({ pengguna }: { pengguna: Pengguna | null }) {
+function DialogFormPengguna({ pengguna, wajib }: { pengguna: Pengguna | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     pengguna
@@ -83,72 +86,74 @@ function DialogFormPengguna({ pengguna }: { pengguna: Pengguna | null }) {
         <DialogHeader>
           <DialogTitle>{pengguna ? 'Ubah Pengguna' : 'Tambah Pengguna'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label nama="Email">Email</Label>
+                <Input
+                  type="email"
+                  value={form.data.Email}
+                  onChange={(e) => form.setData('Email', e.target.value)}
+                />
+                {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
+              <Label wajib={!pengguna}>{pengguna ? 'Kata Sandi Baru (opsional)' : 'Kata Sandi'}</Label>
               <Input
-                type="email"
-                value={form.data.Email}
-                onChange={(e) => form.setData('Email', e.target.value)}
+                type="password"
+                value={form.data.KataSandi}
+                onChange={(e) => form.setData('KataSandi', e.target.value)}
               />
-              {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
+              {form.errors.KataSandi && <p className="text-sm text-destructive">{form.errors.KataSandi}</p>}
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label>{pengguna ? 'Kata Sandi Baru (opsional)' : 'Kata Sandi'}</Label>
-            <Input
-              type="password"
-              value={form.data.KataSandi}
-              onChange={(e) => form.setData('KataSandi', e.target.value)}
-            />
-            {form.errors.KataSandi && <p className="text-sm text-destructive">{form.errors.KataSandi}</p>}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Telepon</Label>
-              <Input value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="Telepon">Telepon</Label>
+                <Input value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label nama="NomorPegawai">Nomor Pegawai</Label>
+                <Input
+                  value={form.data.NomorPegawai}
+                  onChange={(e) => form.setData('NomorPegawai', e.target.value)}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Nomor Pegawai</Label>
-              <Input
-                value={form.data.NomorPegawai}
-                onChange={(e) => form.setData('NomorPegawai', e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="Jabatan">Jabatan</Label>
+                <Input value={form.data.Jabatan} onChange={(e) => form.setData('Jabatan', e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label nama="JenisPengguna">Jenis Pengguna</Label>
+                <Select
+                  value={form.data.JenisPengguna}
+                  onValueChange={(v) => form.setData('JenisPengguna', v as 'Internal' | 'Eksternal')}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Internal">Internal</SelectItem>
+                    <SelectItem value="Eksternal">Eksternal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Jabatan</Label>
-              <Input value={form.data.Jabatan} onChange={(e) => form.setData('Jabatan', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>Jenis Pengguna</Label>
-              <Select
-                value={form.data.JenisPengguna}
-                onValueChange={(v) => form.setData('JenisPengguna', v as 'Internal' | 'Eksternal')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Internal">Internal</SelectItem>
-                  <SelectItem value="Eksternal">Eksternal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -227,7 +232,7 @@ function DialogKelolaPeran({
   );
 }
 
-export default function PenggunaIndex({ pengguna, peranTersedia, filter }: Props) {
+export default function PenggunaIndex({ pengguna, peranTersedia, filter, wajib }: Props) {
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
 
@@ -298,7 +303,7 @@ export default function PenggunaIndex({ pengguna, peranTersedia, filter }: Props
               header: 'Aksi',
               cell: ({ row }: { row: { original: Pengguna } }) => (
                 <div className="flex justify-end gap-2">
-                  <DialogFormPengguna pengguna={row.original} />
+                  <DialogFormPengguna pengguna={row.original} wajib={wajib.pengguna} />
                   <DialogKelolaPeran pengguna={row.original} peranTersedia={peranTersedia} />
                   <Button variant="ghost" size="sm" onClick={() => ubahStatus(row.original)}>
                     {row.original.Status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}
@@ -312,7 +317,7 @@ export default function PenggunaIndex({ pengguna, peranTersedia, filter }: Props
           ]
         : []),
     ],
-    [bolehKelola, peranTersedia],
+    [bolehKelola, peranTersedia, wajib],
   );
 
   return (
@@ -321,7 +326,7 @@ export default function PenggunaIndex({ pengguna, peranTersedia, filter }: Props
       <KepalaHalaman
         judul="Pengguna"
         deskripsi="Kelola akun pengguna dan penetapan peran."
-        aksi={<>{bolehKelola && <DialogFormPengguna pengguna={null} />}</>}
+        aksi={<>{bolehKelola && <DialogFormPengguna pengguna={null} wajib={wajib.pengguna} />}</>}
         className="mb-6"
       />
 

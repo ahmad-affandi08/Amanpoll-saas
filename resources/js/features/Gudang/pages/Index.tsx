@@ -21,6 +21,7 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { Gudang, LokasiGudang, StatusGudang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_GUDANG } from '@/features/Persediaan/status';
 import { ruteGudang } from '@/features/Gudang/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
@@ -38,9 +39,19 @@ interface Props {
   lokasiGudangPerGudang: Record<string, LokasiGudang[]>;
   lokasi: LokasiRingkas[];
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogFormGudang({ gudang, lokasi }: { gudang: Gudang | null; lokasi: LokasiRingkas[] }) {
+function DialogFormGudang({
+  gudang,
+  lokasi,
+  wajib,
+}: {
+  gudang: Gudang | null;
+  lokasi: LokasiRingkas[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     gudang
@@ -83,59 +94,72 @@ function DialogFormGudang({ gudang, lokasi }: { gudang: Gudang | null; lokasi: L
         <DialogHeader>
           <DialogTitle>{gudang ? 'Ubah Gudang' : 'Tambah Gudang'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Lokasi</Label>
-            <Select value={form.data.LokasiId} onValueChange={(v) => form.setData('LokasiId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
-                {lokasi.map((l) => (
-                  <SelectItem key={l.Id} value={l.Id}>
-                    {l.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v as StatusGudang)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Aktif">Aktif</SelectItem>
-                <SelectItem value="Nonaktif">Nonaktif</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-2">
+              <Label nama="LokasiId">Lokasi</Label>
+              <Select value={form.data.LokasiId} onValueChange={(v) => form.setData('LokasiId', v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
+                  {lokasi.map((l) => (
+                    <SelectItem key={l.Id} value={l.Id}>
+                      {l.Nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label nama="Status">Status</Label>
+              <Select
+                value={form.data.Status}
+                onValueChange={(v) => form.setData('Status', v as StatusGudang)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Aktif">Aktif</SelectItem>
+                  <SelectItem value="Nonaktif">Nonaktif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGudang: LokasiGudang[] }) {
+function DialogLokasiGudang({
+  gudang,
+  lokasiGudang,
+  wajib,
+}: {
+  gudang: Gudang;
+  lokasiGudang: LokasiGudang[];
+  wajib: AturanWajib;
+}) {
   const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
   const form = useForm({ Kode: '', Nama: '', IndukId: TANPA_PILIHAN });
@@ -175,15 +199,17 @@ function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGu
         <DialogHeader>
           <DialogTitle>Lokasi dalam {gudang.Nama}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={tambah} className="flex items-end gap-2">
-          <div className="flex-1 space-y-1.5">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-          </div>
-          <Button type="submit" size="sm" disabled={form.processing}>
-            Tambah
-          </Button>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={tambah} className="flex items-end gap-2">
+            <div className="flex-1 space-y-1.5">
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+            </div>
+            <Button type="submit" size="sm" disabled={form.processing}>
+              Tambah
+            </Button>
+          </form>
+        </AturanWajibProvider>
         <div className="space-y-2">
           {lokasiGudang.length === 0 && <p className="text-sm text-muted-foreground">Belum ada lokasi.</p>}
           {lokasiGudang.map((l) => (
@@ -209,7 +235,7 @@ function DialogLokasiGudang({ gudang, lokasiGudang }: { gudang: Gudang; lokasiGu
   );
 }
 
-export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, filter }: Props) {
+export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Gudang) => {
     if (
@@ -268,8 +294,9 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
             <DialogLokasiGudang
               gudang={row.original}
               lokasiGudang={lokasiGudangPerGudang[row.original.Id] ?? []}
+              wajib={wajib.lokasiGudang}
             />
-            <DialogFormGudang gudang={row.original} lokasi={lokasi} />
+            <DialogFormGudang gudang={row.original} lokasi={lokasi} wajib={wajib.gudang} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -280,7 +307,7 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
         meta: { label: 'Aksi' },
       },
     ],
-    [lokasiGudangPerGudang, lokasi],
+    [lokasiGudangPerGudang, lokasi, wajib],
   );
 
   return (
@@ -291,7 +318,7 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
         deskripsi="Kelola gudang beserta lokasi penyimpanan di dalamnya."
         aksi={
           <>
-            <DialogFormGudang gudang={null} lokasi={lokasi} />
+            <DialogFormGudang gudang={null} lokasi={lokasi} wajib={wajib.gudang} />
           </>
         }
         className="mb-6"
