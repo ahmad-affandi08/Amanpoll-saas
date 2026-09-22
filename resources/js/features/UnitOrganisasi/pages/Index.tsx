@@ -25,6 +25,8 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 /** Hanya Id dan Nama: pemilih induk memuat seluruh unit, bukan barisnya. */
 interface IndukRingkas {
@@ -134,19 +136,14 @@ function DialogFormUnit({
             </div>
             <div className="space-y-2">
               <Label nama="IndukId">Induk</Label>
-              <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_INDUK}>Tanpa induk</SelectItem>
-                  {pilihanInduk.map((u) => (
-                    <SelectItem key={u.Id} value={u.Id}>
-                      {u.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.IndukId}
+                onPilih={(v) => form.setData('IndukId', v)}
+                opsi={[
+                  { nilai: TANPA_INDUK, label: 'Tanpa induk' },
+                  ...opsiDari(pilihanInduk, (u) => u.Nama),
+                ]}
+              />
               {form.errors.IndukId && <p className="text-sm text-destructive">{form.errors.IndukId}</p>}
             </div>
             <DialogFooter>

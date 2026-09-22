@@ -26,9 +26,10 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   alurPersetujuan: Paginasi<AlurPersetujuan>;
@@ -97,18 +98,11 @@ function DialogFormAlur({
             </div>
             <div className="space-y-2">
               <Label nama="JenisEntitas">Jenis Entitas</Label>
-              <Select value={form.data.JenisEntitas} onValueChange={(v) => form.setData('JenisEntitas', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {jenisEntitasTersedia.map((j) => (
-                    <SelectItem key={j} value={j}>
-                      {j}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.JenisEntitas}
+                onPilih={(v) => form.setData('JenisEntitas', v)}
+                opsi={jenisEntitasTersedia.map((j) => ({ nilai: j, label: j }))}
+              />
             </div>
             <DialogFooter>
               <Button type="submit" disabled={form.processing}>
@@ -201,21 +195,12 @@ function FormTahap({
       {form.data.JenisPenyetuju === 'Pengguna' && (
         <div className="space-y-1.5">
           <Label nama="PenggunaId">Pengguna</Label>
-          <Select
-            value={form.data.PenggunaId || TANPA_PILIHAN}
-            onValueChange={(v) => form.setData('PenggunaId', v === TANPA_PILIHAN ? '' : v)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Pilih pengguna" />
-            </SelectTrigger>
-            <SelectContent>
-              {pengguna.map((p) => (
-                <SelectItem key={p.Id} value={p.Id}>
-                  {p.Nama}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={form.data.PenggunaId || TANPA_PILIHAN}
+            onPilih={(v) => form.setData('PenggunaId', v === TANPA_PILIHAN ? '' : v)}
+            opsi={opsiDari(pengguna, (p) => p.Nama)}
+            placeholder="Pilih pengguna"
+          />
         </div>
       )}
       {(form.data.JenisPenyetuju === 'Peran' || form.data.JenisPenyetuju === 'Unit') && (

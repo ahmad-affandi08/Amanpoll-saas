@@ -29,9 +29,10 @@ import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari } from '@/lib/pilihan';
 import { PanelPemakaian, PanelReservasi, PanelStok } from '@/features/SukuCadang/components/PanelStok';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Ringkas {
   Id: string;
@@ -215,55 +216,34 @@ function DialogTambahKompatibilitas({
             {form.data.Lingkup === 'aset' && (
               <div className="space-y-1.5">
                 <Label nama="AsetId">Aset</Label>
-                <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih aset" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {aset.map((a) => (
-                      <SelectItem key={a.Id} value={a.Id}>
-                        {a.Nama} ({a.KodeAset})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.AsetId}
+                  onPilih={(v) => form.setData('AsetId', v)}
+                  opsi={opsiDari(aset, (a) => `${a.Nama} (${a.KodeAset})`)}
+                  placeholder="Pilih aset"
+                />
               </div>
             )}
             {form.data.Lingkup === 'model' && (
               <div className="space-y-1.5">
                 <Label nama="ModelAsetId">Model Aset</Label>
-                <Select value={form.data.ModelAsetId} onValueChange={(v) => form.setData('ModelAsetId', v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih model aset" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {modelAset.map((m) => (
-                      <SelectItem key={m.Id} value={m.Id}>
-                        {m.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.ModelAsetId}
+                  onPilih={(v) => form.setData('ModelAsetId', v)}
+                  opsi={opsiDari(modelAset, (m) => m.Nama)}
+                  placeholder="Pilih model aset"
+                />
               </div>
             )}
             {form.data.Lingkup === 'kategori' && (
               <div className="space-y-1.5">
                 <Label nama="KategoriAsetId">Kategori Aset</Label>
-                <Select
-                  value={form.data.KategoriAsetId}
-                  onValueChange={(v) => form.setData('KategoriAsetId', v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih kategori aset" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {kategoriAset.map((k) => (
-                      <SelectItem key={k.Id} value={k.Id}>
-                        {k.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.KategoriAsetId}
+                  onPilih={(v) => form.setData('KategoriAsetId', v)}
+                  opsi={opsiDari(kategoriAset, (k) => k.Nama)}
+                  placeholder="Pilih kategori aset"
+                />
               </div>
             )}
             <div className="space-y-1.5">

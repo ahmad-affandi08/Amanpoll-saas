@@ -12,10 +12,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
 import type { AsetRingkas, StandarKepatuhan } from '@/features/Kepatuhan/types';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 export function DialogTugaskan({
   standar,
@@ -53,18 +54,12 @@ export function DialogTugaskan({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="AsetId">Aset</Label>
-              <Select value={form.data.AsetId} onValueChange={(value) => form.setData('AsetId', value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih aset" />
-                </SelectTrigger>
-                <SelectContent>
-                  {aset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.KodeAset} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={(value) => form.setData('AsetId', value)}
+                opsi={opsiDari(aset, (item) => `${item.KodeAset} — ${item.Nama}`)}
+                placeholder="Pilih aset"
+              />
               {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
             </div>
             <div className="space-y-1.5">
@@ -74,21 +69,15 @@ export function DialogTugaskan({
                   Belum ada standar aktif yang memiliki persyaratan.
                 </p>
               ) : (
-                <Select
-                  value={form.data.StandarKepatuhanId}
-                  onValueChange={(value) => form.setData('StandarKepatuhanId', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih standar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {standarAktif.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Kode} — {item.Nama} ({item.JumlahPersyaratan} persyaratan)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.StandarKepatuhanId}
+                  onPilih={(value) => form.setData('StandarKepatuhanId', value)}
+                  opsi={opsiDari(
+                    standarAktif,
+                    (item) => `${item.Kode} — ${item.Nama} (${item.JumlahPersyaratan} persyaratan)`,
+                  )}
+                  placeholder="Pilih standar"
+                />
               )}
               {form.errors.StandarKepatuhanId && (
                 <p className="text-sm text-destructive">{form.errors.StandarKepatuhanId}</p>

@@ -18,12 +18,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { KonfigurasiTrial, PilihanTrial, Trial } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   trial: Paginasi<Trial>;
@@ -308,18 +308,11 @@ function DialogStatus({ trial, wajib }: { trial: Trial; wajib: AturanWajib }) {
               <Label nama="Status" htmlFor="Status">
                 Status
               </Label>
-              <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
-                <SelectTrigger id="Status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.map((satu) => (
-                    <SelectItem key={satu} value={satu}>
-                      {satu}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.Status}
+                onPilih={(v) => form.setData('Status', v)}
+                opsi={pilihan.map((satu) => ({ nilai: satu, label: satu }))}
+              />
               {form.errors.Status ? <p className="text-sm text-destructive">{form.errors.Status}</p> : null}
             </div>
 

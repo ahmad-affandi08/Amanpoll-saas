@@ -16,19 +16,25 @@ export interface OpsiCombobox {
 
 interface Props {
   opsi: OpsiCombobox[];
-  nilai: string | null;
-  onPilih: (nilai: string | null) => void;
+  nilai: string;
+  onPilih: (nilai: string) => void;
   placeholder?: string;
   placeholderCari?: string;
   pesanKosong?: string;
-  /** Mengizinkan pilihan dikosongkan kembali. */
-  dapatDikosongkan?: boolean;
   disabled?: boolean;
   id?: string;
   className?: string;
 }
 
-/** Pemilih dengan pencarian (DESIGN.md 13). */
+/**
+ * Pemilih dengan pencarian, untuk daftar yang tumbuh: aset, suku cadang,
+ * lokasi, pengguna, penyedia. Select biasa tetap dipakai untuk pilihan tetap
+ * seperti status dan prioritas -- memasang kotak cari di atas tiga pilihan
+ * justru menambah satu langkah tanpa menolong siapa pun.
+ *
+ * "Tidak memilih" tetap diwakili TANPA_PILIHAN seperti pada Select, jadi
+ * logika kirim formulir tidak berubah saat sebuah Select ditukar ke sini.
+ */
 export function Combobox({
   opsi,
   nilai,
@@ -36,7 +42,6 @@ export function Combobox({
   placeholder = 'Pilih…',
   placeholderCari = 'Cari…',
   pesanKosong = 'Tidak ada yang cocok.',
-  dapatDikosongkan = false,
   disabled = false,
   id,
   className,
@@ -57,7 +62,7 @@ export function Combobox({
   }, [opsi, kueri]);
 
   const pilih = (opsiNilai: string) => {
-    onPilih(dapatDikosongkan && opsiNilai === nilai ? null : opsiNilai);
+    onPilih(opsiNilai);
     setTerbuka(false);
     setKueri('');
   };

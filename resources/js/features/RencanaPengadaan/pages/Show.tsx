@@ -22,7 +22,8 @@ import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { Combobox } from '@/components/ui/combobox';
 
 interface PosRingkas {
   Id: string;
@@ -106,22 +107,11 @@ function DialogUbahRencana({ rencana, posAnggaran }: Pick<Props, 'rencana' | 'po
           </div>
           <div className="space-y-1.5">
             <Label nama="PosAnggaranId">Pos Anggaran</Label>
-            <Select
-              value={form.data.PosAnggaranId}
-              onValueChange={(value) => form.setData('PosAnggaranId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Belum dipilih</SelectItem>
-                {posAnggaran.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.PosAnggaranId}
+              onPilih={(value) => form.setData('PosAnggaranId', value)}
+              opsi={[opsiKosong('Belum dipilih'), ...opsiDari(posAnggaran, (item) => item.Label)]}
+            />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={form.processing}>
@@ -187,41 +177,25 @@ function DialogTambahDetail({
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label nama="UsulanAsetId">Sumber Usulan</Label>
-            <Select
-              value={form.data.UsulanAsetId}
-              onValueChange={(value) => form.setData('UsulanAsetId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={MANUAL}>Detail manual</SelectItem>
-                {usulanDisetujui.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Nomor} — {item.NamaKebutuhan}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.UsulanAsetId}
+              onPilih={(value) => form.setData('UsulanAsetId', value)}
+              opsi={[
+                { nilai: MANUAL, label: 'Detail manual' },
+                ...opsiDari(usulanDisetujui, (item) => `${item.Nomor} — ${item.NamaKebutuhan}`),
+              ]}
+            />
           </div>
           <div className="space-y-1.5">
             <Label nama="SukuCadangId">Suku Cadang (opsional)</Label>
-            <Select
-              value={form.data.SukuCadangId}
-              onValueChange={(value) => form.setData('SukuCadangId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tidak terkait suku cadang</SelectItem>
-                {sukuCadang.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Kode} — {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.SukuCadangId}
+              onPilih={(value) => form.setData('SukuCadangId', value)}
+              opsi={[
+                opsiKosong('Tidak terkait suku cadang'),
+                ...opsiDari(sukuCadang, (item) => `${item.Kode} — ${item.Nama}`),
+              ]}
+            />
           </div>
           {manual && (
             <>

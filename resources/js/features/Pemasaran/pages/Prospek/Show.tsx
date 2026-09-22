@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type {
   EntriRiwayatTahap,
@@ -18,6 +17,7 @@ import type {
 } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   prospek: ProspekDetail;
@@ -139,18 +139,11 @@ function KartuTahap({
               <Label nama="tahap" htmlFor="tahap">
                 Tahap
               </Label>
-              <Select value={kode} onValueChange={setKode}>
-                <SelectTrigger id="tahap">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {tahap.map((satu) => (
-                    <SelectItem key={satu.Kode} value={satu.Kode}>
-                      {satu.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={kode}
+                onPilih={setKode}
+                opsi={tahap.map((satu) => ({ nilai: satu.Kode, label: satu.Nama }))}
+              />
             </div>
             <div className="grid gap-2">
               <Label nama="alasan" htmlFor="alasan">
@@ -200,18 +193,11 @@ function KartuAktivitasBaru({
                 <Label nama="jenis" htmlFor="jenis">
                   Jenis
                 </Label>
-                <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
-                  <SelectTrigger id="jenis">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {jenisAktivitas.map((satu) => (
-                      <SelectItem key={satu} value={satu}>
-                        {satu}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.Jenis}
+                  onPilih={(v) => form.setData('Jenis', v)}
+                  opsi={jenisAktivitas.map((satu) => ({ nilai: satu, label: satu }))}
+                />
               </div>
               <div className="grid gap-2">
                 <Label nama="judul" htmlFor="judul">

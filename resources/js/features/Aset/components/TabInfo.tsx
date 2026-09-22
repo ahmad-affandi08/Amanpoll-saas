@@ -4,15 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import type { Aset, KategoriAset, ModelAset } from '@/features/Aset/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { ruteAset } from '@/features/Aset/api';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 export function TabInfo({
   aset,
@@ -88,71 +88,37 @@ export function TabInfo({
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label nama="KategoriAsetId">Kategori</Label>
-            <Select value={form.data.KategoriAsetId} onValueChange={(v) => form.setData('KategoriAsetId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {kategoriAset.map((k) => (
-                  <SelectItem key={k.Id} value={k.Id}>
-                    {k.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.KategoriAsetId}
+              onPilih={(v) => form.setData('KategoriAsetId', v)}
+              opsi={opsiDari(kategoriAset, (k) => k.Nama)}
+            />
           </div>
           <div className="space-y-2">
             <Label nama="ModelAsetId">Model</Label>
-            <Select value={form.data.ModelAsetId} onValueChange={(v) => form.setData('ModelAsetId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tanpa model</SelectItem>
-                {modelAset.map((m) => (
-                  <SelectItem key={m.Id} value={m.Id}>
-                    {m.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.ModelAsetId}
+              onPilih={(v) => form.setData('ModelAsetId', v)}
+              opsi={[opsiKosong('Tanpa model'), ...opsiDari(modelAset, (m) => m.Nama)]}
+            />
           </div>
           <div className="space-y-2">
             <Label nama="PenyediaId">Penyedia</Label>
-            <Select value={form.data.PenyediaId} onValueChange={(v) => form.setData('PenyediaId', v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tanpa penyedia</SelectItem>
-                {penyedia.map((p) => (
-                  <SelectItem key={p.Id} value={p.Id}>
-                    {p.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.PenyediaId}
+              onPilih={(v) => form.setData('PenyediaId', v)}
+              opsi={[opsiKosong('Tanpa penyedia'), ...opsiDari(penyedia, (p) => p.Nama)]}
+            />
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label nama="UnitOrganisasiId">Unit Organisasi</Label>
-            <Select
-              value={form.data.UnitOrganisasiId}
-              onValueChange={(v) => form.setData('UnitOrganisasiId', v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tidak ditautkan</SelectItem>
-                {unitOrganisasi.map((u) => (
-                  <SelectItem key={u.Id} value={u.Id}>
-                    {u.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.UnitOrganisasiId}
+              onPilih={(v) => form.setData('UnitOrganisasiId', v)}
+              opsi={[opsiKosong('Tidak ditautkan'), ...opsiDari(unitOrganisasi, (u) => u.Nama)]}
+            />
           </div>
           <div className="space-y-2">
             <Label nama="NomorSeri">Nomor Seri</Label>
@@ -224,57 +190,30 @@ export function TabInfo({
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label nama="Status">Status</Label>
-            <Select
-              value={form.data.Status}
-              onValueChange={(v) => form.setData('Status', v as Aset['Status'])}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.Status}
+              onPilih={(v) => form.setData('Status', v as Aset['Status'])}
+              opsi={['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => ({
+                nilai: s,
+                label: s,
+              }))}
+            />
           </div>
           <div className="space-y-2">
             <Label nama="Kondisi">Kondisi</Label>
-            <Select
-              value={form.data.Kondisi}
-              onValueChange={(v) => form.setData('Kondisi', v as Aset['Kondisi'])}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {['Baik', 'PerluPerhatian', 'Rusak'].map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.Kondisi}
+              onPilih={(v) => form.setData('Kondisi', v as Aset['Kondisi'])}
+              opsi={['Baik', 'PerluPerhatian', 'Rusak'].map((s) => ({ nilai: s, label: s }))}
+            />
           </div>
           <div className="space-y-2">
             <Label nama="TingkatKritis">Tingkat Kritis</Label>
-            <Select
-              value={form.data.TingkatKritis}
-              onValueChange={(v) => form.setData('TingkatKritis', v as Aset['TingkatKritis'])}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {['Normal', 'Tinggi', 'SangatTinggi'].map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.TingkatKritis}
+              onPilih={(v) => form.setData('TingkatKritis', v as Aset['TingkatKritis'])}
+              opsi={['Normal', 'Tinggi', 'SangatTinggi'].map((s) => ({ nilai: s, label: s }))}
+            />
           </div>
         </div>
         <div className="space-y-2">

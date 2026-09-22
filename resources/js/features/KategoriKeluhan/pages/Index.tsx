@@ -24,9 +24,10 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Ringkas {
   Id: string;
@@ -128,22 +129,11 @@ function DialogKategori({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label nama="TingkatLayananId">Tingkat Layanan</Label>
-                <Select
-                  value={form.data.TingkatLayananId}
-                  onValueChange={(v) => form.setData('TingkatLayananId', v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Tanpa SLA</SelectItem>
-                    {tingkatLayanan.map((sla) => (
-                      <SelectItem key={sla.Id} value={sla.Id}>
-                        {sla.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.TingkatLayananId}
+                  onPilih={(v) => form.setData('TingkatLayananId', v)}
+                  opsi={[opsiKosong('Tanpa SLA'), ...opsiDari(tingkatLayanan, (sla) => sla.Nama)]}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label nama="PrioritasBawaan">Prioritas Bawaan</Label>
@@ -166,22 +156,11 @@ function DialogKategori({
             </div>
             <div className="space-y-1.5">
               <Label nama="PeranPenanggungJawabId">Routing ke Peran</Label>
-              <Select
-                value={form.data.PeranPenanggungJawabId}
-                onValueChange={(v) => form.setData('PeranPenanggungJawabId', v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa routing</SelectItem>
-                  {peran.map((p) => (
-                    <SelectItem key={p.Id} value={p.Id}>
-                      {p.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.PeranPenanggungJawabId}
+                onPilih={(v) => form.setData('PeranPenanggungJawabId', v)}
+                opsi={[opsiKosong('Tanpa routing'), ...opsiDari(peran, (p) => p.Nama)]}
+              />
             </div>
             <div className="flex flex-wrap gap-6">
               <label className="flex items-center gap-2 text-sm">

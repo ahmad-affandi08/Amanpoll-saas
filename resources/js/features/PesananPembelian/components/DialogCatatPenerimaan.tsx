@@ -18,10 +18,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { KondisiPenerimaan } from '@/features/PenerimaanPembelian/types';
 import type { PesananPembelian } from '@/features/PesananPembelian/types';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import type { GudangRingkas } from '@/features/PesananPembelian/types';
 import { hitungSisa } from '@/features/PesananPembelian/perhitungan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 const KONDISI: KondisiPenerimaan[] = ['Baik', 'RusakRingan', 'Rusak'];
 
@@ -134,19 +135,14 @@ export function DialogCatatPenerimaan({
               </div>
               <div className="space-y-1.5">
                 <Label nama="GudangId">Gudang</Label>
-                <Select value={form.data.GudangId} onValueChange={(value) => form.setData('GudangId', value)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Tanpa gudang</SelectItem>
-                    {gudang.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Kode} — {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.GudangId}
+                  onPilih={(value) => form.setData('GudangId', value)}
+                  opsi={[
+                    opsiKosong('Tanpa gudang'),
+                    ...opsiDari(gudang, (item) => `${item.Kode} — ${item.Nama}`),
+                  ]}
+                />
                 {perluGudang && form.data.GudangId === TANPA_PILIHAN && (
                   <p className="text-sm text-destructive">Item suku cadang wajib memilih gudang tujuan.</p>
                 )}

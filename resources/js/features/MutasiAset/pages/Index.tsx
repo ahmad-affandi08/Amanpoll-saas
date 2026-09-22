@@ -24,6 +24,8 @@ import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   permintaan: Paginasi<PermintaanMutasiAset>;
@@ -93,38 +95,19 @@ function DialogBuatMutasi({
             </div>
             <div className="space-y-1.5">
               <Label nama="LokasiTujuanId">Lokasi Tujuan</Label>
-              <Select
-                value={form.data.LokasiTujuanId}
-                onValueChange={(v) => form.setData('LokasiTujuanId', v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
-                  {lokasi.map((l) => (
-                    <SelectItem key={l.Id} value={l.Id}>
-                      {l.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.LokasiTujuanId}
+                onPilih={(v) => form.setData('LokasiTujuanId', v)}
+                opsi={[{ nilai: SEMUA, label: 'Tidak diubah' }, ...opsiDari(lokasi, (l) => l.Nama)]}
+              />
             </div>
             <div className="space-y-1.5">
               <Label nama="UnitTujuanId">Unit Tujuan</Label>
-              <Select value={form.data.UnitTujuanId} onValueChange={(v) => form.setData('UnitTujuanId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={SEMUA}>Tidak diubah</SelectItem>
-                  {unitOrganisasi.map((u) => (
-                    <SelectItem key={u.Id} value={u.Id}>
-                      {u.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.UnitTujuanId}
+                onPilih={(v) => form.setData('UnitTujuanId', v)}
+                opsi={[{ nilai: SEMUA, label: 'Tidak diubah' }, ...opsiDari(unitOrganisasi, (u) => u.Nama)]}
+              />
             </div>
             <p className="text-sm text-muted-foreground">
               Minimal salah satu tujuan (lokasi/unit) harus diisi. Daftar aset dilengkapi setelah draft

@@ -30,9 +30,7 @@ export function KerangkaPlatform({ children }: PropsWithChildren) {
   // konsol tidak pernah menawarkan halaman yang akan ditolak saat dibuka.
   const menu = MENU.filter(
     (item) =>
-      item.kodeIzin === null ||
-      platform.SuperAdmin === true ||
-      (platform.Izin ?? []).includes(item.kodeIzin),
+      item.kodeIzin === null || platform.SuperAdmin === true || (platform.Izin ?? []).includes(item.kodeIzin),
   );
 
   return (

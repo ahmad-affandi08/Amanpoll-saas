@@ -5,10 +5,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { FieldPublik, FormulirPublik, KonfigurasiCaptcha } from '../types';
 import { rutePublik } from '@/features/Publik/api';
+import { Combobox } from '@/components/ui/combobox';
 
 /** Nama field perangkap. */
 const FIELD_HONEYPOT = 'situs_perusahaan';
@@ -172,18 +172,11 @@ function IsianField({
 
     case 'Pilihan':
       return (
-        <Select value={teks} onValueChange={ubah}>
-          <SelectTrigger id={field.Kode}>
-            <SelectValue placeholder={field.Placeholder ?? 'Pilih salah satu'} />
-          </SelectTrigger>
-          <SelectContent>
-            {field.Pilihan.map((satu) => (
-              <SelectItem key={satu} value={satu}>
-                {satu}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={teks}
+          onPilih={ubah}
+          opsi={field.Pilihan.map((satu) => ({ nilai: satu, label: satu }))}
+        />
       );
 
     case 'Radio':

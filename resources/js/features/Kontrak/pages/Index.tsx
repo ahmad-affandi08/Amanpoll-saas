@@ -24,7 +24,8 @@ import type { JenisKontrak, Kontrak, RingkasanKontrak, StatusKontrak } from '@/f
 import { ruteKontrak } from '@/features/Kontrak/api';
 import { formatUang } from '@/lib/uang';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { Combobox } from '@/components/ui/combobox';
 
 interface PenyediaRingkas {
   Id: string;
@@ -143,22 +144,14 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
             </div>
             <div className="space-y-1.5">
               <Label nama="PenyediaId">Penyedia</Label>
-              <Select
-                value={form.data.PenyediaId}
-                onValueChange={(value) => form.setData('PenyediaId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa penyedia</SelectItem>
-                  {penyedia.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Kode} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.PenyediaId}
+                onPilih={(value) => form.setData('PenyediaId', value)}
+                opsi={[
+                  opsiKosong('Tanpa penyedia'),
+                  ...opsiDari(penyedia, (item) => `${item.Kode} — ${item.Nama}`),
+                ]}
+              />
             </div>
           </div>
 
@@ -234,22 +227,11 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
 
           <div className="space-y-1.5">
             <Label nama="TingkatLayananId">Tingkat Layanan</Label>
-            <Select
-              value={form.data.TingkatLayananId}
-              onValueChange={(value) => form.setData('TingkatLayananId', value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_PILIHAN}>Tanpa SLA khusus</SelectItem>
-                {tingkatLayanan.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.TingkatLayananId}
+              onPilih={(value) => form.setData('TingkatLayananId', value)}
+              opsi={[opsiKosong('Tanpa SLA khusus'), ...opsiDari(tingkatLayanan, (item) => item.Nama)]}
+            />
           </div>
 
           <div className="space-y-1.5">
@@ -345,19 +327,11 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
               ))}
             </SelectContent>
           </Select>
-          <Select value={penyediaFilter} onValueChange={setPenyediaFilter}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={SEMUA}>Semua penyedia</SelectItem>
-              {penyedia.map((item) => (
-                <SelectItem key={item.Id} value={item.Id}>
-                  {item.Nama}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={penyediaFilter}
+            onPilih={setPenyediaFilter}
+            opsi={[{ nilai: SEMUA, label: 'Semua penyedia' }, ...opsiDari(penyedia, (item) => item.Nama)]}
+          />
           <Button type="submit" variant="outline">
             Terapkan
           </Button>

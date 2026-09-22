@@ -13,11 +13,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Kontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
 import type { AsetRingkas } from '@/features/Kontrak/types';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 export function DialogTambahAset({
   kontrak,
@@ -67,18 +68,12 @@ export function DialogTambahAset({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="AsetId">Aset</Label>
-              <Select value={form.data.AsetId} onValueChange={(value) => form.setData('AsetId', value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih aset" />
-                </SelectTrigger>
-                <SelectContent>
-                  {aset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.KodeAset} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={(value) => form.setData('AsetId', value)}
+                opsi={opsiDari(aset, (item) => `${item.KodeAset} — ${item.Nama}`)}
+                placeholder="Pilih aset"
+              />
               {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

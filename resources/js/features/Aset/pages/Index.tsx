@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import {
   Dialog,
@@ -30,6 +29,8 @@ import { ruteAset } from '@/features/Aset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -71,60 +72,33 @@ function MedanFilterAset({
       </div>
       <div className="space-y-1.5">
         <Label>Kategori</Label>
-        <Select
-          value={form.kategoriAsetId ?? SEMUA}
-          onValueChange={(v) => setForm((f) => ({ ...f, kategoriAsetId: v === SEMUA ? undefined : v }))}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Semua" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={SEMUA}>Semua</SelectItem>
-            {kategoriAset.map((k) => (
-              <SelectItem key={k.Id} value={k.Id}>
-                {k.Nama}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={form.kategoriAsetId ?? SEMUA}
+          onPilih={(v) => setForm((f) => ({ ...f, kategoriAsetId: v === SEMUA ? undefined : v }))}
+          opsi={[{ nilai: SEMUA, label: 'Semua' }, ...opsiDari(kategoriAset, (k) => k.Nama)]}
+          placeholder="Semua"
+        />
       </div>
       <div className="space-y-1.5">
         <Label>Lokasi</Label>
-        <Select
-          value={form.lokasiId ?? SEMUA}
-          onValueChange={(v) => setForm((f) => ({ ...f, lokasiId: v === SEMUA ? undefined : v }))}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Semua" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={SEMUA}>Semua</SelectItem>
-            {lokasi.map((l) => (
-              <SelectItem key={l.Id} value={l.Id}>
-                {l.Nama}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={form.lokasiId ?? SEMUA}
+          onPilih={(v) => setForm((f) => ({ ...f, lokasiId: v === SEMUA ? undefined : v }))}
+          opsi={[{ nilai: SEMUA, label: 'Semua' }, ...opsiDari(lokasi, (l) => l.Nama)]}
+          placeholder="Semua"
+        />
       </div>
       <div className="space-y-1.5">
         <Label>Status</Label>
-        <Select
-          value={form.status ?? SEMUA}
-          onValueChange={(v) => setForm((f) => ({ ...f, status: v === SEMUA ? undefined : v }))}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Semua" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={SEMUA}>Semua</SelectItem>
-            {['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => (
-              <SelectItem key={s} value={s}>
-                {s}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={form.status ?? SEMUA}
+          onPilih={(v) => setForm((f) => ({ ...f, status: v === SEMUA ? undefined : v }))}
+          opsi={[
+            { nilai: SEMUA, label: 'Semua' },
+            ...['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => ({ nilai: s, label: s })),
+          ]}
+          placeholder="Semua"
+        />
       </div>
     </>
   );
@@ -190,40 +164,22 @@ function DialogTambahAset({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label nama="KategoriAsetId">Kategori</Label>
-                <Select
-                  value={form.data.KategoriAsetId}
-                  onValueChange={(v) => form.setData('KategoriAsetId', v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {kategoriAset.map((k) => (
-                      <SelectItem key={k.Id} value={k.Id}>
-                        {k.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.KategoriAsetId}
+                  onPilih={(v) => form.setData('KategoriAsetId', v)}
+                  opsi={opsiDari(kategoriAset, (k) => k.Nama)}
+                />
                 {form.errors.KategoriAsetId && (
                   <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>
                 )}
               </div>
               <div className="space-y-2">
                 <Label nama="LokasiId">Lokasi Awal</Label>
-                <Select value={form.data.LokasiId} onValueChange={(v) => form.setData('LokasiId', v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={SEMUA}>Belum ditentukan</SelectItem>
-                    {lokasi.map((l) => (
-                      <SelectItem key={l.Id} value={l.Id}>
-                        {l.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.LokasiId}
+                  onPilih={(v) => form.setData('LokasiId', v)}
+                  opsi={[{ nilai: SEMUA, label: 'Belum ditentukan' }, ...opsiDari(lokasi, (l) => l.Nama)]}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

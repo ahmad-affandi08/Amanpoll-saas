@@ -4,9 +4,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { KontenKampanye } from '@/features/Pemasaran/types';
+import { Combobox } from '@/components/ui/combobox';
 
 export function KonsolKonten({
   akar,
@@ -38,18 +38,12 @@ export function KonsolKonten({
       <form onSubmit={submit} className="flex flex-wrap items-end gap-3 rounded-lg border p-4">
         <div className="grid gap-1.5">
           <Label htmlFor="Jenis">Jenis</Label>
-          <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
-            <SelectTrigger id="Jenis" className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {jenis.map((satu) => (
-                <SelectItem key={satu} value={satu}>
-                  {satu}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={form.data.Jenis}
+            onPilih={(v) => form.setData('Jenis', v)}
+            opsi={jenis.map((satu) => ({ nilai: satu, label: satu }))}
+            className="w-40"
+          />
         </div>
 
         <div className="grid gap-1.5">

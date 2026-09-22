@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -13,6 +12,7 @@ import type { Paginasi } from '@/types/global';
 import type { CatatanAudit, FilterCatatanAudit } from '@/features/Audit/types';
 import { ruteAudit } from '@/features/Audit/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   catatan: Paginasi<CatatanAudit>;
@@ -50,22 +50,15 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
         >
           <div className="space-y-1.5">
             <Label>Jenis Entitas</Label>
-            <Select
-              value={form.jenisEntitas ?? SEMUA}
-              onValueChange={(v) => setForm((f) => ({ ...f, jenisEntitas: v === SEMUA ? undefined : v }))}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Semua" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SEMUA}>Semua</SelectItem>
-                {jenisEntitasTersedia.map((jenis) => (
-                  <SelectItem key={jenis} value={jenis}>
-                    {jenis}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.jenisEntitas ?? SEMUA}
+              onPilih={(v) => setForm((f) => ({ ...f, jenisEntitas: v === SEMUA ? undefined : v }))}
+              opsi={[
+                { nilai: SEMUA, label: 'Semua' },
+                ...jenisEntitasTersedia.map((jenis) => ({ nilai: jenis, label: jenis })),
+              ]}
+              placeholder="Semua"
+            />
           </div>
           <div className="space-y-1.5">
             <Label>Aksi</Label>

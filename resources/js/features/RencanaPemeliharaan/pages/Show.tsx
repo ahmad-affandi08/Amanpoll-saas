@@ -12,7 +12,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { ArrowLeft, Plus, Trash2, Calendar, Wrench, Clock } from 'lucide-react';
 import type { RencanaPemeliharaan } from '@/features/PreventifInspeksi/types';
@@ -20,6 +19,8 @@ import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   rencana: RencanaPemeliharaan;
@@ -148,22 +149,13 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                         <Label nama="AsetId" htmlFor="AsetId">
                           Pilih Aset <span className="text-rose-500">*</span>
                         </Label>
-                        <Select
-                          value={formAset.data.AsetId}
-                          onValueChange={(val) => formAset.setData('AsetId', val)}
-                          required
-                        >
-                          <SelectTrigger id="AsetId" className="cursor-pointer">
-                            <SelectValue placeholder="Pilih unit aset..." />
-                          </SelectTrigger>
-                          <SelectContent className="max-h-60">
-                            {asetBelumTerdaftar.map((a) => (
-                              <SelectItem key={a.Id} value={a.Id}>
-                                {a.KodeAset} - {a.Nama}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Combobox
+                          nilai={formAset.data.AsetId}
+                          onPilih={(val) => formAset.setData('AsetId', val)}
+                          opsi={opsiDari(asetBelumTerdaftar, (a) => `${a.KodeAset} - ${a.Nama}`)}
+                          placeholder="Pilih unit aset..."
+                          className="cursor-pointer"
+                        />
                         {formAset.errors.AsetId && (
                           <p className="text-xs text-rose-500">{formAset.errors.AsetId}</p>
                         )}

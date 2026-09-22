@@ -4,14 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { http } from '@/lib/http';
 import type { Aset, GaransiAset } from '@/features/Aset/types';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { ruteAset } from '@/features/Aset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { Combobox } from '@/components/ui/combobox';
 
 export function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[] }) {
   const konfirmasi = useKonfirmasi();
@@ -89,19 +89,11 @@ export function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[
       </div>
       <form onSubmit={submit} className="space-y-2 border-t border-border pt-4">
         <div className="grid grid-cols-2 gap-2">
-          <Select value={form.data.PenyediaId} onValueChange={(v) => form.setData('PenyediaId', v)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={TANPA_PILIHAN}>Tanpa penyedia</SelectItem>
-              {penyedia.map((p) => (
-                <SelectItem key={p.Id} value={p.Id}>
-                  {p.Nama}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={form.data.PenyediaId}
+            onPilih={(v) => form.setData('PenyediaId', v)}
+            opsi={[opsiKosong('Tanpa penyedia'), ...opsiDari(penyedia, (p) => p.Nama)]}
+          />
           <Input
             placeholder="Nomor Garansi"
             value={form.data.NomorGaransi}

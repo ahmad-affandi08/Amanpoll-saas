@@ -27,9 +27,10 @@ import type {
 import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Ringkas {
   Id: string;
@@ -313,45 +314,19 @@ function DialogTingkatLayanan({
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <Label>Peran penerima</Label>
-                      <Select
-                        value={eskalasi.PeranId ?? TANPA_PILIHAN}
-                        onValueChange={(v) =>
-                          ubahEskalasi(indeks, { PeranId: v === TANPA_PILIHAN ? null : v })
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={TANPA_PILIHAN}>Tanpa peran</SelectItem>
-                          {peran.map((p) => (
-                            <SelectItem key={p.Id} value={p.Id}>
-                              {p.Nama}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Combobox
+                        nilai={eskalasi.PeranId ?? TANPA_PILIHAN}
+                        onPilih={(v) => ubahEskalasi(indeks, { PeranId: v === TANPA_PILIHAN ? null : v })}
+                        opsi={[opsiKosong('Tanpa peran'), ...opsiDari(peran, (p) => p.Nama)]}
+                      />
                     </div>
                     <div className="space-y-1.5">
                       <Label>Pengguna penerima</Label>
-                      <Select
-                        value={eskalasi.PenggunaId ?? TANPA_PILIHAN}
-                        onValueChange={(v) =>
-                          ubahEskalasi(indeks, { PenggunaId: v === TANPA_PILIHAN ? null : v })
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={TANPA_PILIHAN}>Tanpa pengguna khusus</SelectItem>
-                          {pengguna.map((p) => (
-                            <SelectItem key={p.Id} value={p.Id}>
-                              {p.Nama}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Combobox
+                        nilai={eskalasi.PenggunaId ?? TANPA_PILIHAN}
+                        onPilih={(v) => ubahEskalasi(indeks, { PenggunaId: v === TANPA_PILIHAN ? null : v })}
+                        opsi={[opsiKosong('Tanpa pengguna khusus'), ...opsiDari(pengguna, (p) => p.Nama)]}
+                      />
                     </div>
                   </div>
                   <div className="flex justify-end">

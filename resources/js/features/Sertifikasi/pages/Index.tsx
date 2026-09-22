@@ -24,6 +24,8 @@ import type { SertifikasiAset, StatusSertifikasi } from '@/features/Sertifikasi/
 import { ruteSertifikasi } from '@/features/Sertifikasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface AsetRingkas {
   Id: string;
@@ -89,18 +91,12 @@ function DialogTerbitkan({ aset, wajib }: { aset: AsetRingkas[]; wajib: AturanWa
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="AsetId">Aset</Label>
-              <Select value={form.data.AsetId} onValueChange={(value) => form.setData('AsetId', value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih aset" />
-                </SelectTrigger>
-                <SelectContent>
-                  {aset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.KodeAset} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={(value) => form.setData('AsetId', value)}
+                opsi={opsiDari(aset, (item) => `${item.KodeAset} — ${item.Nama}`)}
+                placeholder="Pilih aset"
+              />
               {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

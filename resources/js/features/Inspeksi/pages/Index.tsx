@@ -33,6 +33,8 @@ import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifIns
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   inspeksi: Paginasi<Inspeksi>;
@@ -128,44 +130,26 @@ export default function InspeksiIndex({
                           <Label nama="TemplatInspeksiId" htmlFor="TemplatInspeksiId">
                             Templat Inspeksi <span className="text-rose-500">*</span>
                           </Label>
-                          <Select
-                            value={form.data.TemplatInspeksiId}
-                            onValueChange={(val) => form.setData('TemplatInspeksiId', val)}
-                            required
-                          >
-                            <SelectTrigger id="TemplatInspeksiId" className="cursor-pointer">
-                              <SelectValue placeholder="Pilih Templat Inspeksi..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {templatInspeksi.map((t) => (
-                                <SelectItem key={t.Id} value={t.Id}>
-                                  {t.Kode} - {t.Nama}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Combobox
+                            nilai={form.data.TemplatInspeksiId}
+                            onPilih={(val) => form.setData('TemplatInspeksiId', val)}
+                            opsi={opsiDari(templatInspeksi, (t) => `${t.Kode} - ${t.Nama}`)}
+                            placeholder="Pilih Templat Inspeksi..."
+                            className="cursor-pointer"
+                          />
                         </div>
 
                         <div className="space-y-1.5">
                           <Label nama="AsetId" htmlFor="AsetId">
                             Unit Aset yang Diinspeksi <span className="text-rose-500">*</span>
                           </Label>
-                          <Select
-                            value={form.data.AsetId}
-                            onValueChange={(val) => form.setData('AsetId', val)}
-                            required
-                          >
-                            <SelectTrigger id="AsetId" className="cursor-pointer">
-                              <SelectValue placeholder="Pilih Unit Aset..." />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-60">
-                              {aset.map((a) => (
-                                <SelectItem key={a.Id} value={a.Id}>
-                                  {a.KodeAset} - {a.Nama}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Combobox
+                            nilai={form.data.AsetId}
+                            onPilih={(val) => form.setData('AsetId', val)}
+                            opsi={opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`)}
+                            placeholder="Pilih Unit Aset..."
+                            className="cursor-pointer"
+                          />
                         </div>
 
                         <div className="space-y-1.5">

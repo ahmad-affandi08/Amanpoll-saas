@@ -24,8 +24,9 @@ import type { PrioritasUsulanAset, StatusUsulanAset, UsulanAset } from '@/featur
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Referensi {
   Id: string;
@@ -104,21 +105,12 @@ function DialogBuatUsulan({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label nama="UnitOrganisasiId">Unit Organisasi</Label>
-                <Select
-                  value={form.data.UnitOrganisasiId}
-                  onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih unit" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {unitOrganisasi.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.UnitOrganisasiId}
+                  onPilih={(value) => form.setData('UnitOrganisasiId', value)}
+                  opsi={opsiDari(unitOrganisasi, (item) => item.Nama)}
+                  placeholder="Pilih unit"
+                />
                 {form.errors.UnitOrganisasiId && (
                   <p className="text-sm text-destructive">{form.errors.UnitOrganisasiId}</p>
                 )}
@@ -155,41 +147,19 @@ function DialogBuatUsulan({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label nama="KategoriAsetId">Kategori Aset</Label>
-                <Select
-                  value={form.data.KategoriAsetId}
-                  onValueChange={(value) => form.setData('KategoriAsetId', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
-                    {kategoriAset.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.KategoriAsetId}
+                  onPilih={(value) => form.setData('KategoriAsetId', value)}
+                  opsi={[opsiKosong('Belum ditentukan'), ...opsiDari(kategoriAset, (item) => item.Nama)]}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label nama="ModelAsetId">Model Aset</Label>
-                <Select
-                  value={form.data.ModelAsetId}
-                  onValueChange={(value) => form.setData('ModelAsetId', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Belum ditentukan</SelectItem>
-                    {modelAset.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.ModelAsetId}
+                  onPilih={(value) => form.setData('ModelAsetId', value)}
+                  opsi={[opsiKosong('Belum ditentukan'), ...opsiDari(modelAset, (item) => item.Nama)]}
+                />
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">

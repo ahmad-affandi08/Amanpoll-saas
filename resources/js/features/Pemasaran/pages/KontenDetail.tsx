@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { KeywordSeo, KontenPemasaran, PilihanKonten, VersiKonten } from '../types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   konten: KontenPemasaran;
@@ -323,18 +325,12 @@ function TautkanKeyword({ kontenId, keyword }: { kontenId: string; keyword: Keyw
   return (
     <form onSubmit={submit} className="grid gap-2 border-t pt-3">
       <Label htmlFor="KeywordSeoId">Tautkan keyword</Label>
-      <Select value={form.data.KeywordSeoId} onValueChange={(v) => form.setData('KeywordSeoId', v)}>
-        <SelectTrigger id="KeywordSeoId">
-          <SelectValue placeholder="Pilih keyword" />
-        </SelectTrigger>
-        <SelectContent>
-          {keyword.map((satu) => (
-            <SelectItem key={satu.Id} value={satu.Id}>
-              {satu.Keyword}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Combobox
+        nilai={form.data.KeywordSeoId}
+        onPilih={(v) => form.setData('KeywordSeoId', v)}
+        opsi={opsiDari(keyword, (satu) => satu.Keyword)}
+        placeholder="Pilih keyword"
+      />
       <label className="flex items-center gap-2 text-sm">
         <Checkbox
           checked={form.data.Utama}

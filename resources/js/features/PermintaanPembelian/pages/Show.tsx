@@ -23,6 +23,8 @@ import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface AsetRingkas {
   Id: string;
@@ -114,21 +116,12 @@ function DialogTambahItem({ permintaan, aset, sukuCadang, wajib }: Props) {
             {form.data.JenisItem === 'Aset' && (
               <div className="space-y-1.5">
                 <Label nama="AsetReferensiId">Aset Referensi</Label>
-                <Select
-                  value={form.data.AsetReferensiId}
-                  onValueChange={(value) => form.setData('AsetReferensiId', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih aset sejenis" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {aset.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.KodeAset} — {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.AsetReferensiId}
+                  onPilih={(value) => form.setData('AsetReferensiId', value)}
+                  opsi={opsiDari(aset, (item) => `${item.KodeAset} — ${item.Nama}`)}
+                  placeholder="Pilih aset sejenis"
+                />
                 {form.errors.AsetReferensiId && (
                   <p className="text-sm text-destructive">{form.errors.AsetReferensiId}</p>
                 )}
@@ -137,21 +130,12 @@ function DialogTambahItem({ permintaan, aset, sukuCadang, wajib }: Props) {
             {form.data.JenisItem === 'SukuCadang' && (
               <div className="space-y-1.5">
                 <Label nama="SukuCadangId">Suku Cadang</Label>
-                <Select
-                  value={form.data.SukuCadangId}
-                  onValueChange={(value) => form.setData('SukuCadangId', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih suku cadang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sukuCadang.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Kode} — {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.SukuCadangId}
+                  onPilih={(value) => form.setData('SukuCadangId', value)}
+                  opsi={opsiDari(sukuCadang, (item) => `${item.Kode} — ${item.Nama}`)}
+                  placeholder="Pilih suku cadang"
+                />
                 {form.errors.SukuCadangId && (
                   <p className="text-sm text-destructive">{form.errors.SukuCadangId}</p>
                 )}

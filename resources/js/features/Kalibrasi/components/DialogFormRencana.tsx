@@ -4,7 +4,6 @@ import { Plus, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
@@ -18,6 +17,8 @@ import {
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 const TANPA_JENIS = '__none__';
 const INTERNAL = '__internal__';
@@ -128,18 +129,13 @@ export function DialogFormRencana({
               <Label nama="AsetId" htmlFor="AsetId">
                 Pilih Aset / Instrumen *
               </Label>
-              <Select value={form.data.AsetId} onValueChange={(val) => form.setData('AsetId', val)} required>
-                <SelectTrigger className="h-9 text-xs">
-                  <SelectValue placeholder="Pilih Aset" />
-                </SelectTrigger>
-                <SelectContent className="max-h-56">
-                  {aset.map((a) => (
-                    <SelectItem key={a.Id} value={a.Id}>
-                      {a.KodeAset} - {a.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={(val) => form.setData('AsetId', val)}
+                opsi={opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`)}
+                placeholder="Pilih Aset"
+                className="h-9 text-xs"
+              />
               {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
             </div>
 
@@ -148,44 +144,32 @@ export function DialogFormRencana({
                 <Label nama="JenisKalibrasiId" htmlFor="JenisKalibrasiId">
                   Jenis Kalibrasi
                 </Label>
-                <Select
-                  value={form.data.JenisKalibrasiId || TANPA_JENIS}
-                  onValueChange={(val) => form.setData('JenisKalibrasiId', val === TANPA_JENIS ? '' : val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Pilih Jenis (Opsional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_JENIS}>Tanpa Spesifikasi Jenis</SelectItem>
-                    {jenisKalibrasi.map((jk) => (
-                      <SelectItem key={jk.Id} value={jk.Id}>
-                        {jk.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.JenisKalibrasiId || TANPA_JENIS}
+                  onPilih={(val) => form.setData('JenisKalibrasiId', val === TANPA_JENIS ? '' : val)}
+                  opsi={[
+                    { nilai: TANPA_JENIS, label: 'Tanpa Spesifikasi Jenis' },
+                    ...opsiDari(jenisKalibrasi, (jk) => jk.Nama),
+                  ]}
+                  placeholder="Pilih Jenis (Opsional)"
+                  className="h-9 text-xs"
+                />
               </div>
 
               <div className="space-y-1.5">
                 <Label nama="PenyediaId" htmlFor="PenyediaId">
                   Penyedia / Laboratorium Rekanan
                 </Label>
-                <Select
-                  value={form.data.PenyediaId || INTERNAL}
-                  onValueChange={(val) => form.setData('PenyediaId', val === INTERNAL ? '' : val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Internal / Rekanan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={INTERNAL}>Internal Perusahaan</SelectItem>
-                    {penyedia.map((p) => (
-                      <SelectItem key={p.Id} value={p.Id}>
-                        {p.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.PenyediaId || INTERNAL}
+                  onPilih={(val) => form.setData('PenyediaId', val === INTERNAL ? '' : val)}
+                  opsi={[
+                    { nilai: INTERNAL, label: 'Internal Perusahaan' },
+                    ...opsiDari(penyedia, (p) => p.Nama),
+                  ]}
+                  placeholder="Internal / Rekanan"
+                  className="h-9 text-xs"
+                />
               </div>
             </div>
 

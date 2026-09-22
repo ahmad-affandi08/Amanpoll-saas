@@ -17,15 +17,15 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Paginasi } from '@/types/global';
 import type { Anggaran, StatusAnggaran } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Ringkas {
   Id: string;
@@ -119,22 +119,11 @@ function DialogBuatAnggaran({ unitOrganisasi, wajib }: { unitOrganisasi: Ringkas
             </div>
             <div className="space-y-1.5">
               <Label nama="UnitOrganisasiId">Scope Unit</Label>
-              <Select
-                value={form.data.UnitOrganisasiId}
-                onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Seluruh organisasi</SelectItem>
-                  {unitOrganisasi.map((unit) => (
-                    <SelectItem key={unit.Id} value={unit.Id}>
-                      {unit.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.UnitOrganisasiId}
+                onPilih={(value) => form.setData('UnitOrganisasiId', value)}
+                opsi={[opsiKosong('Seluruh organisasi'), ...opsiDari(unitOrganisasi, (unit) => unit.Nama)]}
+              />
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5 sm:col-span-2">
@@ -216,19 +205,18 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full sm:w-52">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={SEMUA}>Semua status</SelectItem>
-              {Object.keys(VARIAN_STATUS).map((nilai) => (
-                <SelectItem key={nilai} value={nilai}>
-                  {nilai === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : nilai}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={status}
+            onPilih={setStatus}
+            opsi={[
+              { nilai: SEMUA, label: 'Semua status' },
+              ...Object.keys(VARIAN_STATUS).map((nilai) => ({
+                nilai: nilai,
+                label: nilai === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : nilai,
+              })),
+            ]}
+            className="sm:w-52"
+          />
           <Button type="submit" variant="outline">
             Terapkan
           </Button>

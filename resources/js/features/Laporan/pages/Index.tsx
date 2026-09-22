@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { KartuKpi } from '@/components/grafik/KartuKpi';
 import { BarisFilter } from '@/features/Pelaporan/components/BarisFilter';
@@ -35,6 +34,7 @@ import type {
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   laporan: LaporanTersimpanItem[];
@@ -406,18 +406,11 @@ function DialogEkspor({
 
         <div className="space-y-1.5">
           <Label>Format</Label>
-          <Select value={format} onValueChange={(nilai) => setFormat(nilai as FormatEkspor)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {formatEkspor.map((satu) => (
-                <SelectItem key={satu.Nilai} value={satu.Nilai}>
-                  {satu.Label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={format}
+            onPilih={(nilai) => setFormat(nilai as FormatEkspor)}
+            opsi={formatEkspor.map((satu) => ({ nilai: satu.Nilai, label: satu.Label }))}
+          />
           {format === 'Pdf' && (
             <p className="text-xs text-muted-foreground">
               PDF dipotong pada 2.000 baris. Untuk data penuh, pilih CSV atau XLSX.

@@ -4,7 +4,6 @@ import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -21,8 +20,9 @@ import type { Paginasi } from '@/types/global';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Ringkas {
   Id: string;
@@ -89,57 +89,35 @@ function DialogBuatMutasi({ gudang, wajib }: { gudang: Ringkas[]; wajib: AturanW
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="Jenis">Jenis</Label>
-              <Select
-                value={form.data.Jenis}
-                onValueChange={(v) => form.setData('Jenis', v as JenisMutasiStok)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(LABEL_JENIS) as JenisMutasiStok[]).map((j) => (
-                    <SelectItem key={j} value={j}>
-                      {LABEL_JENIS[j]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.Jenis}
+                onPilih={(v) => form.setData('Jenis', v as JenisMutasiStok)}
+                opsi={(Object.keys(LABEL_JENIS) as JenisMutasiStok[]).map((j) => ({
+                  nilai: j,
+                  label: LABEL_JENIS[j],
+                }))}
+              />
             </div>
             {butuhGudangAsal(form.data.Jenis) && (
               <div className="space-y-1.5">
                 <Label nama="GudangAsalId">Gudang Asal</Label>
-                <Select value={form.data.GudangAsalId} onValueChange={(v) => form.setData('GudangAsalId', v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih gudang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {gudang.map((g) => (
-                      <SelectItem key={g.Id} value={g.Id}>
-                        {g.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.GudangAsalId}
+                  onPilih={(v) => form.setData('GudangAsalId', v)}
+                  opsi={opsiDari(gudang, (g) => g.Nama)}
+                  placeholder="Pilih gudang"
+                />
               </div>
             )}
             {butuhGudangTujuan(form.data.Jenis) && (
               <div className="space-y-1.5">
                 <Label nama="GudangTujuanId">Gudang Tujuan</Label>
-                <Select
-                  value={form.data.GudangTujuanId}
-                  onValueChange={(v) => form.setData('GudangTujuanId', v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih gudang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {gudang.map((g) => (
-                      <SelectItem key={g.Id} value={g.Id}>
-                        {g.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.GudangTujuanId}
+                  onPilih={(v) => form.setData('GudangTujuanId', v)}
+                  opsi={opsiDari(gudang, (g) => g.Nama)}
+                  placeholder="Pilih gudang"
+                />
               </div>
             )}
             <div className="space-y-1.5">

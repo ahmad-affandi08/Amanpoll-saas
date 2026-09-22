@@ -26,8 +26,9 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { Combobox } from '@/components/ui/combobox';
 
 interface LokasiRingkas {
   Id: string;
@@ -110,19 +111,11 @@ function DialogFormGudang({
             </div>
             <div className="space-y-2">
               <Label nama="LokasiId">Lokasi</Label>
-              <Select value={form.data.LokasiId} onValueChange={(v) => form.setData('LokasiId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
-                  {lokasi.map((l) => (
-                    <SelectItem key={l.Id} value={l.Id}>
-                      {l.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.LokasiId}
+                onPilih={(v) => form.setData('LokasiId', v)}
+                opsi={[opsiKosong('Tidak diisi'), ...opsiDari(lokasi, (l) => l.Nama)]}
+              />
             </div>
             <div className="space-y-2">
               <Label nama="Status">Status</Label>

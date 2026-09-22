@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { Combobox } from '@/components/ui/combobox';
 import type {
   DetailOtomasi,
   EksekusiOtomasi,
@@ -333,18 +334,11 @@ function DialogLangkah({
             <>
               <div className="grid gap-2">
                 <Label htmlFor="BidangKondisi">Bidang</Label>
-                <Select value={bidang} onValueChange={gantiBidang}>
-                  <SelectTrigger id="BidangKondisi">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {daftarBidang.map((satu) => (
-                      <SelectItem key={satu} value={satu}>
-                        {satu}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={bidang}
+                  onPilih={gantiBidang}
+                  opsi={daftarBidang.map((satu) => ({ nilai: satu, label: satu }))}
+                />
               </div>
 
               <div className="grid gap-2">

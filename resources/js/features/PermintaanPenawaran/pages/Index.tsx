@@ -25,6 +25,8 @@ import { formatUang } from '@/lib/uang';
 import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface PermintaanRingkas {
   Id: string;
@@ -93,21 +95,15 @@ function DialogBuatRfq({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="PermintaanPembelianId">Permintaan Pembelian</Label>
-              <Select
-                value={form.data.PermintaanPembelianId}
-                onValueChange={(value) => form.setData('PermintaanPembelianId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih permintaan disetujui" />
-                </SelectTrigger>
-                <SelectContent>
-                  {permintaanDisetujui.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nomor} — {formatUang(item.TotalEstimasi)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.PermintaanPembelianId}
+                onPilih={(value) => form.setData('PermintaanPembelianId', value)}
+                opsi={opsiDari(
+                  permintaanDisetujui,
+                  (item) => `${item.Nomor} — ${formatUang(item.TotalEstimasi)}`,
+                )}
+                placeholder="Pilih permintaan disetujui"
+              />
               {form.errors.PermintaanPembelianId && (
                 <p className="text-sm text-destructive">{form.errors.PermintaanPembelianId}</p>
               )}

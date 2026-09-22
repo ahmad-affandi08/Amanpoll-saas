@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
@@ -12,6 +11,8 @@ import { ruteStokSukuCadang } from '@/features/StokSukuCadang/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Ringkas {
   Id: string;
@@ -127,47 +128,28 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
       <div className="mb-4 grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label>Gudang</Label>
-          <Select
-            value={gudangId}
-            onValueChange={(v) => {
+          <Combobox
+            nilai={gudangId}
+            onPilih={(v) => {
               setGudangId(v);
               terapkanFilter(v, sukuCadangId);
             }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={SEMUA}>Semua Gudang</SelectItem>
-              {gudang.map((g) => (
-                <SelectItem key={g.Id} value={g.Id}>
-                  {g.Nama}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            opsi={[{ nilai: SEMUA, label: 'Semua Gudang' }, ...opsiDari(gudang, (g) => g.Nama)]}
+          />
         </div>
         <div className="space-y-1.5">
           <Label>Suku Cadang</Label>
-          <Select
-            value={sukuCadangId}
-            onValueChange={(v) => {
+          <Combobox
+            nilai={sukuCadangId}
+            onPilih={(v) => {
               setSukuCadangId(v);
               terapkanFilter(gudangId, v);
             }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={SEMUA}>Semua Suku Cadang</SelectItem>
-              {sukuCadang.map((s) => (
-                <SelectItem key={s.Id} value={s.Id}>
-                  {s.Nama} ({s.Kode})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            opsi={[
+              { nilai: SEMUA, label: 'Semua Suku Cadang' },
+              ...opsiDari(sukuCadang, (s) => `${s.Nama} (${s.Kode})`),
+            ]}
+          />
         </div>
       </div>
 

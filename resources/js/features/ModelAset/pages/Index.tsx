@@ -14,7 +14,6 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import type { KategoriAset, Merek, ModelAset } from '@/features/Aset/types';
@@ -24,9 +23,10 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   modelAset: Paginasi<ModelAset>;
@@ -122,40 +122,22 @@ function DialogFormModelAset({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label nama="KategoriAsetId">Kategori</Label>
-                <Select
-                  value={form.data.KategoriAsetId}
-                  onValueChange={(v) => form.setData('KategoriAsetId', v)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {kategoriAset.map((k) => (
-                      <SelectItem key={k.Id} value={k.Id}>
-                        {k.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.KategoriAsetId}
+                  onPilih={(v) => form.setData('KategoriAsetId', v)}
+                  opsi={opsiDari(kategoriAset, (k) => k.Nama)}
+                />
                 {form.errors.KategoriAsetId && (
                   <p className="text-sm text-destructive">{form.errors.KategoriAsetId}</p>
                 )}
               </div>
               <div className="space-y-2">
                 <Label nama="MerekId">Merek</Label>
-                <Select value={form.data.MerekId} onValueChange={(v) => form.setData('MerekId', v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Tanpa merek</SelectItem>
-                    {merek.map((m) => (
-                      <SelectItem key={m.Id} value={m.Id}>
-                        {m.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.MerekId}
+                  onPilih={(v) => form.setData('MerekId', v)}
+                  opsi={[opsiKosong('Tanpa merek'), ...opsiDari(merek, (m) => m.Nama)]}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

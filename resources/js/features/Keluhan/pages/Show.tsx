@@ -14,13 +14,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   keluhan: Keluhan;
@@ -64,21 +64,11 @@ function DialogStatus({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="Status">Status berikutnya</Label>
-              <Select
-                value={form.data.Status}
-                onValueChange={(v) => form.setData('Status', v as StatusKeluhan)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {transisi.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.Status}
+                onPilih={(v) => form.setData('Status', v as StatusKeluhan)}
+                opsi={transisi.map((s) => ({ nilai: s, label: s }))}
+              />
             </div>
             <div className="space-y-1.5">
               <Label nama="Status">
@@ -126,21 +116,14 @@ function DialogPrioritas({ keluhan, wajib }: { keluhan: Keluhan; wajib: AturanWa
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="Prioritas">Prioritas</Label>
-              <Select
-                value={form.data.Prioritas}
-                onValueChange={(v) => form.setData('Prioritas', v as PrioritasKeluhan)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
-                    <SelectItem key={p} value={p}>
-                      {p}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.Prioritas}
+                onPilih={(v) => form.setData('Prioritas', v as PrioritasKeluhan)}
+                opsi={(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => ({
+                  nilai: p,
+                  label: p,
+                }))}
+              />
             </div>
             <div className="space-y-1.5">
               <Label nama="Alasan">Alasan perubahan</Label>

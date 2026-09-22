@@ -26,9 +26,10 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   lokasi: Paginasi<Lokasi>;
@@ -195,41 +196,19 @@ function DialogFormLokasi({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label nama="UnitOrganisasiId">Unit Organisasi</Label>
-                <Select
-                  value={form.data.UnitOrganisasiId}
-                  onValueChange={(v) => form.setData('UnitOrganisasiId', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Tidak ditautkan</SelectItem>
-                    {unitOrganisasi.map((u) => (
-                      <SelectItem key={u.Id} value={u.Id}>
-                        {u.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.UnitOrganisasiId}
+                  onPilih={(v) => form.setData('UnitOrganisasiId', v)}
+                  opsi={[opsiKosong('Tidak ditautkan'), ...opsiDari(unitOrganisasi, (u) => u.Nama)]}
+                />
               </div>
               <div className="space-y-2">
                 <Label nama="KategoriLokasiId">Kategori</Label>
-                <Select
-                  value={form.data.KategoriLokasiId}
-                  onValueChange={(v) => form.setData('KategoriLokasiId', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Tanpa kategori</SelectItem>
-                    {kategoriLokasi.map((k) => (
-                      <SelectItem key={k.Id} value={k.Id}>
-                        {k.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.KategoriLokasiId}
+                  onPilih={(v) => form.setData('KategoriLokasiId', v)}
+                  opsi={[opsiKosong('Tanpa kategori'), ...opsiDari(kategoriLokasi, (k) => k.Nama)]}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

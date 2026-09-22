@@ -17,12 +17,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { LangkahSequence, SequenceEmail } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 type PilihanTemplate = { Id: string; Nama: string; Kode: string };
 
@@ -320,21 +321,11 @@ function DialogLangkah({
                 <Label nama="TemplateLangkah" htmlFor="TemplateLangkah">
                   Template
                 </Label>
-                <Select
-                  value={form.data.TemplateEmailPemasaranId}
-                  onValueChange={(v) => form.setData('TemplateEmailPemasaranId', v)}
-                >
-                  <SelectTrigger id="TemplateLangkah">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {template.map((satu) => (
-                      <SelectItem key={satu.Id} value={satu.Id}>
-                        {satu.Nama} · {satu.Kode}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.TemplateEmailPemasaranId}
+                  onPilih={(v) => form.setData('TemplateEmailPemasaranId', v)}
+                  opsi={opsiDari(template, (satu) => `${satu.Nama} · ${satu.Kode}`)}
+                />
                 {form.errors.TemplateEmailPemasaranId ? (
                   <p className="text-sm text-destructive">{form.errors.TemplateEmailPemasaranId}</p>
                 ) : null}

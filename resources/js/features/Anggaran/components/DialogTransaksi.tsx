@@ -13,11 +13,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { JenisTransaksiAnggaran, PosAnggaran } from '@/features/Anggaran/types';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 export function DialogTransaksi({
   pos,
@@ -80,25 +80,19 @@ export function DialogTransaksi({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="Jenis">Jenis</Label>
-              <Select
-                value={form.data.Jenis}
-                onValueChange={(value) => form.setData('Jenis', value as JenisTransaksiAnggaran)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {jenis.map((item) => (
-                    <SelectItem key={item} value={item}>
-                      {item === 'PelepasanKomitmen'
-                        ? 'Pelepasan Komitmen'
-                        : item === 'Penyesuaian'
-                          ? 'Penyesuaian (izin khusus)'
-                          : item}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.Jenis}
+                onPilih={(value) => form.setData('Jenis', value as JenisTransaksiAnggaran)}
+                opsi={jenis.map((item) => ({
+                  nilai: item,
+                  label:
+                    item === 'PelepasanKomitmen'
+                      ? 'Pelepasan Komitmen'
+                      : item === 'Penyesuaian'
+                        ? 'Penyesuaian (izin khusus)'
+                        : item,
+                }))}
+              />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">

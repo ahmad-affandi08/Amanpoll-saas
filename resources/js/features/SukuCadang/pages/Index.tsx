@@ -15,7 +15,6 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
@@ -23,11 +22,12 @@ import type { StatusSukuCadang, SukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface KategoriRingkas {
   Id: string;
@@ -102,22 +102,11 @@ function DialogFormSukuCadang({
             </div>
             <div className="space-y-2">
               <Label nama="KategoriSukuCadangId">Kategori</Label>
-              <Select
-                value={form.data.KategoriSukuCadangId}
-                onValueChange={(v) => form.setData('KategoriSukuCadangId', v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tidak diisi</SelectItem>
-                  {kategoriSukuCadang.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.KategoriSukuCadangId}
+                onPilih={(v) => form.setData('KategoriSukuCadangId', v)}
+                opsi={[opsiKosong('Tidak diisi'), ...opsiDari(kategoriSukuCadang, (k) => k.Nama)]}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Domain {
   publik: string | null;
@@ -215,18 +215,11 @@ function BarisKonfigurasi({
       {/* Setelan berdaftar tertutup tidak pernah ditawarkan sebagai kotak teks bebas. */}
       {pilihan ? (
         <>
-          <Select value={nilai} onValueChange={setNilai}>
-            <SelectTrigger id={idKolom}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {pilihan.map((satu) => (
-                <SelectItem key={satu.Nilai} value={satu.Nilai}>
-                  {satu.Label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={nilai}
+            onPilih={setNilai}
+            opsi={pilihan.map((satu) => ({ nilai: satu.Nilai, label: satu.Label }))}
+          />
           <p className="text-xs text-muted-foreground">
             {pilihan.find((satu) => satu.Nilai === nilai)?.Keterangan ?? ''}
           </p>

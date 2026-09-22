@@ -4,7 +4,6 @@ import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -21,6 +20,8 @@ import { ruteMutasiAset } from '@/features/MutasiAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   permintaan: PermintaanMutasiAset;
@@ -69,18 +70,12 @@ function DialogTambahAset({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="AsetId">Aset</Label>
-              <Select value={form.data.AsetId} onValueChange={(v) => form.setData('AsetId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih aset" />
-                </SelectTrigger>
-                <SelectContent>
-                  {asetTersedia.map((a) => (
-                    <SelectItem key={a.Id} value={a.Id}>
-                      {a.Nama} ({a.KodeAset})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={(v) => form.setData('AsetId', v)}
+                opsi={opsiDari(asetTersedia, (a) => `${a.Nama} (${a.KodeAset})`)}
+                placeholder="Pilih aset"
+              />
               {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
             </div>
             <DialogFooter>

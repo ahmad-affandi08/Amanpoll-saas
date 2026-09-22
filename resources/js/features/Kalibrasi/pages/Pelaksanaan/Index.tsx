@@ -22,6 +22,8 @@ import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   pelaksanaanKalibrasi: PelaksanaanKalibrasi[];
@@ -302,18 +304,13 @@ export default function KalibrasiPelaksanaanIndex({
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="AsetId">Pilih Aset / Instrumen *</Label>
-              <Select value={form.data.AsetId} onValueChange={onAsetChange} required>
-                <SelectTrigger className="h-9 text-xs">
-                  <SelectValue placeholder="Pilih Aset" />
-                </SelectTrigger>
-                <SelectContent className="max-h-56">
-                  {aset.map((a) => (
-                    <SelectItem key={a.Id} value={a.Id}>
-                      {a.KodeAset} - {a.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={onAsetChange}
+                opsi={opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`)}
+                placeholder="Pilih Aset"
+                className="h-9 text-xs"
+              />
               {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
             </div>
 
@@ -374,21 +371,13 @@ export default function KalibrasiPelaksanaanIndex({
 
               <div className="space-y-1.5">
                 <Label htmlFor="DilaksanakanOleh">Teknisi / Pelaksana Internal</Label>
-                <Select
-                  value={form.data.DilaksanakanOleh}
-                  onValueChange={(val) => form.setData('DilaksanakanOleh', val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Pilih Pelaksana" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teknisi.map((t) => (
-                      <SelectItem key={t.Id} value={t.Id}>
-                        {t.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.DilaksanakanOleh}
+                  onPilih={(val) => form.setData('DilaksanakanOleh', val)}
+                  opsi={opsiDari(teknisi, (t) => t.Nama)}
+                  placeholder="Pilih Pelaksana"
+                  className="h-9 text-xs"
+                />
               </div>
             </div>
 

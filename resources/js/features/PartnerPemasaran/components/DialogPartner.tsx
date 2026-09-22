@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import type { Partner, Pilihan, Program } from '@/features/PartnerPemasaran/types';
 import { Bidang } from '@/features/PartnerPemasaran/components/Bidang';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 export function DialogPartner({
   partner,
@@ -68,21 +70,12 @@ export function DialogPartner({
         </DialogHeader>
         <form onSubmit={kirim} className="space-y-4">
           <Bidang label="Program" galat={form.errors.ProgramPartnerId}>
-            <Select
-              value={form.data.ProgramPartnerId}
-              onValueChange={(nilai) => form.setData('ProgramPartnerId', nilai)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih program" />
-              </SelectTrigger>
-              <SelectContent>
-                {program.map((satu) => (
-                  <SelectItem key={satu.Id} value={satu.Id}>
-                    {satu.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.ProgramPartnerId}
+              onPilih={(nilai) => form.setData('ProgramPartnerId', nilai)}
+              opsi={opsiDari(program, (satu) => satu.Nama)}
+              placeholder="Pilih program"
+            />
           </Bidang>
           <Bidang label="Nama perusahaan" galat={form.errors.NamaPerusahaan}>
             <Input

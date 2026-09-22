@@ -3,12 +3,12 @@ import { router, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { http } from '@/lib/http';
 import type { Aset, RiwayatLokasiAset } from '@/features/Aset/types';
 import type { Lokasi } from '@/features/Lokasi/types';
 import { ruteAset } from '@/features/Aset/api';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { Combobox } from '@/components/ui/combobox';
 
 export function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
   const [data, setData] = useState<RiwayatLokasiAset[]>([]);
@@ -43,19 +43,12 @@ export function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
       <form onSubmit={submit} className="flex flex-wrap items-end gap-2 border-b border-border pb-4">
         <div className="space-y-1">
           <Label className="text-xs">Pindahkan ke</Label>
-          <Select value={form.data.LokasiTujuanId} onValueChange={(v) => form.setData('LokasiTujuanId', v)}>
-            <SelectTrigger className="w-56">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={TANPA_PILIHAN}>Tidak ada (kosongkan lokasi)</SelectItem>
-              {lokasi.map((l) => (
-                <SelectItem key={l.Id} value={l.Id}>
-                  {l.Nama}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={form.data.LokasiTujuanId}
+            onPilih={(v) => form.setData('LokasiTujuanId', v)}
+            opsi={[opsiKosong('Tidak ada (kosongkan lokasi)'), ...opsiDari(lokasi, (l) => l.Nama)]}
+            className="w-56"
+          />
         </div>
         <Input
           placeholder="Alasan (opsional)"

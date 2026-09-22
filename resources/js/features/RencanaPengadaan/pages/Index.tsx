@@ -24,8 +24,9 @@ import type { RencanaPengadaan, StatusRencanaPengadaan } from '@/features/Rencan
 import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface PosRingkas {
   Id: string;
@@ -115,22 +116,11 @@ function DialogBuatRencana({
             </div>
             <div className="space-y-1.5">
               <Label nama="PosAnggaranId">Pos Anggaran</Label>
-              <Select
-                value={form.data.PosAnggaranId}
-                onValueChange={(value) => form.setData('PosAnggaranId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Pilih nanti</SelectItem>
-                  {posAnggaran.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.PosAnggaranId}
+                onPilih={(value) => form.setData('PosAnggaranId', value)}
+                opsi={[opsiKosong('Pilih nanti'), ...opsiDari(posAnggaran, (item) => item.Label)]}
+              />
             </div>
             <div className="space-y-2">
               <Label>Usulan Disetujui</Label>

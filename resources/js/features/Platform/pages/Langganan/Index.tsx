@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
@@ -24,6 +23,8 @@ import { tanggal } from '@/features/Langganan/format';
 import type { LanggananPlatformItem, PilihanRingkas, StatusLangganan } from '@/features/Langganan/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { rutePlatform } from '@/features/Platform/api';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface PilihanSiklus {
   Nilai: string;
@@ -221,21 +222,12 @@ function DialogLangganan({
         <form onSubmit={kirim} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Organisasi</Label>
-            <Select
-              value={form.data.OrganisasiId}
-              onValueChange={(nilai) => form.setData('OrganisasiId', nilai)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih organisasi" />
-              </SelectTrigger>
-              <SelectContent>
-                {organisasi.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.OrganisasiId}
+              onPilih={(nilai) => form.setData('OrganisasiId', nilai)}
+              opsi={opsiDari(organisasi, (item) => item.Nama)}
+              placeholder="Pilih organisasi"
+            />
             {form.errors.OrganisasiId && (
               <p className="text-sm text-destructive">{form.errors.OrganisasiId}</p>
             )}
@@ -243,21 +235,12 @@ function DialogLangganan({
 
           <div className="space-y-1.5">
             <Label>Paket</Label>
-            <Select
-              value={form.data.PaketLanggananId}
-              onValueChange={(nilai) => form.setData('PaketLanggananId', nilai)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih paket" />
-              </SelectTrigger>
-              <SelectContent>
-                {paket.map((item) => (
-                  <SelectItem key={item.Id} value={item.Id}>
-                    {item.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.PaketLanggananId}
+              onPilih={(nilai) => form.setData('PaketLanggananId', nilai)}
+              opsi={opsiDari(paket, (item) => item.Nama)}
+              placeholder="Pilih paket"
+            />
             {form.errors.PaketLanggananId && (
               <p className="text-sm text-destructive">{form.errors.PaketLanggananId}</p>
             )}
@@ -266,18 +249,11 @@ function DialogLangganan({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Siklus</Label>
-              <Select value={form.data.Siklus} onValueChange={(nilai) => form.setData('Siklus', nilai)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {siklus.map((item) => (
-                    <SelectItem key={item.Nilai} value={item.Nilai}>
-                      {item.Label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.Siklus}
+                onPilih={(nilai) => form.setData('Siklus', nilai)}
+                opsi={siklus.map((item) => ({ nilai: item.Nilai, label: item.Label }))}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="mulai-pada">Mulai pada</Label>

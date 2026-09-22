@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { http } from '@/lib/http';
 import type { Aset, RiwayatPenanggungJawabAset } from '@/features/Aset/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteAset } from '@/features/Aset/api';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { Combobox } from '@/components/ui/combobox';
 
 export function TabPenanggungJawab({
   aset,
@@ -64,22 +64,12 @@ export function TabPenanggungJawab({
       <form onSubmit={submit} className="flex flex-wrap items-end gap-2 border-b border-border pb-4">
         <div className="space-y-1">
           <Label className="text-xs">Unit Penanggung Jawab</Label>
-          <Select
-            value={form.data.UnitOrganisasiId}
-            onValueChange={(v) => form.setData('UnitOrganisasiId', v)}
-          >
-            <SelectTrigger className="w-56">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={TANPA_PILIHAN}>Pilih unit</SelectItem>
-              {unitOrganisasi.map((u) => (
-                <SelectItem key={u.Id} value={u.Id}>
-                  {u.Nama}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={form.data.UnitOrganisasiId}
+            onPilih={(v) => form.setData('UnitOrganisasiId', v)}
+            opsi={[opsiKosong('Pilih unit'), ...opsiDari(unitOrganisasi, (u) => u.Nama)]}
+            className="w-56"
+          />
         </div>
         <Input
           placeholder="Catatan (opsional)"

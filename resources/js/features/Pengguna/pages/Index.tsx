@@ -25,6 +25,8 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   pengguna: Paginasi<Pengguna>;
@@ -212,18 +214,13 @@ function DialogKelolaPeran({
             </div>
           ))}
           <div className="flex gap-2 pt-2">
-            <Select value={peranTerpilih} onValueChange={setPeranTerpilih}>
-              <SelectTrigger className="flex-1">
-                <SelectValue placeholder="Pilih peran" />
-              </SelectTrigger>
-              <SelectContent>
-                {peranTersedia.map((p) => (
-                  <SelectItem key={p.Id} value={p.Id}>
-                    {p.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={peranTerpilih}
+              onPilih={setPeranTerpilih}
+              opsi={opsiDari(peranTersedia, (p) => p.Nama)}
+              placeholder="Pilih peran"
+              className="flex-1"
+            />
             <Button onClick={tambahkan}>Tetapkan</Button>
           </div>
         </div>

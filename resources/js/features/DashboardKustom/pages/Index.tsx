@@ -22,6 +22,7 @@ import type {
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   dasbor: DasborTersimpanPenuh[];
@@ -340,21 +341,11 @@ function Penyusun({
 
                   <div className="space-y-1.5">
                     <Label className="text-xs">Lebar</Label>
-                    <Select
-                      value={String(satu.Lebar)}
-                      onValueChange={(nilai) => ubah(indeks, { Lebar: Number(nilai) })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[1, 2, 3, 4].map((lebar) => (
-                          <SelectItem key={lebar} value={String(lebar)}>
-                            {lebar} kolom
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Combobox
+                      nilai={String(satu.Lebar)}
+                      onPilih={(nilai) => ubah(indeks, { Lebar: Number(nilai) })}
+                      opsi={[1, 2, 3, 4].map((lebar) => ({ nilai: String(lebar), label: `${lebar} kolom` }))}
+                    />
                   </div>
 
                   <div className="flex gap-1">

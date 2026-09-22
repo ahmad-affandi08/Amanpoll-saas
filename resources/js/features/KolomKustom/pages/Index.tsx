@@ -23,6 +23,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
   jenisEntitasTersedia: string[];
@@ -204,18 +205,11 @@ export default function KolomKustomIndex({ jenisEntitasTersedia, wajib }: Props)
 
       <div className="mb-4 w-64 space-y-2">
         <Label>Jenis Entitas</Label>
-        <Select value={jenisEntitas} onValueChange={setJenisEntitas}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {jenisEntitasTersedia.map((j) => (
-              <SelectItem key={j} value={j}>
-                {j}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={jenisEntitas}
+          onPilih={setJenisEntitas}
+          opsi={jenisEntitasTersedia.map((j) => ({ nilai: j, label: j }))}
+        />
       </div>
 
       <div className="rounded-lg border border-border bg-card">

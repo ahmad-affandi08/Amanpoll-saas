@@ -27,8 +27,9 @@ import type {
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface UnitRingkas {
   Id: string;
@@ -150,60 +151,35 @@ function DialogBuatPermintaan({
             </div>
             <div className="space-y-1.5">
               <Label nama="PosAnggaranId">Pos Anggaran</Label>
-              <Select
-                value={form.data.PosAnggaranId}
-                onValueChange={(value) => form.setData('PosAnggaranId', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih pos anggaran aktif" />
-                </SelectTrigger>
-                <SelectContent>
-                  {posAnggaran.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Kode} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.PosAnggaranId}
+                onPilih={(value) => form.setData('PosAnggaranId', value)}
+                opsi={opsiDari(posAnggaran, (item) => `${item.Kode} — ${item.Nama}`)}
+                placeholder="Pilih pos anggaran aktif"
+              />
               {form.errors.PosAnggaranId && (
                 <p className="text-sm text-destructive">{form.errors.PosAnggaranId}</p>
               )}
             </div>
             <div className="space-y-1.5">
               <Label nama="RencanaPengadaanId">Rencana Pengadaan</Label>
-              <Select value={form.data.RencanaPengadaanId} onValueChange={pilihRencana}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa rencana</SelectItem>
-                  {rencana.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nomor} — {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.RencanaPengadaanId}
+                onPilih={pilihRencana}
+                opsi={[
+                  opsiKosong('Tanpa rencana'),
+                  ...opsiDari(rencana, (item) => `${item.Nomor} — ${item.Nama}`),
+                ]}
+              />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label nama="UnitOrganisasiId">Unit Organisasi</Label>
-                <Select
-                  value={form.data.UnitOrganisasiId}
-                  onValueChange={(value) => form.setData('UnitOrganisasiId', value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN}>Tanpa unit</SelectItem>
-                    {unitOrganisasi.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.UnitOrganisasiId}
+                  onPilih={(value) => form.setData('UnitOrganisasiId', value)}
+                  opsi={[opsiKosong('Tanpa unit'), ...opsiDari(unitOrganisasi, (item) => item.Nama)]}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label nama="Prioritas">Prioritas</Label>

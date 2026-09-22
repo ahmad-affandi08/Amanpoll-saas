@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +22,8 @@ import { ruteReservasiSukuCadang } from '@/features/ReservasiSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Ringkas {
   Id: string;
@@ -82,33 +83,21 @@ function DialogBuatReservasi({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="GudangId">Gudang</Label>
-              <Select value={form.data.GudangId} onValueChange={(v) => form.setData('GudangId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih gudang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {gudang.map((g) => (
-                    <SelectItem key={g.Id} value={g.Id}>
-                      {g.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.GudangId}
+                onPilih={(v) => form.setData('GudangId', v)}
+                opsi={opsiDari(gudang, (g) => g.Nama)}
+                placeholder="Pilih gudang"
+              />
             </div>
             <div className="space-y-1.5">
               <Label nama="SukuCadangId">Suku Cadang</Label>
-              <Select value={form.data.SukuCadangId} onValueChange={(v) => form.setData('SukuCadangId', v)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih suku cadang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {sukuCadang.map((s) => (
-                    <SelectItem key={s.Id} value={s.Id}>
-                      {s.Nama} ({s.Kode})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.SukuCadangId}
+                onPilih={(v) => form.setData('SukuCadangId', v)}
+                opsi={opsiDari(sukuCadang, (s) => `${s.Nama} (${s.Kode})`)}
+                placeholder="Pilih suku cadang"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">

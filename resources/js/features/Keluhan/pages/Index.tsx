@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -22,8 +21,9 @@ import type { Paginasi } from '@/types/global';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface KategoriRingkas {
   Id: string;
@@ -93,32 +93,23 @@ function DialogBuatKeluhan({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="KategoriKeluhanId">Kategori</Label>
-              <Select
-                value={form.data.KategoriKeluhanId}
-                onValueChange={(value) => {
+              <Combobox
+                nilai={form.data.KategoriKeluhanId}
+                onPilih={(value) => {
                   form.setData('KategoriKeluhanId', value);
                 }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  {kategori.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                opsi={opsiDari(kategori, (item) => item.Nama)}
+                placeholder="Pilih kategori"
+              />
               {form.errors.KategoriKeluhanId && (
                 <p className="text-sm text-destructive">{form.errors.KategoriKeluhanId}</p>
               )}
             </div>
             <div className="space-y-1.5">
               <Label nama="AsetId">Aset {kategoriDipilih?.AsetWajib ? '(wajib)' : '(opsional)'}</Label>
-              <Select
-                value={form.data.AsetId}
-                onValueChange={(value) => {
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={(value) => {
                   const dipilih = aset.find((item) => item.Id === value);
                   form.setData((data) => ({
                     ...data,
@@ -126,57 +117,38 @@ function DialogBuatKeluhan({
                     LokasiId: dipilih?.LokasiId ?? data.LokasiId,
                   }));
                 }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa aset</SelectItem>
-                  {aset.map((item) => (
-                    <SelectItem key={item.Id} value={item.Id}>
-                      {item.KodeAset} · {item.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                opsi={[
+                  opsiKosong('Tanpa aset'),
+                  ...opsiDari(aset, (item) => `${item.KodeAset} · ${item.Nama}`),
+                ]}
+              />
               {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label nama="LokasiId">Lokasi</Label>
-                <Select value={form.data.LokasiId} onValueChange={(value) => form.setData('LokasiId', value)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih lokasi" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {lokasi.map((item) => (
-                      <SelectItem key={item.Id} value={item.Id}>
-                        {item.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.LokasiId}
+                  onPilih={(value) => form.setData('LokasiId', value)}
+                  opsi={opsiDari(lokasi, (item) => item.Nama)}
+                  placeholder="Pilih lokasi"
+                />
                 {form.errors.LokasiId && <p className="text-sm text-destructive">{form.errors.LokasiId}</p>}
               </div>
               {dapatMengelola && (
                 <div className="space-y-1.5">
                   <Label nama="Prioritas">Prioritas</Label>
-                  <Select
-                    value={form.data.Prioritas}
-                    onValueChange={(value) => form.setData('Prioritas', value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={TANPA_PILIHAN}>Gunakan bawaan kategori</SelectItem>
-                      {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
-                        <SelectItem key={p} value={p}>
-                          {p}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Combobox
+                    nilai={form.data.Prioritas}
+                    onPilih={(value) => form.setData('Prioritas', value)}
+                    opsi={[
+                      opsiKosong('Gunakan bawaan kategori'),
+                      ...(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => ({
+                        nilai: p,
+                        label: p,
+                      })),
+                    ]}
+                  />
                 </div>
               )}
             </div>
@@ -271,13 +243,12 @@ export default function KeluhanIndex({
         className="mb-6"
       />
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
-        <Select value={filter.status ?? TANPA_PILIHAN} onValueChange={(value) => filterData('status', value)}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Semua status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={TANPA_PILIHAN}>Semua status</SelectItem>
-            {(
+        <Combobox
+          nilai={filter.status ?? TANPA_PILIHAN}
+          onPilih={(value) => filterData('status', value)}
+          opsi={[
+            opsiKosong('Semua status'),
+            ...(
               [
                 'Baru',
                 'Ditinjau',
@@ -288,29 +259,22 @@ export default function KeluhanIndex({
                 'Ditolak',
                 'Dibatalkan',
               ] as StatusKeluhan[]
-            ).map((s) => (
-              <SelectItem key={s} value={s}>
-                {s}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filter.prioritas ?? TANPA_PILIHAN}
-          onValueChange={(value) => filterData('prioritas', value)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Semua prioritas" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={TANPA_PILIHAN}>Semua prioritas</SelectItem>
-            {(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => (
-              <SelectItem key={p} value={p}>
-                {p}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            ).map((s) => ({ nilai: s, label: s })),
+          ]}
+          placeholder="Semua status"
+        />
+        <Combobox
+          nilai={filter.prioritas ?? TANPA_PILIHAN}
+          onPilih={(value) => filterData('prioritas', value)}
+          opsi={[
+            opsiKosong('Semua prioritas'),
+            ...(['Rendah', 'Normal', 'Tinggi', 'Kritis'] as PrioritasKeluhan[]).map((p) => ({
+              nilai: p,
+              label: p,
+            })),
+          ]}
+          placeholder="Semua prioritas"
+        />
       </div>
       {keluhan.data.length === 0 ? (
         <KeadaanKosong

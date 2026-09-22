@@ -3,10 +3,10 @@ import { router, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatAngka } from '@/lib/angka';
 import type { BiayaKampanye, Kampanye } from '@/features/Pemasaran/types';
+import { Combobox } from '@/components/ui/combobox';
 
 /** Biaya dicatat per channel per hari, sehingga CAC terbaca pada rentang tanggal mana pun. */
 export function KonsolBiaya({
@@ -48,18 +48,12 @@ export function KonsolBiaya({
       <form onSubmit={submit} className="flex flex-wrap items-end gap-3 rounded-lg border p-4">
         <div className="grid gap-1.5">
           <Label htmlFor="Channel">Channel</Label>
-          <Select value={form.data.Channel} onValueChange={(v) => form.setData('Channel', v)}>
-            <SelectTrigger id="Channel" className="w-44">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {channel.map((satu) => (
-                <SelectItem key={satu} value={satu}>
-                  {satu}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={form.data.Channel}
+            onPilih={(v) => form.setData('Channel', v)}
+            opsi={channel.map((satu) => ({ nilai: satu, label: satu }))}
+            className="w-44"
+          />
         </div>
 
         <div className="grid gap-1.5">

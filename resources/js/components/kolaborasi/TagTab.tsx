@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { http } from '@/lib/http';
 import type { EntitasTag, Tag } from '@/features/Kolaborasi/types';
 import { ruteKolaborasi } from '@/features/Kolaborasi/api';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   jenisEntitas: string;
@@ -57,18 +58,13 @@ export function TagTab({ jenisEntitas, entitasId }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
-        <Select value={tagDipilih} onValueChange={setTagDipilih}>
-          <SelectTrigger className="flex-1">
-            <SelectValue placeholder="Pilih tag..." />
-          </SelectTrigger>
-          <SelectContent>
-            {tagBelumDipakai.map((t) => (
-              <SelectItem key={t.Id} value={t.Id}>
-                {t.Nama}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={tagDipilih}
+          onPilih={setTagDipilih}
+          opsi={opsiDari(tagBelumDipakai, (t) => t.Nama)}
+          placeholder="Pilih tag..."
+          className="flex-1"
+        />
         <Button type="button" onClick={tambahkan} disabled={!tagDipilih}>
           Tambah
         </Button>
