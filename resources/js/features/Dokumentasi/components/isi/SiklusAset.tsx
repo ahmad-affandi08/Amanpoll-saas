@@ -1,5 +1,15 @@
 import type { ButirDaftarIsi } from '@/features/Dokumentasi/components/KerangkaDokumentasi';
-import { Awas, Bagian, Butir, Daftar, Jalur, P, Tegas, Ui } from '@/features/Dokumentasi/components/Prosa';
+import {
+  Awas,
+  Bagian,
+  Butir,
+  Catatan,
+  Daftar,
+  Jalur,
+  P,
+  Tegas,
+  Ui,
+} from '@/features/Dokumentasi/components/Prosa';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'mutasi', judul: 'Mutasi aset' },
@@ -52,16 +62,31 @@ export function SiklusAset() {
       </Bagian>
 
       <Bagian id="jejak" judul="Jejak riwayat">
-        <P>Halaman detail tiap aset mengumpulkan seluruh yang pernah terjadi padanya:</P>
+        <P>Halaman detail aset saat ini menyimpan riwayat ini, masing-masing di tabnya sendiri:</P>
         <Daftar>
-          <Butir>Keluhan dan perintah kerja yang pernah menyentuhnya.</Butir>
-          <Butir>Pelaksanaan kalibrasi beserta hasilnya.</Butir>
-          <Butir>Perpindahan lokasi, unit, dan pemegang.</Butir>
-          <Butir>Lampiran berkas dan komentar.</Butir>
+          <Butir>
+            <Ui>Lokasi</Ui> — seluruh perpindahan lokasi beserta tanggalnya.
+          </Butir>
+          <Butir>
+            <Ui>Penanggung Jawab</Ui> — pergantian pemegang aset.
+          </Butir>
+          <Butir>
+            <Ui>Nilai</Ui>, <Ui>Garansi</Ui>, <Ui>Meter</Ui> — riwayat penilaian, masa garansi, dan pembacaan
+            meter.
+          </Butir>
+          <Butir>
+            <Ui>Kolaborasi</Ui> — lampiran berkas dan komentar.
+          </Butir>
         </Daftar>
+        <Catatan>
+          Riwayat pemeliharaan dan kalibrasi <Tegas>belum</Tegas> ditampilkan di halaman aset. Datanya
+          tercatat lengkap, tetapi untuk saat ini dibaca dari menu modulnya: keluhan dan perintah kerja di{' '}
+          <Jalur ruas={['Operasional & Aset', 'Pemeliharaan']} />, dan pelaksanaan kalibrasi di{' '}
+          <Jalur ruas={['Operasional & Aset', 'Kalibrasi']} />, disaring per aset.
+        </Catatan>
         <P>
           Inilah alasan seluruh perubahan sebaiknya dilakukan lewat menu yang semestinya, bukan lewat
-          penyuntingan langsung: yang tidak dicatat tidak akan pernah muncul di sini.
+          penyuntingan langsung: yang tidak dicatat tidak akan pernah muncul di mana pun.
         </P>
       </Bagian>
     </>
