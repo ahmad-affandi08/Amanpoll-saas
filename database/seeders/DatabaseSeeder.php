@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             IzinSeeder::class,
             FiturPaketSeeder::class,
             FiturPlatformSeeder::class,
+            TahapPipelineSeeder::class,
             DemoAwalSeeder::class,
         ]);
     }

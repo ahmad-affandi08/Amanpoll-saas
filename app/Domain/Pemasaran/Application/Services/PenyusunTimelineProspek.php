@@ -1,0 +1,76 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Pemasaran\Application\Services;
+
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AktivitasProspek;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
+
+/**
+ * Timeline gabungan satu prospek (MARKETING.md 7).
+ *
+ * Dua sumber digabung di sini: peristiwa yang terekam otomatis dari
+ * kunjungannya, dan aktivitas yang ditulis manusia. Keduanya sengaja tidak
+ * disatukan ke satu tabel — yang satu tidak boleh diubah, yang satu memang
+ * dikarang orang — tetapi harus terbaca sebagai satu urutan waktu, karena
+ * itulah bentuk pertanyaan yang diajukan tim penjualan.
+ */
+final class PenyusunTimelineProspek
+{
+    private const BATAS = 200;
+
+    /** @return list<array<string, mixed>> */
+    public function untuk(Prospek $prospek): array
+    {
+        $entri = [
+            ...$this->dariPeristiwa($prospek),
+            ...$this->dariAktivitas($prospek),
+        ];
+
+        usort($entri, fn (array $a, array $b): int => strcmp((string) $b['Pada'], (string) $a['Pada']));
+
+        return array_slice($entri, 0, self::BATAS);
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function dariPeristiwa(Prospek $prospek): array
+    {
+        if ($prospek->PengenalPengunjung === null) {
+            return [];
+        }
+
+        return array_values(EventPemasaran::query()
+            ->where('PengenalPengunjung', $prospek->PengenalPengunjung)
+            ->orderByDesc('TerjadiPada')
+            ->limit(self::BATAS)
+            ->get()
+            ->map(fn (EventPemasaran $satu): array => [
+                'Sumber' => 'Peristiwa',
+                'Jenis' => $satu->Jenis,
+                'Judul' => $satu->Jenis,
+                'Isi' => $satu->Url,
+                'Pada' => $satu->TerjadiPada->toIso8601String(),
+            ])
+            ->all());
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function dariAktivitas(Prospek $prospek): array
+    {
+        return array_values(AktivitasProspek::query()
+            ->where('ProspekId', $prospek->Id)
+            ->orderByDesc('TerjadiPada')
+            ->limit(self::BATAS)
+            ->get()
+            ->map(fn (AktivitasProspek $satu): array => [
+                'Sumber' => 'Aktivitas',
+                'Jenis' => $satu->Jenis,
+                'Judul' => $satu->Judul,
+                'Isi' => $satu->Isi,
+                'Pada' => $satu->TerjadiPada->toIso8601String(),
+            ])
+            ->all());
+    }
+}

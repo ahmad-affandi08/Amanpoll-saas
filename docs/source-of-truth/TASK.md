@@ -1861,48 +1861,72 @@ Test bagian 36 yang dipenuhi di sini: `UtmTersimpanTest`,
 
 ## 31.01 Prospek
 
-- [ ] Tabel `Prospek`, `KontakProspek`, `OrganisasiProspek`.
-- [ ] Data lead minimal sesuai `MARKETING.md` 5.2.
-- [ ] Sumber lead sesuai `MARKETING.md` 5.1.
+- [x] Tabel `Prospek`, `KontakProspek`, `OrganisasiProspek`.
+- [x] Data lead minimal sesuai `MARKETING.md` 5.2.
+- [x] Sumber lead sesuai `MARKETING.md` 5.1.
 
 ## 31.02 Pipeline
 
-- [ ] Tabel `TahapPipeline`, `RiwayatTahapProspek`.
-- [ ] State `BARU → DIHUBUNGI → TERLIBAT → DEMO → TRIAL → AKTIF → QUALIFIED → MENANG`.
-- [ ] State alternatif `TIDAK_COCOK`, `HILANG`, `UNSUBSCRIBE`.
-- [ ] Setiap perubahan tahap tercatat di timeline.
+- [x] Tabel `TahapPipeline`, `RiwayatTahapProspek`.
+- [x] State `BARU → DIHUBUNGI → TERLIBAT → DEMO → TRIAL → AKTIF → QUALIFIED → MENANG`.
+- [x] State alternatif `TIDAK_COCOK`, `HILANG`, `UNSUBSCRIBE`.
+- [x] Setiap perubahan tahap tercatat di timeline.
 
 ## 31.03 Skor Prospek
 
-- [ ] Tabel `SkorProspek`, `AturanSkorProspek`.
-- [ ] Aturan configurable, angka tidak di-hard-code.
-- [ ] Job `HitungSkorProspek`.
+- [x] Tabel `SkorProspek`. Aturan bobotnya tidak dibuat sebagai tabel tersendiri melainkan hidup di `KonfigurasiPemasaran` — lihat catatan Gate.
+- [x] Aturan configurable, angka tidak di-hard-code.
+- [x] Job `HitungSkorProspek`.
 
 ## 31.04 Tag dan Aktivitas
 
-- [ ] Tabel `TagProspek`, `ProspekTag`, `AktivitasProspek`.
-- [ ] Timeline gabungan sesuai `MARKETING.md` bagian 7.
-- [ ] Sumber event: website, aplikasi, email, billing, subscription, referral, automation.
+- [x] Tabel `TagProspek`, `ProspekTag`, `AktivitasProspek`.
+- [x] Timeline gabungan sesuai `MARKETING.md` bagian 7.
+- [x] Sumber event: website, aplikasi, email, billing, subscription, referral, automation.
 
 ## 31.05 Masuk dan Keluar
 
-- [ ] Import CSV.
-- [ ] Lead capture lewat API dan webhook.
-- [ ] Ekspor dengan izin terpisah dan tercatat di audit.
-- [ ] Rate limit ekspor.
+- [x] Import CSV.
+- [x] Lead capture lewat API dan webhook.
+- [x] Ekspor dengan izin terpisah dan tercatat di audit.
+- [x] Rate limit ekspor.
 
 ## 31.06 Test
 
-- [ ] `ProspekDibuatTest`.
-- [ ] `PipelineProspekTest`.
-- [ ] `SkorProspekTest`.
-- [ ] `TransisiStatusProspekTest`.
-- [ ] `HitungSkorProspekTest`.
-- [ ] `PermissionPemasaranTest`.
+- [x] `ProspekDibuatTest`.
+- [x] `PipelineProspekTest`.
+- [x] `SkorProspekTest`.
+- [x] `TransisiStatusProspekTest`.
+- [x] `HitungSkorProspekTest`.
+- [x] `PermissionPemasaranTest`.
 
 ### Gate 31
 
-Lead dari seluruh sumber masuk ke satu pipeline dengan timeline yang utuh; ekspor lead tidak dapat dilakukan tanpa izin ekspor dan selalu meninggalkan jejak audit.
+Lead dari seluruh sumber masuk ke satu pipeline dengan timeline yang utuh; ekspor lead tidak dapat dilakukan tanpa izin ekspor dan selalu meninggalkan jejak audit. (Terpenuhi)
+
+Satu pintu untuk formulir publik, impor CSV, API, webhook, dan entri manual,
+karena tiga hal harus terjadi pada setiap prospek baru dan tidak boleh
+bergantung pada siapa yang membuatnya: penggabungan dengan prospek yang sudah
+ada, pengambilan kampanye dari first touch, dan penempatan pada tahap awal.
+
+Penggabungan hanya memakai sinyal kuat — alamat email yang sama atau pengenal
+pengunjung yang sama — sesuai larangan MARKETING.md 14. Menggabungkan dua orang
+berbeda jauh lebih mahal daripada menyimpan satu prospek ganda.
+
+Satu penyimpangan yang disengaja dari bagian 24: `AturanSkorProspek` tidak
+dibuat sebagai tabel. Bobot skor sudah hidup di `KonfigurasiPemasaran` sejak
+FASE 29, dan bagian 24 sendiri melarang membuat tabel baru bila fungsi setara
+sudah tersedia. Yang dituntut bagian 5.4 — aturan configurable, angka tidak
+di-hard-code — tetap terpenuhi dan diuji.
+
+Skor disusun ulang dari nol setiap dihitung, bukan diakumulasi: skor yang
+ditambahkan akan ikut menyimpan setiap kesalahan sebelumnya dan tidak pernah
+dapat dikoreksi. Rinciannya disimpan per peristiwa supaya angkanya dapat
+dijelaskan; skor yang tidak dapat dijelaskan akan diabaikan tim penjualan.
+
+Test bagian 36 yang dipenuhi di sini: `ProspekDibuatTest`, `PipelineProspekTest`,
+`SkorProspekTest`, `TransisiStatusProspekTest`, dan `PermissionPemasaranTest`
+(gerbang izin konsol diuji di `FondasiPemasaranTest` dan pada tiap rute CRM).
 
 ---
 
