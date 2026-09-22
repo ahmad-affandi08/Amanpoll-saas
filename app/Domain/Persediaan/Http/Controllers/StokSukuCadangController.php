@@ -10,7 +10,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
-use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -22,23 +22,31 @@ final class StokSukuCadangController extends Controller
     {
         $this->authorize('viewAny', StokSukuCadang::class);
 
-        $filter = $request->validate([
-            'gudangId' => ['nullable', 'string'],
-            'sukuCadangId' => ['nullable', 'string'],
-        ]);
-
-        $stok = StokSukuCadang::query()
+        // Nama suku cadang dan gudang ikut digabung supaya keduanya dapat dicari dan diurutkan di server.
+        $kueri = StokSukuCadang::query()
             ->with(['gudang', 'lokasiGudang', 'sukuCadang', 'kelompokSukuCadang'])
-            ->when($filter['gudangId'] ?? null, fn ($q, $v) => $q->where('GudangId', $v))
-            ->when($filter['sukuCadangId'] ?? null, fn ($q, $v) => $q->where('SukuCadangId', $v))
-            ->limit(BatasDaftar::MAKS)
-            ->get();
+            ->select('StokSukuCadang.*')
+            ->leftJoin('SukuCadang', 'SukuCadang.Id', '=', 'StokSukuCadang.SukuCadangId')
+            ->leftJoin('Gudang', 'Gudang.Id', '=', 'StokSukuCadang.GudangId');
+
+        $daftar = DaftarTersaring::untuk($request, $kueri)
+            ->cari(['SukuCadang.Nama', 'SukuCadang.Kode', 'Gudang.Nama'])
+            ->urut([
+                'NamaSukuCadang' => 'SukuCadang.Nama',
+                'NamaGudang' => 'Gudang.Nama',
+                'JumlahTersedia' => 'StokSukuCadang.JumlahTersedia',
+                'JumlahDitahan' => 'StokSukuCadang.JumlahDitahan',
+            ], bawaan: 'NamaSukuCadang')
+            ->faset([
+                'gudangId' => 'StokSukuCadang.GudangId',
+                'sukuCadangId' => 'StokSukuCadang.SukuCadangId',
+            ]);
 
         return Inertia::render('StokSukuCadang/Index', [
-            'stok' => StokSukuCadangResource::collection($stok),
+            'stok' => StokSukuCadangResource::collection($daftar->halaman()),
             'gudang' => Gudang::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'sukuCadang' => SukuCadang::query()->where('Status', StatusSukuCadang::Aktif->value)->orderBy('Nama')->get(['Id', 'Nama', 'Kode']),
-            'filter' => $filter,
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 }

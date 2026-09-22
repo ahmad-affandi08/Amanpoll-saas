@@ -398,4 +398,48 @@ class PersediaanTest extends TestCase
         $stok->refresh();
         $this->assertSame('100.0000', $stok->JumlahTersedia);
     }
+
+    /**
+     * Nama suku cadang dan gudang datang dari tabel lain, jadi pencariannya
+     * bergantung pada join di controller. Tanpa join itu kotak cari hanya
+     * akan mencocokkan kolom StokSukuCadang dan tampak tidak menemukan apa pun.
+     */
+    public function test_stok_dapat_dicari_dan_diurutkan_lewat_nama_relasi(): void
+    {
+        $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $pengguna = $this->buatPengguna($organisasi, ['Stok.Kelola']);
+        $this->konteks()->tetapkan($organisasi->Id);
+
+        $gudangUtama = $this->buatGudang($organisasi, ['Nama' => 'Gudang Utama']);
+        $gudangCabang = $this->buatGudang($organisasi, ['Nama' => 'Gudang Cabang']);
+        $baut = $this->buatSukuCadang($organisasi, ['Nama' => 'Baut Hexagonal']);
+        $oli = $this->buatSukuCadang($organisasi, ['Nama' => 'Oli Hidrolik']);
+
+        foreach ([[$gudangUtama, $baut], [$gudangCabang, $oli]] as [$gudang, $sukuCadang]) {
+            StokSukuCadang::create([
+                'GudangId' => $gudang->Id, 'SukuCadangId' => $sukuCadang->Id,
+                'JumlahTersedia' => 10, 'JumlahDipesan' => 0, 'JumlahDitahan' => 0,
+            ]);
+        }
+
+        $this->actingAs($pengguna)->get('/stok-suku-cadang?cari=Hidrolik')
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->has('stok.data', 1)
+                ->where('stok.data.0.NamaSukuCadang', 'Oli Hidrolik')
+                ->etc());
+
+        $this->actingAs($pengguna)->get('/stok-suku-cadang?cari=Cabang')
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->has('stok.data', 1)
+                ->where('stok.data.0.NamaGudang', 'Gudang Cabang')
+                ->etc());
+
+        $this->actingAs($pengguna)->get('/stok-suku-cadang?urut=NamaSukuCadang&arah=desc')
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->where('stok.data.0.NamaSukuCadang', 'Oli Hidrolik')
+                ->etc());
+    }
 }

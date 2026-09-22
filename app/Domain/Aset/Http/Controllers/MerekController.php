@@ -11,20 +11,25 @@ use App\Domain\Aset\Http\Requests\SimpanMerekRequest;
 use App\Domain\Aset\Http\Resources\MerekResource;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class MerekController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Merek::class);
 
-        $merek = Merek::query()->orderBy('Nama')->get();
+        $daftar = DaftarTersaring::untuk($request, Merek::query())
+            ->cari(['Nama', 'NegaraAsal'])
+            ->urut(['Nama', 'NegaraAsal'], bawaan: 'Nama');
 
         return Inertia::render('Merek/Index', [
-            'merek' => MerekResource::collection($merek),
+            'merek' => MerekResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

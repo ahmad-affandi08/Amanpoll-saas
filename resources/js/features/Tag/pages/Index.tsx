@@ -20,9 +20,13 @@ import type { Tag } from '@/features/Kolaborasi/types';
 import { ruteTag } from '@/features/Tag/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  tag: Tag[];
+  tag: Paginasi<Tag>;
+  filter: FilterDaftar;
 }
 
 const WARNA_BAWAAN = '#64748b';
@@ -90,7 +94,7 @@ function DialogFormTag({ tag }: { tag: Tag | null }) {
   );
 }
 
-export default function TagIndex({ tag }: Props) {
+export default function TagIndex({ tag, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Tag) => {
     if (
@@ -152,12 +156,20 @@ export default function TagIndex({ tag }: Props) {
         className="mb-6"
       />
 
-      <DataTable
-        columns={columns}
-        data={tag}
-        pencarianPlaceholder="Cari nama tag..."
-        pesanKosong="Belum ada tag."
-      />
+      {tag.meta.total === 0 && !adaPenyaringAktif(filter) ? (
+        <KeadaanKosong
+          judul="Belum ada tag."
+          deskripsi="Tambahkan tag pertama untuk mulai menandai data."
+        />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={tag.data}
+          server={{ meta: tag.meta, filter }}
+          pencarianPlaceholder="Cari nama tag..."
+          pesanKosong="Tidak ada tag yang cocok."
+        />
+      )}
     </KerangkaAplikasi>
   );
 }

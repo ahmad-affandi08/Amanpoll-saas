@@ -77,7 +77,7 @@ class LokasiControllerTest extends TestCase
         $response->assertSessionHasErrors('UnitOrganisasiId');
     }
 
-    public function test_index_mengembalikan_seluruh_lokasi_untuk_filter_di_client(): void
+    public function test_index_mengembalikan_lokasi_terpaginasi_beserta_filter_yang_berlaku(): void
     {
         $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
         $admin = $this->buatAdmin($organisasi);
@@ -91,7 +91,33 @@ class LokasiControllerTest extends TestCase
         $response = $this->actingAs($admin)->get('/platform/lokasi');
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => $page->has('lokasi', 2));
+        $response->assertInertia(fn ($page) => $page
+            ->has('lokasi.data', 2)
+            ->where('lokasi.meta.total', 2)
+            ->where('filter.urut', 'Nama')
+            ->etc());
+    }
+
+    public function test_pencarian_lokasi_dijalankan_di_server(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $admin = $this->buatAdmin($organisasi);
+
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+        Lokasi::create(['Kode' => 'LOK-GUDANG', 'Nama' => 'Gudang Utama', 'Status' => 'Aktif']);
+        Lokasi::create(['Kode' => 'LOK-KANTOR', 'Nama' => 'Kantor Pusat', 'Status' => 'Aktif']);
+        $konteks->bersihkan();
+
+        $response = $this->actingAs($admin)->get('/platform/lokasi?cari=Kantor');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->has('lokasi.data', 1)
+            ->where('lokasi.data.0.Nama', 'Kantor Pusat')
+            ->where('lokasi.meta.total', 1)
+            ->where('filter.cari', 'Kantor')
+            ->etc());
     }
 
     public function test_hierarki_melingkar_pada_lokasi_ditolak(): void

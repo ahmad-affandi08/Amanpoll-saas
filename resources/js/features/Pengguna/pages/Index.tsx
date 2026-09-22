@@ -21,9 +21,13 @@ import { useIzin } from '@/hooks/use-izin';
 import type { Pengguna, PeranRingkas } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  pengguna: Pengguna[];
+  pengguna: Paginasi<Pengguna>;
+  filter: FilterDaftar;
   peranTersedia: PeranRingkas[];
 }
 
@@ -223,7 +227,7 @@ function DialogKelolaPeran({
   );
 }
 
-export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
+export default function PenggunaIndex({ pengguna, peranTersedia, filter }: Props) {
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
 
@@ -321,9 +325,17 @@ export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
         className="mb-6"
       />
 
+      {pengguna.meta.total === 0 && !adaPenyaringAktif(filter) ? (
+        <KeadaanKosong
+          ilustrasi="/assets/3d/pengguna.webp"
+          judul="Belum ada pengguna."
+          deskripsi="Tambahkan pengguna pertama untuk memberi akses ke sistem."
+        />
+      ) : (
       <DataTable
         columns={columns}
-        data={pengguna}
+        data={pengguna.data}
+        server={{ meta: pengguna.meta, filter }}
         pencarianPlaceholder="Cari nama, email, jabatan..."
         facetedFilters={[
           {
@@ -343,9 +355,10 @@ export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
             ],
           },
         ]}
-        pesanKosong="Belum ada pengguna."
+        pesanKosong="Tidak ada pengguna yang cocok."
         ilustrasiKosong="/assets/3d/pengguna.webp"
       />
+      )}
     </KerangkaAplikasi>
   );
 }

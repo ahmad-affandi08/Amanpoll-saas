@@ -19,9 +19,13 @@ import type { Merek } from '@/features/Aset/types';
 import { ruteMerek } from '@/features/Merek/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Props {
-  merek: Merek[];
+  merek: Paginasi<Merek>;
+  filter: FilterDaftar;
 }
 
 function DialogFormMerek({ merek }: { merek: Merek | null }) {
@@ -91,7 +95,7 @@ function DialogFormMerek({ merek }: { merek: Merek | null }) {
   );
 }
 
-export default function MerekIndex({ merek }: Props) {
+export default function MerekIndex({ merek, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Merek) => {
     if (
@@ -152,12 +156,20 @@ export default function MerekIndex({ merek }: Props) {
         className="mb-6"
       />
 
-      <DataTable
-        columns={columns}
-        data={merek}
-        pencarianPlaceholder="Cari nama merek..."
-        pesanKosong="Belum ada merek."
-      />
+      {merek.meta.total === 0 && !adaPenyaringAktif(filter) ? (
+        <KeadaanKosong
+          judul="Belum ada merek."
+          deskripsi="Tambahkan merek pertama untuk dipakai model aset."
+        />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={merek.data}
+          server={{ meta: merek.meta, filter }}
+          pencarianPlaceholder="Cari nama merek..."
+          pesanKosong="Tidak ada merek yang cocok."
+        />
+      )}
     </KerangkaAplikasi>
   );
 }

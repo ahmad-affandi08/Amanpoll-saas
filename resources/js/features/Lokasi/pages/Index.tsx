@@ -23,11 +23,15 @@ import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteLokasi } from '@/features/Lokasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
-  lokasi: Lokasi[];
+  lokasi: Paginasi<Lokasi>;
+  filter: FilterDaftar;
   unitOrganisasi: UnitOrganisasi[];
   kategoriLokasi: KategoriLokasi[];
 }
@@ -251,7 +255,7 @@ function DialogFormLokasi({
   );
 }
 
-export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: Props) {
+export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Lokasi) => {
     if (
@@ -284,6 +288,8 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: 
         accessorFn: (row) => row.NamaKategoriLokasi ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Kategori" />,
         cell: ({ row }) => row.original.NamaKategoriLokasi ?? '—',
+        // Turunan relasi: disaring lewat faset, bukan diurutkan.
+        enableSorting: false,
         meta: { label: 'Kategori' },
       },
       {
@@ -291,6 +297,7 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: 
         accessorFn: (row) => row.NamaUnitOrganisasi ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Unit" />,
         cell: ({ row }) => row.original.NamaUnitOrganisasi ?? '—',
+        enableSorting: false,
         meta: { label: 'Unit' },
       },
       {
@@ -348,23 +355,42 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: 
         className="mb-6"
       />
 
-      <DataTable
-        columns={columns}
-        data={lokasi}
-        pencarianPlaceholder="Cari nama atau kode lokasi..."
-        facetedFilters={[
-          {
-            columnId: 'Status',
-            title: 'Status',
-            options: [
-              { label: 'Aktif', value: 'Aktif' },
-              { label: 'Nonaktif', value: 'Nonaktif' },
-            ],
-          },
-        ]}
-        pesanKosong="Belum ada lokasi."
-        ilustrasiKosong="/assets/3d/lokasi.webp"
-      />
+      {lokasi.meta.total === 0 && !adaPenyaringAktif(filter) ? (
+        <KeadaanKosong
+          ilustrasi="/assets/3d/lokasi.webp"
+          judul="Belum ada lokasi."
+          deskripsi="Tambahkan lokasi pertama untuk mulai menempatkan aset."
+        />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={lokasi.data}
+          server={{ meta: lokasi.meta, filter }}
+          pencarianPlaceholder="Cari nama atau kode lokasi..."
+          facetedFilters={[
+            {
+              columnId: 'Status',
+              title: 'Status',
+              options: [
+                { label: 'Aktif', value: 'Aktif' },
+                { label: 'Nonaktif', value: 'Nonaktif' },
+              ],
+            },
+            {
+              columnId: 'KategoriLokasiId',
+              title: 'Kategori',
+              options: kategoriLokasi.map((k) => ({ label: k.Nama, value: k.Id })),
+            },
+            {
+              columnId: 'UnitOrganisasiId',
+              title: 'Unit',
+              options: unitOrganisasi.map((u) => ({ label: u.Nama, value: u.Id })),
+            },
+          ]}
+          pesanKosong="Tidak ada lokasi yang cocok."
+          ilustrasiKosong="/assets/3d/lokasi.webp"
+        />
+      )}
     </KerangkaAplikasi>
   );
 }

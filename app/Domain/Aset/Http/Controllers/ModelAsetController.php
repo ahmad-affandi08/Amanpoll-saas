@@ -15,20 +15,26 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class ModelAsetController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', ModelAset::class);
 
-        $modelAset = ModelAset::query()->with(['kategoriAset', 'merek'])->orderBy('Nama')->get();
+        $daftar = DaftarTersaring::untuk($request, ModelAset::query()->with(['kategoriAset', 'merek']))
+            ->cari(['Nama', 'KodeModel'])
+            ->urut(['Nama'], bawaan: 'Nama')
+            ->faset(['KategoriAsetId', 'MerekId']);
 
         return Inertia::render('ModelAset/Index', [
-            'modelAset' => ModelAsetResource::collection($modelAset),
+            'modelAset' => ModelAsetResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
             'merek' => MerekResource::collection(Merek::query()->orderBy('Nama')->get()),
         ]);

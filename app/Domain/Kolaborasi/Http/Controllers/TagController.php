@@ -11,6 +11,7 @@ use App\Domain\Kolaborasi\Http\Requests\SimpanTagRequest;
 use App\Domain\Kolaborasi\Http\Resources\TagResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Tag;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -24,14 +25,18 @@ final class TagController extends Controller
     {
         $this->authorize('viewAny', Tag::class);
 
-        $tag = Tag::query()->orderBy('Nama')->get();
-
+        // Pemilih tag di layar lain menghabiskan seluruh daftar sekaligus, jadi cabang JSON tidak dipaginasi.
         if ($request->wantsJson()) {
-            return TagResource::collection($tag);
+            return TagResource::collection(Tag::query()->orderBy('Nama')->get());
         }
 
+        $daftar = DaftarTersaring::untuk($request, Tag::query())
+            ->cari(['Nama'])
+            ->urut(['Nama'], bawaan: 'Nama');
+
         return Inertia::render('Tag/Index', [
-            'tag' => TagResource::collection($tag),
+            'tag' => TagResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

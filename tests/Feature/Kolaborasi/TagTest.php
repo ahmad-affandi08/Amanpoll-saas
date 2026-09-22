@@ -54,6 +54,34 @@ class TagTest extends TestCase
         return $lokasi;
     }
 
+    /**
+     * Pemilih tag di layar lain menghabiskan daftar ini sekaligus.
+     *
+     * Halaman admin Tag dipaginasi, tapi cabang JSON-nya tidak boleh ikut:
+     * kalau ikut, tag ke-26 dan seterusnya akan hilang dari pemilih tanpa
+     * satu pun pesan galat.
+     */
+    public function test_cabang_json_tag_tidak_dipaginasi(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $admin = $this->buatPengguna($organisasi);
+
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+        for ($i = 1; $i <= 30; $i++) {
+            Tag::create(['Nama' => sprintf('Tag %02d', $i), 'Warna' => '#64748b']);
+        }
+        $konteks->bersihkan();
+
+        $json = $this->actingAs($admin)->getJson('/kolaborasi/tag');
+        $json->assertOk();
+        $this->assertCount(30, $json->json());
+
+        $halaman = $this->actingAs($admin)->get('/kolaborasi/tag');
+        $halaman->assertOk();
+        $halaman->assertInertia(fn ($page) => $page->has('tag.data', 25)->where('tag.meta.total', 30)->etc());
+    }
+
     public function test_admin_dapat_membuat_mengubah_dan_menghapus_tag(): void
     {
         $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);

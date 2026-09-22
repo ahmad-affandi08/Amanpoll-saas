@@ -10,6 +10,8 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { StokSukuCadang } from '@/features/Persediaan/types';
 import { ruteStokSukuCadang } from '@/features/StokSukuCadang/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface Ringkas {
   Id: string;
@@ -22,10 +24,10 @@ interface SukuCadangRingkas {
 }
 
 interface Props {
-  stok: StokSukuCadang[];
+  stok: Paginasi<StokSukuCadang>;
   gudang: Ringkas[];
   sukuCadang: SukuCadangRingkas[];
-  filter: { gudangId?: string; sukuCadangId?: string };
+  filter: FilterDaftar;
 }
 
 const SEMUA = '__semua__';
@@ -34,12 +36,15 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
   const [gudangId, setGudangId] = useState(filter.gudangId ?? SEMUA);
   const [sukuCadangId, setSukuCadangId] = useState(filter.sukuCadangId ?? SEMUA);
 
+  // Filter lain ikut dibawa, kalau tidak memilih gudang akan membuang pencarian dan urutan yang sedang berlaku.
   const terapkanFilter = (gudangIdBaru: string, sukuCadangIdBaru: string) => {
     router.get(
       ruteStokSukuCadang.index,
       {
+        ...filter,
         gudangId: gudangIdBaru === SEMUA ? undefined : gudangIdBaru,
         sukuCadangId: sukuCadangIdBaru === SEMUA ? undefined : sukuCadangIdBaru,
+        page: undefined,
       },
       { preserveState: true },
     );
@@ -78,6 +83,8 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
         accessorFn: (row) => row.NomorBatch ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Batch" />,
         cell: ({ row }) => row.original.NomorBatch ?? '—',
+        // Turunan relasi kelompok, bukan kolom StokSukuCadang.
+        enableSorting: false,
         meta: { label: 'Batch' },
       },
       {
@@ -101,6 +108,8 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
         cell: ({ row }) => (
           <span className="font-semibold text-foreground">{row.original.JumlahTersediaBersih}</span>
         ),
+        // Selisih yang dihitung di resource; urutkan lewat Fisik atau Ditahan.
+        enableSorting: false,
         meta: { label: 'Tersedia Bersih' },
       },
     ],
@@ -162,7 +171,7 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
         </div>
       </div>
 
-      {stok.length === 0 ? (
+      {stok.meta.total === 0 && !adaPenyaringAktif(filter) ? (
         <KeadaanKosong
           ilustrasi="/assets/3d/suku-cadang.webp"
           judul="Belum ada saldo stok."
@@ -171,7 +180,8 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
       ) : (
         <DataTable
           columns={columns}
-          data={stok}
+          data={stok.data}
+          server={{ meta: stok.meta, filter }}
           pencarianPlaceholder="Cari suku cadang atau gudang..."
           pesanKosong="Tidak ada saldo stok yang cocok."
         />

@@ -15,25 +15,26 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\KategoriLokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
-use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class LokasiController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Lokasi::class);
 
-        $lokasi = Lokasi::query()
-            ->with(['kategoriLokasi', 'unitOrganisasi'])
-            ->orderBy('Nama')
-            ->limit(BatasDaftar::MAKS)
-            ->get();
+        $daftar = DaftarTersaring::untuk($request, Lokasi::query()->with(['kategoriLokasi', 'unitOrganisasi']))
+            ->cari(['Nama', 'Kode'])
+            ->urut(['Nama', 'Status'], bawaan: 'Nama')
+            ->faset(['Status', 'KategoriLokasiId', 'UnitOrganisasiId']);
 
         return Inertia::render('Lokasi/Index', [
-            'lokasi' => LokasiResource::collection($lokasi),
+            'lokasi' => LokasiResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
             'unitOrganisasi' => UnitOrganisasiResource::collection(UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),
             'kategoriLokasi' => KategoriLokasiResource::collection(KategoriLokasi::query()->orderBy('Nama')->get()),
         ]);

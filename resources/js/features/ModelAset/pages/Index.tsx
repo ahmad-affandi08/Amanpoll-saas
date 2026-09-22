@@ -21,11 +21,15 @@ import type { KategoriAset, Merek, ModelAset } from '@/features/Aset/types';
 import { ruteModelAset } from '@/features/ModelAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
-  modelAset: ModelAset[];
+  modelAset: Paginasi<ModelAset>;
+  filter: FilterDaftar;
   kategoriAset: KategoriAset[];
   merek: Merek[];
 }
@@ -217,7 +221,7 @@ function DialogFormModelAset({
   );
 }
 
-export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props) {
+export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: ModelAset) => {
     if (
@@ -251,6 +255,8 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props
         id: 'NamaKategoriAset',
         accessorFn: (row) => row.NamaKategoriAset ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Kategori" />,
+        // Turunan relasi: pengurutannya ada di kolom tabel lain, jadi server tidak menawarkannya.
+        enableSorting: false,
         meta: { label: 'Kategori' },
       },
       {
@@ -258,6 +264,7 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props
         accessorFn: (row) => row.NamaMerek ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Merek" />,
         cell: ({ row }) => row.original.NamaMerek ?? '—',
+        enableSorting: false,
         meta: { label: 'Merek' },
       },
       {
@@ -293,12 +300,32 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props
         className="mb-6"
       />
 
-      <DataTable
-        columns={columns}
-        data={modelAset}
-        pencarianPlaceholder="Cari nama atau kode model..."
-        pesanKosong="Belum ada model aset."
-      />
+      {modelAset.meta.total === 0 && !adaPenyaringAktif(filter) ? (
+        <KeadaanKosong
+          judul="Belum ada model aset."
+          deskripsi="Tambahkan model pertama untuk dipakai pendataan aset."
+        />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={modelAset.data}
+          server={{ meta: modelAset.meta, filter }}
+          facetedFilters={[
+            {
+              columnId: 'KategoriAsetId',
+              title: 'Kategori',
+              options: kategoriAset.map((k) => ({ label: k.Nama, value: k.Id })),
+            },
+            {
+              columnId: 'MerekId',
+              title: 'Merek',
+              options: merek.map((m) => ({ label: m.Nama, value: m.Id })),
+            },
+          ]}
+          pencarianPlaceholder="Cari nama atau kode model..."
+          pesanKosong="Tidak ada model aset yang cocok."
+        />
+      )}
     </KerangkaAplikasi>
   );
 }

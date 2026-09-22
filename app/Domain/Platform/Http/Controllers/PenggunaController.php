@@ -13,7 +13,7 @@ use App\Domain\Platform\Http\Resources\PenggunaResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
-use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,18 +22,18 @@ use Inertia\Response;
 
 final class PenggunaController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Pengguna::class);
 
-        $pengguna = Pengguna::query()
-            ->with(['penggunaPeran.peran'])
-            ->orderBy('Nama')
-            ->limit(BatasDaftar::MAKS)
-            ->get();
+        $daftar = DaftarTersaring::untuk($request, Pengguna::query()->with(['penggunaPeran.peran']))
+            ->cari(['Nama', 'Email', 'Jabatan'])
+            ->urut(['Nama', 'Jabatan', 'JenisPengguna', 'Status'], bawaan: 'Nama')
+            ->faset(['Status', 'JenisPengguna']);
 
         return Inertia::render('Pengguna/Index', [
-            'pengguna' => PenggunaResource::collection($pengguna),
+            'pengguna' => PenggunaResource::collection($daftar->halaman()),
+            'filter' => $daftar->filterBerlaku(),
             'peranTersedia' => Peran::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }
