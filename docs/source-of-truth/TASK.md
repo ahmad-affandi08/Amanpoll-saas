@@ -1542,6 +1542,45 @@ paginasi dan tidak berpura-pura menjadi paginasi — baris di luar batas memang
 tidak dikirim, dan itu dikatakan kepada pengguna. Konversi penuh ke paginasi
 server dijadwalkan terpisah.
 
+Konversi itu kemudian dikerjakan, tetapi tidak untuk kedua puluh satu halaman.
+Mode server dibangun ke dalam DataTable satu kali: tanpa prop `server`
+perilakunya persis seperti semula, dengan prop itu paginasi, pencarian,
+pengurutan, dan faset semuanya berangkat ke server. Yang dibalik hanya dua
+belas daftar yang benar-benar tumbuh — Suku Cadang, Stok Suku Cadang, Lokasi,
+Pengguna, Tag, Model Aset, Merek, dan lima daftar Pemasaran (Prospek, Kampanye,
+Trial, Redirect, Halaman). Sisanya, yang isinya terbatas pada beberapa puluh
+baris per organisasi, tetap diolah di browser; membalik daftar yang tidak
+pernah menyentuh batasnya hanya menambah permintaan jaringan tanpa menukarnya
+dengan apa pun.
+
+Sisi kueri dipegang satu helper, `DaftarTersaring`. Nama kolom tidak pernah
+datang dari request: permintaan hanya menyebut kunci, dan kunci yang tidak ada
+di daftar milik controller diabaikan alih-alih diteruskan ke SQL. Joker LIKE
+dari pengguna dilolos, kalau tidak `%` akan mencocokkan segalanya.
+
+Tiga jebakan yang muncul saat mengerjakannya, dan pantas diingat:
+
+- Angka ringkasan yang dihitung dari array di tangan akan menyusut tiap kali
+  pengguna pindah halaman. "Suku cadang di bawah minimum" dipindahkan ke
+  agregat SQL atas seluruh data.
+- Keadaan kosong yang muncul saat barisnya nol ikut menyembunyikan kotak cari.
+  Dengan pencarian di server, pengguna yang kuerinya tidak cocok akan terkunci
+  tanpa cara mengubah pencariannya sendiri.
+- Kolom turunan relasi tidak dapat diurutkan server. Membiarkan tombol urutnya
+  tetap ada berarti menawarkan tombol yang tidak melakukan apa-apa, jadi
+  pengurutannya dimatikan.
+
+Cabang JSON `TagController` sengaja tidak ikut dipaginasi: pemilih tag di layar
+lain menghabiskan daftar itu sekaligus, dan kalau ikut, tag ke-26 akan hilang
+dari pemilih tanpa satu pun pesan galat.
+
+Indeks `(OrganisasiId, Nama)` ditambahkan untuk urutan bawaan enam daftar
+tenant. Diukur pada lima ribu baris satu organisasi: tanpa indeks, pemindaian
+seluruh tabel lalu filesort; dengan indeks, rentang indeks tanpa filesort.
+Pencarian sendiri tetap tanpa indeks — `LIKE '%kata%'` berawalan joker tidak
+dapat memakai indeks apa pun, dan Amanpoll sengaja tidak memasang mesin pencari
+terpisah supaya tetap berjalan di shared hosting.
+
 ## 25.02 Queue
 
 - [x] Retry policy.
