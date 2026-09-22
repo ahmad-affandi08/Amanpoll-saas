@@ -27,7 +27,7 @@ final class SimpanKategoriAsetRequest extends FormRequest
         $kategoriAsetId = $kategoriAset?->Id;
 
         return [
-            'Kode' => ['required', 'string', 'max:60',
+            'Kode' => ['nullable', 'string', 'max:60',
                 Rule::unique('KategoriAset', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($kategoriAsetId, 'Id')],
             'Nama' => ['required', 'string', 'max:160'],
             'IndukId' => ['nullable', 'string',

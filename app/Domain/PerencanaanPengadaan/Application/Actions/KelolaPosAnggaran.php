@@ -33,14 +33,16 @@ final class KelolaPosAnggaran
             $induk = $this->temukanInduk($anggaranTerkunci, $data['IndukId'] ?? null);
             $jumlah = Uang::dariString((string) $data['Jumlah']);
 
-            $this->pastikanKodeUnik($anggaranTerkunci, (string) $data['Kode']);
+            if (filled($data['Kode'] ?? null)) {
+                $this->pastikanKodeUnik($anggaranTerkunci, (string) $data['Kode']);
+            }
             $this->pastikanAlokasiTersedia($anggaranTerkunci, $induk, $jumlah);
 
             $pos = PosAnggaran::create([
                 'OrganisasiId' => $this->konteksOrganisasi->wajibId(),
                 'AnggaranId' => $anggaranTerkunci->Id,
                 'IndukId' => $induk?->Id,
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'Jumlah' => $jumlah->keString(),
                 'Terpakai' => '0.00',

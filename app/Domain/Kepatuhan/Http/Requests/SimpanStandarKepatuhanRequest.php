@@ -26,7 +26,7 @@ final class SimpanStandarKepatuhanRequest extends FormRequest
 
         return [
             'Kode' => [
-                'required', 'string', 'max:80',
+                'nullable', 'string', 'max:80',
                 Rule::unique('StandarKepatuhan', 'Kode')
                     ->where('OrganisasiId', $organisasiId)
                     ->ignore($standar instanceof StandarKepatuhan ? $standar->Id : null, 'Id'),

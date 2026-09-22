@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /** Rangkaian email yang dikirim bertahap (MARKETING.md 15). */
 final class SequenceEmailPemasaran extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'SequenceEmailPemasaran';
 
     public const CREATED_AT = 'DibuatPada';
@@ -25,6 +28,11 @@ final class SequenceEmailPemasaran extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'SEQ';
     }
 
     public function getRouteKeyName(): string

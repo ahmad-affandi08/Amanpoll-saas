@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Pemasaran\Domain\Enums\ChannelKampanye;
 use App\Domain\Pemasaran\Domain\Enums\ObjectiveKampanye;
 use App\Domain\Pemasaran\Domain\Enums\StatusKampanye;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** Kampanye pemasaran (MARKETING.md 13). */
 final class Kampanye extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'Kampanye';
 
     public const CREATED_AT = 'DibuatPada';
@@ -50,6 +53,11 @@ final class Kampanye extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'KMP';
     }
 
     /** @return HasMany<KampanyeChannel, $this> */

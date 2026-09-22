@@ -32,7 +32,7 @@ final class SimpanLokasiGudangRequest extends FormRequest
         $gudangId = $lokasiGudang !== null ? $lokasiGudang->GudangId : $gudang?->Id;
 
         return [
-            'Kode' => ['required', 'string', 'max:60',
+            'Kode' => ['nullable', 'string', 'max:60',
                 Rule::unique('LokasiGudang', 'Kode')->where(fn ($q) => $q->where('GudangId', $gudangId))->ignore($lokasiGudang?->Id, 'Id')],
             'Nama' => ['required', 'string', 'max:120'],
             'IndukId' => ['nullable', 'string',

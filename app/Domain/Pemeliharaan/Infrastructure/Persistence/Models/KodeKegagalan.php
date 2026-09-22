@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class KodeKegagalan extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'KodeKegagalan';
 
@@ -34,6 +35,11 @@ final class KodeKegagalan extends ModelDasar
             'Aktif' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'KGL';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

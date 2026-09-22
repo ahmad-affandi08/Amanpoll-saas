@@ -27,7 +27,7 @@ final class SimpanGudangRequest extends FormRequest
         $gudang = $this->route('gudang');
 
         return [
-            'Kode' => ['required', 'string', 'max:60',
+            'Kode' => ['nullable', 'string', 'max:60',
                 Rule::unique('Gudang', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->ignore($gudang?->Id, 'Id')],
             'Nama' => ['required', 'string', 'max:160'],
             'LokasiId' => ['nullable', 'string',

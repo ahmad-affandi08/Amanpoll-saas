@@ -19,7 +19,7 @@ final class SimpanPersyaratanKepatuhanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Kode' => ['required', 'string', 'max:100'],
+            'Kode' => ['nullable', 'string', 'max:100'],
             'Nama' => ['required', 'string', 'max:220'],
             'Deskripsi' => ['nullable', 'string', 'max:5000'],
             'BuktiYangDiperlukan' => ['nullable', 'string', 'max:2000'],

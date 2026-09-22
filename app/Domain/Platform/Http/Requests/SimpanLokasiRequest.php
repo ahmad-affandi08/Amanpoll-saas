@@ -27,7 +27,7 @@ final class SimpanLokasiRequest extends FormRequest
         $lokasiId = $lokasi?->Id;
 
         return [
-            'Kode' => ['required', 'string', 'max:60',
+            'Kode' => ['nullable', 'string', 'max:60',
                 Rule::unique('Lokasi', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($lokasiId, 'Id')],
             'Nama' => ['required', 'string', 'max:180'],
             'UnitOrganisasiId' => ['nullable', 'string',

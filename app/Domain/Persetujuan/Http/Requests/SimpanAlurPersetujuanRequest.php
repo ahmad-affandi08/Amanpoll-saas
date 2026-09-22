@@ -28,7 +28,7 @@ final class SimpanAlurPersetujuanRequest extends FormRequest
 
         return [
             'Kode' => [
-                'required', 'string', 'max:80',
+                'nullable', 'string', 'max:80',
                 Rule::unique('AlurPersetujuan', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->ignore($alurPersetujuan?->Id, 'Id'),
             ],
             'Nama' => ['required', 'string', 'max:180'],

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Anggaran extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'Anggaran';
 
@@ -40,6 +41,11 @@ final class Anggaran extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'ANG';
     }
 
     /**

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class KategoriLokasi extends ModelDasar
 {
-    use MilikOrganisasi, SoftDeletes;
+    use MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
 
     protected $table = 'KategoriLokasi';
 
@@ -35,6 +36,11 @@ final class KategoriLokasi extends ModelDasar
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'KLO';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

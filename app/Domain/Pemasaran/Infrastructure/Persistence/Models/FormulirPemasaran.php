@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** Formulir pemasaran beserta konfigurasinya (MARKETING.md 10). */
 final class FormulirPemasaran extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'FormulirPemasaran';
 
     public const CREATED_AT = 'DibuatPada';
@@ -47,6 +50,11 @@ final class FormulirPemasaran extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'FRM';
     }
 
     /** Formulir lead magnet adalah formulir biasa yang kebetulan menjanjikan berkas. */

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class JenisKalibrasi extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'JenisKalibrasi';
 
@@ -32,6 +33,11 @@ final class JenisKalibrasi extends ModelDasar
             'Aktif' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'JKL';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

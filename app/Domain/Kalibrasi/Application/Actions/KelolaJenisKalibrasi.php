@@ -27,7 +27,7 @@ final class KelolaJenisKalibrasi
         return $this->transaksi->jalankan(function () use ($data): JenisKalibrasi {
             $organisasiId = $this->konteksOrganisasi->wajibId();
 
-            $ada = JenisKalibrasi::query()
+            $ada = filled($data['Kode'] ?? null) && JenisKalibrasi::query()
                 ->where('OrganisasiId', $organisasiId)
                 ->where('Kode', $data['Kode'])
                 ->exists();
@@ -38,7 +38,7 @@ final class KelolaJenisKalibrasi
 
             $jenis = JenisKalibrasi::create([
                 'OrganisasiId' => $organisasiId,
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'Deskripsi' => $data['Deskripsi'] ?? null,
                 'Aktif' => $data['Aktif'] ?? true,

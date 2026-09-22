@@ -22,7 +22,7 @@ final class SimpanKontenSosialRequest extends FormRequest
         $id = $konten instanceof KontenSosial ? $konten->getKey() : null;
 
         return [
-            'Kode' => ['required', 'string', 'max:80', Rule::unique('KontenSosial', 'Kode')->ignore($id, 'Id')],
+            'Kode' => ['nullable', 'string', 'max:80', Rule::unique('KontenSosial', 'Kode')->ignore($id, 'Id')],
             'Judul' => ['required', 'string', 'max:190'],
             'Ringkasan' => ['nullable', 'string', 'max:500'],
             'MediaUrl' => ['nullable', 'url', 'max:500'],

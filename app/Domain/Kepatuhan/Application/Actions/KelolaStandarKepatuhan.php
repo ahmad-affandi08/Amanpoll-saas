@@ -26,7 +26,7 @@ final class KelolaStandarKepatuhan
         return $this->transaksi->jalankan(function () use ($data): StandarKepatuhan {
             $standar = StandarKepatuhan::create([
                 'OrganisasiId' => $this->konteks->wajibId(),
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'Penerbit' => $data['Penerbit'] ?? null,
                 'VersiStandar' => $data['VersiStandar'] ?? null,
@@ -45,7 +45,7 @@ final class KelolaStandarKepatuhan
     {
         $sebelum = $standar->toArray();
         $standar->fill([
-            'Kode' => $data['Kode'],
+            'Kode' => $data['Kode'] ?? null,
             'Nama' => $data['Nama'],
             'Penerbit' => $data['Penerbit'] ?? null,
             'VersiStandar' => $data['VersiStandar'] ?? null,
@@ -77,7 +77,7 @@ final class KelolaStandarKepatuhan
         if (! $standar->Aktif) {
             throw new AturanBisnisDilanggar('Persyaratan hanya dapat ditambahkan pada standar yang aktif.');
         }
-        if ($standar->persyaratan()->where('Kode', $data['Kode'])->exists()) {
+        if (filled($data['Kode'] ?? null) && $standar->persyaratan()->where('Kode', $data['Kode'])->exists()) {
             throw new AturanBisnisDilanggar("Kode persyaratan {$data['Kode']} sudah dipakai pada standar ini.");
         }
 

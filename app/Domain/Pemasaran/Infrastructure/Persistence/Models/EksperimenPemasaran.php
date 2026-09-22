@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Pemasaran\Domain\Enums\MetrikEksperimen;
 use App\Domain\Pemasaran\Domain\Enums\StatusEksperimen;
 use App\Domain\Pemasaran\Domain\Enums\TargetEksperimen;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** Satu eksperimen A/B beserta ambang sampelnya (MARKETING.md 22). */
 final class EksperimenPemasaran extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'EksperimenPemasaran';
 
     public const CREATED_AT = 'DibuatPada';
@@ -48,6 +51,11 @@ final class EksperimenPemasaran extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'EKS';
     }
 
     /** @return HasMany<VarianEksperimen, $this> */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Pemasaran\Domain\Enums\JenisRewardReferral;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** Satu program referral beserta imbalan yang dijanjikannya (MARKETING.md 20). */
 final class ProgramReferral extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'ProgramReferral';
 
     public const CREATED_AT = 'DibuatPada';
@@ -37,6 +40,11 @@ final class ProgramReferral extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'REF';
     }
 
     public function getRouteKeyName(): string

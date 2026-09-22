@@ -23,7 +23,7 @@ final class SimpanSequenceEmailRequest extends FormRequest
 
         return [
             'Kode' => [
-                'required',
+                'nullable',
                 'string',
                 'max:80',
                 'regex:/^[a-z0-9-]+$/',

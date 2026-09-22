@@ -16,7 +16,7 @@ final class SimpanJenisKalibrasiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Kode' => ['required', 'string', 'max:60'],
+            'Kode' => ['nullable', 'string', 'max:60'],
             'Nama' => ['required', 'string', 'max:160'],
             'Deskripsi' => ['nullable', 'string'],
             'Aktif' => ['sometimes', 'boolean'],

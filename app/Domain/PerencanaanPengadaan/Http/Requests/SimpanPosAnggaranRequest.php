@@ -22,7 +22,7 @@ final class SimpanPosAnggaranRequest extends FormRequest
 
         return [
             'IndukId' => ['nullable', 'string', Rule::exists('PosAnggaran', 'Id')->where('OrganisasiId', $organisasiId)],
-            'Kode' => [$wajib, 'string', 'max:80'],
+            'Kode' => ['nullable', 'string', 'max:80'],
             'Nama' => [$wajib, 'string', 'max:180'],
             'Jumlah' => [$wajib, 'numeric', 'decimal:0,2', 'min:0.01', 'max:99999999999999.99'],
         ];

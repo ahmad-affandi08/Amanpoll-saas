@@ -25,7 +25,7 @@ final class SimpanPeranRequest extends FormRequest
 
         return [
             'Kode' => [
-                'required', 'string', 'max:80', 'regex:/^[A-Za-z0-9_.-]+$/',
+                'nullable', 'string', 'max:80', 'regex:/^[A-Za-z0-9_.-]+$/',
                 Rule::unique('Peran', 'Kode')
                     ->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))
                     ->whereNull('DihapusPada')

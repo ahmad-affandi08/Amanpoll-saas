@@ -26,7 +26,7 @@ final class SimpanDemoPemasaranRequest extends FormRequest
         $id = $demo instanceof DemoPemasaran ? $demo->getKey() : null;
 
         return [
-            'Kode' => ['required', 'string', 'max:80', Rule::unique('DemoPemasaran', 'Kode')->ignore($id, 'Id')],
+            'Kode' => ['nullable', 'string', 'max:80', Rule::unique('DemoPemasaran', 'Kode')->ignore($id, 'Id')],
             'Nama' => ['required', 'string', 'max:180'],
             'Aktif' => ['required', 'boolean'],
             'Dataset' => ['required', 'string', Rule::in(app(RegistriDatasetDemo::class)->kode())],

@@ -31,7 +31,7 @@ final class SimpanDefinisiKolomKustomRequest extends FormRequest
         return [
             'JenisEntitas' => ['required', 'string'],
             'Kode' => [
-                'required', 'string', 'max:80', 'regex:/^[A-Za-z][A-Za-z0-9_]*$/',
+                'nullable', 'string', 'max:80', 'regex:/^[A-Za-z][A-Za-z0-9_]*$/',
                 Rule::unique('DefinisiKolomKustom', 'Kode')
                     ->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->where('JenisEntitas', $jenisEntitas))
                     ->ignore($definisiKolomKustom?->Id, 'Id'),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\EskalasiTingkatLayanan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class TingkatLayanan extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'TingkatLayanan';
 
@@ -42,6 +43,11 @@ final class TingkatLayanan extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'SLA';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

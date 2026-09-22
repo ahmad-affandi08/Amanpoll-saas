@@ -27,7 +27,7 @@ final class SimpanKategoriPenyediaRequest extends FormRequest
         $kategoriPenyediaId = $kategoriPenyedia?->Id;
 
         return [
-            'Kode' => ['required', 'string', 'max:50',
+            'Kode' => ['nullable', 'string', 'max:50',
                 Rule::unique('KategoriPenyedia', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->ignore($kategoriPenyediaId, 'Id')],
             'Nama' => ['required', 'string', 'max:120'],
         ];

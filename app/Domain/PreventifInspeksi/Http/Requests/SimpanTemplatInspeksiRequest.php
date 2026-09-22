@@ -19,7 +19,7 @@ final class SimpanTemplatInspeksiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Kode' => ['required', 'string', 'max:80'],
+            'Kode' => ['nullable', 'string', 'max:80'],
             'Nama' => ['required', 'string', 'max:200'],
             'KategoriAsetId' => ['nullable', 'string', 'size:26'],
             'TemplatDaftarPeriksaId' => ['required', 'string', 'size:26'],

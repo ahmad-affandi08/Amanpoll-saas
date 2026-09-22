@@ -27,7 +27,7 @@ final class SimpanUnitOrganisasiRequest extends FormRequest
         $unitId = $unit?->Id;
 
         return [
-            'Kode' => ['required', 'string', 'max:50',
+            'Kode' => ['nullable', 'string', 'max:50',
                 Rule::unique('UnitOrganisasi', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($unitId, 'Id')],
             'Nama' => ['required', 'string', 'max:180'],
             'Jenis' => ['required', 'string', 'max:60'],

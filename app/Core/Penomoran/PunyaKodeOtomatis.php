@@ -35,6 +35,19 @@ trait PunyaKodeOtomatis
                     ->exists(),
             );
         });
+
+        /*
+         * Kolom kode kini boleh kosong, jadi form yang tidak menampilkannya akan
+         * mengirim nilai kosong saat menyunting. Kode yang sudah terbit tidak
+         * boleh hilang karena itu.
+         */
+        static::updating(function (self $model): void {
+            $kolom = $model->kolomKode();
+
+            if (blank($model->{$kolom})) {
+                $model->{$kolom} = $model->getOriginal($kolom);
+            }
+        });
     }
 
     /** Awalan kode entitas ini, mis. GDG untuk Gudang. */
@@ -65,8 +78,10 @@ trait PunyaKodeOtomatis
             return null;
         }
 
-        if (filled($this->OrganisasiId)) {
-            return (string) $this->OrganisasiId;
+        $organisasiId = $this->getAttribute('OrganisasiId');
+
+        if (filled($organisasiId)) {
+            return (string) $organisasiId;
         }
 
         $konteks = app(KonteksOrganisasi::class);

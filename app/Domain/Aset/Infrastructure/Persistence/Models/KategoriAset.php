@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class KategoriAset extends ModelDasar
 {
-    use MilikOrganisasi, SoftDeletes;
+    use MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
 
     protected $table = 'KategoriAset';
 
@@ -46,6 +47,11 @@ final class KategoriAset extends ModelDasar
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'KAS';
     }
 
     /**

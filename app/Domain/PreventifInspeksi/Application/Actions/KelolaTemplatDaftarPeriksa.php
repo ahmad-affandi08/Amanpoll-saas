@@ -27,7 +27,7 @@ final class KelolaTemplatDaftarPeriksa
         return $this->transaksi->jalankan(function () use ($data): TemplatDaftarPeriksa {
             $organisasiId = $this->konteksOrganisasi->wajibId();
 
-            $adaKode = TemplatDaftarPeriksa::query()
+            $adaKode = filled($data['Kode'] ?? null) && TemplatDaftarPeriksa::query()
                 ->where('OrganisasiId', $organisasiId)
                 ->where('Kode', $data['Kode'])
                 ->exists();
@@ -38,7 +38,7 @@ final class KelolaTemplatDaftarPeriksa
 
             $templat = TemplatDaftarPeriksa::create([
                 'OrganisasiId' => $organisasiId,
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'Jenis' => $data['Jenis'] ?? 'Pemeliharaan',
                 'KategoriAsetId' => $data['KategoriAsetId'] ?? null,

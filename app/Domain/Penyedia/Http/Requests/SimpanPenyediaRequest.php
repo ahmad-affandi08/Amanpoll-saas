@@ -28,7 +28,7 @@ final class SimpanPenyediaRequest extends FormRequest
         $penyediaId = $penyedia?->Id;
 
         return [
-            'Kode' => ['required', 'string', 'max:60',
+            'Kode' => ['nullable', 'string', 'max:60',
                 Rule::unique('Penyedia', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($penyediaId, 'Id')],
             'Nama' => ['required', 'string', 'max:200'],
             'NamaLegal' => ['nullable', 'string', 'max:240'],

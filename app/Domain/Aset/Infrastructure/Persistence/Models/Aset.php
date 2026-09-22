@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Aset extends ModelDasar
 {
-    use MilikOrganisasi, SoftDeletes;
+    use MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
 
     protected $table = 'Aset';
 
@@ -75,6 +76,16 @@ final class Aset extends ModelDasar
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'AST';
+    }
+
+    public function kolomKode(): string
+    {
+        return 'KodeAset';
     }
 
     /**

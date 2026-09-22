@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class TemplatDaftarPeriksa extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'TemplatDaftarPeriksa';
 
@@ -41,6 +42,11 @@ final class TemplatDaftarPeriksa extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'TDP';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

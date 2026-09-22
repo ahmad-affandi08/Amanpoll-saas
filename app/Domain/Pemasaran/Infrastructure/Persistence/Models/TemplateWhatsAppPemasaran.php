@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Pemasaran\Domain\Enums\StatusPersetujuanTemplateWa;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** Naskah WhatsApp beserta status persetujuan penyedianya (MARKETING.md 16). */
 final class TemplateWhatsAppPemasaran extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'TemplateWhatsAppPemasaran';
 
     public const CREATED_AT = 'DibuatPada';
@@ -39,6 +42,11 @@ final class TemplateWhatsAppPemasaran extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'TWA';
     }
 
     /** Dua syarat yang berbeda: penyedia menyetujuinya, dan kami belum menonaktifkannya. */

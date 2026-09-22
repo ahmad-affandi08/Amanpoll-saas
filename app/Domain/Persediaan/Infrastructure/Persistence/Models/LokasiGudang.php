@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\Persediaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class LokasiGudang extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'LokasiGudang';
 
@@ -30,6 +31,21 @@ final class LokasiGudang extends ModelDasar
         return [
             'DibuatPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'LGD';
+    }
+
+    /**
+     * Kode hanya perlu unik dalam satu Gudang, sesuai indeks uniknya.
+     *
+     * @return array<string, mixed>
+     */
+    public function lingkupKode(): array
+    {
+        return ['GudangId' => $this->GudangId];
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class PosAnggaran extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'PosAnggaran';
 
@@ -40,6 +41,21 @@ final class PosAnggaran extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'POS';
+    }
+
+    /**
+     * Kode hanya perlu unik dalam satu Anggaran, sesuai indeks uniknya.
+     *
+     * @return array<string, mixed>
+     */
+    public function lingkupKode(): array
+    {
+        return ['AnggaranId' => $this->AnggaranId];
     }
 
     /**

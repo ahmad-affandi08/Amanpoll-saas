@@ -29,7 +29,7 @@ final class KelolaRencanaPemeliharaan
         return $this->transaksi->jalankan(function () use ($data): RencanaPemeliharaan {
             $organisasiId = $this->konteksOrganisasi->wajibId();
 
-            $ada = RencanaPemeliharaan::query()
+            $ada = filled($data['Kode'] ?? null) && RencanaPemeliharaan::query()
                 ->where('OrganisasiId', $organisasiId)
                 ->where('Kode', $data['Kode'])
                 ->exists();
@@ -40,7 +40,7 @@ final class KelolaRencanaPemeliharaan
 
             $rencana = RencanaPemeliharaan::create([
                 'OrganisasiId' => $organisasiId,
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'Jenis' => $data['Jenis'] ?? 'Preventif',
                 'TemplatDaftarPeriksaId' => $data['TemplatDaftarPeriksaId'] ?? null,

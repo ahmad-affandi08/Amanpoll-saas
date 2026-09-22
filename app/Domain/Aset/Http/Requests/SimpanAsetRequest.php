@@ -30,7 +30,7 @@ final class SimpanAsetRequest extends FormRequest
         $asetId = $aset?->Id;
 
         return [
-            'KodeAset' => ['required', 'string', 'max:100',
+            'KodeAset' => ['nullable', 'string', 'max:100',
                 Rule::unique('Aset', 'KodeAset')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($asetId, 'Id')],
             'Nama' => ['required', 'string', 'max:200'],
             'KategoriAsetId' => ['required', 'string',

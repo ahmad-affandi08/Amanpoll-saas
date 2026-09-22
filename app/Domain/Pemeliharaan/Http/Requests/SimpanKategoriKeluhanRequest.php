@@ -25,7 +25,7 @@ final class SimpanKategoriKeluhanRequest extends FormRequest
 
         return [
             'IndukId' => ['nullable', 'string', Rule::notIn([$kategoriKeluhan?->Id]), Rule::exists('KategoriKeluhan', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))],
-            'Kode' => ['required', 'string', 'max:60', Rule::unique('KategoriKeluhan', 'Kode')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))->ignore($kategoriKeluhan?->Id, 'Id')],
+            'Kode' => ['nullable', 'string', 'max:60', Rule::unique('KategoriKeluhan', 'Kode')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))->ignore($kategoriKeluhan?->Id, 'Id')],
             'Nama' => ['required', 'string', 'max:160'],
             'TingkatLayananId' => ['nullable', 'string', Rule::exists('TingkatLayanan', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId)->where('Aktif', true))],
             'PrioritasBawaan' => ['required', Rule::enum(PrioritasKeluhan::class)],

@@ -27,7 +27,7 @@ final class SimpanTingkatLayananRequest extends FormRequest
         $tingkatLayanan = $this->route('tingkatLayanan');
 
         return [
-            'Kode' => ['required', 'string', 'max:60', Rule::unique('TingkatLayanan', 'Kode')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))->ignore($tingkatLayanan?->Id, 'Id')],
+            'Kode' => ['nullable', 'string', 'max:60', Rule::unique('TingkatLayanan', 'Kode')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))->ignore($tingkatLayanan?->Id, 'Id')],
             'Nama' => ['required', 'string', 'max:160'],
             'Deskripsi' => ['nullable', 'string'],
             'HariKerja' => ['required', 'array', 'min:1'],

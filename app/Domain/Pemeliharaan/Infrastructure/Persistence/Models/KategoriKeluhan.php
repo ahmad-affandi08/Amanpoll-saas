@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class KategoriKeluhan extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'KategoriKeluhan';
 
@@ -38,6 +39,11 @@ final class KategoriKeluhan extends ModelDasar
             'AsetWajib' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'KKL';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

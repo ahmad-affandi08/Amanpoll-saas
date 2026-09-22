@@ -31,12 +31,14 @@ final class KelolaAnggaran
     {
         return $this->transaksi->jalankan(function () use ($data): Anggaran {
             $organisasiId = $this->konteksOrganisasi->wajibId();
-            $this->pastikanKodeUnik($organisasiId, (string) $data['Kode'], (int) $data['Tahun']);
+            if (filled($data['Kode'] ?? null)) {
+                $this->pastikanKodeUnik($organisasiId, (string) $data['Kode'], (int) $data['Tahun']);
+            }
 
             $anggaran = Anggaran::create([
                 'OrganisasiId' => $organisasiId,
                 'UnitOrganisasiId' => $data['UnitOrganisasiId'] ?? null,
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'Tahun' => $data['Tahun'],
                 'MataUang' => $data['MataUang'] ?? 'IDR',

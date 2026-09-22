@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** Satu konten utama yang disebarkan ke banyak channel (MARKETING.md 18). */
 final class KontenSosial extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'KontenSosial';
 
     public const CREATED_AT = 'DibuatPada';
@@ -32,6 +35,11 @@ final class KontenSosial extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'KSO';
     }
 
     /** @return HasMany<DistribusiKontenSosial, $this> */

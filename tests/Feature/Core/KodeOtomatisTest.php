@@ -7,7 +7,12 @@ namespace Tests\Feature\Core;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Core\Penomoran\Services\LayananKodeOtomatis;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -118,5 +123,77 @@ final class KodeOtomatisTest extends TestCase
             organisasiId: $this->organisasi->Id,
             sudahDipakai: static fn (): bool => true,
         );
+    }
+
+    /** Kode yang sudah terbit tidak boleh hilang saat form dikirim tanpa kolom kode. */
+    public function test_menyunting_tanpa_mengirim_kode_tidak_mengosongkannya(): void
+    {
+        $gudang = Gudang::create(['Nama' => 'Gudang Pusat', 'Status' => 'Aktif']);
+
+        $gudang->update(['Kode' => '', 'Nama' => 'Gudang Pusat Baru']);
+
+        $this->assertSame('GDG-0001', $gudang->fresh()->Kode);
+    }
+
+    public function test_membuat_lewat_http_tanpa_kode_diterima_dan_terisi_sendiri(): void
+    {
+        $pengguna = $this->penggunaDenganIzin(['Stok.Kelola']);
+
+        $this->actingAs($pengguna)
+            ->post('/gudang', ['Nama' => 'Gudang Pusat', 'Status' => 'Aktif'])
+            ->assertSessionDoesntHaveErrors();
+
+        app(KonteksOrganisasi::class)->tetapkan($this->organisasi->Id);
+        $this->assertSame('GDG-0001', Gudang::query()->firstOrFail()->Kode);
+    }
+
+    /** Kode yang menjadi kunci di kode program tetap harus diketik. */
+    public function test_entitas_yang_dikecualikan_tetap_mewajibkan_kode(): void
+    {
+        foreach (['IntegrasiEksternal', 'TemplatNotifikasi', 'StandarKepatuhan'] as $berkas) {
+            $aturan = file_get_contents(base_path($this->berkasAturan($berkas)));
+            $wajib = str_contains((string) $aturan, "'Kode' => [\n                'required'")
+                || str_contains((string) $aturan, "'Kode' => ['required'");
+
+            if ($berkas === 'StandarKepatuhan') {
+                $this->assertFalse($wajib, 'StandarKepatuhan seharusnya sudah memakai kode otomatis.');
+
+                continue;
+            }
+
+            $this->assertTrue($wajib, "{$berkas} tidak boleh ikut kode otomatis: kodenya dirujuk kode program.");
+        }
+    }
+
+    private function berkasAturan(string $nama): string
+    {
+        return match ($nama) {
+            'IntegrasiEksternal' => 'app/Domain/Kepatuhan/Http/Requests/SimpanIntegrasiEksternalRequest.php',
+            'TemplatNotifikasi' => 'app/Domain/Notifikasi/Http/Requests/SimpanTemplatNotifikasiRequest.php',
+            'StandarKepatuhan' => 'app/Domain/Kepatuhan/Http/Requests/SimpanStandarKepatuhanRequest.php',
+        };
+    }
+
+    /** @param list<string> $kodeIzin */
+    private function penggunaDenganIzin(array $kodeIzin): Pengguna
+    {
+        $pengguna = Pengguna::create([
+            'OrganisasiId' => $this->organisasi->Id,
+            'Nama' => 'Pengguna Kode',
+            'Email' => 'kode@amanpoll.test',
+            'KataSandi' => 'rahasia',
+            'Status' => 'Aktif',
+        ]);
+
+        $peran = Peran::create(['Kode' => 'PERAN-KODE', 'Nama' => 'Peran Kode']);
+
+        foreach ($kodeIzin as $kode) {
+            $izin = Izin::firstOrCreate(['Kode' => $kode], ['Nama' => $kode, 'Modul' => 'Uji']);
+            PeranIzin::create(['PeranId' => $peran->Id, 'IzinId' => $izin->Id]);
+        }
+
+        PenggunaPeran::create(['PenggunaId' => $pengguna->Id, 'PeranId' => $peran->Id]);
+
+        return $pengguna;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class TemplatInspeksi extends ModelDasar
 {
-    use MilikOrganisasi;
+    use MilikOrganisasi, PunyaKodeOtomatis;
 
     protected $table = 'TemplatInspeksi';
 
@@ -36,6 +37,11 @@ final class TemplatInspeksi extends ModelDasar
             'Aktif' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'TIN';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

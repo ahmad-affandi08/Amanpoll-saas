@@ -25,7 +25,7 @@ final class SimpanTemplateWhatsAppRequest extends FormRequest
 
         return [
             'Kode' => [
-                'required', 'string', 'max:80',
+                'nullable', 'string', 'max:80',
                 Rule::unique('TemplateWhatsAppPemasaran', 'Kode')->ignore($id, 'Id'),
             ],
             'Nama' => ['required', 'string', 'max:190'],

@@ -32,7 +32,7 @@ final class SimpanKampanye
 
         return $this->transaksi->jalankan(function () use ($kampanye, $data, $status, $channel): Kampanye {
             $atribut = [
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'Objective' => ObjectiveKampanye::from((string) $data['Objective']),
                 'Status' => $status,

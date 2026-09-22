@@ -22,7 +22,7 @@ final class SimpanAnggaranRequest extends FormRequest
 
         return [
             'UnitOrganisasiId' => ['nullable', 'string', Rule::exists('UnitOrganisasi', 'Id')->where('OrganisasiId', $organisasiId)],
-            'Kode' => [$wajib, 'string', 'max:80'],
+            'Kode' => ['nullable', 'string', 'max:80'],
             'Nama' => [$wajib, 'string', 'max:180'],
             'Tahun' => [$wajib, 'integer', 'between:2000,2100'],
             'MataUang' => ['sometimes', 'string', 'size:3'],

@@ -27,7 +27,7 @@ final class SimpanSukuCadangRequest extends FormRequest
         $sukuCadang = $this->route('sukuCadang');
 
         return [
-            'Kode' => ['required', 'string', 'max:80',
+            'Kode' => ['nullable', 'string', 'max:80',
                 Rule::unique('SukuCadang', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($sukuCadang?->Id, 'Id')],
             'Nama' => ['required', 'string', 'max:200'],
             'KategoriSukuCadangId' => ['nullable', 'string',

@@ -35,7 +35,7 @@ final class KelolaInspeksi
         return $this->transaksi->jalankan(function () use ($data): TemplatInspeksi {
             $organisasiId = $this->konteksOrganisasi->wajibId();
 
-            $ada = TemplatInspeksi::query()
+            $ada = filled($data['Kode'] ?? null) && TemplatInspeksi::query()
                 ->where('OrganisasiId', $organisasiId)
                 ->where('Kode', $data['Kode'])
                 ->exists();
@@ -46,7 +46,7 @@ final class KelolaInspeksi
 
             $templat = TemplatInspeksi::create([
                 'OrganisasiId' => $organisasiId,
-                'Kode' => $data['Kode'],
+                'Kode' => $data['Kode'] ?? null,
                 'Nama' => $data['Nama'],
                 'KategoriAsetId' => $data['KategoriAsetId'] ?? null,
                 'TemplatDaftarPeriksaId' => $data['TemplatDaftarPeriksaId'] ?? null,

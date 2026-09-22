@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** Satu demo produk beserta setelannya (MARKETING.md 11). */
 final class DemoPemasaran extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'DemoPemasaran';
 
     public const CREATED_AT = 'DibuatPada';
@@ -47,6 +50,11 @@ final class DemoPemasaran extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'DMO';
     }
 
     /** @return HasMany<SesiDemo, $this> */

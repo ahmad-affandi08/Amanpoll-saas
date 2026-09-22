@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
+use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /** Satu program partner beserta jendela atribusi dan aturan komisinya (MARKETING.md 21). */
 final class ProgramPartner extends ModelDasar
 {
+    use PunyaKodeOtomatis;
+
     protected $table = 'ProgramPartner';
 
     public const CREATED_AT = 'DibuatPada';
@@ -32,6 +35,11 @@ final class ProgramPartner extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    public function awalanKode(): string
+    {
+        return 'PTR';
     }
 
     public function getRouteKeyName(): string

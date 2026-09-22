@@ -19,7 +19,7 @@ final class SimpanRencanaPemeliharaanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Kode' => ['required', 'string', 'max:80'],
+            'Kode' => ['nullable', 'string', 'max:80'],
             'Nama' => ['required', 'string', 'max:200'],
             'Jenis' => ['nullable', 'string', 'max:50'],
             'TemplatDaftarPeriksaId' => ['nullable', 'string', 'size:26'],

@@ -22,7 +22,7 @@ final class SimpanKodeKegagalanRequest extends FormRequest
 
         return [
             'KategoriAsetId' => ['nullable', 'string', Rule::exists('KategoriAset', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
-            'Kode' => ['required', 'string', 'max:60', Rule::unique('KodeKegagalan', 'Kode')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))->ignore($this->route('kodeKegagalan'))],
+            'Kode' => ['nullable', 'string', 'max:60', Rule::unique('KodeKegagalan', 'Kode')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))->ignore($this->route('kodeKegagalan'))],
             'Nama' => ['required', 'string', 'max:180'],
             'Jenis' => ['required', Rule::in(['Masalah', 'Penyebab', 'Tindakan'])],
             'Keterangan' => ['nullable', 'string', 'max:2000'],
