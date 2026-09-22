@@ -6,6 +6,12 @@ namespace App\Domain\Penyedia\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
+use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranPenyedia;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -92,5 +98,55 @@ final class Penyedia extends ModelDasar
     {
         return $this->belongsToMany(KategoriPenyedia::class, 'PenyediaKategori', 'PenyediaId', 'KategoriPenyediaId')
             ->withPivot('Id');
+    }
+
+    /**
+     * @return HasMany<PenawaranPenyedia, $this>
+     */
+    public function penawaran(): HasMany
+    {
+        return $this->hasMany(PenawaranPenyedia::class, 'PenyediaId', 'Id')->orderByDesc('TanggalPenawaran');
+    }
+
+    /**
+     * @return HasMany<PesananPembelian, $this>
+     */
+    public function pesananPembelian(): HasMany
+    {
+        return $this->hasMany(PesananPembelian::class, 'PenyediaId', 'Id')->orderByDesc('TanggalPesanan');
+    }
+
+    /**
+     * @return HasMany<TagihanPenyedia, $this>
+     */
+    public function tagihan(): HasMany
+    {
+        return $this->hasMany(TagihanPenyedia::class, 'PenyediaId', 'Id')->orderByDesc('TanggalTagihan');
+    }
+
+    /**
+     * @return HasMany<Kontrak, $this>
+     */
+    public function kontrak(): HasMany
+    {
+        return $this->hasMany(Kontrak::class, 'PenyediaId', 'Id')->orderByDesc('MulaiPada');
+    }
+
+    /**
+     * Aset yang tercatat dibeli dari penyedia ini.
+     *
+     * @return HasMany<Aset, $this>
+     */
+    public function asetDipasok(): HasMany
+    {
+        return $this->hasMany(Aset::class, 'PenyediaId', 'Id')->orderBy('Nama');
+    }
+
+    /**
+     * @return HasMany<PelaksanaanKalibrasi, $this>
+     */
+    public function pelaksanaanKalibrasi(): HasMany
+    {
+        return $this->hasMany(PelaksanaanKalibrasi::class, 'PenyediaId', 'Id')->orderByDesc('TanggalKalibrasi');
     }
 }

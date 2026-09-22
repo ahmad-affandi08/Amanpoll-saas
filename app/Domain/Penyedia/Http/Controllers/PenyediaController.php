@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Penyedia\Http\Controllers;
 
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Penyedia\Application\Actions\BuatPenyedia;
 use App\Domain\Penyedia\Application\Actions\HapusPenyedia;
 use App\Domain\Penyedia\Application\Actions\UbahPenyedia;
@@ -43,6 +44,44 @@ final class PenyediaController extends Controller
             'filter' => $daftar->filterBerlaku(),
             'kategoriPenyedia' => KategoriPenyediaResource::collection(KategoriPenyedia::query()->orderBy('Nama')->get()),
         ]);
+    }
+
+    /**
+     * Profil penyedia beserta angka hubungan dagangnya.
+     *
+     * Daftar penyedia hanya menjawab "siapa saja"; pertanyaan yang sebenarnya
+     * dibawa orang -- sudah belanja berapa, tagihan mana yang belum lunas,
+     * kontrak mana yang masih berjalan -- baru terjawab di sini. Rinciannya
+     * diambil tab masing-masing lewat RiwayatPenyediaController.
+     */
+    public function show(Penyedia $penyedia): Response
+    {
+        $this->authorize('view', $penyedia);
+
+        $penyedia->load('kategoriPenyedia');
+
+        return Inertia::render('Penyedia/Show', [
+            'penyedia' => new PenyediaResource($penyedia),
+            'kategoriPenyedia' => KategoriPenyediaResource::collection(KategoriPenyedia::query()->orderBy('Nama')->get()),
+            'ringkasan' => $this->ringkasanPenyedia($penyedia),
+        ]);
+    }
+
+    /**
+     * Dihitung di basis data supaya angkanya tidak bergantung pada baris yang
+     * kebetulan termuat di salah satu tab.
+     *
+     * @return array{JumlahPesanan: int, NilaiPesanan: float, SisaTagihan: float, JumlahKontrakAktif: int, JumlahAset: int}
+     */
+    private function ringkasanPenyedia(Penyedia $penyedia): array
+    {
+        return [
+            'JumlahPesanan' => $penyedia->pesananPembelian()->count(),
+            'NilaiPesanan' => (float) $penyedia->pesananPembelian()->sum('Total'),
+            'SisaTagihan' => (float) $penyedia->tagihan()->sum('Sisa'),
+            'JumlahKontrakAktif' => $penyedia->kontrak()->where('Status', StatusKontrak::Aktif->value)->count(),
+            'JumlahAset' => $penyedia->asetDipasok()->count(),
+        ];
     }
 
     public function store(SimpanPenyediaRequest $request, BuatPenyedia $aksi): RedirectResponse

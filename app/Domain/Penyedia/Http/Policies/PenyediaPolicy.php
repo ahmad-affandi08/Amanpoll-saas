@@ -17,6 +17,11 @@ final class PenyediaPolicy
         return $this->izin->boleh($pengguna->Id, 'Penyedia.Kelola');
     }
 
+    public function view(Pengguna $pengguna, Penyedia $penyedia): bool
+    {
+        return $this->izin->boleh($pengguna->Id, 'Penyedia.Kelola');
+    }
+
     public function create(Pengguna $pengguna): bool
     {
         return $this->izin->boleh($pengguna->Id, 'Penyedia.Kelola');

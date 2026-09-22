@@ -6,7 +6,7 @@ import type { Aset, RiwayatPemeliharaanAset } from '@/features/Aset/types';
 import { ruteAset } from '@/features/Aset/api';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
-import { BarisKosong, KartuAngka, KepalaBagian, durasi, tanggal } from '@/features/Aset/components/riwayat';
+import { BarisKosong, KartuAngka, KepalaBagian, durasi, tanggal } from '@/components/shared/riwayat';
 
 export function TabPemeliharaan({ aset }: { aset: Aset }) {
   const [data, setData] = useState<RiwayatPemeliharaanAset | null>(null);

@@ -7,7 +7,7 @@ import type { Aset, RiwayatKalibrasiAset } from '@/features/Aset/types';
 import { ruteAset } from '@/features/Aset/api';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
-import { BarisKosong, KartuAngka, KepalaBagian, tanggal } from '@/features/Aset/components/riwayat';
+import { BarisKosong, KartuAngka, KepalaBagian, tanggal } from '@/components/shared/riwayat';
 
 export function TabKalibrasi({ aset }: { aset: Aset }) {
   const [data, setData] = useState<RiwayatKalibrasiAset | null>(null);

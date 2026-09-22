@@ -7,6 +7,7 @@ use App\Domain\Penyedia\Http\Controllers\KontakPenyediaController;
 use App\Domain\Penyedia\Http\Controllers\PenilaianPenyediaController;
 use App\Domain\Penyedia\Http\Controllers\PenyediaController;
 use App\Domain\Penyedia\Http\Controllers\PenyediaKategoriController;
+use App\Domain\Penyedia\Http\Controllers\RiwayatPenyediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth', 'organisasi'])
@@ -32,4 +33,10 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
         Route::get('/{penyedia}/penilaian', [PenilaianPenyediaController::class, 'index'])->name('penilaian.index');
         Route::post('/{penyedia}/penilaian', [PenilaianPenyediaController::class, 'store'])->name('penilaian.store');
+
+        Route::get('/{penyedia}/riwayat-pengadaan', [RiwayatPenyediaController::class, 'pengadaan'])->name('riwayatPengadaan');
+        Route::get('/{penyedia}/riwayat-layanan', [RiwayatPenyediaController::class, 'layanan'])->name('riwayatLayanan');
+
+        // Paling akhir supaya '/kategori' dan '/kontak' tidak tertelan '{penyedia}'.
+        Route::get('/{penyedia}', [PenyediaController::class, 'show'])->name('show');
     });

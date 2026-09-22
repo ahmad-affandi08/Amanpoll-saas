@@ -5,11 +5,22 @@ declare(strict_types=1);
 namespace Tests\Feature\Penyedia;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Domain\Enums\KondisiAset;
+use App\Domain\Aset\Domain\Enums\StatusAset;
+use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
+use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
+use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
+use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KontakPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\PenilaianPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusTagihanPenyedia;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPembelian;
+use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -17,6 +28,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PenyediaTest extends TestCase
@@ -200,5 +212,197 @@ class PenyediaTest extends TestCase
         $this->actingAs($penggunaB)->put("/penyedia/{$penyediaA->Id}", [
             'Kode' => 'HACK', 'Nama' => 'Hack', 'Status' => 'Aktif',
         ])->assertNotFound();
+    }
+
+    /**
+     * Daftar penyedia hanya menjawab "siapa saja". Pertanyaan yang sebenarnya
+     * dibawa orang -- sudah belanja berapa, berapa yang belum lunas, kontrak
+     * mana yang masih jalan -- baru terjawab di halaman detail ini.
+     */
+    public function test_detail_penyedia_menampilkan_ringkasan_hubungan_dagang(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-'.uniqid(), 'Nama' => 'Organisasi']);
+        $pengguna = $this->buatPengguna($organisasi, 'Penyedia.Kelola');
+        $penyedia = $this->buatPenyedia($organisasi);
+
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+
+        foreach ([1_000_000, 2_500_000] as $nilai) {
+            PesananPembelian::create([
+                'Nomor' => 'PO-'.uniqid(),
+                'PenyediaId' => $penyedia->Id,
+                'TanggalPesanan' => now()->subMonth()->toDateString(),
+                'Total' => $nilai,
+                'Status' => StatusPesananPembelian::Disetujui->value,
+            ]);
+        }
+
+        TagihanPenyedia::create([
+            'PenyediaId' => $penyedia->Id,
+            'NomorTagihan' => 'INV-001',
+            'TanggalTagihan' => now()->subWeek()->toDateString(),
+            'Total' => 1_000_000,
+            'Sisa' => 400_000,
+            'Status' => StatusTagihanPenyedia::DibayarSebagian->value,
+        ]);
+
+        Kontrak::create([
+            'PenyediaId' => $penyedia->Id,
+            'Nomor' => 'KTR-001',
+            'Nama' => 'Kontrak Pemeliharaan',
+            'Jenis' => 'Layanan',
+            'MulaiPada' => now()->subMonths(2)->toDateString(),
+            'BerakhirPada' => now()->addYear()->toDateString(),
+            'Nilai' => 9_000_000,
+            'Status' => StatusKontrak::Aktif->value,
+        ]);
+        Kontrak::create([
+            'PenyediaId' => $penyedia->Id,
+            'Nomor' => 'KTR-002',
+            'Nama' => 'Kontrak Lama',
+            'Jenis' => 'Layanan',
+            'MulaiPada' => now()->subYears(2)->toDateString(),
+            'BerakhirPada' => now()->subYear()->toDateString(),
+            'Status' => StatusKontrak::Berakhir->value,
+        ]);
+
+        $kategori = KategoriAset::create(['Kode' => 'KAT-'.uniqid(), 'Nama' => 'Mesin']);
+        Aset::create([
+            'KategoriAsetId' => $kategori->Id,
+            'PenyediaId' => $penyedia->Id,
+            'KodeAset' => 'AST-'.uniqid(),
+            'Nama' => 'Genset',
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
+            'KodeQr' => (string) Str::ulid(),
+            'Versi' => 1,
+        ]);
+
+        $konteks->bersihkan();
+
+        $this->actingAs($pengguna)->get("/penyedia/{$penyedia->Id}")
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->component('Penyedia/Show')
+                ->where('penyedia.Nama', 'Penyedia Uji')
+                ->where('ringkasan.JumlahPesanan', 2)
+                ->where('ringkasan.NilaiPesanan', 3500000)
+                ->where('ringkasan.SisaTagihan', 400000)
+                // Hanya kontrak berstatus Aktif yang dihitung; yang sudah berakhir tidak.
+                ->where('ringkasan.JumlahKontrakAktif', 1)
+                ->where('ringkasan.JumlahAset', 1)
+                ->etc());
+    }
+
+    public function test_riwayat_pengadaan_penyedia_mengumpulkan_pesanan_dan_tagihan(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-'.uniqid(), 'Nama' => 'Organisasi']);
+        $pengguna = $this->buatPengguna($organisasi, 'Penyedia.Kelola');
+        $penyedia = $this->buatPenyedia($organisasi);
+
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+
+        $pesanan = PesananPembelian::create([
+            'Nomor' => 'PO-9001',
+            'PenyediaId' => $penyedia->Id,
+            'TanggalPesanan' => now()->subMonth()->toDateString(),
+            'Total' => 750_000,
+            'Status' => StatusPesananPembelian::Dikirim->value,
+        ]);
+        TagihanPenyedia::create([
+            'PenyediaId' => $penyedia->Id,
+            'PesananPembelianId' => $pesanan->Id,
+            'NomorTagihan' => 'INV-9001',
+            'TanggalTagihan' => now()->subDays(10)->toDateString(),
+            'JatuhTempo' => now()->addDays(20)->toDateString(),
+            'Total' => 750_000,
+            'Sisa' => 750_000,
+            'Status' => StatusTagihanPenyedia::BelumDibayar->value,
+        ]);
+
+        $konteks->bersihkan();
+
+        $respons = $this->actingAs($pengguna)->getJson("/penyedia/{$penyedia->Id}/riwayat-pengadaan");
+
+        $respons->assertOk();
+        $respons->assertJsonPath('ringkasan.JumlahPesanan', 1);
+        $respons->assertJsonPath('ringkasan.SisaTagihan', 750000);
+        $respons->assertJsonPath('pesanan.data.0.Nomor', 'PO-9001');
+        $respons->assertJsonPath('tagihan.data.0.NomorTagihan', 'INV-9001');
+        // Nomor pesanan ikut dibawa supaya tagihan dapat ditelusuri tanpa membuka modul lain.
+        $respons->assertJsonPath('tagihan.data.0.NomorPesanan', 'PO-9001');
+    }
+
+    public function test_riwayat_layanan_penyedia_mengumpulkan_kontrak_dan_aset(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-'.uniqid(), 'Nama' => 'Organisasi']);
+        $pengguna = $this->buatPengguna($organisasi, 'Penyedia.Kelola');
+        $penyedia = $this->buatPenyedia($organisasi);
+
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+
+        Kontrak::create([
+            'PenyediaId' => $penyedia->Id,
+            'Nomor' => 'KTR-7001',
+            'Nama' => 'Kontrak Kalibrasi Tahunan',
+            'Jenis' => 'Layanan',
+            'MulaiPada' => now()->subMonth()->toDateString(),
+            'BerakhirPada' => now()->addMonths(11)->toDateString(),
+            'Nilai' => 5_000_000,
+            'Status' => StatusKontrak::Aktif->value,
+        ]);
+
+        $kategori = KategoriAset::create(['Kode' => 'KAT-'.uniqid(), 'Nama' => 'Instrumen']);
+        Aset::create([
+            'KategoriAsetId' => $kategori->Id,
+            'PenyediaId' => $penyedia->Id,
+            'KodeAset' => 'AST-7001',
+            'Nama' => 'Timbangan Analitik',
+            'Status' => StatusAset::Aktif->value,
+            'Kondisi' => KondisiAset::Baik->value,
+            'TingkatKritis' => TingkatKritisAset::Normal->value,
+            'KodeQr' => (string) Str::ulid(),
+            'Versi' => 1,
+        ]);
+
+        $konteks->bersihkan();
+
+        $respons = $this->actingAs($pengguna)->getJson("/penyedia/{$penyedia->Id}/riwayat-layanan");
+
+        $respons->assertOk();
+        $respons->assertJsonPath('ringkasan.JumlahKontrakAktif', 1);
+        $respons->assertJsonPath('ringkasan.NilaiKontrakAktif', 5000000);
+        $respons->assertJsonPath('ringkasan.JumlahAset', 1);
+        $respons->assertJsonPath('kontrak.data.0.Nomor', 'KTR-7001');
+        $respons->assertJsonPath('aset.data.0.Nama', 'Timbangan Analitik');
+    }
+
+    public function test_detail_penyedia_organisasi_lain_tidak_dapat_dibuka(): void
+    {
+        $organisasiA = Organisasi::create(['Kode' => 'ORG-'.uniqid(), 'Nama' => 'Organisasi A']);
+        $organisasiB = Organisasi::create(['Kode' => 'ORG-'.uniqid(), 'Nama' => 'Organisasi B']);
+        $penggunaB = $this->buatPengguna($organisasiB, 'Penyedia.Kelola');
+        $penyediaA = $this->buatPenyedia($organisasiA);
+
+        $this->actingAs($penggunaB)->get("/penyedia/{$penyediaA->Id}")->assertNotFound();
+        $this->actingAs($penggunaB)
+            ->getJson("/penyedia/{$penyediaA->Id}/riwayat-pengadaan")
+            ->assertNotFound();
+    }
+
+    public function test_detail_penyedia_ditolak_tanpa_izin(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-'.uniqid(), 'Nama' => 'Organisasi']);
+        $penyedia = $this->buatPenyedia($organisasi);
+        $tanpaIzin = $this->buatPengguna($organisasi);
+
+        $this->actingAs($tanpaIzin)->get("/penyedia/{$penyedia->Id}")->assertForbidden();
+        $this->actingAs($tanpaIzin)
+            ->getJson("/penyedia/{$penyedia->Id}/riwayat-layanan")
+            ->assertForbidden();
     }
 }

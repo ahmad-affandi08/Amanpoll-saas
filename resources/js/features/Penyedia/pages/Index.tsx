@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
@@ -43,10 +43,10 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter }: Pr
         accessorFn: (row) => `${row.Nama} ${row.Kode}`,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
         cell: ({ row }) => (
-          <div>
+          <Link href={rutePenyedia.detail(row.original.Id)} className="hover:underline">
             <div className="font-medium text-foreground">{row.original.Nama}</div>
             <div className="font-mono text-xs text-muted-foreground">{row.original.Kode}</div>
-          </div>
+          </Link>
         ),
         meta: { label: 'Nama' },
       },
@@ -147,9 +147,7 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter }: Pr
             options: kategoriPenyedia.map((k) => ({ label: k.Nama, value: k.Id })),
           },
         ]}
-        pesanKosong={
-          adaPenyaringAktif(filter) ? 'Tidak ada penyedia yang cocok.' : 'Belum ada penyedia.'
-        }
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada penyedia yang cocok.' : 'Belum ada penyedia.'}
         ilustrasiKosong="/assets/3d/penyedia-kontrak.webp"
       />
     </KerangkaAplikasi>

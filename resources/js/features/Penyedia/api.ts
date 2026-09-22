@@ -8,4 +8,6 @@ export const rutePenyedia = {
   kategoriDetail2: (id1: string, id2: string) => `/penyedia/${id1}/kategori/${id2}`,
   kontak: (id: string) => `/penyedia/${id}/kontak`,
   penilaian: (id: string) => `/penyedia/${id}/penilaian`,
+  riwayatPengadaan: (id: string) => `/penyedia/${id}/riwayat-pengadaan`,
+  riwayatLayanan: (id: string) => `/penyedia/${id}/riwayat-layanan`,
 };
