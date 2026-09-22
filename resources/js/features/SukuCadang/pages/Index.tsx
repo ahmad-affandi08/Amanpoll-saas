@@ -25,6 +25,8 @@ import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 
 interface KategoriRingkas {
   Id: string;
@@ -32,8 +34,10 @@ interface KategoriRingkas {
 }
 
 interface Props {
-  sukuCadang: SukuCadang[];
+  sukuCadang: Paginasi<SukuCadang>;
   kategoriSukuCadang: KategoriRingkas[];
+  filter: FilterDaftar;
+  jumlahDibawahMinimum: number;
 }
 
 function DialogFormSukuCadang({ kategoriSukuCadang }: { kategoriSukuCadang: KategoriRingkas[] }) {
@@ -199,7 +203,12 @@ function DialogFormSukuCadang({ kategoriSukuCadang }: { kategoriSukuCadang: Kate
   );
 }
 
-export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Props) {
+export default function SukuCadangIndex({
+  sukuCadang,
+  kategoriSukuCadang,
+  filter,
+  jumlahDibawahMinimum,
+}: Props) {
   const columns = useMemo<ColumnDef<SukuCadang>[]>(
     () => [
       {
@@ -219,6 +228,8 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
         accessorFn: (row) => row.NamaKategori ?? '',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Kategori" />,
         cell: ({ row }) => row.original.NamaKategori ?? '—',
+        // Turunan relasi, bukan kolom tabel: server tidak dapat mengurutkannya.
+        enableSorting: false,
         meta: { label: 'Kategori' },
       },
       {
@@ -239,6 +250,8 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
             </div>
           );
         },
+        // Saldo dijumlahkan per halaman, jadi pengurutannya tidak akan konsisten lintas halaman.
+        enableSorting: false,
         meta: { label: 'Stok Tersedia' },
       },
       {
@@ -254,9 +267,8 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
     [],
   );
 
-  const jumlahDibawahMinimum = sukuCadang.filter(
-    (s) => (s.JumlahTersediaBersih ?? 0) <= parseFloat(s.StokMinimum),
-  ).length;
+  // Keadaan kosong menyembunyikan kotak cari, jadi ia hanya boleh muncul saat memang belum ada isinya.
+  const belumAdaIsi = sukuCadang.meta.total === 0 && !adaPenyaringAktif(filter);
 
   return (
     <KerangkaAplikasi>
@@ -278,7 +290,7 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
         </div>
       )}
 
-      {sukuCadang.length === 0 ? (
+      {belumAdaIsi ? (
         <KeadaanKosong
           ilustrasi="/assets/3d/suku-cadang.webp"
           judul="Belum ada suku cadang."
@@ -287,9 +299,17 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
       ) : (
         <DataTable
           columns={columns}
-          data={sukuCadang}
+          data={sukuCadang.data}
+          server={{ meta: sukuCadang.meta, filter }}
+          facetedFilters={[
+            {
+              columnId: 'KategoriSukuCadangId',
+              title: 'Kategori',
+              options: kategoriSukuCadang.map((k) => ({ label: k.Nama, value: k.Id })),
+            },
+          ]}
           pencarianPlaceholder="Cari nama atau kode suku cadang..."
-          pesanKosong="Belum ada suku cadang."
+          pesanKosong="Tidak ada suku cadang yang cocok."
         />
       )}
     </KerangkaAplikasi>

@@ -5,14 +5,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  /** Jumlah seluruh baris; dikirim halaman berpaginasi server karena tabel hanya memegang satu halaman. */
+  totalBaris?: number;
 }
 
-export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
-  const totalBaris = table.getFilteredRowModel().rows.length;
+export function DataTablePagination<TData>({ table, totalBaris }: DataTablePaginationProps<TData>) {
+  const jumlah = totalBaris ?? table.getFilteredRowModel().rows.length;
 
   return (
     <div className="flex items-center justify-between border-t border-border px-4 py-3">
-      <p className="text-sm text-muted-foreground">{totalBaris} baris</p>
+      <p className="text-sm text-muted-foreground">{jumlah.toLocaleString('id-ID')} baris</p>
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">Baris per halaman</p>

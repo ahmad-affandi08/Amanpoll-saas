@@ -22,34 +22,62 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\KategoriSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\KelompokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
-use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class SukuCadangController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', SukuCadang::class);
 
-        $sukuCadang = SukuCadang::query()->with('kategoriSukuCadang')->orderBy('Nama')->limit(BatasDaftar::MAKS)->get();
+        $daftar = DaftarTersaring::untuk($request, SukuCadang::query()->with('kategoriSukuCadang'))
+            ->cari(['Kode', 'Nama'])
+            // Hanya kolom nyata; Kategori dan Stok Tersedia turunan, jadi tidak dapat diurutkan server.
+            ->urut(['Nama', 'Status'], bawaan: 'Nama')
+            ->faset(['KategoriSukuCadangId']);
 
+        $halaman = $daftar->halaman();
+
+        // Stok dijumlahkan hanya untuk baris yang benar-benar tampil di halaman ini.
         $agregatStok = DB::table('StokSukuCadang')
             ->select('SukuCadangId', DB::raw('SUM(JumlahTersedia) - SUM(JumlahDitahan) as bersih'))
-            ->whereIn('SukuCadangId', $sukuCadang->pluck('Id'))
+            ->whereIn('SukuCadangId', $halaman->getCollection()->pluck('Id'))
             ->groupBy('SukuCadangId')
             ->pluck('bersih', 'SukuCadangId');
 
-        $sukuCadang->each(function (SukuCadang $s) use ($agregatStok): void {
+        $halaman->getCollection()->each(function (SukuCadang $s) use ($agregatStok): void {
             $s->setAttribute('JumlahTersediaBersih', (float) ($agregatStok[$s->Id] ?? 0));
         });
 
         return Inertia::render('SukuCadang/Index', [
-            'sukuCadang' => SukuCadangResource::collection($sukuCadang),
+            'sukuCadang' => SukuCadangResource::collection($halaman),
+            'filter' => $daftar->filterBerlaku(),
+            'jumlahDibawahMinimum' => $this->jumlahDibawahMinimum(),
             'kategoriSukuCadang' => KategoriSukuCadang::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
+    }
+
+    /**
+     * Dihitung di basis data, bukan dari baris yang kebetulan tampil.
+     *
+     * Halaman ini dipaginasi, jadi menghitungnya dari koleksi di tangan akan
+     * melaporkan angka yang mengecil setiap kali pengguna berpindah halaman.
+     */
+    private function jumlahDibawahMinimum(): int
+    {
+        $saldo = DB::table('StokSukuCadang')
+            ->select('SukuCadangId', DB::raw('SUM(JumlahTersedia) - SUM(JumlahDitahan) as bersih'))
+            ->groupBy('SukuCadangId');
+
+        return SukuCadang::query()
+            ->leftJoinSub($saldo, 'saldo', 'saldo.SukuCadangId', '=', 'SukuCadang.Id')
+            ->whereRaw('COALESCE(saldo.bersih, 0) <= SukuCadang.StokMinimum')
+            ->count();
     }
 
     public function show(SukuCadang $sukuCadang): Response
