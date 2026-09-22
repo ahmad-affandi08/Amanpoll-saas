@@ -22,6 +22,8 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
@@ -188,24 +190,18 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                             <Label nama="TemplatDaftarPeriksaId" htmlFor="TemplatDaftarPeriksaId">
                               Hubungkan Templat Checklist (Opsional)
                             </Label>
-                            <Select
-                              value={form.data.TemplatDaftarPeriksaId || '__none__'}
-                              onValueChange={(val) =>
+                            <Combobox
+                              nilai={form.data.TemplatDaftarPeriksaId || '__none__'}
+                              onPilih={(val) =>
                                 form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
                               }
-                            >
-                              <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
-                                <SelectValue placeholder="Pilih Templat Checklist" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="__none__">-- Tanpa Checklist Otomatis --</SelectItem>
-                                {templatDaftarPeriksa.map((t) => (
-                                  <SelectItem key={t.Id} value={t.Id}>
-                                    {t.Kode} - {t.Nama}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              opsi={[
+                                { nilai: '__none__', label: '-- Tanpa Checklist Otomatis --' },
+                                ...opsiDari(templatDaftarPeriksa, (t) => `${t.Kode} - ${t.Nama}`),
+                              ]}
+                              placeholder="Pilih Templat Checklist"
+                              className="cursor-pointer"
+                            />
                           </div>
 
                           <div className="grid grid-cols-2 gap-3">

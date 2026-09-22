@@ -4,8 +4,9 @@ import { CalendarRange, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { FilterMetrik, PilihanDimensi } from '@/features/Pelaporan/types';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 const PRESET = [
   { label: '7 hari', hari: 7 },
@@ -101,42 +102,27 @@ export function BarisFilter({
 
       <div className="space-y-1">
         <Label className="text-xs">Unit organisasi</Label>
-        <Select
-          value={filter.UnitOrganisasiId[0] ?? 'semua'}
-          onValueChange={(nilai) => terapkan({ UnitOrganisasiId: pilihSatu(nilai) })}
-        >
-          <SelectTrigger className="w-[11rem]">
-            <SelectValue placeholder="Semua unit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="semua">Semua unit</SelectItem>
-            {pilihanUnit.map((unit) => (
-              <SelectItem key={unit.Id} value={unit.Id}>
-                {unit.Nama}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={filter.UnitOrganisasiId[0] ?? 'semua'}
+          onPilih={(nilai) => terapkan({ UnitOrganisasiId: pilihSatu(nilai) })}
+          opsi={[{ nilai: 'semua', label: 'Semua unit' }, ...opsiDari(pilihanUnit, (unit) => unit.Nama)]}
+          placeholder="Semua unit"
+          className="w-[11rem]"
+        />
       </div>
 
       <div className="space-y-1">
         <Label className="text-xs">Lokasi</Label>
-        <Select
-          value={filter.LokasiId[0] ?? 'semua'}
-          onValueChange={(nilai) => terapkan({ LokasiId: pilihSatu(nilai) })}
-        >
-          <SelectTrigger className="w-[11rem]">
-            <SelectValue placeholder="Semua lokasi" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="semua">Semua lokasi</SelectItem>
-            {pilihanLokasi.map((lokasi) => (
-              <SelectItem key={lokasi.Id} value={lokasi.Id}>
-                {lokasi.Nama}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          nilai={filter.LokasiId[0] ?? 'semua'}
+          onPilih={(nilai) => terapkan({ LokasiId: pilihSatu(nilai) })}
+          opsi={[
+            { nilai: 'semua', label: 'Semua lokasi' },
+            ...opsiDari(pilihanLokasi, (lokasi) => lokasi.Nama),
+          ]}
+          placeholder="Semua lokasi"
+          className="w-[11rem]"
+        />
       </div>
 
       <Button

@@ -21,6 +21,8 @@ import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   templat: TemplatDaftarPeriksa[];
@@ -127,24 +129,16 @@ export default function DaftarPeriksaTemplatIndex({ templat, kategoriAset, model
                           <Label nama="KategoriAsetId" htmlFor="KategoriAsetId">
                             Kategori Aset Terkait (Opsional)
                           </Label>
-                          <Select
-                            value={form.data.KategoriAsetId || '__none__'}
-                            onValueChange={(val) =>
-                              form.setData('KategoriAsetId', val === '__none__' ? '' : val)
-                            }
-                          >
-                            <SelectTrigger id="KategoriAsetId" className="cursor-pointer">
-                              <SelectValue placeholder="Semua Kategori" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">-- Umum (Semua Kategori) --</SelectItem>
-                              {kategoriAset.map((k) => (
-                                <SelectItem key={k.Id} value={k.Id}>
-                                  {k.Nama}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Combobox
+                            nilai={form.data.KategoriAsetId || '__none__'}
+                            onPilih={(val) => form.setData('KategoriAsetId', val === '__none__' ? '' : val)}
+                            opsi={[
+                              { nilai: '__none__', label: '-- Umum (Semua Kategori) --' },
+                              ...opsiDari(kategoriAset, (k) => k.Nama),
+                            ]}
+                            placeholder="Semua Kategori"
+                            className="cursor-pointer"
+                          />
                         </div>
                       </div>
 

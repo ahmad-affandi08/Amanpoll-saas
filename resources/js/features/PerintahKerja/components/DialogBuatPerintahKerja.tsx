@@ -22,8 +22,9 @@ import type {
 } from '@/features/PerintahKerja/types';
 import { DAFTAR_JENIS, DAFTAR_PRIORITAS } from '@/features/PerintahKerja/status';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 export function DialogBuatPerintahKerja({
   keluhan,
@@ -116,21 +117,16 @@ export function DialogBuatPerintahKerja({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label nama="KeluhanId">Terkait Keluhan (Opsional)</Label>
-                <Select value={form.data.KeluhanId} onValueChange={tanganiPilihKeluhan}>
-                  <SelectTrigger className="w-full cursor-pointer">
-                    <SelectValue placeholder="Pilih keluhan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
-                      Tanpa keluhan (Pekerjaan Mandiri)
-                    </SelectItem>
-                    {keluhan.map((k) => (
-                      <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                        {k.Nomor} · {k.Judul}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.KeluhanId}
+                  onPilih={tanganiPilihKeluhan}
+                  opsi={[
+                    opsiKosong('Tanpa keluhan (Pekerjaan Mandiri)'),
+                    ...opsiDari(keluhan, (k) => `${k.Nomor} · ${k.Judul}`),
+                  ]}
+                  placeholder="Pilih keluhan"
+                  className="cursor-pointer"
+                />
                 {form.errors.KeluhanId && <p className="text-sm text-destructive">{form.errors.KeluhanId}</p>}
               </div>
 
@@ -188,18 +184,13 @@ export function DialogBuatPerintahKerja({
 
               <div className="space-y-1.5">
                 <Label nama="LokasiId">Lokasi</Label>
-                <Select value={form.data.LokasiId} onValueChange={(val) => form.setData('LokasiId', val)}>
-                  <SelectTrigger className="w-full cursor-pointer">
-                    <SelectValue placeholder="Pilih lokasi kerja" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {lokasi.map((l) => (
-                      <SelectItem key={l.Id} value={l.Id} className="cursor-pointer">
-                        {l.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.LokasiId}
+                  onPilih={(val) => form.setData('LokasiId', val)}
+                  opsi={opsiDari(lokasi, (l) => l.Nama)}
+                  placeholder="Pilih lokasi kerja"
+                  className="cursor-pointer"
+                />
                 {form.errors.LokasiId && <p className="text-sm text-destructive">{form.errors.LokasiId}</p>}
               </div>
             </div>

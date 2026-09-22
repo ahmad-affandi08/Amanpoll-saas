@@ -15,6 +15,8 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DialogFormRencana } from '@/features/Kalibrasi/components/DialogFormRencana';
 import type { AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   rencanaKalibrasi: RencanaKalibrasi[];
@@ -130,41 +132,29 @@ export default function KalibrasiRencanaIndex({
               </div>
 
               <div>
-                <Select
-                  value={filter.jenisKalibrasiId ?? '__all__'}
-                  onValueChange={(val) => terapkanFilter('jenisKalibrasiId', val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Jenis Kalibrasi" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__all__">Semua Jenis Kalibrasi</SelectItem>
-                    {jenisKalibrasi.map((jk) => (
-                      <SelectItem key={jk.Id} value={jk.Id}>
-                        {jk.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={filter.jenisKalibrasiId ?? '__all__'}
+                  onPilih={(val) => terapkanFilter('jenisKalibrasiId', val)}
+                  opsi={[
+                    { nilai: '__all__', label: 'Semua Jenis Kalibrasi' },
+                    ...opsiDari(jenisKalibrasi, (jk) => jk.Nama),
+                  ]}
+                  placeholder="Jenis Kalibrasi"
+                  className="h-9 text-xs"
+                />
               </div>
 
               <div>
-                <Select
-                  value={filter.asetId ?? '__all__'}
-                  onValueChange={(val) => terapkanFilter('asetId', val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Pilih Aset Spesifik" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__all__">Semua Aset</SelectItem>
-                    {aset.map((a) => (
-                      <SelectItem key={a.Id} value={a.Id}>
-                        {a.KodeAset} - {a.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={filter.asetId ?? '__all__'}
+                  onPilih={(val) => terapkanFilter('asetId', val)}
+                  opsi={[
+                    { nilai: '__all__', label: 'Semua Aset' },
+                    ...opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`),
+                  ]}
+                  placeholder="Pilih Aset Spesifik"
+                  className="h-9 text-xs"
+                />
               </div>
             </div>
           </CardHeader>

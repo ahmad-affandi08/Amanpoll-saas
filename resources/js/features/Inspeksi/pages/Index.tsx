@@ -170,24 +170,16 @@ export default function InspeksiIndex({
                           <Label nama="DilaksanakanOleh" htmlFor="DilaksanakanOleh">
                             Inspektor / Petugas (Opsional)
                           </Label>
-                          <Select
-                            value={form.data.DilaksanakanOleh || '__none__'}
-                            onValueChange={(val) =>
-                              form.setData('DilaksanakanOleh', val === '__none__' ? '' : val)
-                            }
-                          >
-                            <SelectTrigger id="DilaksanakanOleh" className="cursor-pointer">
-                              <SelectValue placeholder="Pilih Petugas..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">-- Ditentukan Nanti --</SelectItem>
-                              {inspektor.map((p) => (
-                                <SelectItem key={p.Id} value={p.Id}>
-                                  {p.Nama}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Combobox
+                            nilai={form.data.DilaksanakanOleh || '__none__'}
+                            onPilih={(val) => form.setData('DilaksanakanOleh', val === '__none__' ? '' : val)}
+                            opsi={[
+                              { nilai: '__none__', label: '-- Ditentukan Nanti --' },
+                              ...opsiDari(inspektor, (p) => p.Nama),
+                            ]}
+                            placeholder="Pilih Petugas..."
+                            className="cursor-pointer"
+                          />
                         </div>
                       </div>
 

@@ -15,6 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { PerintahKerja } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 export function DialogDowntimeAset({
   perintahKerja,
@@ -59,18 +61,15 @@ export function DialogDowntimeAset({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="AsetId">Aset</Label>
-              <Select value={form.data.AsetId} onValueChange={(val) => form.setData('AsetId', val)}>
-                <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {perintahKerja.Aset.map((a) => (
-                    <SelectItem key={a.Id} value={a.Id} className="cursor-pointer">
-                      {a.KodeAset} · {a.Nama} {a.Utama && '(Utama)'}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.AsetId}
+                onPilih={(val) => form.setData('AsetId', val)}
+                opsi={opsiDari(
+                  perintahKerja.Aset,
+                  (a) => `${a.KodeAset} · ${a.Nama} ${a.Utama && '(Utama)'}`,
+                )}
+                className="cursor-pointer"
+              />
             </div>
 
             <div className="space-y-1.5">

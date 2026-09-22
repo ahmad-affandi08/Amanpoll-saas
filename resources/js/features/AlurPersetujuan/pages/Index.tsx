@@ -26,7 +26,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN, opsiDari } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
@@ -206,24 +206,16 @@ function FormTahap({
       {(form.data.JenisPenyetuju === 'Peran' || form.data.JenisPenyetuju === 'Unit') && (
         <div className="space-y-1.5">
           <Label nama="PeranId">Peran {form.data.JenisPenyetuju === 'Unit' && '(opsional)'}</Label>
-          <Select
-            value={form.data.PeranId || TANPA_PILIHAN}
-            onValueChange={(v) => form.setData('PeranId', v === TANPA_PILIHAN ? '' : v)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Pilih peran" />
-            </SelectTrigger>
-            <SelectContent>
-              {form.data.JenisPenyetuju === 'Unit' && (
-                <SelectItem value={TANPA_PILIHAN}>Semua peran</SelectItem>
-              )}
-              {peran.map((p) => (
-                <SelectItem key={p.Id} value={p.Id}>
-                  {p.Nama}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={form.data.PeranId || TANPA_PILIHAN}
+            onPilih={(v) => form.setData('PeranId', v === TANPA_PILIHAN ? '' : v)}
+            placeholder="Pilih peran"
+            opsi={[
+              // Hanya penyetuju berbasis unit yang boleh tanpa peran tertentu.
+              ...(form.data.JenisPenyetuju === 'Unit' ? [opsiKosong('Semua peran')] : []),
+              ...opsiDari(peran, (p) => p.Nama),
+            ]}
+          />
         </div>
       )}
       <div className="space-y-1.5">

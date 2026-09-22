@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { PerintahKerja, StokOpsi } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 export function DialogReservasiSukuCadang({
   perintahKerja,
@@ -75,22 +75,16 @@ export function DialogReservasiSukuCadang({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label>Pilih Suku Cadang & Gudang</Label>
-              <Select value={kombinasiPilihan} onValueChange={tanganiPilihStok}>
-                <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue placeholder="Pilih suku cadang tersedia" />
-                </SelectTrigger>
-                <SelectContent>
-                  {stok.map((s) => (
-                    <SelectItem
-                      key={`${s.GudangId}:${s.SukuCadangId}`}
-                      value={`${s.GudangId}:${s.SukuCadangId}`}
-                      className="cursor-pointer"
-                    >
-                      {s.KodeSukuCadang} · {s.NamaSukuCadang} ({s.NamaGudang} - sisa {s.TersediaBersih})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={kombinasiPilihan}
+                onPilih={tanganiPilihStok}
+                placeholder="Pilih suku cadang tersedia"
+                opsi={stok.map((s) => ({
+                  nilai: `${s.GudangId}:${s.SukuCadangId}`,
+                  label: `${s.KodeSukuCadang} · ${s.NamaSukuCadang}`,
+                  keterangan: `${s.NamaGudang} — sisa ${s.TersediaBersih}`,
+                }))}
+              />
               {form.errors.SukuCadangId && (
                 <p className="text-sm text-destructive">{form.errors.SukuCadangId}</p>
               )}

@@ -4,7 +4,6 @@ import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { KartuKpi } from '@/components/grafik/KartuKpi';
 import { BarisFilter } from '@/features/Pelaporan/components/BarisFilter';
 import { rutePelaporan } from '@/features/Pelaporan/api';
@@ -16,6 +15,8 @@ import type {
   SusunanDasbor,
 } from '@/features/Pelaporan/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   susunan: SusunanDasbor;
@@ -55,20 +56,19 @@ export default function DashboardIndex({
           aksi={
             <>
               <div className="flex flex-wrap items-center gap-2">
-                <Select value={susunan.Kunci} onValueChange={gantiDasbor}>
-                  <SelectTrigger className="w-[13rem]">
-                    <SelectValue placeholder="Pilih dasbor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="preset">Bawaan sesuai peran</SelectItem>
-                    {dasborTersimpan.map((dasbor) => (
-                      <SelectItem key={dasbor.Id} value={dasbor.Id}>
-                        {dasbor.Nama}
-                        {dasbor.Bawaan ? ' (bawaan)' : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={susunan.Kunci}
+                  onPilih={gantiDasbor}
+                  opsi={[
+                    { nilai: 'preset', label: 'Bawaan sesuai peran' },
+                    ...opsiDari(
+                      dasborTersimpan,
+                      (dasbor) => `${dasbor.Nama} ${dasbor.Bawaan ? ' (bawaan)' : ''}`,
+                    ),
+                  ]}
+                  placeholder="Pilih dasbor"
+                  className="w-[13rem]"
+                />
                 <Button variant="outline" size="sm" asChild>
                   <Link href={rutePelaporan.dasborKustom}>
                     <LayoutGrid className="size-4" />

@@ -18,9 +18,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -136,24 +137,13 @@ function DialogFormKodeKegagalan({
 
               <div className="space-y-1.5">
                 <Label nama="KategoriAsetId">Kategori Aset (Opsional)</Label>
-                <Select
-                  value={form.data.KategoriAsetId}
-                  onValueChange={(val) => form.setData('KategoriAsetId', val)}
-                >
-                  <SelectTrigger className="w-full cursor-pointer">
-                    <SelectValue placeholder="Semua kategori" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
-                      Semua Kategori Aset
-                    </SelectItem>
-                    {kategoriAset.map((k) => (
-                      <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                        {k.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.KategoriAsetId}
+                  onPilih={(val) => form.setData('KategoriAsetId', val)}
+                  opsi={[opsiKosong('Semua Kategori Aset'), ...opsiDari(kategoriAset, (k) => k.Nama)]}
+                  placeholder="Semua kategori"
+                  className="cursor-pointer"
+                />
               </div>
             </div>
 

@@ -10,11 +10,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { PerintahKerja, StatusPerintahKerja } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
 
 export function DialogUbahStatus({
   perintahKerja,
@@ -58,21 +58,12 @@ export function DialogUbahStatus({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="Status">Status Baru</Label>
-              <Select
-                value={form.data.Status}
-                onValueChange={(val) => form.setData('Status', val as StatusPerintahKerja)}
-              >
-                <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {transisi.map((s) => (
-                    <SelectItem key={s} value={s} className="cursor-pointer">
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.Status}
+                onPilih={(val) => form.setData('Status', val as StatusPerintahKerja)}
+                opsi={transisi.map((s) => ({ nilai: s, label: s }))}
+                className="cursor-pointer"
+              />
               {form.errors.Status && <p className="text-sm text-destructive">{form.errors.Status}</p>}
             </div>
 

@@ -21,6 +21,8 @@ import { Textarea } from '@/components/ui/textarea';
 import type { ClusterSeo, KeywordSeo, KontenPemasaran, PilihanKonten } from '../types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   konten: KontenPemasaran[];
@@ -390,22 +392,11 @@ function DialogKeyword({
               <Label nama="ClusterSeoId" htmlFor="ClusterSeoId">
                 Cluster
               </Label>
-              <Select
-                value={form.data.ClusterSeoId === '' ? 'tanpa' : form.data.ClusterSeoId}
-                onValueChange={(v) => form.setData('ClusterSeoId', v === 'tanpa' ? '' : v)}
-              >
-                <SelectTrigger id="ClusterSeoId">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tanpa">Tanpa cluster</SelectItem>
-                  {cluster.map((satu) => (
-                    <SelectItem key={satu.Id} value={satu.Id}>
-                      {satu.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.ClusterSeoId === '' ? 'tanpa' : form.data.ClusterSeoId}
+                onPilih={(v) => form.setData('ClusterSeoId', v === 'tanpa' ? '' : v)}
+                opsi={[{ nilai: 'tanpa', label: 'Tanpa cluster' }, ...opsiDari(cluster, (satu) => satu.Nama)]}
+              />
             </div>
 
             <div className="grid gap-2">

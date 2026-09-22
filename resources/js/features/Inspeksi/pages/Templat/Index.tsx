@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Plus, Search } from 'lucide-react';
 import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
@@ -21,6 +20,8 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 interface Props {
   templat: TemplatInspeksi[];
@@ -110,48 +111,34 @@ export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaf
                           <Label nama="KategoriAsetId" htmlFor="KategoriAsetId">
                             Kategori Aset Terkait
                           </Label>
-                          <Select
-                            value={form.data.KategoriAsetId || '__none__'}
-                            onValueChange={(val) =>
-                              form.setData('KategoriAsetId', val === '__none__' ? '' : val)
-                            }
-                          >
-                            <SelectTrigger id="KategoriAsetId" className="cursor-pointer">
-                              <SelectValue placeholder="Pilih Kategori..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">-- Semua Kategori --</SelectItem>
-                              {kategoriAset.map((k) => (
-                                <SelectItem key={k.Id} value={k.Id}>
-                                  {k.Nama}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Combobox
+                            nilai={form.data.KategoriAsetId || '__none__'}
+                            onPilih={(val) => form.setData('KategoriAsetId', val === '__none__' ? '' : val)}
+                            opsi={[
+                              { nilai: '__none__', label: '-- Semua Kategori --' },
+                              ...opsiDari(kategoriAset, (k) => k.Nama),
+                            ]}
+                            placeholder="Pilih Kategori..."
+                            className="cursor-pointer"
+                          />
                         </div>
 
                         <div className="space-y-1.5">
                           <Label nama="TemplatDaftarPeriksaId" htmlFor="TemplatDaftarPeriksaId">
                             Hubungkan Checklist Lapangan
                           </Label>
-                          <Select
-                            value={form.data.TemplatDaftarPeriksaId || '__none__'}
-                            onValueChange={(val) =>
+                          <Combobox
+                            nilai={form.data.TemplatDaftarPeriksaId || '__none__'}
+                            onPilih={(val) =>
                               form.setData('TemplatDaftarPeriksaId', val === '__none__' ? '' : val)
                             }
-                          >
-                            <SelectTrigger id="TemplatDaftarPeriksaId" className="cursor-pointer">
-                              <SelectValue placeholder="Pilih Checklist..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="__none__">-- Tanpa Lembar Checklist --</SelectItem>
-                              {templatDaftarPeriksa.map((t) => (
-                                <SelectItem key={t.Id} value={t.Id}>
-                                  {t.Kode} - {t.Nama}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            opsi={[
+                              { nilai: '__none__', label: '-- Tanpa Lembar Checklist --' },
+                              ...opsiDari(templatDaftarPeriksa, (t) => `${t.Kode} - ${t.Nama}`),
+                            ]}
+                            placeholder="Pilih Checklist..."
+                            className="cursor-pointer"
+                          />
                         </div>
 
                         <div className="space-y-1.5">

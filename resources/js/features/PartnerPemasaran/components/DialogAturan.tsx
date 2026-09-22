@@ -74,22 +74,15 @@ export function DialogAturan({
             />
           </Bidang>
           <Bidang label="Khusus partner (kosong = bawaan program)" galat={form.errors.PartnerId}>
-            <Select
-              value={form.data.PartnerId === '' ? 'bawaan' : form.data.PartnerId}
-              onValueChange={(nilai) => form.setData('PartnerId', nilai === 'bawaan' ? '' : nilai)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Bawaan program" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bawaan">Bawaan program</SelectItem>
-                {seprogram.map((satu) => (
-                  <SelectItem key={satu.Id} value={satu.Id}>
-                    {satu.NamaPerusahaan}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              nilai={form.data.PartnerId === '' ? 'bawaan' : form.data.PartnerId}
+              onPilih={(nilai) => form.setData('PartnerId', nilai === 'bawaan' ? '' : nilai)}
+              opsi={[
+                { nilai: 'bawaan', label: 'Bawaan program' },
+                ...opsiDari(seprogram, (satu) => satu.NamaPerusahaan),
+              ]}
+              placeholder="Bawaan program"
+            />
           </Bidang>
           <Bidang label="Nama" galat={form.errors.Nama}>
             <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />

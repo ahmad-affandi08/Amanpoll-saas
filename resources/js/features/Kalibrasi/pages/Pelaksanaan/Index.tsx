@@ -181,22 +181,16 @@ export default function KalibrasiPelaksanaanIndex({
               </div>
 
               <div>
-                <Select
-                  value={filter.asetId ?? '__all__'}
-                  onValueChange={(val) => terapkanFilter('asetId', val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Pilih Aset Spesifik" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__all__">Semua Aset</SelectItem>
-                    {aset.map((a) => (
-                      <SelectItem key={a.Id} value={a.Id}>
-                        {a.KodeAset} - {a.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={filter.asetId ?? '__all__'}
+                  onPilih={(val) => terapkanFilter('asetId', val)}
+                  opsi={[
+                    { nilai: '__all__', label: 'Semua Aset' },
+                    ...opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`),
+                  ]}
+                  placeholder="Pilih Aset Spesifik"
+                  className="h-9 text-xs"
+                />
               </div>
             </div>
           </CardHeader>
@@ -317,42 +311,30 @@ export default function KalibrasiPelaksanaanIndex({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="JenisKalibrasiId">Jenis Kalibrasi</Label>
-                <Select
-                  value={form.data.JenisKalibrasiId || '__none__'}
-                  onValueChange={(val) => form.setData('JenisKalibrasiId', val === '__none__' ? '' : val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Pilih Jenis" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Tanpa Spesifikasi</SelectItem>
-                    {jenisKalibrasi.map((jk) => (
-                      <SelectItem key={jk.Id} value={jk.Id}>
-                        {jk.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.JenisKalibrasiId || '__none__'}
+                  onPilih={(val) => form.setData('JenisKalibrasiId', val === '__none__' ? '' : val)}
+                  opsi={[
+                    { nilai: '__none__', label: 'Tanpa Spesifikasi' },
+                    ...opsiDari(jenisKalibrasi, (jk) => jk.Nama),
+                  ]}
+                  placeholder="Pilih Jenis"
+                  className="h-9 text-xs"
+                />
               </div>
 
               <div className="space-y-1.5">
                 <Label htmlFor="PenyediaId">Penyedia / Laboratorium Eksternal</Label>
-                <Select
-                  value={form.data.PenyediaId || '__internal__'}
-                  onValueChange={(val) => form.setData('PenyediaId', val === '__internal__' ? '' : val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Pilih Rekanan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__internal__">Internal Perusahaan</SelectItem>
-                    {penyedia.map((p) => (
-                      <SelectItem key={p.Id} value={p.Id}>
-                        {p.Nama}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  nilai={form.data.PenyediaId || '__internal__'}
+                  onPilih={(val) => form.setData('PenyediaId', val === '__internal__' ? '' : val)}
+                  opsi={[
+                    { nilai: '__internal__', label: 'Internal Perusahaan' },
+                    ...opsiDari(penyedia, (p) => p.Nama),
+                  ]}
+                  placeholder="Pilih Rekanan"
+                  className="h-9 text-xs"
+                />
               </div>
             </div>
 

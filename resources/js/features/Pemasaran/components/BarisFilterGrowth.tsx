@@ -3,9 +3,9 @@ import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import type { FilterGrowth, PilihanGrowth } from '@/features/Pemasaran/types';
+import { Combobox } from '@/components/ui/combobox';
 
 export function BarisFilterGrowth({ filter, pilihan }: { filter: FilterGrowth; pilihan: PilihanGrowth }) {
   const [nilai, setNilai] = useState<FilterGrowth>(filter);
@@ -57,19 +57,13 @@ export function BarisFilterGrowth({ filter, pilihan }: { filter: FilterGrowth; p
       {daftar.map(([kunci, label, opsi]) => (
         <div key={kunci} className="grid gap-1.5">
           <Label htmlFor={kunci}>{label}</Label>
-          <Select value={nilai[kunci] ?? 'semua'} onValueChange={(v) => ubah(kunci, v === 'semua' ? '' : v)}>
-            <SelectTrigger id={kunci} className="w-40">
-              <SelectValue placeholder="Semua" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="semua">Semua</SelectItem>
-              {opsi.map((satu) => (
-                <SelectItem key={satu} value={satu}>
-                  {satu}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            nilai={nilai[kunci] ?? 'semua'}
+            onPilih={(v) => ubah(kunci, v === 'semua' ? '' : v)}
+            opsi={[{ nilai: 'semua', label: 'Semua' }, ...opsi.map((satu) => ({ nilai: satu, label: satu }))]}
+            placeholder="Semua"
+            className="w-40"
+          />
         </div>
       ))}
 

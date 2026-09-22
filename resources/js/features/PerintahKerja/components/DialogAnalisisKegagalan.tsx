@@ -10,11 +10,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { KodeKegagalan, PerintahKerja } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { Combobox } from '@/components/ui/combobox';
+import { opsiDari } from '@/lib/pilihan';
 
 export function DialogAnalisisKegagalan({
   perintahKerja,
@@ -70,59 +71,35 @@ export function DialogAnalisisKegagalan({
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-1.5">
               <Label nama="KodeMasalahId">Kode Masalah (Problem)</Label>
-              <Select
-                value={form.data.KodeMasalahId}
-                onValueChange={(val) => form.setData('KodeMasalahId', val)}
-              >
-                <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue placeholder="Pilih kode masalah" />
-                </SelectTrigger>
-                <SelectContent>
-                  {daftarMasalah.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                      {k.Kode} · {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.KodeMasalahId}
+                onPilih={(val) => form.setData('KodeMasalahId', val)}
+                opsi={opsiDari(daftarMasalah, (k) => `${k.Kode} · ${k.Nama}`)}
+                placeholder="Pilih kode masalah"
+                className="cursor-pointer"
+              />
             </div>
 
             <div className="space-y-1.5">
               <Label nama="KodePenyebabId">Kode Penyebab (Cause)</Label>
-              <Select
-                value={form.data.KodePenyebabId}
-                onValueChange={(val) => form.setData('KodePenyebabId', val)}
-              >
-                <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue placeholder="Pilih kode penyebab" />
-                </SelectTrigger>
-                <SelectContent>
-                  {daftarPenyebab.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                      {k.Kode} · {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.KodePenyebabId}
+                onPilih={(val) => form.setData('KodePenyebabId', val)}
+                opsi={opsiDari(daftarPenyebab, (k) => `${k.Kode} · ${k.Nama}`)}
+                placeholder="Pilih kode penyebab"
+                className="cursor-pointer"
+              />
             </div>
 
             <div className="space-y-1.5">
               <Label nama="KodeTindakanId">Kode Tindakan (Remedy)</Label>
-              <Select
-                value={form.data.KodeTindakanId}
-                onValueChange={(val) => form.setData('KodeTindakanId', val)}
-              >
-                <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue placeholder="Pilih kode tindakan" />
-                </SelectTrigger>
-                <SelectContent>
-                  {daftarTindakan.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id} className="cursor-pointer">
-                      {k.Kode} · {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                nilai={form.data.KodeTindakanId}
+                onPilih={(val) => form.setData('KodeTindakanId', val)}
+                opsi={opsiDari(daftarTindakan, (k) => `${k.Kode} · ${k.Nama}`)}
+                placeholder="Pilih kode tindakan"
+                className="cursor-pointer"
+              />
             </div>
 
             <div className="space-y-1.5">
