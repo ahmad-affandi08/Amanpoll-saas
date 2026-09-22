@@ -13,9 +13,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI perintah kerja (21.01: work order).
- */
+/** KPI perintah kerja (21.01: work order). */
 final class QueryPerintahKerja implements PenyediaKpi
 {
     use MenyaringLingkup;
@@ -44,11 +42,7 @@ final class QueryPerintahKerja implements PenyediaKpi
         };
     }
 
-    /**
-     * Pekerjaan yang masih berjalan adalah keadaan saat ini, jadi sengaja tidak
-     * dibatasi rentang tanggal: pekerjaan lama yang menggantung justru yang
-     * paling perlu terlihat.
-     */
+    /** Pekerjaan yang masih berjalan adalah keadaan saat ini, jadi sengaja tidak dibatasi rentang tanggal. */
     private function aktif(FilterMetrik $filter): HasilKpi
     {
         $perStatus = $this->lingkup($filter)

@@ -8,9 +8,7 @@ use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogTahapPipeline;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TahapPipeline;
 
-/**
- * Dasar test CRM: tahap pipeline disemai, modul CRM dinyalakan.
- */
+/** Dasar test CRM: tahap pipeline disemai, modul CRM dinyalakan. */
 abstract class KasusProspek extends KasusPemasaran
 {
     protected function setUp(): void

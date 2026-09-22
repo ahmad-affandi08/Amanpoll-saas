@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Domain\ValueObjects;
 
-/**
- * Hasil satu KPI.
- *
- * `rincian` adalah baris penyusun angka utama — kategori, tren per periode,
- * atau daftar entitas.
- */
+/** Hasil satu KPI. */
 final readonly class HasilKpi
 {
     /**

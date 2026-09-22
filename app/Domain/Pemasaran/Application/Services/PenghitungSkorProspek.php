@@ -12,17 +12,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SkorProspek;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use Carbon\CarbonImmutable;
 
-/**
- * Menghitung skor prospek dari peristiwanya (MARKETING.md 5.4).
- *
- * Bobotnya dibaca dari tabel AturanSkorProspek, tidak pernah ditulis di kode
- * program. Perhitungannya disusun ulang dari nol setiap kali dijalankan, bukan
- * ditambahkan ke angka yang sudah ada — skor yang diakumulasi akan ikut menyimpan
- * setiap kesalahan sebelumnya dan tidak pernah dapat dikoreksi.
- *
- * Satu peristiwa hanya dihitung sekali per prospek. Membuka halaman harga
- * sepuluh kali menunjukkan minat, tetapi tidak sepuluh kali lipat minat.
- */
+/** Menghitung skor prospek dari peristiwanya (MARKETING.md 5.4). */
 final class PenghitungSkorProspek
 {
     public function __construct(
@@ -48,8 +38,7 @@ final class PenghitungSkorProspek
             foreach ($sumbangan as $peristiwa => $bobot) {
                 SkorProspek::create([
                     'ProspekId' => $prospek->Id,
-                    // Menunjuk aturan yang menghasilkannya, supaya pertanyaan
-                    // "kenapa angkanya segini" dapat dijawab sampai ke barisnya.
+                    // Menunjuk aturan yang menghasilkannya.
                     'AturanSkorProspekId' => $petaId[$peristiwa] ?? null,
                     'Peristiwa' => $peristiwa,
                     'Bobot' => $bobot,

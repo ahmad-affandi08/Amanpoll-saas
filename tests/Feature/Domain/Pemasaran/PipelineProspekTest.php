@@ -19,9 +19,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TahapPipeline;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Support\Str;
 
-/**
- * Pipeline prospek dan jejaknya (MARKETING.md 5.3, 36).
- */
+/** Pipeline prospek dan jejaknya (MARKETING.md 5.3, 36). */
 final class PipelineProspekTest extends KasusProspek
 {
     public function test_perpindahan_tahap_menulis_riwayat_dan_timeline(): void

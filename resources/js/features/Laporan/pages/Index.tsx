@@ -49,14 +49,7 @@ interface Props {
   eksporTerakhir: EksporItem[];
 }
 
-/**
- * Laporan tersimpan (21.03) dan pemicu ekspor (21.05).
- *
- * Laporan adalah kombinasi KPI plus filter yang disimpan dengan nama. Membuka
- * satu laporan menghitung KPI-nya terhadap filter yang sedang aktif di layar,
- * bukan filter beku saat disimpan, supaya laporan yang sama dapat dipakai ulang
- * untuk periode berbeda.
- */
+/** Laporan tersimpan (21.03) dan pemicu ekspor (21.05). */
 export default function LaporanIndex({
   laporan,
   dibuka,

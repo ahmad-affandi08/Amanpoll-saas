@@ -19,11 +19,7 @@ enum SiklusLangganan: string
         };
     }
 
-    /**
-     * Akhir periode berikutnya dihitung dengan penambahan kalender, bukan
-     * penambahan hari, supaya langganan yang dimulai tanggal 31 tidak bergeser
-     * mundur setiap bulan.
-     */
+    /** Akhir periode berikutnya dihitung dengan penambahan kalender, bukan penambahan hari. */
     public function akhirPeriodeSetelah(CarbonImmutable $mulai): CarbonImmutable
     {
         return match ($this) {

@@ -39,11 +39,7 @@ export interface EntriTimeline {
   Pada: string;
 }
 
-/*
- * Ditulis sebagai type alias, bukan interface, supaya dapat dikirim apa adanya
- * lewat Inertia: hanya type alias yang dianggap cocok dengan indeks
- * FormDataConvertible tanpa harus menambahkan indeks palsu ke bentuknya.
- */
+/* Ditulis sebagai type alias, bukan interface, supaya dapat dikirim apa adanya lewat Inertia. */
 export type BlokEditor = {
   Jenis: string;
   /** Isi blok bebas bentuk; editor menyuntingnya sebagai JSON. */
@@ -51,12 +47,7 @@ export type BlokEditor = {
   FormulirKode: string | null;
 };
 
-/**
- * Blok di dalam editor. `Kunci` hanya hidup di browser: ia menjaga identitas
- * satu blok saat daftarnya diurutkan ulang, supaya isi yang sedang diketik
- * tidak berpindah kartu. Server tidak mengenalnya dan membuangnya saat
- * divalidasi.
- */
+/** Blok di dalam editor. */
 export type BlokDisunting = BlokEditor & {
   Kunci: string;
 };

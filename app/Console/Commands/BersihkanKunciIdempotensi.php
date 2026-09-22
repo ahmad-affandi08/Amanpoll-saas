@@ -7,10 +7,7 @@ namespace App\Console\Commands;
 use App\Core\Idempotensi\LayananIdempotensi;
 use Illuminate\Console\Command;
 
-/**
- * Membuang kunci idempotensi yang sudah lewat TTL supaya tabelnya tidak tumbuh
- * tanpa batas (19.07).
- */
+/** Membuang kunci idempotensi yang sudah lewat TTL supaya tabelnya tidak tumbuh tanpa batas (19.07). */
 final class BersihkanKunciIdempotensi extends Command
 {
     protected $signature = 'idempotensi:bersihkan';

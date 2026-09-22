@@ -8,9 +8,7 @@ use App\Domain\Langganan\Domain\Contracts\PenyediaPembayaran;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use LogicException;
 
-/**
- * Daftar penyedia pembayaran yang terpasang (22.06).
- */
+/** Daftar penyedia pembayaran yang terpasang (22.06). */
 final class RegistriPenyediaPembayaran
 {
     /** @var array<string, PenyediaPembayaran> */

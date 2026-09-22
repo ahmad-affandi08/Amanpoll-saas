@@ -7,11 +7,7 @@ namespace App\Domain\Sinkronisasi\Http\Policies;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisasi;
 
-/**
- * Antrean offline hanya boleh dilihat dan diselesaikan oleh pemilik
- * perangkatnya. Otorisasi atas mutasi bisnisnya sendiri tetap dipegang policy
- * domain terkait saat mutasi diterapkan.
- */
+/** Antrean offline hanya boleh dilihat dan diselesaikan oleh pemilik perangkatnya. */
 final class AntrianSinkronisasiPolicy
 {
     public function viewAny(Pengguna $pengguna): bool

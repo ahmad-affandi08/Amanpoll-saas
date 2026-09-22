@@ -7,11 +7,7 @@ namespace App\Shared\Infrastructure\Clock;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 
-/**
- * Titik tunggal konversi waktu Amanpoll: penyimpanan selalu UTC,
- * presentasi mengikuti zona waktu organisasi/lokasi. Jangan panggil
- * timezone hardcoded di feature; gunakan service ini.
- */
+/** Titik tunggal konversi waktu Amanpoll. */
 final class LayananZonaWaktu
 {
     public function sekarangUtc(): CarbonImmutable
@@ -29,9 +25,7 @@ final class LayananZonaWaktu
         return CarbonImmutable::parse($waktuLokal, $zonaWaktu)->setTimezone('UTC');
     }
 
-    /**
-     * Lokasi dapat menimpa zona waktu organisasi induknya; kembalikan yang berlaku.
-     */
+    /** Lokasi dapat menimpa zona waktu organisasi induknya; kembalikan yang berlaku. */
     public function zonaWaktuEfektif(?string $zonaWaktuLokasi, string $zonaWaktuOrganisasi): string
     {
         return $zonaWaktuLokasi ?: $zonaWaktuOrganisasi;

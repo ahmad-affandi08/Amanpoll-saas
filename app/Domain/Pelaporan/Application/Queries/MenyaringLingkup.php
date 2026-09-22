@@ -9,12 +9,7 @@ use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use Illuminate\Contracts\Database\Query\Builder as KontrakBuilder;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * Penerapan filter unit organisasi dan lokasi (21.02) ke query metrik.
- *
- * Tabel yang tidak memiliki kedua kolom itu dijangkau lewat aset atau perintah
- * kerja yang bersangkutan.
- */
+/** Penerapan filter unit organisasi dan lokasi (21.02) ke query metrik. */
 trait MenyaringLingkup
 {
     /**

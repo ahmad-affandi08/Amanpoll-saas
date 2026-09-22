@@ -18,10 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Halaman langganan milik tenant: paket berjalan, pemakaian terhadap batas,
- * dan tagihannya (22.04/22.06).
- */
+/** Halaman langganan milik tenant: paket berjalan, pemakaian terhadap batas, dan tagihannya (22.04/22.06). */
 final class LanggananTenantController extends Controller
 {
     public function __construct(
@@ -49,11 +46,7 @@ final class LanggananTenantController extends Controller
         ]);
     }
 
-    /**
-     * Memulai pembayaran sebuah tagihan. Instruksinya datang dari penyedia yang
-     * terpasang, sehingga halaman ini tidak perlu tahu apakah pembayarannya
-     * berupa transfer manual atau pengalihan ke gateway.
-     */
+    /** Memulai pembayaran sebuah tagihan. */
     public function bayar(TagihanLangganan $tagihan, RegistriPenyediaPembayaran $registri): RedirectResponse
     {
         $this->authorize('bayar', Langganan::class);

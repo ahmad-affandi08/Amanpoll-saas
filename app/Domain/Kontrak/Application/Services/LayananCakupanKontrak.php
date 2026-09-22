@@ -10,10 +10,7 @@ use App\Domain\Kontrak\Infrastructure\Persistence\Models\KontrakAset;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 
-/**
- * Menjawab pertanyaan Gate 17: pekerjaan vendor pada sebuah aset ditelusuri ke
- * kontrak aktif mana, pada tanggal berapa, dan milik penyedia yang mana.
- */
+/** Menjawab pertanyaan Gate 17. */
 final class LayananCakupanKontrak
 {
     /**

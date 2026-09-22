@@ -8,9 +8,7 @@ use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 
-/**
- * Peran dan Izin satu modul IAM, jadi memakai kode izin Pengguna.Kelola yang sama.
- */
+/** Peran dan Izin satu modul IAM, jadi memakai kode izin Pengguna.Kelola yang sama. */
 final class PeranPolicy
 {
     public function __construct(private readonly PemeriksaIzin $izin) {}

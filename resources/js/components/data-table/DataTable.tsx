@@ -27,11 +27,7 @@ interface DataTableProps<TData, TValue> {
   aksi?: ReactNode;
   pesanKosong?: string;
   ilustrasiKosong?: string;
-  /**
-   * Menyalakan tampilan kartu di bawah 640px. Dipakai untuk tabel operasional
-   * yang dibaca di lapangan; tabel dengan banyak kolom pembanding justru lebih
-   * terbaca sebagai baris, jadi bawaannya mati.
-   */
+  /** Menyalakan tampilan kartu di bawah 640px. */
   kartuDiPonsel?: boolean;
 }
 

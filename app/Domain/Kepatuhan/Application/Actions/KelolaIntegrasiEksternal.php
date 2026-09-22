@@ -11,10 +11,7 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Konfigurasi integrasi eksternal (19.01). Kredensial disimpan pada kolom
- * terenkripsi dan tidak pernah dikembalikan ke klien.
- */
+/** Konfigurasi integrasi eksternal (19.01). */
 final class KelolaIntegrasiEksternal
 {
     public function __construct(
@@ -63,8 +60,7 @@ final class KelolaIntegrasiEksternal
             'MetodeAutentikasi' => $data['MetodeAutentikasi'] ?? null,
         ]);
 
-        // Konfigurasi hanya ditimpa bila klien benar-benar mengirim nilai baru,
-        // supaya kredensial tersimpan tidak terhapus oleh form yang mengosongkannya.
+        // Konfigurasi hanya ditimpa bila klien benar-benar mengirim nilai baru.
         if (array_key_exists('Konfigurasi', $data) && $data['Konfigurasi'] !== null) {
             $integrasi->KonfigurasiTerenkripsi = $data['Konfigurasi'];
         }

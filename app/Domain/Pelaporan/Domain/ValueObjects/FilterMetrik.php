@@ -6,13 +6,7 @@ namespace App\Domain\Pelaporan\Domain\ValueObjects;
 
 use Carbon\CarbonImmutable;
 
-/**
- * Irisan data yang berlaku untuk seluruh KPI pada satu tampilan (21.02):
- * rentang tanggal plus penyaring unit organisasi dan lokasi.
- *
- * Filter ini sengaja tidak memuat OrganisasiId: pembatasan tenant dipegang
- * global scope MilikOrganisasi, bukan oleh pemanggil.
- */
+/** Irisan data yang berlaku untuk seluruh KPI pada satu tampilan (21.02). */
 final readonly class FilterMetrik
 {
     /**
@@ -46,8 +40,7 @@ final readonly class FilterMetrik
             ? CarbonImmutable::parse((string) $data['Sampai'])->endOfDay()
             : CarbonImmutable::now()->endOfDay();
 
-        // Rentang terbalik dinormalkan daripada menghasilkan laporan kosong
-        // yang membingungkan.
+        // Rentang terbalik dinormalkan daripada menghasilkan laporan kosong yang membingungkan.
         if ($sampai->lessThan($dari)) {
             [$dari, $sampai] = [$sampai->startOfDay(), $dari->endOfDay()];
         }

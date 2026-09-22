@@ -10,14 +10,7 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 use Tests\TestCase;
 
-/**
- * Kosakata nilai domain (status, jenis, prioritas, dan sejenisnya) hidup sebagai
- * enum di `Domain/Enums`, bukan sebagai konstanta string di model.
- *
- * Dua bentuk yang berdampingan adalah bagaimana satu nilai bisa punya dua daftar
- * yang berbeda; tes ini menjaga agar yang sudah diseragamkan tidak kembali
- * terpecah.
- */
+/** Kosakata nilai domain (status, jenis, prioritas. */
 final class KosakataDomainTest extends TestCase
 {
     /**

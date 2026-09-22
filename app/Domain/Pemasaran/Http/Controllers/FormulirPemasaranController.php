@@ -18,9 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Form builder di konsol platform (MARKETING.md 10).
- */
+/** Form builder di konsol platform (MARKETING.md 10). */
 final class FormulirPemasaranController extends Controller
 {
     public function __construct(

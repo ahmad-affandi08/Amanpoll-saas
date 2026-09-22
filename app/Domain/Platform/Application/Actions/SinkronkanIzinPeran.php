@@ -10,11 +10,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-/**
- * Mengganti seluruh set Izin milik satu Peran (dari checkbox di form edit),
- * lalu membersihkan cache izin setiap pengguna yang memakai peran ini
- * supaya perubahan langsung berlaku, tidak menunggu cache kedaluwarsa.
- */
+/** Mengganti seluruh set Izin milik satu Peran (dari checkbox di form edit). */
 final class SinkronkanIzinPeran
 {
     public function __construct(

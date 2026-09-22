@@ -8,13 +8,7 @@ use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use LogicException;
 
-/**
- * Pemetaan kunci KPI ke penyedia yang menghitungnya.
- *
- * Pendaftaran ganda ditolak keras: dua penyedia yang mengaku menghitung KPI
- * yang sama berarti ada dua rumus untuk satu angka, dan itu persis kegagalan
- * yang ingin dicegah Gate 21.
- */
+/** Pemetaan kunci KPI ke penyedia yang menghitungnya. */
 final class RegistriKpi
 {
     /** @var array<string, PenyediaKpi> */

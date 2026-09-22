@@ -16,13 +16,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Database\QueryException;
 
-/**
- * Satu-satunya jalur yang boleh mengubah StokSukuCadang.JumlahTersedia
- * (Gate 10). Setiap baris detail dikunci (SELECT ... FOR UPDATE) di dalam
- * transaksi database sebelum saldonya dibaca dan ditulis ulang, supaya dua
- * posting bersamaan pada kombinasi gudang+suku cadang yang sama diserialkan
- * oleh database, bukan oleh aplikasi.
- */
+/** Satu-satunya jalur yang boleh mengubah StokSukuCadang.JumlahTersedia (Gate 10). */
 final class PostingMutasiStok
 {
     private const KUNCI_KONFIGURASI_STOK_NEGATIF = 'Persediaan.IzinkanStokNegatif';

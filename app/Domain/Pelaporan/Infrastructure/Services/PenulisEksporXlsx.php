@@ -10,10 +10,7 @@ use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\XLSX\Writer;
 
-/**
- * Penulis XLSX lewat OpenSpout, yang menulis secara streaming sehingga jumlah
- * baris tidak dibatasi memori worker.
- */
+/** Penulis XLSX lewat OpenSpout, yang menulis secara streaming. */
 final class PenulisEksporXlsx implements PenulisEkspor
 {
     public function format(): FormatEkspor

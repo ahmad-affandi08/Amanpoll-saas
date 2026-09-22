@@ -13,11 +13,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Gate;
 
-/**
- * Sesi waktu kerja yang direkam teknisi saat offline (20.05). Mutasi bersifat
- * append-only sehingga tidak pernah menimpa data server dan tidak memerlukan
- * pemeriksaan versi; penggandaan dicegah oleh KunciOperasi antrean.
- */
+/** Sesi waktu kerja yang direkam teknisi saat offline (20.05). */
 final class PenanganCatatWaktuKerja implements PenanganOperasiSinkronisasi
 {
     public function __construct(private readonly KelolaWaktuKerja $aksi) {}

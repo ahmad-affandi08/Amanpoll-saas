@@ -13,11 +13,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI kepatuhan tingkat layanan (21.01: SLA).
- *
- * Penyebut selalu dibatasi pada pekerjaan yang benar-benar punya batas waktu.
- */
+/** KPI kepatuhan tingkat layanan (21.01: SLA). */
 final class QueryTingkatLayanan implements PenyediaKpi
 {
     use MenyaringLingkup;

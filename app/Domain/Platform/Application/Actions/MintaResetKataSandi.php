@@ -9,12 +9,7 @@ use App\Domain\Platform\Notifications\ResetKataSandiNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-/**
- * Selalu "berhasil" dari sudut pandang pemanggil (tidak membocorkan apakah
- * kombinasi organisasi+email terdaftar) -- konsisten dengan pesan generik
- * login. Email hanya unik per organisasi, jadi PenggunaId (bukan email)
- * yang dipakai sebagai kunci token.
- */
+/** Selalu "berhasil" dari sudut pandang pemanggil, tanpa membocorkan apakah akunnya terdaftar. */
 final class MintaResetKataSandi
 {
     public function jalankan(string $kodeOrganisasi, string $email): void

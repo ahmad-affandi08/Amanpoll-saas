@@ -16,14 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/**
- * Jalur masuk antrean mutasi offline (20.03) dan penyelesaian konfliknya
- * (20.06).
- *
- * Endpoint dorong aman diulang: mutasi dikenali lewat KunciOperasi buatan
- * klien, jadi pengiriman ulang setelah koneksi putus di tengah jalan tidak
- * pernah menghasilkan transaksi bisnis kedua.
- */
+/** Jalur masuk antrean mutasi offline (20.03) dan penyelesaian konfliknya (20.06). */
 final class AntrianSinkronisasiController extends Controller
 {
     public function dorong(

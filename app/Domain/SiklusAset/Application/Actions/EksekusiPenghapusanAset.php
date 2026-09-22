@@ -13,12 +13,7 @@ use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusan
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Aset historis TIDAK PERNAH forceDelete() -- hanya diarsipkan (Status =
- * Diarsipkan) lalu soft-delete biasa (DihapusPada), supaya seluruh riwayat
- * (lokasi, penanggung jawab, nilai, dst.) tetap tertelusuri (checklist
- * 09.04 "Larang hard-delete aset historis").
- */
+/** Aset historis TIDAK PERNAH forceDelete(). */
 final class EksekusiPenghapusanAset
 {
     public function __construct(

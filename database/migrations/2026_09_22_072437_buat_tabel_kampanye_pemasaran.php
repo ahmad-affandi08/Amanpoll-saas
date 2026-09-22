@@ -6,17 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Kampanye pemasaran (MARKETING.md 13, 24).
- *
- * Kodenya yang menjadi jembatan ke `utm_campaign`: event dan attribution
- * menunjuk baris kampanye, bukan sekadar menyimpan potongan teks dari URL,
- * sehingga satu kampanye yang ditulis berbeda di dua iklan tetap terhitung
- * sebagai satu.
- *
- * Biaya, audience, dan target menyusul di FASE 38; tanpa biaya, CAC per channel
- * belum dapat dihitung.
- */
+/** Kampanye pemasaran (MARKETING.md 13, 24). */
 return new class extends Migration
 {
     public function up(): void

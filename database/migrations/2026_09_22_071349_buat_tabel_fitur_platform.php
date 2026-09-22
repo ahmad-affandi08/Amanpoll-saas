@@ -6,13 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Feature flag tingkat platform (MARKETING.md 31).
- *
- * Berbeda dari FiturPaket yang menentukan apa yang dibeli satu tenant, flag ini
- * menentukan apa yang sudah hidup di produk sama sekali — dipakai untuk
- * menyalakan modul pemasaran secara bertahap tanpa menempel ke paket mana pun.
- */
+/** Feature flag tingkat platform (MARKETING.md 31). */
 return new class extends Migration
 {
     public function up(): void

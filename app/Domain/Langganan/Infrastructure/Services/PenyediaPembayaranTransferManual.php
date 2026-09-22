@@ -10,12 +10,7 @@ use App\Domain\Langganan\Domain\ValueObjects\PeristiwaPembayaran;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Pembayaran transfer bank dengan konfirmasi manual (22.06).
- *
- * "Webhook"-nya adalah konfirmasi administrator, jadi keabsahannya ditentukan
- * rahasia bersama, bukan tanda tangan gateway.
- */
+/** Pembayaran transfer bank dengan konfirmasi manual (22.06). */
 final class PenyediaPembayaranTransferManual implements PenyediaPembayaran
 {
     public const KODE = 'TransferManual';
@@ -39,8 +34,7 @@ final class PenyediaPembayaranTransferManual implements PenyediaPembayaran
             'NomorRekening' => (string) config('amanpoll.langganan.bank_rekening', '000-000-0000'),
             'AtasNama' => (string) config('amanpoll.langganan.bank_atas_nama', 'PT Amanpoll Indonesia'),
             'Jumlah' => (float) $tagihan->Total,
-            // Berita transfer memakai nomor tagihan supaya rekonsiliasi dapat
-            // mencocokkan mutasi bank ke tagihan tanpa menebak.
+            // Berita transfer memakai nomor tagihan.
             'BeritaTransfer' => (string) $tagihan->Nomor,
             'JatuhTempo' => $tagihan->JatuhTempo->toDateString(),
         ];
@@ -56,8 +50,6 @@ final class PenyediaPembayaranTransferManual implements PenyediaPembayaran
 
         if ($rahasia === '') {
             // Tanpa rahasia yang dikonfigurasi, endpoint ditutup rapat.
-            // Gagal-tertutup dipilih daripada gagal-terbuka karena endpoint ini
-            // dapat melunasi tagihan siapa pun.
             return false;
         }
 

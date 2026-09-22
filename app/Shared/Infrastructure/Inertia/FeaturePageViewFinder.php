@@ -4,16 +4,7 @@ namespace App\Shared\Infrastructure\Inertia;
 
 use Illuminate\View\FileViewFinder;
 
-/**
- * Custom view finder yang me-resolve nama komponen Inertia ke struktur feature-based.
- *
- * Konvensi: `Inertia::render('Feature/Page')` → `resources/js/features/Feature/pages/Page.tsx`
- *
- * Contoh:
- * - `Audit/Index`     → `features/Audit/pages/Index.tsx`
- * - `Kalibrasi/Jenis/Index` → `features/Kalibrasi/pages/Jenis/Index.tsx`
- * - `Auth/Login`      → `features/Auth/pages/Login.tsx`
- */
+/** Custom view finder yang me-resolve nama komponen Inertia ke struktur feature-based. */
 class FeaturePageViewFinder extends FileViewFinder
 {
     /**

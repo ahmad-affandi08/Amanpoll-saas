@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
-/**
- * Tahap pipeline bawaan (MARKETING.md 5.3).
- *
- * Tahapnya hidup sebagai baris supaya dapat diubah tanpa rilis, tetapi kode di
- * sini tetap dibutuhkan: corong dan otomasi menyebut tahap tertentu, dan tanpa
- * kode yang stabil keduanya akan putus begitu seseorang mengganti nama tahap.
- */
+/** Tahap pipeline bawaan (MARKETING.md 5.3). */
 final class KatalogTahapPipeline
 {
     public const BARU = 'BARU';

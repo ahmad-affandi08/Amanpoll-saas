@@ -9,10 +9,7 @@ use App\Domain\IntegrasiAudit\Domain\Enums\StatusPengirimanPanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
 use Illuminate\Console\Command;
 
-/**
- * Mengirim ulang panggilan balik web yang gagal dan sudah tiba jadwal
- * percobaannya (19.05).
- */
+/** Mengirim ulang panggilan balik web yang gagal dan sudah tiba jadwal percobaannya (19.05). */
 final class KirimUlangPanggilanBalikWeb extends Command
 {
     protected $signature = 'panggilan-balik:kirim-ulang {--batas=50}';

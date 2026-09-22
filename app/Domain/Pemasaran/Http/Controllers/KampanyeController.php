@@ -18,12 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Kampanye pemasaran (MARKETING.md 13).
- *
- * Kodenya yang dipakai sebagai `utm_campaign`, sehingga kunjungan yang datang
- * membawa kode ini langsung tertaut ke barisnya.
- */
+/** Kampanye pemasaran (MARKETING.md 13). */
 final class KampanyeController extends Controller
 {
     public function __construct(
@@ -39,8 +34,7 @@ final class KampanyeController extends Controller
             ->orderByDesc('DibuatPada')
             ->get();
 
-        // Jumlah kunjungan per kampanye dibaca sekali sebagai peta, bukan satu
-        // query per baris.
+        // Jumlah kunjungan per kampanye dibaca sekali sebagai peta, bukan satu query per baris.
         $kunjungan = UtmPemasaran::query()
             ->whereNotNull('KampanyeId')
             ->selectRaw('KampanyeId, COUNT(*) as Jumlah')

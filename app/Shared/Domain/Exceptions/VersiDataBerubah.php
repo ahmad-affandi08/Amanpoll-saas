@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Exceptions;
 
-/**
- * Dilempar saat optimistic locking mendeteksi data sudah berubah sejak
- * versi yang dibaca client (mis. mismatch kolom versi/updated_at).
- */
+/** Dilempar saat optimistic locking mendeteksi data sudah berubah sejak versi yang dibaca client (mis. */
 final class VersiDataBerubah extends PengecualianDomain
 {
     public function kodeStatusHttp(): int

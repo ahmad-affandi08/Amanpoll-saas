@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * Ekspor laporan (21.05): permintaan masuk antrean, berkasnya dibuat dalam
- * ketiga format, dan unduhannya diotorisasi ulang per berkas.
- */
+/** Ekspor laporan (21.05): permintaan masuk antrean, berkasnya dibuat dalam ketiga format. */
 final class EksporLaporanTest extends KasusPelaporan
 {
     public function test_permintaan_ekspor_dikirim_ke_antrean_bukan_dikerjakan_dalam_permintaan(): void
@@ -120,8 +117,7 @@ final class EksporLaporanTest extends KasusPelaporan
         $berkas = Berkas::query()->where('DiunggahOleh', $pengguna->Id)->firstOrFail();
         $isi = Storage::disk($berkas->MediaPenyimpanan)->get($berkas->LokasiPenyimpanan);
 
-        // Rumus ikut terbawa supaya angka tetap dapat ditelusuri setelah berkas
-        // lepas dari aplikasi (Gate 21).
+        // Rumus ikut terbawa supaya angka tetap dapat ditelusuri setelah berkas lepas dari aplikasi (Gate 21).
         $this->assertStringContainsString('Formula', $isi);
         $this->assertStringContainsString('Perintah Kerja Aktif', $isi);
         $this->assertStringContainsString('COUNT(PerintahKerja) yang belum Selesai', $isi);

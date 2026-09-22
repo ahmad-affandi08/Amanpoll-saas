@@ -15,18 +15,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
 
-/**
- * Pembuatan berkas ekspor laporan (21.05).
- *
- * Dijalankan dari antrean, bukan dari permintaan HTTP, karena laporan lebar
- * dapat menyentuh belasan query agregat.
- */
+/** Pembuatan berkas ekspor laporan (21.05). */
 final class LayananEksporLaporan
 {
-    /**
-     * Penanda pada Berkas.DataTambahan yang membedakan ekspor dari lampiran
-     * biasa.
-     */
+    /** Penanda pada Berkas.DataTambahan yang membedakan ekspor dari lampiran biasa. */
     public const JENIS_BERKAS = 'EksporLaporan';
 
     /** @var array<string, PenulisEkspor> */
@@ -60,8 +52,7 @@ final class LayananEksporLaporan
         $namaPenyimpanan = (string) Str::ulid().'.'.$format->ekstensi();
         $tujuan = 'ekspor-laporan/'.$pengguna->OrganisasiId.'/'.$namaPenyimpanan;
 
-        // Ditulis ke berkas sementara lebih dulu supaya disk tujuan (yang bisa
-        // saja S3) tidak pernah memegang berkas setengah jadi.
+        // Ditulis ke berkas sementara lebih dulu.
         $pathSementara = tempnam(sys_get_temp_dir(), 'ekspor-');
         if ($pathSementara === false) {
             throw new RuntimeException('Tidak dapat membuat berkas sementara untuk ekspor.');

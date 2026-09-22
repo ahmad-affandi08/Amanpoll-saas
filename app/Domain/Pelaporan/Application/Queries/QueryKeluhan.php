@@ -12,14 +12,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI keluhan (21.01: complaint).
- *
- * Keluhan tidak memiliki kolom unit organisasi sendiri, jadi filter unit
- * dijangkau lewat aset yang dikeluhkan; keluhan tanpa aset otomatis keluar dari
- * hasil ketika filter unit dipakai, dan itu memang benar — ia tidak dapat
- * dipastikan milik unit tersebut.
- */
+/** KPI keluhan (21.01: complaint). */
 final class QueryKeluhan implements PenyediaKpi
 {
     use MenyaringLingkup;

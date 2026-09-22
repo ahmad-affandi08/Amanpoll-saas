@@ -8,9 +8,7 @@ use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAkses;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Riwayat audit tidak boleh ditulis ulang lewat kode aplikasi (24).
- */
+/** Riwayat audit tidak boleh ditulis ulang lewat kode aplikasi (24). */
 final class CatatanHanyaTambahTest extends KasusKeamanan
 {
     public function test_catatan_audit_tidak_dapat_diubah(): void

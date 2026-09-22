@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Langganan\Domain\Enums;
 
-/**
- * Bentuk entitlement sebuah fitur (22.01/22.03).
- *
- * Boolean menjawab "boleh atau tidak", Angka menjawab "sampai berapa".
- */
+/** Bentuk entitlement sebuah fitur (22.01/22.03). */
 enum TipeBatasFitur: string
 {
     case Boolean = 'Boolean';

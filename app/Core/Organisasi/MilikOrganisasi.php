@@ -21,11 +21,7 @@ trait MilikOrganisasi
                     $model->OrganisasiId = $konteks->wajibId();
                 }
             } elseif ($konteks->ada() && (string) $model->OrganisasiId !== $konteks->wajibId()) {
-                // Tenant yang sedang berjalan tidak boleh menulis ke tenant lain,
-                // sekalipun OrganisasiId-nya sampai ke sini lewat mass assignment
-                // (24). Jalur lintas tenant yang sah — konsol platform, pekerjaan
-                // terjadwal — berjalan tanpa konteks, jadi tidak tersentuh aturan
-                // ini.
+                // Tenant yang sedang berjalan tidak boleh menulis ke tenant lain.
                 throw new AturanBisnisDilanggar(
                     'OrganisasiId tidak boleh menunjuk organisasi lain dari yang sedang aktif.',
                 );

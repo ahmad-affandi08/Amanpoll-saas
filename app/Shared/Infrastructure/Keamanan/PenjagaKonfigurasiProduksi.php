@@ -7,14 +7,7 @@ namespace App\Shared\Infrastructure\Keamanan;
 use Illuminate\Contracts\Foundation\Application;
 use RuntimeException;
 
-/**
- * Menolak konfigurasi produksi yang membocorkan isi aplikasi (24).
- *
- * Diperiksa saat boot, bukan diserahkan ke daftar periksa penempatan, karena
- * salah satu setelan ini yang lolos ke produksi tidak menimbulkan gejala apa
- * pun sampai ada permintaan yang gagal — dan saat itu halaman kesalahannya
- * memuat jejak tumpukan, isi environment, dan kredensial basis data.
- */
+/** Menolak konfigurasi produksi yang membocorkan isi aplikasi (24). */
 final class PenjagaKonfigurasiProduksi
 {
     public static function periksa(Application $aplikasi): void

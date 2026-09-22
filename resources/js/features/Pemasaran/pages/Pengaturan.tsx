@@ -59,10 +59,7 @@ export default function Pengaturan({ domain, fitur, konfigurasi }: Props) {
   );
 }
 
-/**
- * Host hanya ditampilkan, tidak pernah diubah dari sini: sumbernya environment
- * (MARKETING.md 30).
- */
+/** Host hanya ditampilkan, tidak pernah diubah dari sini: sumbernya environment (MARKETING.md 30). */
 function KartuDomain({ domain }: { domain: Domain }) {
   const baris: Array<[string, string | null]> = [
     ['Host publik', domain.publik],

@@ -31,10 +31,7 @@ use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
-/**
- * Gate 20 — simulasi offline: teknisi bekerja tanpa sinyal, lalu antreannya
- * dikirim (berkali-kali) saat koneksi kembali tanpa menggandakan transaksi.
- */
+/** Gate 20 — simulasi offline. */
 final class AntrianSinkronisasiOfflineTest extends TestCase
 {
     use DatabaseTransactions;
@@ -228,8 +225,7 @@ final class AntrianSinkronisasiOfflineTest extends TestCase
 
         $this->dorong($teknisi, [])->assertOk();
 
-        // Perangkat terdaftar tapi mutasinya baru masuk tanpa sempat diproses
-        // (mis. koneksi putus tepat setelah server menyimpan antrean).
+        // Perangkat terdaftar tapi mutasinya baru masuk tanpa sempat diproses (mis.
         $perangkat = PerangkatPengguna::query()
             ->withoutGlobalScopes()
             ->where('PenggunaId', $teknisi->Id)
@@ -265,8 +261,7 @@ final class AntrianSinkronisasiOfflineTest extends TestCase
         $perangkat = PerangkatPengguna::query()->withoutGlobalScopes()
             ->where('PenggunaId', $teknisi->Id)->firstOrFail();
 
-        // Worker mati mendadak setelah mengklaim mutasi: baris tertinggal di
-        // status Diproses dan tidak akan pernah diambil lagi tanpa pemulihan.
+        // Worker mati mendadak setelah mengklaim mutasi.
         AntrianSinkronisasi::query()->withoutGlobalScopes()->getQuery()->insert([
             'Id' => (string) Str::ulid(),
             'OrganisasiId' => $perintahKerja->OrganisasiId,

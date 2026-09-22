@@ -8,12 +8,7 @@ use App\Shared\Infrastructure\Persistence\HanyaTambah;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Perpindahan tahap satu prospek (MARKETING.md 5.3).
- *
- * Hanya-tambah: seluruh analisis corong menghitung lama tertahan per tahap dari
- * tabel ini, dan riwayat yang dapat ditulis ulang membuat angkanya tak berarti.
- */
+/** Perpindahan tahap satu prospek (MARKETING.md 5.3). */
 final class RiwayatTahapProspek extends ModelDasar
 {
     use HanyaTambah;

@@ -11,8 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         if (! Schema::hasTable('TokenResetKataSandi')) {
-            // Keyed oleh PenggunaId (bukan email) karena email hanya unik per
-            // organisasi, bukan global -- lihat App\Domain\Platform\Application\Actions\MintaResetKataSandi.
+            // Keyed oleh PenggunaId (bukan email).
             Schema::create('TokenResetKataSandi', function (Blueprint $table): void {
                 $table->char('PenggunaId', 26)->primary();
                 $table->string('TokenHash', 255);

@@ -6,17 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * First touch dan last touch per pengunjung (MARKETING.md 14, 24).
- *
- * Satu baris per `PengenalPengunjung`, bukan per sesi: pertanyaan yang dijawab
- * attribution adalah "dari mana orang ini pertama datang, dan dari mana ia
- * datang terakhir kali" — keduanya sifat orangnya, bukan sifat satu kunjungan.
- *
- * Kolom first touch tidak pernah ditulis ulang setelah terisi. Itu aturan
- * pokok MARKETING.md 14 dan satu-satunya alasan kampanye yang mengawali sebuah
- * konversi masih dapat dikenali berminggu kemudian.
- */
+/** First touch dan last touch per pengunjung (MARKETING.md 14, 24). */
 return new class extends Migration
 {
     public function up(): void

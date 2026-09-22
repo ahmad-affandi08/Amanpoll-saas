@@ -12,13 +12,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Ringkasan Growth & Marketing (MARKETING.md 4).
- *
- * Sebelum ada angka pertumbuhan yang sungguhan di FASE 37, halaman ini
- * menjawab pertanyaan yang justru paling sering ditanyakan saat modul dirilis
- * bertahap: modul mana yang sudah hidup, dan apa yang boleh saya buka.
- */
+/** Ringkasan Growth & Marketing (MARKETING.md 4). */
 final class RingkasanPemasaranController extends Controller
 {
     public function __construct(

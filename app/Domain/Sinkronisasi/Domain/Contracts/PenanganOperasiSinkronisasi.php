@@ -7,22 +7,13 @@ namespace App\Domain\Sinkronisasi\Domain\Contracts;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisasi;
 
-/**
- * Satu jenis mutasi offline yang boleh diantrikan klien PWA (20.03/20.05).
- *
- * Penangan sengaja tidak menulis sendiri ke tabel bisnis: ia memanggil Action
- * domain yang sama dengan jalur online, sehingga seluruh invariant, audit, dan
- * optimistic locking tetap berlaku untuk mutasi yang berasal dari offline.
- */
+/** Satu jenis mutasi offline yang boleh diantrikan klien PWA (20.03/20.05). */
 interface PenanganOperasiSinkronisasi
 {
     /** Kode operasi yang dikirim klien, mis. `PerintahKerja.UbahStatus`. */
     public function operasi(): string;
 
-    /**
-     * Jenis entitas yang dimutasi; dipakai untuk penanda sinkronisasi dan
-     * audit.
-     */
+    /** Jenis entitas yang dimutasi; dipakai untuk penanda sinkronisasi dan audit. */
     public function jenisEntitas(): string;
 
     /** Apakah operasi ini wajib menyertakan EntitasId. */
@@ -37,10 +28,7 @@ interface PenanganOperasiSinkronisasi
      */
     public function aturan(): array;
 
-    /**
-     * Versi entitas di server saat ini, atau null bila entitas tidak memakai
-     * optimistic locking (mis. mutasi append-only seperti catatan).
-     */
+    /** Versi entitas di server saat ini, atau null bila entitas tidak memakai optimistic locking (mis. */
     public function versiServer(?string $entitasId): ?int;
 
     /** Apakah pengguna ini boleh menjalankan operasi tersebut. */

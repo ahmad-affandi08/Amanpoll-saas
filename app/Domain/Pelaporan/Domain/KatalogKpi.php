@@ -9,13 +9,7 @@ use App\Domain\Pelaporan\Domain\Enums\SatuanKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\DefinisiKpi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 
-/**
- * Katalog seluruh KPI Amanpoll beserta rumusnya (Gate 21).
- *
- * Satu-satunya daftar resmi; dasbor, laporan, dan ekspor menyebut KPI lewat
- * kunci di sini. Kunci tersimpan di konfigurasi pengguna, jadi jangan diubah
- * namanya — tambah kunci baru dan pensiunkan yang lama.
- */
+/** Katalog seluruh KPI Amanpoll beserta rumusnya (Gate 21). */
 final class KatalogKpi
 {
     /** @var array<string, DefinisiKpi>|null */

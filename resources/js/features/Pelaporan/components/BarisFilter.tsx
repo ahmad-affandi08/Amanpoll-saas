@@ -21,14 +21,7 @@ function tanggalMundur(hari: number): { Dari: string; Sampai: string } {
   return { Dari: dari.toISOString().slice(0, 10), Sampai: sampai.toISOString().slice(0, 10) };
 }
 
-/**
- * Satu baris filter di atas seluruh isi yang dicakupnya (21.02).
- *
- * Filter tidak pernah dipasang per kartu: semua KPI harus dibaca dari irisan
- * data yang sama, kalau tidak angkanya tidak akan saling cocok. Perubahan
- * dikirim sebagai kunjungan Inertia dengan `preserveState`, sehingga kartu
- * menahan render sebelumnya alih-alih berkedip menjadi kerangka kosong.
- */
+/** Satu baris filter di atas seluruh isi yang dicakupnya (21.02). */
 export function BarisFilter({
   filter,
   pilihanUnit,

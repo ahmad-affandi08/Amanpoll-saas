@@ -13,13 +13,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 
-/**
- * Menerbitkan satu versi halaman ke situs publik (MARKETING.md 8).
- *
- * Satu-satunya jalur yang mengubah `VersiTerbitId`. Penjadwal, tombol di
- * konsol, dan rollback semuanya lewat sini, sehingga tidak ada penerbitan yang
- * lolos tanpa dicatat di audit dan tanpa cache isinya dibuang.
- */
+/** Menerbitkan satu versi halaman ke situs publik (MARKETING.md 8). */
 final class TerbitkanHalaman
 {
     public function __construct(
@@ -54,9 +48,7 @@ final class TerbitkanHalaman
             $halaman->VersiTerbitId = $versi->Id;
             $halaman->Status = StatusHalamanPemasaran::Terbit;
             $halaman->TerbitPada = CarbonImmutable::now();
-            // Jadwal tarik yang sudah lewat tidak diwariskan ke penerbitan baru:
-            // halaman akan langsung tertarik lagi pada jalannya penjadwal
-            // berikutnya, dan itu bukan yang diminta siapa pun.
+            // Jadwal tarik yang sudah lewat tidak diwariskan ke penerbitan baru.
             if ($halaman->TarikPada !== null && $halaman->TarikPada->isPast()) {
                 $halaman->TarikPada = null;
             }

@@ -10,11 +10,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Kirim notifikasi ke setiap pengguna berizin Stok.Kelola dalam organisasi
- * yang punya suku cadang aktif dengan stok bersih (tersedia - ditahan,
- * dijumlah lintas gudang) sudah mencapai atau di bawah StokMinimum (10.07).
- */
+/** Kirim notifikasi ke setiap pengguna berizin Stok.Kelola dalam organisasi yang punya suku cadang aktif. */
 final class PeringatanStokMinimum extends Command
 {
     protected $signature = 'suku-cadang:peringatan-stok-minimum';

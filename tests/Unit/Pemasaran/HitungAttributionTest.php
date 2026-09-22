@@ -14,9 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-/**
- * Penyusunan ulang attribution dari data mentah (MARKETING.md 14, 36).
- */
+/** Penyusunan ulang attribution dari data mentah (MARKETING.md 14, 36). */
 final class HitungAttributionTest extends TestCase
 {
     use RefreshDatabase;

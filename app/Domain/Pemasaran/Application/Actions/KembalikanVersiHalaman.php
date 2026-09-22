@@ -13,14 +13,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Rollback ke versi halaman sebelumnya (MARKETING.md 8).
- *
- * Isi versi lama disalin menjadi versi baru, bukan ditunjuk kembali. Dengan
- * begitu nomor versi selalu maju dan riwayatnya terbaca lurus: "versi 5 adalah
- * salinan versi 2" jauh lebih mudah ditelusuri daripada penunjuk yang melompat
- * mundur dan menghapus jejak bahwa versi 3 dan 4 pernah terbit.
- */
+/** Rollback ke versi halaman sebelumnya (MARKETING.md 8). */
 final class KembalikanVersiHalaman
 {
     public function __construct(
@@ -58,12 +51,7 @@ final class KembalikanVersiHalaman
                 ],
             );
 
-            /*
-             * Rollback halaman yang sedang terbit langsung menerbitkan
-             * salinannya: yang diminta adalah situs publik kembali seperti
-             * semula, bukan sebuah draf yang masih menunggu disetujui.
-             * Halaman yang belum terbit hanya mendapat drafnya.
-             */
+            // Rollback halaman yang sedang terbit langsung menerbitkan salinannya.
             if ($halaman->Status === StatusHalamanPemasaran::Terbit) {
                 return $this->terbitkan->jalankan($halaman, $salinan);
             }

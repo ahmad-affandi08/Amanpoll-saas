@@ -8,11 +8,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatPenanggungJawabAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 
-/**
- * "Ganti" penanggung jawab = tutup baris yang masih terbuka (SelesaiPada
- * null) lalu buat baris baru -- tidak pernah update baris lama isinya,
- * supaya histori append-oriented (pola sama seperti KeputusanPersetujuan).
- */
+/** "Ganti" penanggung jawab = tutup baris yang masih terbuka (SelesaiPada null) lalu buat baris baru. */
 final class AssignPenanggungJawabAset
 {
     public function __construct(private readonly TransaksiDatabase $transaksi) {}

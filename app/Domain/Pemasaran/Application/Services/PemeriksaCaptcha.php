@@ -9,20 +9,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-/**
- * Verifikasi CAPTCHA formulir publik (MARKETING.md 10).
- *
- * Agnostik penyedia: Turnstile, hCaptcha, dan reCAPTCHA sama-sama memeriksa satu
- * token lewat satu endpoint dan menjawab `success`, jadi endpoint dan nama
- * fieldnya cukup dibaca dari konfigurasi.
- *
- * Gagal tertutup di dua titik, dan keduanya disengaja. Tanpa rahasia yang
- * terpasang, formulir yang menyalakan CAPTCHA menolak seluruh pengiriman —
- * salah konfigurasi harus terlihat, bukan diam-diam mematikan pemeriksaan yang
- * dikira menyala. Penyedia yang tidak dapat dihubungi juga ditolak: membiarkan
- * pengiriman lewat saat verifikasinya mati sama saja dengan mematikan CAPTCHA
- * lewat gangguan jaringan.
- */
+/** Verifikasi CAPTCHA formulir publik (MARKETING.md 10). */
 final class PemeriksaCaptcha
 {
     private const BATAS_DETIK = 5;

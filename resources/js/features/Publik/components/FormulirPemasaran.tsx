@@ -9,10 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { FieldPublik, FormulirPublik, KonfigurasiCaptcha } from '../types';
 
-/**
- * Nama field perangkap. Harus sama persis dengan
- * `KirimFormulirPemasaran::FIELD_HONEYPOT` di sisi server.
- */
+/** Nama field perangkap. */
 const FIELD_HONEYPOT = 'situs_perusahaan';
 
 interface Props {
@@ -31,13 +28,7 @@ function nilaiAwal(field: FieldPublik): NilaiField {
   return field.Jenis === 'PilihanGanda' ? [] : '';
 }
 
-/**
- * Formulir pemasaran yang bentuknya datang dari server (MARKETING.md 10).
- *
- * Nilai UTM tidak pernah ikut dikirim dari sini. Field tersembunyinya diisi
- * server dari sesi kunjungan, karena apa pun yang dititipkan lewat browser
- * dapat ditulis siapa saja — dan seluruh attribution akan mengikutinya.
- */
+/** Formulir pemasaran yang bentuknya datang dari server (MARKETING.md 10). */
 export function FormulirPemasaran({ formulir, judul, deskripsi }: Props) {
   const awal: Record<string, NilaiField> = { [FIELD_HONEYPOT]: '' };
   formulir.Field.forEach((field) => {
@@ -61,11 +52,7 @@ export function FormulirPemasaran({ formulir, judul, deskripsi }: Props) {
       {judul ? <h2 className="text-xl font-semibold tracking-tight">{judul}</h2> : null}
       {deskripsi ? <p className="text-sm text-muted-foreground">{deskripsi}</p> : null}
 
-      {/*
-        Perangkap bot. Disembunyikan lewat CSS dan dikeluarkan dari urutan tab
-        serta dari pembaca layar, sehingga tidak pernah dilihat atau diisi
-        manusia — pengisinya sudah pasti bukan pengunjung.
-      */}
+      {/* Perangkap bot. */}
       <div className="absolute left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
         <label htmlFor={FIELD_HONEYPOT}>Situs perusahaan</label>
         <input
@@ -122,16 +109,7 @@ export function FormulirPemasaran({ formulir, judul, deskripsi }: Props) {
   );
 }
 
-/**
- * Widget CAPTCHA. Turnstile merender dirinya sendiri pada elemen berkelas
- * `cf-turnstile` dan menaruh tokennya pada input tersembunyi bernama
- * `cf-turnstile-response`, yang persis nama field yang dibaca server. Karena
- * tokennya tidak melewati state React, ia ikut terkirim sebagai bagian dari
- * form biasa.
- *
- * Verifikasi di sisi server agnostik penyedia; yang disertakan di sini
- * hanyalah widget Turnstile.
- */
+/** Widget CAPTCHA. */
 function Captcha({ konfigurasi }: { konfigurasi: KonfigurasiCaptcha }) {
   if (konfigurasi.KunciSitus === null || konfigurasi.Skrip === null) {
     return (

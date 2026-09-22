@@ -16,12 +16,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 
-/**
- * Siklus hidup langganan satu organisasi (22.04).
- *
- * Satu organisasi hanya memiliki satu baris langganan yang berlaku; pergantian
- * paket mengubah baris itu, bukan membuat baris kedua.
- */
+/** Siklus hidup langganan satu organisasi (22.04). */
 final class KelolaLangganan
 {
     public function __construct(
@@ -66,8 +61,7 @@ final class KelolaLangganan
                 'UjiCobaSampai' => $ujiCoba?->toDateString(),
                 'Status' => $ujiCoba !== null ? StatusLangganan::UjiCoba->value : StatusLangganan::Aktif->value,
             ]);
-            // Memulai ulang membatalkan pembatalan sebelumnya; menyisakan
-            // BatalPada akan membuat langganan hidup tetapi tercatat batal.
+            // Memulai ulang membatalkan pembatalan sebelumnya.
             $langganan->BatalPada = null;
             $langganan->save();
 
@@ -89,11 +83,7 @@ final class KelolaLangganan
         });
     }
 
-    /**
-     * Memperpanjang satu periode. Titik tolaknya adalah tanggal berakhir yang
-     * ada bila masih di depan, supaya pembayaran lebih awal menambah waktu
-     * alih-alih membuang sisa periode yang sudah dibayar.
-     */
+    /** Memperpanjang satu periode. */
     public function perpanjang(Langganan $langganan, ?CarbonImmutable $pada = null): Langganan
     {
         return $this->transaksi->jalankan(function () use ($langganan, $pada): Langganan {
@@ -110,8 +100,7 @@ final class KelolaLangganan
 
             $langganan->BerakhirPada = $siklus->akhirPeriodeSetelah($titikTolak);
             $langganan->Status = StatusLangganan::Aktif->value;
-            // Perpanjangan mengakhiri uji coba: periode yang dibayar bukan lagi
-            // percobaan.
+            // Perpanjangan mengakhiri uji coba: periode yang dibayar bukan lagi percobaan.
             $langganan->UjiCobaSampai = null;
             $langganan->save();
 
@@ -125,12 +114,7 @@ final class KelolaLangganan
         });
     }
 
-    /**
-     * Pembatalan bawaannya berlaku di akhir periode: pelanggan sudah membayar
-     * sampai tanggal itu, jadi mencabutnya seketika akan mengambil kembali
-     * sesuatu yang sudah dibayar. Pembatalan segera disediakan terpisah untuk
-     * kasus pelanggaran ketentuan.
-     */
+    /** Pembatalan bawaannya berlaku di akhir periode. */
     public function batalkan(Langganan $langganan, bool $segera = false): Langganan
     {
         return $this->transaksi->jalankan(function () use ($langganan, $segera): Langganan {
@@ -157,11 +141,7 @@ final class KelolaLangganan
         });
     }
 
-    /**
-     * Menyelaraskan kolom Status dengan status efektif hari ini. Dipakai oleh
-     * perintah harian; nilai yang dibaca aplikasi tetap dihitung ulang, jadi
-     * ini demi laporan dan notifikasi, bukan demi penegakan.
-     */
+    /** Menyelaraskan kolom Status dengan status efektif hari ini. */
     public function segarkanStatus(Langganan $langganan, ?CarbonImmutable $pada = null): ?StatusLangganan
     {
         $efektif = $this->layananLangganan->statusEfektif($langganan, $pada);
@@ -217,8 +197,7 @@ final class KelolaLangganan
                 : CarbonImmutable::parse((string) $data['BerakhirPada'])->startOfDay();
         }
 
-        // Periode berbayar dihitung dari akhir uji coba, bukan dari tanggal
-        // mulai, supaya uji coba tidak diam-diam memakan periode berbayar.
+        // Periode berbayar dihitung dari akhir uji coba, bukan dari tanggal mulai.
         return $siklus->akhirPeriodeSetelah($ujiCoba ?? $mulai);
     }
 }

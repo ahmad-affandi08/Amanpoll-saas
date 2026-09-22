@@ -8,17 +8,11 @@ use App\Core\Audit\LayananAudit;
 use App\Domain\Persediaan\Application\Services\LayananSaldoReservasi;
 use App\Domain\Persediaan\Domain\Enums\JenisMutasiStok;
 use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
-use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Mengubah reservasi menjadi pengeluaran stok sungguhan: membuat + memposting
- * MutasiStok jenis Pengeluaran (supaya JumlahTersedia benar-benar berkurang
- * dan tercatat lewat dokumen resmi), lalu melepas hold JumlahDitahan yang
- * dibuat saat reservasi dibuat.
- */
+/** Mengubah reservasi menjadi pengeluaran stok sungguhan. */
 final class KonsumsiReservasiSukuCadang
 {
     public function __construct(

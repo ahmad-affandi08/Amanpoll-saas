@@ -7,9 +7,7 @@ namespace Tests\Unit\Pemasaran;
 use App\Domain\Pemasaran\Domain\Enums\StatusHalamanPemasaran;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Peta transisi status halaman (MARKETING.md 8).
- */
+/** Peta transisi status halaman (MARKETING.md 8). */
 final class TransisiStatusHalamanTest extends TestCase
 {
     public function test_draf_dapat_menuju_seluruh_status_lain(): void

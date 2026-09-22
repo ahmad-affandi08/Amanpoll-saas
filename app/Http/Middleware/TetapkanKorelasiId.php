@@ -10,11 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Satu ID korelasi per request, dipakai LayananAudit supaya beberapa baris
- * CatatanAudit yang berasal dari satu aksi pengguna (mis. operasi massal)
- * bisa dikaitkan tanpa perlu passing manual di setiap pemanggilan.
- */
+/** Satu ID korelasi per request, dipakai LayananAudit. */
 final class TetapkanKorelasiId
 {
     public function handle(Request $request, Closure $next): Response

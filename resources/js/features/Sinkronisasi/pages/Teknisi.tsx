@@ -64,14 +64,7 @@ function nilaiJawaban(jawaban: JawabanDaftarPeriksaOffline | undefined): string 
   return '';
 }
 
-/**
- * Ruang kerja teknisi offline (FASE 20.05).
- *
- * Seluruh isi halaman datang dari paket yang tersimpan di perangkat, bukan
- * dari props Inertia, sehingga halaman tetap berfungsi penuh ketika sinyal
- * hilang. Setiap aksi hanya mengantrikan mutasi; tidak ada yang dinyatakan
- * berhasil sebelum server mengonfirmasi (DESIGN.md 24).
- */
+/** Ruang kerja teknisi offline (FASE 20.05). */
 export default function TeknisiOffline() {
   const {
     status,
@@ -376,11 +369,7 @@ function KartuPenugasan({
 
 type FungsiAntrikan = ReturnType<typeof useSinkronisasiOffline>['antrikan'];
 
-/**
- * Draft pekerjaan dan draft catatan (20.05). Ketiga aksinya hanya menambah
- * mutasi ke antrean; status pekerjaan di layar baru berubah setelah paket
- * ditarik ulang dan server mengonfirmasi.
- */
+/** Draft pekerjaan dan draft catatan (20.05). */
 function DialogKerjakan({
   pekerjaan,
   onTutup,
@@ -682,11 +671,7 @@ function DialogDaftarPeriksa({
   );
 }
 
-/**
- * Dialog konflik (20.06). Nilai perangkat dan nilai server ditampilkan
- * berdampingan lebih dulu; tidak ada pilihan yang menimpa server tanpa
- * teknisi melihat apa yang akan tertimpa.
- */
+/** Dialog konflik (20.06). */
 function DialogKonflik({
   mutasi,
   onTutup,

@@ -22,10 +22,7 @@ export function tanggal(nilai: string | null): string {
   });
 }
 
-/**
- * Batas null berarti tanpa batas. Dibedakan dari nol, yang berarti tidak boleh
- * sama sekali — perbedaan yang hilang kalau keduanya ditulis sebagai "0".
- */
+/** Batas null berarti tanpa batas. */
 export function labelBatas(batas: number | null, satuan: string | null): string {
   if (batas === null) return 'Tanpa batas';
 

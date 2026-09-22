@@ -9,11 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Baris saldo stok per (Gudang, LokasiGudang, SukuCadang, KelompokSukuCadang).
- * TIDAK PERNAH diubah langsung dari Controller/Request -- satu-satunya jalur
- * penulisan adalah lewat PostingMutasiStok dan aksi Reservasi (Gate 10).
- */
+/** Baris saldo stok per (Gudang, LokasiGudang, SukuCadang, KelompokSukuCadang). */
 final class StokSukuCadang extends ModelDasar
 {
     use MilikOrganisasi;
@@ -45,11 +41,7 @@ final class StokSukuCadang extends ModelDasar
         ];
     }
 
-    /**
-     * Kuantitas bersih yang boleh dijanjikan ke pemakai baru: stok fisik
-     * dikurangi yang sudah ditahan reservasi (BUKAN dikurangi lagi oleh
-     * JumlahDipesan, karena itu barang masuk, bukan keluar).
-     */
+    /** Kuantitas bersih yang boleh dijanjikan ke pemakai baru. */
     public function jumlahTersediaBersih(): float
     {
         return (float) $this->JumlahTersedia - (float) $this->JumlahDitahan;

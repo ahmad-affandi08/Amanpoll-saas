@@ -18,12 +18,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Dasbor operasional dan manajemen (21.02).
- *
- * Susunan yang dipakai adalah dasbor tersimpan yang dipilih pengguna, atau
- * dasbor bawaannya, atau preset sesuai kewenangan.
- */
+/** Dasbor operasional dan manajemen (21.02). */
 final class DasborController extends Controller
 {
     public function __invoke(

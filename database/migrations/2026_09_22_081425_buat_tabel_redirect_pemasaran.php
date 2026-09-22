@@ -6,17 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Redirect situs publik (MARKETING.md 9).
- *
- * Slug halaman yang berubah tanpa redirect kehilangan seluruh peringkat yang
- * sudah dibangun untuknya, dan menambalnya lewat deploy berarti setiap
- * perubahan slug menunggu rilis. Karena itu petanya disimpan sebagai data.
- *
- * `Dari` dinormalkan menjadi jalur berawalan `/` tanpa host: aturannya milik
- * situs publik, dan menyimpan host di dalamnya membuat aturan yang sama gagal
- * di lingkungan pengembangan.
- */
+/** Redirect situs publik (MARKETING.md 9). */
 return new class extends Migration
 {
     public function up(): void
@@ -25,8 +15,7 @@ return new class extends Migration
             $table->char('Id', 26)->primary();
             $table->string('Dari', 500)->unique('UnqRedirectPemasaranDari');
 
-            // Kosong untuk 410: sumber daya dinyatakan hilang permanen dan
-            // memang tidak punya tujuan.
+            // Kosong untuk 410: sumber daya dinyatakan hilang permanen dan memang tidak punya tujuan.
             $table->string('Ke', 500)->nullable();
             $table->string('Kode', 3);
             $table->boolean('Aktif')->default(true);

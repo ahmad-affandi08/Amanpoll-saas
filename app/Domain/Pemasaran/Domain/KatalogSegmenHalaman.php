@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
-/**
- * Segmen awal halaman industri (MARKETING.md 8).
- *
- * Daftar semai, bukan daftar tertutup: segmen disimpan sebagai teks pada
- * halaman supaya pemasaran dapat menambah segmen baru tanpa rilis. Yang
- * disediakan di sini hanyalah pilihan bawaan di konsol.
- */
+/** Segmen awal halaman industri (MARKETING.md 8). */
 final class KatalogSegmenHalaman
 {
     /** @return array<string, string> */

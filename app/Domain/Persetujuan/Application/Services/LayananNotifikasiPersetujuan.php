@@ -9,11 +9,7 @@ use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetuju
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Membungkus LayananNotifikasi khusus untuk peristiwa alur persetujuan --
- * memisahkan "kapan dan ke siapa" (di sini) dari "bagaimana notifikasi
- * benar-benar dikirim" (LayananNotifikasi, dipakai domain manapun).
- */
+/** Membungkus LayananNotifikasi khusus untuk peristiwa alur persetujuan -- memisahkan "kapan. */
 final class LayananNotifikasiPersetujuan
 {
     public function __construct(

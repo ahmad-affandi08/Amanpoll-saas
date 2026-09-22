@@ -7,13 +7,7 @@ namespace App\Domain\Pelaporan\Domain\ValueObjects;
 use App\Domain\Pelaporan\Domain\Enums\KelompokKpi;
 use App\Domain\Pelaporan\Domain\Enums\SatuanKpi;
 
-/**
- * Definisi satu KPI: nama, satuan, sumber transaksi, dan rumusnya.
- *
- * `formula` bukan komentar hiasan — ia dikirim ke klien dan ditampilkan pada
- * setiap kartu KPI, sehingga pembaca dasbor selalu dapat melihat angka itu
- * dihitung dari apa (Gate 21).
- */
+/** Definisi satu KPI: nama, satuan, sumber transaksi, dan rumusnya. */
 final readonly class DefinisiKpi
 {
     public function __construct(

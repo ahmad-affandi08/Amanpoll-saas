@@ -31,10 +31,7 @@ export interface PageProps {
   [key: string]: unknown;
 }
 
-/**
- * Dipakai untuk tabel yang tumbuh tak terbatas (mis. log audit) dan sengaja
- * TIDAK memuat seluruh baris ke client seperti tabel DataTable lainnya.
- */
+/** Dipakai untuk tabel yang tumbuh tak terbatas. */
 export interface Paginasi<T> {
   data: T[];
   meta: {

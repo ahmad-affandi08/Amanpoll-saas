@@ -8,11 +8,7 @@ use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Halaman langganan tenant memuat paket, pemakaian, dan seluruh riwayat
- * tagihan; membayar tagihan mengikat organisasi secara finansial. Keduanya
- * urusan pengelola, bukan setiap pengguna yang kebetulan dapat masuk.
- */
+/** Halaman langganan tenant memuat paket, pemakaian, dan seluruh riwayat tagihan. */
 final class LanggananPolicy
 {
     public function __construct(private readonly PemeriksaIzin $izin) {}

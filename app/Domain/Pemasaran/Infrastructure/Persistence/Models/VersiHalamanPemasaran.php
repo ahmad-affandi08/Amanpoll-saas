@@ -9,12 +9,7 @@ use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Satu revisi isi halaman (MARKETING.md 8).
- *
- * Hanya-tambah. Menyunting draf melahirkan versi baru, karena rollback ke versi
- * yang isinya sempat ditulis ulang bukan rollback.
- */
+/** Satu revisi isi halaman (MARKETING.md 8). */
 final class VersiHalamanPemasaran extends ModelDasar
 {
     use HanyaTambah;

@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Konfigurasi;
 
-/**
- * Katalog kunci konfigurasi yang dikenal platform (namespace per fitur).
- * Kunci di luar daftar ini ditolak -- KonfigurasiOrganisasi bukan
- * penyimpanan key-value bebas.
- */
+/** Katalog kunci konfigurasi yang dikenal platform (namespace per fitur). */
 final class DefinisiKonfigurasi
 {
     /**

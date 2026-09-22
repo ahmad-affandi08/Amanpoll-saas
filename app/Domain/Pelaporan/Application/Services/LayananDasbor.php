@@ -11,11 +11,7 @@ use App\Domain\Pelaporan\Infrastructure\Persistence\Models\KomponenDasbor;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use Illuminate\Database\Eloquent\Collection;
 
-/**
- * Susunan dasbor: preset per peran (21.02) dan dasbor tersimpan (21.04).
- *
- * Preset dipilih dari izin yang dimiliki, bukan dari nama peran.
- */
+/** Susunan dasbor: preset per peran (21.02) dan dasbor tersimpan (21.04). */
 final class LayananDasbor
 {
     /** Lebar komponen dalam grid 4 kolom. */

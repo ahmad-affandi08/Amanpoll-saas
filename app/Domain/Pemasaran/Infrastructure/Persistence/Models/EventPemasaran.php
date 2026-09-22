@@ -8,12 +8,7 @@ use App\Shared\Infrastructure\Persistence\HanyaTambah;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Satu peristiwa pemasaran (MARKETING.md 23).
- *
- * Hanya-tambah: timeline prospek dan seluruh corong dibaca dari tabel ini, dan
- * riwayat yang dapat ditulis ulang bukan riwayat.
- */
+/** Satu peristiwa pemasaran (MARKETING.md 23). */
 final class EventPemasaran extends ModelDasar
 {
     use HanyaTambah;

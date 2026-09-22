@@ -6,9 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Kontak, tag, aktivitas, riwayat tahap, dan rincian skor (MARKETING.md 24).
- */
+/** Kontak, tag, aktivitas, riwayat tahap, dan rincian skor (MARKETING.md 24). */
 return new class extends Migration
 {
     public function up(): void
@@ -43,12 +41,7 @@ return new class extends Migration
             $table->foreign('TagProspekId')->references('Id')->on('TagProspek')->cascadeOnDelete();
         });
 
-        /*
-         * Perubahan tahap wajib tercatat (MARKETING.md 5.3). Riwayatnya terpisah
-         * dari AktivitasProspek karena ia menjawab pertanyaan yang berbeda:
-         * bukan "apa yang terjadi", melainkan "berapa lama prospek tertahan di
-         * satu tahap" — dasar seluruh analisis corong.
-         */
+        // Perubahan tahap wajib tercatat (MARKETING.md 5.3).
         Schema::create('RiwayatTahapProspek', function (Blueprint $table): void {
             $table->char('Id', 26)->primary();
             $table->char('ProspekId', 26);
@@ -77,11 +70,7 @@ return new class extends Migration
             $table->foreign('AktorPlatformId')->references('Id')->on('AdminPlatform')->nullOnDelete();
         });
 
-        /*
-         * Rincian skor, bukan hanya totalnya. Tanpa ini, angka pada kartu
-         * prospek tidak dapat dijelaskan kepada siapa pun — dan skor yang tidak
-         * dapat dijelaskan akan diabaikan tim penjualan.
-         */
+        // Rincian skor, bukan hanya totalnya.
         Schema::create('SkorProspek', function (Blueprint $table): void {
             $table->char('Id', 26)->primary();
             $table->char('ProspekId', 26);

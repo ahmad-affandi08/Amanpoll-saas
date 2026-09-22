@@ -9,12 +9,7 @@ use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\PenandaSinkronisas
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
 
-/**
- * Penanda sinkronisasi per perangkat dan jenis entitas (20.04).
- *
- * TokenSinkronisasi adalah sidik jari paket offline terakhir yang diterima
- * perangkat.
- */
+/** Penanda sinkronisasi per perangkat dan jenis entitas (20.04). */
 final class LayananPenandaSinkronisasi
 {
     public function catat(string $perangkatPenggunaId, string $jenisEntitas, ?string $token = null): PenandaSinkronisasi

@@ -15,11 +15,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Support\Facades\Http;
 use Throwable;
 
-/**
- * Abstraksi tarik/dorong data ke sistem eksternal (19.03). Setiap jalannya
- * dicatat sebagai satu baris SinkronisasiEksternal sehingga status, jumlah
- * data, dan kegagalannya dapat ditinjau tanpa membuka log server.
- */
+/** Abstraksi tarik/dorong data ke sistem eksternal (19.03). */
 final class LayananSinkronisasiEksternal
 {
     public function __construct(
@@ -27,10 +23,7 @@ final class LayananSinkronisasiEksternal
         private readonly PenyusunHeaderIntegrasi $header,
     ) {}
 
-    /**
-     * Menyiapkan satu baris sinkronisasi lalu menyerahkannya ke antrean,
-     * sehingga permintaan pengguna tidak menunggu sistem eksternal.
-     */
+    /** Menyiapkan satu baris sinkronisasi lalu menyerahkannya ke antrean. */
     public function antrikan(IntegrasiEksternal $integrasi, string $jenisProses, string $arah): SinkronisasiEksternal
     {
         $sinkronisasi = $this->mulai($integrasi, $jenisProses, $arah);
@@ -39,10 +32,7 @@ final class LayananSinkronisasiEksternal
         return $sinkronisasi;
     }
 
-    /**
-     * Menjalankan satu baris sinkronisasi lewat adapter jenis integrasinya.
-     * Kegagalan dilempar kembali supaya job mencobanya ulang.
-     */
+    /** Menjalankan satu baris sinkronisasi lewat adapter jenis integrasinya. */
     public function jalankan(SinkronisasiEksternal $sinkronisasi): SinkronisasiEksternal
     {
         $integrasi = IntegrasiEksternal::query()
@@ -140,10 +130,7 @@ final class LayananSinkronisasiEksternal
         }
     }
 
-    /**
-     * Pesan kegagalan yang disimpan tidak boleh membocorkan kredensial yang
-     * ikut terbawa pada URL atau header.
-     */
+    /** Pesan kegagalan yang disimpan tidak boleh membocorkan kredensial yang ikut terbawa pada URL atau header. */
     private function pesanAman(string $pesan): string
     {
         $bersih = preg_replace('/(Bearer\s+|api[_-]?key=|token=|password=)[^\s&"\']+/i', '$1[disamarkan]', $pesan) ?? $pesan;

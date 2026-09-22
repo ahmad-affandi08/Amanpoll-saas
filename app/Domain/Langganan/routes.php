@@ -10,26 +10,18 @@ use App\Domain\Langganan\Http\Controllers\WebhookPembayaranController;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use Illuminate\Support\Facades\Route;
 
-/**
- * Admin platform bekerja lintas tenant, jadi bindingnya dibuat eksplisit lepas
- * dari global scope organisasi. Namanya dibedakan dari parameter tenant supaya
- * tidak ada rute tenant yang tanpa sengaja ikut memakai binding tanpa batas
- * ini.
- */
+/** Admin platform bekerja lintas tenant, jadi bindingnya dibuat eksplisit lepas dari global scope organisasi. */
 Route::bind(
     'langgananPlatform',
     fn (string $id): Langganan => Langganan::query()->withoutGlobalScopes()->findOrFail($id),
 );
 
-// Webhook penyedia pembayaran (22.06). Tanpa sesi dan tanpa tenant: keabsahannya
-// dibuktikan oleh tanda tangan penyedia, bukan oleh pengguna yang masuk.
+// Webhook penyedia pembayaran (22.06).
 Route::middleware(['api', 'throttle:webhook'])
     ->post('/webhook/pembayaran/{penyedia}', WebhookPembayaranController::class)
     ->name('langganan.webhook.pembayaran');
 
-// Prefix dibedakan dari /platform milik pengaturan tenant: keduanya memakai
-// guard yang berbeda, dan URL yang sama dengan arti berbeda adalah sumber salah
-// paham yang mahal.
+// Prefix dibedakan dari /platform milik pengaturan tenant.
 Route::middleware('web')->prefix('admin-platform')->name('adminPlatform.')->group(function (): void {
     Route::middleware('guest:platform')->group(function (): void {
         Route::get('/login', [AuthPlatformController::class, 'create'])->name('login');
@@ -63,8 +55,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->group(function (): void {
         Route::get('/', [LanggananTenantController::class, 'index'])->name('index');
 
-        // Dikecualikan dari pemblokiran tulis: justru lewat sini tenant yang
-        // kedaluwarsa memulihkan langganannya.
+        // Dikecualikan dari pemblokiran tulis: justru lewat sini tenant yang kedaluwarsa memulihkan langganannya.
         Route::post('/tagihan/{tagihan}/bayar', [LanggananTenantController::class, 'bayar'])
             ->name('tagihan.bayar');
     });

@@ -6,13 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Pelaku dari konsol platform pada catatan audit (22.02).
- *
- * PenggunaId ber-foreign key ke tabel Pengguna, sehingga tidak dapat menampung
- * identitas admin platform. Tanpa kolom tersendiri, perubahan paket dan
- * langganan — yang berdampak uang — akan tercatat tanpa pelaku sama sekali.
- */
+/** Pelaku dari konsol platform pada catatan audit (22.02). */
 return new class extends Migration
 {
     public function up(): void

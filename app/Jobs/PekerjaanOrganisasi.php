@@ -11,10 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * handle() sengaja final: subclass tidak bisa lupa menetapkan konteks
- * organisasi untuk job queue database. Implementasikan jalankan().
- */
+/** handle() sengaja final: subclass tidak bisa lupa menetapkan konteks organisasi untuk job queue database. */
 abstract class PekerjaanOrganisasi implements ShouldQueue
 {
     use Dispatchable;

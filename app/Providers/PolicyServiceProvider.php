@@ -135,10 +135,7 @@ use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisas
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
-/**
- * Model domain berada di luar namespace App\Models sehingga auto-discovery
- * policy Laravel tidak menemukannya; didaftarkan eksplisit di sini.
- */
+/** Model domain berada di luar namespace App\Models sehingga auto-discovery policy Laravel tidak menemukannya. */
 final class PolicyServiceProvider extends ServiceProvider
 {
     public function boot(): void

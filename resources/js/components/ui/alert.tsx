@@ -3,8 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { CircleAlert, CircleCheck, Info, TriangleAlert, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/* Alert Amanpoll: banner menetap di dalam halaman, radius 9px mengikuti Card
-   (DESIGN.md 6). Untuk notifikasi sesaat pakai toast Sonner (DESIGN.md 21.1). */
+/* Alert Amanpoll: banner menetap di dalam halaman, radius 9px mengikuti Card (DESIGN.md 6). */
 const alertVariants = cva(
   'relative flex w-full items-start gap-3 rounded-[9px] border px-4 py-3 text-sm [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:translate-y-0.5',
   {

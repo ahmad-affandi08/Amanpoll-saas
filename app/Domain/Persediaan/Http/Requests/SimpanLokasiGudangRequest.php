@@ -10,14 +10,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\LokasiGudang;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/**
- * GudangId SENGAJA tidak divalidasi di sini -- ia berasal dari route binding
- * ({gudang} saat membuat, atau LokasiGudang.GudangId yang sudah ada saat
- * mengubah), bukan field yang bisa diedit klien. Konsisten dengan pola
- * LokasiId Aset yang tidak bisa dipindah lewat form edit umum (ADR 0008
- * bagian 5) -- lokasi dalam gudang tidak bisa "dipindah gudang" lewat edit
- * biasa begitu dibuat.
- */
+/** GudangId SENGAJA tidak divalidasi di sini -- ia berasal dari route binding ({gudang} saat membuat. */
 final class SimpanLokasiGudangRequest extends FormRequest
 {
     public function authorize(): bool

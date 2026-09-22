@@ -15,17 +15,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Menyimpan draf halaman sebagai versi baru (MARKETING.md 8).
- *
- * Setiap simpan melahirkan satu versi, tidak pernah menimpa yang sebelumnya.
- * Itu yang membuat revision history dan rollback menjadi konsekuensi wajar dari
- * menyunting, bukan fitur terpisah yang harus diingat untuk dipakai.
- *
- * Halaman yang sedang terbit tetap terbit saat drafnya disunting: yang berubah
- * hanya `VersiDrafId`. Menerbitkan draf itu adalah langkah tersendiri, sehingga
- * tidak ada perubahan yang sampai ke publik tanpa seseorang memutuskannya.
- */
+/** Menyimpan draf halaman sebagai versi baru (MARKETING.md 8). */
 final class SimpanDrafHalaman
 {
     public function __construct(private readonly TransaksiDatabase $transaksi) {}
@@ -102,11 +92,7 @@ final class SimpanDrafHalaman
         ]);
     }
 
-    /**
-     * Menyalin blok satu versi ke versi baru. Dipakai rollback, yang
-     * menerbitkan ulang isi lama sebagai versi baru alih-alih menunjuk balik ke
-     * versi lama — supaya nomor versi tetap maju dan riwayatnya terbaca lurus.
-     */
+    /** Menyalin blok satu versi ke versi baru. */
     public function salinBlok(VersiHalamanPemasaran $sumber, VersiHalamanPemasaran $tujuan): void
     {
         foreach ($sumber->blok as $blok) {

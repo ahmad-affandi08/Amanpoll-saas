@@ -6,11 +6,7 @@ namespace App\Shared\Domain\ValueObjects;
 
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Nilai uang disimpan sebagai integer satuan terkecil (bukan float) agar
- * bebas galat pembulatan biner. Aturan pembulatan: setengah ke atas
- * (half-up) pada digit tepat setelah skala yang ditentukan.
- */
+/** Nilai uang disimpan sebagai integer satuan terkecil (bukan float) agar bebas galat pembulatan biner. */
 final readonly class Uang
 {
     private function __construct(
@@ -119,9 +115,7 @@ final readonly class Uang
         return ($negatif ? '-' : '').$bulat.'.'.$pecahan;
     }
 
-    /**
-     * Hanya untuk tampilan (mis. dikirim ke frontend), bukan untuk kalkulasi lanjutan.
-     */
+    /** Hanya untuk tampilan (mis. */
     public function keFloatTampilan(): float
     {
         return (float) $this->keString();

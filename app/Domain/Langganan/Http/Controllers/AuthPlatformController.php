@@ -14,12 +14,7 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Masuk dan keluar admin platform (22.02).
- *
- * Memakai guard tersendiri, sehingga sesi tenant yang sedang berjalan tidak
- * tergeser saat admin platform masuk di peramban yang sama, dan sebaliknya.
- */
+/** Masuk dan keluar admin platform (22.02). */
 final class AuthPlatformController extends Controller
 {
     private const MAKS_PERCOBAAN = 5;

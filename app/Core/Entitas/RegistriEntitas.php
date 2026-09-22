@@ -11,14 +11,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Peta JenisEntitas (string polimorfik dipakai Berkas/Tag/KolomKustom/
- * Komentar) ke model Eloquent sungguhan + izin yang menguasainya. Setiap
- * modul domain mendaftarkan entitasnya sendiri lewat daftarkan() di
- * ServiceProvider masing-masing -- supaya modul baru (mis. Aset di fase
- * berikutnya) bisa langsung memakai infrastruktur FASE 05 tanpa mengubah
- * kelas ini.
- */
+/** Peta JenisEntitas (string polimorfik dipakai Berkas/Tag/KolomKustom/ Komentar) ke model Eloquent sungguhan. */
 final class RegistriEntitas
 {
     /**
@@ -55,11 +48,7 @@ final class RegistriEntitas
             ?? throw new DataTidakDitemukan("Jenis entitas '{$jenisEntitas}' tidak dikenal.");
     }
 
-    /**
-     * Dipakai seragam oleh semua controller yang menempel data (lampiran,
-     * tag, kolom kustom, komentar) ke entitas polimorfik -- satu titik agar
-     * aturan otorisasinya konsisten di semua modul.
-     */
+    /** Dipakai seragam oleh semua controller yang menempel data (lampiran. */
     public function pastikanBolehKelola(Pengguna $pengguna, string $jenisEntitas): void
     {
         if (! $this->bolehKelola($pengguna, $jenisEntitas)) {
@@ -72,12 +61,7 @@ final class RegistriEntitas
         return $this->pemeriksaIzin->boleh($pengguna->Id, $this->izinKelolaUntuk($jenisEntitas));
     }
 
-    /**
-     * Mengembalikan baris entitas HANYA jika ada dan berada di organisasi
-     * konteks saat ini -- mengandalkan ScopeOrganisasi milik model target
-     * (bukan pengecekan OrganisasiId manual), jadi cross-tenant otomatis
-     * tidak ketemu (404), bukan diam-diam bocor.
-     */
+    /** Mengembalikan baris entitas HANYA jika ada. */
     public function cariEntitas(string $jenisEntitas, string $entitasId): Model
     {
         $kelas = $this->peta[$jenisEntitas]['kelas']

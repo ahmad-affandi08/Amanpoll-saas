@@ -11,13 +11,7 @@ use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Domain\Exceptions\LanggananTidakMengizinkan;
 
-/**
- * Penegakan batas kuota (22.05).
- *
- * Batas tidak dapat dijaga oleh middleware: sebuah permintaan baru melanggar
- * kuota setelah diketahui berapa baris yang sudah ada, jadi pemeriksaannya
- * harus terjadi tepat sebelum baris baru dibuat.
- */
+/** Penegakan batas kuota (22.05). */
 final class PenjagaBatasLangganan
 {
     public function __construct(
@@ -25,13 +19,7 @@ final class PenjagaBatasLangganan
         private readonly KonteksOrganisasi $konteks,
     ) {}
 
-    /**
-     * Memastikan penambahan satu baris tidak melewati batas paket.
-     *
-     * Jumlah terpakai dibaca di sini, bukan diterima dari pemanggil, supaya
-     * tidak ada use-case yang secara tak sengaja menghitungnya dengan cara
-     * yang lebih longgar daripada yang dipakai untuk menampilkannya.
-     */
+    /** Memastikan penambahan satu baris tidak melewati batas paket. */
     public function pastikanMasihMuat(string $kodeFitur, int $tambahan = 1): void
     {
         $definisi = KatalogFitur::ambil($kodeFitur);
@@ -71,11 +59,7 @@ final class PenjagaBatasLangganan
         return $hasil;
     }
 
-    /**
-     * Baris yang dihitung terhadap kuota. Hanya baris yang benar-benar hidup
-     * yang dihitung: aset yang sudah dihapus dan pengguna nonaktif tidak
-     * memakan kuota, sebab pelanggan sudah melepasnya.
-     */
+    /** Baris yang dihitung terhadap kuota. */
     private function terpakai(string $kodeFitur): int
     {
         $organisasiId = $this->konteks->id();

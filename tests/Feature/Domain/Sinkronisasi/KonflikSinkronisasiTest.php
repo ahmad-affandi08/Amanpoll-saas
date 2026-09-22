@@ -19,11 +19,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
-/**
- * 20.06 — perubahan offline yang bertabrakan dengan server berhenti sebagai
- * konflik dan menunggu keputusan pengguna. Tidak ada jalur yang menimpa server
- * secara diam-diam, dan setiap keputusan meninggalkan jejak audit.
- */
+/** 20.06 — perubahan offline yang bertabrakan dengan server berhenti sebagai konflik. */
 final class KonflikSinkronisasiTest extends TestCase
 {
     use DatabaseTransactions;

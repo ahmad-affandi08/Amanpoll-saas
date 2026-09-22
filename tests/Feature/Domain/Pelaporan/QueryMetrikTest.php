@@ -37,13 +37,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-/**
- * Gate 21, bagian kedua: setiap KPI punya query test.
- *
- * Nilai yang diharapkan dihitung tangan dari data yang ditanam, bukan disalin
- * dari keluaran implementasi, supaya tes ini benar-benar menguji rumusnya dan
- * bukan sekadar mengunci perilaku yang ada.
- */
+/** Gate 21, bagian kedua: setiap KPI punya query test. */
 final class QueryMetrikTest extends TestCase
 {
     use DatabaseTransactions;

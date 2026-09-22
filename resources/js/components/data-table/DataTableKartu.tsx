@@ -1,12 +1,7 @@
 import { type Row, type Table as TabelTanstack, flexRender } from '@tanstack/react-table';
 import { EmptyState } from '@/components/shared/EmptyState';
 
-/**
- * Tampilan kartu untuk DataTable di layar sempit (DESIGN.md 9.3).
- *
- * Dinyalakan per tabel lewat `kartuDiPonsel`; kolom menentukan perannya sendiri
- * lewat `meta.kartu`.
- */
+/** Tampilan kartu untuk DataTable di layar sempit (DESIGN.md 9.3). */
 export function DataTableKartu<TData>({
   table,
   pesanKosong,
@@ -80,10 +75,7 @@ function KartuBaris<TData>({ row }: { row: Row<TData> }) {
   );
 }
 
-/**
- * Header kolom sering berupa komponen pengurut, bukan teks. Kolom menyediakan
- * `labelKartu`; bila tidak, id kolom dirapikan seadanya.
- */
+/** Header kolom sering berupa komponen pengurut, bukan teks. */
 function labelKolom(label: string | undefined, id: string): string {
   if (label) return label;
 

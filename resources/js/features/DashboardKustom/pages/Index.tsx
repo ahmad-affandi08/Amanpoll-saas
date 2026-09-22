@@ -37,18 +37,7 @@ interface KomponenDraf {
   Lebar: number;
 }
 
-/**
- * Penyusun dasbor kustom (21.04).
- *
- * Pengguna memilih KPI, bentuk tampilannya, lebar dalam grid empat kolom, dan
- * urutannya. Tata letak bebas seret-lepas sengaja tidak dipakai: kolom
- * PosisiX/PosisiY disediakan skema untuk kebutuhan itu nanti, tetapi urutan dan
- * lebar sudah cukup untuk susunan yang rapi di ponsel sampai desktop tanpa
- * memaksa pengguna menata ulang tiap kali layarnya berganti ukuran.
- *
- * Bentuk yang ditawarkan per KPI berasal dari server, jadi tidak mungkin
- * memilih bagan yang nanti ditolak saat disimpan.
- */
+/** Penyusun dasbor kustom (21.04). */
 export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batasKomponen }: Props) {
   const { flash } = usePage<PageProps>().props;
   const konfirmasi = useKonfirmasi();

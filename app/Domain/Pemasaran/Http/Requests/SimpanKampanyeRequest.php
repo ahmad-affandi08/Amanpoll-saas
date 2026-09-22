@@ -25,8 +25,7 @@ final class SimpanKampanyeRequest extends FormRequest
         $id = $kampanye instanceof Kampanye ? $kampanye->getKey() : null;
 
         return [
-            // Kode inilah yang dipakai sebagai utm_campaign, jadi keunikannya
-            // menentukan apakah satu kampanye terhitung satu atau terpecah.
+            // Kode inilah yang dipakai sebagai utm_campaign.
             'Kode' => ['required', 'string', 'max:100', Rule::unique('Kampanye', 'Kode')->ignore($id, 'Id')],
             'Nama' => ['required', 'string', 'max:180'],
             'Objective' => ['required', Rule::enum(ObjectiveKampanye::class)],

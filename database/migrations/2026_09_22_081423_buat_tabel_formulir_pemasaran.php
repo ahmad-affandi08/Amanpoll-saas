@@ -6,15 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Form builder dan pengirimannya (MARKETING.md 10).
- *
- * `PengirimanFormulir` menyimpan jawaban mentah apa adanya, terpisah dari
- * `Prospek` yang lahir darinya. Dua alasan: field formulir dapat berubah
- * sewaktu-waktu sedangkan jawaban lama harus tetap terbaca seperti saat
- * dikirim, dan satu pengiriman yang gagal menjadi prospek tetap harus
- * tersimpan supaya dapat diperiksa.
- */
+/** Form builder dan pengirimannya (MARKETING.md 10). */
 return new class extends Migration
 {
     public function up(): void
@@ -29,11 +21,7 @@ return new class extends Migration
             $table->char('KampanyeId', 26)->nullable();
             $table->json('Tag')->nullable();
 
-            /*
-             * Pemicu otomasi disimpan sebagai kode, bukan foreign key: mesin
-             * otomasinya baru lahir di FASE 35, dan formulir tidak boleh
-             * menunggu modul itu ada untuk dapat dikonfigurasi.
-             */
+            // Pemicu otomasi disimpan sebagai kode, bukan foreign key.
             $table->string('PemicuOtomasi', 120)->nullable();
             $table->string('UrlWebhook', 500)->nullable();
 

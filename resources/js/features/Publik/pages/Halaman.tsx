@@ -7,12 +7,7 @@ interface Props extends PropsPublik {
   halaman: IsiHalaman;
 }
 
-/**
- * Satu halaman pemasaran yang disusun dari dashboard (MARKETING.md 8).
- *
- * Seluruh alamat situs publik dilayani komponen ini; yang membedakan satu
- * halaman dari lainnya hanyalah daftar bloknya.
- */
+/** Satu halaman pemasaran yang disusun dari dashboard (MARKETING.md 8). */
 export default function Halaman({ halaman, kanonik, urlMasuk, urlDaftar }: Props) {
   const meta = halaman.Meta;
   const alamatKanonik = meta.Kanonik ?? kanonik;
@@ -22,11 +17,7 @@ export default function Halaman({ halaman, kanonik, urlMasuk, urlDaftar }: Props
       <Head>
         <title>{meta.Judul}</title>
         {meta.Deskripsi ? <meta name="description" content={meta.Deskripsi} /> : null}
-        {/*
-          Ditandai di dua tempat. Header X-Robots-Tag dipasang middleware dan
-          itulah yang mengikat, tetapi perayap yang hanya membaca HTML — dan
-          alat pratinjau yang menempelkan halaman ini — membaca tag ini.
-        */}
+        {/* Ditandai di dua tempat. */}
         {halaman.NoIndex ? <meta name="robots" content="noindex, nofollow" /> : null}
         {!halaman.NoIndex && alamatKanonik ? <link rel="canonical" href={alamatKanonik} /> : null}
         {meta.OgJudul ? <meta property="og:title" content={meta.OgJudul} /> : null}

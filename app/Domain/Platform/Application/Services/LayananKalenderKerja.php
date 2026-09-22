@@ -7,11 +7,7 @@ namespace App\Domain\Platform\Application\Services;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Sumber kebenaran tunggal untuk "apakah tanggal ini hari libur" -- dipakai
- * fase berikutnya oleh penjadwalan pemeliharaan preventif/kalibrasi supaya
- * tidak menjadwalkan pekerjaan di hari libur.
- */
+/** Sumber kebenaran tunggal untuk "apakah tanggal ini hari libur". */
 final class LayananKalenderKerja
 {
     public function apakahHariLibur(string $organisasiId, CarbonInterface $tanggal, ?string $lokasiId = null): bool
@@ -32,8 +28,7 @@ final class LayananKalenderKerja
             return true;
         }
 
-        // Dibandingkan di PHP (bukan fungsi tanggal khusus dialek SQL) supaya
-        // query tetap portabel antara MySQL (produksi) dan SQLite (test).
+        // Dibandingkan di PHP (bukan fungsi tanggal khusus dialek SQL).
         $bulanHari = $tanggal->format('m-d');
         $tanggalBerulang = (clone $query)->where('BerulangTahunan', true)->pluck('Tanggal');
 

@@ -83,14 +83,11 @@ final class AmanpollServiceProvider extends ServiceProvider
             TransaksiDatabaseLaravel::class,
         );
 
-        // Jenis integrasi yang butuh protokol sendiri mendaftarkan adapternya
-        // ke registri ini; sisanya memakai adapter REST bawaan.
+        // Jenis integrasi yang butuh protokol sendiri mendaftarkan adapternya ke registri ini.
         $this->app->bind(AdapterSinkronisasi::class, AdapterSinkronisasiRest::class);
         $this->app->singleton(RegistriAdapterSinkronisasi::class);
 
         // Daftar putih mutasi yang boleh masuk lewat antrean offline (FASE 20).
-        // Operasi yang tidak terdaftar di sini ditolak server, sehingga antrean
-        // tidak dapat dipakai sebagai jalur pintas ke use-case sembarang.
         $this->app->singleton(RegistriOperasiSinkronisasi::class, function ($app): RegistriOperasiSinkronisasi {
             $registri = new RegistriOperasiSinkronisasi;
             foreach ([
@@ -107,8 +104,7 @@ final class AmanpollServiceProvider extends ServiceProvider
             return $registri;
         });
 
-        // Setiap kelompok KPI (FASE 21.01) punya tepat satu penyedia; registri
-        // menolak pendaftaran ganda supaya satu angka tidak punya dua rumus.
+        // Setiap kelompok KPI (FASE 21.01) punya tepat satu penyedia.
         $this->app->singleton(RegistriKpi::class, function ($app): RegistriKpi {
             $registri = new RegistriKpi;
             foreach ([
@@ -167,7 +163,6 @@ final class AmanpollServiceProvider extends ServiceProvider
         // Binding repository spesifik domain ditambahkan ketika use-case mulai diimplementasikan.
 
         // Entitas yang boleh dilampiri berkas/tag/kolom kustom/komentar (FASE 05).
-        // Modul domain baru mendaftarkan entitasnya sendiri di sini saat dibangun.
         $registri = $this->app->make(RegistriEntitas::class);
         $registri->daftarkan('UnitOrganisasi', UnitOrganisasi::class, 'Pengaturan.Kelola');
         $registri->daftarkan('Lokasi', Lokasi::class, 'Pengaturan.Kelola');
@@ -194,8 +189,7 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('PenerimaanPembelian', PenerimaanPembelian::class, 'Pengadaan.Kelola');
         $registri->daftarkan('TagihanPenyedia', TagihanPenyedia::class, 'Pengadaan.Kelola');
 
-        // Mesin Persetujuan (FASE 06) domain-agnostic; SiklusAset menyalin
-        // balik hasil keputusan ke status entitasnya sendiri lewat observer.
+        // Mesin Persetujuan (FASE 06) domain-agnostic.
         PermintaanPersetujuan::observe(SinkronkanStatusPersetujuanSiklusAset::class);
         PermintaanPersetujuan::observe(SinkronkanStatusPersetujuanPerencanaanPengadaan::class);
     }

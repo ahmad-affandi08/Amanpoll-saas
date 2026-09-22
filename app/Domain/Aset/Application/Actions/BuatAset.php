@@ -26,8 +26,7 @@ final class BuatAset
     public function jalankan(array $data, string $dibuatOleh): Aset
     {
         return $this->transaksi->jalankan(function () use ($data, $dibuatOleh): Aset {
-            // Batas paket ditegakkan di dalam use-case, bukan di rute, supaya
-            // jalur API dan impor massal ikut terjaga (22.05, Gate 22).
+            // Batas paket ditegakkan di dalam use-case, bukan di rute.
             $this->penjagaBatas->pastikanMasihMuat(KatalogFitur::BATAS_ASET);
 
             /** @var KategoriAset|null $kategoriAset */

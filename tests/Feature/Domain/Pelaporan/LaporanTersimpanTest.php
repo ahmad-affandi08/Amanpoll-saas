@@ -7,10 +7,7 @@ namespace Tests\Feature\Domain\Pelaporan;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Laporan tersimpan (21.03): kepemilikan, pembagian, dan normalisasi
- * konfigurasi.
- */
+/** Laporan tersimpan (21.03): kepemilikan, pembagian, dan normalisasi konfigurasi. */
 final class LaporanTersimpanTest extends KasusPelaporan
 {
     public function test_pengguna_dapat_menyimpan_laporan_beserta_filternya(): void
@@ -38,8 +35,7 @@ final class LaporanTersimpanTest extends KasusPelaporan
 
     public function test_kpi_di_luar_kewenangan_penyimpan_dibuang_dari_konfigurasi(): void
     {
-        // Tanpa Aset.Lihat, "aset.jumlah" tidak boleh mengendap di konfigurasi
-        // dan meledak saat laporan dibuka orang lain.
+        // Tanpa Aset.Lihat, "aset.jumlah" tidak boleh mengendap di konfigurasi.
         $pengguna = $this->buatPengguna();
 
         $this->actingAs($pengguna)

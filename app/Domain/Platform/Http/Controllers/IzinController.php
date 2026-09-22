@@ -10,11 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * Katalog Izin adalah data platform (bukan tenant), jadi hanya dapat
- * dibaca oleh organisasi admin untuk keperluan menyusun Peran -- CRUD-nya
- * dikelola di level platform, bukan oleh tenant.
- */
+/** Katalog Izin adalah data platform (bukan tenant). */
 final class IzinController extends Controller
 {
     public function __construct(private readonly PemeriksaIzin $pemeriksaIzin) {}

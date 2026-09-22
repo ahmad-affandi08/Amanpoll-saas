@@ -12,13 +12,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-/**
- * KPI keandalan: downtime, ketersediaan, MTTR, dan MTBF (21.01).
- *
- * Sesi downtime yang belum berakhir tetap dihitung dan dipotong pada akhir
- * rentang; penyebut ketersediaan dan MTBF hanya memuat aset yang pernah
- * mengalami downtime.
- */
+/** KPI keandalan: downtime, ketersediaan, MTTR, dan MTBF (21.01). */
 final class QueryKeandalan implements PenyediaKpi
 {
     use MenyaringLingkup;
@@ -135,10 +129,7 @@ final class QueryKeandalan implements PenyediaKpi
             ->get(['Id', 'AsetId', 'Jenis', 'MulaiPada', 'SelesaiPada', 'DurasiMenit']);
     }
 
-    /**
-     * Menit downtime yang jatuh di dalam rentang. Sesi yang masih berjalan
-     * dipotong pada batas akhir rentang, bukan diabaikan.
-     */
+    /** Menit downtime yang jatuh di dalam rentang. */
     private function menitEfektif(WaktuHentiAset $sesi, FilterMetrik $filter): int
     {
         $selesai = $sesi->SelesaiPada ?? $filter->sampai;

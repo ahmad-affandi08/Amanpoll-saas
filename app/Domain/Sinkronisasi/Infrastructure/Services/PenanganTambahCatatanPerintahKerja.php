@@ -11,10 +11,7 @@ use App\Domain\Sinkronisasi\Domain\Contracts\PenanganOperasiSinkronisasi;
 use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisasi;
 use Illuminate\Support\Facades\Gate;
 
-/**
- * Draft catatan lapangan yang ditulis teknisi saat offline (20.05). Catatan
- * masuk sebagai komentar entitas PerintahKerja, append-only dan tanpa versi.
- */
+/** Draft catatan lapangan yang ditulis teknisi saat offline (20.05). */
 final class PenanganTambahCatatanPerintahKerja implements PenanganOperasiSinkronisasi
 {
     public function __construct(private readonly TambahKomentar $aksi) {}

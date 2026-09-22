@@ -20,12 +20,7 @@ interface Props {
   className?: string;
 }
 
-/**
- * Baris pencarian dan filter baku (DESIGN.md 9, 12).
- *
- * Tombol reset hanya muncul bila ada filter aktif. Di ponsel kolom pencarian
- * melebar penuh dan filter membungkus ke bawahnya.
- */
+/** Baris pencarian dan filter baku (DESIGN.md 9, 12). */
 export function SearchFilterBar({
   kueri,
   onKueri,

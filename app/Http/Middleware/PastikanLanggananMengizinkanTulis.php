@@ -11,24 +11,13 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Pemblokiran tulis untuk tenant yang langganannya habis (22.05, Gate 22).
- *
- * Dipasang pada grup web dan api, bukan per rute, supaya tidak ada rute yang
- * dapat lupa dijaga.
- */
+/** Pemblokiran tulis untuk tenant yang langganannya habis (22.05, Gate 22). */
 final class PastikanLanggananMengizinkanTulis
 {
-    /**
-     * Metode yang tidak mengubah keadaan, jadi tetap diizinkan saat
-     * kedaluwarsa.
-     */
+    /** Metode yang tidak mengubah keadaan, jadi tetap diizinkan saat kedaluwarsa. */
     private const METODE_BACA = ['GET', 'HEAD', 'OPTIONS'];
 
-    /**
-     * Rute yang harus tetap dapat ditulis walau langganan habis, karena justru
-     * lewat sinilah tenant memulihkan langganannya.
-     */
+    /** Rute yang harus tetap dapat ditulis walau langganan habis. */
     private const RUTE_DIKECUALIKAN = [
         'logout',
         'langganan.tagihan.bayar',
@@ -42,8 +31,7 @@ final class PastikanLanggananMengizinkanTulis
     public function handle(Request $request, Closure $next): Response
     {
         if ($this->konteks->id() === null) {
-            // Belum ada tenant pada permintaan ini (halaman masuk, webhook,
-            // endpoint status). Tidak ada langganan yang bisa dinilai.
+            // Belum ada tenant pada permintaan ini (halaman masuk, webhook, endpoint status).
             return $next($request);
         }
 

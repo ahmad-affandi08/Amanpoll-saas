@@ -27,13 +27,7 @@ final class BuatRelasiAset
         return RelasiAset::create($data);
     }
 
-    /**
-     * Menolak relasi Komponen yang akan membuat siklus: menambahkan edge
-     * (induk -> anak) melingkar kalau induk sudah bisa dicapai dari anak
-     * lewat rantai relasi Komponen yang sudah ada (BFS pada graf edge,
-     * bukan kolom induk tunggal seperti PemeriksaHierarkiSirkular karena
-     * satu aset bisa punya banyak relasi Komponen sekaligus).
-     */
+    /** Menolak relasi Komponen yang akan membuat siklus. */
     private function pastikanTidakSirkular(string $asetIndukId, string $asetAnakId): void
     {
         $antrian = [$asetAnakId];

@@ -6,14 +6,7 @@ import { GrafikKpi } from '@/components/grafik/GrafikKpi';
 import { formatNilaiKpi } from '@/features/Pelaporan/format';
 import type { BentukKomponen, MetrikKpi } from '@/features/Pelaporan/types';
 
-/**
- * Kartu satu komponen dasbor.
- *
- * Rumus KPI selalu dapat dibuka dari ikon di samping judul. Itu bagian dari
- * Gate 21: angka di dasbor tidak boleh menjadi sesuatu yang harus dipercaya
- * begitu saja — pembacanya dapat melihat dari mana angkanya berasal tanpa
- * meninggalkan halaman.
- */
+/** Kartu satu komponen dasbor. */
 export function KartuKpi({
   kpi,
   bentuk,
@@ -66,8 +59,7 @@ export function KartuKpi({
 
         {bentuk === 'Angka' ? (
           <div>
-            {/* Figur proporsional, bukan tabular: angka besar berdigit sama
-                lebar terlihat renggang pada ukuran ini. */}
+            {/* Figur proporsional, bukan tabular. */}
             <p className="text-3xl font-semibold tracking-tight">
               {tanpaData ? '—' : formatNilaiKpi(kpi, true)}
             </p>

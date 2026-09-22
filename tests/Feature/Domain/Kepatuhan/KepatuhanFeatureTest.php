@@ -30,9 +30,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-/**
- * FASE 18 — standar kepatuhan, persyaratan, kepatuhan aset, dan sertifikasi.
- */
+/** FASE 18 — standar kepatuhan, persyaratan, kepatuhan aset, dan sertifikasi. */
 final class KepatuhanFeatureTest extends TestCase
 {
     use DatabaseTransactions;

@@ -4,14 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Exceptions;
 
-/**
- * Permintaan ditolak karena langganan tenant: paketnya tidak memuat fitur itu,
- * kuotanya habis, atau langganannya sudah lewat masa tenggang.
- *
- * Dipisahkan dari AksesDitolak karena penyebabnya berbeda dan jalan keluarnya
- * juga berbeda: yang ini tidak diselesaikan dengan memberi izin pada peran,
- * melainkan dengan membayar atau menaikkan paket.
- */
+/** Permintaan ditolak karena langganan tenant. */
 final class LanggananTidakMengizinkan extends PengecualianDomain
 {
     public function kodeStatusHttp(): int

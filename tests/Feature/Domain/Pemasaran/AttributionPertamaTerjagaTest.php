@@ -8,9 +8,7 @@ use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AttributionPemasaran;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 
-/**
- * First touch ditulis sekali dan tidak pernah tertimpa (MARKETING.md 14).
- */
+/** First touch ditulis sekali dan tidak pernah tertimpa (MARKETING.md 14). */
 final class AttributionPertamaTerjagaTest extends KasusPemasaran
 {
     private function urlPublik(string $path = '/'): string

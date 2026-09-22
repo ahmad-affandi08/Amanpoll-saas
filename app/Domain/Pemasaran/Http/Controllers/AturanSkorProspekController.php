@@ -13,13 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Aturan bobot skor prospek di konsol platform (MARKETING.md 5.4).
- *
- * Halaman ini menggantikan penyuntingan bobot sebagai satu objek JSON di
- * Pengaturan. Bentuk lamanya menerima kode peristiwa apa pun tanpa keluhan, lalu
- * mengabaikannya diam-diam saat menghitung.
- */
+/** Aturan bobot skor prospek di konsol platform (MARKETING.md 5.4). */
 final class AturanSkorProspekController extends Controller
 {
     public function __construct(private readonly LayananAturanSkorProspek $layanan) {}

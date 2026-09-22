@@ -17,12 +17,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Throwable;
 
-/**
- * Berjalan di luar konteks HTTP (worker antrian tidak punya
- * KonteksOrganisasi aktif), jadi ScopeOrganisasi sengaja dilewati --
- * baris Notifikasi dicari lewat Id ULID-nya sendiri yang sudah unik
- * lintas organisasi, pola yang sama seperti BersihkanCatatanAkses.
- */
+/** Berjalan di luar konteks HTTP (worker antrian tidak punya KonteksOrganisasi aktif). */
 final class KirimNotifikasi implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

@@ -22,8 +22,7 @@ final class UbahStatusHalamanRequest extends FormRequest
             'Status' => [
                 'required',
                 Rule::enum(StatusHalamanPemasaran::class)
-                    // Terbit punya rutenya sendiri karena ia juga memindahkan
-                    // versi terbit dan menulis audit penerbitan.
+                    // Terbit punya rutenya sendiri.
                     ->except([StatusHalamanPemasaran::Terbit]),
             ],
             'TerbitPada' => [

@@ -12,17 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Menerapkan peta redirect situs publik (MARKETING.md 9).
- *
- * Dipasang pada grup host publik saja. Redirect adalah alat SEO untuk alamat
- * yang pernah diumumkan ke dunia luar; memberlakukannya pada host dashboard
- * berarti satu baris data dapat mengalihkan rute sistem.
- *
- * Berjalan setelah pengenal pengunjung ditetapkan, sehingga cookienya tetap
- * ikut terkirim pada respons pengalihan dan perjalanan pengunjung tidak putus
- * tepat di alamat lama yang sedang dipindahkan.
- */
+/** Menerapkan peta redirect situs publik (MARKETING.md 9). */
 final class TerapkanRedirectPemasaran
 {
     public function __construct(private readonly PencariRedirectPemasaran $pencari) {}
@@ -51,13 +41,7 @@ final class TerapkanRedirectPemasaran
         );
     }
 
-    /**
-     * `DiperbaruiPada` disebut ulang dengan nilainya sendiri, bukan dibiarkan
-     * terisi otomatis: kolomnya memakai `ON UPDATE CURRENT_TIMESTAMP`, sehingga
-     * tanpa ini setiap kunjungan akan tampak seperti seseorang baru menyunting
-     * aturannya — dan kolom itu yang dipakai untuk menemukan aturan yang sudah
-     * lama tidak ditinjau.
-     */
+    /** `DiperbaruiPada` disebut ulang dengan nilainya sendiri, bukan dibiarkan terisi otomatis. */
     private function catatPemakaian(RedirectPemasaran $redirect): void
     {
         DB::table('RedirectPemasaran')

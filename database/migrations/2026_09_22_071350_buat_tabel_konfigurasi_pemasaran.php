@@ -6,16 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Konfigurasi domain Pemasaran (MARKETING.md 29.02, 30).
- *
- * Lintas tenant dan tanpa OrganisasiId: yang diatur di sini adalah bagaimana
- * Amanpoll memasarkan dirinya — durasi trial yang ditawarkan, aturan skor
- * prospek, jendela attribution — bukan data milik satu pelanggan.
- *
- * Rahasia penyedia tidak pernah disimpan di sini. MARKETING.md 0 dan 30
- * menempatkannya di environment, dan dashboard tidak pernah menampilkannya.
- */
+/** Konfigurasi domain Pemasaran (MARKETING.md 29.02, 30). */
 return new class extends Migration
 {
     public function up(): void

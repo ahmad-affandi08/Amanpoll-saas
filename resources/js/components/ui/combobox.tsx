@@ -28,17 +28,7 @@ interface Props {
   className?: string;
 }
 
-/**
- * Pemilih dengan pencarian (DESIGN.md 13).
- *
- * Dipakai menggantikan Select ketika pilihannya banyak — daftar aset atau
- * pengguna tidak dapat ditelusuri dengan menggulir. Pencariannya menyertakan
- * keterangan, sehingga "AST-0042" menemukan asetnya walau penggunanya tidak
- * ingat namanya.
- *
- * Seluruh label dirender sebagai teks React biasa karena isinya berasal dari
- * data tenant, tidak pernah lewat HTML mentah.
- */
+/** Pemilih dengan pencarian (DESIGN.md 13). */
 export function Combobox({
   opsi,
   nilai,

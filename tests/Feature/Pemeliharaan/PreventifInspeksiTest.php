@@ -324,8 +324,7 @@ final class PreventifInspeksiTest extends TestCase
         // Verifikasi TanggalBerikutnya pada RencanaPemeliharaanAset sudah dimajukan 1 bulan (menjadi 2026-04-23)
         $this->assertSame('2026-04-23', $asetPlan->fresh()->TanggalBerikutnya->toDateString());
 
-        // GATE 13 PERSYARATAN KRUSIAL: Menjalankan penjadwal KEDUA KALI TIDAK BOLEH MEMBUAT DUPLIKASI
-        // Uji idempoten dengan memanggil kembali scheduler command
+        // GATE 13 PERSYARATAN KRUSIAL.
         $this->artisan('pemeliharaan:jadwalkan-preventif', [
             '--organisasi' => $organisasi->Id,
             '--tanggal' => '2026-03-20',

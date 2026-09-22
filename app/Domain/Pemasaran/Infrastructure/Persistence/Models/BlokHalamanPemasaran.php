@@ -9,12 +9,7 @@ use App\Shared\Infrastructure\Persistence\HanyaTambah;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Satu blok pada satu versi halaman (MARKETING.md 8).
- *
- * Hanya-tambah, mengikuti versinya: blok yang dapat diubah membuat versi lama
- * ikut berubah, dan riwayat yang begitu tidak dapat dipakai untuk rollback.
- */
+/** Satu blok pada satu versi halaman (MARKETING.md 8). */
 final class BlokHalamanPemasaran extends ModelDasar
 {
     use HanyaTambah;

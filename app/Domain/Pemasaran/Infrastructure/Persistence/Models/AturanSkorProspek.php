@@ -35,10 +35,7 @@ final class AturanSkorProspek extends ModelDasar
         return $this->hasMany(SkorProspek::class, 'AturanSkorProspekId', 'Id');
     }
 
-    /**
-     * Dari mana sinyalnya datang. Aturan yang asalnya `Tertunda` tidak akan
-     * pernah menyumbang apa pun sampai penghasilnya ada.
-     */
+    /** Dari mana sinyalnya datang. */
     public function asal(): ?string
     {
         return KatalogPeristiwaSkor::asal($this->Peristiwa);

@@ -10,13 +10,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PerangkatPengguna;
 use App\Domain\Sinkronisasi\Application\Services\LayananPenandaSinkronisasi;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 
-/**
- * Pendaftaran perangkat yang memegang data offline (20.03).
- *
- * IdentitasPerangkat dibuat klien sekali lalu disimpan di perangkat, sehingga
- * pemasangan ulang PWA pada perangkat yang sama tetap memakai antrean yang
- * sama dan mutasi yang belum terkirim tidak berubah menjadi transaksi ganda.
- */
+/** Pendaftaran perangkat yang memegang data offline (20.03). */
 final class DaftarkanPerangkatPengguna
 {
     public function __construct(
@@ -52,11 +46,7 @@ final class DaftarkanPerangkatPengguna
         });
     }
 
-    /**
-     * Melepas perangkat saat pengguna keluar. Penanda sinkronisasi dibuang
-     * supaya paket berikutnya ditarik utuh, sedangkan antrean yang belum
-     * terkirim sengaja dipertahankan agar pekerjaan lapangan tidak hilang.
-     */
+    /** Melepas perangkat saat pengguna keluar. */
     public function lepaskan(PerangkatPengguna $perangkat): void
     {
         $this->transaksi->jalankan(function () use ($perangkat): void {

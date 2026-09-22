@@ -19,11 +19,7 @@ use Inertia\Response;
 
 final class TagController extends Controller
 {
-    /**
-     * Dipakai baik untuk halaman admin Tag maupun sebagai daftar sumber
-     * pemilihan tag (mis. TagTab) -- membedakan lewat wantsJson() supaya
-     * tidak perlu dua endpoint terpisah untuk data yang sama.
-     */
+    /** Dipakai baik untuk halaman admin Tag maupun sebagai daftar sumber pemilihan tag (mis. */
     public function index(Request $request): Response|AnonymousResourceCollection
     {
         $this->authorize('viewAny', Tag::class);

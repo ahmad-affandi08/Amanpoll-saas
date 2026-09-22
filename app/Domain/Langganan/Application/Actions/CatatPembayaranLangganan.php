@@ -16,13 +16,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
 
-/**
- * Pencatatan pembayaran dan pelunasan tagihan (22.06).
- *
- * Idempotensi ditegakkan indeks unik (PenyediaPembayaran, IdPeristiwaPenyedia),
- * bukan pemeriksaan sebelum menulis yang akan lolos saat dua webhook tiba
- * bersamaan; yang kalah ditangkap di sini dan dikembalikan apa adanya.
- */
+/** Pencatatan pembayaran dan pelunasan tagihan (22.06). */
 final class CatatPembayaranLangganan
 {
     public function __construct(
@@ -84,12 +78,7 @@ final class CatatPembayaranLangganan
         return $pembayaran;
     }
 
-    /**
-     * Status tagihan selalu dihitung ulang dari seluruh pembayaran berhasil,
-     * bukan ditambahkan sedikit demi sedikit. Dengan begitu pengembalian dana
-     * dan koreksi ikut terhitung, dan tidak ada nilai berjalan yang bisa
-     * menyimpang dari kenyataan.
-     */
+    /** Status tagihan selalu dihitung ulang dari seluruh pembayaran berhasil. */
     public function perbaruiStatusTagihan(TagihanLangganan $tagihan): TagihanLangganan
     {
         $statusLama = StatusTagihanLangganan::tryFrom((string) $tagihan->Status);
@@ -106,8 +95,7 @@ final class CatatPembayaranLangganan
         $total = (float) $tagihan->Total;
         $status = match (true) {
             $dibayar <= 0.0 => StatusTagihanLangganan::BelumDibayar,
-            // Toleransi satu sen menghindari tagihan yang tidak pernah lunas
-            // karena pembulatan nilai desimal.
+            // Toleransi satu sen menghindari tagihan yang tidak pernah lunas karena pembulatan nilai desimal.
             $dibayar + 0.01 >= $total => StatusTagihanLangganan::Lunas,
             default => StatusTagihanLangganan::SebagianDibayar,
         };
@@ -119,12 +107,9 @@ final class CatatPembayaranLangganan
         $tagihan->Status = $status->value;
         $tagihan->save();
 
-        // Pelunasan adalah satu-satunya peristiwa yang memperpanjang langganan,
-        // sehingga perpanjangan tidak mungkin terjadi dari pembayaran sebagian.
+        // Pelunasan adalah satu-satunya peristiwa yang memperpanjang langganan.
         if ($status === StatusTagihanLangganan::Lunas) {
-            // Webhook berjalan tanpa konteks organisasi, jadi relasinya dibaca
-            // lepas dari global scope tenant — kalau tidak, pelunasan lewat
-            // webhook tidak akan pernah memperpanjang langganan.
+            // Webhook berjalan tanpa konteks organisasi, jadi relasinya dibaca lepas dari global scope tenant.
             $langganan = Langganan::query()
                 ->withoutGlobalScopes()
                 ->find((string) $tagihan->LanggananId);

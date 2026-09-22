@@ -20,14 +20,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SkorProspek;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Support\Str;
 
-/**
- * Aturan bobot skor sebagai tabel (MARKETING.md 5.4, 24).
- *
- * Yang dijaga di sini bukan sekadar "bobot dapat diubah" — itu sudah berlaku
- * sejak bobotnya hidup di konfigurasi. Yang baru adalah kegagalannya terlihat:
- * kode sinyal yang tidak dikenal ditolak saat disimpan, bukan diabaikan
- * diam-diam saat dihitung.
- */
+/** Aturan bobot skor sebagai tabel (MARKETING.md 5.4, 24). */
 final class AturanSkorProspekTest extends KasusProspek
 {
     public function test_tabel_disemai_dengan_bobot_bawaan(): void
@@ -90,11 +83,7 @@ final class AturanSkorProspekTest extends KasusProspek
         $this->assertSame($sebelum + 45, app(PenghitungSkorProspek::class)->hitungUlang($prospek));
     }
 
-    /**
-     * Inilah kegagalan yang dulu tidak bergejala. `EmailBounce` punya bobot
-     * bawaan sejak awal, tetapi belum ada yang menghasilkannya — dan dulu tidak
-     * ada satu pun tempat yang menyatakan itu.
-     */
+    /** Inilah kegagalan yang dulu tidak bergejala. */
     public function test_sinyal_tertunda_tidak_menyumbang_meski_aktif(): void
     {
         $aturan = $this->aturan(KatalogPeristiwaSkor::EMAIL_BOUNCE);

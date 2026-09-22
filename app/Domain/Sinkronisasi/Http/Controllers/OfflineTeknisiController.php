@@ -17,13 +17,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Ruang kerja teknisi yang dapat dipakai tanpa koneksi (20.05).
- *
- * Halaman Inertia-nya hanya kerangka; seluruh data kerja ditarik lewat
- * endpoint paket lalu disimpan klien di IndexedDB per organisasi dan pengguna,
- * sehingga halaman tetap terbuka saat perangkat kehilangan sinyal.
- */
+/** Ruang kerja teknisi yang dapat dipakai tanpa koneksi (20.05). */
 final class OfflineTeknisiController extends Controller
 {
     public function index(): Response
@@ -31,10 +25,7 @@ final class OfflineTeknisiController extends Controller
         return Inertia::render('Sinkronisasi/Teknisi');
     }
 
-    /**
-     * Mendaftarkan perangkat lalu mengirim paket kerja terbaru beserta status
-     * antrean perangkat itu.
-     */
+    /** Mendaftarkan perangkat lalu mengirim paket kerja terbaru beserta status antrean perangkat itu. */
     public function paket(
         DaftarkanPerangkatRequest $request,
         DaftarkanPerangkatPengguna $daftarkan,
@@ -63,11 +54,7 @@ final class OfflineTeknisiController extends Controller
         ]);
     }
 
-    /**
-     * Dipanggil klien tepat sebelum keluar, setelah data lokal dihapus (20.02).
-     * Perangkat dinonaktifkan dan penandanya dibuang supaya sesi berikutnya
-     * menarik paket dari nol.
-     */
+    /** Dipanggil klien tepat sebelum keluar, setelah data lokal dihapus (20.02). */
     public function lepaskanPerangkat(
         DaftarkanPerangkatRequest $request,
         DaftarkanPerangkatPengguna $daftarkan,

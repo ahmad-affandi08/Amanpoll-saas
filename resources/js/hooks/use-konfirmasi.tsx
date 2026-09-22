@@ -9,10 +9,7 @@ type MintaKonfirmasi = (opsi: OpsiKonfirmasi) => Promise<HasilKonfirmasi>;
 
 const KonteksKonfirmasi = createContext<MintaKonfirmasi | null>(null);
 
-/**
- * Menyediakan satu dialog konfirmasi untuk seluruh aplikasi sehingga halaman
- * cukup memanggil `useKonfirmasi()` tanpa menyalin markup dialog.
- */
+/** Menyediakan satu dialog konfirmasi untuk seluruh aplikasi. */
 export function PenyediaKonfirmasi({ children }: { children: ReactNode }) {
   const [opsi, setOpsi] = useState<OpsiKonfirmasi | null>(null);
   const penyelesai = useRef<((hasil: HasilKonfirmasi) => void) | null>(null);
@@ -40,15 +37,7 @@ export function PenyediaKonfirmasi({ children }: { children: ReactNode }) {
   );
 }
 
-/**
- * Mengganti `window.confirm`. Kembaliannya falsy saat dibatalkan:
- *
- * ```ts
- * if (await konfirmasi({ judul: `Hapus tag "${tag.Nama}"?`, deskripsi: '...' })) {
- *   router.delete(ruteTag.detail(tag.Id));
- * }
- * ```
- */
+/** Mengganti `window.confirm`. */
 export function useKonfirmasi(): MintaKonfirmasi {
   const konteks = useContext(KonteksKonfirmasi);
 

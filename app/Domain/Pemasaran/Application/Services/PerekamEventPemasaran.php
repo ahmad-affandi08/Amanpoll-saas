@@ -8,13 +8,7 @@ use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Titik masuk tunggal untuk menulis EventPemasaran (MARKETING.md 23).
- *
- * Jenis yang tidak ada di katalog ditolak, bukan disimpan diam-diam: peristiwa
- * dengan nama salah ketik tidak akan pernah muncul di corong mana pun, dan
- * kesalahan itu baru ketahuan berbulan kemudian ketika angkanya tidak cocok.
- */
+/** Titik masuk tunggal untuk menulis EventPemasaran (MARKETING.md 23). */
 final class PerekamEventPemasaran
 {
     /** @param array<string, mixed>|null $dataTambahan */

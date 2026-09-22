@@ -1,14 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import type { PageProps } from '@/types/global';
 
-/**
- * Pembantu tampilan saja: backend tetap satu-satunya penegak entitlement.
- *
- * Prop yang dibaca di sini dihitung oleh PemeriksaEntitlement — pemeriksa yang
- * sama dengan yang menolak permintaan — sehingga menu yang disembunyikan selalu
- * sama dengan rute yang ditutup, dan tidak ada tombol yang menjanjikan sesuatu
- * yang akan ditolak backend.
- */
+/** Pembantu tampilan saja: backend tetap satu-satunya penegak entitlement. */
 export function useEntitlement() {
   const { entitlement } = usePage<PageProps>().props;
 

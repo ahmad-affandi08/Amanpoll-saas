@@ -17,14 +17,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * Penetrasi lintas tenant lewat rute aplikasi yang sebenarnya (24).
- *
- * Berbeda dari RouteModelBindingTenantTest yang membuktikan mekanismenya pada
- * satu rute sintetis, test ini menembak URL yang benar-benar dilayani produk:
- * pemegang izin penuh di organisasi A mencoba membaca dan mengubah milik
- * organisasi B.
- */
+/** Penetrasi lintas tenant lewat rute aplikasi yang sebenarnya (24). */
 final class PenetrasiLintasTenantTest extends KasusKeamanan
 {
     private Organisasi $organisasiA;
@@ -40,8 +33,7 @@ final class PenetrasiLintasTenantTest extends KasusKeamanan
         $this->organisasiA = $this->buatOrganisasi('ORG-PEN-A');
         $this->organisasiB = $this->buatOrganisasi('ORG-PEN-B');
 
-        // Penyerang bukan pengguna berizin rendah: ia administrator penuh di
-        // organisasinya sendiri. Yang diuji adalah batas tenant, bukan batas peran.
+        // Penyerang bukan pengguna berizin rendah: ia administrator penuh di organisasinya sendiri.
         $this->penyerang = $this->buatPengguna($this->organisasiA, [
             'Aset.Lihat', 'Aset.Ubah', 'Aset.Hapus', 'Stok.Kelola', 'Kontrak.Kelola',
         ]);
@@ -69,11 +61,7 @@ final class PenetrasiLintasTenantTest extends KasusKeamanan
             ->assertNotFound();
     }
 
-    /**
-     * Kontrol terhadap positif palsu: 404 di atas hanya bermakna bila rutenya
-     * memang ada dan melayani data milik sendiri. Tanpa test ini, salah ketik
-     * URL akan lulus sebagai "isolasi tenant berhasil".
-     */
+    /** Kontrol terhadap positif palsu. */
     #[DataProvider('rutePembacaan')]
     public function test_rute_yang_sama_melayani_data_milik_sendiri(string $jenis, string $polaUrl): void
     {

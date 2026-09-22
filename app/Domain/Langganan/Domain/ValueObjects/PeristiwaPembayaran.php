@@ -6,13 +6,7 @@ namespace App\Domain\Langganan\Domain\ValueObjects;
 
 use App\Domain\Langganan\Domain\Enums\StatusPembayaranLangganan;
 
-/**
- * Bentuk baku sebuah peristiwa pembayaran, apa pun penyedianya (22.06).
- *
- * Seluruh sisa aplikasi hanya mengenal bentuk ini; menambah penyedia baru
- * berarti menulis satu penerjemah ke bentuk ini, bukan menyebar kondisi khusus
- * penyedia ke seluruh alur tagihan.
- */
+/** Bentuk baku sebuah peristiwa pembayaran, apa pun penyedianya (22.06). */
 final readonly class PeristiwaPembayaran
 {
     /**

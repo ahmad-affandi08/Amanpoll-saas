@@ -32,10 +32,7 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-/**
- * FASE 19 — konfigurasi integrasi, pemetaan data, sinkronisasi, dan panggilan
- * balik web.
- */
+/** FASE 19 — konfigurasi integrasi, pemetaan data, sinkronisasi, dan panggilan balik web. */
 final class IntegrasiEksternalTest extends TestCase
 {
     use DatabaseTransactions;

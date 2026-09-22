@@ -9,10 +9,7 @@ use App\Domain\Pelaporan\Infrastructure\Persistence\Models\DasborTersimpan;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\KomponenDasbor;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Dasbor kustom (21.04): pilihan komponen, urutannya, lebarnya, dan penanda
- * dasbor bawaan.
- */
+/** Dasbor kustom (21.04): pilihan komponen, urutannya, lebarnya, dan penanda dasbor bawaan. */
 final class DasborTersimpanTest extends KasusPelaporan
 {
     public function test_komponen_disimpan_sesuai_urutan_yang_dikirim(): void
@@ -66,8 +63,7 @@ final class DasborTersimpanTest extends KasusPelaporan
 
     public function test_bentuk_yang_tidak_mungkin_digambar_untuk_kpi_ditolak(): void
     {
-        // MTTR adalah satu angka tanpa rincian, jadi tidak ada yang dapat
-        // digambar sebagai donat.
+        // MTTR adalah satu angka tanpa rincian, jadi tidak ada yang dapat digambar sebagai donat.
         $pengguna = $this->buatPengguna();
 
         $this->actingAs($pengguna)

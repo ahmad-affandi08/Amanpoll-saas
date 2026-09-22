@@ -6,16 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Sesi pengunjung anonim (MARKETING.md 24, 1.1).
- *
- * `PengenalPengunjung` adalah identitas yang bertahan — nilai cookie berdomain
- * induk — sedangkan satu baris di sini adalah satu kunjungan. Keduanya dipisah
- * karena perjalanan calon pelanggan berlangsung berhari-hari dan melintasi dua
- * host: yang pertama melekat pada orangnya, yang kedua pada kedatangannya.
- *
- * Tanpa OrganisasiId: pengunjung situs pemasaran belum menjadi tenant mana pun.
- */
+/** Sesi pengunjung anonim (MARKETING.md 24, 1.1). */
 return new class extends Migration
 {
     public function up(): void

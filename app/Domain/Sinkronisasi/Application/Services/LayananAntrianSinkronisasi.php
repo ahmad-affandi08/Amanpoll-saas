@@ -20,13 +20,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
 
-/**
- * Antrean mutasi offline (20.03) dan penyelesaian konfliknya (20.06).
- *
- * KunciOperasi dari klien membuat pengiriman ulang memakai baris antrean yang
- * sama, dan VersiKlien dibandingkan dengan versi server sebelum Action
- * dipanggil — dua hal itulah inti Gate 20.
- */
+/** Antrean mutasi offline (20.03) dan penyelesaian konfliknya (20.06). */
 final class LayananAntrianSinkronisasi
 {
     /** Batas percobaan otomatis sebelum mutasi ditandai gagal permanen. */
@@ -80,8 +74,7 @@ final class LayananAntrianSinkronisasi
                 'DiprosesPada' => $penolakan === null ? null : CarbonImmutable::now(),
             ]);
         } catch (QueryException $e) {
-            // Dua pengiriman identik yang tiba bersamaan: satu menang di unique
-            // index, yang kalah memakai baris pemenang.
+            // Dua pengiriman identik yang tiba bersamaan.
             $baris = $this->cariBerdasarkanKunci($perangkat, $kunciOperasi);
             if ($baris === null) {
                 throw $e;
@@ -149,10 +142,7 @@ final class LayananAntrianSinkronisasi
         return $hasil;
     }
 
-    /**
-     * Menerapkan satu mutasi. Aman dipanggil berulang: baris yang sudah tuntas
-     * dikembalikan apa adanya tanpa menyentuh data bisnis lagi.
-     */
+    /** Menerapkan satu mutasi. */
     public function proses(AntrianSinkronisasi $antrian, Pengguna $pengguna): AntrianSinkronisasi
     {
         if (! $this->klaim($antrian)) {
@@ -202,10 +192,7 @@ final class LayananAntrianSinkronisasi
         return $antrian;
     }
 
-    /**
-     * Menyelesaikan konflik atas keputusan pengguna (20.06). Kedua pilihan
-     * dicatat ke audit sehingga jejak "siapa memutuskan apa" tetap ada.
-     */
+    /** Menyelesaikan konflik atas keputusan pengguna (20.06). */
     public function selesaikanKonflik(
         AntrianSinkronisasi $antrian,
         KeputusanKonflikSinkronisasi $keputusan,
@@ -231,8 +218,7 @@ final class LayananAntrianSinkronisasi
             return $antrian;
         }
 
-        // Terapkan ulang di atas versi server terbaru. Ini bukan penimpaan
-        // diam-diam: pengguna sudah melihat nilai server pada dialog konflik.
+        // Terapkan ulang di atas versi server terbaru.
         $versiServer = $this->registri->untuk($antrian->Operasi)->versiServer($antrian->EntitasId);
         $antrian->VersiKlien = $versiServer === null ? null : max(0, $versiServer);
         $antrian->Status = StatusAntrianSinkronisasi::Menunggu->value;
@@ -265,12 +251,7 @@ final class LayananAntrianSinkronisasi
             ->update(['Status' => StatusAntrianSinkronisasi::Menunggu->value]);
     }
 
-    /**
-     * Klaim atomik supaya dua worker (atau worker dan permintaan klien) tidak
-     * menerapkan mutasi yang sama dua kali. DiprosesPada diisi saat klaim
-     * sebagai penanda "percobaan terakhir dimulai kapan", sehingga baris yang
-     * terhenti dapat dikenali.
-     */
+    /** Klaim atomik supaya dua worker (atau worker. */
     private function klaim(AntrianSinkronisasi $antrian): bool
     {
         $sekarang = CarbonImmutable::now();
@@ -328,10 +309,7 @@ final class LayananAntrianSinkronisasi
         return $antrian;
     }
 
-    /**
-     * Kegagalan tak terduga (mis. deadlock atau gangguan sesaat) dikembalikan
-     * ke antrean sampai batas percobaan, baru kemudian gagal permanen.
-     */
+    /** Kegagalan tak terduga (mis. */
     private function tandaiGagalSementara(AntrianSinkronisasi $antrian, Throwable $e): AntrianSinkronisasi
     {
         report($e);

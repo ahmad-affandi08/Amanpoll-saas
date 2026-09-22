@@ -9,14 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
-/**
- * Batas laju untuk endpoint yang mahal atau rawan disalahgunakan (24).
- *
- * Kunci limiter dipilih sadar: IP saja menyatukan seluruh tenant yang berada di
- * balik satu NAT kantor, sedangkan identitas saja membuka penolakan layanan
- * yang diarahkan ke satu korban. Karena itu yang dipakai adalah identitas yang
- * paling spesifik yang tersedia, dengan IP sebagai cadangan.
- */
+/** Batas laju untuk endpoint yang mahal atau rawan disalahgunakan (24). */
 final class BatasLajuServiceProvider extends ServiceProvider
 {
     public function boot(): void
@@ -24,41 +17,28 @@ final class BatasLajuServiceProvider extends ServiceProvider
         RateLimiter::for('api', fn (Request $request): Limit => Limit::perMinute(60)
             ->by($this->kunciKlienApi($request)));
 
-        // Pelengkap batas per akun di LoginController: yang ini menahan satu
-        // sumber yang mencoba banyak akun berbeda, yang tidak tersentuh batas
-        // berkunci email.
+        // Pelengkap batas per akun di LoginController.
         RateLimiter::for('masuk', fn (Request $request): Limit => Limit::perMinute(20)
             ->by((string) $request->ip()));
 
-        // Satu permintaan ekspor membangkitkan pekerjaan yang dapat menyentuh
-        // belasan query agregat, jadi batasnya jauh lebih ketat daripada halaman
-        // biasa.
+        // Satu permintaan ekspor membangkitkan pekerjaan yang dapat menyentuh belasan query agregat.
         RateLimiter::for('ekspor', fn (Request $request): Limit => Limit::perMinute(6)
             ->by($this->kunciPemesan($request)));
 
-        // Halaman publik anonim: satu IP adalah satu-satunya identitas yang ada,
-        // dan batasnya longgar karena satu kunjungan wajar membuka banyak
-        // halaman berturut-turut.
+        // Halaman publik anonim: satu IP adalah satu-satunya identitas yang ada, dan batasnya longgar.
         RateLimiter::for('publik', fn (Request $request): Limit => Limit::perMinute(120)
             ->by((string) $request->ip()));
 
-        // Endpoint publik: keabsahannya baru terbukti setelah tanda tangan
-        // diperiksa, sehingga banjir permintaan palsu harus berhenti lebih dulu
-        // di sini.
+        // Endpoint publik: keabsahannya baru terbukti setelah tanda tangan diperiksa.
         RateLimiter::for('webhook', fn (Request $request): Limit => Limit::perMinute(120)
             ->by((string) $request->ip()));
 
-        // Pengiriman formulir pemasaran. Jauh lebih ketat daripada membaca
-        // halaman: setiap pengiriman melahirkan prospek, dan honeypot saja
-        // tidak menahan pengirim yang tahu perangkapnya (MARKETING.md 10).
+        // Pengiriman formulir pemasaran.
         RateLimiter::for('formulir', fn (Request $request): Limit => Limit::perMinute(5)
             ->by((string) $request->ip()));
     }
 
-    /**
-     * Awalan kunci API mengidentifikasi pemanggil tanpa membocorkan kuncinya,
-     * dan membuat satu tenant tidak dapat menghabiskan kuota tenant lain.
-     */
+    /** Awalan kunci API mengidentifikasi pemanggil tanpa membocorkan kuncinya. */
     private function kunciKlienApi(Request $request): string
     {
         $kunci = (string) $request->bearerToken();

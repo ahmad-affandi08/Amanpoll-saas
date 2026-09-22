@@ -7,11 +7,7 @@ namespace Tests\Feature\Keamanan;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAkses;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Status akun diperiksa saat masuk, tetapi sesi berumur panjang. Tanpa
- * pemeriksaan ulang per permintaan, menonaktifkan pengguna atau organisasi
- * tidak berlaku sampai sesinya kedaluwarsa (24).
- */
+/** Status akun diperiksa saat masuk, tetapi sesi berumur panjang. */
 final class SesiAkunNonaktifTest extends KasusKeamanan
 {
     public function test_pengguna_yang_dinonaktifkan_langsung_kehilangan_sesinya(): void

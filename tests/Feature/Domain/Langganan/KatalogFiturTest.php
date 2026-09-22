@@ -9,9 +9,7 @@ use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\FiturPaket;
 use Database\Seeders\FiturPaketSeeder;
 
-/**
- * Master fitur dan kestabilan kodenya (22.01).
- */
+/** Master fitur dan kestabilan kodenya (22.01). */
 final class KatalogFiturTest extends KasusLangganan
 {
     public function test_setiap_fitur_katalog_punya_master_di_basis_data(): void
@@ -50,8 +48,7 @@ final class KatalogFiturTest extends KasusLangganan
     public function test_kode_fitur_memakai_penamaan_yang_stabil(): void
     {
         foreach (KatalogFitur::kode() as $kode) {
-            // Kode tertanam di rute dan di baris PaketFitur setiap pelanggan,
-            // jadi bentuknya dikunci.
+            // Kode tertanam di rute dan di baris PaketFitur setiap pelanggan, jadi bentuknya dikunci.
             $this->assertMatchesRegularExpression('/^[a-z][a-z_]*\.[a-z][a-z_]*$/', $kode);
         }
     }
@@ -64,8 +61,7 @@ final class KatalogFiturTest extends KasusLangganan
 
         $sesudah = FiturPaket::query()->orderBy('Kode')->pluck('Id', 'Kode')->all();
 
-        // Id yang berubah akan memutus entitlement seluruh pelanggan, karena
-        // PaketFitur menunjuk ke baris master lewat Id.
+        // Id yang berubah akan memutus entitlement seluruh pelanggan.
         $this->assertSame($sebelum, $sesudah);
     }
 

@@ -37,10 +37,7 @@ final class PemeriksaIzin
         );
     }
 
-    /**
-     * Dipanggil setiap kali PenggunaPeran atau PeranIzin berubah, supaya
-     * pencabutan izin langsung berlaku tanpa menunggu cache kedaluwarsa.
-     */
+    /** Dipanggil setiap kali PenggunaPeran atau PeranIzin berubah. */
     public function bersihkanCache(string $organisasiId, string $penggunaId): void
     {
         $this->cache->forget($this->kunciCache($organisasiId, $penggunaId));

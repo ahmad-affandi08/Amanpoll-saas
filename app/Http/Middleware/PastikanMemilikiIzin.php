@@ -15,8 +15,7 @@ final class PastikanMemilikiIzin
 
     public function handle(Request $request, Closure $next, string $kodeIzin): Response
     {
-        // Izin peran adalah konsep tenant; admin platform tidak memilikinya dan
-        // tidak boleh lolos hanya karena sedang masuk di guard lain.
+        // Izin peran adalah konsep tenant.
         $pengguna = $request->user('web');
         abort_unless($pengguna, 401);
         abort_unless($this->izin->boleh((string) $pengguna->Id, $kodeIzin), 403);

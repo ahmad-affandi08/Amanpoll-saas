@@ -9,16 +9,7 @@ export interface JejakBreadcrumb {
   href?: string;
 }
 
-/**
- * Breadcrumb (DESIGN.md 12).
- *
- * Ruas terakhir dirender sebagai teks ber-`aria-current`, bukan tautan ke
- * halaman yang sedang dibuka — tautan yang tidak ke mana-mana membingungkan
- * pembaca layar sekaligus pengguna tetikus.
- *
- * Di layar sempit ruas tengah disembunyikan dan disisakan induk terdekat saja,
- * supaya breadcrumb tidak memakan dua baris di ponsel.
- */
+/** Breadcrumb (DESIGN.md 12). */
 export function Breadcrumb({
   jejak,
   className,

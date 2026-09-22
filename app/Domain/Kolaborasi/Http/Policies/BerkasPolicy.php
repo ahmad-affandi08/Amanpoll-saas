@@ -10,12 +10,7 @@ use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Berkas sendiri tidak punya pemilik tetap -- otorisasi mengikuti entitas
- * induk tempat ia dilampirkan (izin "kelola" milik JenisEntitas-nya), supaya
- * konsisten dengan aturan LampiranEntitas dan langsung berlaku untuk entitas
- * baru (mis. Aset) tanpa perlu policy baru.
- */
+/** Berkas sendiri tidak punya pemilik tetap. */
 final class BerkasPolicy
 {
     public function __construct(

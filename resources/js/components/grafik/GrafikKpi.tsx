@@ -29,17 +29,7 @@ import type { BentukKomponen, MetrikKpi, RincianKpi } from '@/features/Pelaporan
 
 const TINGGI_PLOT = 200;
 
-/**
- * Satu grafik KPI, lengkap dengan legenda, tabel padanan, dan tooltip.
- *
- * Tiga hal di sini bukan hiasan melainkan syarat sahnya palet Amanpoll (lihat
- * `palet.ts`): legenda untuk dua deret atau lebih, jarak 2px antarsegmen, dan
- * tabel padanan yang selalu dapat dibuka. Tooltip hanya memperkaya — setiap
- * angka tetap terbaca lewat sumbu, label langsung, atau tabel.
- *
- * Bila KPI tidak punya rincian, komponen menampilkan empty state dan bukan
- * bidang kosong yang menyamar sebagai bagan (21.02: no fake chart).
- */
+/** Satu grafik KPI, lengkap dengan legenda, tabel padanan, dan tooltip. */
 export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKomponen }) {
   const [tabelTampil, setTabelTampil] = useState(bentuk === 'Tabel');
   const idJudul = useId();
@@ -190,9 +180,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
         </ResponsiveContainer>
       </div>
 
-      {/* Legenda wajib untuk dua irisan atau lebih: identitas tidak boleh
-          bergantung pada warna saja. Deret tunggal pada grafik garis sudah
-          dinamai judul kartunya. */}
+      {/* Legenda wajib untuk dua irisan atau lebih: identitas tidak boleh bergantung pada warna saja. */}
       {!deretWaktu && data.length >= 2 && (
         <ul className="flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
           {data.map((baris, indeks) => (
@@ -227,10 +215,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
   );
 }
 
-/**
- * Melipat ekor menjadi "Lainnya" alih-alih menghasilkan warna kelima. Hanya
- * dipakai untuk grafik identitas; deret waktu memakai seluruh titiknya.
- */
+/** Melipat ekor menjadi "Lainnya" alih-alih menghasilkan warna kelima. */
 function lipatEkor(rincian: RincianKpi[]): RincianKpi[] {
   if (rincian.length <= BATAS_DERET + 1) {
     return rincian;

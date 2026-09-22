@@ -9,12 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Menolak foreign key yang menunjuk ke baris milik organisasi lain (mis.
- * UnitOrganisasiId pada Lokasi menunjuk ke unit organisasi lain). Berbasis
- * metadata foreign key sungguhan di database, bukan relasi Eloquent, supaya
- * berlaku untuk seluruh kolom FK walau belum ada method relasi untuknya.
- */
+/** Menolak foreign key yang menunjuk ke baris milik organisasi lain (mis. */
 final class PemeriksaRelasiOrganisasi
 {
     /**
@@ -24,9 +19,7 @@ final class PemeriksaRelasiOrganisasi
 
     public static function pastikanSeorganisasi(Model $model): void
     {
-        // Baca atribut mentah (bukan getAttribute()) karena kolom FK seperti
-        // "DibuatOleh" ber-camelCase sama dengan method relasi "dibuatOleh()",
-        // sehingga getAttribute() bisa salah resolve ke relasi, bukan kolom mentah.
+        // Baca atribut mentah (bukan getAttribute()).
         $atribut = $model->getAttributes();
         $organisasiId = $atribut['OrganisasiId'] ?? null;
         if (empty($organisasiId)) {

@@ -12,13 +12,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 
-/**
- * Perpindahan status halaman selain penerbitan (MARKETING.md 8).
- *
- * Penerbitan punya aksinya sendiri karena ia juga memindahkan versi terbit.
- * Sisanya — kirim ke review, kembalikan ke draf, jadwalkan, arsipkan — hanya
- * memindahkan status, dan semuanya tunduk pada peta transisi yang sama.
- */
+/** Perpindahan status halaman selain penerbitan (MARKETING.md 8). */
 final class UbahStatusHalaman
 {
     public function __construct(
@@ -56,8 +50,7 @@ final class UbahStatusHalaman
                 $halaman->Status = $tujuan;
                 $halaman->save();
 
-                // Halaman yang tidak lagi terbit harus hilang dari situs publik
-                // seketika, bukan setelah cachenya kedaluwarsa sendiri.
+                // Halaman yang tidak lagi terbit harus hilang dari situs publik seketika.
                 if ($sebelum === StatusHalamanPemasaran::Terbit) {
                     $this->isi->buang($halaman->Slug);
                 }
@@ -93,8 +86,7 @@ final class UbahStatusHalaman
             throw new AturanBisnisDilanggar('Waktu tarik harus setelah waktu terbit.');
         }
 
-        // Tanpa versi, penjadwal akan menerbitkan halaman kosong pada jam yang
-        // sudah diumumkan ke siapa pun yang menunggunya.
+        // Tanpa versi, penjadwal akan menerbitkan halaman kosong pada jam yang sudah diumumkan.
         if ($halaman->VersiDrafId === null && $halaman->VersiTerbitId === null) {
             throw new AturanBisnisDilanggar('Halaman belum punya versi yang dapat dijadwalkan.');
         }

@@ -14,13 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Peta redirect situs publik di konsol platform (MARKETING.md 9).
- *
- * Setiap perubahan membuang cache petanya. Tanpa itu, aturan yang baru dibuat
- * baru berlaku setelah cachenya kedaluwarsa sendiri — dan orang yang membuatnya
- * akan menyimpulkan bahwa fiturnya rusak.
- */
+/** Peta redirect situs publik di konsol platform (MARKETING.md 9). */
 final class RedirectPemasaranController extends Controller
 {
     public function __construct(
@@ -110,9 +104,7 @@ final class RedirectPemasaranController extends Controller
 
         return [
             'Dari' => $data['Dari'],
-            // Tujuan dibuang untuk 410, apa pun yang terkirim: menyimpan tujuan
-            // pada aturan yang tidak pernah mengalihkan hanya menyesatkan
-            // pembacanya nanti.
+            // Tujuan dibuang untuk 410, apa pun yang terkirim.
             'Ke' => $kode->butuhTujuan() ? $data['Ke'] : null,
             'Kode' => $kode,
             'Aktif' => (bool) ($data['Aktif'] ?? true),

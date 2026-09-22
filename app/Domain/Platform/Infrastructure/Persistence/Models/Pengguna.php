@@ -81,13 +81,7 @@ final class Pengguna extends Authenticatable
         return $this->Email ?: null;
     }
 
-    /**
-     * Pengguna sengaja tidak memakai MilikOrganisasi (lihat ADR 0002) supaya
-     * resolusi user oleh guard autentikasi tidak butuh konteks organisasi
-     * yang belum ada. Tapi route model binding admin (mis. /pengguna/{pengguna})
-     * tetap wajib tenant-aware, jadi discope eksplisit di sini -- method ini
-     * tidak dipakai oleh EloquentUserProvider::retrieveById().
-     */
+    /** Pengguna sengaja tidak memakai MilikOrganisasi (lihat ADR 0002). */
     public function resolveRouteBinding($value, $field = null): ?Model
     {
         return self::query()

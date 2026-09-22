@@ -18,9 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-/**
- * Permintaan dan pengunduhan ekspor laporan (21.05).
- */
+/** Permintaan dan pengunduhan ekspor laporan (21.05). */
 final class EksporLaporanController extends Controller
 {
     public function store(
@@ -30,9 +28,7 @@ final class EksporLaporanController extends Controller
         $pengguna = $request->user('web');
         $data = $request->validated();
 
-        // Kunci disaring di sini juga, bukan hanya di job: permintaan yang
-        // memuat KPI di luar kewenangan pemesan ditolak terang-terangan
-        // daripada diam-diam menghasilkan berkas yang lebih sempit.
+        // Kunci disaring di sini juga, bukan hanya di job.
         $diizinkan = $layananMetrik->saringYangDiizinkan(array_values($data['KunciKpi']), $pengguna);
         if (count($diizinkan) !== count($data['KunciKpi'])) {
             throw new AksesDitolak('Ada KPI pada permintaan ekspor yang tidak boleh Anda lihat.');
@@ -55,11 +51,7 @@ final class EksporLaporanController extends Controller
         );
     }
 
-    /**
-     * Unduhan diotorisasi per berkas, bukan hanya per rute: berkas ekspor
-     * memuat angka yang sudah disaring menurut izin pemesannya, sehingga hanya
-     * pemesan itu yang boleh mengunduhnya.
-     */
+    /** Unduhan diotorisasi per berkas, bukan hanya per rute. */
     public function unduh(Request $request, Berkas $berkas): StreamedResponse
     {
         $this->authorize('view', $berkas);

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Domain\Enums;
 
-/**
- * Format berkas hasil ekspor laporan (21.05).
- */
+/** Format berkas hasil ekspor laporan (21.05). */
 enum FormatEkspor: string
 {
     case Csv = 'Csv';

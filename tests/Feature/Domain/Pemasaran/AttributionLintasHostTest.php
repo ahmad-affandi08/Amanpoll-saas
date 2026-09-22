@@ -10,9 +10,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiPengunjung;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 use Illuminate\Support\Str;
 
-/**
- * Identitas pengunjung bertahan saat berpindah host (MARKETING.md 1.1, 14).
- */
+/** Identitas pengunjung bertahan saat berpindah host (MARKETING.md 1.1, 14). */
 final class AttributionLintasHostTest extends KasusPemasaran
 {
     private function urlPublik(string $path = '/'): string
@@ -25,8 +23,7 @@ final class AttributionLintasHostTest extends KasusPemasaran
         $publik = $this->get($this->urlPublik('/?utm_source=google&utm_campaign=lintas-host'));
         $pengenal = (string) $publik->getCookie(TetapkanSesiPengunjung::NAMA_COOKIE)?->getValue();
 
-        // Perjalanan yang sesungguhnya: pengunjung mengklik CTA lalu mendarat di
-        // halaman masuk pada host dashboard.
+        // Perjalanan yang sesungguhnya: pengunjung mengklik CTA lalu mendarat di halaman masuk pada host dashboard.
         $this->withCookie(TetapkanSesiPengunjung::NAMA_COOKIE, $pengenal)
             ->get(route('login'))
             ->assertOk();
@@ -41,8 +38,7 @@ final class AttributionLintasHostTest extends KasusPemasaran
     {
         $props = $this->get($this->urlPublik('/'))->viewData('page')['props'];
 
-        // Host uji tidak berbagi domain induk, jadi tautannya menitipkan
-        // pengenal sekali lewat parameter.
+        // Host uji tidak berbagi domain induk, jadi tautannya menitipkan pengenal sekali lewat parameter.
         $this->assertStringContainsString(
             TetapkanSesiPengunjung::PARAMETER_SERAH_TERIMA.'=',
             (string) $props['urlMasuk'],

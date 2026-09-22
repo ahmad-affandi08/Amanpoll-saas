@@ -13,9 +13,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Aturan transisi tahap prospek (MARKETING.md 5.3, 36).
- */
+/** Aturan transisi tahap prospek (MARKETING.md 5.3, 36). */
 final class TransisiStatusProspekTest extends TestCase
 {
     use RefreshDatabase;

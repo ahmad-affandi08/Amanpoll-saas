@@ -6,13 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Parameter kampanye yang terbawa satu kedatangan (MARKETING.md 14, 24).
- *
- * Disimpan per sesi, bukan per pengunjung: satu orang dapat datang lewat iklan
- * hari ini dan lewat pencarian organik minggu depan, dan justru perbedaan itu
- * yang membedakan first touch dari last touch.
- */
+/** Parameter kampanye yang terbawa satu kedatangan (MARKETING.md 14, 24). */
 return new class extends Migration
 {
     public function up(): void

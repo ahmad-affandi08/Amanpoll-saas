@@ -6,9 +6,7 @@ namespace App\Domain\Langganan\Domain\ValueObjects;
 
 use App\Domain\Langganan\Domain\Enums\TipeBatasFitur;
 
-/**
- * Satu entri katalog fitur paket (22.01).
- */
+/** Satu entri katalog fitur paket (22.01). */
 final readonly class DefinisiFitur
 {
     public function __construct(
@@ -16,12 +14,7 @@ final readonly class DefinisiFitur
         public string $nama,
         public string $deskripsi,
         public TipeBatasFitur $tipeBatas,
-        /**
-         * Nilai bawaan saat sebuah paket belum menyebut fitur ini sama sekali.
-         * Fitur modul bawaannya mati supaya paket baru tidak diam-diam membuka
-         * modul berbayar; batas bawaannya null yang berarti tanpa batas, sebab
-         * batas yang tidak pernah ditetapkan bukan batas nol.
-         */
+        /** Nilai bawaan saat sebuah paket belum menyebut fitur ini sama sekali. */
         public bool $diizinkanBawaan = false,
         public ?float $batasBawaan = null,
         /** Satuan batas, dipakai untuk menyusun pesan penolakan yang jelas. */

@@ -8,10 +8,7 @@ use App\Domain\Kontrak\Application\Services\LayananPeringatanKontrak;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Illuminate\Console\Command;
 
-/**
- * Mengirim peringatan kontrak yang mendekati tanggal berakhir dan menutup
- * kontrak yang sudah lewat masa berlakunya (17.04).
- */
+/** Mengirim peringatan kontrak yang mendekati tanggal berakhir. */
 final class PeringatanKontrakBerakhir extends Command
 {
     protected $signature = 'kontrak:kirim-peringatan-berakhir';

@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Domain\Enums;
 
-/**
- * Satuan nilai KPI. Dipakai klien untuk memformat angka tanpa menebak, dan
- * dipakai ekspor untuk menulis kolom dengan tipe yang benar.
- */
+/** Satuan nilai KPI. */
 enum SatuanKpi: string
 {
     case Jumlah = 'Jumlah';

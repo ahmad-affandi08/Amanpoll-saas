@@ -9,12 +9,7 @@ use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Identitas satu halaman pemasaran (MARKETING.md 8).
- *
- * Isinya ada di versi; baris ini hanya menunjuk versi mana yang terbit dan mana
- * yang sedang disunting.
- */
+/** Identitas satu halaman pemasaran (MARKETING.md 8). */
 final class HalamanPemasaran extends ModelDasar
 {
     protected $table = 'HalamanPemasaran';
@@ -73,11 +68,7 @@ final class HalamanPemasaran extends ModelDasar
         return $this->belongsTo(Kampanye::class, 'KampanyeId', 'Id');
     }
 
-    /**
-     * Terlihat publik hanya bila statusnya Terbit dan ada versi yang ditunjuk.
-     * Status saja tidak cukup: halaman yang diterbitkan sebelum versinya ada
-     * akan merender badan kosong.
-     */
+    /** Terlihat publik hanya bila statusnya Terbit dan ada versi yang ditunjuk. */
     public function terbit(): bool
     {
         return $this->Status->terlihatPublik() && $this->VersiTerbitId !== null;

@@ -10,14 +10,7 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 use Tests\TestCase;
 
-/**
- * Host tidak boleh ditulis langsung di source maupun di frontend (PRD 5.4,
- * Gate 24.5).
- *
- * Aturan ini menjaga satu hal yang mudah rusak diam-diam: begitu satu nama host
- * tertanam di kode, lingkungan staging dan lokal akan menunjuk produksi tanpa
- * ada yang menyadarinya sampai ada yang mengklik tautannya.
- */
+/** Host tidak boleh ditulis langsung di source maupun di frontend (PRD 5.4, Gate 24.5). */
 final class HostTidakDitulisDiSourceTest extends TestCase
 {
     /**

@@ -14,11 +14,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Peringatan masa berlaku kepatuhan aset dan sertifikat (18.03, 18.04).
- * Ambang hari memakai konfigurasi organisasi yang sama dengan kontrak agar
- * tidak ada dua sumber kebenaran untuk kebijakan pengingat.
- */
+/** Peringatan masa berlaku kepatuhan aset dan sertifikat (18.03, 18.04). */
 final class LayananKepatuhan
 {
     private const IZIN = 'Kepatuhan.Kelola';
@@ -101,10 +97,7 @@ final class LayananKepatuhan
         ];
     }
 
-    /**
-     * Status kepatuhan yang sudah memperhitungkan masa berlaku, tanpa mengubah
-     * baris di database. Dipakai untuk tampilan agar angka tidak menunggu cron.
-     */
+    /** Status kepatuhan yang sudah memperhitungkan masa berlaku, tanpa mengubah baris di database. */
     public function statusEfektif(KepatuhanAset $kepatuhan, ?CarbonImmutable $hariIni = null): string
     {
         $hariIni ??= CarbonImmutable::today();

@@ -8,10 +8,7 @@ use App\Domain\Pelaporan\Domain\Contracts\PenulisEkspor;
 use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
 use RuntimeException;
 
-/**
- * Penulis CSV. Ditulis baris demi baris ke berkas, tanpa menahan seluruh isi
- * di memori.
- */
+/** Penulis CSV. */
 final class PenulisEksporCsv implements PenulisEkspor
 {
     private const AWALAN_RUMUS = "=+-@\t\r";

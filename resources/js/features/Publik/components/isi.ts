@@ -1,12 +1,4 @@
-/**
- * Pembaca isi blok (MARKETING.md 8).
- *
- * Isi blok disimpan sebagai JSON bebas bentuk supaya jenis blok baru tidak
- * menuntut migrasi. Konsekuensinya, apa pun yang keluar dari sana harus
- * diperlakukan sebagai data tak dikenal — kunci bisa hilang, tipenya bisa
- * salah, dan komponen yang mengasumsikan sebaliknya akan memutih seluruh
- * halaman publik karena satu blok yang tertulis keliru.
- */
+/** Pembaca isi blok (MARKETING.md 8). */
 
 export function teks(isi: Record<string, unknown>, kunci: string, bawaan = ''): string {
   const nilai = isi[kunci];
@@ -38,11 +30,7 @@ export function daftarObjek(isi: Record<string, unknown>, kunci: string): Record
   );
 }
 
-/**
- * Hanya `http`, `https`, dan alamat relatif yang diloloskan. Isi halaman
- * ditulis manusia lewat konsol, dan satu tautan berskema `javascript:` yang
- * lolos ke situs publik berarti skrip pihak ketiga berjalan di domain utama.
- */
+/** Hanya `http`, `https`, dan alamat relatif yang diloloskan. */
 export function urlAman(nilai: string | null): string | null {
   if (nilai === null || nilai === '') {
     return null;

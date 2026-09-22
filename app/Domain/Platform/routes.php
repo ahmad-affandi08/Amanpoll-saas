@@ -41,8 +41,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::put('/profil/kata-sandi', [ProfilController::class, 'gantiKataSandi'])->name('profil.kata-sandi');
         Route::delete('/profil/perangkat/{perangkat}', [ProfilController::class, 'hapusPerangkat'])->name('profil.perangkat.destroy');
 
-        // Kunci API adalah pintu masuk integrasi, jadi ikut gerbang fitur yang
-        // sama dengan modul integrasi (22.05).
+        // Kunci API adalah pintu masuk integrasi, jadi ikut gerbang fitur yang sama dengan modul integrasi (22.05).
         Route::middleware('fitur:modul.integrasi')->group(function (): void {
             Route::get('/kunci-api', [KunciApiController::class, 'index'])->name('kunci-api.index');
             Route::post('/kunci-api', [KunciApiController::class, 'store'])->name('kunci-api.store');

@@ -11,12 +11,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use Illuminate\Console\Command;
 
-/**
- * Melepas hold JumlahDitahan milik reservasi yang KadaluarsaPada-nya sudah
- * lewat tapi belum dilepas/dipakai (10.06 "Expiry"). Operasi sistem lintas
- * organisasi terjadwal, jadi scope organisasi sengaja dilewati (pola sama
- * dengan catatan-akses:bersihkan).
- */
+/** Melepas hold JumlahDitahan milik reservasi yang KadaluarsaPada-nya sudah lewat. */
 final class KedaluwarsakanReservasiSukuCadang extends Command
 {
     protected $signature = 'reservasi-suku-cadang:kedaluwarsakan';

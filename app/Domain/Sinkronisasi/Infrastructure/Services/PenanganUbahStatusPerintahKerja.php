@@ -14,11 +14,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-/**
- * Perubahan status pekerjaan yang dibuat teknisi saat offline (20.05).
- * PerintahKerja memakai kolom Versi, jadi mutasi lama yang kalah balapan
- * dengan perubahan di server berhenti sebagai konflik, bukan ditimpa (20.06).
- */
+/** Perubahan status pekerjaan yang dibuat teknisi saat offline (20.05). */
 final class PenanganUbahStatusPerintahKerja implements PenanganOperasiSinkronisasi
 {
     public function __construct(private readonly UbahStatusPerintahKerja $aksi) {}

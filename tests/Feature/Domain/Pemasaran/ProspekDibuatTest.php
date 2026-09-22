@@ -16,9 +16,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RiwayatTahapProspek;
 use Illuminate\Support\Str;
 
-/**
- * Pembuatan prospek dari seluruh sumber (MARKETING.md 5.1, 36).
- */
+/** Pembuatan prospek dari seluruh sumber (MARKETING.md 5.1, 36). */
 final class ProspekDibuatTest extends KasusProspek
 {
     public function test_prospek_baru_masuk_tahap_awal_dan_tercatat_riwayatnya(): void

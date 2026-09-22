@@ -39,8 +39,7 @@ final class SimpanRedirectPemasaranRequest extends FormRequest
                 'max:500',
                 Rule::unique('RedirectPemasaran', 'Dari')->ignore($id, 'Id'),
             ],
-            // Wajib kecuali 410, yang menyatakan sumber daya hilang permanen
-            // dan memang tidak punya tujuan.
+            // Wajib kecuali 410, yang menyatakan sumber daya hilang permanen dan memang tidak punya tujuan.
             'Ke' => [
                 Rule::requiredIf(fn (): bool => $this->input('Kode') !== KodeRedirect::Hilang->value),
                 'nullable',

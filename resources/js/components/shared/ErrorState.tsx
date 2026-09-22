@@ -12,12 +12,7 @@ interface Props {
   aksi?: ReactNode;
 }
 
-/**
- * Keadaan gagal memuat (DESIGN.md 13.6).
- *
- * Dipisahkan dari EmptyState karena tindakan penggunanya berbeda: membuat data
- * versus mencoba lagi.
- */
+/** Keadaan gagal memuat (DESIGN.md 13.6). */
 export function ErrorState({
   judul = 'Data gagal dimuat.',
   deskripsi = 'Periksa koneksi Anda, lalu coba lagi. Jika terus berulang, hubungi administrator.',

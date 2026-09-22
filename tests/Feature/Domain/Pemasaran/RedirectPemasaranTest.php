@@ -8,9 +8,7 @@ use App\Domain\Pemasaran\Application\Services\PencariRedirectPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\KodeRedirect;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RedirectPemasaran;
 
-/**
- * Peta redirect situs publik (MARKETING.md 9, TASK 32.03).
- */
+/** Peta redirect situs publik (MARKETING.md 9, TASK 32.03). */
 final class RedirectPemasaranTest extends KasusHalaman
 {
     public function test_redirect_permanen_mengalihkan_dengan_301(): void

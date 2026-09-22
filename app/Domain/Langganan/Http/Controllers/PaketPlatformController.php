@@ -15,9 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * CRUD katalog paket oleh admin platform (22.02/22.03).
- */
+/** CRUD katalog paket oleh admin platform (22.02/22.03). */
 final class PaketPlatformController extends Controller
 {
     public function index(): Response

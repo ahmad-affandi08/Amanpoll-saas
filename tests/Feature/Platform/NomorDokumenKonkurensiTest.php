@@ -10,18 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-/**
- * Membuktikan LayananNomorDokumen::berikutnya() aman dari race condition
- * memakai proses OS sungguhan (pcntl_fork), bukan simulasi single-process --
- * request paralel yang sesungguhnya, sesuai TASK.md 04.05.
- *
- * SQLite tidak mendukung row-level lock ("FOR UPDATE" adalah no-op di
- * grammar-nya), tapi tetap men-serialize transaksi tulis di level file;
- * PRAGMA busy_timeout dipasang supaya penulis kedua MENUNGGU (seperti
- * InnoDB row lock di produksi/MySQL), bukan langsung gagal dengan
- * "database is locked". Baris kode yang diuji (DB::transaction +
- * lockForUpdate) sama persis dengan yang berjalan di produksi.
- */
+/** Membuktikan LayananNomorDokumen::berikutnya() aman dari race condition memakai proses OS sungguhan. */
 class NomorDokumenKonkurensiTest extends TestCase
 {
     private string $pathDb;

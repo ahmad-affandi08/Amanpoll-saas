@@ -12,9 +12,7 @@ use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogKonfigurasiPemasaran;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 
-/**
- * Fondasi konsol Growth & Marketing (FASE 29).
- */
+/** Fondasi konsol Growth & Marketing (FASE 29). */
 final class FondasiPemasaranTest extends KasusPemasaran
 {
     public function test_konsol_menolak_admin_tanpa_izin_pemasaran(): void
@@ -131,11 +129,7 @@ final class FondasiPemasaranTest extends KasusPemasaran
         $this->assertSame(75, $konfigurasi->angka(KatalogKonfigurasiPemasaran::SKOR_AMBANG_QUALIFIED));
     }
 
-    /**
-     * Bobot skor pernah hidup di sini sebagai satu objek JSON. Ia dipindahkan ke
-     * tabel AturanSkorProspek karena bentuk lamanya menerima kode peristiwa apa
-     * pun lalu mengabaikannya diam-diam; kuncinya tidak boleh kembali.
-     */
+    /** Bobot skor pernah hidup di sini sebagai satu objek JSON. */
     public function test_bobot_skor_tidak_lagi_hidup_di_konfigurasi(): void
     {
         $this->assertNotContains('skor.aturan', KatalogKonfigurasiPemasaran::kunci());

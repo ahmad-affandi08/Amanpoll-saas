@@ -12,12 +12,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI kalibrasi (21.01: calibration).
- *
- * Jatuh tempo diukur terhadap hari ini, bukan terhadap rentang filter: yang
- * ingin diketahui pembaca adalah apa yang perlu dikerjakan sekarang.
- */
+/** KPI kalibrasi (21.01: calibration). */
 final class QueryKalibrasi implements PenyediaKpi
 {
     use MenyaringLingkup;

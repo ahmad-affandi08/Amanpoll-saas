@@ -18,14 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 
-/**
- * Gate 22 — tenant yang kedaluwarsa atau kehabisan kuota tidak dapat menembus
- * pembatasan lewat API langsung.
- *
- * Tes ini sengaja tidak melewati satu pun halaman: ia memakai kunci API dan
- * memanggil endpoint API persis seperti yang dilakukan integrator, karena di
- * situlah pembatasan yang hanya hidup di UI akan runtuh.
- */
+/** Gate 22 — tenant yang kedaluwarsa atau kehabisan kuota tidak dapat menembus pembatasan lewat API langsung. */
 final class Gate22BypassApiTest extends KasusLangganan
 {
     public function test_gate_22_tenant_kedaluwarsa_ditolak_saat_menulis_lewat_api(): void
@@ -65,9 +58,7 @@ final class Gate22BypassApiTest extends KasusLangganan
 
     public function test_gate_22_tenant_yang_uji_coba_awalnya_habis_ditolak_lewat_api(): void
     {
-        // Organisasi yang tidak pernah diberi paket berhenti sendiri setelah
-        // uji coba awalnya lewat — gagal ke arah tertutup, bukan menjadi
-        // pelanggan gratis selamanya.
+        // Organisasi yang tidak pernah diberi paket berhenti sendiri setelah uji coba awalnya lewat.
         $this->mundurkanPembuatanOrganisasi(365);
 
         $token = $this->buatKunciApi(['Keluhan.Kelola']);
@@ -77,8 +68,7 @@ final class Gate22BypassApiTest extends KasusLangganan
 
     public function test_tenant_baru_dapat_langsung_bekerja_selama_uji_coba_awal(): void
     {
-        // Tenant baru tidak boleh terkunci hanya karena admin platform belum
-        // sempat menetapkan paketnya.
+        // Tenant baru tidak boleh terkunci hanya karena admin platform belum sempat menetapkan paketnya.
         $this->siapkanPolaNomor('Keluhan', 'KLH');
         $token = $this->buatKunciApi(['Keluhan.Kelola']);
 
@@ -113,8 +103,7 @@ final class Gate22BypassApiTest extends KasusLangganan
 
         $pengguna = $this->buatPengguna(['Kalibrasi.Kelola']);
 
-        // Izin perannya lengkap; yang menolak adalah paketnya, dan penolakan itu
-        // berlaku untuk GET juga — bukan hanya untuk tombol yang disembunyikan.
+        // Izin perannya lengkap; yang menolak adalah paketnya, dan penolakan itu berlaku untuk GET juga.
         $this->actingAs($pengguna)->get('/kalibrasi')->assertStatus(402);
     }
 
@@ -139,8 +128,7 @@ final class Gate22BypassApiTest extends KasusLangganan
 
         $pengguna = $this->buatPengguna(['Integrasi.Kelola']);
 
-        // Kunci API adalah pintu masuk integrasi; menutup modulnya tanpa menutup
-        // halaman ini akan menyisakan jalan memutar yang sah.
+        // Kunci API adalah pintu masuk integrasi.
         $this->actingAs($pengguna)->get('/integrasi')->assertStatus(402);
         $this->actingAs($pengguna)->get('/platform/kunci-api')->assertStatus(402);
     }
@@ -169,8 +157,7 @@ final class Gate22BypassApiTest extends KasusLangganan
 
         $pengguna = $this->buatPengguna(['Aset.Lihat']);
 
-        // Kebijakan baca-saja: data lama tetap terlihat supaya tenant tidak
-        // terkunci dari jalan keluarnya sendiri.
+        // Kebijakan baca-saja: data lama tetap terlihat supaya tenant tidak terkunci dari jalan keluarnya sendiri.
         $this->actingAs($pengguna)->get('/aset')->assertOk();
     }
 
@@ -208,8 +195,7 @@ final class Gate22BypassApiTest extends KasusLangganan
 
     private function kirimKeluhanApi(string $token): TestResponse
     {
-        // Kunci API ini tidak punya pengguna pemilik, jadi pelapornya disebut
-        // eksplisit seperti yang dilakukan integrator sungguhan.
+        // Kunci API ini tidak punya pengguna pemilik.
         $pelapor = $this->buatPengguna();
 
         return $this->withHeaders([

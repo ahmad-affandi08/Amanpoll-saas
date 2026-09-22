@@ -18,13 +18,7 @@ use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftar
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
-/**
- * Paket data yang dibawa teknisi ke lapangan (20.05).
- *
- * Isinya dibatasi pada penugasan milik teknisi itu sendiri beserta aset dan
- * daftar periksanya; harga dan data pengguna lain tidak ikut ke perangkat (PRD
- * 8.17).
- */
+/** Paket data yang dibawa teknisi ke lapangan (20.05). */
 final class LayananPaketOffline
 {
     /** Status pekerjaan yang masih relevan dibawa offline. */
@@ -157,10 +151,7 @@ final class LayananPaketOffline
         ));
     }
 
-    /**
-     * Penugasan yang belum direspons tetap dapat diterima atau ditolak dari
-     * lapangan, karena inilah transisi pertama yang dilakukan teknisi.
-     */
+    /** Penugasan yang belum direspons tetap dapat diterima atau ditolak dari lapangan. */
     private function perluResponsPenugasan(PerintahKerja $perintahKerja, Pengguna $pengguna): bool
     {
         return PenugasanPerintahKerja::query()

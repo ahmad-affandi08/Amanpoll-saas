@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
-/**
- * Feature flag modul pemasaran (MARKETING.md 31).
- *
- * Kode tersimpan di tabel FiturPlatform dan dirujuk rute, jadi jangan diubah
- * namanya — tambah kode baru dan pensiunkan yang lama.
- */
+/** Feature flag modul pemasaran (MARKETING.md 31). */
 final class KatalogFiturPlatform
 {
     public const CRM = 'marketing.crm';

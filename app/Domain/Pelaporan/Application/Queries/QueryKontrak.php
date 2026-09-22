@@ -11,12 +11,7 @@ use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 
-/**
- * KPI kontrak (21.01: contract).
- *
- * Kontrak tidak berdimensi unit maupun lokasi, jadi filter dimensi tidak
- * berlaku dan hal itu dinyatakan eksplisit ke klien.
- */
+/** KPI kontrak (21.01: contract). */
 final class QueryKontrak implements PenyediaKpi
 {
     public function kunciDilayani(): array

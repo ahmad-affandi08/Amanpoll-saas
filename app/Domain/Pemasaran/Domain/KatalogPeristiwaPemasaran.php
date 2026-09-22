@@ -4,14 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
-/**
- * Taxonomy peristiwa pemasaran (MARKETING.md 23).
- *
- * Katalog ini yang menentukan apa yang boleh masuk EventPemasaran. Tanpa daftar
- * tertutup, satu salah ketik pada pemanggil melahirkan jenis peristiwa baru
- * yang tidak pernah muncul di corong mana pun — dan kesalahan seperti itu tidak
- * bergejala sampai ada yang bertanya mengapa angkanya tidak cocok.
- */
+/** Taxonomy peristiwa pemasaran (MARKETING.md 23). */
 final class KatalogPeristiwaPemasaran
 {
     // Publik

@@ -51,10 +51,7 @@ final class LaporanTersimpan extends ModelDasar
         return $this->belongsTo(Pengguna::class, 'PemilikId', 'Id');
     }
 
-    /**
-     * Nama pemilik bila relasinya sudah dimuat; null untuk laporan tanpa
-     * pemilik.
-     */
+    /** Nama pemilik bila relasinya sudah dimuat; null untuk laporan tanpa pemilik. */
     public function namaPemilik(): ?string
     {
         $pemilik = $this->pemilik;

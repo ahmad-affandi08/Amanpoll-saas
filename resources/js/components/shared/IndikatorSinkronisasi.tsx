@@ -33,14 +33,7 @@ const TAMPILAN: Record<
   },
 };
 
-/**
- * Indikator sinkronisasi topbar (DESIGN.md 24). Sengaja menempel di kerangka
- * aplikasi, bukan hanya di halaman teknisi, supaya teknisi selalu tahu masih
- * ada berapa perubahan yang belum sampai ke server.
- *
- * Indikator disembunyikan ketika semuanya normal dan tidak ada antrean, agar
- * topbar tidak dipenuhi lencana "Online" sepanjang hari.
- */
+/** Indikator sinkronisasi topbar (DESIGN.md 24). */
 export function IndikatorSinkronisasi({ className }: { className?: string }) {
   const { status, jumlahBelumTersinkron, jumlahKonflik } = useSinkronisasiOffline();
 

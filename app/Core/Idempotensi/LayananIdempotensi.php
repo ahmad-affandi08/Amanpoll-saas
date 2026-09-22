@@ -10,12 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Idempotensi permintaan tulis: kunci dicatat per organisasi + rute + kunci
- * klien, disertai sidik jari muatan. Permintaan ulang dengan muatan sama
- * memutar ulang respons pertama, sedangkan kunci yang sama dengan muatan
- * berbeda ditolak sebagai konflik (19.07).
- */
+/** Idempotensi permintaan tulis: kunci dicatat per organisasi + rute + kunci klien, disertai sidik jari muatan. */
 final class LayananIdempotensi
 {
     public const HEADER = 'Idempotency-Key';
@@ -66,8 +61,7 @@ final class LayananIdempotensi
 
             return null;
         } catch (QueryException $e) {
-            // Dua permintaan identik yang tiba bersamaan: satu menang di unique index,
-            // yang kalah memakai baris pemenang sebagai acuan.
+            // Dua permintaan identik yang tiba bersamaan.
             if (! $this->pelanggaranUnik($e)) {
                 throw $e;
             }
@@ -118,8 +112,7 @@ final class LayananIdempotensi
 
     private function cari(?string $organisasiId, string $kunci, string $rute): ?KunciIdempotensi
     {
-        // Query tanpa scope organisasi: kunci idempotensi juga dipakai pada rute
-        // publik yang belum memiliki konteks organisasi.
+        // Query tanpa scope organisasi.
         return KunciIdempotensi::query()
             ->withoutGlobalScopes()
             ->when($organisasiId === null, fn ($query) => $query->whereNull('OrganisasiId'))

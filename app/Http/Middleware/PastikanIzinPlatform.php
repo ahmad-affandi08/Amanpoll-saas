@@ -10,13 +10,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Gerbang izin konsol platform (MARKETING.md 26).
- *
- * Dipasang pada rute karena kewenangannya berbeda per halaman; guard `platform`
- * hanya membuktikan bahwa yang masuk adalah admin platform, bukan bahwa ia
- * berhak atas halaman ini.
- */
+/** Gerbang izin konsol platform (MARKETING.md 26). */
 final class PastikanIzinPlatform
 {
     public function __construct(private readonly PemeriksaIzinPlatform $izin) {}

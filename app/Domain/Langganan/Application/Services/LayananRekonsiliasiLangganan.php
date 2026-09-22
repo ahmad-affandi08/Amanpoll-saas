@@ -10,12 +10,7 @@ use App\Domain\Langganan\Domain\Enums\StatusTagihanLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\PembayaranLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 
-/**
- * Rekonsiliasi tagihan terhadap pembayarannya (22.06).
- *
- * Memperbaiki status yang tertinggal karena webhook hilang, dan melaporkan
- * selisih yang menuntut keputusan manusia alih-alih mengoreksinya sendiri.
- */
+/** Rekonsiliasi tagihan terhadap pembayarannya (22.06). */
 final class LayananRekonsiliasiLangganan
 {
     public function __construct(private readonly CatatPembayaranLangganan $catatPembayaran) {}

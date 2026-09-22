@@ -12,10 +12,7 @@ use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\PenandaSinkronisas
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-/**
- * 20.01/20.02 — aset yang membuat aplikasi dapat dipasang dan dipakai offline,
- * serta pembersihan data lokal saat pengguna keluar.
- */
+/** 20.01/20.02 — aset yang membuat aplikasi dapat dipasang. */
 final class InstallabilityPwaTest extends TestCase
 {
     use DatabaseTransactions;
@@ -45,10 +42,7 @@ final class InstallabilityPwaTest extends TestCase
 
     public function test_service_worker_dan_halaman_cadangan_offline_tersedia(): void
     {
-        // Keduanya disajikan langsung oleh web server sebagai berkas statis
-        // (aturan `!-f` pada .htaccess), bukan lewat router Laravel; yang
-        // penting dijamin di sini adalah berkasnya ada di document root
-        // sehingga cakupan service worker tetap `/`.
+        // Keduanya disajikan langsung oleh web server sebagai berkas statis (aturan `!-f` pada .htaccess).
         $this->assertFileExists(public_path('sw.js'));
         $this->assertFileExists(public_path('offline.html'));
 
@@ -64,13 +58,11 @@ final class InstallabilityPwaTest extends TestCase
     {
         $sw = (string) file_get_contents(public_path('sw.js'));
 
-        // Hanya permintaan GET yang boleh diproses, dan hanya path aset statis
-        // yang boleh masuk cache runtime.
+        // Hanya permintaan GET yang boleh diproses, dan hanya path aset statis yang boleh masuk cache runtime.
         $this->assertStringContainsString("permintaan.method !== 'GET'", $sw);
         $this->assertStringContainsString('POLA_ASET_STATIS', $sw);
 
-        // Hanya kerangka ruang kerja teknisi yang boleh disimpan dari jalur
-        // navigasi; endpoint data tidak boleh ikut ter-cache.
+        // Hanya kerangka ruang kerja teknisi yang boleh disimpan dari jalur navigasi.
         $this->assertStringContainsString("HALAMAN_OFFLINE_DIIZINKAN = '/offline/teknisi'", $sw);
         $this->assertStringContainsString('url.pathname === HALAMAN_OFFLINE_DIIZINKAN', $sw);
         $kode = (string) preg_replace('#/\*.*?\*/|//[^\n]*#s', '', $sw);

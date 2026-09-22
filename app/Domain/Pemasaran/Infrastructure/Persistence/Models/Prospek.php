@@ -10,14 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Satu prospek (MARKETING.md 5.2).
- *
- * `OrganisasiId` di sini adalah tautan ke tenant yang lahir dari prospek ini,
- * bukan scope tenant: prospek hidup di luar batas organisasi mana pun, dan
- * justru tautan itu yang membuat perjalanannya tetap terbaca setelah ia menjadi
- * pelanggan.
- */
+/** Satu prospek (MARKETING.md 5.2). */
 final class Prospek extends ModelDasar
 {
     protected $table = 'Prospek';

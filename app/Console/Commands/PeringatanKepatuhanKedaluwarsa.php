@@ -8,10 +8,7 @@ use App\Domain\Kepatuhan\Application\Services\LayananKepatuhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Illuminate\Console\Command;
 
-/**
- * Mengirim peringatan masa berlaku kepatuhan aset dan sertifikat, sekaligus
- * menandai yang sudah lewat sebagai kedaluwarsa (18.03, 18.04).
- */
+/** Mengirim peringatan masa berlaku kepatuhan aset. */
 final class PeringatanKepatuhanKedaluwarsa extends Command
 {
     protected $signature = 'kepatuhan:kirim-peringatan-kedaluwarsa';

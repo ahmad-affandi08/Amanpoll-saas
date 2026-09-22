@@ -26,14 +26,7 @@ function ukuranTerbaca(byte: number): string {
   return `${(byte / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/**
- * Pemilih berkas dengan seret-lepas (DESIGN.md 13).
- *
- * `<input type="file">` yang sesungguhnya hanya disembunyikan secara visual
- * agar papan ketik dan pembaca layar tetap bekerja; seret-lepas hanya kemudahan
- * tambahan. Batas ukuran di sini sekadar umpan balik awal — server yang
- * menegakkannya.
- */
+/** Pemilih berkas dengan seret-lepas (DESIGN.md 13). */
 export function FileUploader({
   berkas,
   onUbah,

@@ -8,11 +8,7 @@ use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Kepemilikan laporan tersimpan (21.03).
- *
- * Laporan bertanda Pribadi hanya terlihat pemiliknya.
- */
+/** Kepemilikan laporan tersimpan (21.03). */
 final class LaporanTersimpanPolicy
 {
     public function __construct(private readonly PemeriksaIzin $izin) {}

@@ -15,13 +15,7 @@ use App\Domain\Pemasaran\Http\Controllers\RedirectPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\RingkasanPemasaranController;
 use Illuminate\Support\Facades\Route;
 
-/*
- * Konsol Growth & Marketing (MARKETING.md 4).
- *
- * Berada di bawah guard `platform`, bukan guard tenant: yang dikelola di sini
- * adalah pemasaran Amanpoll sendiri, bukan data satu pelanggan. Host dashboard
- * sudah dipasang DomainServiceProvider untuk seluruh berkas rute domain.
- */
+// Konsol Growth & Marketing (MARKETING.md 4).
 Route::middleware(['web', 'auth:platform'])
     ->prefix('admin-platform/pemasaran')
     ->name('pemasaran.')
@@ -30,22 +24,12 @@ Route::middleware(['web', 'auth:platform'])
             ->middleware('izin.platform:'.KatalogIzinPemasaran::PEMASARAN_LIHAT)
             ->name('ringkasan');
 
-        // CRM prospek. Seluruhnya di balik flag marketing.crm, sehingga
-        // mematikan modulnya benar-benar menutup datanya.
+        // CRM prospek.
         Route::middleware('fitur.platform:'.KatalogFiturPlatform::CRM)
             ->prefix('prospek')
             ->name('prospek.')
             ->group(function (): void {
-                /*
-                 * Aturan bobot skor. Didaftarkan sebelum `/{prospek}` karena
-                 * jalurnya akan tertelan parameter itu — Laravel memilih rute
-                 * pertama yang cocok, dan `aturan-skor` adalah ULID yang sah
-                 * bagi pencocoknya.
-                 *
-                 * Mengubah bobot menggeser seluruh prioritas tim penjualan,
-                 * jadi haknya izin kelola dan setiap perubahannya tercatat di
-                 * audit.
-                 */
+                // Aturan bobot skor.
                 Route::prefix('aturan-skor')->name('aturanSkor.')->group(function (): void {
                     Route::get('/', [AturanSkorProspekController::class, 'index'])
                         ->middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_LIHAT)
@@ -74,8 +58,7 @@ Route::middleware(['web', 'auth:platform'])
                     Route::post('/impor', [ImporEksporProspekController::class, 'impor'])->name('impor');
                 });
 
-                // Ekspor memindahkan data pribadi keluar sistem: izinnya sendiri
-                // dan lajunya dibatasi (MARKETING.md 26, 27).
+                // Ekspor memindahkan data pribadi keluar sistem.
                 Route::get('/ekspor/csv', [ImporEksporProspekController::class, 'ekspor'])
                     ->middleware([
                         'izin.platform:'.KatalogIzinPemasaran::PROSPEK_EKSPOR,
@@ -84,8 +67,7 @@ Route::middleware(['web', 'auth:platform'])
                     ->name('ekspor');
             });
 
-        // Kampanye berada di balik flag analitik: tanpa modulnya hidup, tidak
-        // ada tempat angkanya dibaca.
+        // Kampanye berada di balik flag analitik: tanpa modulnya hidup, tidak ada tempat angkanya dibaca.
         Route::middleware([
             'izin.platform:'.KatalogIzinPemasaran::KAMPANYE_LIHAT,
             'fitur.platform:'.KatalogFiturPlatform::ANALITIK,
@@ -98,13 +80,7 @@ Route::middleware(['web', 'auth:platform'])
             });
         });
 
-        /*
-         * Landing page builder dan peta redirect. Keduanya di balik flag
-         * marketing.cms: mematikan modulnya menutup konsolnya, sementara
-         * halaman yang sudah terbit tetap dilayani host publik — menurunkan
-         * situs pemasaran bukan yang diminta siapa pun ketika mematikan
-         * konsol penyuntingnya.
-         */
+        // Landing page builder dan peta redirect.
         Route::middleware('fitur.platform:'.KatalogFiturPlatform::CMS)->group(function (): void {
             Route::prefix('halaman')->name('halaman.')->group(function (): void {
                 Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_LIHAT)->group(function (): void {
@@ -120,11 +96,7 @@ Route::middleware(['web', 'auth:platform'])
                         ->name('pratinjau');
                 });
 
-                /*
-                 * Menerbitkan, menjadwalkan, dan mengembalikan mengubah isi
-                 * situs publik, jadi ketiganya menuntut izin terbit — bukan
-                 * izin kelola (MARKETING.md 26).
-                 */
+                // Menerbitkan, menjadwalkan, dan mengembalikan mengubah isi situs publik.
                 Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_TERBITKAN)
                     ->group(function (): void {
                         Route::post('/{halaman}/terbitkan', [HalamanPemasaranController::class, 'terbitkan'])
@@ -154,8 +126,7 @@ Route::middleware(['web', 'auth:platform'])
                     ->middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_LIHAT)
                     ->name('index');
 
-                // Redirect mengubah alamat yang dilihat mesin pencari, jadi
-                // haknya sama dengan menerbitkan halaman.
+                // Redirect mengubah alamat yang dilihat mesin pencari, jadi haknya sama dengan menerbitkan halaman.
                 Route::middleware('izin.platform:'.KatalogIzinPemasaran::HALAMAN_TERBITKAN)
                     ->group(function (): void {
                         Route::post('/', [RedirectPemasaranController::class, 'store'])->name('store');

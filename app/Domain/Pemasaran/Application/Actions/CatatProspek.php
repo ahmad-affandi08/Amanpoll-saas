@@ -15,15 +15,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TahapPipeline;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 
-/**
- * Membuat atau memperbarui prospek dari sumber mana pun (MARKETING.md 5.1).
- *
- * Satu pintu untuk formulir publik, impor CSV, API, webhook, dan entri manual —
- * karena tiga hal harus terjadi pada setiap prospek baru dan tidak boleh
- * bergantung pada siapa yang membuatnya: penggabungan dengan prospek yang sudah
- * ada, pengambilan attribution dari riwayat anonimnya, dan penempatan pada
- * tahap pipeline.
- */
+/** Membuat atau memperbarui prospek dari sumber mana pun (MARKETING.md 5.1). */
 final class CatatProspek
 {
     public function __construct(
@@ -60,8 +52,7 @@ final class CatatProspek
                     'Skor' => 0,
                 ]);
             } else {
-                // Prospek yang kembali mengisi formulir tidak diganti sumbernya:
-                // yang bernilai adalah dari mana ia pertama kali datang.
+                // Prospek yang kembali mengisi formulir tidak diganti sumbernya.
                 $prospek->fill(array_filter($atribut, fn (mixed $nilai): bool => $nilai !== null));
                 $prospek->PengenalPengunjung ??= $pengenalPengunjung;
                 $prospek->OrganisasiProspekId ??= $this->perusahaanUntuk($data);
@@ -131,10 +122,7 @@ final class CatatProspek
         )->Id;
     }
 
-    /**
-     * Kampanye prospek diambil dari first touch, bukan last touch: yang ingin
-     * dinilai adalah kampanye yang memulai perjalanannya.
-     */
+    /** Kampanye prospek diambil dari first touch, bukan last touch. */
     private function kampanyeDariAttribution(?string $pengenalPengunjung): ?string
     {
         if ($pengenalPengunjung === null) {

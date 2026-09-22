@@ -9,13 +9,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PerangkatPengguna;
 
-/**
- * IDOR di dalam satu tenant (24).
- *
- * Isolasi tenant tidak menolong di sini: penyerang dan korban berada di
- * organisasi yang sama, sehingga global scope meloloskan barisnya dan yang
- * tersisa hanya pemeriksaan kepemilikan per objek.
- */
+/** IDOR di dalam satu tenant (24). */
 final class IdorDalamTenantTest extends KasusKeamanan
 {
     private Organisasi $organisasi;

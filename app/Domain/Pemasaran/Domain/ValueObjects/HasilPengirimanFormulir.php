@@ -7,14 +7,7 @@ namespace App\Domain\Pemasaran\Domain\ValueObjects;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\PengirimanFormulir;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 
-/**
- * Hasil satu pengiriman formulir publik (MARKETING.md 10).
- *
- * `ditolakSebagaiSpam` sengaja dibedakan dari gagal. Pengiriman yang menabrak
- * honeypot dijawab persis seperti pengiriman yang berhasil — memberi tahu bot
- * bahwa perangkapnya bekerja berarti membuang perangkapnya — jadi pemanggil
- * membutuhkan cara untuk tahu bahwa tidak ada apa pun yang tersimpan.
- */
+/** Hasil satu pengiriman formulir publik (MARKETING.md 10). */
 final readonly class HasilPengirimanFormulir
 {
     private function __construct(

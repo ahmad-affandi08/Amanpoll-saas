@@ -9,19 +9,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\VersiHalamanPemasaran;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
-/**
- * Menyusun dan menyimpan isi halaman terbit (MARKETING.md 8).
- *
- * Yang di-cache adalah isi halamannya, bukan respons HTTP-nya. Perbedaan itu
- * penting: badan respons Inertia memuat token CSRF milik satu sesi, sehingga
- * menyajikan ulang respons yang sama kepada orang lain akan membagikan token
- * yang salah. Isi halaman tidak memuat apa pun yang mengikat ke seseorang, jadi
- * aman dipakai bersama — sementara setiap pengunjung tetap menerima respons
- * miliknya sendiri, lengkap dengan cookie dan tokennya.
- *
- * Cache dibuang pada setiap penerbitan dan pengarsipan. Draf tidak pernah
- * masuk ke sini: pratinjau harus selalu menampilkan apa yang baru saja ditulis.
- */
+/** Menyusun dan menyimpan isi halaman terbit (MARKETING.md 8). */
 final class PenyimpanIsiHalaman
 {
     private const UMUR_DETIK = 300;

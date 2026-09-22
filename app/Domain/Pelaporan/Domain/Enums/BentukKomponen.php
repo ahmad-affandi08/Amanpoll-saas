@@ -6,14 +6,7 @@ namespace App\Domain\Pelaporan\Domain\Enums;
 
 use App\Domain\Pelaporan\Domain\ValueObjects\DefinisiKpi;
 
-/**
- * Bentuk tampilan satu komponen dasbor (21.04).
- *
- * Pilihan bentuk dibatasi oleh apa yang benar-benar dimiliki KPI: KPI tanpa
- * rincian tidak boleh dipasang sebagai grafik, karena bagan tanpa data hanya
- * akan menjadi kotak kosong yang menyamar sebagai informasi (21.02: no fake
- * chart).
- */
+/** Bentuk tampilan satu komponen dasbor (21.04). */
 enum BentukKomponen: string
 {
     /** Kartu angka tunggal. */
@@ -58,8 +51,7 @@ enum BentukKomponen: string
     {
         $bentuk = [self::Angka];
 
-        // KPI yang rinciannya berupa deret waktu cocok sebagai garis; sisanya
-        // sebagai perbandingan kategori.
+        // KPI yang rinciannya berupa deret waktu cocok sebagai garis; sisanya sebagai perbandingan kategori.
         if (in_array($definisi->kunci, self::KUNCI_DERET_WAKTU, true)) {
             $bentuk[] = self::Garis;
             $bentuk[] = self::Tabel;

@@ -1,12 +1,6 @@
 import type { MetrikKpi, SatuanKpi } from './types';
 
-/**
- * Pemformatan nilai KPI.
- *
- * Nilai besar diringkas (1,2 jt) pada kartu angka supaya tidak memaksa kartu
- * melebar, sementara tabel dan tooltip memakai angka penuh — ringkasan hanya
- * boleh dipakai di tempat yang angkanya juga tersedia lengkap di tempat lain.
- */
+/** Pemformatan nilai KPI. */
 
 const LOKAL = 'id-ID';
 
@@ -50,10 +44,7 @@ export function formatNilaiKpi(kpi: MetrikKpi, ringkas = false): string {
     : formatNilai(kpi.Nilai, kpi.Satuan, kpi.Desimal);
 }
 
-/**
- * Label sumbu untuk deret waktu. Kunci berupa `YYYY-MM-DD` atau `YYYY-MM`;
- * keduanya diringkas supaya sumbu tidak penuh.
- */
+/** Label sumbu untuk deret waktu. */
 export function labelPeriode(label: string): string {
   const bagian = label.split('-');
   if (bagian.length === 3) {

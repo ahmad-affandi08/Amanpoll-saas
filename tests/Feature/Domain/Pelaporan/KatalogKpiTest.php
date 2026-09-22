@@ -11,14 +11,7 @@ use App\Domain\Pelaporan\Domain\KatalogKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\DefinisiKpi;
 use Tests\TestCase;
 
-/**
- * Gate 21, bagian pertama: setiap KPI utama memiliki definisi formula yang
- * terdokumentasi.
- *
- * Tes ini menjaga katalog tetap menjadi satu-satunya sumber kebenaran — tidak
- * ada KPI yang dapat masuk ke dasbor tanpa rumus, dan tidak ada penyedia yang
- * diam-diam menghitung KPI di luar katalog.
- */
+/** Gate 21, bagian pertama: setiap KPI utama memiliki definisi formula yang terdokumentasi. */
 final class KatalogKpiTest extends TestCase
 {
     public function test_setiap_kpi_memiliki_formula_dan_sumber_yang_terdokumentasi(): void
@@ -30,8 +23,7 @@ final class KatalogKpiTest extends TestCase
             $this->assertNotSame('', trim($definisi->nama), "KPI {$kunci} tidak punya nama.");
             $this->assertNotSame('', trim($definisi->sumber), "KPI {$kunci} tidak menyebut tabel sumbernya.");
 
-            // Rumus harus benar-benar menjelaskan perhitungan, bukan sekadar
-            // mengulang nama KPI-nya.
+            // Rumus harus benar-benar menjelaskan perhitungan, bukan sekadar mengulang nama KPI-nya.
             $this->assertGreaterThan(
                 30,
                 mb_strlen(trim($definisi->formula)),
@@ -64,9 +56,7 @@ final class KatalogKpiTest extends TestCase
 
     public function test_setiap_kelompok_metrik_yang_diminta_task_terwakili(): void
     {
-        // Enam belas butir 21.01 dipetakan ke tiga belas kelompok; asset counts
-        // dan asset condition berbagi kelompok Aset, MTTR dan MTBF berbagi
-        // kelompok Keandalan bersama downtime.
+        // Enam belas butir 21.01 dipetakan ke tiga belas kelompok.
         foreach (KelompokKpi::cases() as $kelompok) {
             $this->assertNotEmpty(
                 KatalogKpi::untukKelompok($kelompok),
@@ -92,8 +82,7 @@ final class KatalogKpiTest extends TestCase
     public function test_kunci_kpi_memakai_penamaan_yang_stabil(): void
     {
         foreach (KatalogKpi::semua() as $kunci => $definisi) {
-            // Kunci tersimpan di konfigurasi dasbor dan laporan pengguna, jadi
-            // bentuknya dikunci: huruf kecil, titik sebagai pemisah kelompok.
+            // Kunci tersimpan di konfigurasi dasbor dan laporan pengguna, jadi bentuknya dikunci.
             $this->assertMatchesRegularExpression(
                 '/^[a-z][a-z_]*\.[a-z][a-z_]*$/',
                 $kunci,

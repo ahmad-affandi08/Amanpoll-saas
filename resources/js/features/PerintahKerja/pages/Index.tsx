@@ -427,12 +427,7 @@ export default function PerintahKerjaIndex({
         />
       ) : (
         <div className="rounded-lg border border-border bg-card">
-          {/*
-            Di ponsel daftar ini menjadi kartu (DESIGN.md 9.3). Teknisi di
-            lapangan mencari satu pekerjaan, bukan membandingkan delapan kolom,
-            dan memaksanya menggeser mendatar di layar 360px membuat pekerjaan
-            dasar menuntut layar besar — persis yang dilarang Gate 23.
-          */}
+          {/* Di ponsel daftar ini menjadi kartu (DESIGN.md 9.3). */}
           <ul className="divide-y divide-border sm:hidden">
             {perintahKerja.map((item) => {
               const asetUtama = item.Aset?.find((a) => a.Utama) ?? item.Aset?.[0];

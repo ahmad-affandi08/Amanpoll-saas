@@ -6,17 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Prospek dan perusahaannya (MARKETING.md 5.2, 24).
- *
- * Tanpa OrganisasiId: prospek belum menjadi tenant. Ketika trialnya menghasilkan
- * workspace, `OrganisasiId` diisi sebagai tautan — bukan sebagai scope — supaya
- * attribution perjalanannya tetap dapat ditelusuri setelah ia menjadi pelanggan
- * (MARKETING.md 25).
- *
- * `PengenalPengunjung` adalah jembatan ke attribution: satu prospek yang lahir
- * dari formulir membawa serta seluruh riwayat kunjungan anonimnya.
- */
+/** Prospek dan perusahaannya (MARKETING.md 5.2, 24). */
 return new class extends Migration
 {
     public function up(): void

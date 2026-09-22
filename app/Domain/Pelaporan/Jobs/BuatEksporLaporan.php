@@ -16,14 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Ekspor laporan di antrean (21.05).
- *
- * Worker tidak memiliki sesi, jadi konteks organisasi dan pengguna ditetapkan
- * ulang di sini dari pemesan ekspor — tanpa itu, global scope MilikOrganisasi
- * tidak punya tenant dan laporan akan dibuat kosong atau, lebih buruk, tanpa
- * batas tenant.
- */
+/** Ekspor laporan di antrean (21.05). */
 final class BuatEksporLaporan implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

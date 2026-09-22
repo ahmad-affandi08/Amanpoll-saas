@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
-/**
- * Setelan domain Pemasaran beserta nilai bawaannya (MARKETING.md 30).
- *
- * Katalog ini yang menjadi sumber kebenaran, bukan tabelnya: setelan yang belum
- * pernah disentuh tetap punya nilai yang masuk akal, dan tidak mungkin ada kode
- * yang membaca kunci tanpa definisi.
- */
+/** Setelan domain Pemasaran beserta nilai bawaannya (MARKETING.md 30). */
 final class KatalogKonfigurasiPemasaran
 {
     public const TRIAL_HARI = 'trial.hari';

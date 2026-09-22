@@ -22,9 +22,7 @@ final class HandleInertiaRequests extends Middleware
 
     public function share(Request $request): array
     {
-        // Guard disebut eksplisit: sejak konsol platform punya guard sendiri,
-        // $request->user() dapat mengembalikan admin platform, yang tidak punya
-        // organisasi maupun izin tenant.
+        // Guard disebut eksplisit: sejak konsol platform punya guard sendiri.
         $pengguna = $request->user('web');
 
         return [
@@ -46,9 +44,7 @@ final class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'izin' => fn (): array => $pengguna ? $this->pemeriksaIzin->daftarKodeIzin((string) $pengguna->Id) : [],
-            // Kewenangan konsol platform dibagikan terpisah: admin platform
-            // tidak punya organisasi, sehingga izin tenant di atas selalu kosong
-            // baginya dan menu konsolnya butuh sumbernya sendiri.
+            // Kewenangan konsol platform dibagikan terpisah.
             'platform' => function () use ($request): array {
                 $admin = $request->user('platform');
 
@@ -58,10 +54,7 @@ final class HandleInertiaRequests extends Middleware
                     'Izin' => $this->pemeriksaIzinPlatform->daftarKode($admin),
                 ];
             },
-            // Entitlement dibagikan supaya UI dapat menyembunyikan menu dan
-            // menonaktifkan tombol. Ini semata demi kenyamanan: penegakannya
-            // tetap di backend, dan prop ini membaca sumber yang sama persis
-            // sehingga UI tidak pernah menjanjikan apa yang backend tolak.
+            // Entitlement dibagikan supaya UI dapat menyembunyikan menu dan menonaktifkan tombol.
             'entitlement' => fn (): array => $pengguna
                 ? $this->pemeriksaEntitlement->sekarang()->keArray()
                 : [],

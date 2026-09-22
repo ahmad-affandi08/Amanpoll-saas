@@ -7,12 +7,7 @@ namespace App\Shared\Domain\Services;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Menolak penetapan induk yang akan membuat hierarki melingkar pada tabel
- * self-referencing mana pun (mis. UnitOrganisasi.IndukId, Lokasi.IndukId).
- * Ditulis generik lewat DB::table supaya dipakai lintas domain tanpa
- * bergantung pada model Eloquent tertentu.
- */
+/** Menolak penetapan induk yang akan membuat hierarki melingkar pada tabel self-referencing mana pun (mis. */
 final class PemeriksaHierarkiSirkular
 {
     public static function pastikanTidakSirkular(string $tabel, string $kolomInduk, string $id, ?string $indukId): void

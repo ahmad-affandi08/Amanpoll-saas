@@ -7,14 +7,7 @@ namespace App\Domain\Pemasaran\Application\Services;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FieldFormulirPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FormulirPemasaran;
 
-/**
- * Bentuk formulir sebagaimana dilihat pengunjung (MARKETING.md 10).
- *
- * Yang dikirim ke browser hanya apa yang diperlukan untuk menggambar dan
- * mengisi formulir. Konfigurasi internalnya — webhook, pemicu otomasi, tag,
- * kampanye — tidak pernah ikut: itu urusan server, dan halaman publik dapat
- * dibaca siapa saja.
- */
+/** Bentuk formulir sebagaimana dilihat pengunjung (MARKETING.md 10). */
 final class PenyusunFormulirPublik
 {
     public function __construct(private readonly PemeriksaCaptcha $captcha) {}
@@ -29,8 +22,7 @@ final class PenyusunFormulirPublik
             'Nama' => $formulir->Nama,
             'WajibPersetujuan' => $formulir->WajibPersetujuan,
             'CaptchaAktif' => $formulir->CaptchaAktif,
-            // Hanya dikirim saat CAPTCHA memang menyala, supaya halaman biasa
-            // tidak ikut memuat skrip pihak ketiga tanpa keperluan.
+            // Hanya dikirim saat CAPTCHA memang menyala.
             'Captcha' => $formulir->CaptchaAktif ? [
                 'KunciSitus' => config('amanpoll.pemasaran.captcha.kunci_situs'),
                 'Skrip' => config('amanpoll.pemasaran.captcha.skrip'),

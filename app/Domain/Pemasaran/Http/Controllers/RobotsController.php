@@ -10,12 +10,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 
-/**
- * `robots.txt` dan `sitemap.xml` (MARKETING.md 1.2).
- *
- * Perbedaan antar host diselesaikan oleh grup rute, bukan oleh percabangan di
- * dalam controller: tiap host memanggil metode yang memang miliknya.
- */
+/** `robots.txt` dan `sitemap.xml` (MARKETING.md 1.2). */
 final class RobotsController extends Controller
 {
     public function __construct(private readonly PetaHost $host) {}
@@ -34,11 +29,7 @@ final class RobotsController extends Controller
         return $this->teks("User-agent: *\nDisallow: /\n");
     }
 
-    /**
-     * Peta situs berisi akar dan setiap halaman yang benar-benar terbit.
-     * Halaman ber-`NoIndex` dikecualikan: mengundang perayap ke alamat yang
-     * responsnya melarang pengindeksan hanya membuang anggaran perayapannya.
-     */
+    /** Peta situs berisi akar dan setiap halaman yang benar-benar terbit. */
     public function sitemap(): Response
     {
         $jalur = HalamanPemasaran::query()

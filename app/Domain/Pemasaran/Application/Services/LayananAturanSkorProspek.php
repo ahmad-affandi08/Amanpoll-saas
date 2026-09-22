@@ -10,17 +10,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AturanSkorProspek;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
-/**
- * Pembaca dan penulis aturan bobot skor (MARKETING.md 5.4).
- *
- * Kode peristiwa divalidasi saat disimpan, bukan diabaikan saat dihitung. Itu
- * perbedaan pentingnya dengan bentuk lama: bobot bagi peristiwa yang salah ketik
- * dulu tersimpan diam-diam dan tidak pernah menyumbang apa pun, dan tidak ada
- * yang tahu sampai seseorang bertanya mengapa skornya tidak naik.
- *
- * Dibaca pada setiap perhitungan skor, jadi disimpan di cache dan dibuang pada
- * setiap penyuntingan.
- */
+/** Pembaca dan penulis aturan bobot skor (MARKETING.md 5.4). */
 final class LayananAturanSkorProspek
 {
     private const KUNCI_CACHE = 'pemasaran:aturan-skor';

@@ -9,11 +9,7 @@ use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggi
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-/**
- * Mengirim satu panggilan balik web. Percobaan ulang dikelola oleh layanan
- * lewat kolom JadwalCobaLagiPada, bukan oleh retry queue, supaya jejak tiap
- * percobaan tetap terlihat pada log pengiriman.
- */
+/** Mengirim satu panggilan balik web. */
 final class KirimPanggilanBalikWeb implements ShouldQueue
 {
     use Queueable;

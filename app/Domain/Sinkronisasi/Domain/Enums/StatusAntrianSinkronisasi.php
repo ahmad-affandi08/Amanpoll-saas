@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Sinkronisasi\Domain\Enums;
 
-/**
- * Siklus hidup satu mutasi offline di AntrianSinkronisasi (20.03).
- */
+/** Siklus hidup satu mutasi offline di AntrianSinkronisasi (20.03). */
 enum StatusAntrianSinkronisasi: string
 {
     case Menunggu = 'Menunggu';

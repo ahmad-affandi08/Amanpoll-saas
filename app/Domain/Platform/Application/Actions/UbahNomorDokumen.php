@@ -13,8 +13,7 @@ final class UbahNomorDokumen
      */
     public function jalankan(NomorDokumen $nomorDokumen, array $data): NomorDokumen
     {
-        // NomorTerakhir/PeriodeAktif sengaja tidak dapat diubah lewat sini --
-        // hanya LayananNomorDokumen::berikutnya() yang boleh mengubah sequence.
+        // NomorTerakhir/PeriodeAktif sengaja tidak dapat diubah lewat sini.
         $nomorDokumen->fill($data);
         $nomorDokumen->save();
 

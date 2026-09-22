@@ -7,11 +7,7 @@ namespace App\Domain\Sinkronisasi\Application\Services;
 use App\Domain\Sinkronisasi\Domain\Contracts\PenanganOperasiSinkronisasi;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Daftar putih operasi yang boleh dikirim dari antrean offline (20.03).
- * Operasi di luar daftar ini ditolak, sehingga klien tidak dapat memakai
- * antrean sebagai jalur pintas ke use-case sembarang.
- */
+/** Daftar putih operasi yang boleh dikirim dari antrean offline (20.03). */
 final class RegistriOperasiSinkronisasi
 {
     /** @var array<string, PenanganOperasiSinkronisasi> */

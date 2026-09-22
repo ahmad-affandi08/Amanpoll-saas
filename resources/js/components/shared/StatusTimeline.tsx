@@ -26,12 +26,7 @@ const LABEL_NADA: Record<NadaTahap, string> = {
   gagal: 'gagal',
 };
 
-/**
- * Riwayat status sebuah entitas (DESIGN.md 12).
- *
- * Nada tahap disampaikan lewat bentuk titik dan teks bagi pembaca layar, bukan
- * warna saja. Garis penyambung digambar dengan border agar tinggi tahap bebas.
- */
+/** Riwayat status sebuah entitas (DESIGN.md 12). */
 export function StatusTimeline({ tahap, className }: { tahap: TahapStatus[]; className?: string }) {
   if (tahap.length === 0) {
     return null;

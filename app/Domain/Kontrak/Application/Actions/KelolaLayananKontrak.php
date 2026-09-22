@@ -53,10 +53,7 @@ final class KelolaLayananKontrak
         $this->audit->catat('LayananKontrak.Dihapus', 'Kontrak', $kontrak->Id, dataSebelum: $sebelum);
     }
 
-    /**
-     * Mencatat pemakaian kuota layanan. Pemakaian dikunci di dalam transaksi agar
-     * dua pencatatan bersamaan tidak melampaui kuota kontrak.
-     */
+    /** Mencatat pemakaian kuota layanan. */
     public function catatPemakaian(LayananKontrak $layanan, string $jumlah): LayananKontrak
     {
         if ($this->keInteger($jumlah) <= 0) {

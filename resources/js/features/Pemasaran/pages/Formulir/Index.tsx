@@ -122,11 +122,7 @@ function DialogFormulir({ formulir, pilihan }: { formulir: Formulir | null; pili
     Aktif: formulir?.Aktif ?? true,
   });
 
-  /*
-   * Daftar field dipegang terpisah dari form, sama seperti daftar blok di
-   * editor halaman: bentuknya bersarang, dan menaruhnya di dalam state form
-   * memaksa pemeriksa tipe menelusuri struktur yang tidak berujung.
-   */
+  /* Daftar field dipegang terpisah dari form, sama seperti daftar blok di editor halaman. */
   const [field, setField] = useState<FieldFormulir[]>(
     () => formulir?.Field ?? [{ ...FIELD_BARU, Kode: 'Nama', Label: 'Nama', Wajib: true }],
   );

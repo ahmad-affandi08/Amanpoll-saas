@@ -31,9 +31,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-/**
- * FASE 17 — kontrak penyedia, cakupan aset, layanan, dan pengingat masa berlaku.
- */
+/** FASE 17 — kontrak penyedia, cakupan aset, layanan, dan pengingat masa berlaku. */
 final class KontrakFeatureTest extends TestCase
 {
     use DatabaseTransactions;

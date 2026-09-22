@@ -185,8 +185,7 @@ final class KalibrasiFeatureTest extends TestCase
         $hasilItem1 = $hasilItems->firstWhere('TitikUkurKalibrasiId', $titik1->Id);
         $hasilItem2 = $hasilItems->firstWhere('TitikUkurKalibrasiId', $titik2->Id);
 
-        // Uji Titik 1: NilaiTerukur = 5.05 (Toleransi 4.9 - 5.1) -> Lolos, Koreksi = +0.05
-        // Uji Titik 2: NilaiTerukur = 10.30 (Toleransi 9.9 - 10.1) -> Gagal, Koreksi = +0.30
+        // Uji Titik 1: NilaiTerukur = 5.05 (Toleransi 4.9 - 5.1) -> Lolos.
         $kelolaPelaksanaan->simpanHasilTitikUkur($pelaksanaan, [
             [
                 'Id' => $hasilItem1->Id,
@@ -266,9 +265,7 @@ final class KalibrasiFeatureTest extends TestCase
         $this->assertSame($pengguna->Id, $final->DiverifikasiOleh);
         $this->assertNotNull($final->DiverifikasiPada);
 
-        // GATE 14: Konsistensi Next Due
-        // RencanaKalibrasi.TanggalBerikutnya HARUS diperbarui otomatis menjadi:
-        // TanggalKalibrasi (2026-06-20) + IntervalHari (365) = 2027-06-20
+        // GATE 14: RencanaKalibrasi.TanggalBerikutnya harus diperbarui otomatis.
         $rencanaSegar = $rencana->fresh();
         $this->assertSame('2027-06-20', $rencanaSegar->TanggalBerikutnya->toDateString());
         $this->assertSame('2027-06-20', $final->TanggalBerlakuSampai->toDateString());

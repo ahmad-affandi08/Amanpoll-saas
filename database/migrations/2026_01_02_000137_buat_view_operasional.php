@@ -5,10 +5,7 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * View operasional MySQL. Tidak dijalankan di SQLite (dipakai untuk test)
- * karena sintaks CASE/TIMESTAMPDIFF di sini spesifik MySQL.
- */
+/** View operasional MySQL. */
 return new class extends Migration
 {
     public function up(): void

@@ -86,8 +86,7 @@ final class BuatKeluhan
 
             $this->audit->catat('Buat', 'Keluhan', $keluhan->Id, null, $keluhan->toArray());
 
-            // Peristiwa ditulis di transaksi yang sama supaya integrasi eksternal
-            // tidak pernah menerima keluhan yang ternyata gagal disimpan (19.06).
+            // Peristiwa ditulis di transaksi yang sama.
             $this->kotakKeluar->catat('Keluhan.Dibuat', [
                 'KeluhanId' => $keluhan->Id,
                 'Nomor' => $keluhan->Nomor,

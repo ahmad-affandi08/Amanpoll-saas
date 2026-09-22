@@ -6,16 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Peristiwa pemasaran (MARKETING.md 23, 24).
- *
- * Satu tabel untuk seluruh taxonomy — publik, trial, revenue, referral —
- * supaya timeline prospek dapat dibaca berurutan tanpa menggabungkan lima
- * sumber yang jamnya berbeda-beda.
- *
- * `PengenalPengunjung` ikut disimpan, bukan hanya SesiPengunjungId, agar
- * peristiwa tetap dapat dirangkai ketika sesinya sudah lama berakhir.
- */
+/** Peristiwa pemasaran (MARKETING.md 23, 24). */
 return new class extends Migration
 {
     public function up(): void

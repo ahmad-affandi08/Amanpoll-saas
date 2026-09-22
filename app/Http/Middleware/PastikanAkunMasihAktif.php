@@ -11,15 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Menutup sesi yang pemiliknya sudah tidak berhak masuk (24, PRD 6).
- *
- * Status diperiksa saat masuk, tetapi sesi berumur panjang: tanpa pemeriksaan
- * ulang per permintaan, menonaktifkan pengguna atau organisasi baru berlaku
- * setelah sesinya kedaluwarsa — dan `IngatSaya` membuat tenggang itu berbulan.
- * PemeriksaIzin pun hanya membaca peran, bukan status, sehingga akun yang sudah
- * dinonaktifkan tetap lolos seluruh gerbang izin.
- */
+/** Menutup sesi yang pemiliknya sudah tidak berhak masuk (24, PRD 6). */
 final class PastikanAkunMasihAktif
 {
     private const STATUS_AKTIF = 'Aktif';
@@ -54,10 +46,7 @@ final class PastikanAkunMasihAktif
         return $status === self::STATUS_AKTIF;
     }
 
-    /**
-     * Sesi dibuang seluruhnya, bukan sekadar ditolak, supaya cookie yang
-     * tertinggal tidak dapat dipakai lagi bila statusnya sempat dipulihkan.
-     */
+    /** Sesi dibuang seluruhnya, bukan sekadar ditolak. */
     private function akhiriSesi(Request $request, string $alasan): Response
     {
         $penggunaId = (string) $request->user('web')->Id;

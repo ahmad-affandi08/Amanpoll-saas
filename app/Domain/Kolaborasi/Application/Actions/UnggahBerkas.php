@@ -21,9 +21,7 @@ final class UnggahBerkas
     public function jalankan(UploadedFile $berkas, ?string $pengunggahId): Berkas
     {
         $disk = (string) config('amanpoll.disk_berkas', 'local');
-        // Nama file dari klien tidak pernah dipakai untuk path fisik --
-        // ULID + ekstensi hasil deteksi mime, supaya aman dari path traversal
-        // dan penamaan yang bisa saling menimpa.
+        // Nama file dari klien tidak pernah dipakai untuk path fisik -- ULID + ekstensi hasil deteksi mime.
         $namaPenyimpanan = (string) Str::ulid().'.'.$berkas->extension();
         $direktori = 'berkas/'.$this->konteks->wajibId();
 

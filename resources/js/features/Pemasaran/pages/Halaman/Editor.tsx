@@ -49,11 +49,7 @@ export default function Editor({ halaman, versi, pilihan }: Props) {
     Catatan: '',
   });
 
-  /*
-   * Daftar blok dipegang terpisah dari form dan baru disatukan saat dikirim.
-   * Bentuknya bersarang dan bebas isi, sehingga menaruhnya di dalam state form
-   * memaksa pemeriksa tipe menelusuri struktur yang tidak berujung.
-   */
+  /* Daftar blok dipegang terpisah dari form dan baru disatukan saat dikirim. */
   const [blok, setBlok] = useState<BlokDisunting[]>(() =>
     (halaman?.Blok ?? []).map((satu): BlokDisunting => ({ ...satu, Kunci: kunciBaru() })),
   );
@@ -342,12 +338,7 @@ function KartuBlok({
   hapus: () => void;
   pindah: (arah: -1 | 1) => void;
 }) {
-  /*
-   * Isi blok disunting sebagai JSON. Bentuknya berbeda untuk setiap jenis blok
-   * dan masih akan berubah; formulir khusus per jenis baru sepadan setelah
-   * bentuknya mengendap. Yang penting sekarang: JSON tak sah tidak pernah
-   * sampai ke server.
-   */
+  /* Isi blok disunting sebagai JSON. */
   const [naskah, setNaskah] = useState(() => JSON.stringify(blok.Isi ?? {}, null, 2));
   const [galat, setGalat] = useState<string | null>(null);
 

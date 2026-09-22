@@ -6,14 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Tahap pipeline prospek (MARKETING.md 5.3, 24).
- *
- * Tahap disimpan sebagai baris, bukan enum, karena urutannya adalah kebijakan
- * penjualan yang berubah tanpa rilis. Yang tetap dijaga kode adalah
- * `Kode`-nya: dua tahap akhir — menang dan kalah — punya arti khusus di corong,
- * sehingga tidak boleh sekadar menjadi label bebas.
- */
+/** Tahap pipeline prospek (MARKETING.md 5.3, 24). */
 return new class extends Migration
 {
     public function up(): void

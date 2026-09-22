@@ -16,9 +16,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\VersiHalamanPemasaran
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 
-/**
- * Landing page dibuat, diterbitkan, dan dikembalikan tanpa deploy (Gate 32).
- */
+/** Landing page dibuat, diterbitkan, dan dikembalikan tanpa deploy (Gate 32). */
 final class HalamanPemasaranTest extends KasusHalaman
 {
     public function test_draf_tidak_terlihat_di_situs_publik(): void

@@ -11,11 +11,7 @@ use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\PreferensiNotifikasi;
 use App\Domain\Notifikasi\Jobs\KirimNotifikasi;
 
-/**
- * Titik masuk tunggal untuk mengirim notifikasi. Setiap kanal dicek
- * terhadap PreferensiNotifikasi milik penerima (default: aktif, model
- * opt-out) sebelum baris Notifikasi dibuat dan job pengiriman di-queue.
- */
+/** Titik masuk tunggal untuk mengirim notifikasi. */
 final class LayananNotifikasi
 {
     /**

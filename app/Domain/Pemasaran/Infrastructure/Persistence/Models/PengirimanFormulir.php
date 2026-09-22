@@ -8,12 +8,7 @@ use App\Shared\Infrastructure\Persistence\HanyaTambah;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Satu pengiriman formulir, apa adanya (MARKETING.md 10, 27).
- *
- * Hanya-tambah. Baris inilah bukti bahwa seseorang menyetujui sesuatu pada satu
- * waktu; bukti yang dapat disunting belakangan tidak bernilai sebagai bukti.
- */
+/** Satu pengiriman formulir, apa adanya (MARKETING.md 10, 27). */
 final class PengirimanFormulir extends ModelDasar
 {
     use HanyaTambah;

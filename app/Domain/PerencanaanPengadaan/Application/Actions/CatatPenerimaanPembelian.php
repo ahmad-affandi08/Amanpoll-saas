@@ -152,8 +152,7 @@ final class CatatPenerimaanPembelian
             if ($detailPo->JenisItem !== 'Aset') {
                 continue;
             }
-            // Deskripsi unik per permintaan pembelian (dijaga KelolaPermintaanPembelian)
-            // membuat penelusuran balik PO -> penawaran -> item PR bersifat deterministik.
+            // Deskripsi unik per permintaan pembelian membuat penelusuran balik PO ke item PR deterministik.
             $asal = DetailPenawaranPenyedia::query()
                 ->with('detailPermintaanPembelian.asetReferensi')
                 ->where('PenawaranPenyediaId', $po->PenawaranPenyediaId)

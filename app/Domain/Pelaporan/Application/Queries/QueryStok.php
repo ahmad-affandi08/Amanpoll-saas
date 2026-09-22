@@ -12,11 +12,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI persediaan (21.01: stock).
- *
- * Stok adalah posisi saat ini, jadi rentang tanggal tidak dipakai.
- */
+/** KPI persediaan (21.01: stock). */
 final class QueryStok implements PenyediaKpi
 {
     public function kunciDilayani(): array

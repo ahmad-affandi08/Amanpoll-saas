@@ -6,10 +6,7 @@ namespace App\Domain\Kepatuhan\Infrastructure\Services;
 
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 
-/**
- * Menyusun header autentikasi dari konfigurasi terenkripsi sebuah integrasi.
- * Dipisah supaya uji koneksi dan adapter sinkronisasi memakai aturan yang sama.
- */
+/** Menyusun header autentikasi dari konfigurasi terenkripsi sebuah integrasi. */
 final class PenyusunHeaderIntegrasi
 {
     /**

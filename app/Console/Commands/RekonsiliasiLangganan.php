@@ -7,12 +7,7 @@ namespace App\Console\Commands;
 use App\Domain\Langganan\Application\Services\LayananRekonsiliasiLangganan;
 use Illuminate\Console\Command;
 
-/**
- * Rekonsiliasi tagihan terhadap pembayarannya (22.06).
- *
- * Selisih dilaporkan sebagai kegagalan perintah supaya penjadwal menandainya,
- * bukan diam-diam dicatat di log yang tidak dibaca siapa pun.
- */
+/** Rekonsiliasi tagihan terhadap pembayarannya (22.06). */
 final class RekonsiliasiLangganan extends Command
 {
     protected $signature = 'langganan:rekonsiliasi';

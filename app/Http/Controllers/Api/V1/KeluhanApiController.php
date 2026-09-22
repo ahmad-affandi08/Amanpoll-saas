@@ -13,11 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-/**
- * Endpoint kritis untuk sistem eksternal yang melaporkan keluhan. Dilindungi
- * kunci idempotensi supaya percobaan ulang akibat jaringan tidak membuat
- * keluhan ganda (Gate 19).
- */
+/** Endpoint kritis untuk sistem eksternal yang melaporkan keluhan. */
 final class KeluhanApiController extends Controller
 {
     public function store(Request $request, BuatKeluhan $aksi, KonteksOrganisasi $konteks): JsonResponse

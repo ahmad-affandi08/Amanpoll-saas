@@ -7,13 +7,7 @@ namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Sumbangan satu peristiwa terhadap skor prospek (MARKETING.md 5.4).
- *
- * Disimpan per peristiwa, bukan hanya totalnya, supaya angka pada kartu prospek
- * dapat dijelaskan. Skor yang tidak dapat dijelaskan akan diabaikan tim
- * penjualan, dan skor yang diabaikan tidak ada gunanya dihitung.
- */
+/** Sumbangan satu peristiwa terhadap skor prospek (MARKETING.md 5.4). */
 final class SkorProspek extends ModelDasar
 {
     protected $table = 'SkorProspek';

@@ -21,9 +21,7 @@ use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Laporan tersimpan (21.03) beserta pemicu ekspornya (21.05).
- */
+/** Laporan tersimpan (21.03) beserta pemicu ekspornya (21.05). */
 final class LaporanTersimpanController extends Controller
 {
     public function index(Request $request, LayananMetrik $layananMetrik): Response

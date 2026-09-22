@@ -14,14 +14,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Perpindahan tahap prospek (MARKETING.md 5.3).
- *
- * Setiap perpindahan menulis riwayat dan satu entri timeline. Keduanya wajib,
- * dan keduanya ditulis di sini supaya tidak ada jalur yang memindahkan tahap
- * tanpa meninggalkan jejak — corong yang kehilangan satu perpindahan akan
- * salah menghitung lama tahapnya untuk selamanya.
- */
+/** Perpindahan tahap prospek (MARKETING.md 5.3). */
 final class PindahkanTahapProspek
 {
     public function __construct(private readonly TransaksiDatabase $transaksi) {}
@@ -65,10 +58,7 @@ final class PindahkanTahapProspek
         });
     }
 
-    /**
-     * Tahap pertama prospek baru. Dipisah dari `jalankan()` karena tidak ada
-     * tahap asal yang berpindah — yang dicatat adalah titik masuknya.
-     */
+    /** Tahap pertama prospek baru. */
     public function catatTahapAwal(Prospek $prospek): void
     {
         if ($prospek->TahapPipelineId === null) {

@@ -19,8 +19,7 @@ final class ImporProspekRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // `mimes` membaca isi berkasnya, bukan ekstensi yang diberi
-            // pengunggah; `txt` ikut karena CSV kerap terdeteksi demikian.
+            // `mimes` membaca isi berkasnya, bukan ekstensi yang diberi pengunggah.
             'Berkas' => ['required', 'file', 'mimes:csv,txt', 'max:'.self::UKURAN_MAKS_KB],
         ];
     }

@@ -18,9 +18,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Pengelolaan langganan seluruh tenant oleh admin platform (22.04).
- */
+/** Pengelolaan langganan seluruh tenant oleh admin platform (22.04). */
 final class LanggananPlatformController extends Controller
 {
     public function __construct(private readonly LayananLangganan $layananLangganan) {}

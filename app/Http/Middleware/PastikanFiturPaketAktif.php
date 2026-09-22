@@ -11,13 +11,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Gerbang fitur per rute (22.05).
- *
- * Dipasang pada grup rute modul berbayar, dan berlaku untuk baca maupun tulis:
- * modul yang tidak dibeli tidak seharusnya dapat dibaca lewat API hanya karena
- * menunya disembunyikan di UI (Gate 22).
- */
+/** Gerbang fitur per rute (22.05). */
 final class PastikanFiturPaketAktif
 {
     public function __construct(private readonly PemeriksaEntitlement $entitlement) {}

@@ -9,22 +9,7 @@ use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Cache respons untuk isi publik yang sama bagi semua orang (MARKETING.md 1).
- *
- * Dipakai `robots.txt` dan `sitemap.xml`: keduanya byte-identik bagi setiap
- * pengunjung, tidak membawa sesi, dan diambil perayap berulang kali.
- *
- * Halaman HTML sengaja belum ikut. Badan halaman Inertia memuat token CSRF
- * milik satu sesi, sehingga menyajikannya ulang ke orang lain akan
- * membagikan token yang salah. Saat halaman pemasaran yang sesungguhnya lahir
- * di FASE 32, yang di-cache adalah isi halaman terbitannya — bukan respons
- * HTTP-nya — sehingga persoalan token tidak muncul sama sekali.
- *
- * Header `Set-Cookie` tidak pernah ikut tersimpan. Satu saja yang terbawa akan
- * membagikan pengenal pengunjung yang sama ke semua orang dan membuat seluruh
- * attribution salah.
- */
+/** Cache respons untuk isi publik yang sama bagi semua orang (MARKETING.md 1). */
 final class CacheResponsPublik
 {
     public function __construct(private readonly Cache $cache) {}

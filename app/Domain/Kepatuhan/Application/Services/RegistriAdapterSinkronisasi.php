@@ -7,10 +7,7 @@ namespace App\Domain\Kepatuhan\Application\Services;
 use App\Domain\Kepatuhan\Domain\Contracts\AdapterSinkronisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 
-/**
- * Menentukan adapter mana yang dipakai untuk sebuah integrasi. Jenis yang
- * belum punya adapter khusus jatuh ke adapter REST bawaan.
- */
+/** Menentukan adapter mana yang dipakai untuk sebuah integrasi. */
 final class RegistriAdapterSinkronisasi
 {
     /** @var array<string, AdapterSinkronisasi> */

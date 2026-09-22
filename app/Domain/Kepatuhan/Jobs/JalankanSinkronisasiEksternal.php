@@ -10,11 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Throwable;
 
-/**
- * Menjalankan satu baris sinkronisasi di latar belakang (19.03). Percobaan
- * ulang diserahkan ke antrean; setelah percobaan terakhir habis, barisnya
- * ditandai gagal dengan pesan yang sudah disamarkan.
- */
+/** Menjalankan satu baris sinkronisasi di latar belakang (19.03). */
 final class JalankanSinkronisasiEksternal implements ShouldQueue
 {
     use Queueable;

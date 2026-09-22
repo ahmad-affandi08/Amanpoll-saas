@@ -10,12 +10,7 @@ use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\KotakKeluarPeris
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Kotak keluar peristiwa (19.06). Peristiwa ditulis di dalam transaksi bisnis
- * yang sama dengan perubahan datanya, lalu dipublikasikan worker terpisah.
- * Dengan begitu tidak mungkin ada peristiwa terkirim untuk transaksi yang
- * gagal, maupun transaksi sukses yang peristiwanya hilang.
- */
+/** Kotak keluar peristiwa (19.06). */
 final class LayananKotakKeluar
 {
     public function __construct(private readonly KonteksOrganisasi $konteks) {}
@@ -80,10 +75,7 @@ final class LayananKotakKeluar
         $peristiwa->save();
     }
 
-    /**
-     * Mengembalikan peristiwa ke antrean dengan jeda menaik, atau menyerah
-     * setelah batas percobaan supaya tidak berputar selamanya.
-     */
+    /** Mengembalikan peristiwa ke antrean dengan jeda menaik, atau menyerah setelah batas percobaan. */
     public function tandaiGagal(KotakKeluarPeristiwa $peristiwa, string $kesalahan): void
     {
         $percobaan = $peristiwa->Percobaan + 1;

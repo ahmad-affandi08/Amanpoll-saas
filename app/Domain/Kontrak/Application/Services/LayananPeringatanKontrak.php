@@ -11,11 +11,7 @@ use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Peringatan kontrak akan berakhir dan kontrak kedaluwarsa (17.04). Ambang hari
- * dapat diatur per organisasi lewat konfigurasi `Kontrak.HariPeringatan`,
- * dengan `PeringatanHariSebelum` pada kontrak sebagai ambang tambahan.
- */
+/** Peringatan kontrak akan berakhir dan kontrak kedaluwarsa (17.04). */
 final class LayananPeringatanKontrak
 {
     private const IZIN = 'Kontrak.Kelola';

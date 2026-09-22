@@ -11,15 +11,7 @@ use App\Shared\Domain\Exceptions\AksesDitolak;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * Endpoint webhook penyedia pembayaran (22.06).
- *
- * Tiga hal yang membuatnya aman dipanggil publik: keabsahan dibuktikan lewat
- * tanda tangan penyedia sebelum muatannya dipercaya; pemrosesannya idempoten,
- * sehingga pengiriman ulang tidak menggandakan pembayaran; dan ia tidak pernah
- * mempercayai OrganisasiId dari muatan, melainkan menurunkannya dari tagihan
- * yang nomornya disebut.
- */
+/** Endpoint webhook penyedia pembayaran (22.06). */
 final class WebhookPembayaranController extends Controller
 {
     public function __invoke(

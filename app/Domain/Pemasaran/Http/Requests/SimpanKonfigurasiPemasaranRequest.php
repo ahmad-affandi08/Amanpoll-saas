@@ -20,8 +20,7 @@ final class SimpanKonfigurasiPemasaranRequest extends FormRequest
     {
         return [
             'Kunci' => ['required', 'string', Rule::in(KatalogKonfigurasiPemasaran::kunci())],
-            // Bentuk nilainya berbeda per kunci — angka, teks, atau peta bobot
-            // skor — jadi yang ditegakkan di sini hanya bahwa kuncinya dikenal.
+            // Bentuk nilainya berbeda per kunci.
             'Nilai' => ['required'],
         ];
     }

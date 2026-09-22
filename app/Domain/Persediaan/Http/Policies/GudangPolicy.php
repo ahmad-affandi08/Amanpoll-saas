@@ -8,11 +8,7 @@ use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Menjaga Gudang sekaligus LokasiGudang (anak langsung Gudang) -- keduanya
- * dikelola lewat kode Izin yang sama, konsisten dengan pola satu policy per
- * agregat teratas di SiklusAset (FASE 09).
- */
+/** Menjaga Gudang sekaligus LokasiGudang (anak langsung Gudang) -- keduanya dikelola lewat kode Izin yang sama. */
 final class GudangPolicy
 {
     public function __construct(private readonly PemeriksaIzin $izin) {}

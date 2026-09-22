@@ -11,13 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Menentukan siapa yang berhak memutuskan satu TahapPersetujuan. "Unit"
- * dievaluasi terhadap unit milik entitas yang sedang diminta persetujuannya
- * (bukan kolom statis di TahapPersetujuan, karena skema tabel itu tidak
- * punya UnitOrganisasiId sendiri) -- memanfaatkan PenggunaPeran.UnitOrganisasiId
- * yang sudah ada tapi belum dipakai modul manapun sebelum FASE 06.
- */
+/** Menentukan siapa yang berhak memutuskan satu TahapPersetujuan. */
 final class LayananPenyetuju
 {
     /**

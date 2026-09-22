@@ -15,11 +15,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-/**
- * Teknisi menerima atau menolak penugasan dari lapangan (20.05). Ini transisi
- * pertama yang ia lakukan setelah pekerjaan masuk, jadi harus tersedia offline
- * supaya pekerjaan tidak macet di status Ditugaskan sampai sinyal kembali.
- */
+/** Teknisi menerima atau menolak penugasan dari lapangan (20.05). */
 final class PenanganResponsPenugasan implements PenanganOperasiSinkronisasi
 {
     public function __construct(private readonly ResponsPenugasanPerintahKerja $aksi) {}

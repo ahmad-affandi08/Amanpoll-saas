@@ -9,18 +9,14 @@ use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
 use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\PaketLangganan;
 
-/**
- * CRUD paket oleh admin platform beserta validasi entitlement-nya
- * (22.02/22.03), dan pemisahan identitasnya dari tenant.
- */
+/** CRUD paket oleh admin platform beserta validasi entitlement-nya (22.02/22.03). */
 final class PlatformPaketTest extends KasusLangganan
 {
     public function test_tenant_biasa_tidak_dapat_membuka_konsol_platform(): void
     {
         $pengguna = $this->buatPengguna(['Pengaturan.Kelola']);
 
-        // Guard berbeda: sesi tenant tidak pernah menjadi sesi platform, berapa
-        // pun izin yang dimilikinya di dalam organisasinya.
+        // Guard berbeda: sesi tenant tidak pernah menjadi sesi platform.
         $this->actingAs($pengguna)
             ->get(route('adminPlatform.paket.index'))
             ->assertRedirect(route('adminPlatform.login'));

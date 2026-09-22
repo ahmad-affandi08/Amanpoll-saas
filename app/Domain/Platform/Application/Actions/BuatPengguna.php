@@ -21,8 +21,7 @@ final class BuatPengguna
 
     public function jalankan(PenggunaData $data): Pengguna
     {
-        // Kuota pengguna diperiksa di sini supaya undangan lewat API maupun
-        // lewat UI sama-sama terjaga (22.05, Gate 22).
+        // Kuota pengguna diperiksa di sini.
         $this->penjagaBatas->pastikanMasihMuat(KatalogFitur::BATAS_PENGGUNA);
 
         $pengguna = new Pengguna([

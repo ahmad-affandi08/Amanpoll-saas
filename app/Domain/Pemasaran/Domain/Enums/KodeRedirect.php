@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain\Enums;
 
-/**
- * Kode redirect yang didukung situs publik (MARKETING.md 9).
- *
- * Bernilai teks meski isinya angka, mengikuti kosakata domain lainnya yang
- * seluruhnya tersimpan sebagai teks.
- */
+/** Kode redirect yang didukung situs publik (MARKETING.md 9). */
 enum KodeRedirect: string
 {
     case Permanen = '301';

@@ -11,18 +11,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use Illuminate\Console\Command;
 use Throwable;
 
-/**
- * Menjalankan terbit dan tarik terjadwal (MARKETING.md 8).
- *
- * Yang dibandingkan adalah waktu yang sudah lewat, bukan waktu yang persis
- * sekarang: penjadwal yang terlambat berjalan — dan pada shared hosting itu
- * sering terjadi — tetap menerbitkan halaman yang jamnya sudah tiba, alih-alih
- * melewatkannya untuk selamanya.
- *
- * Satu halaman yang gagal tidak menghentikan sisanya. Kampanye yang isinya
- * sepuluh landing page tidak boleh batal seluruhnya karena satu di antaranya
- * kehilangan versinya.
- */
+/** Menjalankan terbit dan tarik terjadwal (MARKETING.md 8). */
 final class JalankanJadwalHalamanPemasaran extends Command
 {
     protected $signature = 'pemasaran:jalankan-jadwal-halaman';

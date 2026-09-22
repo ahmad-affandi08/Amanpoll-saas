@@ -27,9 +27,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
-/**
- * Dasar bersama tes domain Langganan (22.01–22.06).
- */
+/** Dasar bersama tes domain Langganan (22.01–22.06). */
 abstract class KasusLangganan extends TestCase
 {
     use DatabaseTransactions;
@@ -51,11 +49,7 @@ abstract class KasusLangganan extends TestCase
         app(KonteksOrganisasi::class)->tetapkan($this->organisasi->Id);
     }
 
-    /**
-     * Pola nomor dokumen adalah data pengaturan tenant, bukan bagian dari
-     * langganan; disiapkan di sini supaya tes yang menulis transaksi nyata
-     * gagal karena aturan langganan, bukan karena pengaturan yang belum ada.
-     */
+    /** Pola nomor dokumen adalah data pengaturan tenant, bukan bagian dari langganan. */
     protected function siapkanPolaNomor(string $jenisDokumen, string $awalan): void
     {
         DB::table('NomorDokumen')->insert([
@@ -188,12 +182,7 @@ abstract class KasusLangganan extends TestCase
         return $pengguna;
     }
 
-    /**
-     * Permintaan ke konsol platform berjalan tanpa konteks organisasi, persis
-     * seperti di produksi: rute platform tidak memakai middleware 'organisasi',
-     * jadi tidak ada tenant yang sedang aktif. Konteks dilepas di sini supaya
-     * tes tidak memakai keadaan yang tidak mungkin terjadi.
-     */
+    /** Permintaan ke konsol platform berjalan tanpa konteks organisasi, persis seperti di produksi. */
     protected function sebagaiAdminPlatform(?AdminPlatform $admin = null): static
     {
         app(KonteksOrganisasi::class)->bersihkan();
@@ -211,11 +200,7 @@ abstract class KasusLangganan extends TestCase
         ]);
     }
 
-    /**
-     * Memundurkan tanggal pembuatan organisasi sehingga uji coba awalnya sudah
-     * lewat. Dipakai untuk menguji keadaan tenant yang tidak pernah diberi
-     * paket dan dibiarkan terlalu lama.
-     */
+    /** Memundurkan tanggal pembuatan organisasi sehingga uji coba awalnya sudah lewat. */
     protected function mundurkanPembuatanOrganisasi(int $hari): void
     {
         DB::table('Organisasi')

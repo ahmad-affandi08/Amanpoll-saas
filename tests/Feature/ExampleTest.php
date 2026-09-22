@@ -7,9 +7,7 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * Root membutuhkan autentikasi, jadi pengunjung anonim diarahkan ke halaman login.
-     */
+    /** Root membutuhkan autentikasi, jadi pengunjung anonim diarahkan ke halaman login. */
     public function test_pengunjung_anonim_diarahkan_ke_login(): void
     {
         $response = $this->get('/');

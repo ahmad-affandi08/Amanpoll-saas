@@ -11,12 +11,7 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPem
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI pengadaan (21.01: procurement).
- *
- * Pesanan pembelian tidak membawa unit organisasi maupun lokasi, sehingga
- * filter dimensi tidak berlaku di sini.
- */
+/** KPI pengadaan (21.01: procurement). */
 final class QueryPengadaan implements PenyediaKpi
 {
     /** Status yang tidak dihitung sebagai komitmen belanja. */

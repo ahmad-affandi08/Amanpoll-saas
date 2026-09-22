@@ -10,17 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-/**
- * Penerimaan formulir di host publik (MARKETING.md 10).
- *
- * Anonim, tetapi tetap berada di grup `web`: tokennya diperiksa seperti
- * formulir lain, sehingga halaman pihak ketiga tidak dapat mengirim atas nama
- * pengunjung yang sedang membuka situs ini.
- *
- * Pengiriman yang tertangkap honeypot dijawab persis seperti yang berhasil.
- * Memberi tahu pengirimnya bahwa ia tertangkap sama saja dengan membuang
- * perangkapnya.
- */
+/** Penerimaan formulir di host publik (MARKETING.md 10). */
 final class FormulirPublikController extends Controller
 {
     public function __invoke(

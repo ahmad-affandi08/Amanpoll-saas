@@ -1,7 +1,4 @@
-/**
- * Formatter tampilan uang saja. Backend (App\Shared\Domain\ValueObjects\Uang)
- * tetap menjadi sumber kebenaran nilai dan kalkulasi.
- */
+/** Formatter tampilan uang saja. */
 export function formatUang(nilai: number | string, mataUang = 'IDR'): string {
   const angka = typeof nilai === 'string' ? Number(nilai) : nilai;
 

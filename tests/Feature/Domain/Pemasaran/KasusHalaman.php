@@ -11,10 +11,7 @@ use App\Domain\Pemasaran\Domain\Enums\JenisBlokHalaman;
 use App\Domain\Pemasaran\Domain\Enums\TipeHalamanPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 
-/**
- * Landasan test halaman pemasaran: host publik diambil dari konfigurasi, tidak
- * pernah dari nama produksi (MARKETING.md 1.3).
- */
+/** Landasan test halaman pemasaran. */
 abstract class KasusHalaman extends KasusPemasaran
 {
     protected PetaHost $host;

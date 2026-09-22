@@ -23,8 +23,7 @@ final class LampirkanBerkas
         ?string $keterangan,
         ?string $pembuatId,
     ): LampiranEntitas {
-        // Melempar DataTidakDitemukan (404) kalau entitas tidak dikenal atau
-        // lintas organisasi -- ScopeOrganisasi milik model target yang menjamin.
+        // Melempar DataTidakDitemukan (404) kalau entitas tidak dikenal atau lintas organisasi.
         $this->registriEntitas->cariEntitas($jenisEntitas, $entitasId);
 
         return $this->lampiranEntitasRepository->simpan(new LampiranEntitas([

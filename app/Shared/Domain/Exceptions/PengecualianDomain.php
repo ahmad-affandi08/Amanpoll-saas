@@ -6,10 +6,7 @@ namespace App\Shared\Domain\Exceptions;
 
 use RuntimeException;
 
-/**
- * Basis seluruh exception domain Amanpoll agar exception handler dapat
- * memetakan response web/API secara konsisten tanpa mengenal tiap subclass.
- */
+/** Basis seluruh exception domain Amanpoll. */
 abstract class PengecualianDomain extends RuntimeException
 {
     abstract public function kodeStatusHttp(): int;

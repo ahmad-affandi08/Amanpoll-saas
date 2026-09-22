@@ -3,13 +3,7 @@ import { Button } from '@/components/ui/button';
 import { KerangkaPublik } from '../components/KerangkaPublik';
 import type { PropsPublik } from '../types';
 
-/**
- * Beranda bawaan situs publik (MARKETING.md 34.1).
- *
- * Tampil hanya selama belum ada halaman pemasaran yang terbit di `/`. Begitu
- * ada, akar situs dilayani halaman itu — situs publik tidak boleh kosong di
- * alamat utamanya hanya karena isinya belum disusun.
- */
+/** Beranda bawaan situs publik (MARKETING.md 34.1). */
 export default function Beranda({ kanonik, urlMasuk, urlDaftar }: PropsPublik) {
   return (
     <>

@@ -9,11 +9,7 @@ interface Props {
   entitasId: string;
 }
 
-/**
- * Panel kolaborasi generik (lampiran, tag, kolom kustom, komentar) yang
- * dapat ditempel ke halaman entitas manapun yang terdaftar di RegistriEntitas
- * -- dibuktikan di sini lewat halaman Lokasi, siap dipakai Aset tanpa refactor.
- */
+/** Panel kolaborasi generik: lampiran, komentar, dan riwayat. */
 export function PanelKolaborasi({ jenisEntitas, entitasId }: Props) {
   return (
     <div className="rounded-lg border border-border p-4">

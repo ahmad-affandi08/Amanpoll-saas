@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Audit;
 
-/**
- * Wadah singleton per-request untuk ID korelasi, ditetapkan
- * TetapkanKorelasiId middleware, dibaca LayananAudit.
- */
+/** Wadah singleton per-request untuk ID korelasi, ditetapkan TetapkanKorelasiId middleware, dibaca LayananAudit. */
 final class KorelasiId
 {
     private ?string $nilai = null;

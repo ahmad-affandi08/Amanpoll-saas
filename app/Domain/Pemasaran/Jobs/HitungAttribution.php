@@ -11,16 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * Menyusun ulang attribution satu pengunjung dari sesi-sesinya
- * (MARKETING.md 29).
- *
- * Attribution ditulis langsung saat kunjungan terjadi, jadi pekerjaan ini bukan
- * jalur utamanya. Ia dibutuhkan untuk dua hal yang pasti terjadi: mengisi
- * kembali attribution setelah kampanye baru didaftarkan — kunjungan lama
- * menyimpan `utm_campaign` tetapi belum tertaut ke barisnya — dan memperbaiki
- * baris yang rusak tanpa menyentuh data mentahnya.
- */
+/** Menyusun ulang attribution satu pengunjung dari sesi-sesinya (MARKETING.md 29). */
 final class HitungAttribution implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

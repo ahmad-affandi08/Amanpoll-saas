@@ -6,10 +6,7 @@ namespace App\Core\Idempotensi;
 
 use App\Shared\Domain\Exceptions\PengecualianDomain;
 
-/**
- * Kunci idempotensi dipakai ulang untuk muatan yang berbeda. Ditolak agar
- * permintaan kedua tidak diam-diam menerima hasil permintaan pertama.
- */
+/** Kunci idempotensi dipakai ulang untuk muatan yang berbeda. */
 final class KonflikIdempotensi extends PengecualianDomain
 {
     public function kodeStatusHttp(): int

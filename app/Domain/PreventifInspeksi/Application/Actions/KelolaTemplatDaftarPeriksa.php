@@ -99,9 +99,7 @@ final class KelolaTemplatDaftarPeriksa
         });
     }
 
-    /**
-     * Membuat versi baru dari templat dan menyalin semua butir pertanyaan.
-     */
+    /** Membuat versi baru dari templat dan menyalin semua butir pertanyaan. */
     public function buatVersiBaru(TemplatDaftarPeriksa $templatLama, string $penggunaId): TemplatDaftarPeriksa
     {
         return $this->transaksi->jalankan(function () use ($templatLama): TemplatDaftarPeriksa {

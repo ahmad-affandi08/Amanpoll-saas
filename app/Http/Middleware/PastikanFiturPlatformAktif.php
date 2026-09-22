@@ -9,13 +9,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Menutup rute milik modul yang flag-nya mati (MARKETING.md 31).
- *
- * Menutup, bukan menyembunyikan: menu yang hilang sementara rutenya masih
- * dilayani adalah feature flag yang hanya berlaku bagi orang yang tidak
- * mengetik URL sendiri.
- */
+/** Menutup rute milik modul yang flag-nya mati (MARKETING.md 31). */
 final class PastikanFiturPlatformAktif
 {
     public function __construct(private readonly PemeriksaFiturPlatform $fitur) {}

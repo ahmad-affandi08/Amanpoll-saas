@@ -15,19 +15,10 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Dasbor kustom milik pengguna (21.04): komponen, urutan, lebar, dan penanda
- * dasbor bawaan.
- *
- * KPI tak dikenal, KPI di luar kewenangan penyimpan, dan bentuk yang tidak
- * mungkin digambar ditolak di server, bukan disembunyikan di klien.
- */
+/** Dasbor kustom milik pengguna (21.04): komponen, urutan, lebar, dan penanda dasbor bawaan. */
 final class KelolaDasborTersimpan
 {
-    /**
-     * Batas komponen per dasbor supaya satu halaman tidak menjadi ratusan
-     * query.
-     */
+    /** Batas komponen per dasbor supaya satu halaman tidak menjadi ratusan query. */
     public const BATAS_KOMPONEN = 24;
 
     public function __construct(
@@ -62,8 +53,7 @@ final class KelolaDasborTersimpan
                 $this->jadikanSatuSatunyaBawaan($dasbor, $pengguna);
             }
 
-            // Komponen ditulis ulang seluruhnya: susunan adalah satu kesatuan,
-            // dan pembaruan sebagian akan meninggalkan urutan yang berlubang.
+            // Komponen ditulis ulang seluruhnya.
             $dasbor->komponen()->delete();
             foreach ($komponen as $urutan => $satu) {
                 KomponenDasbor::create([
@@ -154,10 +144,7 @@ final class KelolaDasborTersimpan
         return $hasil;
     }
 
-    /**
-     * Preferensi dasbor bawaan bersifat per pengguna, jadi penandaan hanya
-     * melepas penanda pada dasbor milik pengguna yang sama.
-     */
+    /** Preferensi dasbor bawaan bersifat per pengguna. */
     private function jadikanSatuSatunyaBawaan(DasborTersimpan $dasbor, Pengguna $pengguna): void
     {
         DasborTersimpan::query()

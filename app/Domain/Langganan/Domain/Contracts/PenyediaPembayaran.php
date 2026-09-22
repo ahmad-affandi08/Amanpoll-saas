@@ -7,13 +7,7 @@ namespace App\Domain\Langganan\Domain\Contracts;
 use App\Domain\Langganan\Domain\ValueObjects\PeristiwaPembayaran;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 
-/**
- * Abstraksi penyedia pembayaran (22.06, PRD 8.19).
- *
- * Kontrak ini sengaja hanya memuat yang benar-benar berbeda antar penyedia:
- * cara memulai pembayaran, cara membuktikan bahwa sebuah webhook memang datang
- * darinya, dan cara menerjemahkan muatannya.
- */
+/** Abstraksi penyedia pembayaran (22.06, PRD 8.19). */
 interface PenyediaPembayaran
 {
     /** Kode stabil yang disimpan pada PembayaranLangganan.PenyediaPembayaran. */

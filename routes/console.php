@@ -2,11 +2,7 @@
 
 use Illuminate\Support\Facades\Schedule;
 
-/*
-| Shared hosting tidak menjalankan daemon queue secara permanen.
-| hPanel hanya perlu memanggil "php artisan schedule:run" setiap menit.
-| Scheduler di bawah menjalankan worker pendek lalu keluar dengan aman.
-*/
+// | Shared hosting tidak menjalankan daemon queue secara permanen.
 Schedule::command('queue:work database --queue=high,default,low --stop-when-empty --sleep=1 --tries=3 --timeout=45 --max-time=50')
     ->everyMinute()
     ->withoutOverlapping(1);
@@ -72,8 +68,7 @@ Schedule::command('idempotensi:bersihkan')
     ->dailyAt('03:30')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'));
 
-// Terbit dan tarik terjadwal halaman pemasaran. Tiap lima menit sudah cukup:
-// jadwalnya ditentukan manusia dalam satuan jam, bukan detik.
+// Terbit dan tarik terjadwal halaman pemasaran.
 Schedule::command('pemasaran:jalankan-jadwal-halaman')
     ->everyFiveMinutes()
     ->withoutOverlapping(5);

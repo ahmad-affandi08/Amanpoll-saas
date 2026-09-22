@@ -9,14 +9,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TagProspek;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-/**
- * Menempelkan tag pada prospek (MARKETING.md 10, 24).
- *
- * Pivot `ProspekTag` memakai kunci utama ULID seperti tabel lain di aplikasi
- * ini, sehingga `attach()` bawaan Eloquent tidak dapat dipakai apa adanya —
- * kuncinya tidak akan terisi. Penempelannya dikumpulkan di sini supaya detail
- * itu tidak tersebar ke setiap pemanggil.
- */
+/** Menempelkan tag pada prospek (MARKETING.md 10, 24). */
 final class PenempelTagProspek
 {
     /** @param list<string> $nama */

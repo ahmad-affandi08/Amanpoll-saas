@@ -1,12 +1,6 @@
 import { kunciKonteks, type KonteksOffline } from '@/lib/penyimpanan-offline';
 
-/**
- * Pemasangan dan pembaruan service worker Amanpoll (FASE 20.01).
- *
- * Pembaruan tidak pernah dipaksakan di tengah pekerjaan: worker baru menunggu
- * sampai `terapkanPembaruan()` dipanggil, yang hanya terjadi setelah pengguna
- * menyetujui tawaran muat ulang.
- */
+/** Pemasangan dan pembaruan service worker Amanpoll (FASE 20.01). */
 
 let pendaftaran: ServiceWorkerRegistration | null = null;
 let menungguPembaruan: ServiceWorker | null = null;

@@ -12,10 +12,7 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 
-/**
- * Siklus hidup langganan (22.04): mulai, uji coba, aktif, tenggang,
- * kedaluwarsa, batal.
- */
+/** Siklus hidup langganan (22.04): mulai, uji coba, aktif, tenggang, kedaluwarsa, batal. */
 final class SiklusHidupLanggananTest extends KasusLangganan
 {
     public function test_memulai_langganan_tanpa_uji_coba_langsung_aktif_satu_periode(): void
@@ -92,8 +89,7 @@ final class SiklusHidupLanggananTest extends KasusLangganan
     public function test_status_efektif_tidak_bergantung_pada_kolom_status_yang_tertinggal(): void
     {
         $paket = $this->buatPaketLengkap();
-        // Kolomnya masih 'Aktif' walau tanggalnya sudah jauh terlewat: inilah
-        // keadaan setelah perintah harian gagal jalan.
+        // Kolomnya masih 'Aktif' walau tanggalnya sudah jauh terlewat.
         $langganan = $this->buatLangganan(
             $paket,
             StatusLangganan::Aktif,

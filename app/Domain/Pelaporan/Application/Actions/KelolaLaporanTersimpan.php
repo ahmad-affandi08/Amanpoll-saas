@@ -12,12 +12,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Filter laporan yang disimpan pengguna (21.03).
- *
- * Konfigurasi dinormalkan sebelum disimpan: kunci KPI yang tidak dikenal atau
- * tidak diizinkan bagi penyimpannya dibuang, dan rentang tanggal dibakukan.
- */
+/** Filter laporan yang disimpan pengguna (21.03). */
 final class KelolaLaporanTersimpan
 {
     public function __construct(
@@ -53,8 +48,7 @@ final class KelolaLaporanTersimpan
                 'Pribadi' => (bool) ($data['Pribadi'] ?? true),
             ]);
 
-            // Kepemilikan ditetapkan sekali saat dibuat dan tidak berpindah
-            // lewat pembaruan, supaya laporan tidak dapat "diambil alih".
+            // Kepemilikan ditetapkan sekali saat dibuat dan tidak berpindah lewat pembaruan.
             if ($baru) {
                 $laporan->PemilikId = $pengguna->Id;
             }

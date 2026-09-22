@@ -13,9 +13,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\UtmPemasaran;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 use Illuminate\Support\Str;
 
-/**
- * Penangkapan UTM dan sesi kunjungan (MARKETING.md 14, 36).
- */
+/** Penangkapan UTM dan sesi kunjungan (MARKETING.md 14, 36). */
 final class UtmTersimpanTest extends KasusPemasaran
 {
     private function urlPublik(string $path = '/'): string

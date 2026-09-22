@@ -13,13 +13,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Satu-satunya tempat entitlement dijawab (22.05).
- *
- * Seluruh penegakan — gerbang rute, penjaga batas, dan prop yang dikirim ke UI
- * — memanggil kelas ini, sehingga tidak mungkin ada jalur yang memakai aturan
- * berbeda.
- */
+/** Satu-satunya tempat entitlement dijawab (22.05). */
 final class PemeriksaEntitlement
 {
     private const MENIT_CACHE = 5;
@@ -67,20 +61,13 @@ final class PemeriksaEntitlement
         return $entitlement->bolehFitur($kodeFitur);
     }
 
-    /**
-     * Dipanggil setiap kali langganan atau isi paket berubah, supaya kenaikan
-     * paket langsung terasa dan penurunan paket tidak tertunda lima menit.
-     */
+    /** Dipanggil setiap kali langganan atau isi paket berubah. */
     public function bersihkanCache(string $organisasiId): void
     {
         $this->cache->forget($this->kunciCache($organisasiId));
     }
 
-    /**
-     * Perubahan pada sebuah paket menyentuh semua organisasi yang memakainya,
-     * jadi cache-nya dibersihkan per organisasi pemakai — bukan dengan
-     * mengosongkan seluruh cache aplikasi.
-     */
+    /** Perubahan pada sebuah paket menyentuh semua organisasi yang memakainya. */
     public function bersihkanCachePaket(string $paketLanggananId): void
     {
         $organisasiId = Langganan::query()
@@ -107,10 +94,7 @@ final class PemeriksaEntitlement
         $fitur = [];
         $batas = [];
 
-        // Katalog menjadi kerangkanya, bukan isi tabel: fitur yang belum pernah
-        // ditetapkan pada sebuah paket tetap muncul dengan nilai bawaannya,
-        // sehingga menambah fitur baru tidak membuat paket lama menjawab "tidak
-        // tahu" dan gerbangnya gagal terbuka atau gagal tertutup.
+        // Katalog menjadi kerangkanya, bukan isi tabel.
         foreach (KatalogFitur::semua() as $kode => $definisi) {
             $fitur[$kode] = $definisi->diizinkanBawaan;
             $batas[$kode] = $definisi->batasBawaan;
@@ -141,12 +125,7 @@ final class PemeriksaEntitlement
         );
     }
 
-    /**
-     * Organisasi yang belum diberi paket berada dalam uji coba awal, dihitung
-     * dari tanggal organisasinya dibuat. Ini membuat tenant baru langsung dapat
-     * bekerja, sekaligus memastikan tenant yang terlupakan berhenti sendiri
-     * alih-alih menjadi pelanggan gratis selamanya.
-     */
+    /** Organisasi yang belum diberi paket berada dalam uji coba awal. */
     private function ujiCobaAwal(string $organisasiId): Entitlement
     {
         $dibuatPada = DB::table('Organisasi')->where('Id', $organisasiId)->value('DibuatPada');

@@ -13,8 +13,7 @@ final class BuatAlurPersetujuan
      */
     public function jalankan(array $data): AlurPersetujuan
     {
-        // Alur baru selalu tidak aktif -- harus punya minimal satu tahap
-        // dulu sebelum bisa diaktifkan (lihat UbahAlurPersetujuan).
+        // Alur baru selalu tidak aktif.
         $data['Aktif'] = false;
 
         return AlurPersetujuan::create($data);

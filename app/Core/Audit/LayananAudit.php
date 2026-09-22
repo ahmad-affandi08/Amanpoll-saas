@@ -10,18 +10,10 @@ use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-/**
- * Titik masuk tunggal untuk menulis CatatanAudit. Setiap modul domain
- * memanggil catat() dari Action-nya sendiri saat use-case-nya dibangun --
- * layanan ini tidak tahu apa-apa soal entitas bisnis tertentu.
- */
+/** Titik masuk tunggal untuk menulis CatatanAudit. */
 final class LayananAudit
 {
-    /**
-     * Nama kunci (case-insensitive, dicocokkan sebagai substring) yang
-     * nilainya diredaksi dari DataSebelum/DataSesudah supaya kredensial
-     * tidak pernah tersimpan mentah di log audit.
-     */
+    /** Nama kunci (case-insensitive. */
     private const KUNCI_RAHASIA = ['katasandi', 'password', 'tokenhash', 'hashkunci', 'token', 'rahasia', 'secret'];
 
     public function __construct(
@@ -47,9 +39,7 @@ final class LayananAudit
 
         $this->catatanAuditRepository->simpan(new CatatanAudit([
             'OrganisasiId' => $this->konteksOrganisasi->id(),
-            // Guard disebut eksplisit: Auth::id() memakai guard bawaan, yang
-            // dapat berpindah ke 'platform' dan menulis identitas non-tenant ke
-            // kolom yang ber-foreign key ke tabel Pengguna.
+            // Guard disebut eksplisit: Auth::id() memakai guard bawaan, yang dapat berpindah ke 'platform'.
             'PenggunaId' => Auth::guard('web')->id(),
             'AktorPlatformId' => Auth::guard('platform')->id(),
             'Aksi' => $aksi,

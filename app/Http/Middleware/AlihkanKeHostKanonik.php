@@ -9,13 +9,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Satu halaman publik hanya boleh punya satu URL (MARKETING.md 1.2).
- *
- * Bentuk apex dan bentuk www adalah dua URL berbeda bagi mesin pencari:
- * peringkat satu halaman terbelah, dan attribution pemasaran menghitung satu
- * kunjungan sebagai dua sumber.
- */
+/** Satu halaman publik hanya boleh punya satu URL (MARKETING.md 1.2). */
 final class AlihkanKeHostKanonik
 {
     public function __construct(private readonly PetaHost $host) {}

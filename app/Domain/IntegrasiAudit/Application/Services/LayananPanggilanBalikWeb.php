@@ -11,10 +11,7 @@ use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggi
 use App\Domain\IntegrasiAudit\Jobs\KirimPanggilanBalikWeb;
 use Illuminate\Support\Facades\Http;
 
-/**
- * Menerbitkan peristiwa kotak keluar ke endpoint webhook yang berlangganan,
- * lalu mengirimkannya dengan tanda tangan dan percobaan ulang (19.04, 19.05).
- */
+/** Menerbitkan peristiwa kotak keluar ke endpoint webhook yang berlangganan. */
 final class LayananPanggilanBalikWeb
 {
     public const HEADER_TANDA_TANGAN = 'X-Amanpoll-Signature';
@@ -73,10 +70,7 @@ final class LayananPanggilanBalikWeb
         return $dibuat;
     }
 
-    /**
-     * Mengirim satu pengiriman ke endpoint tujuan dan mencatat hasilnya.
-     * Kegagalan dijadwalkan ulang dengan jeda menaik sampai batas percobaan.
-     */
+    /** Mengirim satu pengiriman ke endpoint tujuan dan mencatat hasilnya. */
     public function kirim(PengirimanPanggilanBalikWeb $pengiriman): bool
     {
         if ($pengiriman->Status === StatusPengirimanPanggilanBalikWeb::Berhasil->value) {

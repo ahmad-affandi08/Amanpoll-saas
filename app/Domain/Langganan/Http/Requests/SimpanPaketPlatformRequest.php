@@ -19,9 +19,7 @@ final class SimpanPaketPlatformRequest extends FormRequest
     /** @return array<string, mixed> */
     public function rules(): array
     {
-        // Atribut Eloquent bukan properti kelas, jadi kuncinya dibaca lewat
-        // getKey(); property_exists() akan selalu menjawab tidak ada dan membuat
-        // paket gagal disimpan karena kodenya sendiri dianggap kembar.
+        // Atribut Eloquent bukan properti kelas, jadi kuncinya dibaca lewat getKey().
         $paket = $this->route('paketLangganan');
         $abaikan = $paket instanceof PaketLangganan ? $paket->getKey() : null;
 

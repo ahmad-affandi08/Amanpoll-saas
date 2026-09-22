@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Host;
 
-/**
- * Satu-satunya tempat host dibaca (PRD 5.4, MARKETING.md 1).
- *
- * Rute, middleware, dan prop yang dikirim ke frontend semuanya menanyakan ke
- * sini, sehingga tidak ada host yang tertulis di source maupun di berkas React
- * — syarat yang diuji Gate 24.5.
- */
+/** Satu-satunya tempat host dibaca (PRD 5.4, MARKETING.md 1). */
 final class PetaHost
 {
     public function publik(): ?string
@@ -28,11 +22,7 @@ final class PetaHost
         return $this->bersihkan(config('amanpoll.domain.partner'));
     }
 
-    /**
-     * Situs publik baru hidup setelah hostnya dikonfigurasi. Sebelum itu grup
-     * rutenya tidak didaftarkan, sehingga root tetap milik dashboard dan tidak
-     * ada rute yang bertabrakan.
-     */
+    /** Situs publik baru hidup setelah hostnya dikonfigurasi. */
     public function situsPublikAktif(): bool
     {
         $publik = $this->publik();
@@ -72,11 +62,7 @@ final class PetaHost
         return $skema.'://'.$host.'/'.ltrim($path, '/');
     }
 
-    /**
-     * Bentuk host publik yang bukan kanonik — apex bila kanoniknya www, dan
-     * sebaliknya. Bentuk ini tetap harus dilayani supaya dapat dialihkan 301;
-     * host yang tidak punya rute sama sekali menjawab 404, bukan pengalihan.
-     */
+    /** Bentuk host publik yang bukan kanonik — apex bila kanoniknya www, dan sebaliknya. */
     public function publikNonKanonik(): ?string
     {
         $kanonik = $this->publikKanonik();

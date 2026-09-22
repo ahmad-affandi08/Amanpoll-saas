@@ -9,22 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-/**
- * Aturan bobot skor prospek (MARKETING.md 5.4, 24).
- *
- * Sebelumnya bobot ini hidup sebagai satu objek JSON di `KonfigurasiPemasaran`.
- * Bentuk itu memenuhi tuntutan "configurable, jangan di-hard-code", tetapi
- * membawa kegagalan yang tidak bergejala: kunci yang salah ketik tersimpan
- * dengan senang hati lalu diabaikan diam-diam oleh penghitungnya, dan tidak ada
- * yang memberi tahu siapa pun. Domain ini sudah menolak kegagalan sejenis di
- * tempat lain — `PerekamEventPemasaran` menolak jenis peristiwa asing — jadi
- * aturannya dipindahkan ke tabel yang kode peristiwanya dapat divalidasi saat
- * disimpan.
- *
- * Bobot yang sudah disetel operator dibawa serta. Migrasi yang menghapus
- * setelan orang lain lalu menggantinya dengan bawaan adalah migrasi yang
- * menghilangkan pekerjaan.
- */
+/** Aturan bobot skor prospek (MARKETING.md 5.4, 24). */
 return new class extends Migration
 {
     public function up(): void
@@ -39,11 +24,7 @@ return new class extends Migration
             $table->dateTime('DiperbaruiPada', 6)->useCurrent()->useCurrentOnUpdate();
         });
 
-        /*
-         * Rincian skor menunjuk aturan yang menghasilkannya. Boleh kosong, dan
-         * memang harus boleh: aturan yang dihapus tidak menghapus penjelasan
-         * skor yang terlanjur dihitung darinya.
-         */
+        // Rincian skor menunjuk aturan yang menghasilkannya.
         Schema::table('SkorProspek', function (Blueprint $table): void {
             $table->char('AturanSkorProspekId', 26)->nullable()->after('Peristiwa');
             $table->foreign('AturanSkorProspekId')
@@ -69,9 +50,7 @@ return new class extends Migration
         $sekarang = now();
 
         foreach ($bobot as $peristiwa => $nilai) {
-            // Kunci yang tidak dikenal tidak ikut dipindahkan. Ia memang tidak
-            // pernah berlaku, dan membawanya masuk hanya memindahkan kesalahan
-            // yang sama ke tempat yang lebih sulit dilihat.
+            // Kunci yang tidak dikenal tidak ikut dipindahkan.
             if (! KatalogPeristiwaSkor::dikenal((string) $peristiwa)) {
                 continue;
             }

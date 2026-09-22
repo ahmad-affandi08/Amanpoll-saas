@@ -19,13 +19,7 @@ use App\Shared\Domain\Exceptions\AksesDitolak;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use App\Shared\Domain\Exceptions\KonflikData;
 
-/**
- * Perilaku penolakan bersifat fail-fast: satu penolakan di tahap manapun
- * langsung mengakhiri seluruh PermintaanPersetujuan (tidak menunggu
- * kuorum penolakan) -- skema TahapPersetujuan tidak punya kolom untuk
- * konfigurasi perilaku penolakan lain, jadi ini dipilih sebagai default
- * yang paling umum dipakai mesin approval.
- */
+/** Perilaku penolakan bersifat fail-fast. */
 final class TolakPermintaanPersetujuan
 {
     public function __construct(

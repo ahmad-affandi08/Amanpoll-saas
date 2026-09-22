@@ -13,9 +13,7 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTransferManual;
 use Illuminate\Testing\TestResponse;
 
-/**
- * Tagihan, pembayaran, webhook idempoten, dan rekonsiliasi (22.06).
- */
+/** Tagihan, pembayaran, webhook idempoten, dan rekonsiliasi (22.06). */
 final class TagihanDanPembayaranTest extends KasusLangganan
 {
     private const RAHASIA = 'rahasia-webhook-uji';
@@ -175,8 +173,7 @@ final class TagihanDanPembayaranTest extends KasusLangganan
     {
         $tagihan = $this->terbitkanTagihan();
 
-        // Pembayaran tercatat di luar alur webhook (mis. konfirmasi manual yang
-        // ditulis langsung), sehingga status tagihan tidak ikut berubah.
+        // Pembayaran tercatat di luar alur webhook (mis.
         PembayaranLangganan::create([
             'OrganisasiId' => $this->organisasi->Id,
             'TagihanLanggananId' => $tagihan->Id,
@@ -206,8 +203,7 @@ final class TagihanDanPembayaranTest extends KasusLangganan
             'DibayarPada' => now(),
         ]);
 
-        // Selisih menuntut keputusan manusia, jadi dilaporkan sebagai gagal
-        // supaya penjadwal menandainya alih-alih diam.
+        // Selisih menuntut keputusan manusia, jadi dilaporkan sebagai gagal.
         $this->artisan('langganan:rekonsiliasi')->assertFailed();
     }
 

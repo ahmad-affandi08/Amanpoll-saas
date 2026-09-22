@@ -1,12 +1,6 @@
 import type { MutasiOffline, PaketOffline } from '@/features/Sinkronisasi/types';
 
-/**
- * Penyimpanan lokal perangkat untuk mode offline (FASE 20.02/20.03).
- *
- * Nama basis data memuat organisasi dan pengguna, jadi satu perangkat yang
- * dipakai bergantian tidak pernah menampilkan data milik sesi sebelumnya.
- * Membersihkan data saat logout berarti membuang basis data itu seutuhnya.
- */
+/** Penyimpanan lokal perangkat untuk mode offline (FASE 20.02/20.03). */
 
 const VERSI_SKEMA = 1;
 const TOKO_PAKET = 'paket';
@@ -86,10 +80,7 @@ export function hapusMutasi(konteks: KonteksOffline, kunciOperasi: string): Prom
   return jalankan(konteks, TOKO_ANTRIAN, 'readwrite', (store) => store.delete(kunciOperasi));
 }
 
-/**
- * Membuang seluruh data lokal milik konteks ini. Dipanggil saat logout supaya
- * tidak ada data organisasi yang tertinggal di perangkat bersama.
- */
+/** Membuang seluruh data lokal milik konteks ini. */
 export function hapusBasisData(konteks: KonteksOffline): Promise<void> {
   return new Promise((selesai) => {
     const permintaan = indexedDB.deleteDatabase(namaBasisData(konteks));

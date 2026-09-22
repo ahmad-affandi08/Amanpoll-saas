@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Langganan\Domain\Enums;
 
-/**
- * Siklus hidup langganan (22.04).
- *
- * Tenggang adalah status turunan, bukan sesuatu yang ditulis operator: begitu
- * tanggal berakhir terlewat, langganan aktif menjadi Tenggang dengan
- * sendirinya, lalu Kedaluwarsa setelah masa tenggang habis.
- */
+/** Siklus hidup langganan (22.04). */
 enum StatusLangganan: string
 {
     case UjiCoba = 'UjiCoba';
@@ -30,11 +24,7 @@ enum StatusLangganan: string
         };
     }
 
-    /**
-     * Status yang masih memberi akses penuh, termasuk menulis. Masa tenggang
-     * ikut di sini secara sengaja: tujuannya memberi waktu membayar tanpa
-     * langsung menghentikan pekerjaan lapangan.
-     */
+    /** Status yang masih memberi akses penuh, termasuk menulis. */
     public function memberiAksesPenuh(): bool
     {
         return match ($this) {
@@ -43,11 +33,7 @@ enum StatusLangganan: string
         };
     }
 
-    /**
-     * Alasan yang ditampilkan saat akses tulis ditolak. Pesannya menyebut jalan
-     * keluarnya, bukan hanya kenyataannya, supaya pengguna tahu apa yang harus
-     * dilakukan.
-     */
+    /** Alasan yang ditampilkan saat akses tulis ditolak. */
     public function alasanTulisDitolak(): string
     {
         return match ($this) {

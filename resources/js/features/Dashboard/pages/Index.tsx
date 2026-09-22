@@ -26,14 +26,7 @@ interface Props {
   pilihanLokasi: PilihanDimensi[];
 }
 
-/**
- * Dasbor operasional (21.02).
- *
- * Susunan datang dari server — preset sesuai kewenangan atau dasbor tersimpan
- * pilihan pengguna — dan setiap kartu hanya dirender bila KPI-nya benar-benar
- * dihitung. Komponen yang KPI-nya disaring izin hilang dari layar alih-alih
- * menjadi kartu kosong.
- */
+/** Dasbor operasional (21.02). */
 export default function Dashboard({
   susunan,
   metrik,

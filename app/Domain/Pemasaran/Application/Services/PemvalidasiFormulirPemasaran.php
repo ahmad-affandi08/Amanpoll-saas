@@ -9,19 +9,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FieldFormulirPemasara
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FormulirPemasaran;
 use Illuminate\Support\Facades\Validator;
 
-/**
- * Validasi jawaban formulir yang bentuknya baru diketahui saat dijalankan
- * (MARKETING.md 10).
- *
- * Aturannya disusun dari definisi field, bukan ditulis tetap di satu
- * FormRequest: susunan field berubah tiap kali seseorang menyunting formulir di
- * konsol, dan aturan yang tertinggal di belakang berarti field wajib yang tidak
- * pernah diperiksa.
- *
- * Kunci yang tidak dikenal dibuang, bukan ditolak. Pengunjung tidak menentukan
- * field apa yang ada, jadi kelebihan kunci adalah masalah pengirimnya — tetapi
- * meneruskannya ke penyimpanan berarti menerima data sembarang dari luar.
- */
+/** Validasi jawaban formulir yang bentuknya baru diketahui saat dijalankan (MARKETING.md 10). */
 final class PemvalidasiFormulirPemasaran
 {
     /**
@@ -62,8 +50,7 @@ final class PemvalidasiFormulirPemasaran
     /** @return list<string> */
     private function aturanUntuk(FieldFormulirPemasaran $field): array
     {
-        // Kotak centang yang wajib berarti harus dicentang, bukan sekadar
-        // hadir — bentuk yang dipakai persetujuan.
+        // Kotak centang yang wajib berarti harus dicentang, bukan sekadar hadir — bentuk yang dipakai persetujuan.
         $kehadiran = match (true) {
             $field->Wajib && $field->Jenis === JenisFieldFormulir::Persetujuan => 'accepted',
             $field->Wajib && $field->Jenis === JenisFieldFormulir::KotakCentang => 'accepted',

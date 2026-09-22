@@ -28,14 +28,7 @@ use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Landing page builder di konsol platform (MARKETING.md 8).
- *
- * Seluruh perubahan isi lewat SimpanDrafHalaman, seluruh penerbitan lewat
- * TerbitkanHalaman. Controller ini tidak pernah menyentuh `VersiTerbitId`
- * sendiri — kalau ia boleh, akan ada dua jalur penerbitan yang harus sama-sama
- * diingat untuk menulis audit dan membuang cache.
- */
+/** Landing page builder di konsol platform (MARKETING.md 8). */
 final class HalamanPemasaranController extends Controller
 {
     /** Umur tautan pratinjau. Cukup untuk ditinjau, terlalu pendek untuk beredar. */
@@ -135,12 +128,7 @@ final class HalamanPemasaranController extends Controller
         return back()->with('sukses', "Halaman berhasil dikembalikan ke versi {$versi->Nomor}.");
     }
 
-    /**
-     * Tautan pratinjau dibuat di sisi server dan berumur pendek. Halaman
-     * pratinjau sendiri berada di host publik: yang ditinjau harus persis
-     * sebagaimana pengunjung akan melihatnya, bukan versi yang dirender di
-     * lingkungan lain.
-     */
+    /** Tautan pratinjau dibuat di sisi server dan berumur pendek. */
     public function pratinjau(HalamanPemasaran $halaman, VersiHalamanPemasaran $versi): RedirectResponse
     {
         if ($versi->HalamanPemasaranId !== $halaman->Id) {

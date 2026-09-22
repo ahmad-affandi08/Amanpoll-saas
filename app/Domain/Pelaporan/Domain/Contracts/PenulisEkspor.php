@@ -6,12 +6,7 @@ namespace App\Domain\Pelaporan\Domain\Contracts;
 
 use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
 
-/**
- * Penulis berkas ekspor untuk satu format (21.05).
- *
- * Penulis menerima path lokal dan menulis langsung ke sana, bukan menyusun
- * seluruh isi di memori, supaya laporan besar tidak menjatuhkan worker antrean.
- */
+/** Penulis berkas ekspor untuk satu format (21.05). */
 interface PenulisEkspor
 {
     public function format(): FormatEkspor;

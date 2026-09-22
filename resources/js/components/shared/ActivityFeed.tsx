@@ -24,11 +24,7 @@ function inisial(nama?: string | null): string {
     : (bagian[0][0] + bagian[bagian.length - 1][0]).toUpperCase();
 }
 
-/**
- * Umpan aktivitas entitas (DESIGN.md 12).
- *
- * Pelaku ditampilkan sebagai inisial karena catatan audit tidak membawa avatar.
- */
+/** Umpan aktivitas entitas (DESIGN.md 12). */
 export function ActivityFeed({
   butir,
   className,

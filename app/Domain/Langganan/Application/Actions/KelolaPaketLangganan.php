@@ -14,13 +14,7 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\PaketLangganan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * CRUD paket langganan beserta entitlement-nya (22.02/22.03).
- *
- * Paket dan isinya disimpan dalam satu transaksi karena paket tanpa baris fitur
- * bukan paket setengah jadi melainkan paket yang salah: ia akan jatuh ke nilai
- * bawaan katalog dan diam-diam menutup modul yang sudah dijual.
- */
+/** CRUD paket langganan beserta entitlement-nya (22.02/22.03). */
 final class KelolaPaketLangganan
 {
     public function __construct(
@@ -57,8 +51,7 @@ final class KelolaPaketLangganan
                 dataSesudah: ['Kode' => $paket->Kode, 'Nama' => $paket->Nama, 'JumlahFitur' => count($fitur)],
             );
 
-            // Perubahan isi paket langsung terasa bagi pelanggannya; tanpa ini,
-            // modul yang baru dicabut masih dapat dipakai sampai lima menit.
+            // Perubahan isi paket langsung terasa bagi pelanggannya.
             $this->entitlement->bersihkanCachePaket((string) $paket->Id);
 
             return $paket->load('fitur');

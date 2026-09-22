@@ -36,10 +36,7 @@ final class KompatibilitasSukuCadangController extends Controller
         return back()->with('sukses', 'Kompatibilitas suku cadang berhasil dihapus.');
     }
 
-    /**
-     * Filter suku cadang yang kompatibel dengan satu aset spesifik: cocok
-     * langsung ke AsetId, atau ke ModelAsetId/KategoriAsetId milik aset itu.
-     */
+    /** Filter suku cadang yang kompatibel dengan satu aset spesifik. */
     public function untukAset(Aset $aset): AnonymousResourceCollection
     {
         $this->authorize('viewAny', SukuCadang::class);

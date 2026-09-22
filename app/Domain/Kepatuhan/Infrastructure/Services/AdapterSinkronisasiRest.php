@@ -11,11 +11,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
-/**
- * Adapter bawaan untuk sistem eksternal ber-REST: satu proses dipetakan ke
- * satu sumber daya pada UrlDasar, dan jumlah baris yang dipertukarkan diambil
- * dari badan respons.
- */
+/** Adapter bawaan untuk sistem eksternal ber-REST. */
 final class AdapterSinkronisasiRest implements AdapterSinkronisasi
 {
     public function __construct(private readonly PenyusunHeaderIntegrasi $header) {}

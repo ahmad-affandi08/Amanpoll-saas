@@ -5,10 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-/**
- * Masuk konsol platform. Sengaja tanpa kode organisasi: admin platform bukan
- * milik tenant mana pun, dan memintanya justru akan menyesatkan.
- */
+/** Masuk konsol platform. */
 export default function PlatformLogin() {
   const form = useForm({ Email: '', KataSandi: '' });
 

@@ -13,12 +13,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
-/**
- * KPI anggaran (21.01: budget).
- *
- * Anggaran bersifat tahunan, jadi rentang filter dipakai untuk memilih tahun
- * yang tersentuh rentang, bukan untuk memotong nilainya per hari.
- */
+/** KPI anggaran (21.01: budget). */
 final class QueryAnggaran implements PenyediaKpi
 {
     public function kunciDilayani(): array

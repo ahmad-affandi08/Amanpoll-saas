@@ -8,12 +8,7 @@ use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-/**
- * Isi ekspor berasal dari data tenant — nama aset, gudang, penyedia — dan
- * Excel memperlakukan sel yang diawali karakter tertentu sebagai rumus. Satu
- * pengguna yang menamai asetnya `=cmd|...` karena itu dapat mengeksekusi
- * perintah di komputer rekan kerjanya yang membuka hasil ekspor (24).
- */
+/** Isi ekspor berasal dari data tenant. */
 final class InjeksiRumusEksporTest extends TestCase
 {
     /** @return array<string, array{0: string}> */

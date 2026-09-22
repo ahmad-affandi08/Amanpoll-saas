@@ -6,21 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Landing page builder (MARKETING.md 8).
- *
- * Isi halaman tidak disimpan pada barisnya sendiri melainkan pada versi.
- * `HalamanPemasaran` hanya memegang identitas — slug, tipe, status, jadwal —
- * dan menunjuk satu versi yang sedang terbit. Dengan bentuk ini revision
- * history, rollback, dan terbit terjadwal menjadi satu mekanisme yang sama:
- * mengganti versi mana yang ditunjuk. Tidak ada jalur lain yang mengubah isi
- * halaman terbit, sehingga tidak ada cara menerbitkan sesuatu tanpa
- * meninggalkan versinya.
- *
- * Versi dan bloknya tidak pernah diubah setelah dibuat. Menyunting draf
- * melahirkan versi baru, bukan menimpa yang lama — riwayat yang dapat ditulis
- * ulang tidak dapat dipakai untuk rollback.
- */
+/** Landing page builder (MARKETING.md 8). */
 return new class extends Migration
 {
     public function up(): void
@@ -37,11 +23,7 @@ return new class extends Migration
             $table->char('VersiTerbitId', 26)->nullable();
             $table->char('VersiDrafId', 26)->nullable();
 
-            /*
-             * Jadwal disimpan sebagai niat, bukan sebagai hasil: penjadwal yang
-             * terlambat berjalan tetap menerbitkan halaman yang waktunya sudah
-             * lewat, alih-alih melewatkannya diam-diam.
-             */
+            // Jadwal disimpan sebagai niat, bukan sebagai hasil.
             $table->dateTime('TerbitPada', 6)->nullable();
             $table->dateTime('TarikPada', 6)->nullable();
 
@@ -95,8 +77,7 @@ return new class extends Migration
                 ->references('Id')->on('FormulirPemasaran')->nullOnDelete();
         });
 
-        // Ditambahkan terpisah: kedua tabel saling menunjuk, sehingga salah satu
-        // kuncinya baru dapat dipasang setelah keduanya ada.
+        // Ditambahkan terpisah: kedua tabel saling menunjuk.
         Schema::table('HalamanPemasaran', function (Blueprint $table): void {
             $table->foreign('VersiTerbitId')
                 ->references('Id')->on('VersiHalamanPemasaran')->nullOnDelete();

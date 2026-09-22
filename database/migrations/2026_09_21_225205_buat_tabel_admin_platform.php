@@ -6,11 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Admin platform berada di luar tenant: ia mengelola katalog paket dan
- * langganan seluruh organisasi, sehingga sengaja tidak memiliki OrganisasiId
- * dan tidak dapat memakai kredensial tenant mana pun.
- */
+/** Admin platform berada di luar tenant. */
 return new class extends Migration
 {
     public function up(): void

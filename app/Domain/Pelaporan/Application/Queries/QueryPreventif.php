@@ -13,9 +13,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI pemeliharaan preventif (21.01: preventive).
- */
+/** KPI pemeliharaan preventif (21.01: preventive). */
 final class QueryPreventif implements PenyediaKpi
 {
     use MenyaringLingkup;

@@ -17,14 +17,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-/**
- * Peta navigasi Amanpoll (DESIGN.md 11).
- *
- * Dipisahkan dari komponen layout karena dua pemakai membutuhkannya: sidebar
- * untuk menggambar menu, dan penurun breadcrumb untuk menamai ruas URL. Satu
- * sumber membuat breadcrumb tidak mungkin menyebut halaman dengan nama yang
- * berbeda dari menunya.
- */
+/** Peta navigasi Amanpoll (DESIGN.md 11). */
 
 export interface SubItemNav {
   label: string;

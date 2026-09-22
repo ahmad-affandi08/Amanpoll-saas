@@ -8,10 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Membatasi endpoint API key sesuai Cakupan yang ditetapkan saat kunci
- * dibuat (mis. middleware(['kunci.api', 'cakupan.kunci:Aset.Lihat'])).
- */
+/** Membatasi endpoint API key sesuai Cakupan yang ditetapkan saat kunci dibuat (mis. */
 final class PastikanCakupanKunciApi
 {
     public function handle(Request $request, Closure $next, string $cakupan): Response

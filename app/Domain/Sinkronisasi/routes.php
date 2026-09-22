@@ -32,11 +32,7 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.integrasi'])
         Route::get('/panggilan-balik/{panggilanBalikWeb}/pengiriman', [PanggilanBalikWebController::class, 'riwayat'])->name('panggilan-balik.pengiriman');
     });
 
-/*
-| Jalur PWA offline teknisi (FASE 20). Semua endpoint memakai sesi web yang
-| sama dengan aplikasi, sehingga tidak ada kredensial tambahan yang perlu
-| disimpan di perangkat lapangan.
-*/
+// | Jalur PWA offline teknisi (FASE 20).
 Route::middleware(['web', 'auth', 'organisasi'])
     ->prefix('offline')
     ->name('offline.')

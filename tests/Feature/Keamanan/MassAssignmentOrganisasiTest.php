@@ -7,12 +7,7 @@ namespace Tests\Feature\Keamanan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * `OrganisasiId` ada di `$fillable` hampir seluruh model, jadi satu Form
- * Request yang lalai meloloskannya sudah cukup untuk menulis ke tenant lain.
- * Penjagaannya karena itu berada di trait MilikOrganisasi, bukan di tiap
- * aturan validasi (24).
- */
+/** `OrganisasiId` ada di `$fillable` hampir seluruh model. */
 final class MassAssignmentOrganisasiTest extends KasusKeamanan
 {
     public function test_menolak_penulisan_ke_organisasi_lain_lewat_mass_assignment(): void
@@ -53,8 +48,7 @@ final class MassAssignmentOrganisasiTest extends KasusKeamanan
 
     public function test_tanpa_konteks_organisasi_id_eksplisit_tetap_diizinkan(): void
     {
-        // Jalur lintas tenant yang sah — konsol platform, pekerjaan terjadwal —
-        // berjalan tanpa konteks dan menetapkan organisasinya sendiri.
+        // Jalur lintas tenant yang sah.
         $organisasi = $this->buatOrganisasi('ORG-MA-KONSOL');
 
         $lokasi = Lokasi::create([

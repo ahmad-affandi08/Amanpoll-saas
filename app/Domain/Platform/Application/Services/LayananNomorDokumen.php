@@ -7,15 +7,7 @@ namespace App\Domain\Platform\Application\Services;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Generator nomor dokumen sequential per organisasi+JenisDokumen.
- * Aman dari race condition lewat SELECT ... FOR UPDATE di dalam transaksi:
- * request kedua yang mencoba mengambil nomor untuk baris yang sama akan
- * menunggu request pertama commit, bukan membaca NomorTerakhir yang basi.
- * Attempt diberi >1 supaya deadlock/lock-wait transien (MySQL) atau
- * "database is locked" (SQLite di lingkungan test) otomatis diulang oleh
- * Laravel, bukan langsung gagal ke pemanggil.
- */
+/** Generator nomor dokumen sequential per organisasi+JenisDokumen. */
 final class LayananNomorDokumen
 {
     private const MAKS_PERCOBAAN = 5;
@@ -46,9 +38,7 @@ final class LayananNomorDokumen
         }, self::MAKS_PERCOBAAN);
     }
 
-    /**
-     * Pratinjau nomor berikutnya TANPA mengubah NomorTerakhir.
-     */
+    /** Pratinjau nomor berikutnya TANPA mengubah NomorTerakhir. */
     public function pratinjau(string $organisasiId, string $jenisDokumen): string
     {
         $baris = DB::table('NomorDokumen')

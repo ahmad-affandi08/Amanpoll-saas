@@ -7,14 +7,7 @@ namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-/**
- * Administrator platform Amanpoll (22.02).
- *
- * Sengaja tidak memakai trait MilikOrganisasi dan tidak punya OrganisasiId:
- * katalog paket berlaku lintas tenant, sehingga menaruhnya di bawah scope
- * tenant mana pun akan salah. Karena identitasnya terpisah, admin platform juga
- * tidak dapat dipakai untuk masuk ke aplikasi tenant, dan sebaliknya.
- */
+/** Administrator platform Amanpoll (22.02). */
 final class AdminPlatform extends Authenticatable
 {
     use HasUlids;

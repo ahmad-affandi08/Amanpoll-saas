@@ -9,12 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatLokasiAset;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 
-/**
- * Satu-satunya jalur yang boleh mengubah Aset.LokasiId -- UbahAset sengaja
- * mengabaikan field LokasiId supaya current location TIDAK PERNAH berubah
- * tanpa baris RiwayatLokasiAset yang menyertainya (checklist 08.05 "current
- * location konsisten dengan history").
- */
+/** Satu-satunya jalur yang boleh mengubah Aset.LokasiId -- UbahAset sengaja mengabaikan field LokasiId. */
 final class PindahkanLokasiAset
 {
     public function __construct(private readonly TransaksiDatabase $transaksi) {}

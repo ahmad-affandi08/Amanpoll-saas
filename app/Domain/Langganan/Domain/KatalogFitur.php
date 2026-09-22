@@ -8,14 +8,7 @@ use App\Domain\Langganan\Domain\Enums\TipeBatasFitur;
 use App\Domain\Langganan\Domain\ValueObjects\DefinisiFitur;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 
-/**
- * Master fitur paket (22.01).
- *
- * Sumber kebenaran kode fitur; tabel FiturPaket disemai dari sini.
- *
- * Kode tertanam di rute dan di baris PaketFitur pelanggan, jadi jangan diubah
- * namanya — tambah kode baru dan pensiunkan yang lama.
- */
+/** Master fitur paket (22.01). */
 final class KatalogFitur
 {
     /** Modul bernilai tambah yang dijual terpisah dari paket dasar. */

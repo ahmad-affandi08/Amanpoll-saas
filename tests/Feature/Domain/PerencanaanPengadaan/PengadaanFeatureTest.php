@@ -57,9 +57,7 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-/**
- * FASE 16 — alur pengadaan dari permintaan pembelian sampai pembayaran penyedia.
- */
+/** FASE 16 — alur pengadaan dari permintaan pembelian sampai pembayaran penyedia. */
 final class PengadaanFeatureTest extends TestCase
 {
     use DatabaseTransactions;

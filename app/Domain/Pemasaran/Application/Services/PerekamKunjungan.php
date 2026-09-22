@@ -12,22 +12,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\UtmPemasaran;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use Illuminate\Http\Request;
 
-/**
- * Merekam satu kedatangan beserta attribution-nya (MARKETING.md 14).
- *
- * Tiga aturan yang menentukan benar-tidaknya seluruh angka pemasaran, dan
- * ketiganya ditegakkan di sini supaya tidak ada pemanggil yang dapat
- * melewatinya:
- *
- * 1. First touch ditulis sekali saja. Setelah terisi ia tidak pernah diganti,
- *    termasuk oleh kunjungan ke host dashboard — itulah yang membuat kampanye
- *    pembuka sebuah konversi masih dapat dikenali berminggu kemudian.
- * 2. Last touch selalu diperbarui, karena pertanyaannya memang "dari mana ia
- *    datang kali ini".
- * 3. Kedatangan tanpa riwayat apa pun dicatat sebagai `direct`, bukan
- *    dibiarkan kosong. Kolom kosong akan terbaca sebagai "belum diketahui"
- *    padahal jawabannya sudah pasti.
- */
+/** Merekam satu kedatangan beserta attribution-nya (MARKETING.md 14). */
 final class PerekamKunjungan
 {
     private const SUMBER_LANGSUNG = 'direct';
@@ -105,11 +90,7 @@ final class PerekamKunjungan
         $attribution->save();
     }
 
-    /**
-     * Kode kampanye dicocokkan ke barisnya bila ada. Bila tidak, `utm_campaign`
-     * tetap tersimpan apa adanya: kampanye yang belum didaftarkan tidak boleh
-     * membuat kunjungannya hilang dari catatan.
-     */
+    /** Kode kampanye dicocokkan ke barisnya bila ada. */
     private function kampanyeUntuk(string $kode): ?string
     {
         return Kampanye::query()->where('Kode', $kode)->value('Id');
@@ -136,8 +117,7 @@ final class PerekamKunjungan
 
         $bersih = trim($nilai);
 
-        // Dipotong pada panjang kolomnya: nilai UTM datang dari URL dan panjang
-        // apa pun dapat dikirim orang luar.
+        // Dipotong pada panjang kolomnya: nilai UTM datang dari URL dan panjang apa pun dapat dikirim orang luar.
         return $bersih === '' ? null : mb_substr($bersih, 0, 190);
     }
 

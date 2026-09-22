@@ -11,13 +11,7 @@ use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 
-/**
- * KPI populasi aset (21.01: asset counts, asset condition).
- *
- * Aset adalah keadaan saat ini, bukan aliran transaksi, sehingga rentang
- * tanggal tidak dipakai di sini — memfilter aset "yang ada bulan lalu" akan
- * salah menggambarkan jumlah yang dikelola hari ini.
- */
+/** KPI populasi aset (21.01: asset counts, asset condition). */
 final class QueryAset implements PenyediaKpi
 {
     use MenyaringLingkup;

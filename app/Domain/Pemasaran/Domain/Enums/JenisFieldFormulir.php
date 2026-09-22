@@ -25,10 +25,7 @@ enum JenisFieldFormulir: string
         return in_array($this, [self::Pilihan, self::PilihanGanda, self::Radio], true);
     }
 
-    /**
-     * Field yang tidak diisi pengunjung. Nilainya datang dari kunjungan, bukan
-     * dari ketikan, jadi ia tidak pernah divalidasi sebagai masukan wajib.
-     */
+    /** Field yang tidak diisi pengunjung. */
     public function terisiOtomatis(): bool
     {
         return $this === self::UtmTersembunyi;

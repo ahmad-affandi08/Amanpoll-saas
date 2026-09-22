@@ -6,11 +6,7 @@ namespace App\Domain\Sinkronisasi\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-/**
- * Amplop pengiriman antrean offline. Isi tiap mutasi divalidasi per operasi
- * oleh LayananAntrianSinkronisasi, supaya satu mutasi rusak tidak menolak
- * seluruh batch dan membuat antrean perangkat macet.
- */
+/** Amplop pengiriman antrean offline. */
 final class DorongAntrianSinkronisasiRequest extends FormRequest
 {
     /** Batas mutasi per pengiriman supaya satu permintaan tetap ringan. */

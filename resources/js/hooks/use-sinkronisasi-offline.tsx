@@ -93,10 +93,7 @@ function amplopPerangkat() {
   };
 }
 
-/**
- * Menyatukan status antrean lokal menjadi satu status tampil (DESIGN.md 24).
- * Konflik menang atas apa pun karena butuh keputusan manusia.
- */
+/** Menyatukan status antrean lokal menjadi satu status tampil (DESIGN.md 24). */
 function hitungStatus(daring: boolean, mengirim: boolean, antrian: MutasiOffline[]): StatusSinkronisasi {
   if (antrian.some((m) => m.Status === 'Konflik')) return 'Konflik';
   if (!daring) return 'Offline';
@@ -258,10 +255,7 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
     [konteks?.organisasiId, konteks?.penggunaId, muatPaket, serapAntreanServer],
   );
 
-  /**
-   * Membersihkan jejak organisasi dari perangkat (20.02). Dipanggil sebelum
-   * logout sehingga perangkat bersama tidak menyimpan data tenant sebelumnya.
-   */
+  /** Membersihkan jejak organisasi dari perangkat (20.02). */
   const bersihkanDataLokal = useCallback(async () => {
     bersihkanCache();
     if (!konteks) return;

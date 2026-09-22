@@ -7,13 +7,7 @@ namespace App\Domain\Pelaporan\Application\Services;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Meratakan hasil KPI menjadi baris tabel untuk diekspor (21.05).
- *
- * Setiap baris membawa kunci KPI, rumusnya, dan label rincian penyusunnya,
- * sehingga berkas yang sudah lepas dari aplikasi tetap dapat ditelusuri kembali
- * ke definisi angkanya (PRD 8.18) alih-alih menjadi deretan angka tanpa asal.
- */
+/** Meratakan hasil KPI menjadi baris tabel untuk diekspor (21.05). */
 final class PenyusunBarisLaporan
 {
     /** @var list<string> */

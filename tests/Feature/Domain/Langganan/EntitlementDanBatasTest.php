@@ -16,9 +16,7 @@ use App\Domain\Platform\Application\Actions\BuatPengguna;
 use App\Domain\Platform\Application\DTO\PenggunaData;
 use App\Shared\Domain\Exceptions\LanggananTidakMengizinkan;
 
-/**
- * Entitlement, batas kuota, dan prop untuk UI (22.05).
- */
+/** Entitlement, batas kuota, dan prop untuk UI (22.05). */
 final class EntitlementDanBatasTest extends KasusLangganan
 {
     public function test_organisasi_baru_tanpa_paket_berada_dalam_uji_coba_awal(): void
@@ -46,8 +44,7 @@ final class EntitlementDanBatasTest extends KasusLangganan
 
     public function test_fitur_yang_tidak_disebut_paket_jatuh_ke_nilai_bawaan_katalog(): void
     {
-        // Paket hanya menyebut kalibrasi; sisanya harus memakai bawaan katalog,
-        // bukan menjadi "tidak diketahui".
+        // Paket hanya menyebut kalibrasi; sisanya harus memakai bawaan katalog, bukan menjadi "tidak diketahui".
         $paket = $this->buatPaket('Paket Sebagian', [
             KatalogFitur::MODUL_KALIBRASI => ['Diizinkan' => true],
         ]);
@@ -172,8 +169,7 @@ final class EntitlementDanBatasTest extends KasusLangganan
 
         $props = $respons->viewData('page')['props'];
 
-        // Prop UI dan penegakan backend membaca pemeriksa yang sama, sehingga
-        // UI tidak pernah menjanjikan apa yang backend tolak.
+        // Prop UI dan penegakan backend membaca pemeriksa yang sama.
         $this->assertTrue($props['entitlement']['Fitur'][KatalogFitur::MODUL_KALIBRASI]);
         $this->assertSame(100.0, $props['entitlement']['Batas'][KatalogFitur::BATAS_ASET]);
         $this->assertTrue($props['entitlement']['AksesPenuh']);

@@ -11,15 +11,7 @@ use App\Domain\SiklusAset\Domain\Enums\StatusPermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 
-/**
- * Mesin Persetujuan (FASE 06) sengaja domain-agnostic -- tidak tahu apa-apa
- * soal PermintaanMutasiAset/PengajuanPenghapusanAset. Observer ini yang
- * menyalin balik hasil keputusan (Disetujui/Ditolak) ke status entitas
- * SiklusAset sendiri, TANPA mengeksekusi apa pun -- eksekusi (pemindahan
- * lokasi/pengarsipan aset) tetap aksi manual terpisah (lihat
- * EksekusiMutasiAset/EksekusiPenghapusanAset) karena tindakan fisiknya
- * bisa tertunda dari momen keputusan disetujui.
- */
+/** Mesin Persetujuan (FASE 06) sengaja domain-agnostic. */
 final class SinkronkanStatusPersetujuanSiklusAset
 {
     public function updated(PermintaanPersetujuan $permintaanPersetujuan): void

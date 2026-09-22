@@ -23,10 +23,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Testing\TestResponse;
 
-/**
- * Formulir publik menghasilkan lead lengkap dengan UTM (Gate 32,
- * MARKETING.md 10, 36).
- */
+/** Formulir publik menghasilkan lead lengkap dengan UTM (Gate 32, MARKETING.md 10, 36). */
 final class FormulirPemasaranTest extends KasusHalaman
 {
     protected function setUp(): void
@@ -123,11 +120,7 @@ final class FormulirPemasaranTest extends KasusHalaman
         $this->assertSame(0, Prospek::query()->count());
     }
 
-    /**
-     * Penjaga terakhir persetujuan. Formulir yang menuntut persetujuan tetapi
-     * lupa memasang fieldnya akan lolos validasi — tidak ada aturan yang
-     * dilanggar — lalu menyimpan prospek yang tidak pernah menyetujui apa pun.
-     */
+    /** Penjaga terakhir persetujuan. */
     public function test_formulir_wajib_persetujuan_tanpa_field_persetujuan_ditolak(): void
     {
         $formulir = $this->buatFormulir();
@@ -166,14 +159,7 @@ final class FormulirPemasaranTest extends KasusHalaman
         ]);
     }
 
-    /**
-     * Yang diperiksa adalah pemasangan middlewarenya, bukan penolakannya:
-     * Laravel melewati ValidateCsrfToken saat test berjalan, sehingga
-     * mengirim permintaan tanpa token di sini selalu lolos dan tidak
-     * membuktikan apa pun. Yang dapat dibuktikan — dan yang benar-benar
-     * pernah salah — adalah rute publik yang tidak sengaja didaftarkan di
-     * luar grup `web`, sehingga tokennya tidak pernah diperiksa di produksi.
-     */
+    /** Yang diperiksa adalah pemasangan middlewarenya, bukan penolakannya. */
     public function test_rute_formulir_berada_di_balik_pemeriksaan_csrf(): void
     {
         $rute = Route::getRoutes()->getByName('publik.formulir');

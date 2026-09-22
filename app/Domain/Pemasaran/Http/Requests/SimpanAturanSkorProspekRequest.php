@@ -23,8 +23,7 @@ final class SimpanAturanSkorProspekRequest extends FormRequest
         $id = $aturan instanceof AturanSkorProspek ? $aturan->getKey() : null;
 
         return [
-            // Daftar tertutup. Bobot untuk sinyal yang tidak dikenal tidak akan
-            // pernah terpakai, dan menyimpannya hanya menunda kebingungannya.
+            // Daftar tertutup.
             'Peristiwa' => [
                 'required',
                 Rule::in(KatalogPeristiwaSkor::kode()),

@@ -22,13 +22,7 @@ interface Props {
   className?: string;
 }
 
-/**
- * Kepala halaman baku (DESIGN.md 12).
- *
- * Breadcrumb diturunkan dari URL terhadap peta navigasi, jadi halaman tidak
- * perlu menuliskannya. Judul selalu satu `h1` per halaman. Di ponsel aksi turun
- * ke baris sendiri dan melebar penuh.
- */
+/** Kepala halaman baku (DESIGN.md 12). */
 export function PageHeader({
   judul,
   deskripsi,

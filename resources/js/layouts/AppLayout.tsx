@@ -386,12 +386,7 @@ function KerangkaAplikasi({ children }: PropsWithChildren) {
     terapkanPembaruanAplikasi,
   } = useSinkronisasiOffline();
 
-  /**
-   * Logout membersihkan data offline milik organisasi ini (FASE 20.02) supaya
-   * perangkat bersama tidak menyimpan jejak tenant sebelumnya. Antrean yang
-   * belum terkirim didorong lebih dulu, dan bila tetap tidak bisa terkirim
-   * pengguna diberi tahu apa yang akan hilang sebelum memutuskan.
-   */
+  /** Logout membersihkan data offline milik organisasi ini (FASE 20.02). */
   const keluar = async () => {
     await dorong();
 

@@ -7,15 +7,7 @@ namespace App\Domain\Pemasaran\Application\Services;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RedirectPemasaran;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
-/**
- * Peta redirect situs publik (MARKETING.md 9).
- *
- * Seluruh aturan aktif dibaca sekali lalu disimpan sebagai satu peta. Bentuk
- * ini dipilih karena middlewarenya berjalan pada setiap permintaan halaman
- * publik, termasuk yang tidak punya redirect sama sekali — dan satu query per
- * permintaan hanya untuk mendapati bahwa tidak ada apa-apa adalah harga yang
- * dibayar setiap pengunjung.
- */
+/** Peta redirect situs publik (MARKETING.md 9). */
 final class PencariRedirectPemasaran
 {
     private const KUNCI_CACHE = 'pemasaran:redirect';
@@ -41,11 +33,7 @@ final class PencariRedirectPemasaran
         $this->cache->forget(self::KUNCI_CACHE);
     }
 
-    /**
-     * Jalur dinormalkan menjadi berawalan `/` dan tanpa garis miring penutup,
-     * supaya `/harga`, `harga`, dan `/harga/` adalah aturan yang sama. Akar
-     * situs tetap `/`.
-     */
+    /** Jalur dinormalkan menjadi berawalan `/` dan tanpa garis miring penutup. */
     public static function normalkan(string $jalur): string
     {
         $bersih = '/'.trim(parse_url($jalur, PHP_URL_PATH) ?: $jalur, '/');

@@ -8,10 +8,7 @@ use App\Domain\Langganan\Application\Actions\TerbitkanTagihanLangganan;
 use App\Domain\Langganan\Domain\Enums\StatusLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 
-/**
- * Halaman langganan memuat tagihan dan tombol bayar, jadi ia bukan halaman
- * untuk semua orang yang kebetulan dapat masuk (24).
- */
+/** Halaman langganan memuat tagihan dan tombol bayar. */
 final class OtorisasiLanggananTest extends KasusLangganan
 {
     public function test_pengguna_tanpa_izin_pengaturan_tidak_dapat_membuka_halaman_langganan(): void

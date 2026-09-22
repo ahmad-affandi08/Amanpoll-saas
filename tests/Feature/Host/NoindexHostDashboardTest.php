@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Host;
 
-/**
- * Hanya host publik yang boleh diindeks (MARKETING.md 1.2).
- */
+/** Hanya host publik yang boleh diindeks (MARKETING.md 1.2). */
 final class NoindexHostDashboardTest extends KasusHost
 {
     public function test_halaman_host_dashboard_mengirim_noindex(): void

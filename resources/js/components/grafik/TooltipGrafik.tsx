@@ -1,8 +1,4 @@
-/**
- * Bentuk baris tooltip yang benar-benar dipakai di sini. Dibuat longgar
- * (`unknown` untuk nilai) supaya cocok dengan tipe internal Recharts yang
- * mengizinkan larik, lalu dipersempit saat dibaca.
- */
+/** Bentuk baris tooltip yang benar-benar dipakai di sini. */
 interface BarisTooltip {
   name?: string | number;
   value?: unknown;
@@ -39,17 +35,7 @@ function labelBaris(payload: unknown, cadangan: string): string {
   return cadangan;
 }
 
-/**
- * Tooltip bersama untuk seluruh grafik Amanpoll.
- *
- * Nilai tampil sebagai elemen kuat dan nama deret sebagai pendukung, karena
- * pembaca yang sudah mengarahkan penunjuk sudah tahu deretnya dan yang ia cari
- * adalah angkanya. Deret dikunci dengan garis pendek berwarna, bukan kotak
- * penuh, supaya tinta data tidak dipakai untuk pekerjaan label.
- *
- * Label kategori berasal dari data (nama gudang, nama anggaran) sehingga selalu
- * dirender sebagai teks React biasa, tidak pernah lewat HTML mentah.
- */
+/** Tooltip bersama untuk seluruh grafik Amanpoll. */
 export function TooltipGrafik({ active, payload, label, formatNilai, formatLabel }: PropsTooltipGrafik) {
   if (!active || !payload || payload.length === 0) {
     return null;

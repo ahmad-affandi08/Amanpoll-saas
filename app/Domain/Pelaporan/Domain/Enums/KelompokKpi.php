@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Domain\Enums;
 
-/**
- * Pengelompokan KPI sesuai sumber transaksinya (TASK 21.01). Satu kelompok
- * dilayani tepat satu PenyediaKpi.
- */
+/** Pengelompokan KPI sesuai sumber transaksinya (TASK 21.01). */
 enum KelompokKpi: string
 {
     case Aset = 'Aset';

@@ -14,13 +14,7 @@ use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Terpisah dari SubmitPermintaanMutasiAset/persetujuan secara sengaja --
- * persetujuan hanya OTORISASI, perpindahan fisik aset sungguhan (dan
- * pencatatannya di sistem) adalah langkah manusia berikutnya yang bisa
- * tertunda dari waktu keputusan disetujui. Idempotency dijaga dengan
- * guard status di awal (checklist 09.02).
- */
+/** Terpisah dari SubmitPermintaanMutasiAset/persetujuan secara sengaja -- persetujuan hanya OTORISASI. */
 final class EksekusiMutasiAset
 {
     public function __construct(

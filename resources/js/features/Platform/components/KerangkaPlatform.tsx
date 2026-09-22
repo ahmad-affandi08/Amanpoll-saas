@@ -20,14 +20,7 @@ interface PropsPlatform {
   Izin?: string[];
 }
 
-/**
- * Kerangka konsol platform.
- *
- * Sengaja tidak memakai AppLayout: layout tenant memuat navigasi modul, menu
- * organisasi, dan indikator sinkronisasi offline — semuanya bergantung pada
- * konteks tenant yang tidak ada di sini, dan semuanya menyesatkan bila muncul
- * pada konsol lintas tenant.
- */
+/** Kerangka konsol platform. */
 export function KerangkaPlatform({ children }: PropsWithChildren) {
   const { url, props } = usePage<{ platform?: PropsPlatform }>();
   const platform = props.platform ?? {};

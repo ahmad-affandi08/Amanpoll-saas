@@ -51,13 +51,7 @@ class RelasiLintasOrganisasiTest extends TestCase
         $this->assertSame($induk->Id, $anak->IndukId);
     }
 
-    /**
-     * Koreksi ADR 0002 bagian 5: guard ini berbasis metadata skema
-     * (Schema::hasColumn target, bukan penggunaan trait MilikOrganisasi di
-     * model target), jadi tetap berlaku untuk FK ke Pengguna karena tabel
-     * Pengguna sendiri punya kolom OrganisasiId -- meski model Pengguna
-     * sengaja tidak memakai trait MilikOrganisasi (lihat bagian 5).
-     */
+    /** Koreksi ADR 0002 bagian 5. */
     public function test_menolak_kunci_api_menunjuk_pembuat_milik_organisasi_lain(): void
     {
         $organisasiA = $this->buatOrganisasi('ORG-A');

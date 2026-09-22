@@ -11,9 +11,7 @@ use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 
-/**
- * Otorisasi dan alur konsol landing page builder (MARKETING.md 26, Gate 32).
- */
+/** Otorisasi dan alur konsol landing page builder (MARKETING.md 26, Gate 32). */
 final class KonsolHalamanPemasaranTest extends KasusHalaman
 {
     protected function setUp(): void

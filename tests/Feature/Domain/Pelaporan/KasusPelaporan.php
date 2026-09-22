@@ -14,13 +14,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-/**
- * Dasar bersama untuk tes HTTP Pelaporan (21.03–21.05).
- *
- * Ketiga berkas turunan memerlukan organisasi berkonteks dan pengguna dengan
- * izin tertentu; menaruhnya di sini menjaga tiap tes fokus pada perilakunya
- * sendiri, bukan pada penanaman data.
- */
+/** Dasar bersama untuk tes HTTP Pelaporan (21.03–21.05). */
 abstract class KasusPelaporan extends TestCase
 {
     use DatabaseTransactions;

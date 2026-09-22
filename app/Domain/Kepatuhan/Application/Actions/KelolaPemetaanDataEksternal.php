@@ -10,11 +10,7 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PemetaanDataEksternal
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Pemetaan identitas internal ke identitas sistem eksternal (19.02).
- * Satu kode eksternal hanya boleh menunjuk satu entitas internal; bentrokan
- * ditandai sebagai konflik dan menunggu penyelesaian manual.
- */
+/** Pemetaan identitas internal ke identitas sistem eksternal (19.02). */
 final class KelolaPemetaanDataEksternal
 {
     public function __construct(
@@ -77,10 +73,7 @@ final class KelolaPemetaanDataEksternal
         return (bool) ($pemetaan->DataTambahan['Konflik'] ?? false);
     }
 
-    /**
-     * Menyelesaikan konflik secara manual: pemetaan yang kalah dilepas dan
-     * penanda konflik dibersihkan.
-     */
+    /** Menyelesaikan konflik secara manual: pemetaan yang kalah dilepas dan penanda konflik dibersihkan. */
     public function selesaikanKonflik(PemetaanDataEksternal $pemetaan, bool $pertahankan): void
     {
         if (! $this->berkonflik($pemetaan)) {

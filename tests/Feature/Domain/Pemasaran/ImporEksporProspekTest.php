@@ -12,9 +12,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;
 
-/**
- * Impor CSV dan ekspor prospek (MARKETING.md 5.1, 26, 27).
- */
+/** Impor CSV dan ekspor prospek (MARKETING.md 5.1, 26, 27). */
 final class ImporEksporProspekTest extends KasusProspek
 {
     public function test_impor_csv_membuat_prospek(): void
@@ -96,8 +94,7 @@ final class ImporEksporProspekTest extends KasusProspek
 
     public function test_nama_prospek_berawalan_rumus_dinetralkan_di_ekspor(): void
     {
-        // Nama diketik orang luar lewat formulir publik, jadi ekspornya tidak
-        // boleh menjadi rumus saat dibuka di Excel.
+        // Nama diketik orang luar lewat formulir publik.
         $this->buatProspek('=cmd|\' /c calc\'!A0');
 
         $respons = $this->actingAs($this->buatAdmin([KatalogIzinPemasaran::PROSPEK_EKSPOR]), 'platform')

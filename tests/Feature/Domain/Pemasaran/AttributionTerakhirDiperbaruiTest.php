@@ -8,9 +8,7 @@ use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AttributionPemasaran;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 
-/**
- * Last touch selalu mengikuti kedatangan terbaru (MARKETING.md 14).
- */
+/** Last touch selalu mengikuti kedatangan terbaru (MARKETING.md 14). */
 final class AttributionTerakhirDiperbaruiTest extends KasusPemasaran
 {
     private function urlPublik(string $path = '/'): string

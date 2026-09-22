@@ -8,20 +8,12 @@ use App\Domain\Langganan\Domain\Enums\StatusLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use Carbon\CarbonImmutable;
 
-/**
- * Pembacaan status langganan satu organisasi (22.04).
- *
- * Status efektif dihitung dari tanggal, bukan hanya dibaca dari kolom Status.
- */
+/** Pembacaan status langganan satu organisasi (22.04). */
 final class LayananLangganan
 {
     public function __construct(private readonly LayananKebijakanTenggang $kebijakan) {}
 
-    /**
-     * Langganan yang sedang berlaku untuk sebuah organisasi. Bila ada lebih
-     * dari satu baris (mis. sisa riwayat penggantian paket), yang dipakai
-     * adalah yang terakhir dimulai.
-     */
+    /** Langganan yang sedang berlaku untuk sebuah organisasi. */
     public function untukOrganisasi(string $organisasiId): ?Langganan
     {
         return Langganan::query()
@@ -33,11 +25,7 @@ final class LayananLangganan
             ->first();
     }
 
-    /**
-     * Status efektif hari ini. Urutan pemeriksaan penting: pembatalan mengunci
-     * apa pun tanggalnya, lalu uji coba yang masih berjalan, baru perbandingan
-     * dengan tanggal berakhir.
-     */
+    /** Status efektif hari ini. */
     public function statusEfektif(Langganan $langganan, ?CarbonImmutable $pada = null): StatusLangganan
     {
         $pada ??= CarbonImmutable::now();
@@ -55,8 +43,7 @@ final class LayananLangganan
 
         $berakhirPada = $langganan->BerakhirPada;
         if ($berakhirPada === null) {
-            // Langganan tanpa tanggal akhir adalah langganan berjalan; ini
-            // dipakai paket internal dan pelanggan dengan kontrak terpisah.
+            // Langganan tanpa tanggal akhir adalah langganan berjalan.
             return StatusLangganan::Aktif;
         }
 
@@ -72,10 +59,7 @@ final class LayananLangganan
             : StatusLangganan::Kedaluwarsa;
     }
 
-    /**
-     * Uji coba yang sudah lewat tidak boleh ikut dilaporkan sebagai uji coba
-     * berjalan, sehingga tanggalnya hanya dikembalikan selama masih relevan.
-     */
+    /** Uji coba yang sudah lewat tidak boleh ikut dilaporkan sebagai uji coba berjalan. */
     public function ujiCobaMasihBerjalan(Langganan $langganan, ?CarbonImmutable $pada = null): bool
     {
         $ujiCobaSampai = $langganan->UjiCobaSampai;

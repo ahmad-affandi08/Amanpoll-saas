@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Notifikasi\Domain;
 
-/**
- * Katalog kode JenisPeristiwa yang dikenal platform -- modul baru
- * mendaftarkan peristiwanya sendiri di sini saat mulai mengirim notifikasi,
- * konsisten dengan pola DefinisiKonfigurasi (App\Core\Konfigurasi).
- */
+/** Katalog kode JenisPeristiwa yang dikenal platform. */
 final class KatalogPeristiwaNotifikasi
 {
     /**

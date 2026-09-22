@@ -18,27 +18,10 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 
-/**
- * Menerima satu pengiriman formulir publik (MARKETING.md 10).
- *
- * Jawaban mentah disimpan apa adanya sebagai `PengirimanFormulir`, lalu
- * diterjemahkan menjadi prospek lewat `CatatProspek`. Dua langkah, bukan satu,
- * karena keduanya menjawab pertanyaan yang berbeda: yang pertama adalah bukti
- * apa yang seseorang kirimkan dan setujui pada satu waktu, yang kedua adalah
- * pandangan penjualan atas orangnya. Field formulir boleh berubah kapan saja;
- * bukti yang ikut berubah bersamanya bukan bukti.
- *
- * UTM tidak diambil dari masukan. Field `UtmTersembunyi` diisi dari sesi
- * kunjungan di sisi server, sebab nilai yang datang dari browser dapat ditulis
- * siapa saja dan seluruh attribution akan mengikutinya.
- */
+/** Menerima satu pengiriman formulir publik (MARKETING.md 10). */
 final class KirimFormulirPemasaran
 {
-    /**
-     * Nama field perangkap. Disamarkan sebagai field yang wajar supaya bot
-     * pengisi-segalanya mengisinya, dan disembunyikan dari manusia lewat CSS
-     * pada komponen formulirnya.
-     */
+    /** Nama field perangkap. */
     public const FIELD_HONEYPOT = 'situs_perusahaan';
 
     public function __construct(
@@ -67,11 +50,7 @@ final class KirimFormulirPemasaran
             return HasilPengirimanFormulir::spam();
         }
 
-        /*
-         * Diperiksa sebelum validasi field. Pengiriman yang tidak lolos CAPTCHA
-         * tidak perlu diberi tahu field mana yang salah — itu hanya membantu
-         * pengirimnya memperbaiki tebakan berikutnya.
-         */
+        // Diperiksa sebelum validasi field.
         if ($formulir->CaptchaAktif) {
             $token = $masukan[$this->captcha->namaField()] ?? null;
             $this->captcha->pastikanSah(is_string($token) ? $token : null, $alamatIp);

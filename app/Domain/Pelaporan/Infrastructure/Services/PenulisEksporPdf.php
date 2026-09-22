@@ -10,12 +10,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use RuntimeException;
 
-/**
- * Penulis PDF lewat Dompdf.
- *
- * Dompdf memuat seluruh dokumen ke memori, jadi laporan yang sangat panjang
- * dipotong dan diberi catatan eksplisit di kaki dokumen.
- */
+/** Penulis PDF lewat Dompdf. */
 final class PenulisEksporPdf implements PenulisEkspor
 {
     /** Batas baris yang dicetak ke PDF. */

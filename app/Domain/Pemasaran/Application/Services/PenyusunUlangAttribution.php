@@ -10,13 +10,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiPengunjung;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\UtmPemasaran;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 
-/**
- * Menyusun ulang attribution dari sesi yang tersimpan (MARKETING.md 14).
- *
- * Sumbernya selalu data mentah — sesi dan UTM-nya — bukan baris attribution
- * yang sedang berlaku. Karena itu hasilnya sama berapa kali pun dijalankan, dan
- * baris yang sempat salah dapat diperbaiki tanpa kehilangan riwayat.
- */
+/** Menyusun ulang attribution dari sesi yang tersimpan (MARKETING.md 14). */
 final class PenyusunUlangAttribution
 {
     private const SUMBER_LANGSUNG = 'direct';
@@ -41,9 +35,7 @@ final class PenyusunUlangAttribution
             $pertama = $sesi[0];
             $terakhir = $sesi[count($sesi) - 1];
 
-            // UTM diambil sekali untuk kedua sesi yang dipakai, bukan lewat
-            // properti relasi: sesi tanpa UTM memang mungkin, dan pencarian
-            // eksplisit membuat kemungkinan itu terbaca di tipenya.
+            // UTM diambil sekali untuk kedua sesi yang dipakai, bukan lewat properti relasi.
             $utm = UtmPemasaran::query()
                 ->whereIn('SesiPengunjungId', array_unique([$pertama->Id, $terakhir->Id]))
                 ->get()
@@ -82,8 +74,7 @@ final class PenyusunUlangAttribution
             'Sumber'.$akhiran => $sumber,
             'Medium'.$akhiran => $medium,
             'Kampanye'.$akhiran => $campaign,
-            // Kampanye yang baru didaftarkan belakangan tetap tertaut di sini,
-            // karena pencocokannya diulang dari kodenya.
+            // Kampanye yang baru didaftarkan belakangan tetap tertaut di sini.
             'KampanyeId'.$akhiran => $campaign === null
                 ? null
                 : Kampanye::query()->where('Kode', $campaign)->value('Id'),

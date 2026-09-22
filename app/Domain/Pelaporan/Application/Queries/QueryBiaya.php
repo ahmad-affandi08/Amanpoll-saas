@@ -13,12 +13,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerjaAset;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI biaya pemeliharaan (21.01: cost).
- *
- * Biaya menempel pada perintah kerja, jadi filter unit dan lokasi diterapkan
- * lewat perintah kerja yang membiayainya.
- */
+/** KPI biaya pemeliharaan (21.01: cost). */
 final class QueryBiaya implements PenyediaKpi
 {
     use MenyaringLingkup;

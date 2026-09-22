@@ -11,11 +11,7 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\StandarKepatuhan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 
-/**
- * Standar kepatuhan sepenuhnya data milik organisasi. Amanpoll sengaja tidak
- * memiliki katalog standar regulator bawaan (Gate 18); setiap organisasi
- * mendaftarkan standar yang berlaku baginya sendiri.
- */
+/** Standar kepatuhan sepenuhnya data milik organisasi. */
 final class KelolaStandarKepatuhan
 {
     public function __construct(

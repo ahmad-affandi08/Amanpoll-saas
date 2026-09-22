@@ -6,11 +6,7 @@ namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 
-/**
- * Status hidup satu modul platform (MARKETING.md 31).
- *
- * Tanpa MilikOrganisasi: flag berlaku untuk seluruh instalasi, bukan per tenant.
- */
+/** Status hidup satu modul platform (MARKETING.md 31). */
 final class FiturPlatform extends ModelDasar
 {
     protected $table = 'FiturPlatform';

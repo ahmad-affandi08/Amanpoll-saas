@@ -17,11 +17,7 @@ final class SimpanHalamanPemasaranRequest extends FormRequest
         return $this->user('platform') !== null;
     }
 
-    /**
-     * Slug dinormalkan sebelum divalidasi supaya `harga`, `/harga`, dan
-     * `/harga/` tidak dapat menjadi tiga halaman berbeda yang saling menutupi
-     * di situs publik.
-     */
+    /** Slug dinormalkan sebelum divalidasi. */
     protected function prepareForValidation(): void
     {
         $slug = $this->input('Slug');

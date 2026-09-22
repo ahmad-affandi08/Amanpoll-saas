@@ -18,9 +18,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SkorProspek;
 use App\Domain\Pemasaran\Jobs\HitungSkorProspek;
 use Illuminate\Support\Str;
 
-/**
- * Skor prospek (MARKETING.md 5.4, 36).
- */
+/** Skor prospek (MARKETING.md 5.4, 36). */
 final class SkorProspekTest extends KasusProspek
 {
     public function test_skor_dihitung_dari_peristiwa_pengunjungnya(): void
@@ -32,8 +30,7 @@ final class SkorProspekTest extends KasusProspek
 
         $total = app(PenghitungSkorProspek::class)->hitungUlang($prospek);
 
-        // HargaDilihat 5 + DemoDimulai 8 + FormulirDikirim 10, ditambah
-        // AktifTigaHari 10 karena prospeknya baru saja dibuat.
+        // HargaDilihat 5 + DemoDimulai 8 + FormulirDikirim 10, ditambah AktifTigaHari 10.
         $this->assertSame(33, $total);
         $this->assertSame(33, (int) Prospek::query()->whereKey($prospek->Id)->value('Skor'));
     }

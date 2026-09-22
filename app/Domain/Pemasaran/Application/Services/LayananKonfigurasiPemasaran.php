@@ -9,13 +9,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KonfigurasiPemasaran;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
-/**
- * Pembaca dan penulis konfigurasi pemasaran (MARKETING.md 30).
- *
- * Nilai bawaan datang dari katalog, bukan dari baris database, sehingga
- * instalasi baru langsung berjalan tanpa perlu disemai lebih dulu dan setelan
- * yang belum pernah disentuh tidak menjadi lubang null di sepanjang kode.
- */
+/** Pembaca dan penulis konfigurasi pemasaran (MARKETING.md 30). */
 final class LayananKonfigurasiPemasaran
 {
     private const KUNCI_CACHE = 'konfigurasi-pemasaran';

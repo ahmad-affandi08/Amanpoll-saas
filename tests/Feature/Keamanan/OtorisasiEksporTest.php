@@ -11,11 +11,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-/**
- * Berkas ekspor memuat angka yang sudah disaring menurut izin pemesannya, jadi
- * hanya pemesan itu yang boleh mengunduhnya — sekalipun rekan satu organisasi
- * memegang izin laporan yang sama (24).
- */
+/** Berkas ekspor memuat angka yang sudah disaring menurut izin pemesannya. */
 final class OtorisasiEksporTest extends KasusKeamanan
 {
     private Organisasi $organisasi;
@@ -73,8 +69,7 @@ final class OtorisasiEksporTest extends KasusKeamanan
 
     public function test_permintaan_ekspor_menolak_kpi_di_luar_kewenangan(): void
     {
-        // Pengguna ini boleh melihat aset, tetapi nilai persediaan menuntut
-        // Stok.Kelola yang tidak ia punya.
+        // Pengguna ini boleh melihat aset, tetapi nilai persediaan menuntut Stok.Kelola yang tidak ia punya.
         $terbatas = $this->buatPengguna($this->organisasi, ['Aset.Lihat']);
 
         $this->actingAs($terbatas)

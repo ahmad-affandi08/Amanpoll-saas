@@ -118,11 +118,7 @@ final class LayananPeringatanKalibrasi
                 continue;
             }
 
-            /*
-             * Anti duplikasi (14.05). Dibandingkan dengan JadwalKirimPada, bukan
-             * DibuatPada: kolom itu diisi nilai bawaan basis data, sehingga tidak
-             * mengikuti jam aplikasi.
-             */
+            // Anti duplikasi (14.05).
             $sudahAdaNotifikasiHariIni = DB::table('Notifikasi')
                 ->where('OrganisasiId', $organisasiId)
                 ->where('JenisEntitas', 'RencanaKalibrasi')

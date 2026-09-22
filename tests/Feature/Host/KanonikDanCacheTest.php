@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Host;
 
-/**
- * Satu halaman publik hanya boleh punya satu URL, dan isinya yang sama bagi
- * semua orang tidak dihitung ulang tiap permintaan (MARKETING.md 1, 1.2).
- */
+/** Satu halaman publik hanya boleh punya satu URL. */
 final class KanonikDanCacheTest extends KasusHost
 {
     public function test_bentuk_www_dialihkan_301_ke_bentuk_kanonik(): void

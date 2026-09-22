@@ -10,11 +10,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Menjaga endpoint tulis agar aman diulang. Klien mengirim header
- * `Idempotency-Key`; permintaan ulang dengan isi sama memutar ulang respons
- * pertama alih-alih membuat data kedua kalinya (19.07).
- */
+/** Menjaga endpoint tulis agar aman diulang. */
 final class PastikanIdempoten
 {
     public function __construct(

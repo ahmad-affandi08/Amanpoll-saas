@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
-/**
- * Izin konsol Growth & Marketing (MARKETING.md 26).
- *
- * Kode tersimpan pada baris AdminPlatform, jadi jangan diubah namanya — tambah
- * kode baru dan pensiunkan yang lama.
- */
+/** Izin konsol Growth & Marketing (MARKETING.md 26). */
 final class KatalogIzinPemasaran
 {
     public const PEMASARAN_LIHAT = 'platform.pemasaran.lihat';

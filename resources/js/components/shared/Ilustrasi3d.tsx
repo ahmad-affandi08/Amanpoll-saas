@@ -13,10 +13,7 @@ interface Props {
   className?: string;
 }
 
-/**
- * Ilustrasi 3D dengan cadangan ikon. Berkas ilustrasi bersifat dekoratif, jadi
- * kegagalan memuatnya tidak boleh menyisakan gambar rusak di tengah dialog.
- */
+/** Ilustrasi 3D dengan cadangan ikon. */
 export function Ilustrasi3d({
   sumber,
   ikonCadangan: IkonCadangan,

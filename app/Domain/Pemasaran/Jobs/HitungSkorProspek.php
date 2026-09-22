@@ -12,13 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * Menghitung ulang skor satu prospek (MARKETING.md 29).
- *
- * Dijalankan di antrean karena perhitungannya membaca seluruh peristiwa
- * pengunjungnya, dan itu bukan pekerjaan yang pantas ditunggu orang yang baru
- * saja menekan tombol kirim pada formulir.
- */
+/** Menghitung ulang skor satu prospek (MARKETING.md 29). */
 final class HitungSkorProspek implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

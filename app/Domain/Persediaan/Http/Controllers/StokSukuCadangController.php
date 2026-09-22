@@ -14,10 +14,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Hanya baca. StokSukuCadang TIDAK PERNAH punya endpoint store/update/destroy
- * -- lihat Gate 10 dan ADR 0010.
- */
+/** Hanya baca. */
 final class StokSukuCadangController extends Controller
 {
     public function index(Request $request): Response

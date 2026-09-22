@@ -13,9 +13,7 @@ use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FormulirPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RedirectPemasaran;
 
-/**
- * Otorisasi konsol form builder dan peta redirect (MARKETING.md 9, 10, 26).
- */
+/** Otorisasi konsol form builder dan peta redirect (MARKETING.md 9, 10, 26). */
 final class KonsolFormulirDanRedirectTest extends KasusHalaman
 {
     protected function setUp(): void

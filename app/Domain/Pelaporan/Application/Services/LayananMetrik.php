@@ -10,13 +10,7 @@ use App\Domain\Pelaporan\Domain\ValueObjects\DefinisiKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Titik masuk tunggal untuk menghitung KPI (21.01/21.02).
- *
- * Penyaringan izin terjadi di sini, bukan di lapisan tampilan: KPI yang tidak
- * boleh dilihat pengguna tidak pernah dihitung, sehingga angkanya tidak bocor
- * lewat respons maupun lewat lama waktu permintaan.
- */
+/** Titik masuk tunggal untuk menghitung KPI (21.01/21.02). */
 final class LayananMetrik
 {
     public function __construct(

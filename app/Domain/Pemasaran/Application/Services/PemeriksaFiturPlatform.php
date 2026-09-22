@@ -8,14 +8,7 @@ use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\FiturPlatform;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
-/**
- * Sumber kebenaran tunggal untuk feature flag platform (MARKETING.md 31).
- *
- * Gerbang rute, menu, dan prop yang dikirim ke UI semuanya bertanya ke sini,
- * sehingga tidak mungkin ada jalur yang memakai jawaban berbeda — menu yang
- * hilang tetapi rutenya terbuka adalah bentuk kebocoran yang paling mudah
- * terjadi bila jawabannya dihitung di dua tempat.
- */
+/** Sumber kebenaran tunggal untuk feature flag platform (MARKETING.md 31). */
 final class PemeriksaFiturPlatform
 {
     private const KUNCI_CACHE = 'fitur-platform';
@@ -26,8 +19,7 @@ final class PemeriksaFiturPlatform
 
     public function aktif(string $kode): bool
     {
-        // Kode yang tidak dikenal katalog selalu mati: salah ketik pada gerbang
-        // rute lebih baik menutup halaman daripada membukanya diam-diam.
+        // Kode yang tidak dikenal katalog selalu mati.
         if (! KatalogFiturPlatform::dikenal($kode)) {
             return false;
         }
@@ -60,8 +52,7 @@ final class PemeriksaFiturPlatform
 
         $status = [];
         foreach (KatalogFiturPlatform::kode() as $kode) {
-            // Flag yang belum pernah disemai dianggap mati, bukan hidup: modul
-            // baru tidak boleh menyala sendiri saat deployment.
+            // Flag yang belum pernah disemai dianggap mati, bukan hidup.
             $status[$kode] = (bool) ($tersimpan[$kode] ?? false);
         }
 

@@ -12,12 +12,7 @@ use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisas
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Illuminate\Support\Facades\Gate;
 
-/**
- * Jawaban daftar periksa yang diisi teknisi saat offline (20.05).
- *
- * PelaksanaanDaftarPeriksa tidak memakai kolom versi; penguncian terjadi lewat
- * status.
- */
+/** Jawaban daftar periksa yang diisi teknisi saat offline (20.05). */
 final class PenanganSimpanJawabanDaftarPeriksa implements PenanganOperasiSinkronisasi
 {
     public function __construct(private readonly KelolaPelaksanaanDaftarPeriksa $aksi) {}

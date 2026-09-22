@@ -15,13 +15,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Halaman pemasaran di host publik (MARKETING.md 8, 34.1).
- *
- * Seluruhnya anonim dan tidak pernah menyentuh data tenant. Tombol aksinya
- * mengarah ke host dashboard lewat URL absolut yang dibentuk server, sehingga
- * sesi yang terbentuk di seberang sudah benar sejak awal.
- */
+/** Halaman pemasaran di host publik (MARKETING.md 8, 34.1). */
 final class HalamanPublikController extends Controller
 {
     public function __construct(
@@ -30,11 +24,7 @@ final class HalamanPublikController extends Controller
         private readonly PenautHostPengunjung $penaut,
     ) {}
 
-    /**
-     * Akar situs. Bila belum ada halaman terbit di `/`, yang tampil adalah
-     * beranda bawaan — situs publik tidak boleh menjawab 404 di alamat
-     * utamanya hanya karena isinya belum disusun.
-     */
+    /** Akar situs. */
     public function beranda(Request $request): Response
     {
         $isi = $this->isi->untukSlug('/');
@@ -57,11 +47,7 @@ final class HalamanPublikController extends Controller
         return $this->render($request, $isi);
     }
 
-    /**
-     * Pratinjau satu versi, terbit maupun tidak. Rutenya bertanda tangan dan
-     * responsnya ditandai `noindex`: draf tidak boleh dapat ditebak, dan tidak
-     * boleh ikut terindeks bila tautannya bocor.
-     */
+    /** Pratinjau satu versi, terbit maupun tidak. */
     public function pratinjau(
         Request $request,
         HalamanPemasaran $halaman,

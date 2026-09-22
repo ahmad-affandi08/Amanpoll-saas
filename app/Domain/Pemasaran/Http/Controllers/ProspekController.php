@@ -25,9 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * CRM prospek (MARKETING.md 6, 7).
- */
+/** CRM prospek (MARKETING.md 6, 7). */
 final class ProspekController extends Controller
 {
     public function __construct(

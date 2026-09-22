@@ -12,13 +12,7 @@ use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
-/**
- * KPI kepatuhan aset (21.01: compliance).
- *
- * Baris berstatus BelumDiperiksa dikeluarkan dari penyebut tingkat kepatuhan:
- * ia bukan bukti patuh maupun tidak patuh, dan memasukkannya akan menghukum
- * organisasi yang baru mendaftarkan persyaratan.
- */
+/** KPI kepatuhan aset (21.01: compliance). */
 final class QueryKepatuhan implements PenyediaKpi
 {
     use MenyaringLingkup;

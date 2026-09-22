@@ -8,13 +8,7 @@ interface Props {
   children: ReactNode;
 }
 
-/**
- * Kerangka setiap halaman situs publik (MARKETING.md 34.1).
- *
- * Tautan aksinya selalu URL absolut yang dibentuk server, bukan rute Inertia:
- * tujuannya berada di host lain, dan navigasi SPA lintas host akan gagal
- * tanpa suara.
- */
+/** Kerangka setiap halaman situs publik (MARKETING.md 34.1). */
 export function KerangkaPublik({ urlMasuk, urlDaftar, children }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-background">

@@ -8,10 +8,7 @@ use App\Core\Host\PetaHost;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Host diambil dari konfigurasi, tidak pernah dari nama produksi, sesuai
- * MARKETING.md 1.3.
- */
+/** Host diambil dari konfigurasi, tidak pernah dari nama produksi, sesuai MARKETING.md 1.3. */
 abstract class KasusHost extends TestCase
 {
     use RefreshDatabase;

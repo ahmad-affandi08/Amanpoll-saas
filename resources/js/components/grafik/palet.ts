@@ -1,24 +1,4 @@
-/**
- * Palet grafik Amanpoll.
- *
- * Nilainya diambil dari token merek di `resources/css/app.css` dan sudah lolos
- * pemeriksaan palet (light, permukaan putih):
- *
- * - Kategorikal `#376FA6, #F59E0B, #16835B, #C2413B`
- *   lightness band PASS · chroma floor PASS · normal-vision ΔE 25,9 PASS ·
- *   CVD ΔE 6,7 (pita ambang 6–8) dan kontras `#F59E0B` 2,15:1 berstatus WARN.
- *
- *   Kedua peringatan itu mewajibkan kanal kedua, dan itulah sebabnya setiap
- *   grafik di sini SELALU membawa legenda, label langsung pada nilai yang
- *   penting, jarak 2px antarsegmen, dan tampilan tabel. Menghapus salah satunya
- *   membuat palet ini tidak lagi sah dipakai.
- *
- * - Sequential `#3487A6 → #17324D` (ramp teknisi) lolos pemeriksaan ordinal:
- *   monotone, ΔL ≥ 0,06, ujung terang 4,07:1.
- *
- * Urutan slot tidak pernah diputar. Deret kelima dan seterusnya dilipat menjadi
- * "Lainnya" alih-alih menghasilkan warna baru.
- */
+/** Palet grafik Amanpoll. */
 
 /** Slot kategorikal, dipakai berurutan dan tidak pernah didaur ulang. */
 export const PALET_KATEGORIKAL = ['#376FA6', '#F59E0B', '#16835B', '#C2413B'] as const;
@@ -74,14 +54,7 @@ const PETA_STATUS: Record<string, string> = {
   BelumDiperiksa: WARNA_STATUS.netral,
 };
 
-/**
- * Warna untuk satu irisan.
- *
- * Label yang maknanya benar-benar baik/buruk memakai token status; sisanya
- * memakai slot kategorikal menurut posisinya. Satu grafik tidak pernah
- * mencampur keduanya karena pemetaan status hanya cocok pada label yang seluruh
- * grafiknya memang berupa status.
- */
+/** Warna untuk satu irisan. */
 export function warnaIrisan(label: string, indeks: number): string {
   return PETA_STATUS[label] ?? PALET_KATEGORIKAL[indeks % BATAS_DERET];
 }

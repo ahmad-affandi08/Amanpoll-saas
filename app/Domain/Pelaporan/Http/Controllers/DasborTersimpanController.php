@@ -17,10 +17,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Dasbor kustom milik pengguna (21.04): memilih komponen, mengurutkannya, dan
- * menandai satu sebagai dasbor bawaan.
- */
+/** Dasbor kustom milik pengguna (21.04). */
 final class DasborTersimpanController extends Controller
 {
     public function index(Request $request, LayananDasbor $layananDasbor, LayananMetrik $layananMetrik): Response

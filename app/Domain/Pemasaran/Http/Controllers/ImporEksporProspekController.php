@@ -13,13 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-/**
- * Impor CSV dan ekspor prospek (MARKETING.md 5.1, 27).
- *
- * Ekspor memindahkan data pribadi keluar sistem, jadi izinnya terpisah dari
- * izin melihat, jejaknya masuk audit, dan lajunya dibatasi — ketiganya
- * diwajibkan MARKETING.md 26 dan 27.
- */
+/** Impor CSV dan ekspor prospek (MARKETING.md 5.1, 27). */
 final class ImporEksporProspekController extends Controller
 {
     /** Kolom yang diterima impor, sekaligus urutan kolom hasil ekspor. */
@@ -61,8 +55,7 @@ final class ImporEksporProspekController extends Controller
             while (($baris = fgetcsv($pegangan, escape: '\\')) !== false) {
                 $data = $this->baris($baris, $petaKolom);
 
-                // Nama adalah satu-satunya kolom wajib; baris tanpa nama
-                // dilewati alih-alih membuat prospek tanpa identitas.
+                // Nama adalah satu-satunya kolom wajib.
                 if (($data['Nama'] ?? '') === '') {
                     $hasil['dilewati']++;
 
@@ -100,8 +93,7 @@ final class ImporEksporProspekController extends Controller
             fwrite($keluaran, "\xEF\xBB\xBF");
             fputcsv($keluaran, [...self::KOLOM, 'Sumber', 'Tahap', 'Skor', 'DibuatPada'], escape: '\\');
 
-            // Dialirkan per potongan: daftar prospek tumbuh tanpa batas, dan
-            // memuat seluruhnya ke memori worker hanya menunggu waktu.
+            // Dialirkan per potongan: daftar prospek tumbuh tanpa batas.
             Prospek::query()
                 ->with(['organisasiProspek', 'tahap'])
                 ->orderBy('DibuatPada')

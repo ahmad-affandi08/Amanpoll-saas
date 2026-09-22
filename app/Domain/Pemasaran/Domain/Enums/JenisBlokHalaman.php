@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain\Enums;
 
-/**
- * Blok penyusun halaman pemasaran (MARKETING.md 8).
- *
- * Daftar tertutup, dan memang harus tertutup: setiap jenis punya komponen React
- * yang memetakan isinya. Jenis yang tidak dikenal akan tersimpan rapi di basis
- * data lalu hilang tanpa jejak saat halamannya dirender.
- */
+/** Blok penyusun halaman pemasaran (MARKETING.md 8). */
 enum JenisBlokHalaman: string
 {
     case Hero = 'Hero';

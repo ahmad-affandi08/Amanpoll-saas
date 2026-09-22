@@ -24,10 +24,7 @@ use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
-/**
- * Gate 19 — satu endpoint kritis dan satu peristiwa eksternal terbukti
- * idempotent: diulang berapa kali pun, efeknya tetap satu kali.
- */
+/** Gate 19 — satu endpoint kritis dan satu peristiwa eksternal terbukti idempotent. */
 final class IdempotensiDanKotakKeluarTest extends TestCase
 {
     use DatabaseTransactions;

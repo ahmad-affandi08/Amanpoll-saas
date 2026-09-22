@@ -7,11 +7,7 @@ use App\Http\Controllers\Auth\LupaKataSandiController;
 use App\Http\Controllers\Auth\ResetKataSandiController;
 use Illuminate\Support\Facades\Route;
 
-/*
- * Seluruh rute sistem hidup di host dashboard (PRD 5.4). Root host ini adalah
- * dashboard organisasi, bukan landing page; pengunjung anonim diarahkan ke
- * halaman masuk oleh middleware `auth`.
- */
+// Seluruh rute sistem hidup di host dashboard (PRD 5.4).
 Route::domain(app(PetaHost::class)->dashboard())->group(function (): void {
     Route::middleware('guest')->group(function (): void {
         Route::get('/login', [LoginController::class, 'create'])->name('login');

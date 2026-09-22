@@ -11,14 +11,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Merekam kunjungan halaman publik (MARKETING.md 14, 23).
- *
- * Berjalan setelah TetapkanSesiPengunjung, yang sudah memastikan pengenalnya
- * ada. Perekaman dilakukan setelah respons terbentuk supaya halaman tidak
- * menunggu tulisan ini, dan hanya untuk GET yang berhasil: percobaan URL yang
- * berujung 404 bukan kunjungan.
- */
+/** Merekam kunjungan halaman publik (MARKETING.md 14, 23). */
 final class RekamKunjunganPemasaran
 {
     public function __construct(

@@ -8,10 +8,7 @@ use App\Core\Peristiwa\LayananKotakKeluar;
 use App\Domain\IntegrasiAudit\Application\Services\LayananPanggilanBalikWeb;
 use Illuminate\Console\Command;
 
-/**
- * Worker kotak keluar: mengambil peristiwa yang menunggu, menerbitkannya ke
- * webhook yang berlangganan, lalu menandainya selesai (19.06).
- */
+/** Worker kotak keluar: mengambil peristiwa yang menunggu. */
 final class ProsesKotakKeluarPeristiwa extends Command
 {
     protected $signature = 'outbox:proses {--batas=50 : Jumlah peristiwa maksimum per jalan}';

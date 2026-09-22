@@ -66,12 +66,7 @@ final class KelolaWaktuKerja
         });
     }
 
-    /**
-     * Mencatat satu sesi waktu kerja yang sudah utuh (mulai dan selesai
-     * diketahui). Dipakai oleh sinkronisasi offline: teknisi menjalankan
-     * timernya di perangkat, lalu sesi lengkapnya dikirim saat kembali online
-     * sehingga waktu yang tercatat adalah waktu kejadian, bukan waktu sinkron.
-     */
+    /** Mencatat satu sesi waktu kerja yang sudah utuh (mulai dan selesai diketahui). */
     public function catatSelesai(
         PerintahKerja $perintahKerja,
         string $penggunaId,

@@ -19,8 +19,7 @@ final class BersihkanCatatanAkses extends Command
         $hariRetensi = (int) config('amanpoll.retensi_catatan_akses_hari', 90);
         $batasWaktu = now()->subDays($hariRetensi);
 
-        // Retensi berlaku lintas seluruh organisasi (operasi sistem terjadwal,
-        // bukan permintaan tenant), jadi scope organisasi sengaja dilewati.
+        // Retensi berlaku lintas seluruh organisasi (operasi sistem terjadwal, bukan permintaan tenant).
         $jumlahDihapus = CatatanAkses::withoutGlobalScope(ScopeOrganisasi::class)
             ->where('DibuatPada', '<', $batasWaktu)
             ->delete();

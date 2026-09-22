@@ -8,10 +8,7 @@ use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Menjaga SukuCadang beserta master data pendukungnya (KategoriSukuCadang,
- * KelompokSukuCadang, KompatibilitasSukuCadang) lewat satu kode Izin.
- */
+/** Menjaga SukuCadang beserta master data pendukungnya (KategoriSukuCadang. */
 final class SukuCadangPolicy
 {
     public function __construct(private readonly PemeriksaIzin $izin) {}

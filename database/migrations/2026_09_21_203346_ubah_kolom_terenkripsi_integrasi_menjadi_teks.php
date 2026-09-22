@@ -6,11 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Kolom yang dicast `encrypted` menyimpan ciphertext base64, bukan JSON dan
- * bukan teks pendek. Tipe `json` menolaknya dan `string(255)` memotongnya
- * begitu rahasia sedikit lebih panjang, jadi keduanya dipindah ke `text`.
- */
+/** Kolom yang dicast `encrypted` menyimpan ciphertext base64, bukan JSON dan bukan teks pendek. */
 return new class extends Migration
 {
     public function up(): void

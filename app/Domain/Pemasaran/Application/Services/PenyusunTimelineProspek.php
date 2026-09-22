@@ -8,15 +8,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AktivitasProspek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 
-/**
- * Timeline gabungan satu prospek (MARKETING.md 7).
- *
- * Dua sumber digabung di sini: peristiwa yang terekam otomatis dari
- * kunjungannya, dan aktivitas yang ditulis manusia. Keduanya sengaja tidak
- * disatukan ke satu tabel — yang satu tidak boleh diubah, yang satu memang
- * dikarang orang — tetapi harus terbaca sebagai satu urutan waktu, karena
- * itulah bentuk pertanyaan yang diajukan tim penjualan.
- */
+/** Timeline gabungan satu prospek (MARKETING.md 7). */
 final class PenyusunTimelineProspek
 {
     private const BATAS = 200;

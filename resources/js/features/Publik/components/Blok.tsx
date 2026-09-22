@@ -6,14 +6,7 @@ import { FormulirPemasaran } from './FormulirPemasaran';
 import { daftarObjek, daftarTeks, teks, teksOpsional, urlAman } from './isi';
 import type { BlokHalaman } from '../types';
 
-/**
- * Perender satu blok halaman pemasaran (MARKETING.md 8).
- *
- * Jenis yang tidak dikenal tidak merender apa pun, dan itu disengaja: daftar
- * jenis di server tertutup, jadi blok asing hanya muncul saat versi frontend
- * tertinggal di belakang — dan halaman yang kehilangan satu bagian jauh lebih
- * baik daripada halaman yang gagal dirender seluruhnya.
- */
+/** Perender satu blok halaman pemasaran (MARKETING.md 8). */
 export function Blok({ blok }: { blok: BlokHalaman }) {
   switch (blok.Jenis) {
     case 'Hero':
@@ -426,11 +419,7 @@ function ToolEmbed({ isi }: { isi: Isi }) {
   return (
     <Bagian>
       <JudulBagian isi={isi} />
-      {/*
-        Disandboxkan. Yang ditanam di sini adalah kalkulator dan perkakas dari
-        luar; tanpa sandbox ia berjalan dengan hak penuh atas domain utama —
-        termasuk cookienya.
-      */}
+      {/* Disandboxkan. */}
       <iframe
         src={url}
         title={teks(isi, 'judul', 'Perkakas')}

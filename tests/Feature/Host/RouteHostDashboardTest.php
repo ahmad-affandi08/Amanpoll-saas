@@ -7,10 +7,7 @@ namespace Tests\Feature\Host;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
-/**
- * Host dashboard melayani sistem penuh dan tidak pernah menampilkan situs
- * pemasaran (PRD 5.4, MARKETING.md 34.2).
- */
+/** Host dashboard melayani sistem penuh. */
 final class RouteHostDashboardTest extends KasusHost
 {
     public function test_root_host_dashboard_mengarahkan_pengunjung_anonim_ke_login(): void
@@ -58,8 +55,7 @@ final class RouteHostDashboardTest extends KasusHost
 
     public function test_host_dashboard_tidak_mengenal_kode_organisasi_dari_host_publik(): void
     {
-        // Host publik tidak pernah membaca sesi organisasi; membuktikannya
-        // dengan memastikan halaman publik tetap terbuka bagi tamu.
+        // Host publik tidak pernah membaca sesi organisasi.
         $this->get($this->urlPublik('/'))->assertOk();
         $this->assertGuest();
     }

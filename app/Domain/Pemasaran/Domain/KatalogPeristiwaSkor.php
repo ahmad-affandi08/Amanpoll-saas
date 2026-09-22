@@ -4,21 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain;
 
-/**
- * Sinyal yang boleh diberi bobot skor (MARKETING.md 5.4).
- *
- * Sengaja tidak sama dengan KatalogPeristiwaPemasaran. Taxonomy bagian 23
- * mendaftar apa yang boleh masuk `EventPemasaran`, sedangkan yang memengaruhi
- * skor lebih luas dari itu: dua di antaranya dihitung dari keadaan prospek dan
- * tidak pernah menjadi baris peristiwa sama sekali.
- *
- * Tiap sinyal membawa asalnya, dan itu yang membuat daftar ini berguna. Bobot
- * untuk sinyal yang belum ada penghasilnya — `EmailBounce`, sampai domain email
- * lahir — tidak akan pernah terpakai. Dulu keadaan itu tidak terlihat sama
- * sekali: bobotnya tersimpan rapi di konfigurasi dan diam-diam tidak pernah
- * menyumbang apa pun. Sekarang ia dinyatakan `Tertunda` dan tampil apa adanya
- * di konsol.
- */
+/** Sinyal yang boleh diberi bobot skor (MARKETING.md 5.4). */
 final class KatalogPeristiwaSkor
 {
     /** Datang dari baris EventPemasaran. */

@@ -8,13 +8,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonInterface;
 
-/**
- * Kalkulasi penyusutan garis lurus MURNI SEBAGAI PRATINJAU -- hasilnya
- * dipakai untuk mengisi awal form NilaiAset, tapi baris yang benar-benar
- * tersimpan selalu lewat input eksplisit (BuatNilaiAset), sama seperti
- * pratinjau() pada LayananNomorDokumen. Tidak ada penjadwalan otomatis
- * yang menulis NilaiAset tanpa keterlibatan pengguna.
- */
+/** Kalkulasi penyusutan garis lurus MURNI SEBAGAI PRATINJAU. */
 final class LayananPenyusutanAset
 {
     /**

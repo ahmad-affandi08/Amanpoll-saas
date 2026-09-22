@@ -1,13 +1,7 @@
 import type { JejakBreadcrumb } from '@/components/ui/breadcrumb';
 import { semuaGrup } from '@/layouts/navigasi';
 
-/**
- * Menurunkan breadcrumb dari peta navigasi (DESIGN.md 12), bukan dari data per
- * halaman, supaya breadcrumb tidak dapat menyimpang dari menu.
- *
- * Ruas yang tidak dikenal peta tetap ditampilkan dari potongan URL-nya;
- * pemanggil dapat menimpanya lewat `timpaTerakhir`.
- */
+/** Menurunkan breadcrumb dari peta navigasi (DESIGN.md 12), bukan dari data per halaman. */
 
 interface Simpul {
   label: string;

@@ -66,11 +66,7 @@ interface Props {
   onSelesai: (hasil: HasilKonfirmasi) => void;
 }
 
-/**
- * Dialog konfirmasi berbasis AlertDialog: fokus awal jatuh ke tombol batal dan
- * dialog tidak tertutup oleh Esc/klik luar, supaya tindakan merusak butuh
- * keputusan yang disengaja.
- */
+/** Dialog konfirmasi berbasis AlertDialog. */
 export function DialogKonfirmasi({ opsi, onSelesai }: Props) {
   const [alasan, setAlasan] = useState('');
   const [ketikan, setKetikan] = useState('');

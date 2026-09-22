@@ -13,11 +13,7 @@ use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisas
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Menjalankan ulang mutasi offline yang masih menunggu (20.03).
- *
- * Klien biasanya mendorong dan langsung memproses antreannya sendiri.
- */
+/** Menjalankan ulang mutasi offline yang masih menunggu (20.03). */
 final class ProsesAntrianSinkronisasi extends Command
 {
     protected $signature = 'sinkronisasi:proses-antrian {--batas=100 : Jumlah mutasi maksimum per jalan}';

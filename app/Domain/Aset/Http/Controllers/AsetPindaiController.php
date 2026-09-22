@@ -11,12 +11,7 @@ use Illuminate\Http\RedirectResponse;
 
 final class AsetPindaiController extends Controller
 {
-    /**
-     * Scan resolver: menerima kode dari QR/barcode/NFC fisik yang ditempel
-     * ke aset lalu mengarahkan ke halaman detailnya. Satu titik masuk untuk
-     * ketiga jenis identifier supaya perangkat pemindai apa pun (kamera QR,
-     * pembaca barcode, pembaca NFC) bisa memakai URL yang sama.
-     */
+    /** Scan resolver: menerima kode dari QR/barcode/NFC fisik yang ditempel ke aset. */
     public function tampilkan(string $kode): RedirectResponse
     {
         $aset = Aset::query()

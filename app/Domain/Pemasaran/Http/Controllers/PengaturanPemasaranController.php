@@ -19,9 +19,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-/**
- * Pengaturan Growth & Marketing (MARKETING.md 30).
- */
+/** Pengaturan Growth & Marketing (MARKETING.md 30). */
 final class PengaturanPemasaranController extends Controller
 {
     public function __construct(
@@ -33,9 +31,7 @@ final class PengaturanPemasaranController extends Controller
     public function index(PetaHost $host): Response
     {
         return Inertia::render('Pemasaran/Pengaturan', [
-            // Host hanya dibaca, tidak pernah diubah lewat form: sumbernya
-            // environment, dan menampilkannya di sini justru untuk membuktikan
-            // host mana yang sedang dilayani (MARKETING.md 30).
+            // Host hanya dibaca, tidak pernah diubah lewat form.
             'domain' => [
                 'publik' => $host->publik(),
                 'dashboard' => $host->dashboard(),

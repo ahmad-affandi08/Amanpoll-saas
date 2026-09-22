@@ -6,10 +6,7 @@ namespace Tests\Feature\Host;
 
 use App\Http\Middleware\TetapkanSesiPengunjung;
 
-/**
- * Host publik melayani situs pemasaran, anonim, dan tidak pernah menyentuh
- * rute sistem (MARKETING.md 1 dan 34.1).
- */
+/** Host publik melayani situs pemasaran, anonim. */
 final class RouteHostPublikTest extends KasusHost
 {
     public function test_root_host_publik_membuka_landing_page(): void
@@ -72,8 +69,7 @@ final class RouteHostPublikTest extends KasusHost
     {
         $pertama = $this->get($this->urlPublik('/'));
 
-        // Nilai yang sudah didekripsi: withCookie() mengenkripsinya kembali saat
-        // mengirim, jadi mengoper blob mentah akan terenkripsi dua kali.
+        // Nilai yang sudah didekripsi.
         $pengenal = $pertama->getCookie(TetapkanSesiPengunjung::NAMA_COOKIE)?->getValue();
 
         $this->assertNotNull($pengenal);

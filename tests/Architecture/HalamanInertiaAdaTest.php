@@ -10,14 +10,7 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 use Tests\TestCase;
 
-/**
- * Setiap `Inertia::render('Fitur/Halaman')` harus punya berkasnya di
- * `resources/js/features/Fitur/pages/Halaman.tsx`.
- *
- * Kesalahan ini tidak tertangkap test HTTP mana pun: respons Inertia hanya
- * memuat nama komponen, sehingga `assertOk()` tetap hijau sementara halamannya
- * gagal dimuat di peramban. Test inilah yang menutup celah itu.
- */
+/** Setiap `Inertia::render('Fitur/Halaman')` harus punya berkas komponennya. */
 final class HalamanInertiaAdaTest extends TestCase
 {
     public function test_setiap_komponen_yang_dirender_memiliki_berkasnya(): void

@@ -7,10 +7,7 @@ namespace Tests\Feature\Domain\Pemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\HalamanPemasaran;
 use Illuminate\Support\Facades\URL;
 
-/**
- * Draf tidak dapat diakses tanpa tanda tangan dan tidak terindeks
- * (MARKETING.md 8, TASK 32.07).
- */
+/** Draf tidak dapat diakses tanpa tanda tangan dan tidak terindeks (MARKETING.md 8, TASK 32.07). */
 final class PratinjauDrafTest extends KasusHalaman
 {
     public function test_pratinjau_tanpa_tanda_tangan_ditolak(): void

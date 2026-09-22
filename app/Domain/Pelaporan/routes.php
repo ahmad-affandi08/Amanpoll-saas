@@ -17,8 +17,7 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.pelaporan_lanjutan'
         Route::put('/laporan/{laporanTersimpan}', [LaporanTersimpanController::class, 'update'])->name('laporan.update');
         Route::delete('/laporan/{laporanTersimpan}', [LaporanTersimpanController::class, 'destroy'])->name('laporan.destroy');
 
-        // Ekspor (21.05). Pembuatan berkas berjalan di antrean; unduhan
-        // diotorisasi ulang per berkas.
+        // Ekspor (21.05).
         Route::post('/ekspor', [EksporLaporanController::class, 'store'])
             ->middleware('throttle:ekspor')
             ->name('ekspor.store');

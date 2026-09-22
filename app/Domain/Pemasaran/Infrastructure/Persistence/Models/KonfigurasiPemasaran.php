@@ -6,12 +6,7 @@ namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 
-/**
- * Satu setelan domain Pemasaran (MARKETING.md 30).
- *
- * Lintas tenant: yang diatur adalah cara Amanpoll memasarkan dirinya, bukan
- * data milik satu pelanggan.
- */
+/** Satu setelan domain Pemasaran (MARKETING.md 30). */
 final class KonfigurasiPemasaran extends ModelDasar
 {
     protected $table = 'KonfigurasiPemasaran';

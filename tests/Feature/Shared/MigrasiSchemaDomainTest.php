@@ -12,10 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
-/**
- * Memastikan migration hasil konversi Amanpoll_Database_MySQL.sql benar-benar
- * bisa dipakai model Eloquent yang sudah ada, bukan hanya berhasil dieksekusi.
- */
+/** Memastikan migration hasil konversi Amanpoll_Database_MySQL.sql benar-benar bisa dipakai model Eloquent. */
 class MigrasiSchemaDomainTest extends TestCase
 {
     use RefreshDatabase;

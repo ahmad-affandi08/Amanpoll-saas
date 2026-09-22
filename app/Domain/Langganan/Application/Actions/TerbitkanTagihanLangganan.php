@@ -15,13 +15,7 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Carbon\CarbonImmutable;
 
-/**
- * Penerbitan tagihan periode langganan (22.06).
- *
- * Penerbitan bersifat idempoten per periode: menjalankan penagihan dua kali
- * pada hari yang sama tidak menghasilkan dua tagihan, karena satu langganan
- * hanya boleh punya satu tagihan hidup untuk satu rentang periode.
- */
+/** Penerbitan tagihan periode langganan (22.06). */
 final class TerbitkanTagihanLangganan
 {
     public function __construct(
@@ -80,11 +74,7 @@ final class TerbitkanTagihanLangganan
         });
     }
 
-    /**
-     * Periode yang ditagih adalah periode yang akan dimulai setelah periode
-     * berjalan berakhir; bila langganan tidak punya tanggal akhir, yang ditagih
-     * adalah periode yang dimulai hari ini.
-     */
+    /** Periode yang ditagih adalah periode yang akan dimulai setelah periode berjalan berakhir. */
     private function periodeMulai(Langganan $langganan, CarbonImmutable $pada): CarbonImmutable
     {
         $berakhir = $langganan->BerakhirPada;
@@ -94,10 +84,7 @@ final class TerbitkanTagihanLangganan
             : CarbonImmutable::parse($berakhir)->startOfDay()->addDay();
     }
 
-    /**
-     * Nomor berurut per bulan. Keunikannya tetap dijamin oleh indeks unik di
-     * basis data; loop di sini hanya menangani perlombaan yang jarang terjadi.
-     */
+    /** Nomor berurut per bulan. */
     private function nomorBerikutnya(CarbonImmutable $pada): string
     {
         $awalan = 'INV-'.$pada->format('Ym').'-';
