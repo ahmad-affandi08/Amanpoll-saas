@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -58,7 +58,7 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/whatsapp';
 
-export default function WhatsAppHalaman({
+export default function PemasaranWhatsApp({
   template,
   menu,
   pratinjauMenu,
@@ -71,7 +71,7 @@ export default function WhatsAppHalaman({
     <KerangkaPlatform>
       <Head title="WhatsApp" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="WhatsApp"
         deskripsi="Template menunggu persetujuan penyedia sebelum boleh berangkat, dan setiap nomor dapat berhenti kapan saja."
         tanpaBreadcrumb

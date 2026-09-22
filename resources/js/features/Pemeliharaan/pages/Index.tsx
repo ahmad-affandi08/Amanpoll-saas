@@ -1,7 +1,7 @@
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 export default function PemeliharaanIndex() {
   return (
-    <PageHeader
+    <KepalaHalaman
       judul="Pemeliharaan"
       deskripsi="Halaman modul Pemeliharaan. Implementasikan use-case dan UI di feature ini."
     />

@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle2, Pencil, Plus, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +21,7 @@ import type { DetailRencanaPengadaan, RencanaPengadaan } from '@/features/Rencan
 import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface PosRingkas {
   Id: string;
@@ -334,7 +334,7 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
       router.delete(ruteRencanaPengadaan.detail(rencana.Id));
   }
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`${rencana.Nomor} — Rencana Pengadaan`} />
       <div className="space-y-6">
         <Link
@@ -343,7 +343,7 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
         >
           <ArrowLeft className="size-4" /> Kembali ke Rencana Pengadaan
         </Link>
-        <PageHeader
+        <KepalaHalaman
           judul={rencana.Nama}
           labelBreadcrumb={rencana.Nomor}
           lencana={<Badge variant={VARIAN_STATUS[rencana.Status]}>{rencana.Status}</Badge>}
@@ -495,6 +495,6 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
           )}
         </section>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

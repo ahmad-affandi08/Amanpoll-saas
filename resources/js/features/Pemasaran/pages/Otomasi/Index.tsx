@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,14 +28,14 @@ interface Props {
 const AKAR = '/admin-platform/pemasaran/otomasi';
 const BELUM_ADA_SUMBER = 'BelumAdaSumber';
 
-export default function Index({ otomasi, pilihan }: Props) {
+export default function PemasaranOtomasiIndex({ otomasi, pilihan }: Props) {
   const belumBerlaku = otomasi.filter((satu) => satu.Aktif && !satu.PemicuBerlaku);
 
   return (
     <KerangkaPlatform>
       <Head title="Otomasi Pemasaran" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Otomasi Pemasaran"
         deskripsi="Pemicu, kondisi, jeda, dan aksi. Setiap versi dikunci saat diaktifkan."
         tanpaBreadcrumb

@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, PlugZap, Plus, RefreshCw, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -230,7 +230,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi }: Pro
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`${integrasi.Kode} — Integrasi`} />
       <BreadcrumbHalaman />
       <div className="space-y-6">
@@ -309,7 +309,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi }: Pro
           </CardHeader>
           <CardContent className="space-y-3">
             {pemetaan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada pemetaan."
                 deskripsi="Petakan entitas Amanpoll ke kode pada sistem eksternal."
               />
@@ -359,7 +359,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi }: Pro
           </CardHeader>
           <CardContent className="space-y-3">
             {sinkronisasi.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada sinkronisasi."
                 deskripsi="Riwayat tarik dan dorong data akan muncul di sini beserta jumlah keberhasilannya."
               />
@@ -387,6 +387,6 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi }: Pro
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

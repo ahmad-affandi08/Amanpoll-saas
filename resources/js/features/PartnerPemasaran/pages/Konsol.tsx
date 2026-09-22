@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -118,7 +118,7 @@ const rupiah = (nilai: number) =>
 
 const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString('id-ID') : '—');
 
-export default function Konsol({
+export default function PartnerPemasaranKonsol({
   program,
   partner,
   aturan,
@@ -133,7 +133,7 @@ export default function Konsol({
     <KerangkaPlatform>
       <Head title="Partner" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Partner"
         deskripsi={
           hostPartner

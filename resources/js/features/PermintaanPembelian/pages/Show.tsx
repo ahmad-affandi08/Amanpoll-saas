@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Plus, Send, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { JenisItemPengadaan, PermintaanPembelian } from '@/features/PermintaanPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface AsetRingkas {
   Id: string;
@@ -240,7 +240,7 @@ export default function PermintaanPembelianShow(props: Props) {
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={permintaan.Nomor} />
       <div className="space-y-6 pb-28 sm:pb-6">
         <Link
@@ -250,7 +250,7 @@ export default function PermintaanPembelianShow(props: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <PageHeader
+        <KepalaHalaman
           judul={<span className="font-mono">{permintaan.Nomor}</span>}
           labelBreadcrumb={permintaan.Nomor}
           lencana={
@@ -289,7 +289,7 @@ export default function PermintaanPembelianShow(props: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {detail.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada item."
                 deskripsi="Tambahkan minimal satu item sebelum permintaan dapat diajukan."
               />
@@ -333,6 +333,6 @@ export default function PermintaanPembelianShow(props: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { Badge } from '@/components/ui/badge';
@@ -332,7 +332,7 @@ function DialogFormKampanye({ kampanye, pilihan }: { kampanye: Kampanye | null; 
   );
 }
 
-export default function KampanyeHalaman({ kampanye, pilihan }: Props) {
+export default function PemasaranKampanye({ kampanye, pilihan }: Props) {
   const columns = useMemo<ColumnDef<Kampanye>[]>(
     () => [
       {
@@ -418,7 +418,7 @@ export default function KampanyeHalaman({ kampanye, pilihan }: Props) {
     <KerangkaPlatform>
       <Head title="Kampanye" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Kampanye"
         deskripsi="Kode kampanye menjadi utm_campaign pada tautan iklan, sehingga kunjungannya tertaut otomatis."
         tanpaBreadcrumb

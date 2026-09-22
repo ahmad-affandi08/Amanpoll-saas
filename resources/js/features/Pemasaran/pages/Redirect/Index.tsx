@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
@@ -29,7 +29,7 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/redirect';
 
-export default function Index({ redirect, pilihan }: Props) {
+export default function PemasaranRedirectIndex({ redirect, pilihan }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (satu: Redirect) => {
@@ -101,7 +101,7 @@ export default function Index({ redirect, pilihan }: Props) {
     <KerangkaPlatform>
       <Head title="Redirect" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Redirect"
         deskripsi="Berlaku hanya di host publik. Slug yang berubah tanpa redirect kehilangan peringkatnya."
         tanpaBreadcrumb

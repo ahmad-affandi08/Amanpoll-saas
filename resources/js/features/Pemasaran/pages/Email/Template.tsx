@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/email/template';
 
-export default function Template({ template, pilihan }: Props) {
+export default function PemasaranEmailTemplate({ template, pilihan }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (satu: TemplateEmail) => {
@@ -47,7 +47,7 @@ export default function Template({ template, pilihan }: Props) {
     <KerangkaPlatform>
       <Head title="Template Email" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Template Email"
         deskripsi="Naskah email pemasaran beserta variabelnya. Variabel yang salah ketik ditolak saat disimpan."
         tanpaBreadcrumb

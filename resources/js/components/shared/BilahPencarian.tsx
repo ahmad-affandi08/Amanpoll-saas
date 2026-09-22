@@ -21,7 +21,7 @@ interface Props {
 }
 
 /** Baris pencarian dan filter baku (DESIGN.md 9, 12). */
-export function SearchFilterBar({
+export function BilahPencarian({
   kueri,
   onKueri,
   placeholder = 'Cari…',

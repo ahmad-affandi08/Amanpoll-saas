@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { NomorDokumen } from '@/features/NomorDokumen/types';
 import { ruteNomorDokumen } from '@/features/NomorDokumen/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   nomorDokumen: NomorDokumen[];
@@ -194,9 +194,9 @@ export default function NomorDokumenIndex({ nomorDokumen }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Nomor Dokumen" />
-      <PageHeader
+      <KepalaHalaman
         judul="Nomor Dokumen"
         deskripsi="Pola penomoran otomatis untuk dokumen operasional."
         aksi={
@@ -224,6 +224,6 @@ export default function NomorDokumenIndex({ nomorDokumen }: Props) {
         ]}
         pesanKosong="Belum ada pola nomor dokumen."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

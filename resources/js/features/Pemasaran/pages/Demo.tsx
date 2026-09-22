@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -52,12 +52,12 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/demo';
 
-export default function DemoHalaman({ demo, peristiwa, pilihan }: Props) {
+export default function PemasaranDemo({ demo, peristiwa, pilihan }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Demo Produk" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Demo Produk"
         deskripsi="Sandbox yang dicoba calon pelanggan. Datasetnya dibangun ulang berkala dan tidak pernah menyentuh tenant sungguhan."
         tanpaBreadcrumb

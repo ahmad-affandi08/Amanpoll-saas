@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,7 +43,7 @@ const AKAR = '/admin-platform/pemasaran/otomasi';
 
 const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString('id-ID') : '—');
 
-export default function Show({ otomasi, versi, eksekusi, pilihan }: Props) {
+export default function PemasaranOtomasiShow({ otomasi, versi, eksekusi, pilihan }: Props) {
   const konfirmasi = useKonfirmasi();
   const draf = versi.find((satu) => satu.Status === 'Draf');
 
@@ -76,7 +76,7 @@ export default function Show({ otomasi, versi, eksekusi, pilihan }: Props) {
     <KerangkaPlatform>
       <Head title={otomasi.Nama} />
 
-      <PageHeader
+      <KepalaHalaman
         judul={otomasi.Nama}
         deskripsi={otomasi.Keterangan ?? `Pemicu ${otomasi.Pemicu}.`}
         tanpaBreadcrumb

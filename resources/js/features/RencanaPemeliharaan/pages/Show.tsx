@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +27,7 @@ interface Props {
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
 }
 
-export default function ShowRencana({ rencana, asetTersedia }: Props) {
+export default function RencanaPemeliharaanShow({ rencana, asetTersedia }: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialogAset, setBukaDialogAset] = useState(false);
 
@@ -65,7 +65,7 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
   const asetBelumTerdaftar = asetTersedia.filter((a) => !asetTerdaftarIds.has(a.Id));
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`Rencana: ${rencana.Nama}`} />
       <BreadcrumbHalaman />
 
@@ -291,6 +291,6 @@ export default function ShowRencana({ rencana, asetTersedia }: Props) {
           )}
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

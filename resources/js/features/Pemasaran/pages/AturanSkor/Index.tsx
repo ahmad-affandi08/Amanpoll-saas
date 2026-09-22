@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
@@ -29,7 +29,7 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/prospek/aturan-skor';
 
-export default function Index({ aturan, pilihan }: Props) {
+export default function PemasaranAturanSkorIndex({ aturan, pilihan }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (satu: AturanSkor) => {
@@ -134,7 +134,7 @@ export default function Index({ aturan, pilihan }: Props) {
     <KerangkaPlatform>
       <Head title="Aturan Skor Prospek" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Aturan Skor Prospek"
         deskripsi="Bobot tiap sinyal terhadap skor prospek. Angkanya tidak pernah ditulis di kode program."
         tanpaBreadcrumb

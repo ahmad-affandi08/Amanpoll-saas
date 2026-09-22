@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { LogoMark } from '@/components/shared/LogoMark';
+import { LogoLambang } from '@/components/shared/Logo';
 import { ruteAuth } from '@/features/Auth/api';
 
-export default function Login() {
+export default function AuthLogin() {
   const form = useForm({ KodeOrganisasi: '', Email: '', KataSandi: '', IngatSaya: false });
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ export default function Login() {
         className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
       >
         <div className="flex flex-col items-center gap-3 pb-1 text-center">
-          <LogoMark className="size-14" />
+          <LogoLambang className="size-14" />
           <div>
             <h1 className="text-xl font-semibold text-foreground">Amanpoll</h1>
             <p className="text-sm text-muted-foreground">Masuk untuk melanjutkan pekerjaan operasional.</p>

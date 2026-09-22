@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ListChecks, Plus, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,7 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { RencanaPengadaan, StatusRencanaPengadaan } from '@/features/RencanaPengadaan/types';
 import { formatUang } from '@/lib/uang';
 import { ruteRencanaPengadaan } from '@/features/RencanaPengadaan/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface PosRingkas {
   Id: string;
@@ -176,10 +176,10 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
     );
   }
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Rencana Pengadaan" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Rencana Pengadaan"
           deskripsi="Konsolidasikan usulan disetujui ke rencana dan pos anggaran."
           aksi={
@@ -227,7 +227,7 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
           </Button>
         </form>
         {rencana.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/dashboard-analitik.webp"
             judul="Belum ada rencana pengadaan."
             deskripsi="Buat rencana dari usulan yang telah disetujui."
@@ -292,7 +292,7 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
                 </Link>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={rencana.meta}
               onNavigasi={(page) =>
                 navigasiHalaman(page, { cari, tahun, status: status === SEMUA ? '' : status })
@@ -301,6 +301,6 @@ export default function RencanaPengadaanIndex({ rencana, posAnggaran, usulanDise
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

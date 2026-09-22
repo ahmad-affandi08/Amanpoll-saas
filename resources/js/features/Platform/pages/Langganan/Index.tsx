@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { CalendarPlus, FileText, Plus, XCircle } from 'lucide-react';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { tanggal } from '@/features/Langganan/format';
 import type { LanggananPlatformItem, PilihanRingkas, StatusLangganan } from '@/features/Langganan/types';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface PilihanSiklus {
   Nilai: string;
@@ -65,7 +65,7 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
       <Head title="Langganan Tenant" />
 
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           tanpaBreadcrumb
           judul="Langganan Tenant"
           deskripsi="Status efektif dihitung dari tanggal, jadi kolom ini selalu mencerminkan hak akses hari ini."
@@ -85,7 +85,7 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
           </CardHeader>
           <CardContent>
             {langganan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada organisasi yang berlangganan."
                 deskripsi="Mulai langganan untuk organisasi pertama."
               />

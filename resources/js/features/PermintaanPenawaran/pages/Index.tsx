@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { FileText, Plus, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,7 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { PermintaanPenawaran, StatusPermintaanPenawaran } from '@/features/PermintaanPenawaran/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface PermintaanRingkas {
   Id: string;
@@ -173,10 +173,10 @@ export default function PermintaanPenawaranIndex({ rfq, permintaanDisetujui, pen
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Permintaan Penawaran" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Permintaan Penawaran"
           deskripsi="Undang penyedia, catat penawaran masuk, dan pilih hasil evaluasi."
           aksi={
@@ -216,7 +216,7 @@ export default function PermintaanPenawaranIndex({ rfq, permintaanDisetujui, pen
         </form>
 
         {rfq.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/penyedia-kontrak.webp"
             judul="Belum ada permintaan penawaran."
             deskripsi="Buat RFQ dari permintaan pembelian yang sudah disetujui."
@@ -277,7 +277,7 @@ export default function PermintaanPenawaranIndex({ rfq, permintaanDisetujui, pen
                 </Link>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={rfq.meta}
               onNavigasi={(halaman) =>
                 navigasiHalaman(halaman, { cari, status: status === SEMUA ? '' : status })
@@ -286,6 +286,6 @@ export default function PermintaanPenawaranIndex({ rfq, permintaanDisetujui, pen
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

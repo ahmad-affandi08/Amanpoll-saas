@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +19,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { Tag } from '@/features/Kolaborasi/types';
 import { ruteTag } from '@/features/Tag/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   tag: Tag[];
@@ -139,9 +139,9 @@ export default function TagIndex({ tag }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Tag" />
-      <PageHeader
+      <KepalaHalaman
         judul="Tag"
         deskripsi="Label bebas untuk menandai dan menyaring data lintas modul."
         aksi={
@@ -158,6 +158,6 @@ export default function TagIndex({ tag }: Props) {
         pencarianPlaceholder="Cari nama tag..."
         pesanKosong="Belum ada tag."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

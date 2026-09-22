@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -15,13 +15,13 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { formatUang } from '@/lib/uang';
 import type { KelompokSukuCadang, KompatibilitasSukuCadang, SukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Ringkas {
   Id: string;
@@ -290,10 +290,10 @@ export default function SukuCadangShow({
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={sukuCadang.Nama} />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul={sukuCadang.Nama}
           labelBreadcrumb={sukuCadang.Kode}
           lencana={
@@ -334,7 +334,7 @@ export default function SukuCadangShow({
             <DialogTambahKelompok sukuCadang={sukuCadang} />
           </div>
           {kelompokSukuCadang.length === 0 ? (
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada batch."
               deskripsi="Tambahkan batch bila suku cadang ini dilacak per kelompok/kadaluarsa."
             />
@@ -373,7 +373,7 @@ export default function SukuCadangShow({
             />
           </div>
           {kompatibilitasSukuCadang.length === 0 ? (
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada kompatibilitas."
               deskripsi="Tambahkan aset, model aset, atau kategori aset yang cocok dengan suku cadang ini."
             />
@@ -401,6 +401,6 @@ export default function SukuCadangShow({
           )}
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

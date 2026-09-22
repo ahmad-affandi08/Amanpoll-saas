@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ const AKAR = '/admin-platform/pemasaran/email/konsen';
 
 const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString('id-ID') : '—');
 
-export default function Konsen({ cari, supresi, riwayat, permintaan, pilihan }: Props) {
+export default function PemasaranEmailKonsen({ cari, supresi, riwayat, permintaan, pilihan }: Props) {
   const [kataKunci, setKataKunci] = useState(cari);
 
   const telusuri = (e: FormEvent) => {
@@ -44,7 +44,7 @@ export default function Konsen({ cari, supresi, riwayat, permintaan, pilihan }: 
     <KerangkaPlatform>
       <Head title="Consent dan Supresi" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Consent dan Supresi"
         deskripsi="Siapa boleh dikirimi pesan pemasaran, sejak kapan, dan atas dasar apa."
         tanpaBreadcrumb

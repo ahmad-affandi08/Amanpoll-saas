@@ -12,7 +12,7 @@ interface Props extends PropsPublik {
 }
 
 /** Generator QR aset publik; QR dirender di server (MARKETING.md 10). */
-export default function QrAset({ tool, batas, kanonik, urlMasuk, urlDaftar }: Props) {
+export default function PublikQrAset({ tool, batas, kanonik, urlMasuk, urlDaftar }: Props) {
   const { props } = usePage<{ qr?: LabelQr[]; errors: Record<string, string> }>();
   const label = props.qr ?? [];
 

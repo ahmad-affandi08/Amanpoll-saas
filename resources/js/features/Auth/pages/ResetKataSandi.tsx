@@ -4,14 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ruteAuth } from '@/features/Auth/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface ResetKataSandiProps {
   penggunaId: string;
   token: string;
 }
 
-export default function ResetKataSandi({ penggunaId, token }: ResetKataSandiProps) {
+export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandiProps) {
   const form = useForm({ KataSandiBaru: '', KataSandiBaru_confirmation: '' });
 
   const submit = (e: FormEvent) => {
@@ -26,7 +26,7 @@ export default function ResetKataSandi({ penggunaId, token }: ResetKataSandiProp
         onSubmit={submit}
         className="w-full max-w-sm space-y-5 rounded-lg border border-border bg-card p-6 shadow-sm"
       >
-        <PageHeader judul="Reset Kata Sandi" deskripsi="Masukkan kata sandi baru untuk akun Anda." />
+        <KepalaHalaman judul="Reset Kata Sandi" deskripsi="Masukkan kata sandi baru untuk akun Anda." />
         <div className="space-y-1.5">
           <Label>Kata Sandi Baru</Label>
           <Input

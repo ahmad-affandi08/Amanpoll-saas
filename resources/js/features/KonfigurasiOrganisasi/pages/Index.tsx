@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { KonfigurasiOrganisasi } from '@/features/Konfigurasi/types';
 import { ruteKonfigurasiOrganisasi } from '@/features/KonfigurasiOrganisasi/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   konfigurasi: KonfigurasiOrganisasi[];
@@ -71,9 +71,9 @@ export default function KonfigurasiOrganisasiIndex({ konfigurasi }: Props) {
   }, {});
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Konfigurasi" />
-      <PageHeader judul="Konfigurasi Organisasi" deskripsi="Pengaturan per fitur untuk organisasi Anda." />
+      <KepalaHalaman judul="Konfigurasi Organisasi" deskripsi="Pengaturan per fitur untuk organisasi Anda." />
 
       <div className="space-y-4">
         {Object.entries(kelompok).map(([namespace, daftar]) => (
@@ -92,6 +92,6 @@ export default function KonfigurasiOrganisasiIndex({ konfigurasi }: Props) {
           </Card>
         ))}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

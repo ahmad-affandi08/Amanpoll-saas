@@ -8,7 +8,7 @@ interface Props extends PropsPublik {
 }
 
 /** Satu konten CMS di situs publik (MARKETING.md 9). */
-export default function Konten({ konten, kanonik, urlMasuk, urlDaftar }: Props) {
+export default function PublikKonten({ konten, kanonik, urlMasuk, urlDaftar }: Props) {
   const meta = konten.Meta;
   const alamatKanonik = meta.Kanonik ?? kanonik;
 

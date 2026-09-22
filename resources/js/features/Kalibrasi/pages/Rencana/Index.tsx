@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import {
   Calendar,
   Plus,
@@ -34,7 +34,7 @@ import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   rencanaKalibrasi: RencanaKalibrasi[];
@@ -48,7 +48,7 @@ interface Props {
   };
 }
 
-export default function RencanaKalibrasiIndex({
+export default function KalibrasiRencanaIndex({
   rencanaKalibrasi,
   aset,
   jenisKalibrasi,
@@ -164,12 +164,12 @@ export default function RencanaKalibrasiIndex({
   });
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Rencana Kalibrasi Berkala" />
 
       <div className="space-y-6">
         {/* Header */}
-        <PageHeader
+        <KepalaHalaman
           judul="Rencana Kalibrasi"
           deskripsi={
             <>
@@ -262,7 +262,7 @@ export default function RencanaKalibrasiIndex({
           <CardContent className="p-0">
             {filteredList.length === 0 ? (
               <div className="py-12">
-                <EmptyState
+                <KeadaanKosong
                   judul="Belum ada rencana kalibrasi."
                   deskripsi="Belum ada rencana kalibrasi yang terdaftar atau cocok dengan kriteria filter."
                 />
@@ -536,6 +536,6 @@ export default function RencanaKalibrasiIndex({
           </form>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

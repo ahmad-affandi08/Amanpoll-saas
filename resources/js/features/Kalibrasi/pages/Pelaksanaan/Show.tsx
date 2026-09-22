@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import {
   ArrowLeft,
   AlertTriangle,
@@ -55,7 +55,7 @@ interface ItemTitikUkurRow {
   Catatan: string;
 }
 
-export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedia }: Props) {
+export default function KalibrasiPelaksanaanShow({ pelaksanaan, teknisi, penyedia }: Props) {
   const badgeHasil = hasilKalibrasiBadge(pelaksanaan.Hasil);
   const sudahVerifikasi = Boolean(pelaksanaan.DiverifikasiPada);
 
@@ -175,7 +175,7 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
   const adaTitikGagal = titikRows.some((r) => r.Hasil === 'Gagal');
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`Kalibrasi ${pelaksanaan.Nomor} - ${pelaksanaan.aset?.Nama}`} />
       <BreadcrumbHalaman />
 
@@ -374,7 +374,7 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
           <CardContent className="p-0">
             {titikRows.length === 0 ? (
               <div className="py-12">
-                <EmptyState
+                <KeadaanKosong
                   judul="Belum ada titik ukur."
                   deskripsi="Gunakan tombol Tambah Titik di atas untuk mendefinisikan parameter pengujian."
                 />
@@ -726,6 +726,6 @@ export default function PelaksanaanKalibrasiShow({ pelaksanaan, teknisi, penyedi
           </form>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

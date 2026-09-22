@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { StokSukuCadang } from '@/features/Persediaan/types';
 import { ruteStokSukuCadang } from '@/features/StokSukuCadang/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Ringkas {
   Id: string;
@@ -108,9 +108,9 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Stok Suku Cadang" />
-      <PageHeader
+      <KepalaHalaman
         judul="Stok Suku Cadang"
         deskripsi="Saldo stok per gudang -- hanya baca. Perubahan hanya lewat Mutasi Stok atau Reservasi."
       />
@@ -163,7 +163,7 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
       </div>
 
       {stok.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           ilustrasi="/assets/3d/suku-cadang.webp"
           judul="Belum ada saldo stok."
           deskripsi="Saldo stok akan muncul setelah mutasi stok pertama diposting."
@@ -176,6 +176,6 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
           pesanKosong="Tidak ada saldo stok yang cocok."
         />
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

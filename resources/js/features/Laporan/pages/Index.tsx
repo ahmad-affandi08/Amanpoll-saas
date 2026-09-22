@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Download, FileDown, Lock, Plus, Share2, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -35,7 +35,7 @@ import type {
   PilihanDimensi,
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   laporan: LaporanTersimpanItem[];
@@ -85,10 +85,10 @@ export default function LaporanIndex({
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Laporan" />
       <div className="space-y-5">
-        <PageHeader
+        <KepalaHalaman
           judul="Laporan"
           deskripsi="Simpan kombinasi KPI dan filter, lalu ekspor hasilnya saat dibutuhkan."
           aksi={
@@ -127,7 +127,7 @@ export default function LaporanIndex({
           <aside className="space-y-2">
             <h2 className="text-sm font-medium">Laporan tersimpan</h2>
             {laporan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada laporan tersimpan."
                 deskripsi="Simpan kombinasi KPI yang sering Anda buka."
               />
@@ -201,13 +201,13 @@ export default function LaporanIndex({
 
           <section>
             {dibuka === null ? (
-              <EmptyState
+              <KeadaanKosong
                 ilustrasi="/assets/3d/laporan.webp"
                 judul="Pilih laporan untuk melihat hasilnya."
                 deskripsi="Atau buat laporan baru dari KPI yang boleh Anda lihat."
               />
             ) : kpiDibuka.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Tidak ada KPI yang dapat ditampilkan."
                 deskripsi="KPI pada laporan ini berada di luar kewenangan Anda saat ini."
               />
@@ -244,7 +244,7 @@ export default function LaporanIndex({
           formatEkspor={formatEkspor}
         />
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }
 

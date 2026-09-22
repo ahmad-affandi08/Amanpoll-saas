@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import {
   Gauge,
   Plus,
@@ -31,13 +31,13 @@ import {
 import type { JenisKalibrasi, TitikUkurKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   jenisKalibrasi: JenisKalibrasi[];
 }
 
-export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
+export default function KalibrasiJenisIndex({ jenisKalibrasi }: Props) {
   const konfirmasi = useKonfirmasi();
   const [pencarian, setPencarian] = useState('');
   const [bukaDialogJenis, setBukaDialogJenis] = useState(false);
@@ -200,12 +200,12 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Jenis Kalibrasi & Titik Ukur Standar" />
 
       <div className="space-y-6">
         {/* Header */}
-        <PageHeader
+        <KepalaHalaman
           judul="Jenis Kalibrasi"
           deskripsi="Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji."
           aksi={
@@ -236,7 +236,7 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
           <CardContent className="p-0">
             {filteredJenis.length === 0 ? (
               <div className="py-12">
-                <EmptyState
+                <KeadaanKosong
                   judul="Belum ada jenis kalibrasi."
                   deskripsi="Tambahkan jenis kalibrasi seperti Kalibrasi Suhu, Tekanan, Dimensi, atau Listrik."
                 />
@@ -602,6 +602,6 @@ export default function JenisKalibrasiIndex({ jenisKalibrasi }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

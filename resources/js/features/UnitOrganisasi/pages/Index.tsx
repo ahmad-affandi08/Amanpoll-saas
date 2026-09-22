@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteUnitOrganisasi } from '@/features/UnitOrganisasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   unitOrganisasi: UnitOrganisasi[];
@@ -215,9 +215,9 @@ export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Unit Organisasi" />
-      <PageHeader
+      <KepalaHalaman
         judul="Unit Organisasi"
         deskripsi="Kelola struktur divisi dan hierarki organisasi."
         aksi={
@@ -244,6 +244,6 @@ export default function UnitOrganisasiIndex({ unitOrganisasi }: Props) {
         ]}
         pesanKosong="Belum ada unit organisasi."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,7 @@ interface Props {
   pelaksanaan: PelaksanaanDaftarPeriksa;
 }
 
-export default function ShowPelaksanaan({ pelaksanaan }: Props) {
+export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
   const konfirmasi = useKonfirmasi();
   const terkunci = pelaksanaan.Status === 'Selesai';
   const butirList = pelaksanaan.templatDaftarPeriksa?.butir ?? [];
@@ -123,7 +123,7 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
   const badgeInfo = statusPelaksanaanBadge[pelaksanaan.Status] ?? { label: pelaksanaan.Status, kelas: '' };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`Pelaksanaan: ${pelaksanaan.templatDaftarPeriksa?.Nama ?? 'Checklist'}`} />
       <BreadcrumbHalaman />
 
@@ -405,6 +405,6 @@ export default function ShowPelaksanaan({ pelaksanaan }: Props) {
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

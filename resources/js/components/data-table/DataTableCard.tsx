@@ -1,8 +1,8 @@
 import { type Row, type Table as TabelTanstack, flexRender } from '@tanstack/react-table';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 
 /** Tampilan kartu untuk DataTable di layar sempit (DESIGN.md 9.3). */
-export function DataTableKartu<TData>({
+export function DataTableCard<TData>({
   table,
   pesanKosong,
   ilustrasiKosong,
@@ -14,7 +14,7 @@ export function DataTableKartu<TData>({
   const baris = table.getRowModel().rows;
 
   if (baris.length === 0) {
-    return <EmptyState ilustrasi={ilustrasiKosong} judul={pesanKosong} />;
+    return <KeadaanKosong ilustrasi={ilustrasiKosong} judul={pesanKosong} />;
   }
 
   return (

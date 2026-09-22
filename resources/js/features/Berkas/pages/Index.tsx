@@ -1,7 +1,7 @@
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 export default function BerkasIndex() {
   return (
-    <PageHeader
+    <KepalaHalaman
       judul="Berkas"
       deskripsi="Halaman modul Berkas. Implementasikan use-case dan UI di feature ini."
     />

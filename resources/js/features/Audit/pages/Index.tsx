@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,11 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import type { Paginasi } from '@/types/global';
 import type { CatatanAudit, FilterCatatanAudit } from '@/features/Audit/types';
 import { ruteAudit } from '@/features/Audit/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   catatan: Paginasi<CatatanAudit>;
@@ -36,10 +36,10 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Log Audit" />
       <div className="space-y-4">
-        <PageHeader
+        <KepalaHalaman
           judul="Log Audit"
           deskripsi="Riwayat perubahan data lintas modul, tersaring per organisasi."
         />
@@ -135,12 +135,12 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
               ))}
             </TableBody>
           </Table>
-          <Pagination
+          <KontrolPaginasi
             meta={catatan.meta}
             onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)}
           />
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

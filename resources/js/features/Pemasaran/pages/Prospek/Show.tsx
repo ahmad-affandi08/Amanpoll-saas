@@ -1,8 +1,8 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { ActivityFeed } from '@/components/shared/ActivityFeed';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { RiwayatAktivitas } from '@/components/shared/RiwayatAktivitas';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,12 +19,12 @@ interface Props {
   jenisAktivitas: string[];
 }
 
-export default function Show({ prospek, timeline, tahap, jenisAktivitas }: Props) {
+export default function PemasaranProspekShow({ prospek, timeline, tahap, jenisAktivitas }: Props) {
   return (
     <KerangkaPlatform>
       <Head title={prospek.Nama} />
 
-      <PageHeader
+      <KepalaHalaman
         judul={prospek.Nama}
         deskripsi={prospek.Perusahaan ?? 'Tanpa perusahaan'}
         tanpaBreadcrumb
@@ -65,7 +65,7 @@ export default function Show({ prospek, timeline, tahap, jenisAktivitas }: Props
               <CardTitle className="text-base">Timeline</CardTitle>
             </CardHeader>
             <CardContent>
-              <ActivityFeed
+              <RiwayatAktivitas
                 butir={timeline.map((satu, urutan) => ({
                   id: `${satu.Sumber}-${satu.Pada}-${urutan}`,
                   pelaku: satu.Sumber === 'Peristiwa' ? 'Sistem' : 'Tim',

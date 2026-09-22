@@ -1,8 +1,8 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,12 +39,12 @@ const FIELD_BARU: FieldFormulir = {
   Bantuan: null,
 };
 
-export default function Index({ formulir, pilihan }: Props) {
+export default function PemasaranFormulirIndex({ formulir, pilihan }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Formulir Pemasaran" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Formulir Pemasaran"
         deskripsi="Formulir yang dipasang di halaman publik. Setiap pengiriman menjadi prospek beserta UTM-nya."
         tanpaBreadcrumb
@@ -53,7 +53,7 @@ export default function Index({ formulir, pilihan }: Props) {
       />
 
       {formulir.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           judul="Belum ada formulir"
           deskripsi="Buat formulir lebih dulu, lalu pasang sebagai blok pada halaman pemasaran."
         />

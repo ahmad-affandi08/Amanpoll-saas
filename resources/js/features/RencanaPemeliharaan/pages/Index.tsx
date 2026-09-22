@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,19 +14,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { CalendarClock, Plus, Search, Play, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import type { RencanaPemeliharaan, TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
 }
 
-export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
+export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa }: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
@@ -87,12 +87,12 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Rencana Pemeliharaan Preventif" />
 
       <div className="space-y-6">
         {/* Header */}
-        <PageHeader
+        <KepalaHalaman
           judul="Rencana Pemeliharaan Preventif"
           deskripsi="Otomatisasi siklus pemeliharaan berkala, pencegahan downtime, dan kepatuhan servis aset."
           aksi={
@@ -303,7 +303,7 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
 
         {/* Daftar Kartu Rencana */}
         {daftarTersaring.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/pemeliharaan-jadwal.webp"
             judul="Belum Ada Rencana Pemeliharaan"
             deskripsi="Rencana pemeliharaan preventif yang dibuat akan muncul di sini untuk mengotomatisasi perintah kerja berkala."
@@ -374,6 +374,6 @@ export default function IndexRencana({ rencana, templatDaftarPeriksa }: Props) {
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

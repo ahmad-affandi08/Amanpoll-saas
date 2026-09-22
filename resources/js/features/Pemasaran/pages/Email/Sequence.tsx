@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -31,12 +31,12 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/email/sequence';
 
-export default function Sequence({ sequence, template, kodeSequenceTrial }: Props) {
+export default function PemasaranEmailSequence({ sequence, template, kodeSequenceTrial }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Sequence Email" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Sequence Email"
         deskripsi="Rangkaian email onboarding beserta jadwalnya, disusun dari konsol tanpa rilis."
         tanpaBreadcrumb

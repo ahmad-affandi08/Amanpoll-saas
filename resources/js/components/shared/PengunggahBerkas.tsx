@@ -27,7 +27,7 @@ function ukuranTerbaca(byte: number): string {
 }
 
 /** Pemilih berkas dengan seret-lepas (DESIGN.md 13). */
-export function FileUploader({
+export function PengunggahBerkas({
   berkas,
   onUbah,
   terima,

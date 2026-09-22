@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,7 +36,7 @@ interface Props {
   inspeksi: Inspeksi;
 }
 
-export default function ShowInspeksi({ inspeksi }: Props) {
+export default function InspeksiShow({ inspeksi }: Props) {
   const [bukaDialogHasil, setBukaDialogHasil] = useState(false);
   const [bukaDialogPK, setBukaDialogPK] = useState(false);
 
@@ -75,7 +75,7 @@ export default function ShowInspeksi({ inspeksi }: Props) {
   const hasilBadge = inspeksi.Hasil ? hasilInspeksiBadge[inspeksi.Hasil] : null;
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`Inspeksi ${inspeksi.Nomor}`} />
       <BreadcrumbHalaman />
 
@@ -384,6 +384,6 @@ export default function ShowInspeksi({ inspeksi }: Props) {
           </form>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

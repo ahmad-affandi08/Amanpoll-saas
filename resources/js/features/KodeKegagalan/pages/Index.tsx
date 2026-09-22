@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,9 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -212,10 +212,10 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kode Kegagalan" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Kode Kegagalan"
         deskripsi="Katalog taksonomi Problem-Cause-Remedy untuk standarisasi analisis kegagalan aset."
         aksi={
@@ -254,7 +254,7 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
       </div>
 
       {daftarTersaring.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           judul="Belum ada kode kegagalan"
           deskripsi="Tambahkan master data kode masalah, penyebab, atau tindakan untuk memudahkan teknisi."
         />
@@ -308,6 +308,6 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset }: Prop
           </table>
         </div>
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -1,14 +1,14 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import type { PageProps } from '@/types/global';
-import { useEntitlement } from '@/hooks/use-entitlement';
+import { useHakLangganan } from '@/hooks/use-hak-langganan';
 import { useIzin } from '@/hooks/use-izin';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { PenyediaSinkronisasiOffline, useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
 import { cn } from '@/lib/utils';
-import { NotificationBell } from '@/components/notifikasi/NotificationBell';
+import { LoncengNotifikasi } from '@/components/notifikasi/LoncengNotifikasi';
 import { IndikatorSinkronisasi } from '@/components/shared/IndikatorSinkronisasi';
-import { LogoMark } from '@/components/shared/LogoMark';
+import { LogoLambang } from '@/components/shared/Logo';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -99,7 +99,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
                 >
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-teknisi-800 text-sidebar-primary-foreground p-1 shrink-0">
-                    <LogoMark className="size-full object-contain" />
+                    <LogoLambang className="size-full object-contain" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                     <span className="truncate text-base font-bold text-white tracking-tight">Amanpoll</span>
@@ -371,12 +371,12 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
   );
 }
 
-function KerangkaAplikasi({ children }: PropsWithChildren) {
+function KerangkaDalam({ children }: PropsWithChildren) {
   const page = usePage<PageProps>();
   const { auth } = page.props;
   const pathSekarang = page.url.split('?')[0];
   const { boleh } = useIzin();
-  const { bolehFitur } = useEntitlement();
+  const { bolehFitur } = useHakLangganan();
   const konfirmasi = useKonfirmasi();
   const {
     bersihkanDataLokal,
@@ -453,7 +453,7 @@ function KerangkaAplikasi({ children }: PropsWithChildren) {
               </button>
             )}
             <IndikatorSinkronisasi />
-            <NotificationBell />
+            <LoncengNotifikasi />
           </div>
         </header>
         <div className="p-4 sm:p-6">{children}</div>
@@ -462,10 +462,11 @@ function KerangkaAplikasi({ children }: PropsWithChildren) {
   );
 }
 
-export default function AppLayout({ children }: PropsWithChildren) {
+/** Pembungkus luar hanya memasang penyedia sinkronisasi offline; kerangkanya sendiri ada di dalam. */
+export default function KerangkaAplikasi({ children }: PropsWithChildren) {
   return (
     <PenyediaSinkronisasiOffline>
-      <KerangkaAplikasi>{children}</KerangkaAplikasi>
+      <KerangkaDalam>{children}</KerangkaDalam>
     </PenyediaSinkronisasiOffline>
   );
 }

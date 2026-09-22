@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Plus, Search, ShoppingCart } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,7 +26,7 @@ import type {
 } from '@/features/PermintaanPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPembelian } from '@/features/PermintaanPembelian/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface UnitRingkas {
   Id: string;
@@ -252,10 +252,10 @@ export default function PermintaanPembelianIndex({
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Permintaan Pembelian" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Permintaan Pembelian"
           deskripsi="Draft kebutuhan, validasi sisa anggaran, dan pengajuan persetujuan."
           aksi={
@@ -299,7 +299,7 @@ export default function PermintaanPembelianIndex({
         </form>
 
         {permintaan.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/berkas-dokumen.webp"
             judul="Belum ada permintaan pembelian."
             deskripsi="Buat permintaan untuk memulai proses pengadaan."
@@ -368,7 +368,7 @@ export default function PermintaanPembelianIndex({
                 </Link>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={permintaan.meta}
               onNavigasi={(halaman) =>
                 navigasiHalaman(halaman, { cari, status: status === SEMUA ? '' : status })
@@ -377,6 +377,6 @@ export default function PermintaanPembelianIndex({
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

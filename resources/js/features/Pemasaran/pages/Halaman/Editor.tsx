@@ -1,8 +1,8 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,7 +31,7 @@ function kunciBaru(): string {
   return `blok-${penghitungKunci}`;
 }
 
-export default function Editor({ halaman, versi, pilihan }: Props) {
+export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Props) {
   const form = useForm({
     Slug: halaman?.Slug ?? '/',
     Tipe: halaman?.Tipe ?? pilihan.Tipe[0],
@@ -103,7 +103,7 @@ export default function Editor({ halaman, versi, pilihan }: Props) {
     <KerangkaPlatform>
       <Head title={halaman ? halaman.Judul : 'Halaman Baru'} />
 
-      <PageHeader
+      <KepalaHalaman
         judul={halaman ? halaman.Judul : 'Halaman Baru'}
         deskripsi={halaman ? halaman.Slug : 'Setiap penyimpanan melahirkan versi baru.'}
         tanpaBreadcrumb
@@ -199,7 +199,7 @@ export default function Editor({ halaman, versi, pilihan }: Props) {
           </div>
 
           {blok.length === 0 ? (
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada blok"
               deskripsi="Halaman kosong tidak dapat diterbitkan. Tambahkan setidaknya satu blok hero."
             />
@@ -300,7 +300,7 @@ export default function Editor({ halaman, versi, pilihan }: Props) {
 
         <TabsContent value="terbit" className="pt-4">
           {halaman === null ? (
-            <EmptyState
+            <KeadaanKosong
               judul="Simpan dulu"
               deskripsi="Penerbitan tersedia setelah halaman punya versi pertamanya."
             />
@@ -311,7 +311,7 @@ export default function Editor({ halaman, versi, pilihan }: Props) {
 
         <TabsContent value="versi" className="pt-4">
           {halaman === null || versi.length === 0 ? (
-            <EmptyState judul="Belum ada versi" deskripsi="Setiap penyimpanan draf melahirkan satu versi." />
+            <KeadaanKosong judul="Belum ada versi" deskripsi="Setiap penyimpanan draf melahirkan satu versi." />
           ) : (
             <DaftarVersi halaman={halaman} versi={versi} />
           )}

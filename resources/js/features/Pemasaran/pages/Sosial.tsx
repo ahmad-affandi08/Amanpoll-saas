@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -75,12 +75,12 @@ const WARNA_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destru
   Gagal: 'destructive',
 };
 
-export default function SosialHalaman({ konten, pilihan }: Props) {
+export default function PemasaranSosial({ konten, pilihan }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Konten Sosial" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Konten Sosial"
         deskripsi="Satu konten utama, banyak distribusi. Tiap distribusi punya caption, media, CTA, dan UTM sendiri."
         tanpaBreadcrumb

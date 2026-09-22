@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { LogoMark } from '@/components/shared/LogoMark';
+import { LogoLambang } from '@/components/shared/Logo';
 import { Button } from '@/components/ui/button';
 
 interface Props {
@@ -15,7 +15,7 @@ export function KerangkaPublik({ urlMasuk, urlDaftar, children }: Props) {
       <header className="border-b">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4">
           <a href="/" aria-label="Beranda Amanpoll">
-            <LogoMark />
+            <LogoLambang />
           </a>
           <nav className="flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>

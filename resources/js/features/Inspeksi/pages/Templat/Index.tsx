@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,10 +14,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ClipboardCheck, Plus, Search, Calendar, FolderTree } from 'lucide-react';
 import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   templat: TemplatInspeksi[];
@@ -25,7 +25,7 @@ interface Props {
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
 }
 
-export default function IndexTemplatInspeksi({ templat, kategoriAset, templatDaftarPeriksa }: Props) {
+export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaftarPeriksa }: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
 
@@ -55,11 +55,11 @@ export default function IndexTemplatInspeksi({ templat, kategoriAset, templatDaf
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Templat Inspeksi Aset" />
 
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Templat Inspeksi Aset"
           deskripsi="Konfigurasi siklus inspeksi rutin dan lembar periksa per kategori aset."
           aksi={
@@ -203,7 +203,7 @@ export default function IndexTemplatInspeksi({ templat, kategoriAset, templatDaf
         </div>
 
         {daftarTersaring.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/berkas-dokumen.webp"
             judul="Belum Ada Templat Inspeksi"
             deskripsi="Templat inspeksi berkala yang dibuat akan muncul di sini untuk menentukan standar pemeriksaan aset."
@@ -255,6 +255,6 @@ export default function IndexTemplatInspeksi({ templat, kategoriAset, templatDaf
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

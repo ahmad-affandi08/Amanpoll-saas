@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Ban, Plus, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import type { Kontrak, LayananKontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
 import { formatUang } from '@/lib/uang';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface AsetRingkas {
   Id: string;
@@ -347,7 +347,7 @@ export default function KontrakShow({ kontrak, aset }: Props) {
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`${kontrak.Nomor} — Kontrak`} />
       <div className="space-y-6">
         <Link
@@ -357,7 +357,7 @@ export default function KontrakShow({ kontrak, aset }: Props) {
           <ArrowLeft className="size-4" /> Kembali ke Kontrak
         </Link>
 
-        <PageHeader
+        <KepalaHalaman
           judul={kontrak.Nama}
           labelBreadcrumb={kontrak.Nomor}
           lencana={<Badge variant={VARIAN_STATUS[kontrak.Status]}>{kontrak.Status}</Badge>}
@@ -423,7 +423,7 @@ export default function KontrakShow({ kontrak, aset }: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {daftarAset.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada aset tercakup."
                 deskripsi="Lampirkan aset agar pekerjaan vendor dapat ditelusuri ke kontrak ini."
               />
@@ -463,7 +463,7 @@ export default function KontrakShow({ kontrak, aset }: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {daftarLayanan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada layanan."
                 deskripsi="Daftarkan layanan beserta kuotanya bila kontrak membatasi jumlah pekerjaan."
               />
@@ -508,6 +508,6 @@ export default function KontrakShow({ kontrak, aset }: Props) {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

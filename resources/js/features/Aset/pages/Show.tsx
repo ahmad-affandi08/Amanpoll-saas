@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,7 +38,7 @@ import type { Penyedia } from '@/features/Penyedia/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import { ruteAset } from '@/features/Aset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   aset: Aset;
@@ -1020,9 +1020,9 @@ function TabMeter({ aset }: { aset: Aset }) {
 
 export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unitOrganisasi, lokasi }: Props) {
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={aset.Nama} />
-      <PageHeader
+      <KepalaHalaman
         className="mb-6"
         judul={aset.Nama}
         labelBreadcrumb={aset.KodeAset}
@@ -1078,6 +1078,6 @@ export default function AsetShow({ aset, kategoriAset, modelAset, penyedia, unit
           <PanelKolaborasi jenisEntitas="Aset" entitasId={aset.Id} />
         </TabsContent>
       </Tabs>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

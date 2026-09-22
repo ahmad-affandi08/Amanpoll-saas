@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +40,7 @@ const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destru
   Dibatalkan: 'destructive',
 };
 
-export default function Index({ trial, konfigurasi, pilihan }: Props) {
+export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan }: Props) {
   const columns = useMemo<ColumnDef<Trial>[]>(
     () => [
       {
@@ -115,7 +115,7 @@ export default function Index({ trial, konfigurasi, pilihan }: Props) {
     <KerangkaPlatform>
       <Head title="Trial" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Trial"
         deskripsi="Perjalanan tiap workspace percobaan, dari pendaftaran sampai konversi."
         tanpaBreadcrumb

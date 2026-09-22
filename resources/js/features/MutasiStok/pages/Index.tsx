@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -14,13 +14,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import type { JenisMutasiStok, MutasiStok } from '@/features/Persediaan/types';
 import type { Paginasi } from '@/types/global';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Ringkas {
   Id: string;
@@ -168,9 +168,9 @@ function filterAktif(filter: Props['filter']): Record<string, string> {
 
 export default function MutasiStokIndex({ mutasiStok, gudang, filter }: Props) {
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Mutasi Stok" />
-      <PageHeader
+      <KepalaHalaman
         judul="Mutasi Stok"
         deskripsi="Penerimaan, pengeluaran, transfer, penyesuaian, dan retur -- draf, posting, sampai audit."
         aksi={
@@ -182,7 +182,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter }: Props) {
       />
 
       {mutasiStok.data.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           ilustrasi="/assets/3d/persediaan.webp"
           judul="Belum ada mutasi stok."
           deskripsi="Buat mutasi pertama untuk mulai mencatat pergerakan stok."
@@ -212,12 +212,12 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter }: Props) {
               <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[m.Status]}>{m.Status}</Badge>
             </Link>
           ))}
-          <Pagination
+          <KontrolPaginasi
             meta={mutasiStok.meta}
             onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
           />
         </div>
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

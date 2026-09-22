@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { ruteKategoriLokasi } from '@/features/KategoriLokasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 
@@ -115,7 +115,7 @@ function DialogFormKategoriLokasi({ kategori }: { kategori: KategoriLokasi | nul
   );
 }
 
-export default function Index({ kategoriLokasi }: Props) {
+export default function KategoriLokasiIndex({ kategoriLokasi }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (kategori: KategoriLokasi) => {
@@ -173,9 +173,9 @@ export default function Index({ kategoriLokasi }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kategori Lokasi" />
-      <PageHeader
+      <KepalaHalaman
         judul="Kategori Lokasi"
         deskripsi="Klasifikasi lokasi, misalnya gedung, lantai, atau ruangan."
         aksi={<DialogFormKategoriLokasi kategori={null} />}
@@ -188,6 +188,6 @@ export default function Index({ kategoriLokasi }: Props) {
         pencarianPlaceholder="Cari nama atau kode kategori..."
         pesanKosong="Belum ada kategori lokasi."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

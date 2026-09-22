@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -14,15 +14,15 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { Paginasi } from '@/types/global';
 import type { PermintaanMutasiAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_MUTASI } from '@/features/SiklusAset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   permintaan: Paginasi<PermintaanMutasiAset>;
@@ -146,10 +146,10 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Mutasi Aset" />
       <div className="space-y-4">
-        <PageHeader
+        <KepalaHalaman
           judul="Mutasi Aset"
           deskripsi="Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi."
           aksi={
@@ -178,7 +178,7 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
 
         {permintaan.data.length === 0 && (
           <div className="rounded-[9px] border border-border bg-card">
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada permintaan mutasi."
               deskripsi="Permintaan perpindahan aset akan muncul di sini."
             />
@@ -215,13 +215,13 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
                 ))}
               </TableBody>
             </Table>
-            <Pagination
+            <KontrolPaginasi
               meta={permintaan.meta}
               onNavigasi={(halaman) => navigasiHalaman(halaman, filter as Record<string, string>)}
             />
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -3,13 +3,13 @@ interface LogoProps {
   alt?: string;
 }
 
-/** LogoMark resmi Amanpoll (ikon perisai dengan peralatan teknisi). */
-export function LogoMark({ className = 'size-8', alt = 'Amanpoll' }: LogoProps) {
+/** LogoLambang resmi Amanpoll (ikon perisai dengan peralatan teknisi). */
+export function LogoLambang({ className = 'size-8', alt = 'Amanpoll' }: LogoProps) {
   return <img src="/images/branding/amanpoll-icon.png" alt={alt} className={className} loading="eager" />;
 }
 
 /** Logo Horizontal resmi Amanpoll (ikon + nama Amanpoll + subtitle). */
-export function LogoHorizontal({ className = 'h-8 w-auto', alt = 'Amanpoll' }: LogoProps) {
+export function LogoMendatar({ className = 'h-8 w-auto', alt = 'Amanpoll' }: LogoProps) {
   return (
     <img
       src="/images/branding/amanpoll-logo-horizontal.png"
@@ -21,7 +21,7 @@ export function LogoHorizontal({ className = 'h-8 w-auto', alt = 'Amanpoll' }: L
 }
 
 /** Logo Vertikal resmi Amanpoll (ikon di atas + nama Amanpoll di bawah). */
-export function LogoVertical({ className = 'h-24 w-auto', alt = 'Amanpoll' }: LogoProps) {
+export function LogoTegak({ className = 'h-24 w-auto', alt = 'Amanpoll' }: LogoProps) {
   return (
     <img src="/images/branding/amanpoll-logo-vertical.png" alt={alt} className={className} loading="eager" />
   );

@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +20,7 @@ import { http } from '@/lib/http';
 import type { DefinisiKolomKustom, TipeDataKolomKustom } from '@/features/Kolaborasi/types';
 import { ruteKolomKustom } from '@/features/KolomKustom/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   jenisEntitasTersedia: string[];
@@ -176,9 +176,9 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kolom Kustom" />
-      <PageHeader
+      <KepalaHalaman
         judul="Kolom Kustom"
         deskripsi="Tambahkan field tambahan khusus organisasi Anda untuk setiap jenis data."
         aksi={
@@ -245,6 +245,6 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
           </TableBody>
         </Table>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

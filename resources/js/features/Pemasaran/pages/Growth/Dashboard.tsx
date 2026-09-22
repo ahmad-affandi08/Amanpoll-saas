@@ -2,7 +2,7 @@ import { FormEvent, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { AlertTriangle, CircleAlert, Info } from 'lucide-react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA, WARNA_STATUS } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -131,7 +131,7 @@ const angka = (nilai: number, satuan: string, desimal: number) => {
   return `${nilai.toLocaleString('id-ID', { maximumFractionDigits: desimal })}${satuan === 'Persen' ? '%' : ''}`;
 };
 
-export default function Dashboard({
+export default function PemasaranGrowthDashboard({
   filter,
   funnel,
   kpi,
@@ -151,7 +151,7 @@ export default function Dashboard({
     <KerangkaPlatform>
       <Head title="Dashboard Growth" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Dashboard Growth"
         deskripsi="Channel mana menghasilkan customer, campaign mana menghasilkan revenue, halaman mana paling efektif."
         tanpaBreadcrumb

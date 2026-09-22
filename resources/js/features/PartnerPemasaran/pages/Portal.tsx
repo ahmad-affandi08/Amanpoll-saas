@@ -73,7 +73,7 @@ const tanggal = (nilai: string | null) =>
   nilai ? new Date(nilai).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
 /** Portal partner: lead, trial, pelanggan berbayar, komisi, payout, dan materi pemasaran. */
-export default function PortalPartner({ partner, ringkasan, lead, komisi, payout, materi }: Props) {
+export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komisi, payout, materi }: Props) {
   const form = useForm({
     NamaPerusahaan: '',
     NamaKontak: '',

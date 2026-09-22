@@ -1,8 +1,8 @@
 import { type FormEvent, useMemo, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, FileText, PackagePlus, Send, Truck } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +23,7 @@ import type { DetailPesananPembelian, PesananPembelian } from '@/features/Pesana
 import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface GudangRingkas {
   Id: string;
@@ -376,7 +376,7 @@ export default function PesananPembelianShow(props: Props) {
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={pesanan.Nomor} />
       <div className="space-y-6">
         <Link
@@ -386,7 +386,7 @@ export default function PesananPembelianShow(props: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <PageHeader
+        <KepalaHalaman
           judul={<span className="font-mono">{pesanan.Nomor}</span>}
           labelBreadcrumb={pesanan.Nomor}
           lencana={<Badge variant={VARIAN_STATUS[pesanan.Status]}>{pesanan.Status}</Badge>}
@@ -457,7 +457,7 @@ export default function PesananPembelianShow(props: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {penerimaan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada penerimaan."
                 deskripsi="Penerimaan dapat dicatat setelah PO dikirim ke penyedia."
               />
@@ -490,7 +490,7 @@ export default function PesananPembelianShow(props: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {tagihan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada tagihan."
                 deskripsi="Tagihan hanya dapat dicatat setelah ada barang yang diterima."
               />
@@ -521,6 +521,6 @@ export default function PesananPembelianShow(props: Props) {
           </p>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

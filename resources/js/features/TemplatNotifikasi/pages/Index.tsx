@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { TemplatNotifikasi } from '@/features/Notifikasi/types';
 import { ruteTemplatNotifikasi } from '@/features/TemplatNotifikasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   templatNotifikasi: TemplatNotifikasi[];
@@ -173,9 +173,9 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Templat Notifikasi" />
-      <PageHeader
+      <KepalaHalaman
         judul="Templat Notifikasi"
         deskripsi="Kelola isi pesan notifikasi per peristiwa dan kanal."
         aksi={
@@ -193,6 +193,6 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi }: Props) {
         pesanKosong="Belum ada templat notifikasi."
         ilustrasiKosong="/assets/3d/notifikasi.webp"
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

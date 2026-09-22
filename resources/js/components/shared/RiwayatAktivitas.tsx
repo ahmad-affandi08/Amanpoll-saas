@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Activity } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { cn } from '@/lib/utils';
 
 export interface ButirAktivitas {
@@ -25,7 +25,7 @@ function inisial(nama?: string | null): string {
 }
 
 /** Umpan aktivitas entitas (DESIGN.md 12). */
-export function ActivityFeed({
+export function RiwayatAktivitas({
   butir,
   className,
   pesanKosong = 'Belum ada aktivitas tercatat.',
@@ -35,7 +35,7 @@ export function ActivityFeed({
   pesanKosong?: string;
 }) {
   if (butir.length === 0) {
-    return <EmptyState judul={pesanKosong} />;
+    return <KeadaanKosong judul={pesanKosong} />;
   }
 
   return (

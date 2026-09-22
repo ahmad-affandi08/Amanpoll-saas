@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Banknote } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { LampiranTab } from '@/components/kolaborasi/LampiranTab';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,7 @@ import type { TagihanPenyedia } from '@/features/TagihanPenyedia/types';
 import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   tagihan: TagihanPenyedia;
@@ -144,7 +144,7 @@ export default function TagihanPenyediaShow({ tagihan }: Props) {
   const pembayaran = tagihan.Pembayaran ?? [];
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={tagihan.NomorTagihan} />
       <div className="space-y-6">
         <Link
@@ -154,7 +154,7 @@ export default function TagihanPenyediaShow({ tagihan }: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <PageHeader
+        <KepalaHalaman
           judul={<span className="font-mono">{tagihan.NomorTagihan}</span>}
           labelBreadcrumb={tagihan.NomorTagihan}
           lencana={<Badge variant={VARIAN_STATUS[tagihan.Status]}>{tagihan.Status}</Badge>}
@@ -215,7 +215,10 @@ export default function TagihanPenyediaShow({ tagihan }: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {pembayaran.length === 0 ? (
-              <EmptyState judul="Belum ada pembayaran." deskripsi="Catat pembayaran penuh atau sebagian." />
+              <KeadaanKosong
+                judul="Belum ada pembayaran."
+                deskripsi="Catat pembayaran penuh atau sebagian."
+              />
             ) : (
               pembayaran.map((item) => (
                 <div
@@ -237,6 +240,6 @@ export default function TagihanPenyediaShow({ tagihan }: Props) {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -13,12 +13,12 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { SerahTerimaAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   serahTerima: SerahTerimaAset;
@@ -170,10 +170,10 @@ function DialogTerima({ serahTerima }: { serahTerima: SerahTerimaAset }) {
 
 export default function SerahTerimaAsetShow({ serahTerima, aset }: Props) {
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={serahTerima.Nomor} />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul={serahTerima.Jenis}
           labelBreadcrumb={serahTerima.Nomor}
           lencana={
@@ -217,7 +217,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset }: Props) {
             )}
           </div>
           {serahTerima.DetailSerahTerimaAset.length === 0 && (
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada aset ditambahkan."
               deskripsi="Tambahkan aset yang diserahterimakan."
             />
@@ -238,6 +238,6 @@ export default function SerahTerimaAsetShow({ serahTerima, aset }: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

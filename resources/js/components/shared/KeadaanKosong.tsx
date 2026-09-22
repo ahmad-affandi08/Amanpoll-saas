@@ -7,8 +7,8 @@ interface Props {
   aksi?: ReactNode;
 }
 
-/* EmptyState umum (DESIGN.md 13.6): jelaskan apa yang kosong + aksi berikutnya. */
-export function EmptyState({ ilustrasi, judul, deskripsi, aksi }: Props) {
+/* KeadaanKosong umum (DESIGN.md 13.6): jelaskan apa yang kosong + aksi berikutnya. */
+export function KeadaanKosong({ ilustrasi, judul, deskripsi, aksi }: Props) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 px-6 py-10 text-center">
       {ilustrasi && <img src={ilustrasi} alt="" className="size-16 shrink-0" />}

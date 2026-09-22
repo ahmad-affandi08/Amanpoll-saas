@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,8 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import {
   ClipboardCheck,
   Plus,
@@ -32,7 +32,7 @@ import type { Inspeksi } from '@/features/PreventifInspeksi/types';
 import type { Paginasi } from '@/types/global';
 import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   inspeksi: Paginasi<Inspeksi>;
@@ -50,7 +50,7 @@ function filterAktif(filter: Props['filter']): Record<string, string> {
   );
 }
 
-export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspektor, ringkasan, filter }: Props) {
+export default function InspeksiIndex({ inspeksi, templatInspeksi, aset, inspektor, ringkasan, filter }: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState(filter.cari ?? '');
 
@@ -89,12 +89,12 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
   const gagalCount = ringkasan.Gagal;
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Inspeksi Aset Berkala" />
 
       <div className="space-y-6">
         {/* Header */}
-        <PageHeader
+        <KepalaHalaman
           judul="Inspeksi Aset Berkala"
           deskripsi="Pemeriksaan fisik, pemantauan kondisi aset, dan pencatatan temuan operasional."
           aksi={
@@ -291,7 +291,7 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
 
         {/* Tabel Inspeksi */}
         {daftarTersaring.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/persetujuan-kepatuhan.webp"
             judul="Belum Ada Catatan Inspeksi"
             deskripsi="Riwayat dan jadwal inspeksi kondisi aset operasional akan dicatat di sini."
@@ -365,13 +365,13 @@ export default function IndexInspeksi({ inspeksi, templatInspeksi, aset, inspekt
                 </tbody>
               </table>
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={inspeksi.meta}
               onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
             />
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

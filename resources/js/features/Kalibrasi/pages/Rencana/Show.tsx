@@ -1,9 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ArrowLeft, Sliders, Clock, Building2, Plus } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
@@ -16,11 +16,11 @@ interface Props {
   penyedia: { Id: string; Kode: string; Nama: string }[];
 }
 
-export default function RencanaKalibrasiShow({ rencana }: Props) {
+export default function KalibrasiRencanaShow({ rencana }: Props) {
   const badgeKepatuhan = statusKalibrasiBadge(rencana.StatusKalibrasi);
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`Rencana Kalibrasi - ${rencana.aset?.Nama}`} />
       <BreadcrumbHalaman />
 
@@ -178,7 +178,7 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
           <CardContent className="p-0">
             {!rencana.pelaksanaanKalibrasi || rencana.pelaksanaanKalibrasi.length === 0 ? (
               <div className="py-12">
-                <EmptyState
+                <KeadaanKosong
                   judul="Belum ada riwayat pelaksanaan."
                   deskripsi="Kalibrasi yang dijadwalkan dan difinalisasi untuk instrumen ini akan muncul di sini."
                 />
@@ -237,6 +237,6 @@ export default function RencanaKalibrasiShow({ rencana }: Props) {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -15,13 +15,13 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { Paginasi } from '@/types/global';
 import type { SerahTerimaAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
 import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   serahTerima: Paginasi<SerahTerimaAset>;
@@ -85,10 +85,10 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Serah Terima Aset" />
       <div className="space-y-4">
-        <PageHeader
+        <KepalaHalaman
           judul="Serah Terima Aset"
           deskripsi="Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi."
           aksi={
@@ -117,7 +117,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
 
         {serahTerima.data.length === 0 && (
           <div className="rounded-[9px] border border-border bg-card">
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada dokumen serah terima."
               deskripsi="Dokumen serah terima aset akan muncul di sini."
             />
@@ -154,13 +154,13 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter }: Props) {
                 ))}
               </TableBody>
             </Table>
-            <Pagination
+            <KontrolPaginasi
               meta={serahTerima.meta}
               onNavigasi={(halaman) => navigasiHalaman(halaman, filter as Record<string, string>)}
             />
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

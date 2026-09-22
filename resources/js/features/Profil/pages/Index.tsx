@@ -1,6 +1,6 @@
 import { FormEvent } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteProfil } from '@/features/Profil/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   pengguna: Pengguna;
@@ -152,9 +152,9 @@ function KartuPerangkat({ pengguna }: { pengguna: Pengguna }) {
 
 export default function ProfilIndex({ pengguna }: Props) {
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Profil" />
-      <PageHeader judul="Profil" deskripsi="Kelola data diri, kata sandi, dan perangkat Anda." />
+      <KepalaHalaman judul="Profil" deskripsi="Kelola data diri, kata sandi, dan perangkat Anda." />
       <div className="grid gap-4 md:grid-cols-2">
         <FormProfil pengguna={pengguna} />
         <FormKataSandi />
@@ -162,6 +162,6 @@ export default function ProfilIndex({ pengguna }: Props) {
           <KartuPerangkat pengguna={pengguna} />
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

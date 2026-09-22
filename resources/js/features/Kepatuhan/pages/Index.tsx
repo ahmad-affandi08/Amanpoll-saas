@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ClipboardCheck, Plus, Search, ShieldCheck, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,7 +30,7 @@ import type {
   StatusKepatuhan,
 } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface AsetRingkas {
   Id: string;
@@ -369,10 +369,10 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kepatuhan" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Kepatuhan"
           deskripsi="Standar yang berlaku bagi organisasi, persyaratannya, dan status kepatuhan tiap aset."
           aksi={
@@ -405,7 +405,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           </CardHeader>
           <CardContent className="space-y-3">
             {standar.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada standar kepatuhan."
                 deskripsi="Daftarkan standar yang berlaku bagi organisasi Anda, lalu rinci persyaratannya."
               />
@@ -465,7 +465,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
         </form>
 
         {kewajiban.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/persetujuan-kepatuhan.webp"
             judul="Belum ada kewajiban kepatuhan."
             deskripsi="Tugaskan standar ke aset agar status kepatuhannya dapat dipantau."
@@ -558,7 +558,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
                 </div>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={kewajiban.meta}
               onNavigasi={(halaman) =>
                 navigasiHalaman(halaman, { cari, status: status === SEMUA ? '' : status })
@@ -567,6 +567,6 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

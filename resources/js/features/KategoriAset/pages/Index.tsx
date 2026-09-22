@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +21,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { KategoriAset } from '@/features/Aset/types';
 import { ruteKategoriAset } from '@/features/KategoriAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   kategoriAset: KategoriAset[];
@@ -246,9 +246,9 @@ export default function KategoriAsetIndex({ kategoriAset }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kategori Aset" />
-      <PageHeader
+      <KepalaHalaman
         judul="Kategori Aset"
         deskripsi="Klasifikasi aset beserta default penyusutan dan kebutuhan pemeliharaan/kalibrasi."
         aksi={
@@ -265,6 +265,6 @@ export default function KategoriAsetIndex({ kategoriAset }: Props) {
         pencarianPlaceholder="Cari nama atau kode kategori..."
         pesanKosong="Belum ada kategori aset."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

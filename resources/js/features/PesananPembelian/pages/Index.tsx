@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { PackageCheck, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +24,7 @@ import type { PenawaranPenyedia } from '@/features/PermintaanPenawaran/types';
 import type { PesananPembelian, StatusPesananPembelian } from '@/features/PesananPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   pesanan: Paginasi<PesananPembelian>;
@@ -145,10 +145,10 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Pesanan Pembelian" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Pesanan Pembelian"
           deskripsi="PO dibuat dari penawaran terpilih; komitmen anggaran dicatat saat PO dikirim."
         />
@@ -207,7 +207,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
         </form>
 
         {pesanan.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/persediaan.webp"
             judul="Belum ada pesanan pembelian."
             deskripsi="Pilih penawaran pada RFQ untuk menerbitkan PO."
@@ -267,7 +267,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
                 </Link>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={pesanan.meta}
               onNavigasi={(halaman) =>
                 navigasiHalaman(halaman, { cari, status: status === SEMUA ? '' : status })
@@ -276,6 +276,6 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

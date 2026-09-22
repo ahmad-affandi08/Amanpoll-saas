@@ -1,7 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { AlertTriangle, CheckCircle2, CreditCard, Lock } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,7 @@ import type {
   StatusLangganan,
   TagihanItem,
 } from '@/features/Langganan/types';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   entitlement: Entitlement;
@@ -55,11 +55,11 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
   const fiturBatas = katalogFitur.filter((f) => f.TipeBatas === 'Angka');
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Langganan" />
 
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Langganan"
           deskripsi="Paket yang sedang berjalan, pemakaian terhadap batasnya, dan riwayat tagihan organisasi Anda."
         />
@@ -86,7 +86,7 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
           </CardHeader>
           <CardContent className="space-y-4">
             {entitlement.PaketId === null ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Organisasi ini belum berlangganan."
                 deskripsi="Hubungi administrator platform untuk mengaktifkan paket."
               />
@@ -186,7 +186,7 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
           </CardHeader>
           <CardContent>
             {tagihan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada tagihan."
                 deskripsi="Tagihan akan muncul di sini setelah periode berlangganan diterbitkan."
               />
@@ -242,7 +242,7 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }
 

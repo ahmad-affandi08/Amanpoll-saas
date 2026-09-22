@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -14,12 +14,12 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { MutasiStok } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_MUTASI_STOK } from '@/features/Persediaan/status';
 import { ruteMutasiStok } from '@/features/MutasiStok/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface SukuCadangRingkas {
   Id: string;
@@ -151,10 +151,10 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={mutasiStok.Nomor} />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul={mutasiStok.Jenis}
           labelBreadcrumb={mutasiStok.Nomor}
           lencana={
@@ -192,7 +192,7 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
             )}
           </div>
           {mutasiStok.DetailMutasiStok.length === 0 ? (
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada baris detail."
               deskripsi="Tambahkan suku cadang yang terlibat dalam mutasi ini."
             />
@@ -223,6 +223,6 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang }: Props) {
           )}
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

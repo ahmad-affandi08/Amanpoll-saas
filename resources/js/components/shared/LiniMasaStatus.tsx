@@ -27,7 +27,7 @@ const LABEL_NADA: Record<NadaTahap, string> = {
 };
 
 /** Riwayat status sebuah entitas (DESIGN.md 12). */
-export function StatusTimeline({ tahap, className }: { tahap: TahapStatus[]; className?: string }) {
+export function LiniMasaStatus({ tahap, className }: { tahap: TahapStatus[]; className?: string }) {
   if (tahap.length === 0) {
     return null;
   }

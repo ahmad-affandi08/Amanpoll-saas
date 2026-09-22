@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Plus, Search, WalletCards } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,7 @@ import type { Paginasi } from '@/types/global';
 import type { Anggaran, StatusAnggaran } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Ringkas {
   Id: string;
@@ -179,10 +179,10 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Anggaran" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Anggaran"
           deskripsi="Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi."
           aksi={
@@ -225,7 +225,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
         </form>
 
         {anggaran.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/dashboard-analitik.webp"
             judul="Belum ada anggaran."
             deskripsi="Buat anggaran periode pertama untuk mulai mengalokasikan pos."
@@ -294,13 +294,13 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter }: Prop
                 </Link>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={anggaran.meta}
               onNavigasi={(page) => navigasiHalaman(page, { cari, status: status === SEMUA ? '' : status })}
             />
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

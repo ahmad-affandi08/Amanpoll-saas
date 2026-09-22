@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -14,14 +14,14 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import type { ReservasiSukuCadang } from '@/features/Persediaan/types';
 import type { Paginasi } from '@/types/global';
 import { VARIAN_BADGE_STATUS_RESERVASI } from '@/features/Persediaan/status';
 import { ruteReservasiSukuCadang } from '@/features/ReservasiSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Ringkas {
   Id: string;
@@ -167,9 +167,9 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Reservasi Suku Cadang" />
-      <PageHeader
+      <KepalaHalaman
         judul="Reservasi Suku Cadang"
         deskripsi="Menahan stok tersedia untuk kebutuhan mendatang tanpa mengurangi stok fisik."
         aksi={
@@ -181,7 +181,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
       />
 
       {reservasi.data.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           ilustrasi="/assets/3d/suku-cadang.webp"
           judul="Belum ada reservasi."
           deskripsi="Buat reservasi untuk menahan stok bagi kebutuhan mendatang."
@@ -222,12 +222,12 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
               </div>
             </div>
           ))}
-          <Pagination
+          <KontrolPaginasi
             meta={reservasi.meta}
             onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
           />
         </div>
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -8,7 +8,7 @@ interface Props extends PropsPublik {
 }
 
 /** Satu halaman pemasaran yang disusun dari dashboard (MARKETING.md 8). */
-export default function Halaman({ halaman, kanonik, urlMasuk, urlDaftar }: Props) {
+export default function PublikHalaman({ halaman, kanonik, urlMasuk, urlDaftar }: Props) {
   const meta = halaman.Meta;
   const alamatKanonik = meta.Kanonik ?? kanonik;
 

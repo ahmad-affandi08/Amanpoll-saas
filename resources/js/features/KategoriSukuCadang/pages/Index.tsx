@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +19,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { KategoriSukuCadang } from '@/features/Persediaan/types';
 import { ruteKategoriSukuCadang } from '@/features/KategoriSukuCadang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   kategoriSukuCadang: KategoriSukuCadang[];
@@ -169,9 +169,9 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kategori Suku Cadang" />
-      <PageHeader
+      <KepalaHalaman
         judul="Kategori Suku Cadang"
         deskripsi="Klasifikasi suku cadang, mendukung hierarki sub-kategori."
         aksi={
@@ -188,6 +188,6 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang }: Props) {
         pencarianPlaceholder="Cari nama atau kode kategori..."
         pesanKosong="Belum ada kategori suku cadang."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

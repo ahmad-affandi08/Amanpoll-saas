@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { LayoutGrid, SlidersHorizontal } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,7 +15,7 @@ import type {
   PilihanDimensi,
   SusunanDasbor,
 } from '@/features/Pelaporan/types';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   susunan: SusunanDasbor;
@@ -27,7 +27,7 @@ interface Props {
 }
 
 /** Dasbor operasional (21.02). */
-export default function Dashboard({
+export default function DashboardIndex({
   susunan,
   metrik,
   filter,
@@ -46,10 +46,10 @@ export default function Dashboard({
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Dashboard" />
       <div className="space-y-5">
-        <PageHeader
+        <KepalaHalaman
           judul={susunan.Nama}
           deskripsi="Ringkasan operasional Amanpoll. Setiap angka membawa rumusnya sendiri."
           aksi={
@@ -95,7 +95,7 @@ export default function Dashboard({
         />
 
         {komponenTampil.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/dashboard-analitik.webp"
             judul="Belum ada KPI yang dapat ditampilkan."
             deskripsi="Dasbor ini kosong karena kewenangan Anda belum mencakup KPI di dalamnya, atau komponennya belum dipilih."
@@ -126,6 +126,6 @@ export default function Dashboard({
           </span>
         </footer>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -13,7 +13,7 @@ interface Props {
 }
 
 /** Keadaan gagal memuat (DESIGN.md 13.6). */
-export function ErrorState({
+export function KeadaanGalat({
   judul = 'Data gagal dimuat.',
   deskripsi = 'Periksa koneksi Anda, lalu coba lagi. Jika terus berulang, hubungi administrator.',
   rincian,

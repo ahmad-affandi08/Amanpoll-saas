@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { FileSignature, Plus, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,7 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { JenisKontrak, Kontrak, RingkasanKontrak, StatusKontrak } from '@/features/Kontrak/types';
 import { ruteKontrak } from '@/features/Kontrak/api';
 import { formatUang } from '@/lib/uang';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface PenyediaRingkas {
   Id: string;
@@ -278,10 +278,10 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kontrak" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Kontrak"
           deskripsi="Kontrak penyedia, aset yang tercakup, layanan, dan pengingat masa berlaku."
           aksi={
@@ -348,7 +348,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
         </form>
 
         {kontrak.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/penyedia-kontrak.webp"
             judul="Belum ada kontrak."
             deskripsi="Buat kontrak untuk menghubungkan penyedia dengan aset dan tingkat layanannya."
@@ -428,7 +428,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
                 );
               })}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={kontrak.meta}
               onNavigasi={(halaman) =>
                 navigasiHalaman(halaman, {
@@ -441,6 +441,6 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

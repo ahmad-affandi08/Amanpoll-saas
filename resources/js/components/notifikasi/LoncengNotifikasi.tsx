@@ -15,7 +15,7 @@ import { http } from '@/lib/http';
 import type { Notifikasi } from '@/features/Notifikasi/types';
 import { ruteNotifikasi } from '@/features/Notifikasi/api';
 
-export function NotificationBell() {
+export function LoncengNotifikasi() {
   const [data, setData] = useState<Notifikasi[]>([]);
   const [jumlahBelumDibaca, setJumlahBelumDibaca] = useState(0);
   const [buka, setBuka] = useState(false);

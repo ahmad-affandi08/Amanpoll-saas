@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,12 +12,12 @@ interface Props {
   pengiriman: PengirimanFormulir[];
 }
 
-export default function Show({ formulir, pengiriman }: Props) {
+export default function PemasaranFormulirShow({ formulir, pengiriman }: Props) {
   return (
     <KerangkaPlatform>
       <Head title={formulir.Nama} />
 
-      <PageHeader
+      <KepalaHalaman
         judul={formulir.Nama}
         deskripsi={`Kode ${formulir.Kode} · ${formulir.JumlahPengiriman} pengiriman`}
         tanpaBreadcrumb
@@ -31,7 +31,7 @@ export default function Show({ formulir, pengiriman }: Props) {
       />
 
       {pengiriman.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           judul="Belum ada pengiriman"
           deskripsi="Pengiriman muncul di sini segera setelah formulir dipasang pada halaman terbit."
         />

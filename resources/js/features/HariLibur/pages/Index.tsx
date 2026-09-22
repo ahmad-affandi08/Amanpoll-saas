@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -21,7 +21,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { HariLibur } from '@/features/HariLibur/types';
 import { ruteHariLibur } from '@/features/HariLibur/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   hariLibur: HariLibur[];
@@ -152,9 +152,9 @@ export default function HariLiburIndex({ hariLibur }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Hari Libur" />
-      <PageHeader
+      <KepalaHalaman
         judul="Hari Libur"
         deskripsi="Dipakai untuk menghindari penjadwalan pekerjaan di hari libur."
         aksi={
@@ -181,6 +181,6 @@ export default function HariLiburIndex({ hariLibur }: Props) {
         ]}
         pesanKosong="Belum ada hari libur."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

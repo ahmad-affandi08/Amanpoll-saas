@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,13 +15,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import type { Paginasi } from '@/types/global';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface KategoriRingkas {
   Id: string;
@@ -235,9 +235,9 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
       { preserveState: true, replace: true },
     );
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Keluhan" />
-      <PageHeader
+      <KepalaHalaman
         judul="Keluhan"
         deskripsi={
           dapatMengelola
@@ -296,7 +296,7 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
         </Select>
       </div>
       {keluhan.data.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           ilustrasi="/assets/3d/keluhan.webp"
           judul="Belum ada keluhan."
           deskripsi="Buat keluhan pertama agar masalah dapat segera ditindaklanjuti."
@@ -338,12 +338,12 @@ export default function KeluhanIndex({ keluhan, kategori, aset, lokasi, filter, 
               </div>
             </Link>
           ))}
-          <Pagination
+          <KontrolPaginasi
             meta={keluhan.meta}
             onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
           />
         </div>
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

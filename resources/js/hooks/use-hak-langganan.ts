@@ -2,7 +2,7 @@ import { usePage } from '@inertiajs/react';
 import type { PageProps } from '@/types/global';
 
 /** Pembantu tampilan saja: backend tetap satu-satunya penegak entitlement. */
-export function useEntitlement() {
+export function useHakLangganan() {
   const { entitlement } = usePage<PageProps>().props;
 
   return {

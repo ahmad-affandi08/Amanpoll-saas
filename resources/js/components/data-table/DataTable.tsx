@@ -16,8 +16,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DataTableToolbar, FilterFasetKolom } from '@/components/data-table/DataTableToolbar';
 import { DataTablePagination } from '@/components/data-table/DataTablePagination';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { DataTableKartu } from '@/components/data-table/DataTableKartu';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { DataTableCard } from '@/components/data-table/DataTableCard';
 import { BATAS_DAFTAR } from '@/lib/batas';
 
 interface DataTableProps<TData, TValue> {
@@ -83,7 +83,7 @@ export function DataTable<TData, TValue>({
       />
       {kartuDiPonsel && (
         <div className="sm:hidden">
-          <DataTableKartu table={table} pesanKosong={pesanKosong} ilustrasiKosong={ilustrasiKosong} />
+          <DataTableCard table={table} pesanKosong={pesanKosong} ilustrasiKosong={ilustrasiKosong} />
         </div>
       )}
 
@@ -115,7 +115,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="p-0">
-                <EmptyState ilustrasi={ilustrasiKosong} judul={pesanKosong} />
+                <KeadaanKosong ilustrasi={ilustrasiKosong} judul={pesanKosong} />
               </TableCell>
             </TableRow>
           )}

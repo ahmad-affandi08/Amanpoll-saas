@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +18,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { Merek } from '@/features/Aset/types';
 import { ruteMerek } from '@/features/Merek/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   merek: Merek[];
@@ -139,9 +139,9 @@ export default function MerekIndex({ merek }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Merek" />
-      <PageHeader
+      <KepalaHalaman
         judul="Merek"
         deskripsi="Katalog merek/produsen untuk model aset."
         aksi={
@@ -158,6 +158,6 @@ export default function MerekIndex({ merek }: Props) {
         pencarianPlaceholder="Cari nama merek..."
         pesanKosong="Belum ada merek."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

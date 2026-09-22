@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ruteAuth } from '@/features/Auth/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
-export default function LupaKataSandi() {
+export default function AuthLupaKataSandi() {
   const { props } = usePage<{ flash: { sukses?: string | null } }>();
   const form = useForm({ KodeOrganisasi: '', Email: '' });
 
@@ -22,7 +22,7 @@ export default function LupaKataSandi() {
         onSubmit={submit}
         className="w-full max-w-sm space-y-5 rounded-lg border border-border bg-card p-6 shadow-sm"
       >
-        <PageHeader
+        <KepalaHalaman
           judul="Lupa Kata Sandi"
           deskripsi="Masukkan kode organisasi dan email untuk menerima tautan reset kata sandi."
         />

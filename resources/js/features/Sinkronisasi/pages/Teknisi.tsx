@@ -13,10 +13,10 @@ import {
   Timer,
   TriangleAlert,
 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { cn } from '@/lib/utils';
 import { useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,7 +41,7 @@ import type {
   MutasiOffline,
   PenugasanOffline,
 } from '@/features/Sinkronisasi/types';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 const VARIAN_STATUS_MUTASI = {
   Menunggu: 'perhatian',
@@ -65,7 +65,7 @@ function nilaiJawaban(jawaban: JawabanDaftarPeriksaOffline | undefined): string 
 }
 
 /** Ruang kerja teknisi offline (FASE 20.05). */
-export default function TeknisiOffline() {
+export default function SinkronisasiTeknisi() {
   const {
     status,
     daring,
@@ -107,10 +107,10 @@ export default function TeknisiOffline() {
   const gagal = antrian.filter((m) => m.Status === 'Gagal');
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Mode Teknisi (Offline)" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Mode Teknisi"
           deskripsi="Penugasan, daftar periksa, dan catatan lapangan yang tetap dapat dikerjakan tanpa sinyal."
           aksi={
@@ -175,7 +175,7 @@ export default function TeknisiOffline() {
 
             <TabsContent value="penugasan" className="space-y-3">
               {(paket?.Penugasan.length ?? 0) === 0 ? (
-                <EmptyState
+                <KeadaanKosong
                   judul="Belum ada penugasan aktif."
                   deskripsi="Pekerjaan yang ditugaskan kepada Anda akan muncul di sini dan ikut tersimpan di perangkat."
                 />
@@ -197,7 +197,7 @@ export default function TeknisiOffline() {
 
             <TabsContent value="aset" className="space-y-3">
               {(paket?.Aset.length ?? 0) === 0 ? (
-                <EmptyState
+                <KeadaanKosong
                   judul="Belum ada aset pada paket ini."
                   deskripsi="Ringkasan aset mengikuti pekerjaan yang ditugaskan kepada Anda."
                 />
@@ -227,7 +227,7 @@ export default function TeknisiOffline() {
 
             <TabsContent value="antrean" className="space-y-3">
               {antrian.length === 0 ? (
-                <EmptyState
+                <KeadaanKosong
                   judul="Antrean kosong."
                   deskripsi="Semua perubahan lapangan Anda sudah diterima server."
                 />
@@ -284,7 +284,7 @@ export default function TeknisiOffline() {
         onTutup={() => setKonflikTerpilih(null)}
         onSelesaikan={selesaikanKonflik}
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }
 

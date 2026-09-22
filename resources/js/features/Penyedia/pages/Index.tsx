@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,7 +32,7 @@ import type {
 } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   penyedia: Penyedia[];
@@ -698,9 +698,9 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Penyedia" />
-      <PageHeader
+      <KepalaHalaman
         judul="Penyedia"
         deskripsi="Kelola data vendor/supplier untuk pengadaan, kontrak, dan kalibrasi."
         aksi={
@@ -736,6 +736,6 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia }: Props) {
         pesanKosong="Belum ada penyedia."
         ilustrasiKosong="/assets/3d/penyedia-kontrak.webp"
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

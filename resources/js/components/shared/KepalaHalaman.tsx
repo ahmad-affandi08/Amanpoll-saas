@@ -23,7 +23,7 @@ interface Props {
 }
 
 /** Kepala halaman baku (DESIGN.md 12). */
-export function PageHeader({
+export function KepalaHalaman({
   judul,
   deskripsi,
   lencana,

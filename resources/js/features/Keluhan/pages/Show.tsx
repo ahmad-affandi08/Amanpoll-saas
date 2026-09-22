@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   keluhan: Keluhan;
@@ -146,14 +146,14 @@ function DialogPrioritas({ keluhan }: { keluhan: Keluhan }) {
 
 export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan }: Props) {
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={keluhan.Nomor} />
       <div className="mb-5">
         <Link href={ruteKeluhan.index} className="text-sm text-muted-foreground hover:text-foreground">
           ← Kembali ke Keluhan
         </Link>
       </div>
-      <PageHeader
+      <KepalaHalaman
         className="mb-6"
         judul={keluhan.Judul}
         labelBreadcrumb={keluhan.Nomor}
@@ -261,6 +261,6 @@ export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan
           </Card>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

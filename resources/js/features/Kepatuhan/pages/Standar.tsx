@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -159,7 +159,7 @@ export default function KepatuhanStandar({ standar }: Props) {
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`${standar.Kode} — Standar Kepatuhan`} />
       <BreadcrumbHalaman />
       <div className="space-y-6">
@@ -210,7 +210,7 @@ export default function KepatuhanStandar({ standar }: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {persyaratan.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada persyaratan."
                 deskripsi="Rinci persyaratan standar ini agar dapat ditugaskan ke aset."
               />
@@ -245,6 +245,6 @@ export default function KepatuhanStandar({ standar }: Props) {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

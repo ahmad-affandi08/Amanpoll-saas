@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,7 +23,7 @@ import type { Peran, KatalogIzin } from '@/features/PeranIzin/types';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { http } from '@/lib/http';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   peran: Peran[];
@@ -234,9 +234,9 @@ export default function PeranIzinIndex({ peran }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Peran & Izin" />
-      <PageHeader
+      <KepalaHalaman
         judul="Peran & Izin"
         deskripsi="Kelola peran dan hak akses per organisasi."
         aksi={<>{bolehKelola && <DialogFormPeran peran={null} />}</>}
@@ -250,6 +250,6 @@ export default function PeranIzinIndex({ peran }: Props) {
         pesanKosong="Belum ada peran."
         ilustrasiKosong="/assets/3d/peran-izin.webp"
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

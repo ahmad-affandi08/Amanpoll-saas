@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,12 +29,12 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/konten';
 
-export default function KontenHalaman({ konten, keyword, cluster, pilihan }: Props) {
+export default function PemasaranKonten({ konten, keyword, cluster, pilihan }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Konten & SEO" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Konten & SEO"
         deskripsi="Konten berversi seperti halaman pemasaran: yang tayang adalah versi terkunci, dan yang ditandai noindex tidak pernah masuk peta situs."
         tanpaBreadcrumb

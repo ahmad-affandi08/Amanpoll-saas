@@ -5,7 +5,7 @@ interface Props {
 }
 
 /** Konfirmasi bahwa pencabutan sudah tercatat (MARKETING.md 27). */
-export default function BerhentiLangganan({ email }: Props) {
+export default function PublikBerhentiLangganan({ email }: Props) {
   return (
     <>
       <Head>

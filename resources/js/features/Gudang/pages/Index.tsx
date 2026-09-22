@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,12 +17,12 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { Gudang, LokasiGudang, StatusGudang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_GUDANG } from '@/features/Persediaan/status';
 import { ruteGudang } from '@/features/Gudang/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface LokasiRingkas {
   Id: string;
@@ -285,9 +285,9 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: P
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Gudang" />
-      <PageHeader
+      <KepalaHalaman
         judul="Gudang"
         deskripsi="Kelola gudang beserta lokasi penyimpanan di dalamnya."
         aksi={
@@ -299,7 +299,7 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: P
       />
 
       {gudang.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           ilustrasi="/assets/3d/gudang.webp"
           judul="Belum ada gudang."
           deskripsi="Tambahkan gudang pertama untuk mulai mencatat stok."
@@ -312,6 +312,6 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi }: P
           pesanKosong="Belum ada gudang."
         />
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { ArrowDown, ArrowUp, LayoutDashboard, Plus, Star, Trash2, X } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,7 +21,7 @@ import type {
   SusunanDasbor,
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   dasbor: DasborTersimpanPenuh[];
@@ -58,10 +58,10 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Dasbor Kustom" />
       <div className="space-y-5">
-        <PageHeader
+        <KepalaHalaman
           judul="Dasbor Kustom"
           deskripsi="Pilih KPI yang ingin Anda lihat, atur urutan dan lebarnya, lalu tandai satu sebagai bawaan."
           aksi={
@@ -106,7 +106,7 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
             }}
           />
         ) : dasbor.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/dashboard-analitik.webp"
             judul="Belum ada dasbor kustom."
             deskripsi={`Saat ini Anda memakai "${preset.Nama}" bawaan. Buat dasbor sendiri bila ingin susunan lain.`}
@@ -171,7 +171,7 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }
 
@@ -295,7 +295,7 @@ function Penyusun({
         </div>
 
         {komponen.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             judul="Belum ada komponen."
             deskripsi="Tambahkan minimal satu KPI sebelum menyimpan dasbor."
           />

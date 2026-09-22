@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Switch } from '@/components/ui/switch';
 import { http } from '@/lib/http';
 import type { PreferensiBaris } from '@/features/Notifikasi/types';
 import { rutePreferensiNotifikasi } from '@/features/PreferensiNotifikasi/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 export default function PreferensiNotifikasiIndex() {
   const [data, setData] = useState<PreferensiBaris[]>([]);
@@ -41,9 +41,9 @@ export default function PreferensiNotifikasiIndex() {
   const peristiwaUnik = Array.from(new Set(data.map((b) => b.JenisPeristiwa)));
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Preferensi Notifikasi" />
-      <PageHeader
+      <KepalaHalaman
         judul="Preferensi Notifikasi"
         deskripsi="Atur peristiwa mana yang ingin Anda terima melalui tiap kanal notifikasi."
       />
@@ -90,6 +90,6 @@ export default function PreferensiNotifikasiIndex() {
           </table>
         </div>
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

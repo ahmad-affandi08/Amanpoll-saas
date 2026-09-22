@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { BellRing, Search, ArrowRight, Calendar } from 'lucide-react';
 import type { PelaksanaanKalibrasi, RencanaKalibrasi, StatistikKepatuhan } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   statistik: StatistikKepatuhan;
@@ -18,7 +18,7 @@ interface Props {
   pelaksanaanTerbaru: PelaksanaanKalibrasi[];
 }
 
-export default function KalibrasiDashboard({ statistik, rencanaKalibrasi, pelaksanaanTerbaru }: Props) {
+export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaanTerbaru }: Props) {
   const [pencarian, setPencarian] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('SEMUA');
   const [sedangMemeriksa, setSedangMemeriksa] = useState(false);
@@ -46,12 +46,12 @@ export default function KalibrasiDashboard({ statistik, rencanaKalibrasi, pelaks
   });
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Dasbor Kalibrasi & Kepatuhan" />
 
       <div className="space-y-6">
         {/* Header */}
-        <PageHeader
+        <KepalaHalaman
           judul="Dasbor Kalibrasi"
           deskripsi="Ringkasan kepatuhan, jadwal jatuh tempo, dan riwayat kalibrasi instrumen."
           aksi={
@@ -176,7 +176,7 @@ export default function KalibrasiDashboard({ statistik, rencanaKalibrasi, pelaks
               <CardContent className="p-0">
                 {filteredRencana.length === 0 ? (
                   <div className="py-12">
-                    <EmptyState
+                    <KeadaanKosong
                       judul="Belum ada rencana kalibrasi."
                       deskripsi={
                         pencarian || filterStatus !== 'SEMUA'
@@ -334,6 +334,6 @@ export default function KalibrasiDashboard({ statistik, rencanaKalibrasi, pelaks
           </div>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

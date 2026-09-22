@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Plug, Plus, Webhook } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ import type {
   PanggilanBalikWeb,
 } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   integrasi: IntegrasiEksternal[];
@@ -263,10 +263,10 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa }:
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Integrasi" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Integrasi"
           deskripsi="Sistem eksternal, panggilan balik web, dan antrean peristiwa keluar."
           aksi={
@@ -313,7 +313,7 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa }:
           </CardHeader>
           <CardContent className="space-y-3">
             {integrasi.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 ilustrasi="/assets/3d/integrasi.webp"
                 judul="Belum ada integrasi."
                 deskripsi="Daftarkan sistem eksternal untuk menarik atau mendorong data."
@@ -349,7 +349,7 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa }:
           </CardHeader>
           <CardContent className="space-y-3">
             {webhook.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada panggilan balik."
                 deskripsi="Daftarkan endpoint untuk menerima peristiwa Amanpoll secara otomatis."
               />
@@ -393,6 +393,6 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa }:
           Endpoint tulis API memerlukan header Idempotency-Key agar percobaan ulang tidak menggandakan data.
         </p>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

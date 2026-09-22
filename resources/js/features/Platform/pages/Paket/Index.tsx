@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { labelBatas, rupiah } from '@/features/Langganan/format';
 import type { DefinisiFitur, PaketItem } from '@/features/Langganan/types';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   paket: PaketItem[];
@@ -61,7 +61,7 @@ export default function PlatformPaketIndex({ paket, katalogFitur }: Props) {
       <Head title="Paket Langganan" />
 
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           tanpaBreadcrumb
           judul="Paket Langganan"
           deskripsi="Harga, masa berlaku, dan modul yang termasuk pada tiap paket."
@@ -81,7 +81,7 @@ export default function PlatformPaketIndex({ paket, katalogFitur }: Props) {
           </CardHeader>
           <CardContent>
             {paket.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada paket."
                 deskripsi="Buat paket pertama untuk mulai menjual langganan."
                 aksi={

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ import {
   VARIAN_STATUS_PERINTAH_KERJA,
 } from '@/features/PerintahKerja/status';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface TeknisiOpsi {
   Id: string;
@@ -843,7 +843,7 @@ export default function PerintahKerjaShow({
   const waktuHentiAktif = perintahKerja.WaktuHenti?.find((h) => h.SelesaiPada === null);
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`${perintahKerja.Nomor} - Perintah Kerja`} />
 
       <div className="mb-5">
@@ -855,7 +855,7 @@ export default function PerintahKerjaShow({
         </Link>
       </div>
 
-      <PageHeader
+      <KepalaHalaman
         className="mb-6"
         judul={perintahKerja.Judul}
         labelBreadcrumb={perintahKerja.Nomor}
@@ -1365,6 +1365,6 @@ export default function PerintahKerjaShow({
           </Card>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

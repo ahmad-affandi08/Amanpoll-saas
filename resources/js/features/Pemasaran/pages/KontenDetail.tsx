@@ -1,7 +1,7 @@
 import { FormEvent } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +21,7 @@ interface Props {
 
 const AKAR = '/admin-platform/pemasaran/konten';
 
-export default function KontenDetailHalaman({ konten, versi, keyword, pilihan }: Props) {
+export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan }: Props) {
   const form = useForm({
     Slug: konten.Ruas,
     Jenis: konten.Jenis,
@@ -50,7 +50,7 @@ export default function KontenDetailHalaman({ konten, versi, keyword, pilihan }:
     <KerangkaPlatform>
       <Head title={konten.Judul} />
 
-      <PageHeader
+      <KepalaHalaman
         judul={konten.Judul}
         deskripsi={`${konten.Slug} · ${konten.Jenis}`}
         className="mb-6"

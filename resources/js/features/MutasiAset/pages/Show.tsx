@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -13,13 +13,13 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { PermintaanMutasiAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_MUTASI } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { ruteMutasiAset } from '@/features/MutasiAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   permintaan: PermintaanMutasiAset;
@@ -123,10 +123,10 @@ export default function MutasiAsetShow({ permintaan, aset }: Props) {
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={permintaan.Nomor} />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul={permintaan.JenisMutasi}
           labelBreadcrumb={permintaan.Nomor}
           deskripsi={
@@ -182,7 +182,7 @@ export default function MutasiAsetShow({ permintaan, aset }: Props) {
             {permintaan.Status === 'Draft' && <DialogTambahAset permintaan={permintaan} aset={aset} />}
           </div>
           {permintaan.DetailMutasiAset.length === 0 && (
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada aset ditambahkan."
               deskripsi="Tambahkan aset yang akan dimutasi sebelum submit."
             />
@@ -216,6 +216,6 @@ export default function MutasiAsetShow({ permintaan, aset }: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

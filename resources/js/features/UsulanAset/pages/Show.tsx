@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Pencil, Send, ShieldCheck, Star, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ import type { PrioritasUsulanAset, UsulanAset } from '@/features/UsulanAset/type
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Referensi {
   Id: string;
@@ -385,7 +385,7 @@ export default function UsulanAsetShow({
       router.delete(ruteUsulanAset.detail(usulan.Id));
   }
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`${usulan.Nomor} — Usulan Aset`} />
       <div className="space-y-6">
         <Link
@@ -394,7 +394,7 @@ export default function UsulanAsetShow({
         >
           <ArrowLeft className="size-4" /> Kembali ke Usulan Aset
         </Link>
-        <PageHeader
+        <KepalaHalaman
           judul={usulan.NamaKebutuhan}
           labelBreadcrumb={usulan.Nomor}
           lencana={
@@ -581,6 +581,6 @@ export default function UsulanAsetShow({
           </Card>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

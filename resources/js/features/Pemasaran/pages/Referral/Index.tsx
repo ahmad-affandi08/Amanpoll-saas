@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -38,12 +38,12 @@ const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString(
 
 const URUTAN_CORONG = ['Dibuat', 'Diklik', 'Lead', 'Trial', 'Paid', 'RewardPending', 'Rewarded'];
 
-export default function Index({ program, corong, reward, pilihan }: Props) {
+export default function PemasaranReferralIndex({ program, corong, reward, pilihan }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Referral" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Referral"
         deskripsi="Program referral, kode tiap pelanggan, dan imbalan yang terutang."
         tanpaBreadcrumb

@@ -1,7 +1,7 @@
 import { type FormEvent, useMemo, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Pencil, Plus, ReceiptText, Send, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +27,7 @@ import type {
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   anggaran: Anggaran;
@@ -409,10 +409,10 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`${anggaran.Kode} — Anggaran`} />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul={anggaran.Nama}
           labelBreadcrumb={anggaran.Kode}
           lencana={
@@ -590,6 +590,6 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan }:
           )}
         </section>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

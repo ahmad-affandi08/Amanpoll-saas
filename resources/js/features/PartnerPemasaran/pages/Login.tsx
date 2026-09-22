@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 /** Masuk portal partner. */
-export default function PartnerLogin() {
+export default function PartnerPemasaranLogin() {
   const form = useForm({ Email: '', KataSandi: '' });
 
   const kirim = (e: FormEvent) => {

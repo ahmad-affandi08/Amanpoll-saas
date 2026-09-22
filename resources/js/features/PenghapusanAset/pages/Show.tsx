@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -14,14 +14,14 @@ import {
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { formatUang } from '@/lib/uang';
 import type { PengajuanPenghapusanAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_PENGHAPUSAN } from '@/features/SiklusAset/status';
 import type { Aset } from '@/features/Aset/types';
 import { rutePenghapusanAset } from '@/features/PenghapusanAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   pengajuan: PengajuanPenghapusanAset;
@@ -144,10 +144,10 @@ export default function PenghapusanAsetShow({ pengajuan, aset }: Props) {
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={pengajuan.Nomor} />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul={pengajuan.MetodePenghapusan ?? 'Penghapusan Aset'}
           lencana={
             <>
@@ -200,7 +200,7 @@ export default function PenghapusanAsetShow({ pengajuan, aset }: Props) {
             {pengajuan.Status === 'Draft' && <DialogTambahAset pengajuan={pengajuan} aset={aset} />}
           </div>
           {pengajuan.DetailPenghapusanAset.length === 0 && (
-            <EmptyState
+            <KeadaanKosong
               judul="Belum ada aset ditambahkan."
               deskripsi="Tambahkan aset yang akan dihapuskan."
             />
@@ -239,6 +239,6 @@ export default function PenghapusanAsetShow({ pengajuan, aset }: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

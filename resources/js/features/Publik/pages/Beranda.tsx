@@ -4,7 +4,7 @@ import { KerangkaPublik } from '../components/KerangkaPublik';
 import type { PropsPublik } from '../types';
 
 /** Beranda bawaan situs publik (MARKETING.md 34.1). */
-export default function Beranda({ kanonik, urlMasuk, urlDaftar }: PropsPublik) {
+export default function PublikBeranda({ kanonik, urlMasuk, urlDaftar }: PropsPublik) {
   return (
     <>
       <Head>

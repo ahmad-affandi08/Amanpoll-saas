@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +26,7 @@ import type {
 } from '@/features/Keluhan/types';
 import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Ringkas {
   Id: string;
@@ -386,9 +386,9 @@ function DialogTingkatLayanan({
 export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }: Props) {
   const konfirmasi = useKonfirmasi();
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Tingkat Layanan" />
-      <PageHeader
+      <KepalaHalaman
         judul="Tingkat Layanan"
         deskripsi="Konfigurasi kalender, target respons dan penyelesaian, serta tahapan eskalasi."
         aksi={
@@ -457,6 +457,6 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna }:
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

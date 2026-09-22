@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -43,7 +43,7 @@ interface Props {
   modelAset: { Id: string; Nama: string; KategoriAsetId?: string }[];
 }
 
-export default function ShowTemplat({ templat, kategoriAset }: Props) {
+export default function DaftarPeriksaTemplatShow({ templat, kategoriAset }: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialogButir, setBukaDialogButir] = useState(false);
   const [butirDiedit, setButirDiedit] = useState<ButirTemplatDaftarPeriksa | null>(null);
@@ -159,7 +159,7 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`Builder: ${templat.Nama}`} />
       <BreadcrumbHalaman />
 
@@ -494,6 +494,6 @@ export default function ShowTemplat({ templat, kategoriAset }: Props) {
           </form>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

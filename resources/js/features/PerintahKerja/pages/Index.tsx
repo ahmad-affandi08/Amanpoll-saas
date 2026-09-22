@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,8 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import type {
   JenisPerintahKerja,
   PerintahKerja,
@@ -28,7 +28,7 @@ import {
   VARIAN_STATUS_PERINTAH_KERJA,
 } from '@/features/PerintahKerja/status';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import type { Paginasi } from '@/types/global';
 
 interface KeluhanRingkas {
@@ -380,9 +380,9 @@ export default function PerintahKerjaIndex({
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Perintah Kerja" />
-      <PageHeader
+      <KepalaHalaman
         judul="Perintah Kerja"
         deskripsi={
           dapatMengelola
@@ -430,7 +430,7 @@ export default function PerintahKerjaIndex({
       </div>
 
       {perintahKerja.data.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           judul="Belum ada perintah kerja"
           deskripsi="Perintah kerja perbaikan atau pemeliharaan aset akan tercatat di sini."
         />
@@ -564,12 +564,12 @@ export default function PerintahKerjaIndex({
               </tbody>
             </table>
           </div>
-          <Pagination
+          <KontrolPaginasi
             meta={perintahKerja.meta}
             onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}
           />
         </div>
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

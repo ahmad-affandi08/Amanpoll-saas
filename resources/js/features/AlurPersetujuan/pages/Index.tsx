@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,7 +23,7 @@ import type { Peran } from '@/features/PeranIzin/types';
 import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteAlurPersetujuan } from '@/features/AlurPersetujuan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   alurPersetujuan: AlurPersetujuan[];
@@ -437,9 +437,9 @@ export default function AlurPersetujuanIndex({
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Alur Persetujuan" />
-      <PageHeader
+      <KepalaHalaman
         judul="Alur Persetujuan"
         deskripsi="Definisikan tahapan persetujuan untuk berbagai jenis entitas."
         aksi={
@@ -467,6 +467,6 @@ export default function AlurPersetujuanIndex({
         pesanKosong="Belum ada alur persetujuan."
         ilustrasiKosong="/assets/3d/persetujuan-kepatuhan.webp"
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

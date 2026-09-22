@@ -4,7 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Modul {
   Kode: string;
@@ -130,14 +130,14 @@ const PINTASAN = [
   },
 ] as const;
 
-export default function Ringkasan({ modul, izinSaya, superAdmin }: Props) {
+export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Props) {
   const hidup = modul.filter((satu) => satu.Aktif).length;
 
   return (
     <KerangkaPlatform>
       <Head title="Growth & Marketing" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Growth & Marketing"
         deskripsi={`${hidup} dari ${modul.length} modul aktif.`}
         tanpaBreadcrumb

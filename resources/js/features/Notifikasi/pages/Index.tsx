@@ -1,7 +1,7 @@
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 export default function NotifikasiIndex() {
   return (
-    <PageHeader
+    <KepalaHalaman
       judul="Notifikasi"
       deskripsi="Halaman modul Notifikasi. Implementasikan use-case dan UI di feature ini."
     />

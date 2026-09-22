@@ -1,7 +1,7 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ListFilter } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,8 +17,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { formatUang } from '@/lib/uang';
 import type { Paginasi } from '@/types/global';
 import type { Aset, FilterAset } from '@/features/Aset/types';
@@ -26,7 +26,7 @@ import type { KategoriAset } from '@/features/Aset/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 import { ruteAset } from '@/features/Aset/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -260,10 +260,10 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
   const jumlahAktif = jumlahFilterAktif(filter);
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Aset" />
       <div className="space-y-4">
-        <PageHeader
+        <KepalaHalaman
           judul="Aset"
           deskripsi="Daftar induk aset organisasi -- identitas, lokasi, dan status."
           aksi={
@@ -320,7 +320,7 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
 
         {aset.data.length === 0 && (
           <div className="rounded-[9px] border border-border bg-card">
-            <EmptyState
+            <KeadaanKosong
               ilustrasi="/assets/3d/aset-qr.webp"
               judul="Belum ada aset."
               deskripsi="Aset yang terdaftar akan muncul di sini lengkap dengan lokasi dan status."
@@ -349,7 +349,7 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
                 <div className="mt-1 text-sm text-muted-foreground">Kondisi: {a.Kondisi}</div>
               </button>
             ))}
-            <Pagination
+            <KontrolPaginasi
               meta={aset.meta}
               onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)}
             />
@@ -388,13 +388,13 @@ export default function AsetIndex({ aset, filter, kategoriAset, lokasi }: Props)
                 ))}
               </TableBody>
             </Table>
-            <Pagination
+            <KontrolPaginasi
               meta={aset.meta}
               onNavigasi={(halaman) => navigasiHalaman(halaman, form as Record<string, string>)}
             />
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

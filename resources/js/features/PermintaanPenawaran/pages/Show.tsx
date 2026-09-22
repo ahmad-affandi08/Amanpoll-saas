@@ -1,8 +1,8 @@
 import { type FormEvent, useMemo, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle2, ChevronRight, Paperclip, Send } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { PermintaanPenawaran } from '@/features/PermintaanPenawaran/types';
 import { formatUang } from '@/lib/uang';
 import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   rfq: PermintaanPenawaran;
@@ -235,7 +235,7 @@ export default function PermintaanPenawaranShow({ rfq }: Props) {
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={rfq.Nomor} />
       <div className="space-y-6">
         <Link
@@ -245,7 +245,7 @@ export default function PermintaanPenawaranShow({ rfq }: Props) {
           <ArrowLeft className="size-4" /> Kembali
         </Link>
 
-        <PageHeader
+        <KepalaHalaman
           judul={<span className="font-mono">{rfq.Nomor}</span>}
           labelBreadcrumb={rfq.Nomor}
           lencana={<Badge variant={VARIAN_STATUS[rfq.Status]}>{rfq.Status}</Badge>}
@@ -295,7 +295,7 @@ export default function PermintaanPenawaranShow({ rfq }: Props) {
           </CardHeader>
           <CardContent className="space-y-3">
             {penawaran.length === 0 ? (
-              <EmptyState
+              <KeadaanKosong
                 judul="Belum ada penawaran masuk."
                 deskripsi="Catat penawaran penyedia selama RFQ masih dibuka."
               />
@@ -342,6 +342,6 @@ export default function PermintaanPenawaranShow({ rfq }: Props) {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

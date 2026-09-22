@@ -13,7 +13,7 @@ const judulPerStatus: Record<number, string> = {
   500: 'Terjadi kesalahan pada server',
 };
 
-export default function Error({ status, pesan }: ErrorProps) {
+export default function SharedError({ status, pesan }: ErrorProps) {
   const judul = judulPerStatus[status] ?? 'Terjadi kesalahan';
 
   return (

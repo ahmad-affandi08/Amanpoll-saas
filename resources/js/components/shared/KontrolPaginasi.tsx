@@ -7,7 +7,7 @@ interface PaginationProps {
   onNavigasi: (halaman: number) => void;
 }
 
-export function Pagination({ meta, onNavigasi }: PaginationProps) {
+export function KontrolPaginasi({ meta, onNavigasi }: PaginationProps) {
   if (meta.last_page <= 1) return null;
 
   return (

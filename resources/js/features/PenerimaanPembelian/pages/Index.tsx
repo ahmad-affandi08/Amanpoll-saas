@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { PackageCheck, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import type { Paginasi } from '@/types/global';
 import type { PenerimaanPembelian } from '@/features/PenerimaanPembelian/types';
 import { rutePenerimaanPembelian } from '@/features/PenerimaanPembelian/api';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   penerimaan: Paginasi<PenerimaanPembelian>;
@@ -31,10 +31,10 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Penerimaan Pembelian" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Penerimaan Pembelian"
           deskripsi="Riwayat penerimaan barang; stok dan registrasi aset dibuat otomatis saat dokumen dicatat."
         />
@@ -56,7 +56,7 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
         </form>
 
         {penerimaan.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/gudang.webp"
             judul="Belum ada penerimaan."
             deskripsi="Catat penerimaan dari halaman pesanan pembelian yang sudah dikirim."
@@ -120,10 +120,13 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
                 </Link>
               ))}
             </div>
-            <Pagination meta={penerimaan.meta} onNavigasi={(halaman) => navigasiHalaman(halaman, { cari })} />
+            <KontrolPaginasi
+              meta={penerimaan.meta}
+              onNavigasi={(halaman) => navigasiHalaman(halaman, { cari })}
+            />
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

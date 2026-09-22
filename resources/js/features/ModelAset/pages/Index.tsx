@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import type { KategoriAset, Merek, ModelAset } from '@/features/Aset/types';
 import { ruteModelAset } from '@/features/ModelAset/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   modelAset: ModelAset[];
@@ -281,9 +281,9 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Model Aset" />
-      <PageHeader
+      <KepalaHalaman
         judul="Model Aset"
         deskripsi="Master model/tipe aset lengkap dengan metadata teknis dan interval pemeliharaan/kalibrasi."
         aksi={
@@ -300,6 +300,6 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek }: Props
         pencarianPlaceholder="Cari nama atau kode model..."
         pesanKosong="Belum ada model aset."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

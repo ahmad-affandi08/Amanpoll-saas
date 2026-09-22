@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +20,7 @@ import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHe
 import { useIzin } from '@/hooks/use-izin';
 import type { Pengguna, PeranRingkas } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   pengguna: Pengguna[];
@@ -312,9 +312,9 @@ export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Pengguna" />
-      <PageHeader
+      <KepalaHalaman
         judul="Pengguna"
         deskripsi="Kelola akun pengguna dan penetapan peran."
         aksi={<>{bolehKelola && <DialogFormPengguna pengguna={null} />}</>}
@@ -346,6 +346,6 @@ export default function PenggunaIndex({ pengguna, peranTersedia }: Props) {
         pesanKosong="Belum ada pengguna."
         ilustrasiKosong="/assets/3d/pengguna.webp"
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

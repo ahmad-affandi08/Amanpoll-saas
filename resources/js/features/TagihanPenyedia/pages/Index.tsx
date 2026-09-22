@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { ReceiptText, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import type { Paginasi } from '@/types/global';
 import type { StatusTagihanPenyedia, TagihanPenyedia } from '@/features/TagihanPenyedia/types';
 import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   tagihan: Paginasi<TagihanPenyedia>;
@@ -37,10 +37,10 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Tagihan Penyedia" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Tagihan Penyedia"
           deskripsi="Tagihan hasil matching PO dan penerimaan, beserta sisa yang belum dibayar."
         />
@@ -75,7 +75,7 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
         </form>
 
         {tagihan.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/berkas-dokumen.webp"
             judul="Belum ada tagihan penyedia."
             deskripsi="Catat tagihan dari halaman pesanan pembelian yang sudah menerima barang."
@@ -140,7 +140,7 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
                 </Link>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={tagihan.meta}
               onNavigasi={(halaman) =>
                 navigasiHalaman(halaman, { cari, status: status === SEMUA ? '' : status })
@@ -149,6 +149,6 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -36,7 +36,7 @@ function kartuDari(hasil: HasilKeandalan): Kartu[] {
 }
 
 /** Kalkulator keandalan publik; angkanya dihitung di server (MARKETING.md 10). */
-export default function Kalkulator({ tool, kanonik, urlMasuk, urlDaftar }: Props) {
+export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar }: Props) {
   const { props } = usePage<{ hasil?: HasilKeandalan }>();
   const hasil = props.hasil;
 

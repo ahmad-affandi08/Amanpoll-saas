@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,11 +14,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ClipboardCheck, Plus, Search, Layers, ArrowRight } from 'lucide-react';
 import type { TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   templat: TemplatDaftarPeriksa[];
@@ -26,7 +26,7 @@ interface Props {
   modelAset: { Id: string; Nama: string; KategoriAsetId?: string }[];
 }
 
-export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props) {
+export default function DaftarPeriksaTemplatIndex({ templat, kategoriAset, modelAset }: Props) {
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
 
@@ -56,11 +56,11 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
   };
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Templat Daftar Periksa (Checklist)" />
 
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Templat Daftar Periksa"
           deskripsi="Kelola lembar periksa terstandarisasi untuk inspeksi dan pemeliharaan preventif."
           aksi={
@@ -183,7 +183,7 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
         </div>
 
         {daftarTersaring.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/berkas-dokumen.webp"
             judul="Belum Ada Templat Daftar Periksa"
             deskripsi="Katalog templat checklist yang dibuat akan muncul di sini untuk digunakan pada pemeliharaan dan inspeksi."
@@ -239,6 +239,6 @@ export default function IndexTemplat({ templat, kategoriAset, modelAset }: Props
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -1,7 +1,7 @@
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 export default function SinkronisasiIndex() {
   return (
-    <PageHeader
+    <KepalaHalaman
       judul="Sinkronisasi"
       deskripsi="Halaman modul Sinkronisasi. Implementasikan use-case dan UI di feature ini."
     />

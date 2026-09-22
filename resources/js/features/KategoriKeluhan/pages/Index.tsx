@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/data-table/DataTable';
@@ -21,7 +21,7 @@ import { Switch } from '@/components/ui/switch';
 import type { KategoriKeluhan, PrioritasKeluhan } from '@/features/Keluhan/types';
 import { ruteKategoriKeluhan } from '@/features/KategoriKeluhan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Ringkas {
   Id: string;
@@ -273,9 +273,9 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kategori Keluhan" />
-      <PageHeader
+      <KepalaHalaman
         judul="Kategori Keluhan"
         deskripsi="Atur prioritas bawaan, kebutuhan aset, SLA, dan routing triage."
         aksi={
@@ -291,6 +291,6 @@ export default function KategoriKeluhanIndex({ kategori, tingkatLayanan, peran }
         pencarianPlaceholder="Cari kategori..."
         pesanKosong="Belum ada kategori keluhan."
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

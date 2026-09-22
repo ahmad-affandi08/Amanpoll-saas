@@ -3,7 +3,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Download, Upload } from 'lucide-react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { Badge } from '@/components/ui/badge';
@@ -135,7 +135,7 @@ function DialogImpor() {
   );
 }
 
-export default function Index({ prospek, tahap, filter }: Props) {
+export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
 
   const saring = (tahapKode: string | null) => {
@@ -199,7 +199,7 @@ export default function Index({ prospek, tahap, filter }: Props) {
     <KerangkaPlatform>
       <Head title="Prospek" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Prospek"
         deskripsi="Seluruh lead dari situs publik, impor, API, dan entri manual."
         tanpaBreadcrumb

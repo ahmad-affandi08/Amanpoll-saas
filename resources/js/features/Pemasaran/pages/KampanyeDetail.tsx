@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -78,7 +78,7 @@ interface Props {
 const rupiah = (nilai: number) =>
   new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(nilai);
 
-export default function KampanyeDetail({ kampanye, biaya, target, konten, pilihan }: Props) {
+export default function PemasaranKampanyeDetail({ kampanye, biaya, target, konten, pilihan }: Props) {
   const akar = `/admin-platform/pemasaran/kampanye/${kampanye.Id}`;
   const totalBiaya = biaya.reduce((jumlah, satu) => jumlah + satu.Jumlah, 0);
 
@@ -86,7 +86,7 @@ export default function KampanyeDetail({ kampanye, biaya, target, konten, piliha
     <KerangkaPlatform>
       <Head title={`Kampanye ${kampanye.Kode}`} />
 
-      <PageHeader
+      <KepalaHalaman
         judul={kampanye.Nama}
         deskripsi={`Kode ${kampanye.Kode} dipakai sebagai utm_campaign pada tautan iklannya.`}
         tanpaBreadcrumb

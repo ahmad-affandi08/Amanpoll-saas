@@ -1,8 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import type { Paginasi } from '@/types/global';
 import type { PanggilanBalikWeb, PengirimanPanggilanBalikWeb } from '@/features/Integrasi/types';
@@ -27,7 +27,7 @@ function waktuLokal(nilai: string | null): string {
 
 export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title={`Pengiriman ${webhook.Nama}`} />
       <BreadcrumbHalaman />
       <div className="space-y-6">
@@ -50,7 +50,7 @@ export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
         </header>
 
         {pengiriman.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             judul="Belum ada pengiriman."
             deskripsi="Pengiriman muncul setelah peristiwa yang dilanggani terjadi."
           />
@@ -110,10 +110,10 @@ export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
                 </div>
               ))}
             </div>
-            <Pagination meta={pengiriman.meta} onNavigasi={(halaman) => navigasiHalaman(halaman)} />
+            <KontrolPaginasi meta={pengiriman.meta} onNavigasi={(halaman) => navigasiHalaman(halaman)} />
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

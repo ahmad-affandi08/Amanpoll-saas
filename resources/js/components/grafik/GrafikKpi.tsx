@@ -14,7 +14,7 @@ import {
   YAxis,
 } from 'recharts';
 import { Table2, TrendingUp } from 'lucide-react';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { TooltipGrafik } from '@/components/grafik/TooltipGrafik';
 import {
   BATAS_DERET,
@@ -40,7 +40,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
 
   if (data.length === 0) {
     return (
-      <EmptyState
+      <KeadaanKosong
         judul="Belum ada data pada rentang ini."
         deskripsi="Grafik muncul setelah ada transaksi yang memenuhi filter."
       />

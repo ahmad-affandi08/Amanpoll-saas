@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { BadgeCheck, Plus, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Paginasi } from '@/types/global';
 import type { SertifikasiAset, StatusSertifikasi } from '@/features/Sertifikasi/types';
 import { ruteSertifikasi } from '@/features/Sertifikasi/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface AsetRingkas {
   Id: string;
@@ -226,10 +226,10 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Sertifikasi Aset" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Sertifikasi Aset"
           deskripsi="Sertifikat aset beserta penerbit, masa berlaku, dan statusnya."
           aksi={
@@ -269,7 +269,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
         </form>
 
         {sertifikasi.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/persetujuan-kepatuhan.webp"
             judul="Belum ada sertifikat aset."
             deskripsi="Catat sertifikat agar masa berlakunya ikut diingatkan."
@@ -342,7 +342,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
                 </div>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={sertifikasi.meta}
               onNavigasi={(halaman) =>
                 navigasiHalaman(halaman, { cari, status: status === SEMUA ? '' : status })
@@ -351,6 +351,6 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter }: Props) {
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +22,7 @@ const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destru
   Diarsipkan: 'destructive',
 };
 
-export default function Index({ halaman }: Props) {
+export default function PemasaranHalamanIndex({ halaman }: Props) {
   const columns = useMemo<ColumnDef<HalamanRingkas>[]>(
     () => [
       {
@@ -100,7 +100,7 @@ export default function Index({ halaman }: Props) {
     <KerangkaPlatform>
       <Head title="Halaman Pemasaran" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Halaman Pemasaran"
         deskripsi="Landing page disusun dan diterbitkan dari sini, tanpa deploy."
         tanpaBreadcrumb

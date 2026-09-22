@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -69,12 +69,12 @@ const AKAR = '/admin-platform/pemasaran/eksperimen';
 
 const persen = (nilai: number) => `${(nilai * 100).toFixed(1)}%`;
 
-export default function EksperimenHalaman({ eksperimen, pilihan }: Props) {
+export default function PemasaranEksperimen({ eksperimen, pilihan }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Eksperimen A/B" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Eksperimen A/B"
         deskripsi="Pengunjung yang sama selalu melihat varian yang sama, dan pemenang tidak pernah dinyatakan sebelum sampel minimumnya tercapai."
         tanpaBreadcrumb

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +17,7 @@ import { http } from '@/lib/http';
 import type { PermintaanPersetujuan, StatusPermintaanPersetujuan } from '@/features/Persetujuan/types';
 import { rutePermintaanPersetujuan } from '@/features/PermintaanPersetujuan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 function badgeStatus(status: StatusPermintaanPersetujuan) {
   const varian = status === 'Disetujui' ? 'default' : status === 'Menunggu' ? 'secondary' : 'outline';
@@ -204,9 +204,9 @@ function MilikSayaTab() {
 
 export default function PermintaanPersetujuanIndex() {
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Persetujuan Saya" />
-      <PageHeader
+      <KepalaHalaman
         judul="Persetujuan Saya"
         deskripsi="Kelola permintaan persetujuan yang Anda ajukan atau yang perlu tindakan Anda."
       />
@@ -223,6 +223,6 @@ export default function PermintaanPersetujuanIndex() {
           <MilikSayaTab />
         </TabsContent>
       </Tabs>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

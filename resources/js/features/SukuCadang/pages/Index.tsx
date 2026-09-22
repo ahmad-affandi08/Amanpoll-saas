@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,11 +18,11 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { KategoriSukuCadang, StatusSukuCadang, SukuCadang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_SUKU_CADANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface KategoriRingkas {
   Id: string;
@@ -262,9 +262,9 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
   ).length;
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Suku Cadang" />
-      <PageHeader
+      <KepalaHalaman
         judul="Suku Cadang"
         deskripsi="Master data suku cadang beserta saldo stok bersih lintas gudang."
         aksi={
@@ -282,7 +282,7 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
       )}
 
       {sukuCadang.length === 0 ? (
-        <EmptyState
+        <KeadaanKosong
           ilustrasi="/assets/3d/suku-cadang.webp"
           judul="Belum ada suku cadang."
           deskripsi="Tambahkan suku cadang pertama untuk mulai mencatat stok."
@@ -295,6 +295,6 @@ export default function SukuCadangIndex({ sukuCadang, kategoriSukuCadang }: Prop
           pesanKosong="Belum ada suku cadang."
         />
       )}
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

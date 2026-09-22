@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,12 +47,12 @@ interface Props {
   pilihanKonfigurasi: Record<string, PilihanKonfigurasi[]>;
 }
 
-export default function Pengaturan({ domain, fitur, konfigurasi, pilihanKonfigurasi }: Props) {
+export default function PemasaranPengaturan({ domain, fitur, konfigurasi, pilihanKonfigurasi }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Pengaturan Growth & Marketing" />
 
-      <PageHeader
+      <KepalaHalaman
         judul="Pengaturan"
         deskripsi="Host, modul, dan setelan domain Pemasaran."
         tanpaBreadcrumb

@@ -1,9 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ClipboardPlus, Plus, Search } from 'lucide-react';
-import AppLayout from '@/layouts/AppLayout';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { Pagination, navigasiHalaman } from '@/components/shared/Pagination';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,7 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { PrioritasUsulanAset, StatusUsulanAset, UsulanAset } from '@/features/UsulanAset/types';
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Referensi {
   Id: string;
@@ -265,10 +265,10 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
   }
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Usulan Aset" />
       <div className="space-y-6">
-        <PageHeader
+        <KepalaHalaman
           judul="Usulan Aset"
           deskripsi="Susun kebutuhan, lakukan penilaian, lalu ajukan persetujuan."
           aksi={
@@ -326,7 +326,7 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
           </Button>
         </form>
         {usulan.data.length === 0 ? (
-          <EmptyState
+          <KeadaanKosong
             ilustrasi="/assets/3d/dashboard-analitik.webp"
             judul="Belum ada usulan aset."
             deskripsi="Buat usulan pertama untuk memulai proses perencanaan kebutuhan."
@@ -398,7 +398,7 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
                 </Link>
               ))}
             </div>
-            <Pagination
+            <KontrolPaginasi
               meta={usulan.meta}
               onNavigasi={(page) =>
                 navigasiHalaman(page, {
@@ -411,6 +411,6 @@ export default function UsulanAsetIndex({ usulan, unitOrganisasi, kategoriAset, 
           </div>
         )}
       </div>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

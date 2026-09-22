@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import {
   FileCheck2,
   Plus,
@@ -33,7 +33,7 @@ import {
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   pelaksanaanKalibrasi: PelaksanaanKalibrasi[];
@@ -55,7 +55,7 @@ interface Props {
   };
 }
 
-export default function PelaksanaanKalibrasiIndex({
+export default function KalibrasiPelaksanaanIndex({
   pelaksanaanKalibrasi,
   aset,
   jenisKalibrasi,
@@ -135,12 +135,12 @@ export default function PelaksanaanKalibrasiIndex({
   });
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Pelaksanaan & Sertifikat Kalibrasi" />
 
       <div className="space-y-6">
         {/* Header */}
-        <PageHeader
+        <KepalaHalaman
           judul="Pelaksanaan Kalibrasi"
           deskripsi={
             <>
@@ -214,7 +214,7 @@ export default function PelaksanaanKalibrasiIndex({
           <CardContent className="p-0">
             {filteredList.length === 0 ? (
               <div className="py-12">
-                <EmptyState
+                <KeadaanKosong
                   judul="Belum ada riwayat pelaksanaan kalibrasi."
                   deskripsi="Kegiatan pengujian kalibrasi yang didaftarkan akan ditampilkan di sini."
                 />
@@ -437,6 +437,6 @@ export default function PelaksanaanKalibrasiIndex({
           </form>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

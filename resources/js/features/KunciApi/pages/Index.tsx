@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,7 +26,7 @@ import { ruteKunciApi } from '@/features/KunciApi/api';
 import { http } from '@/lib/http';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   kunciApi: KunciApi[];
@@ -279,10 +279,10 @@ export default function KunciApiIndex({ kunciApi }: Props) {
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Kunci API" />
       {tokenTampil && <DialogTampilkanToken token={tokenTampil} onTutup={() => setTokenTampil(null)} />}
-      <PageHeader
+      <KepalaHalaman
         judul="Kunci API"
         deskripsi="Kelola akses integrasi eksternal ke Amanpoll."
         aksi={
@@ -310,6 +310,6 @@ export default function KunciApiIndex({ kunciApi }: Props) {
         pesanKosong="Belum ada kunci API."
         ilustrasiKosong="/assets/3d/integrasi.webp"
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

@@ -1,7 +1,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import AppLayout from '@/layouts/AppLayout';
+import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,7 @@ import type { Lokasi, KategoriLokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import { ruteLokasi } from '@/features/Lokasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   lokasi: Lokasi[];
@@ -338,9 +338,9 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: 
   );
 
   return (
-    <AppLayout>
+    <KerangkaAplikasi>
       <Head title="Lokasi" />
-      <PageHeader
+      <KepalaHalaman
         judul="Lokasi"
         deskripsi="Kelola lokasi fisik aset dan fasilitas."
         aksi={
@@ -375,6 +375,6 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi }: 
         pesanKosong="Belum ada lokasi."
         ilustrasiKosong="/assets/3d/lokasi.webp"
       />
-    </AppLayout>
+    </KerangkaAplikasi>
   );
 }

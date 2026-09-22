@@ -28,7 +28,7 @@ const IKON_ARAH: Record<Arah, LucideIcon> = {
 };
 
 /** Kartu angka tunggal (DESIGN.md 13). */
-export function StatCard({ label, nilai, keterangan, ikon: Ikon, perubahan, className }: Props) {
+export function KartuStatistik({ label, nilai, keterangan, ikon: Ikon, perubahan, className }: Props) {
   const IkonArah = perubahan ? IKON_ARAH[perubahan.arah] : null;
   const naikItuBaik = perubahan?.naikItuBaik ?? true;
 

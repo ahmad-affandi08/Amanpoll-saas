@@ -1,7 +1,7 @@
-import { PageHeader } from '@/components/shared/PageHeader';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 export default function PersetujuanIndex() {
   return (
-    <PageHeader
+    <KepalaHalaman
       judul="Persetujuan"
       deskripsi="Halaman modul Persetujuan. Implementasikan use-case dan UI di feature ini."
     />
