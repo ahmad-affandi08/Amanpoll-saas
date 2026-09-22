@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatPenanggungJawabAset;
+use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAkses;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuKerja;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -116,5 +120,39 @@ final class Pengguna extends Authenticatable
     public function perangkat(): HasMany
     {
         return $this->hasMany(PerangkatPengguna::class, 'PenggunaId', 'Id');
+    }
+
+    /**
+     * @return HasMany<PenugasanPerintahKerja, $this>
+     */
+    public function penugasanPerintahKerja(): HasMany
+    {
+        return $this->hasMany(PenugasanPerintahKerja::class, 'PenggunaId', 'Id')
+            ->orderByDesc('DitugaskanPada');
+    }
+
+    /**
+     * @return HasMany<WaktuKerja, $this>
+     */
+    public function waktuKerja(): HasMany
+    {
+        return $this->hasMany(WaktuKerja::class, 'PenggunaId', 'Id')->orderByDesc('MulaiPada');
+    }
+
+    /**
+     * @return HasMany<RiwayatPenanggungJawabAset, $this>
+     */
+    public function riwayatPenanggungJawabAset(): HasMany
+    {
+        return $this->hasMany(RiwayatPenanggungJawabAset::class, 'PenggunaId', 'Id')
+            ->orderByDesc('MulaiPada');
+    }
+
+    /**
+     * @return HasMany<CatatanAkses, $this>
+     */
+    public function catatanAkses(): HasMany
+    {
+        return $this->hasMany(CatatanAkses::class, 'PenggunaId', 'Id')->orderByDesc('DibuatPada');
     }
 }

@@ -4,4 +4,6 @@ export const rutePengguna = {
   peran: (id: string) => `/platform/pengguna/${id}/peran`,
   peranDetail: (penggunaPeranId: string) => `/platform/pengguna-peran/${penggunaPeranId}`,
   status: (id: string) => `/platform/pengguna/${id}/status`,
+  bebanKerja: (id: string) => `/platform/pengguna/${id}/beban-kerja`,
+  aktivitas: (id: string) => `/platform/pengguna/${id}/aktivitas`,
 };

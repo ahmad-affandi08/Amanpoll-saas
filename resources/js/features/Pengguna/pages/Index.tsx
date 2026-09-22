@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
@@ -243,10 +243,10 @@ export default function PenggunaIndex({ pengguna, peranTersedia, filter }: Props
         accessorFn: (row) => `${row.Nama} ${row.Email}`,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
         cell: ({ row }) => (
-          <div>
+          <Link href={rutePengguna.detail(row.original.Id)} className="hover:underline">
             <div className="font-medium text-foreground">{row.original.Nama}</div>
             <div className="text-sm text-muted-foreground">{row.original.Email}</div>
-          </div>
+          </Link>
         ),
         meta: { label: 'Nama' },
       },
@@ -332,32 +332,32 @@ export default function PenggunaIndex({ pengguna, peranTersedia, filter }: Props
           deskripsi="Tambahkan pengguna pertama untuk memberi akses ke sistem."
         />
       ) : (
-      <DataTable
-        columns={columns}
-        data={pengguna.data}
-        server={{ meta: pengguna.meta, filter }}
-        pencarianPlaceholder="Cari nama, email, jabatan..."
-        facetedFilters={[
-          {
-            columnId: 'Status',
-            title: 'Status',
-            options: [
-              { label: 'Aktif', value: 'Aktif' },
-              { label: 'Nonaktif', value: 'Nonaktif' },
-            ],
-          },
-          {
-            columnId: 'JenisPengguna',
-            title: 'Jenis',
-            options: [
-              { label: 'Internal', value: 'Internal' },
-              { label: 'Eksternal', value: 'Eksternal' },
-            ],
-          },
-        ]}
-        pesanKosong="Tidak ada pengguna yang cocok."
-        ilustrasiKosong="/assets/3d/pengguna.webp"
-      />
+        <DataTable
+          columns={columns}
+          data={pengguna.data}
+          server={{ meta: pengguna.meta, filter }}
+          pencarianPlaceholder="Cari nama, email, jabatan..."
+          facetedFilters={[
+            {
+              columnId: 'Status',
+              title: 'Status',
+              options: [
+                { label: 'Aktif', value: 'Aktif' },
+                { label: 'Nonaktif', value: 'Nonaktif' },
+              ],
+            },
+            {
+              columnId: 'JenisPengguna',
+              title: 'Jenis',
+              options: [
+                { label: 'Internal', value: 'Internal' },
+                { label: 'Eksternal', value: 'Eksternal' },
+              ],
+            },
+          ]}
+          pesanKosong="Tidak ada pengguna yang cocok."
+          ilustrasiKosong="/assets/3d/pengguna.webp"
+        />
       )}
     </KerangkaAplikasi>
   );

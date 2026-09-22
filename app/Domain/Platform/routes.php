@@ -15,6 +15,7 @@ use App\Domain\Platform\Http\Controllers\PenggunaController;
 use App\Domain\Platform\Http\Controllers\PenggunaPeranController;
 use App\Domain\Platform\Http\Controllers\PeranController;
 use App\Domain\Platform\Http\Controllers\ProfilController;
+use App\Domain\Platform\Http\Controllers\RiwayatPenggunaController;
 use App\Domain\Platform\Http\Controllers\UnitOrganisasiController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,9 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
         Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna.index');
         Route::post('/pengguna', [PenggunaController::class, 'store'])->name('pengguna.store');
+        Route::get('/pengguna/{pengguna}', [PenggunaController::class, 'show'])->name('pengguna.show');
+        Route::get('/pengguna/{pengguna}/beban-kerja', [RiwayatPenggunaController::class, 'bebanKerja'])->name('pengguna.bebanKerja');
+        Route::get('/pengguna/{pengguna}/aktivitas', [RiwayatPenggunaController::class, 'aktivitas'])->name('pengguna.aktivitas');
         Route::put('/pengguna/{pengguna}', [PenggunaController::class, 'update'])->name('pengguna.update');
         Route::put('/pengguna/{pengguna}/status', [PenggunaController::class, 'ubahStatus'])->name('pengguna.status');
         Route::post('/pengguna/{pengguna}/peran', [PenggunaPeranController::class, 'store'])->name('pengguna.peran.store');

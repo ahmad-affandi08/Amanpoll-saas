@@ -38,6 +38,41 @@ final class PenggunaController extends Controller
         ]);
     }
 
+    /**
+     * Profil pengguna beserta beban kerja dan tanggung jawabnya.
+     *
+     * Daftar pengguna hanya menjawab "siapa saja dan perannya apa". Sebelum
+     * menonaktifkan atau memindahkan seseorang, penyelia perlu tahu apa yang
+     * sedang dipegangnya; rinciannya diambil tab lewat RiwayatPenggunaController.
+     */
+    public function show(Pengguna $pengguna): Response
+    {
+        $this->authorize('view', $pengguna);
+
+        $pengguna->load(['penggunaPeran.peran', 'unitOrganisasi']);
+
+        return Inertia::render('Pengguna/Show', [
+            'pengguna' => new PenggunaResource($pengguna),
+            'ringkasan' => $this->ringkasanPengguna($pengguna),
+        ]);
+    }
+
+    /**
+     * Dihitung di basis data supaya angkanya tidak bergantung pada baris yang
+     * kebetulan termuat di salah satu tab.
+     *
+     * @return array{PenugasanBerjalan: int, TotalMenitKerja: int, AsetDitanggung: int, JumlahPeran: int}
+     */
+    private function ringkasanPengguna(Pengguna $pengguna): array
+    {
+        return [
+            'PenugasanBerjalan' => $pengguna->penugasanPerintahKerja()->whereNull('SelesaiPada')->count(),
+            'TotalMenitKerja' => (int) $pengguna->waktuKerja()->sum('DurasiMenit'),
+            'AsetDitanggung' => $pengguna->riwayatPenanggungJawabAset()->whereNull('SelesaiPada')->count(),
+            'JumlahPeran' => $pengguna->penggunaPeran()->count(),
+        ];
+    }
+
     public function store(SimpanPenggunaRequest $request, BuatPengguna $aksi): RedirectResponse
     {
         $this->authorize('create', Pengguna::class);
