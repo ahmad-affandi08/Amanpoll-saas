@@ -20,6 +20,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Demo {
   Id: string;
@@ -50,11 +51,13 @@ interface Props {
   demo: Demo[];
   peristiwa: Record<string, number>;
   pilihan: Pilihan;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.demo;
 
-export default function PemasaranDemo({ demo, peristiwa, pilihan }: Props) {
+export default function PemasaranDemo({ demo, peristiwa, pilihan, wajib }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Demo Produk" />
@@ -63,7 +66,7 @@ export default function PemasaranDemo({ demo, peristiwa, pilihan }: Props) {
         judul="Demo Produk"
         deskripsi="Sandbox yang dicoba calon pelanggan. Datasetnya dibangun ulang berkala dan tidak pernah menyentuh tenant sungguhan."
         tanpaBreadcrumb
-        aksi={<DialogFormDemo demo={null} pilihan={pilihan} />}
+        aksi={<DialogFormDemo demo={null} pilihan={pilihan} wajib={wajib.demo} />}
         className="mb-6"
       />
 
@@ -72,7 +75,7 @@ export default function PemasaranDemo({ demo, peristiwa, pilihan }: Props) {
           {demo.length === 0 ? (
             <p className="text-sm text-muted-foreground">Belum ada demo yang disiapkan.</p>
           ) : (
-            demo.map((satu) => <KartuDemo key={satu.Id} demo={satu} pilihan={pilihan} />)
+            demo.map((satu) => <KartuDemo key={satu.Id} demo={satu} pilihan={pilihan} wajib={wajib.demo} />)
           )}
         </div>
 
@@ -82,7 +85,7 @@ export default function PemasaranDemo({ demo, peristiwa, pilihan }: Props) {
   );
 }
 
-function KartuDemo({ demo, pilihan }: { demo: Demo; pilihan: Pilihan }) {
+function KartuDemo({ demo, pilihan, wajib }: { demo: Demo; pilihan: Pilihan; wajib: AturanWajib }) {
   return (
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
@@ -92,7 +95,7 @@ function KartuDemo({ demo, pilihan }: { demo: Demo; pilihan: Pilihan }) {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Badge variant={demo.Aktif ? 'default' : 'secondary'}>{demo.Aktif ? 'Aktif' : 'Dimatikan'}</Badge>
-          <DialogFormDemo demo={demo} pilihan={pilihan} />
+          <DialogFormDemo demo={demo} pilihan={pilihan} wajib={wajib} />
           <Button
             variant="outline"
             size="sm"
@@ -197,7 +200,15 @@ function PeristiwaDemo({ peristiwa }: { peristiwa: Record<string, number> }) {
   );
 }
 
-function DialogFormDemo({ demo, pilihan }: { demo: Demo | null; pilihan: Pilihan }) {
+function DialogFormDemo({
+  demo,
+  pilihan,
+  wajib,
+}: {
+  demo: Demo | null;
+  pilihan: Pilihan;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const dataset = Object.keys(pilihan.Dataset);
   const form = useForm({
@@ -250,142 +261,158 @@ function DialogFormDemo({ demo, pilihan }: { demo: Demo | null; pilihan: Pilihan
           <DialogTitle>{demo ? 'Setelan Demo' : 'Tambah Demo'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="grid gap-2">
-              <Label htmlFor="Nama">Nama</Label>
-              <Input
-                id="Nama"
-                value={form.data.Nama}
-                onChange={(e) => form.setData('Nama', e.target.value)}
-                required
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
               />
+              <div className="grid gap-2">
+                <Label nama="Nama" htmlFor="Nama">
+                  Nama
+                </Label>
+                <Input
+                  id="Nama"
+                  value={form.data.Nama}
+                  onChange={(e) => form.setData('Nama', e.target.value)}
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.Aktif}
-              onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-            />
-            Demo aktif dan dapat dimulai pengunjung
-          </label>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.Aktif}
+                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+              />
+              Demo aktif dan dapat dimulai pengunjung
+            </label>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Dataset">Dataset</Label>
-            <Select value={form.data.Dataset} onValueChange={(v) => form.setData('Dataset', v)}>
-              <SelectTrigger id="Dataset">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(pilihan.Dataset).map(([kode, nama]) => (
-                  <SelectItem key={kode} value={kode}>
-                    {nama}
-                  </SelectItem>
+            <div className="grid gap-2">
+              <Label nama="Dataset" htmlFor="Dataset">
+                Dataset
+              </Label>
+              <Select value={form.data.Dataset} onValueChange={(v) => form.setData('Dataset', v)}>
+                <SelectTrigger id="Dataset">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(pilihan.Dataset).map(([kode, nama]) => (
+                    <SelectItem key={kode} value={kode}>
+                      {nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.Dataset ? <p className="text-sm text-destructive">{form.errors.Dataset}</p> : null}
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-2">
+                <Label nama="ResetIntervalMenit" htmlFor="ResetIntervalMenit">
+                  Interval reset (menit)
+                </Label>
+                <Input
+                  id="ResetIntervalMenit"
+                  type="number"
+                  min="15"
+                  value={form.data.ResetIntervalMenit}
+                  onChange={(e) => form.setData('ResetIntervalMenit', e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label nama="MaksDurasiMenit" htmlFor="MaksDurasiMenit">
+                  Durasi sesi (menit)
+                </Label>
+                <Input
+                  id="MaksDurasiMenit"
+                  type="number"
+                  min="5"
+                  value={form.data.MaksDurasiMenit}
+                  onChange={(e) => form.setData('MaksDurasiMenit', e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label nama="MaksSesiSerentak" htmlFor="MaksSesiSerentak">
+                  Sesi serentak
+                </Label>
+                <Input
+                  id="MaksSesiSerentak"
+                  type="number"
+                  min="1"
+                  value={form.data.MaksSesiSerentak}
+                  onChange={(e) => form.setData('MaksSesiSerentak', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <fieldset className="grid gap-2">
+              <legend className="text-sm font-medium">Modul yang ditampilkan</legend>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {pilihan.Modul.map((satu) => (
+                  <label key={satu} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={form.data.ModulTampil.includes(satu)}
+                      onCheckedChange={(nilai) => ubahDaftar('ModulTampil', satu, nilai === true)}
+                    />
+                    {satu}
+                  </label>
                 ))}
-              </SelectContent>
-            </Select>
-            {form.errors.Dataset ? <p className="text-sm text-destructive">{form.errors.Dataset}</p> : null}
-          </div>
+              </div>
+              {form.errors.ModulTampil ? (
+                <p className="text-sm text-destructive">{form.errors.ModulTampil}</p>
+              ) : null}
+            </fieldset>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="grid gap-2">
-              <Label htmlFor="ResetIntervalMenit">Interval reset (menit)</Label>
-              <Input
-                id="ResetIntervalMenit"
-                type="number"
-                min="15"
-                value={form.data.ResetIntervalMenit}
-                onChange={(e) => form.setData('ResetIntervalMenit', e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="MaksDurasiMenit">Durasi sesi (menit)</Label>
-              <Input
-                id="MaksDurasiMenit"
-                type="number"
-                min="5"
-                value={form.data.MaksDurasiMenit}
-                onChange={(e) => form.setData('MaksDurasiMenit', e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="MaksSesiSerentak">Sesi serentak</Label>
-              <Input
-                id="MaksSesiSerentak"
-                type="number"
-                min="1"
-                value={form.data.MaksSesiSerentak}
-                onChange={(e) => form.setData('MaksSesiSerentak', e.target.value)}
-              />
-            </div>
-          </div>
+            <fieldset className="grid gap-2">
+              <legend className="text-sm font-medium">Fitur yang dibatasi</legend>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {pilihan.Fitur.map((satu) => (
+                  <label key={satu} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={form.data.FiturDibatasi.includes(satu)}
+                      onCheckedChange={(nilai) => ubahDaftar('FiturDibatasi', satu, nilai === true)}
+                    />
+                    {satu}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
 
-          <fieldset className="grid gap-2">
-            <legend className="text-sm font-medium">Modul yang ditampilkan</legend>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {pilihan.Modul.map((satu) => (
-                <label key={satu} className="flex items-center gap-2 text-sm">
-                  <Checkbox
-                    checked={form.data.ModulTampil.includes(satu)}
-                    onCheckedChange={(nilai) => ubahDaftar('ModulTampil', satu, nilai === true)}
-                  />
-                  {satu}
-                </label>
-              ))}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label nama="CtaLabel" htmlFor="CtaLabel">
+                  Label CTA
+                </Label>
+                <Input
+                  id="CtaLabel"
+                  value={form.data.CtaLabel}
+                  onChange={(e) => form.setData('CtaLabel', e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label nama="CtaUrl" htmlFor="CtaUrl">
+                  Tautan CTA
+                </Label>
+                <Input
+                  id="CtaUrl"
+                  type="url"
+                  value={form.data.CtaUrl}
+                  onChange={(e) => form.setData('CtaUrl', e.target.value)}
+                />
+                {form.errors.CtaUrl ? <p className="text-sm text-destructive">{form.errors.CtaUrl}</p> : null}
+              </div>
             </div>
-            {form.errors.ModulTampil ? (
-              <p className="text-sm text-destructive">{form.errors.ModulTampil}</p>
-            ) : null}
-          </fieldset>
 
-          <fieldset className="grid gap-2">
-            <legend className="text-sm font-medium">Fitur yang dibatasi</legend>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {pilihan.Fitur.map((satu) => (
-                <label key={satu} className="flex items-center gap-2 text-sm">
-                  <Checkbox
-                    checked={form.data.FiturDibatasi.includes(satu)}
-                    onCheckedChange={(nilai) => ubahDaftar('FiturDibatasi', satu, nilai === true)}
-                  />
-                  {satu}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="CtaLabel">Label CTA</Label>
-              <Input
-                id="CtaLabel"
-                value={form.data.CtaLabel}
-                onChange={(e) => form.setData('CtaLabel', e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="CtaUrl">Tautan CTA</Label>
-              <Input
-                id="CtaUrl"
-                type="url"
-                value={form.data.CtaUrl}
-                onChange={(e) => form.setData('CtaUrl', e.target.value)}
-              />
-              {form.errors.CtaUrl ? <p className="text-sm text-destructive">{form.errors.CtaUrl}</p> : null}
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

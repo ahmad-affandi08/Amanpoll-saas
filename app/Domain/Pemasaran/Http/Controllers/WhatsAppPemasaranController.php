@@ -16,6 +16,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\MenuWhatsAppPemasaran
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TemplateWhatsAppPemasaran;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,7 @@ final class WhatsAppPemasaranController extends Controller
     public function index(): Response
     {
         return Inertia::render('Pemasaran/WhatsApp', [
+            'wajib' => ['template' => AturanWajib::untuk(SimpanTemplateWhatsAppRequest::class), 'menu' => AturanWajib::untuk(SimpanMenuWhatsAppRequest::class)],
             'template' => TemplateWhatsAppPemasaran::query()
                 ->orderBy('Kode')
                 ->get()

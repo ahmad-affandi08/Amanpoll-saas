@@ -10,6 +10,7 @@ use App\Domain\Pemasaran\Http\Requests\SimpanAturanSkorProspekRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AturanSkorProspek;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -49,6 +50,7 @@ final class AturanSkorProspekController extends Controller
             ->urut(['Peristiwa', 'Bobot'], bawaan: 'Bobot', arahBawaan: 'desc');
 
         return Inertia::render('Pemasaran/AturanSkor/Index', [
+            'wajib' => ['aturan' => AturanWajib::untuk(SimpanAturanSkorProspekRequest::class)],
             'aturan' => $daftar->halamanTerpeta(fn (AturanSkorProspek $satu): array => [
                 'Id' => $satu->Id,
                 'Peristiwa' => $satu->Peristiwa,

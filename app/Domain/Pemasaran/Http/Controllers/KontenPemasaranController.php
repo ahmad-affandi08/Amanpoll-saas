@@ -24,6 +24,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KontenPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\VersiKontenPemasaran;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -47,6 +48,7 @@ final class KontenPemasaranController extends Controller
             ->get();
 
         return Inertia::render('Pemasaran/Konten', [
+            'wajib' => ['konten' => AturanWajib::untuk(SimpanKontenPemasaranRequest::class), 'keyword' => AturanWajib::untuk(SimpanKeywordSeoRequest::class)],
             'konten' => $konten->map(fn (KontenPemasaran $satu): array => $this->ringkas($satu))->all(),
             'keyword' => $this->daftarKeyword(),
             'cluster' => ClusterSeo::query()
@@ -63,6 +65,7 @@ final class KontenPemasaranController extends Controller
         $disunting = $konten->versiDraf ?? $konten->versiTerbit;
 
         return Inertia::render('Pemasaran/KontenDetail', [
+            'wajib' => ['konten' => AturanWajib::untuk(SimpanKontenPemasaranRequest::class), 'keyword' => AturanWajib::untuk(SimpanKeywordSeoRequest::class)],
             'konten' => [
                 ...$this->ringkas($konten),
                 ...$this->isiVersi($disunting),

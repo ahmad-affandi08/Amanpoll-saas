@@ -11,6 +11,7 @@ use App\Domain\Pemasaran\Http\Requests\SimpanRedirectPemasaranRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RedirectPemasaran;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,6 +33,7 @@ final class RedirectPemasaranController extends Controller
             ->faset(['Kode']);
 
         return Inertia::render('Pemasaran/Redirect/Index', [
+            'wajib' => ['redirect' => AturanWajib::untuk(SimpanRedirectPemasaranRequest::class)],
             'redirect' => $daftar->halamanTerpeta(fn (RedirectPemasaran $satu): array => [
                 'Id' => $satu->Id,
                 'Dari' => $satu->Dari,

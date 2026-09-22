@@ -20,6 +20,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Kampanye;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KontenSosial;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -52,6 +53,7 @@ final class KontenSosialController extends Controller
             ->keyBy('DistribusiKontenSosialId');
 
         return Inertia::render('Pemasaran/Sosial', [
+            'wajib' => ['konten' => AturanWajib::untuk(SimpanKontenSosialRequest::class), 'distribusi' => AturanWajib::untuk(SimpanDistribusiSosialRequest::class)],
             'konten' => $konten->map(fn (KontenSosial $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,

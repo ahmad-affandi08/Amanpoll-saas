@@ -16,6 +16,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\DemoPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SesiDemo;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -42,6 +43,7 @@ final class DemoPemasaranController extends Controller
             ->get();
 
         return Inertia::render('Pemasaran/Demo', [
+            'wajib' => ['demo' => AturanWajib::untuk(SimpanDemoPemasaranRequest::class)],
             'demo' => $demo->map(fn (DemoPemasaran $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,

@@ -19,6 +19,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\VarianEksperimen;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,6 +46,7 @@ final class EksperimenPemasaranController extends Controller
             ->get();
 
         return Inertia::render('Pemasaran/Eksperimen', [
+            'wajib' => ['eksperimen' => AturanWajib::untuk(SimpanEksperimenRequest::class)],
             'eksperimen' => $eksperimen->map(fn (EksperimenPemasaran $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,

@@ -23,10 +23,13 @@ import { Textarea } from '@/components/ui/textarea';
 import type { FieldFormulir, Formulir, PilihanFormulir } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   formulir: Formulir[];
   pilihan: PilihanFormulir;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.formulir;
@@ -41,7 +44,7 @@ const FIELD_BARU: FieldFormulir = {
   Bantuan: null,
 };
 
-export default function PemasaranFormulirIndex({ formulir, pilihan }: Props) {
+export default function PemasaranFormulirIndex({ formulir, pilihan, wajib }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Formulir Pemasaran" />
@@ -50,7 +53,7 @@ export default function PemasaranFormulirIndex({ formulir, pilihan }: Props) {
         judul="Formulir Pemasaran"
         deskripsi="Formulir yang dipasang di halaman publik. Setiap pengiriman menjadi prospek beserta UTM-nya."
         tanpaBreadcrumb
-        aksi={<DialogFormulir formulir={null} pilihan={pilihan} />}
+        aksi={<DialogFormulir formulir={null} pilihan={pilihan} wajib={wajib.formulir} />}
         className="mb-6"
       />
 
@@ -96,7 +99,7 @@ export default function PemasaranFormulirIndex({ formulir, pilihan }: Props) {
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`${AKAR}/${satu.Kode}`}>Pengiriman</Link>
                   </Button>
-                  <DialogFormulir formulir={satu} pilihan={pilihan} />
+                  <DialogFormulir formulir={satu} pilihan={pilihan} wajib={wajib.formulir} />
                 </div>
               </CardContent>
             </Card>
@@ -107,7 +110,15 @@ export default function PemasaranFormulirIndex({ formulir, pilihan }: Props) {
   );
 }
 
-function DialogFormulir({ formulir, pilihan }: { formulir: Formulir | null; pilihan: PilihanFormulir }) {
+function DialogFormulir({
+  formulir,
+  pilihan,
+  wajib,
+}: {
+  formulir: Formulir | null;
+  pilihan: PilihanFormulir;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: formulir?.Kode ?? '',
@@ -173,200 +184,219 @@ function DialogFormulir({ formulir, pilihan }: { formulir: Formulir | null; pili
           <DialogTitle>{formulir ? 'Ubah Formulir' : 'Tambah Formulir'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-              contoh="demo-manufaktur"
-            />
-
-            <div className="grid gap-2">
-              <Label htmlFor="Nama">Nama</Label>
-              <Input
-                id="Nama"
-                value={form.data.Nama}
-                onChange={(e) => form.setData('Nama', e.target.value)}
-                required
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+                contoh="demo-manufaktur"
               />
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="Sumber">Sumber prospek</Label>
-              <Select value={form.data.Sumber} onValueChange={(v) => form.setData('Sumber', v)}>
-                <SelectTrigger id="Sumber">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.Sumber.map((satu) => (
-                    <SelectItem key={satu} value={satu}>
-                      {satu}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="Tag">Tag (dipisah koma)</Label>
-              <Input id="Tag" value={form.data.Tag} onChange={(e) => form.setData('Tag', e.target.value)} />
-            </div>
-
-            <div className="grid gap-2 sm:col-span-2">
-              <Label htmlFor="PesanSukses">Pesan sukses</Label>
-              <Textarea
-                id="PesanSukses"
-                rows={2}
-                value={form.data.PesanSukses}
-                onChange={(e) => form.setData('PesanSukses', e.target.value)}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="UrlRedirect">Redirect setelah kirim</Label>
-              <Input
-                id="UrlRedirect"
-                value={form.data.UrlRedirect}
-                onChange={(e) => form.setData('UrlRedirect', e.target.value)}
-              />
-              {form.errors.UrlRedirect ? (
-                <p className="text-sm text-destructive">{form.errors.UrlRedirect}</p>
-              ) : null}
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="UrlWebhook">Webhook</Label>
-              <Input
-                id="UrlWebhook"
-                value={form.data.UrlWebhook}
-                onChange={(e) => form.setData('UrlWebhook', e.target.value)}
-              />
-            </div>
-
-            <div className="grid gap-2 sm:col-span-2">
-              <Label htmlFor="PemicuOtomasi">Pemicu otomasi</Label>
-              <Input
-                id="PemicuOtomasi"
-                value={form.data.PemicuOtomasi}
-                onChange={(e) => form.setData('PemicuOtomasi', e.target.value)}
-              />
-              <p className="text-sm text-muted-foreground">
-                Disimpan sebagai kode. Mesin otomasinya menyusul pada fase berikutnya.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-6">
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.WajibPersetujuan}
-                onCheckedChange={(nilai) => form.setData('WajibPersetujuan', nilai === true)}
-              />
-              Wajib persetujuan
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.CaptchaAktif}
-                onCheckedChange={(nilai) => form.setData('CaptchaAktif', nilai === true)}
-              />
-              CAPTCHA
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.Aktif}
-                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-              />
-              Aktif
-            </label>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium">Field</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setField((sebelum) => [...sebelum, { ...FIELD_BARU }])}
-            >
-              Tambah Field
-            </Button>
-          </div>
-
-          {field.map((satu, urutan) => (
-            <div key={urutan} className="grid gap-3 rounded-lg border p-3">
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="grid gap-2">
-                  <Label>Kode</Label>
-                  <Input value={satu.Kode} onChange={(e) => ubahField(urutan, { Kode: e.target.value })} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Label</Label>
-                  <Input value={satu.Label} onChange={(e) => ubahField(urutan, { Label: e.target.value })} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Jenis</Label>
-                  <Select value={satu.Jenis} onValueChange={(v) => ubahField(urutan, { Jenis: v })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pilihan.Jenis.map((jenis) => (
-                        <SelectItem key={jenis} value={jenis}>
-                          {jenis}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="grid gap-2">
+                <Label nama="Nama" htmlFor="Nama">
+                  Nama
+                </Label>
+                <Input
+                  id="Nama"
+                  value={form.data.Nama}
+                  onChange={(e) => form.setData('Nama', e.target.value)}
+                  required
+                />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label>Pilihan (dipisah koma)</Label>
-                  <Input
-                    value={satu.Pilihan.join(', ')}
-                    onChange={(e) =>
-                      ubahField(urutan, {
-                        Pilihan: e.target.value
-                          .split(',')
-                          .map((bagian) => bagian.trim())
-                          .filter((bagian) => bagian !== ''),
-                      })
-                    }
-                  />
-                </div>
-                <div className="flex items-end justify-between gap-4">
-                  <label className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      checked={satu.Wajib}
-                      onCheckedChange={(nilai) => ubahField(urutan, { Wajib: nilai === true })}
+              <div className="grid gap-2">
+                <Label nama="Sumber" htmlFor="Sumber">
+                  Sumber prospek
+                </Label>
+                <Select value={form.data.Sumber} onValueChange={(v) => form.setData('Sumber', v)}>
+                  <SelectTrigger id="Sumber">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.Sumber.map((satu) => (
+                      <SelectItem key={satu} value={satu}>
+                        {satu}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label nama="Tag" htmlFor="Tag">
+                  Tag (dipisah koma)
+                </Label>
+                <Input id="Tag" value={form.data.Tag} onChange={(e) => form.setData('Tag', e.target.value)} />
+              </div>
+
+              <div className="grid gap-2 sm:col-span-2">
+                <Label nama="PesanSukses" htmlFor="PesanSukses">
+                  Pesan sukses
+                </Label>
+                <Textarea
+                  id="PesanSukses"
+                  rows={2}
+                  value={form.data.PesanSukses}
+                  onChange={(e) => form.setData('PesanSukses', e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label nama="UrlRedirect" htmlFor="UrlRedirect">
+                  Redirect setelah kirim
+                </Label>
+                <Input
+                  id="UrlRedirect"
+                  value={form.data.UrlRedirect}
+                  onChange={(e) => form.setData('UrlRedirect', e.target.value)}
+                />
+                {form.errors.UrlRedirect ? (
+                  <p className="text-sm text-destructive">{form.errors.UrlRedirect}</p>
+                ) : null}
+              </div>
+
+              <div className="grid gap-2">
+                <Label nama="UrlWebhook" htmlFor="UrlWebhook">
+                  Webhook
+                </Label>
+                <Input
+                  id="UrlWebhook"
+                  value={form.data.UrlWebhook}
+                  onChange={(e) => form.setData('UrlWebhook', e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2 sm:col-span-2">
+                <Label nama="PemicuOtomasi" htmlFor="PemicuOtomasi">
+                  Pemicu otomasi
+                </Label>
+                <Input
+                  id="PemicuOtomasi"
+                  value={form.data.PemicuOtomasi}
+                  onChange={(e) => form.setData('PemicuOtomasi', e.target.value)}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Disimpan sebagai kode. Mesin otomasinya menyusul pada fase berikutnya.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-6">
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.WajibPersetujuan}
+                  onCheckedChange={(nilai) => form.setData('WajibPersetujuan', nilai === true)}
+                />
+                Wajib persetujuan
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.CaptchaAktif}
+                  onCheckedChange={(nilai) => form.setData('CaptchaAktif', nilai === true)}
+                />
+                CAPTCHA
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.Aktif}
+                  onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+                />
+                Aktif
+              </label>
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium">Field</h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setField((sebelum) => [...sebelum, { ...FIELD_BARU }])}
+              >
+                Tambah Field
+              </Button>
+            </div>
+
+            {field.map((satu, urutan) => (
+              <div key={urutan} className="grid gap-3 rounded-lg border p-3">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="grid gap-2">
+                    <Label>Kode</Label>
+                    <Input value={satu.Kode} onChange={(e) => ubahField(urutan, { Kode: e.target.value })} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Label</Label>
+                    <Input
+                      value={satu.Label}
+                      onChange={(e) => ubahField(urutan, { Label: e.target.value })}
                     />
-                    Wajib
-                  </label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setField((sebelum) => sebelum.filter((_, ke) => ke !== urutan))}
-                  >
-                    Hapus
-                  </Button>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Jenis</Label>
+                    <Select value={satu.Jenis} onValueChange={(v) => ubahField(urutan, { Jenis: v })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pilihan.Jenis.map((jenis) => (
+                          <SelectItem key={jenis} value={jenis}>
+                            {jenis}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-2">
+                    <Label>Pilihan (dipisah koma)</Label>
+                    <Input
+                      value={satu.Pilihan.join(', ')}
+                      onChange={(e) =>
+                        ubahField(urutan, {
+                          Pilihan: e.target.value
+                            .split(',')
+                            .map((bagian) => bagian.trim())
+                            .filter((bagian) => bagian !== ''),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-end justify-between gap-4">
+                    <label className="flex items-center gap-2 text-sm">
+                      <Checkbox
+                        checked={satu.Wajib}
+                        onCheckedChange={(nilai) => ubahField(urutan, { Wajib: nilai === true })}
+                      />
+                      Wajib
+                    </label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setField((sebelum) => sebelum.filter((_, ke) => ke !== urutan))}
+                    >
+                      Hapus
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {galatField ? <p className="text-sm text-destructive">{galatField}</p> : null}
+            {galatField ? <p className="text-sm text-destructive">{galatField}</p> : null}
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

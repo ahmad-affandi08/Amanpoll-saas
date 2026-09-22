@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { rutePartner } from '@/features/PartnerPemasaran/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 type Partner = {
   Kode: string;
@@ -65,16 +66,30 @@ type Props = {
   komisi: Komisi[];
   payout: Payout[];
   materi: Materi[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 };
 
 const rupiah = (nilai: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(nilai);
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(
+    nilai,
+  );
 
 const tanggal = (nilai: string | null) =>
-  nilai ? new Date(nilai).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  nilai
+    ? new Date(nilai).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+    : '—';
 
 /** Portal partner: lead, trial, pelanggan berbayar, komisi, payout, dan materi pemasaran. */
-export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komisi, payout, materi }: Props) {
+export default function PartnerPemasaranPortal({
+  partner,
+  ringkasan,
+  lead,
+  komisi,
+  payout,
+  materi,
+  wajib,
+}: Props) {
   const form = useForm({
     NamaPerusahaan: '',
     NamaKontak: '',
@@ -126,66 +141,80 @@ export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komis
 
         <section className="rounded-[10px] border border-border bg-card p-5">
           <h2 className="text-base font-semibold text-foreground">Kirim lead baru</h2>
-          <form onSubmit={kirimLead} className="mt-4 grid gap-4 md:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="perusahaan">Nama perusahaan</Label>
-              <Input
-                id="perusahaan"
-                value={form.data.NamaPerusahaan}
-                onChange={(e) => form.setData('NamaPerusahaan', e.target.value)}
-              />
-              {form.errors.NamaPerusahaan && (
-                <p className="text-sm text-destructive">{form.errors.NamaPerusahaan}</p>
-              )}
-            </div>
+          <AturanWajibProvider aturan={wajib.lead}>
+            <form onSubmit={kirimLead} className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="perusahaan" htmlFor="perusahaan">
+                  Nama perusahaan
+                </Label>
+                <Input
+                  id="perusahaan"
+                  value={form.data.NamaPerusahaan}
+                  onChange={(e) => form.setData('NamaPerusahaan', e.target.value)}
+                />
+                {form.errors.NamaPerusahaan && (
+                  <p className="text-sm text-destructive">{form.errors.NamaPerusahaan}</p>
+                )}
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="kontak">Nama kontak</Label>
-              <Input
-                id="kontak"
-                value={form.data.NamaKontak}
-                onChange={(e) => form.setData('NamaKontak', e.target.value)}
-              />
-              {form.errors.NamaKontak && <p className="text-sm text-destructive">{form.errors.NamaKontak}</p>}
-            </div>
+              <div className="space-y-1.5">
+                <Label nama="kontak" htmlFor="kontak">
+                  Nama kontak
+                </Label>
+                <Input
+                  id="kontak"
+                  value={form.data.NamaKontak}
+                  onChange={(e) => form.setData('NamaKontak', e.target.value)}
+                />
+                {form.errors.NamaKontak && (
+                  <p className="text-sm text-destructive">{form.errors.NamaKontak}</p>
+                )}
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="email-lead">Email</Label>
-              <Input
-                id="email-lead"
-                type="email"
-                value={form.data.Email}
-                onChange={(e) => form.setData('Email', e.target.value)}
-              />
-              {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
-            </div>
+              <div className="space-y-1.5">
+                <Label nama="Email" htmlFor="email-lead">
+                  Email
+                </Label>
+                <Input
+                  id="email-lead"
+                  type="email"
+                  value={form.data.Email}
+                  onChange={(e) => form.setData('Email', e.target.value)}
+                />
+                {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="telepon">Telepon</Label>
-              <Input
-                id="telepon"
-                value={form.data.Telepon}
-                onChange={(e) => form.setData('Telepon', e.target.value)}
-              />
-              {form.errors.Telepon && <p className="text-sm text-destructive">{form.errors.Telepon}</p>}
-            </div>
+              <div className="space-y-1.5">
+                <Label nama="telepon" htmlFor="telepon">
+                  Telepon
+                </Label>
+                <Input
+                  id="telepon"
+                  value={form.data.Telepon}
+                  onChange={(e) => form.setData('Telepon', e.target.value)}
+                />
+                {form.errors.Telepon && <p className="text-sm text-destructive">{form.errors.Telepon}</p>}
+              </div>
 
-            <div className="space-y-1.5 md:col-span-2">
-              <Label htmlFor="catatan">Catatan</Label>
-              <Textarea
-                id="catatan"
-                value={form.data.Catatan}
-                onChange={(e) => form.setData('Catatan', e.target.value)}
-              />
-              {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
-            </div>
+              <div className="space-y-1.5 md:col-span-2">
+                <Label nama="catatan" htmlFor="catatan">
+                  Catatan
+                </Label>
+                <Textarea
+                  id="catatan"
+                  value={form.data.Catatan}
+                  onChange={(e) => form.setData('Catatan', e.target.value)}
+                />
+                {form.errors.Catatan && <p className="text-sm text-destructive">{form.errors.Catatan}</p>}
+              </div>
 
-            <div className="md:col-span-2">
-              <Button type="submit" disabled={form.processing}>
-                Kirim lead
-              </Button>
-            </div>
-          </form>
+              <div className="md:col-span-2">
+                <Button type="submit" disabled={form.processing}>
+                  Kirim lead
+                </Button>
+              </div>
+            </form>
+          </AturanWajibProvider>
         </section>
 
         <section className="rounded-[10px] border border-border bg-card p-5">
@@ -269,7 +298,10 @@ export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komis
           ) : (
             <ul className="mt-3 space-y-2 text-sm">
               {payout.map((satu) => (
-                <li key={satu.Id} className="flex flex-wrap justify-between gap-2 border-t border-border py-2">
+                <li
+                  key={satu.Id}
+                  className="flex flex-wrap justify-between gap-2 border-t border-border py-2"
+                >
                   <span className="text-foreground">
                     {satu.Nomor} · {satu.JumlahKomisi} komisi
                   </span>
@@ -292,7 +324,10 @@ export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komis
           ) : (
             <ul className="mt-3 space-y-2 text-sm">
               {materi.map((satu) => (
-                <li key={satu.Judul} className="flex flex-wrap justify-between gap-2 border-t border-border py-2">
+                <li
+                  key={satu.Judul}
+                  className="flex flex-wrap justify-between gap-2 border-t border-border py-2"
+                >
                   <span className="text-foreground">{satu.Judul}</span>
                   <span className="text-muted-foreground">
                     {satu.Jenis} ·{' '}
@@ -311,7 +346,8 @@ export default function PartnerPemasaranPortal({ partner, ringkasan, lead, komis
         </section>
 
         <footer className="pb-4 text-xs text-muted-foreground">
-          Perjanjian: {partner.ReferensiPerjanjian ?? '—'} · Referensi payout: {partner.ReferensiPayout ?? '—'}
+          Perjanjian: {partner.ReferensiPerjanjian ?? '—'} · Referensi payout:{' '}
+          {partner.ReferensiPayout ?? '—'}
         </footer>
       </div>
     </div>

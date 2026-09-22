@@ -23,12 +23,15 @@ import type { KonfigurasiTrial, PilihanTrial, Trial } from '@/features/Pemasaran
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   trial: Paginasi<Trial>;
   filter: FilterDaftar;
   konfigurasi: KonfigurasiTrial;
   pilihan: PilihanTrial;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.trial;
@@ -44,7 +47,7 @@ const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destru
   Dibatalkan: 'destructive',
 };
 
-export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filter }: Props) {
+export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filter, wajib }: Props) {
   const columns = useMemo<ColumnDef<Trial>[]>(
     () => [
       {
@@ -103,8 +106,8 @@ export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filte
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogPerpanjang trial={row.original} konfigurasi={konfigurasi} />
-            <DialogStatus trial={row.original} />
+            <DialogPerpanjang trial={row.original} konfigurasi={konfigurasi} wajib={wajib.perpanjang} />
+            <DialogStatus trial={row.original} wajib={wajib.status} />
           </div>
         ),
         enableSorting: false,
@@ -199,7 +202,15 @@ function Checklist({ trial, pilihan }: { trial: Trial; pilihan: PilihanTrial }) 
   );
 }
 
-function DialogPerpanjang({ trial, konfigurasi }: { trial: Trial; konfigurasi: KonfigurasiTrial }) {
+function DialogPerpanjang({
+  trial,
+  konfigurasi,
+  wajib,
+}: {
+  trial: Trial;
+  konfigurasi: KonfigurasiTrial;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const sisa = konfigurasi.PerpanjanganMaksHari - trial.HariPerpanjangan;
   const form = useForm({ Hari: '7', Alasan: '' });
@@ -225,42 +236,48 @@ function DialogPerpanjang({ trial, konfigurasi }: { trial: Trial; konfigurasi: K
           <DialogTitle>Perpanjang Trial</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Hari">Tambahan hari</Label>
-            <Input
-              id="Hari"
-              type="number"
-              min={1}
-              max={sisa}
-              value={form.data.Hari}
-              onChange={(e) => form.setData('Hari', e.target.value)}
-            />
-            <p className="text-sm text-muted-foreground">Sisa jatah perpanjangan: {sisa} hari.</p>
-            {form.errors.Hari ? <p className="text-sm text-destructive">{form.errors.Hari}</p> : null}
-          </div>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label nama="Hari" htmlFor="Hari">
+                Tambahan hari
+              </Label>
+              <Input
+                id="Hari"
+                type="number"
+                min={1}
+                max={sisa}
+                value={form.data.Hari}
+                onChange={(e) => form.setData('Hari', e.target.value)}
+              />
+              <p className="text-sm text-muted-foreground">Sisa jatah perpanjangan: {sisa} hari.</p>
+              {form.errors.Hari ? <p className="text-sm text-destructive">{form.errors.Hari}</p> : null}
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Alasan">Alasan</Label>
-            <Input
-              id="Alasan"
-              value={form.data.Alasan}
-              onChange={(e) => form.setData('Alasan', e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="Alasan" htmlFor="Alasan">
+                Alasan
+              </Label>
+              <Input
+                id="Alasan"
+                value={form.data.Alasan}
+                onChange={(e) => form.setData('Alasan', e.target.value)}
+              />
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-function DialogStatus({ trial }: { trial: Trial }) {
+function DialogStatus({ trial, wajib }: { trial: Trial; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const pilihan = trial.StatusBerikutnya.filter((satu) => satu !== 'Diperpanjang');
   const form = useForm({ Status: pilihan[0] ?? '', Alasan: '' });
@@ -285,39 +302,45 @@ function DialogStatus({ trial }: { trial: Trial }) {
           <DialogTitle>Ubah Status Trial</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Status">Status</Label>
-            <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
-              <SelectTrigger id="Status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {pilihan.map((satu) => (
-                  <SelectItem key={satu} value={satu}>
-                    {satu}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.Status ? <p className="text-sm text-destructive">{form.errors.Status}</p> : null}
-          </div>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label nama="Status" htmlFor="Status">
+                Status
+              </Label>
+              <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
+                <SelectTrigger id="Status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {pilihan.map((satu) => (
+                    <SelectItem key={satu} value={satu}>
+                      {satu}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.errors.Status ? <p className="text-sm text-destructive">{form.errors.Status}</p> : null}
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="AlasanStatus">Alasan</Label>
-            <Input
-              id="AlasanStatus"
-              value={form.data.Alasan}
-              onChange={(e) => form.setData('Alasan', e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="AlasanStatus" htmlFor="AlasanStatus">
+                Alasan
+              </Label>
+              <Input
+                id="AlasanStatus"
+                value={form.data.Alasan}
+                onChange={(e) => form.setData('Alasan', e.target.value)}
+              />
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

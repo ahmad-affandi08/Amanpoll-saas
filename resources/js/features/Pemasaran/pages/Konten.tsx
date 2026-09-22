@@ -20,17 +20,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { ClusterSeo, KeywordSeo, KontenPemasaran, PilihanKonten } from '../types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   konten: KontenPemasaran[];
   keyword: KeywordSeo[];
   cluster: ClusterSeo[];
   pilihan: PilihanKonten;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.konten;
 
-export default function PemasaranKonten({ konten, keyword, cluster, pilihan }: Props) {
+export default function PemasaranKonten({ konten, keyword, cluster, pilihan, wajib }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Konten & SEO" />
@@ -39,7 +42,7 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan }: P
         judul="Konten & SEO"
         deskripsi="Konten berversi seperti halaman pemasaran: yang tayang adalah versi terkunci, dan yang ditandai noindex tidak pernah masuk peta situs."
         tanpaBreadcrumb
-        aksi={<DialogKonten pilihan={pilihan} />}
+        aksi={<DialogKonten pilihan={pilihan} wajib={wajib.konten} />}
         className="mb-6"
       />
 
@@ -66,7 +69,7 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan }: P
             <CardTitle className="text-base">Keyword</CardTitle>
             <div className="flex gap-2">
               <DialogCluster />
-              <DialogKeyword keyword={null} cluster={cluster} pilihan={pilihan} />
+              <DialogKeyword keyword={null} cluster={cluster} pilihan={pilihan} wajib={wajib.keyword} />
             </div>
           </CardHeader>
           <CardContent>
@@ -94,7 +97,12 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan }: P
                           {satu.Prioritas}
                         </Badge>
                         <Badge variant="outline">{satu.Status}</Badge>
-                        <DialogKeyword keyword={satu} cluster={cluster} pilihan={pilihan} />
+                        <DialogKeyword
+                          keyword={satu}
+                          cluster={cluster}
+                          pilihan={pilihan}
+                          wajib={wajib.keyword}
+                        />
                       </div>
                     </div>
                   ))}
@@ -128,7 +136,7 @@ function BarisKonten({ konten }: { konten: KontenPemasaran }) {
   );
 }
 
-function DialogKonten({ pilihan }: { pilihan: PilihanKonten }) {
+function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const jenisAwal = pilihan.Jenis[0] ?? 'Artikel';
 
@@ -158,91 +166,105 @@ function DialogKonten({ pilihan }: { pilihan: PilihanKonten }) {
           <DialogTitle>Tambah Konten</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Jenis">Jenis</Label>
-            <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
-              <SelectTrigger id="Jenis">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {pilihan.Jenis.map((satu) => (
-                  <SelectItem key={satu} value={satu}>
-                    {satu}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label nama="Jenis" htmlFor="Jenis">
+                Jenis
+              </Label>
+              <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
+                <SelectTrigger id="Jenis">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {pilihan.Jenis.map((satu) => (
+                    <SelectItem key={satu} value={satu}>
+                      {satu}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Slug">Slug</Label>
-            <Input
-              id="Slug"
-              value={form.data.Slug}
-              onChange={(e) => form.setData('Slug', e.target.value)}
-              required
-            />
-            <p className="text-xs text-muted-foreground">
-              Alamatnya menjadi {pilihan.AwalanJalur[form.data.Jenis] ?? ''}/{form.data.Slug || 'slug'}
-            </p>
-            {form.errors.Slug ? <p className="text-sm text-destructive">{form.errors.Slug}</p> : null}
-          </div>
+            <div className="grid gap-2">
+              <Label nama="Slug" htmlFor="Slug">
+                Slug
+              </Label>
+              <Input
+                id="Slug"
+                value={form.data.Slug}
+                onChange={(e) => form.setData('Slug', e.target.value)}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Alamatnya menjadi {pilihan.AwalanJalur[form.data.Jenis] ?? ''}/{form.data.Slug || 'slug'}
+              </p>
+              {form.errors.Slug ? <p className="text-sm text-destructive">{form.errors.Slug}</p> : null}
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Judul">Judul</Label>
-            <Input
-              id="Judul"
-              value={form.data.Judul}
-              onChange={(e) => form.setData('Judul', e.target.value)}
-              required
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="Judul" htmlFor="Judul">
+                Judul
+              </Label>
+              <Input
+                id="Judul"
+                value={form.data.Judul}
+                onChange={(e) => form.setData('Judul', e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Ringkasan">Ringkasan</Label>
-            <Textarea
-              id="Ringkasan"
-              rows={2}
-              value={form.data.Ringkasan}
-              onChange={(e) => form.setData('Ringkasan', e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="Ringkasan" htmlFor="Ringkasan">
+                Ringkasan
+              </Label>
+              <Textarea
+                id="Ringkasan"
+                rows={2}
+                value={form.data.Ringkasan}
+                onChange={(e) => form.setData('Ringkasan', e.target.value)}
+              />
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="IsiMarkdown">Naskah</Label>
-            <Textarea
-              id="IsiMarkdown"
-              rows={8}
-              value={form.data.IsiMarkdown}
-              onChange={(e) => form.setData('IsiMarkdown', e.target.value)}
-              required
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="IsiMarkdown" htmlFor="IsiMarkdown">
+                Naskah
+              </Label>
+              <Textarea
+                id="IsiMarkdown"
+                rows={8}
+                value={form.data.IsiMarkdown}
+                onChange={(e) => form.setData('IsiMarkdown', e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="PenulisNama">Penulis</Label>
-            <Input
-              id="PenulisNama"
-              value={form.data.PenulisNama}
-              onChange={(e) => form.setData('PenulisNama', e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="PenulisNama" htmlFor="PenulisNama">
+                Penulis
+              </Label>
+              <Input
+                id="PenulisNama"
+                value={form.data.PenulisNama}
+                onChange={(e) => form.setData('PenulisNama', e.target.value)}
+              />
+            </div>
 
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.NoIndex}
-              onCheckedChange={(nilai) => form.setData('NoIndex', nilai === true)}
-            />
-            Tandai noindex — konten ini tidak akan pernah masuk peta situs
-          </label>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.NoIndex}
+                onCheckedChange={(nilai) => form.setData('NoIndex', nilai === true)}
+              />
+              Tandai noindex — konten ini tidak akan pernah masuk peta situs
+            </label>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan draf
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan draf
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -252,17 +274,19 @@ function DialogKeyword({
   keyword,
   cluster,
   pilihan,
+  wajib,
 }: {
   keyword: KeywordSeo | null;
   cluster: ClusterSeo[];
   pilihan: PilihanKonten;
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
 
   const form = useForm({
     Keyword: keyword?.Keyword ?? '',
     ClusterSeoId: keyword?.ClusterSeoId ?? '',
-    Intent: keyword?.Intent ?? (Object.keys(pilihan.Intent)[0] ?? 'INFORMATIONAL'),
+    Intent: keyword?.Intent ?? Object.keys(pilihan.Intent)[0] ?? 'INFORMATIONAL',
     TargetUrl: keyword?.TargetUrl ?? '',
     Prioritas: keyword?.Prioritas ?? 'Sedang',
     Status: keyword?.Status ?? 'Ide',
@@ -292,102 +316,116 @@ function DialogKeyword({
           <DialogTitle>{keyword ? 'Ubah Keyword' : 'Tambah Keyword'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Keyword">Keyword</Label>
-            <Input
-              id="Keyword"
-              value={form.data.Keyword}
-              onChange={(e) => form.setData('Keyword', e.target.value)}
-              required
-            />
-            {form.errors.Keyword ? <p className="text-sm text-destructive">{form.errors.Keyword}</p> : null}
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="Intent">Niat pencarian</Label>
-            <Select value={form.data.Intent} onValueChange={(v) => form.setData('Intent', v)}>
-              <SelectTrigger id="Intent">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(pilihan.Intent).map(([kunci, label]) => (
-                  <SelectItem key={kunci} value={kunci}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="Prioritas">Prioritas</Label>
-              <Select value={form.data.Prioritas} onValueChange={(v) => form.setData('Prioritas', v)}>
-                <SelectTrigger id="Prioritas">
+              <Label nama="Keyword" htmlFor="Keyword">
+                Keyword
+              </Label>
+              <Input
+                id="Keyword"
+                value={form.data.Keyword}
+                onChange={(e) => form.setData('Keyword', e.target.value)}
+                required
+              />
+              {form.errors.Keyword ? <p className="text-sm text-destructive">{form.errors.Keyword}</p> : null}
+            </div>
+
+            <div className="grid gap-2">
+              <Label nama="Intent" htmlFor="Intent">
+                Niat pencarian
+              </Label>
+              <Select value={form.data.Intent} onValueChange={(v) => form.setData('Intent', v)}>
+                <SelectTrigger id="Intent">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {pilihan.Prioritas.map((satu) => (
-                    <SelectItem key={satu} value={satu}>
-                      {satu}
+                  {Object.entries(pilihan.Intent).map(([kunci, label]) => (
+                    <SelectItem key={kunci} value={kunci}>
+                      {label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label nama="Prioritas" htmlFor="Prioritas">
+                  Prioritas
+                </Label>
+                <Select value={form.data.Prioritas} onValueChange={(v) => form.setData('Prioritas', v)}>
+                  <SelectTrigger id="Prioritas">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.Prioritas.map((satu) => (
+                      <SelectItem key={satu} value={satu}>
+                        {satu}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label nama="StatusKeyword" htmlFor="StatusKeyword">
+                  Status
+                </Label>
+                <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
+                  <SelectTrigger id="StatusKeyword">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.StatusKeyword.map((satu) => (
+                      <SelectItem key={satu} value={satu}>
+                        {satu}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="grid gap-2">
-              <Label htmlFor="StatusKeyword">Status</Label>
-              <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
-                <SelectTrigger id="StatusKeyword">
+              <Label nama="ClusterSeoId" htmlFor="ClusterSeoId">
+                Cluster
+              </Label>
+              <Select
+                value={form.data.ClusterSeoId === '' ? 'tanpa' : form.data.ClusterSeoId}
+                onValueChange={(v) => form.setData('ClusterSeoId', v === 'tanpa' ? '' : v)}
+              >
+                <SelectTrigger id="ClusterSeoId">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {pilihan.StatusKeyword.map((satu) => (
-                    <SelectItem key={satu} value={satu}>
-                      {satu}
+                  <SelectItem value="tanpa">Tanpa cluster</SelectItem>
+                  {cluster.map((satu) => (
+                    <SelectItem key={satu.Id} value={satu.Id}>
+                      {satu.Nama}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="ClusterSeoId">Cluster</Label>
-            <Select
-              value={form.data.ClusterSeoId === '' ? 'tanpa' : form.data.ClusterSeoId}
-              onValueChange={(v) => form.setData('ClusterSeoId', v === 'tanpa' ? '' : v)}
-            >
-              <SelectTrigger id="ClusterSeoId">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tanpa">Tanpa cluster</SelectItem>
-                {cluster.map((satu) => (
-                  <SelectItem key={satu.Id} value={satu.Id}>
-                    {satu.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="grid gap-2">
+              <Label nama="TargetUrl" htmlFor="TargetUrl">
+                Halaman target
+              </Label>
+              <Input
+                id="TargetUrl"
+                value={form.data.TargetUrl}
+                onChange={(e) => form.setData('TargetUrl', e.target.value)}
+              />
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="TargetUrl">Halaman target</Label>
-            <Input
-              id="TargetUrl"
-              value={form.data.TargetUrl}
-              onChange={(e) => form.setData('TargetUrl', e.target.value)}
-            />
-          </div>
-
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -422,7 +460,9 @@ function DialogCluster() {
 
         <form onSubmit={submit} className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="KodeCluster">Kode</Label>
+            <Label nama="KodeCluster" htmlFor="KodeCluster">
+              Kode
+            </Label>
             <Input
               id="KodeCluster"
               value={form.data.Kode}
@@ -432,7 +472,9 @@ function DialogCluster() {
             {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="NamaCluster">Nama</Label>
+            <Label nama="NamaCluster" htmlFor="NamaCluster">
+              Nama
+            </Label>
             <Input
               id="NamaCluster"
               value={form.data.Nama}
@@ -441,7 +483,9 @@ function DialogCluster() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="KeteranganCluster">Keterangan</Label>
+            <Label nama="KeteranganCluster" htmlFor="KeteranganCluster">
+              Keterangan
+            </Label>
             <Textarea
               id="KeteranganCluster"
               rows={2}

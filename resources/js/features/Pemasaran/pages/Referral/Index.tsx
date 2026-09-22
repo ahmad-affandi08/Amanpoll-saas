@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { ProgramReferral, RewardReferralRingkas } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 type Pilihan = { Jenis: string[]; JenisDidukung: string[] };
 
@@ -32,6 +33,8 @@ interface Props {
   corong: Record<string, number>;
   reward: RewardReferralRingkas[];
   pilihan: Pilihan;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.referral;
@@ -40,7 +43,7 @@ const waktu = (nilai: string | null) => (nilai ? new Date(nilai).toLocaleString(
 
 const URUTAN_CORONG = ['Dibuat', 'Diklik', 'Lead', 'Trial', 'Paid', 'RewardPending', 'Rewarded'];
 
-export default function PemasaranReferralIndex({ program, corong, reward, pilihan }: Props) {
+export default function PemasaranReferralIndex({ program, corong, reward, pilihan, wajib }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Referral" />
@@ -49,7 +52,7 @@ export default function PemasaranReferralIndex({ program, corong, reward, piliha
         judul="Referral"
         deskripsi="Program referral, kode tiap pelanggan, dan imbalan yang terutang."
         tanpaBreadcrumb
-        aksi={<DialogProgram program={null} pilihan={pilihan} />}
+        aksi={<DialogProgram program={null} pilihan={pilihan} wajib={wajib.program} />}
         className="mb-6"
       />
 
@@ -65,7 +68,9 @@ export default function PemasaranReferralIndex({ program, corong, reward, piliha
           {program.length === 0 ? (
             <p className="text-sm text-muted-foreground">Belum ada program referral.</p>
           ) : (
-            program.map((satu) => <KartuProgram key={satu.Id} program={satu} pilihan={pilihan} />)
+            program.map((satu) => (
+              <KartuProgram key={satu.Id} program={satu} pilihan={pilihan} wajib={wajib} />
+            ))
           )}
         </TabsContent>
 
@@ -102,7 +107,15 @@ function Corong({ corong }: { corong: Record<string, number> }) {
   );
 }
 
-function KartuProgram({ program, pilihan }: { program: ProgramReferral; pilihan: Pilihan }) {
+function KartuProgram({
+  program,
+  pilihan,
+  wajib,
+}: {
+  program: ProgramReferral;
+  pilihan: Pilihan;
+  wajib: Record<string, AturanWajib>;
+}) {
   return (
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-2 space-y-0">
@@ -115,7 +128,7 @@ function KartuProgram({ program, pilihan }: { program: ProgramReferral; pilihan:
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {program.Aktif ? <Badge>Aktif</Badge> : <Badge variant="secondary">Nonaktif</Badge>}
-          <DialogProgram program={program} pilihan={pilihan} />
+          <DialogProgram program={program} pilihan={pilihan} wajib={wajib.program} />
         </div>
       </CardHeader>
 
@@ -149,7 +162,15 @@ function KartuProgram({ program, pilihan }: { program: ProgramReferral; pilihan:
   );
 }
 
-function DialogProgram({ program, pilihan }: { program: ProgramReferral | null; pilihan: Pilihan }) {
+function DialogProgram({
+  program,
+  pilihan,
+  wajib,
+}: {
+  program: ProgramReferral | null;
+  pilihan: Pilihan;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
 
   const form = useForm({
@@ -200,101 +221,113 @@ function DialogProgram({ program, pilihan }: { program: ProgramReferral | null; 
           <DialogTitle>{program ? 'Ubah Program Referral' : 'Tambah Program Referral'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <BidangKode
-            nilai={form.data.Kode}
-            onUbah={(nilai) => form.setData('Kode', nilai)}
-            galat={form.errors.Kode}
-            contoh="ajak-teman"
-          />
-
-          <div className="grid gap-2">
-            <Label htmlFor="NamaProgram">Nama</Label>
-            <Input
-              id="NamaProgram"
-              value={form.data.Nama}
-              onChange={(e) => form.setData('Nama', e.target.value)}
-              required
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+              contoh="ajak-teman"
             />
-            {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="JenisReward">Jenis imbalan</Label>
-              <Select value={form.data.JenisReward} onValueChange={(v) => form.setData('JenisReward', v)}>
-                <SelectTrigger id="JenisReward">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.Jenis.map((jenis) => (
-                    <SelectItem key={jenis} value={jenis}>
-                      {jenis}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="NilaiReward">Nilai</Label>
+              <Label nama="NamaProgram" htmlFor="NamaProgram">
+                Nama
+              </Label>
               <Input
-                id="NilaiReward"
-                type="number"
-                min={0}
-                value={form.data.NilaiReward}
-                onChange={(e) => form.setData('NilaiReward', e.target.value)}
+                id="NamaProgram"
+                value={form.data.Nama}
+                onChange={(e) => form.setData('Nama', e.target.value)}
                 required
               />
+              {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
             </div>
-          </div>
 
-          {didukung ? null : (
-            <p className="text-sm text-destructive">
-              Billing belum dapat memberikan imbalan berbentuk {form.data.JenisReward}. Yang tersedia:{' '}
-              {pilihan.JenisDidukung.join(', ')}.
-            </p>
-          )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label nama="JenisReward" htmlFor="JenisReward">
+                  Jenis imbalan
+                </Label>
+                <Select value={form.data.JenisReward} onValueChange={(v) => form.setData('JenisReward', v)}>
+                  <SelectTrigger id="JenisReward">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.Jenis.map((jenis) => (
+                      <SelectItem key={jenis} value={jenis}>
+                        {jenis}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="HariKedaluwarsa">Jendela (hari)</Label>
-            <Input
-              id="HariKedaluwarsa"
-              type="number"
-              min={1}
-              value={form.data.HariKedaluwarsa}
-              onChange={(e) => form.setData('HariKedaluwarsa', e.target.value)}
-              required
-            />
-            <p className="text-sm text-muted-foreground">
-              Referral yang belum dibayar dalam rentang ini ditutup.
-            </p>
-          </div>
+              <div className="grid gap-2">
+                <Label nama="NilaiReward" htmlFor="NilaiReward">
+                  Nilai
+                </Label>
+                <Input
+                  id="NilaiReward"
+                  type="number"
+                  min={0}
+                  value={form.data.NilaiReward}
+                  onChange={(e) => form.setData('NilaiReward', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="KeteranganProgram">Keterangan</Label>
-            <Textarea
-              id="KeteranganProgram"
-              rows={3}
-              value={form.data.Keterangan}
-              onChange={(e) => form.setData('Keterangan', e.target.value)}
-            />
-          </div>
+            {didukung ? null : (
+              <p className="text-sm text-destructive">
+                Billing belum dapat memberikan imbalan berbentuk {form.data.JenisReward}. Yang tersedia:{' '}
+                {pilihan.JenisDidukung.join(', ')}.
+              </p>
+            )}
 
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.Aktif}
-              onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-            />
-            Aktif
-          </label>
+            <div className="grid gap-2">
+              <Label nama="HariKedaluwarsa" htmlFor="HariKedaluwarsa">
+                Jendela (hari)
+              </Label>
+              <Input
+                id="HariKedaluwarsa"
+                type="number"
+                min={1}
+                value={form.data.HariKedaluwarsa}
+                onChange={(e) => form.setData('HariKedaluwarsa', e.target.value)}
+                required
+              />
+              <p className="text-sm text-muted-foreground">
+                Referral yang belum dibayar dalam rentang ini ditutup.
+              </p>
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing || !didukung}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid gap-2">
+              <Label nama="KeteranganProgram" htmlFor="KeteranganProgram">
+                Keterangan
+              </Label>
+              <Textarea
+                id="KeteranganProgram"
+                rows={3}
+                value={form.data.Keterangan}
+                onChange={(e) => form.setData('Keterangan', e.target.value)}
+              />
+            </div>
+
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.Aktif}
+                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+              />
+              Aktif
+            </label>
+
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing || !didukung}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -330,7 +363,9 @@ function DialogKode({ program }: { program: ProgramReferral }) {
 
         <form onSubmit={kirim} className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="OrganisasiKode">ID organisasi pelanggan</Label>
+            <Label nama="OrganisasiKode" htmlFor="OrganisasiKode">
+              ID organisasi pelanggan
+            </Label>
             <Input
               id="OrganisasiKode"
               className="font-mono text-xs"

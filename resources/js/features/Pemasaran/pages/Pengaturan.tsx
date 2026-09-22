@@ -84,12 +84,15 @@ function KartuDomain({ domain }: { domain: Domain }) {
       </CardHeader>
       <CardContent className="grid gap-3 text-sm">
         <p className="text-muted-foreground">
-          Nilai berasal dari environment dan hanya dapat dibaca di sini. Ubah lewat
-          konfigurasi server, bukan lewat form.
+          Nilai berasal dari environment dan hanya dapat dibaca di sini. Ubah lewat konfigurasi server, bukan
+          lewat form.
         </p>
         <dl className="grid gap-2 sm:grid-cols-2">
           {baris.map(([label, nilai]) => (
-            <div key={label} className="flex items-center justify-between gap-3 rounded-[6px] bg-muted/50 px-3 py-2">
+            <div
+              key={label}
+              className="flex items-center justify-between gap-3 rounded-[6px] bg-muted/50 px-3 py-2"
+            >
               <dt className="text-muted-foreground">{label}</dt>
               <dd className="font-mono text-xs">{nilai ?? 'belum diatur'}</dd>
             </div>

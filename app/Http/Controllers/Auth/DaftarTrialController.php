@@ -10,6 +10,7 @@ use App\Domain\Pemasaran\Application\Services\PenjagaKartuTrial;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 use App\Http\Requests\Auth\DaftarTrialRequest;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -38,6 +39,7 @@ final class DaftarTrialController extends Controller
             'namaPaket' => $setelan->namaPaket,
             'kartuDiminta' => $this->penjagaKartu->kartuDiminta(),
             'penyediaSiapKartu' => $this->penjagaKartu->penyediaSiapMenerimaKartu(),
+            'wajib' => ['trial' => AturanWajib::untuk(DaftarTrialRequest::class)],
         ]);
     }
 

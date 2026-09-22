@@ -110,9 +110,7 @@ export default function PemasaranOtomasiShow({ otomasi, versi, eksekusi, pilihan
             <div className="flex justify-end">
               <Button
                 variant="outline"
-                onClick={() =>
-                  router.post(`${AKAR}/${otomasi.Kode}/versi`, {}, { preserveScroll: true })
-                }
+                onClick={() => router.post(`${AKAR}/${otomasi.Kode}/versi`, {}, { preserveScroll: true })}
               >
                 Buat Draf Baru
               </Button>
@@ -214,8 +212,8 @@ function KartuVersi({
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
-            Versi yang sudah diaktifkan tidak dapat disunting; eksekusi yang berjalan memakainya apa
-            adanya. Buat draf baru untuk mengubah alurnya.
+            Versi yang sudah diaktifkan tidak dapat disunting; eksekusi yang berjalan memakainya apa adanya.
+            Buat draf baru untuk mengubah alurnya.
           </p>
         )}
       </CardContent>

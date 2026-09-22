@@ -21,6 +21,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KampanyeTarget;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\UtmPemasaran;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +60,7 @@ final class KampanyeController extends Controller
             ->pluck('Total', 'KampanyeId');
 
         return Inertia::render('Pemasaran/Kampanye', [
+            'wajib' => ['kampanye' => AturanWajib::untuk(SimpanKampanyeRequest::class)],
             'kampanye' => DaftarTersaring::paginasi($halaman, fn (Kampanye $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,

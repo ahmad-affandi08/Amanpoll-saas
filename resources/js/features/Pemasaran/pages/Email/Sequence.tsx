@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { LangkahSequence, SequenceEmail } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 type PilihanTemplate = { Id: string; Nama: string; Kode: string };
 
@@ -29,11 +30,13 @@ interface Props {
   sequence: SequenceEmail[];
   template: PilihanTemplate[];
   kodeSequenceTrial: string;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.emailSequence;
 
-export default function PemasaranEmailSequence({ sequence, template, kodeSequenceTrial }: Props) {
+export default function PemasaranEmailSequence({ sequence, template, kodeSequenceTrial, wajib }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Sequence Email" />
@@ -42,7 +45,7 @@ export default function PemasaranEmailSequence({ sequence, template, kodeSequenc
         judul="Sequence Email"
         deskripsi="Rangkaian email onboarding beserta jadwalnya, disusun dari konsol tanpa rilis."
         tanpaBreadcrumb
-        aksi={<DialogSequence sequence={null} />}
+        aksi={<DialogSequence sequence={null} wajib={wajib.sequence} />}
         className="mb-6"
       />
 
@@ -56,7 +59,7 @@ export default function PemasaranEmailSequence({ sequence, template, kodeSequenc
       ) : (
         <div className="space-y-4">
           {sequence.map((satu) => (
-            <KartuSequence key={satu.Id} sequence={satu} template={template} />
+            <KartuSequence key={satu.Id} sequence={satu} template={template} wajib={wajib} />
           ))}
         </div>
       )}
@@ -64,7 +67,15 @@ export default function PemasaranEmailSequence({ sequence, template, kodeSequenc
   );
 }
 
-function KartuSequence({ sequence, template }: { sequence: SequenceEmail; template: PilihanTemplate[] }) {
+function KartuSequence({
+  sequence,
+  template,
+  wajib,
+}: {
+  sequence: SequenceEmail;
+  template: PilihanTemplate[];
+  wajib: Record<string, AturanWajib>;
+}) {
   const konfirmasi = useKonfirmasi();
   const terkunci = sequence.JumlahBerjalan > 0;
 
@@ -92,7 +103,7 @@ function KartuSequence({ sequence, template }: { sequence: SequenceEmail; templa
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {sequence.Aktif ? <Badge>Aktif</Badge> : <Badge variant="secondary">Nonaktif</Badge>}
-          <DialogSequence sequence={sequence} />
+          <DialogSequence sequence={sequence} wajib={wajib.sequence} />
         </div>
       </CardHeader>
 
@@ -121,7 +132,12 @@ function KartuSequence({ sequence, template }: { sequence: SequenceEmail; templa
                 </div>
                 {terkunci ? null : (
                   <div className="flex shrink-0 gap-1">
-                    <DialogLangkah sequence={sequence} langkah={langkah} template={template} />
+                    <DialogLangkah
+                      sequence={sequence}
+                      langkah={langkah}
+                      template={template}
+                      wajib={wajib.langkah}
+                    />
                     <Button variant="ghost" size="sm" onClick={() => hapusLangkah(langkah)}>
                       Hapus
                     </Button>
@@ -134,7 +150,7 @@ function KartuSequence({ sequence, template }: { sequence: SequenceEmail; templa
 
         {terkunci ? null : (
           <div className="flex justify-end">
-            <DialogLangkah sequence={sequence} langkah={null} template={template} />
+            <DialogLangkah sequence={sequence} langkah={null} template={template} wajib={wajib.langkah} />
           </div>
         )}
       </CardContent>
@@ -142,7 +158,7 @@ function KartuSequence({ sequence, template }: { sequence: SequenceEmail; templa
   );
 }
 
-function DialogSequence({ sequence }: { sequence: SequenceEmail | null }) {
+function DialogSequence({ sequence, wajib }: { sequence: SequenceEmail | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
 
   const form = useForm({
@@ -182,49 +198,55 @@ function DialogSequence({ sequence }: { sequence: SequenceEmail | null }) {
           <DialogTitle>{sequence ? 'Ubah Sequence' : 'Tambah Sequence'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <BidangKode
-            nilai={form.data.Kode}
-            onUbah={(nilai) => form.setData('Kode', nilai)}
-            galat={form.errors.Kode}
-            contoh="onboarding-trial"
-          />
-
-          <div className="grid gap-2">
-            <Label htmlFor="NamaSequence">Nama</Label>
-            <Input
-              id="NamaSequence"
-              value={form.data.Nama}
-              onChange={(e) => form.setData('Nama', e.target.value)}
-              required
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+              contoh="onboarding-trial"
             />
-            {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="KeteranganSequence">Keterangan</Label>
-            <Textarea
-              id="KeteranganSequence"
-              rows={3}
-              value={form.data.Keterangan}
-              onChange={(e) => form.setData('Keterangan', e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="NamaSequence" htmlFor="NamaSequence">
+                Nama
+              </Label>
+              <Input
+                id="NamaSequence"
+                value={form.data.Nama}
+                onChange={(e) => form.setData('Nama', e.target.value)}
+                required
+              />
+              {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
+            </div>
 
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.Aktif}
-              onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-            />
-            Aktif
-          </label>
+            <div className="grid gap-2">
+              <Label nama="KeteranganSequence" htmlFor="KeteranganSequence">
+                Keterangan
+              </Label>
+              <Textarea
+                id="KeteranganSequence"
+                rows={3}
+                value={form.data.Keterangan}
+                onChange={(e) => form.setData('Keterangan', e.target.value)}
+              />
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.Aktif}
+                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+              />
+              Aktif
+            </label>
+
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -234,10 +256,12 @@ function DialogLangkah({
   sequence,
   langkah,
   template,
+  wajib,
 }: {
   sequence: SequenceEmail;
   langkah: LangkahSequence | null;
   template: PilihanTemplate[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const urutanBerikut = sequence.Langkah.reduce((maks, satu) => Math.max(maks, satu.Urutan + 1), 0);
@@ -290,75 +314,87 @@ function DialogLangkah({
             Belum ada template aktif. Buat template lebih dulu di halaman Template Email.
           </p>
         ) : (
-          <form onSubmit={kirim} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="TemplateLangkah">Template</Label>
-              <Select
-                value={form.data.TemplateEmailPemasaranId}
-                onValueChange={(v) => form.setData('TemplateEmailPemasaranId', v)}
-              >
-                <SelectTrigger id="TemplateLangkah">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {template.map((satu) => (
-                    <SelectItem key={satu.Id} value={satu.Id}>
-                      {satu.Nama} · {satu.Kode}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {form.errors.TemplateEmailPemasaranId ? (
-                <p className="text-sm text-destructive">{form.errors.TemplateEmailPemasaranId}</p>
-              ) : null}
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
+          <AturanWajibProvider aturan={wajib}>
+            <form onSubmit={kirim} className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="UrutanLangkah">Urutan</Label>
-                <Input
-                  id="UrutanLangkah"
-                  type="number"
-                  min={0}
-                  value={form.data.Urutan}
-                  onChange={(e) => form.setData('Urutan', e.target.value)}
-                  required
-                />
-                {form.errors.Urutan ? <p className="text-sm text-destructive">{form.errors.Urutan}</p> : null}
+                <Label nama="TemplateLangkah" htmlFor="TemplateLangkah">
+                  Template
+                </Label>
+                <Select
+                  value={form.data.TemplateEmailPemasaranId}
+                  onValueChange={(v) => form.setData('TemplateEmailPemasaranId', v)}
+                >
+                  <SelectTrigger id="TemplateLangkah">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {template.map((satu) => (
+                      <SelectItem key={satu.Id} value={satu.Id}>
+                        {satu.Nama} · {satu.Kode}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {form.errors.TemplateEmailPemasaranId ? (
+                  <p className="text-sm text-destructive">{form.errors.TemplateEmailPemasaranId}</p>
+                ) : null}
               </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="HariLangkah">Hari ke</Label>
-                <Input
-                  id="HariLangkah"
-                  type="number"
-                  min={0}
-                  value={form.data.HariKe}
-                  onChange={(e) => form.setData('HariKe', e.target.value)}
-                  required
-                />
-                {form.errors.HariKe ? <p className="text-sm text-destructive">{form.errors.HariKe}</p> : null}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label nama="UrutanLangkah" htmlFor="UrutanLangkah">
+                    Urutan
+                  </Label>
+                  <Input
+                    id="UrutanLangkah"
+                    type="number"
+                    min={0}
+                    value={form.data.Urutan}
+                    onChange={(e) => form.setData('Urutan', e.target.value)}
+                    required
+                  />
+                  {form.errors.Urutan ? (
+                    <p className="text-sm text-destructive">{form.errors.Urutan}</p>
+                  ) : null}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label nama="HariLangkah" htmlFor="HariLangkah">
+                    Hari ke
+                  </Label>
+                  <Input
+                    id="HariLangkah"
+                    type="number"
+                    min={0}
+                    value={form.data.HariKe}
+                    onChange={(e) => form.setData('HariKe', e.target.value)}
+                    required
+                  />
+                  {form.errors.HariKe ? (
+                    <p className="text-sm text-destructive">{form.errors.HariKe}</p>
+                  ) : null}
+                </div>
               </div>
-            </div>
 
-            <p className="text-sm text-muted-foreground">
-              Hari ke-0 berangkat saat orang mendaftar; angka lain dihitung dari tanggal itu.
-            </p>
+              <p className="text-sm text-muted-foreground">
+                Hari ke-0 berangkat saat orang mendaftar; angka lain dihitung dari tanggal itu.
+              </p>
 
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.data.Aktif}
-                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-              />
-              Aktif
-            </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.data.Aktif}
+                  onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+                />
+                Aktif
+              </label>
 
-            <DialogFooter>
-              <Button type="submit" disabled={form.processing}>
-                Simpan
-              </Button>
-            </DialogFooter>
-          </form>
+              <DialogFooter>
+                <Button type="submit" disabled={form.processing}>
+                  Simpan
+                </Button>
+              </DialogFooter>
+            </form>
+          </AturanWajibProvider>
         )}
       </DialogContent>
     </Dialog>

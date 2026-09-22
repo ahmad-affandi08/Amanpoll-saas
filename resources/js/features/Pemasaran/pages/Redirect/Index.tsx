@@ -24,16 +24,19 @@ import type { Redirect } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   redirect: Paginasi<Redirect>;
   pilihan: { Kode: string[] };
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.redirect;
 
-export default function PemasaranRedirectIndex({ redirect, pilihan, filter }: Props) {
+export default function PemasaranRedirectIndex({ redirect, pilihan, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (satu: Redirect) => {
@@ -86,7 +89,7 @@ export default function PemasaranRedirectIndex({ redirect, pilihan, filter }: Pr
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogRedirect redirect={row.original} pilihan={pilihan} />
+            <DialogRedirect redirect={row.original} pilihan={pilihan} wajib={wajib.redirect} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -98,7 +101,7 @@ export default function PemasaranRedirectIndex({ redirect, pilihan, filter }: Pr
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pilihan],
+    [pilihan, wajib],
   );
 
   return (
@@ -109,7 +112,7 @@ export default function PemasaranRedirectIndex({ redirect, pilihan, filter }: Pr
         judul="Redirect"
         deskripsi="Berlaku hanya di host publik. Slug yang berubah tanpa redirect kehilangan peringkatnya."
         tanpaBreadcrumb
-        aksi={<DialogRedirect redirect={null} pilihan={pilihan} />}
+        aksi={<DialogRedirect redirect={null} pilihan={pilihan} wajib={wajib.redirect} />}
         className="mb-6"
       />
 
@@ -126,15 +129,21 @@ export default function PemasaranRedirectIndex({ redirect, pilihan, filter }: Pr
         ]}
         kartuDiPonsel
         pencarianPlaceholder="Cari alamat..."
-        pesanKosong={
-          adaPenyaringAktif(filter) ? 'Tidak ada redirect yang cocok.' : 'Belum ada redirect.'
-        }
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada redirect yang cocok.' : 'Belum ada redirect.'}
       />
     </KerangkaPlatform>
   );
 }
 
-function DialogRedirect({ redirect, pilihan }: { redirect: Redirect | null; pilihan: { Kode: string[] } }) {
+function DialogRedirect({
+  redirect,
+  pilihan,
+  wajib,
+}: {
+  redirect: Redirect | null;
+  pilihan: { Kode: string[] };
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Dari: redirect?.Dari ?? '',
@@ -176,75 +185,85 @@ function DialogRedirect({ redirect, pilihan }: { redirect: Redirect | null; pili
           <DialogTitle>{redirect ? 'Ubah Redirect' : 'Tambah Redirect'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Dari">Dari</Label>
-            <Input
-              id="Dari"
-              value={form.data.Dari}
-              onChange={(e) => form.setData('Dari', e.target.value)}
-              placeholder="/halaman-lama"
-              required
-            />
-            {form.errors.Dari ? <p className="text-sm text-destructive">{form.errors.Dari}</p> : null}
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="Kode">Kode</Label>
-            <Select value={form.data.Kode} onValueChange={(v) => form.setData('Kode', v)}>
-              <SelectTrigger id="Kode">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {pilihan.Kode.map((satu) => (
-                  <SelectItem key={satu} value={satu}>
-                    {satu}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {butuhTujuan ? (
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="Ke">Ke</Label>
+              <Label nama="Dari" htmlFor="Dari">
+                Dari
+              </Label>
               <Input
-                id="Ke"
-                value={form.data.Ke}
-                onChange={(e) => form.setData('Ke', e.target.value)}
-                placeholder="/halaman-baru"
+                id="Dari"
+                value={form.data.Dari}
+                onChange={(e) => form.setData('Dari', e.target.value)}
+                placeholder="/halaman-lama"
+                required
               />
-              {form.errors.Ke ? <p className="text-sm text-destructive">{form.errors.Ke}</p> : null}
+              {form.errors.Dari ? <p className="text-sm text-destructive">{form.errors.Dari}</p> : null}
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Kode 410 menyatakan halaman hilang permanen, jadi tidak punya tujuan.
-            </p>
-          )}
 
-          <div className="grid gap-2">
-            <Label htmlFor="Catatan">Catatan</Label>
-            <Input
-              id="Catatan"
-              value={form.data.Catatan}
-              onChange={(e) => form.setData('Catatan', e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="Kode" htmlFor="Kode">
+                Kode
+              </Label>
+              <Select value={form.data.Kode} onValueChange={(v) => form.setData('Kode', v)}>
+                <SelectTrigger id="Kode">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {pilihan.Kode.map((satu) => (
+                    <SelectItem key={satu} value={satu}>
+                      {satu}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.Aktif}
-              onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-            />
-            Aktif
-          </label>
+            {butuhTujuan ? (
+              <div className="grid gap-2">
+                <Label nama="Ke" htmlFor="Ke">
+                  Ke
+                </Label>
+                <Input
+                  id="Ke"
+                  value={form.data.Ke}
+                  onChange={(e) => form.setData('Ke', e.target.value)}
+                  placeholder="/halaman-baru"
+                />
+                {form.errors.Ke ? <p className="text-sm text-destructive">{form.errors.Ke}</p> : null}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Kode 410 menyatakan halaman hilang permanen, jadi tidak punya tujuan.
+              </p>
+            )}
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid gap-2">
+              <Label nama="Catatan" htmlFor="Catatan">
+                Catatan
+              </Label>
+              <Input
+                id="Catatan"
+                value={form.data.Catatan}
+                onChange={(e) => form.setData('Catatan', e.target.value)}
+              />
+            </div>
+
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.Aktif}
+                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+              />
+              Aktif
+            </label>
+
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

@@ -20,17 +20,20 @@ import { Textarea } from '@/components/ui/textarea';
 import type { RingkasanOtomasi } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   otomasi: RingkasanOtomasi[];
   /** kode pemicu => peristiwa yang menyalakannya, atau BelumAdaSumber. */
   pilihan: { Pemicu: Record<string, string> };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.otomasi;
 const BELUM_ADA_SUMBER = 'BelumAdaSumber';
 
-export default function PemasaranOtomasiIndex({ otomasi, pilihan }: Props) {
+export default function PemasaranOtomasiIndex({ otomasi, pilihan, wajib }: Props) {
   const belumBerlaku = otomasi.filter((satu) => satu.Aktif && !satu.PemicuBerlaku);
 
   return (
@@ -41,7 +44,7 @@ export default function PemasaranOtomasiIndex({ otomasi, pilihan }: Props) {
         judul="Otomasi Pemasaran"
         deskripsi="Pemicu, kondisi, jeda, dan aksi. Setiap versi dikunci saat diaktifkan."
         tanpaBreadcrumb
-        aksi={<DialogOtomasi pilihan={pilihan} />}
+        aksi={<DialogOtomasi pilihan={pilihan} wajib={wajib.otomasi} />}
         className="mb-6"
       />
 
@@ -98,7 +101,13 @@ export default function PemasaranOtomasiIndex({ otomasi, pilihan }: Props) {
   );
 }
 
-function DialogOtomasi({ pilihan }: { pilihan: { Pemicu: Record<string, string> } }) {
+function DialogOtomasi({
+  pilihan,
+  wajib,
+}: {
+  pilihan: { Pemicu: Record<string, string> };
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const daftarPemicu = Object.entries(pilihan.Pemicu);
 
@@ -126,64 +135,72 @@ function DialogOtomasi({ pilihan }: { pilihan: { Pemicu: Record<string, string> 
           <DialogTitle>Tambah Otomasi</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <BidangKode
-            nilai={form.data.Kode}
-            onUbah={(nilai) => form.setData('Kode', nilai)}
-            galat={form.errors.Kode}
-            contoh="sapa-prospek-baru"
-          />
-
-          <div className="grid gap-2">
-            <Label htmlFor="NamaOtomasi">Nama</Label>
-            <Input
-              id="NamaOtomasi"
-              value={form.data.Nama}
-              onChange={(e) => form.setData('Nama', e.target.value)}
-              required
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+              contoh="sapa-prospek-baru"
             />
-            {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="PemicuOtomasi">Pemicu</Label>
-            <Select value={form.data.Pemicu} onValueChange={(v) => form.setData('Pemicu', v)}>
-              <SelectTrigger id="PemicuOtomasi">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {daftarPemicu.map(([kode]) => (
-                  <SelectItem key={kode} value={kode}>
-                    {kode}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {sumberTerpilih === BELUM_ADA_SUMBER ? (
-              <p className="text-sm text-muted-foreground">
-                Belum ada yang menghasilkan pemicu ini. Otomasinya tersimpan tetapi tidak akan berjalan sampai
-                sumbernya ada.
-              </p>
-            ) : null}
-            {form.errors.Pemicu ? <p className="text-sm text-destructive">{form.errors.Pemicu}</p> : null}
-          </div>
+            <div className="grid gap-2">
+              <Label nama="NamaOtomasi" htmlFor="NamaOtomasi">
+                Nama
+              </Label>
+              <Input
+                id="NamaOtomasi"
+                value={form.data.Nama}
+                onChange={(e) => form.setData('Nama', e.target.value)}
+                required
+              />
+              {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="KeteranganOtomasi">Keterangan</Label>
-            <Textarea
-              id="KeteranganOtomasi"
-              rows={3}
-              value={form.data.Keterangan}
-              onChange={(e) => form.setData('Keterangan', e.target.value)}
-            />
-          </div>
+            <div className="grid gap-2">
+              <Label nama="PemicuOtomasi" htmlFor="PemicuOtomasi">
+                Pemicu
+              </Label>
+              <Select value={form.data.Pemicu} onValueChange={(v) => form.setData('Pemicu', v)}>
+                <SelectTrigger id="PemicuOtomasi">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {daftarPemicu.map(([kode]) => (
+                    <SelectItem key={kode} value={kode}>
+                      {kode}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {sumberTerpilih === BELUM_ADA_SUMBER ? (
+                <p className="text-sm text-muted-foreground">
+                  Belum ada yang menghasilkan pemicu ini. Otomasinya tersimpan tetapi tidak akan berjalan
+                  sampai sumbernya ada.
+                </p>
+              ) : null}
+              {form.errors.Pemicu ? <p className="text-sm text-destructive">{form.errors.Pemicu}</p> : null}
+            </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid gap-2">
+              <Label nama="KeteranganOtomasi" htmlFor="KeteranganOtomasi">
+                Keterangan
+              </Label>
+              <Textarea
+                id="KeteranganOtomasi"
+                rows={3}
+                value={form.data.Keterangan}
+                onChange={(e) => form.setData('Keterangan', e.target.value)}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

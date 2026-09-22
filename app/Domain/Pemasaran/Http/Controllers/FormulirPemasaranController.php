@@ -16,6 +16,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Kampanye;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\PengirimanFormulir;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -37,6 +38,7 @@ final class FormulirPemasaranController extends Controller
             ->get();
 
         return Inertia::render('Pemasaran/Formulir/Index', [
+            'wajib' => ['formulir' => AturanWajib::untuk(SimpanFormulirPemasaranRequest::class)],
             'formulir' => $formulir->map(fn (FormulirPemasaran $satu): array => $this->ringkas($satu))->all(),
             'pilihan' => [
                 'Jenis' => array_column(JenisFieldFormulir::cases(), 'value'),

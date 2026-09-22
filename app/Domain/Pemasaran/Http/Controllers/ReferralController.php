@@ -17,6 +17,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Referral;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RewardReferral;
 use App\Domain\Pemasaran\Jobs\ProsesRewardReferral;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -34,6 +35,7 @@ final class ReferralController extends Controller
     public function index(): Response
     {
         return Inertia::render('Pemasaran/Referral/Index', [
+            'wajib' => ['program' => AturanWajib::untuk(SimpanProgramReferralRequest::class)],
             'program' => $this->daftarProgram(),
             'corong' => $this->corong(),
             'reward' => $this->daftarReward(),

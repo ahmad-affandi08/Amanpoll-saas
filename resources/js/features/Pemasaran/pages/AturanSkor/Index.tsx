@@ -24,6 +24,7 @@ import type { AturanSkor, PilihanAturanSkor } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   aturan: Paginasi<AturanSkor>;
@@ -31,6 +32,8 @@ interface Props {
   filter: FilterDaftar;
   /** Dihitung di server: spanduknya berbicara tentang seluruh aturan, bukan satu halaman. */
   jumlahBelumBerlaku: { jumlah: number; peristiwa: string[] };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.aturanSkor;
@@ -40,6 +43,7 @@ export default function PemasaranAturanSkorIndex({
   pilihan,
   filter,
   jumlahBelumBerlaku,
+  wajib,
 }: Props) {
   const konfirmasi = useKonfirmasi();
 
@@ -126,7 +130,7 @@ export default function PemasaranAturanSkorIndex({
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogAturan aturan={row.original} pilihan={pilihan} />
+            <DialogAturan aturan={row.original} pilihan={pilihan} wajib={wajib.aturan} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -138,7 +142,7 @@ export default function PemasaranAturanSkorIndex({
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pilihan],
+    [pilihan, wajib],
   );
 
   return (
@@ -149,15 +153,15 @@ export default function PemasaranAturanSkorIndex({
         judul="Aturan Skor Prospek"
         deskripsi="Bobot tiap sinyal terhadap skor prospek. Angkanya tidak pernah ditulis di kode program."
         tanpaBreadcrumb
-        aksi={<DialogAturan aturan={null} pilihan={pilihan} />}
+        aksi={<DialogAturan aturan={null} pilihan={pilihan} wajib={wajib.aturan} />}
         className="mb-6"
       />
 
       {jumlahBelumBerlaku.jumlah > 0 ? (
         <div className="mb-4 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-          {jumlahBelumBerlaku.jumlah} aturan aktif belum berlaku karena belum ada yang menghasilkan
-          sinyalnya: <span className="font-mono">{jumlahBelumBerlaku.peristiwa.join(', ')}</span>.
-          Bobotnya tersimpan dan akan terpakai begitu sumbernya ada.
+          {jumlahBelumBerlaku.jumlah} aturan aktif belum berlaku karena belum ada yang menghasilkan sinyalnya:{' '}
+          <span className="font-mono">{jumlahBelumBerlaku.peristiwa.join(', ')}</span>. Bobotnya tersimpan dan
+          akan terpakai begitu sumbernya ada.
         </div>
       ) : null}
 
@@ -167,20 +171,26 @@ export default function PemasaranAturanSkorIndex({
         server={{ meta: aturan.meta, filter }}
         kartuDiPonsel
         pencarianPlaceholder="Cari sinyal atau keterangan..."
-        pesanKosong={
-          adaPenyaringAktif(filter) ? 'Tidak ada aturan yang cocok.' : 'Belum ada aturan skor.'
-        }
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada aturan yang cocok.' : 'Belum ada aturan skor.'}
       />
     </KerangkaPlatform>
   );
 }
 
-function DialogAturan({ aturan, pilihan }: { aturan: AturanSkor | null; pilihan: PilihanAturanSkor }) {
+function DialogAturan({
+  aturan,
+  pilihan,
+  wajib,
+}: {
+  aturan: AturanSkor | null;
+  pilihan: PilihanAturanSkor;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const daftarSinyal = Object.entries(pilihan.Peristiwa);
 
   const form = useForm({
-    Peristiwa: aturan?.Peristiwa ?? (daftarSinyal[0]?.[0] ?? ''),
+    Peristiwa: aturan?.Peristiwa ?? daftarSinyal[0]?.[0] ?? '',
     Bobot: String(aturan?.Bobot ?? 0),
     Aktif: aturan?.Aktif ?? true,
     Keterangan: aturan?.Keterangan ?? '',
@@ -220,70 +230,77 @@ function DialogAturan({ aturan, pilihan }: { aturan: AturanSkor | null; pilihan:
           <DialogTitle>{aturan ? 'Ubah Aturan Skor' : 'Tambah Aturan Skor'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="Peristiwa">Sinyal</Label>
-            <Select value={form.data.Peristiwa} onValueChange={(v) => form.setData('Peristiwa', v)}>
-              <SelectTrigger id="Peristiwa">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {daftarSinyal.map(([kode, asal]) => (
-                  <SelectItem key={kode} value={kode}>
-                    {kode} · {asal}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {asalTerpilih === pilihan.AsalTertunda ? (
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label nama="Peristiwa" htmlFor="Peristiwa">
+                Sinyal
+              </Label>
+              <Select value={form.data.Peristiwa} onValueChange={(v) => form.setData('Peristiwa', v)}>
+                <SelectTrigger id="Peristiwa">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {daftarSinyal.map(([kode, asal]) => (
+                    <SelectItem key={kode} value={kode}>
+                      {kode} · {asal}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {asalTerpilih === pilihan.AsalTertunda ? (
+                <p className="text-sm text-muted-foreground">
+                  Belum ada yang menghasilkan sinyal ini. Bobotnya tersimpan tetapi belum menyumbang apa pun.
+                </p>
+              ) : null}
+              {form.errors.Peristiwa ? (
+                <p className="text-sm text-destructive">{form.errors.Peristiwa}</p>
+              ) : null}
+            </div>
+
+            <div className="grid gap-2">
+              <Label nama="Bobot" htmlFor="Bobot">
+                Bobot
+              </Label>
+              <Input
+                id="Bobot"
+                type="number"
+                value={form.data.Bobot}
+                onChange={(e) => form.setData('Bobot', e.target.value)}
+                required
+              />
               <p className="text-sm text-muted-foreground">
-                Belum ada yang menghasilkan sinyal ini. Bobotnya tersimpan tetapi belum menyumbang
-                apa pun.
+                Boleh negatif, misalnya untuk sinyal yang menurunkan minat.
               </p>
-            ) : null}
-            {form.errors.Peristiwa ? (
-              <p className="text-sm text-destructive">{form.errors.Peristiwa}</p>
-            ) : null}
-          </div>
+              {form.errors.Bobot ? <p className="text-sm text-destructive">{form.errors.Bobot}</p> : null}
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Bobot">Bobot</Label>
-            <Input
-              id="Bobot"
-              type="number"
-              value={form.data.Bobot}
-              onChange={(e) => form.setData('Bobot', e.target.value)}
-              required
-            />
-            <p className="text-sm text-muted-foreground">
-              Boleh negatif, misalnya untuk sinyal yang menurunkan minat.
-            </p>
-            {form.errors.Bobot ? <p className="text-sm text-destructive">{form.errors.Bobot}</p> : null}
-          </div>
+            <div className="grid gap-2">
+              <Label nama="Keterangan" htmlFor="Keterangan">
+                Keterangan
+              </Label>
+              <Input
+                id="Keterangan"
+                value={form.data.Keterangan}
+                onChange={(e) => form.setData('Keterangan', e.target.value)}
+              />
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Keterangan">Keterangan</Label>
-            <Input
-              id="Keterangan"
-              value={form.data.Keterangan}
-              onChange={(e) => form.setData('Keterangan', e.target.value)}
-            />
-          </div>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.Aktif}
+                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+              />
+              Aktif
+            </label>
 
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.Aktif}
-              onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-            />
-            Aktif
-          </label>
-
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

@@ -17,6 +17,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Partner;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\PayoutPartner;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\AksesDitolak;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -41,6 +42,7 @@ final class PortalPartnerController extends Controller
         $partner = $this->partner($request);
 
         return Inertia::render('PartnerPemasaran/Portal', [
+            'wajib' => ['lead' => AturanWajib::untuk(KirimLeadPartnerRequest::class)],
             'partner' => [
                 'Kode' => $partner->Kode,
                 'NamaPerusahaan' => $partner->NamaPerusahaan,

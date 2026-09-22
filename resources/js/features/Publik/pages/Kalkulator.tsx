@@ -6,9 +6,12 @@ import { Label } from '@/components/ui/label';
 import { KerangkaPublik } from '../components/KerangkaPublik';
 import type { HasilKeandalan, PropsPublik, ToolPublik } from '../types';
 import { rutePublik } from '@/features/Publik/api';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props extends PropsPublik {
   tool: ToolPublik;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 interface Kartu {
@@ -37,7 +40,7 @@ function kartuDari(hasil: HasilKeandalan): Kartu[] {
 }
 
 /** Kalkulator keandalan publik; angkanya dihitung di server (MARKETING.md 10). */
-export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar }: Props) {
+export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar, wajib }: Props) {
   const { props } = usePage<{ hasil?: HasilKeandalan }>();
   const hasil = props.hasil;
 
@@ -73,87 +76,97 @@ export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar }:
             bukan salinannya.
           </p>
 
-          <form onSubmit={submit} className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="JumlahAset">Jumlah aset dipantau</Label>
-              <Input
-                id="JumlahAset"
-                type="number"
-                min="0"
-                value={form.data.JumlahAset}
-                onChange={(e) => form.setData('JumlahAset', e.target.value)}
-                required
-              />
-              {form.errors.JumlahAset ? (
-                <p className="text-sm text-destructive">{form.errors.JumlahAset}</p>
-              ) : null}
-            </div>
+          <AturanWajibProvider aturan={wajib.kalkulator}>
+            <form onSubmit={submit} className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label nama="JumlahAset" htmlFor="JumlahAset">
+                  Jumlah aset dipantau
+                </Label>
+                <Input
+                  id="JumlahAset"
+                  type="number"
+                  min="0"
+                  value={form.data.JumlahAset}
+                  onChange={(e) => form.setData('JumlahAset', e.target.value)}
+                  required
+                />
+                {form.errors.JumlahAset ? (
+                  <p className="text-sm text-destructive">{form.errors.JumlahAset}</p>
+                ) : null}
+              </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="HariRentang">Panjang rentang (hari)</Label>
-              <Input
-                id="HariRentang"
-                type="number"
-                min="0"
-                value={form.data.HariRentang}
-                onChange={(e) => form.setData('HariRentang', e.target.value)}
-                required
-              />
-              {form.errors.HariRentang ? (
-                <p className="text-sm text-destructive">{form.errors.HariRentang}</p>
-              ) : null}
-            </div>
+              <div className="grid gap-2">
+                <Label nama="HariRentang" htmlFor="HariRentang">
+                  Panjang rentang (hari)
+                </Label>
+                <Input
+                  id="HariRentang"
+                  type="number"
+                  min="0"
+                  value={form.data.HariRentang}
+                  onChange={(e) => form.setData('HariRentang', e.target.value)}
+                  required
+                />
+                {form.errors.HariRentang ? (
+                  <p className="text-sm text-destructive">{form.errors.HariRentang}</p>
+                ) : null}
+              </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="JumlahKegagalan">Jumlah kegagalan</Label>
-              <Input
-                id="JumlahKegagalan"
-                type="number"
-                min="0"
-                value={form.data.JumlahKegagalan}
-                onChange={(e) => form.setData('JumlahKegagalan', e.target.value)}
-                required
-              />
-              {form.errors.JumlahKegagalan ? (
-                <p className="text-sm text-destructive">{form.errors.JumlahKegagalan}</p>
-              ) : null}
-            </div>
+              <div className="grid gap-2">
+                <Label nama="JumlahKegagalan" htmlFor="JumlahKegagalan">
+                  Jumlah kegagalan
+                </Label>
+                <Input
+                  id="JumlahKegagalan"
+                  type="number"
+                  min="0"
+                  value={form.data.JumlahKegagalan}
+                  onChange={(e) => form.setData('JumlahKegagalan', e.target.value)}
+                  required
+                />
+                {form.errors.JumlahKegagalan ? (
+                  <p className="text-sm text-destructive">{form.errors.JumlahKegagalan}</p>
+                ) : null}
+              </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="MenitDowntime">Total downtime (menit)</Label>
-              <Input
-                id="MenitDowntime"
-                type="number"
-                min="0"
-                value={form.data.MenitDowntime}
-                onChange={(e) => form.setData('MenitDowntime', e.target.value)}
-                required
-              />
-              {form.errors.MenitDowntime ? (
-                <p className="text-sm text-destructive">{form.errors.MenitDowntime}</p>
-              ) : null}
-            </div>
+              <div className="grid gap-2">
+                <Label nama="MenitDowntime" htmlFor="MenitDowntime">
+                  Total downtime (menit)
+                </Label>
+                <Input
+                  id="MenitDowntime"
+                  type="number"
+                  min="0"
+                  value={form.data.MenitDowntime}
+                  onChange={(e) => form.setData('MenitDowntime', e.target.value)}
+                  required
+                />
+                {form.errors.MenitDowntime ? (
+                  <p className="text-sm text-destructive">{form.errors.MenitDowntime}</p>
+                ) : null}
+              </div>
 
-            {/* Perangkap honeypot yang sama dengan formulir pemasaran. */}
-            <div className="absolute left-[-9999px]" aria-hidden="true">
-              <label htmlFor={tool.FieldPerangkap}>Situs perusahaan</label>
-              <input
-                id={tool.FieldPerangkap}
-                name={tool.FieldPerangkap}
-                type="text"
-                tabIndex={-1}
-                autoComplete="off"
-                value={String(form.data[tool.FieldPerangkap] ?? '')}
-                onChange={(e) => form.setData(tool.FieldPerangkap, e.target.value)}
-              />
-            </div>
+              {/* Perangkap honeypot yang sama dengan formulir pemasaran. */}
+              <div className="absolute left-[-9999px]" aria-hidden="true">
+                <label htmlFor={tool.FieldPerangkap}>Situs perusahaan</label>
+                <input
+                  id={tool.FieldPerangkap}
+                  name={tool.FieldPerangkap}
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={String(form.data[tool.FieldPerangkap] ?? '')}
+                  onChange={(e) => form.setData(tool.FieldPerangkap, e.target.value)}
+                />
+              </div>
 
-            <div className="sm:col-span-2">
-              <Button type="submit" disabled={form.processing}>
-                Hitung
-              </Button>
-            </div>
-          </form>
+              <div className="sm:col-span-2">
+                <Button type="submit" disabled={form.processing}>
+                  Hitung
+                </Button>
+              </div>
+            </form>
+          </AturanWajibProvider>
 
           {hasil ? (
             <div className="mt-10">

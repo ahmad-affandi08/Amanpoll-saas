@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Angka {
   Pembilang: number;
@@ -65,13 +66,15 @@ interface Pilihan {
 interface Props {
   eksperimen: Eksperimen[];
   pilihan: Pilihan;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.eksperimen;
 
 const persen = (nilai: number) => `${(nilai * 100).toFixed(1)}%`;
 
-export default function PemasaranEksperimen({ eksperimen, pilihan }: Props) {
+export default function PemasaranEksperimen({ eksperimen, pilihan, wajib }: Props) {
   return (
     <KerangkaPlatform>
       <Head title="Eksperimen A/B" />
@@ -80,7 +83,7 @@ export default function PemasaranEksperimen({ eksperimen, pilihan }: Props) {
         judul="Eksperimen A/B"
         deskripsi="Pengunjung yang sama selalu melihat varian yang sama, dan pemenang tidak pernah dinyatakan sebelum sampel minimumnya tercapai."
         tanpaBreadcrumb
-        aksi={<DialogFormEksperimen eksperimen={null} pilihan={pilihan} />}
+        aksi={<DialogFormEksperimen eksperimen={null} pilihan={pilihan} wajib={wajib.eksperimen} />}
         className="mb-6"
       />
 
@@ -89,7 +92,7 @@ export default function PemasaranEksperimen({ eksperimen, pilihan }: Props) {
       ) : (
         <div className="space-y-6">
           {eksperimen.map((satu) => (
-            <KartuEksperimen key={satu.Id} eksperimen={satu} pilihan={pilihan} />
+            <KartuEksperimen key={satu.Id} eksperimen={satu} pilihan={pilihan} wajib={wajib.eksperimen} />
           ))}
         </div>
       )}
@@ -97,7 +100,15 @@ export default function PemasaranEksperimen({ eksperimen, pilihan }: Props) {
   );
 }
 
-function KartuEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen; pilihan: Pilihan }) {
+function KartuEksperimen({
+  eksperimen,
+  pilihan,
+  wajib,
+}: {
+  eksperimen: Eksperimen;
+  pilihan: Pilihan;
+  wajib: AturanWajib;
+}) {
   const puncak = Math.max(
     ...eksperimen.Varian.map((satu) => satu.Hasil[eksperimen.MetrikUtama]?.Rasio ?? 0),
     0.0001,
@@ -115,7 +126,7 @@ function KartuEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen; pili
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           <Badge variant={eksperimen.Status === 'Aktif' ? 'default' : 'secondary'}>{eksperimen.Status}</Badge>
           {eksperimen.Pemenang ? <Badge variant="outline">Pemenang {eksperimen.Pemenang}</Badge> : null}
-          <DialogFormEksperimen eksperimen={eksperimen} pilihan={pilihan} />
+          <DialogFormEksperimen eksperimen={eksperimen} pilihan={pilihan} wajib={wajib} />
           {eksperimen.TujuanStatus.map((tujuan) => (
             <Button
               key={tujuan}
@@ -210,7 +221,15 @@ function KartuEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen; pili
   );
 }
 
-function DialogFormEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen | null; pilihan: Pilihan }) {
+function DialogFormEksperimen({
+  eksperimen,
+  pilihan,
+  wajib,
+}: {
+  eksperimen: Eksperimen | null;
+  pilihan: Pilihan;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: eksperimen?.Kode ?? '',
@@ -279,153 +298,165 @@ function DialogFormEksperimen({ eksperimen, pilihan }: { eksperimen: Eksperimen 
           <DialogTitle>{eksperimen ? 'Ubah Eksperimen' : 'Tambah Eksperimen'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
+              <div className="grid gap-2">
+                <Label nama="Nama" htmlFor="Nama">
+                  Nama
+                </Label>
+                <Input
+                  id="Nama"
+                  value={form.data.Nama}
+                  onChange={(e) => form.setData('Nama', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label nama="Target" htmlFor="Target">
+                  Target uji
+                </Label>
+                <Select value={form.data.Target} onValueChange={(v) => form.setData('Target', v)}>
+                  <SelectTrigger id="Target">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.Target.map((satu) => (
+                      <SelectItem key={satu} value={satu}>
+                        {satu}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label nama="MetrikUtama" htmlFor="MetrikUtama">
+                  Metrik utama
+                </Label>
+                <Select value={form.data.MetrikUtama} onValueChange={(v) => form.setData('MetrikUtama', v)}>
+                  <SelectTrigger id="MetrikUtama">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.Metrik.map((satu) => (
+                      <SelectItem key={satu.Kunci} value={satu.Kunci}>
+                        {satu.Label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="grid gap-2">
-              <Label htmlFor="Nama">Nama</Label>
-              <Input
-                id="Nama"
-                value={form.data.Nama}
-                onChange={(e) => form.setData('Nama', e.target.value)}
-                required
+              <Label nama="Hipotesis" htmlFor="Hipotesis">
+                Hipotesis
+              </Label>
+              <Textarea
+                id="Hipotesis"
+                rows={3}
+                value={form.data.Hipotesis}
+                onChange={(e) => form.setData('Hipotesis', e.target.value)}
               />
             </div>
-          </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label htmlFor="Target">Target uji</Label>
-              <Select value={form.data.Target} onValueChange={(v) => form.setData('Target', v)}>
-                <SelectTrigger id="Target">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.Target.map((satu) => (
-                    <SelectItem key={satu} value={satu}>
-                      {satu}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label nama="MinimumSampel" htmlFor="MinimumSampel">
+                Minimum sampel tiap varian
+              </Label>
+              <Input
+                id="MinimumSampel"
+                type="number"
+                min="1"
+                value={form.data.MinimumSampel}
+                onChange={(e) => form.setData('MinimumSampel', e.target.value)}
+                required
+              />
+              <p className="text-sm text-muted-foreground">
+                Selama satu varian pun belum mencapai angka ini, pemenang tidak akan pernah dinyatakan,
+                sebesar apa pun selisihnya.
+              </p>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="MetrikUtama">Metrik utama</Label>
-              <Select value={form.data.MetrikUtama} onValueChange={(v) => form.setData('MetrikUtama', v)}>
-                <SelectTrigger id="MetrikUtama">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.Metrik.map((satu) => (
-                    <SelectItem key={satu.Kunci} value={satu.Kunci}>
-                      {satu.Label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Hipotesis">Hipotesis</Label>
-            <Textarea
-              id="Hipotesis"
-              rows={3}
-              value={form.data.Hipotesis}
-              onChange={(e) => form.setData('Hipotesis', e.target.value)}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="MinimumSampel">Minimum sampel tiap varian</Label>
-            <Input
-              id="MinimumSampel"
-              type="number"
-              min="1"
-              value={form.data.MinimumSampel}
-              onChange={(e) => form.setData('MinimumSampel', e.target.value)}
-              required
-            />
-            <p className="text-sm text-muted-foreground">
-              Selama satu varian pun belum mencapai angka ini, pemenang tidak akan pernah dinyatakan, sebesar
-              apa pun selisihnya.
-            </p>
-          </div>
-
-          <fieldset className="grid gap-3">
-            <legend className="text-sm font-medium">Varian</legend>
-            {form.data.Varian.map((satu, indeks) => (
-              <div key={indeks} className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[4rem_1fr_5rem]">
-                <div className="grid gap-1.5">
-                  <Label htmlFor={`Kode-${indeks}`}>Kode</Label>
-                  <Input
-                    id={`Kode-${indeks}`}
-                    value={satu.Kode}
-                    onChange={(e) => ubahVarian(indeks, 'Kode', e.target.value)}
-                    required
-                  />
+            <fieldset className="grid gap-3">
+              <legend className="text-sm font-medium">Varian</legend>
+              {form.data.Varian.map((satu, indeks) => (
+                <div key={indeks} className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[4rem_1fr_5rem]">
+                  <div className="grid gap-1.5">
+                    <Label htmlFor={`Kode-${indeks}`}>Kode</Label>
+                    <Input
+                      id={`Kode-${indeks}`}
+                      value={satu.Kode}
+                      onChange={(e) => ubahVarian(indeks, 'Kode', e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label htmlFor={`Nama-${indeks}`}>Nama</Label>
+                    <Input
+                      id={`Nama-${indeks}`}
+                      value={satu.Nama}
+                      onChange={(e) => ubahVarian(indeks, 'Nama', e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label htmlFor={`Bobot-${indeks}`}>Bobot</Label>
+                    <Input
+                      id={`Bobot-${indeks}`}
+                      type="number"
+                      min="0"
+                      value={satu.Bobot}
+                      onChange={(e) => ubahVarian(indeks, 'Bobot', e.target.value)}
+                      required
+                    />
+                  </div>
+                  <label className="flex items-center gap-2 text-sm sm:col-span-3">
+                    <Checkbox
+                      checked={satu.Kontrol}
+                      onCheckedChange={(nilai) => ubahVarian(indeks, 'Kontrol', nilai === true)}
+                    />
+                    Varian kontrol
+                  </label>
                 </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor={`Nama-${indeks}`}>Nama</Label>
-                  <Input
-                    id={`Nama-${indeks}`}
-                    value={satu.Nama}
-                    onChange={(e) => ubahVarian(indeks, 'Nama', e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor={`Bobot-${indeks}`}>Bobot</Label>
-                  <Input
-                    id={`Bobot-${indeks}`}
-                    type="number"
-                    min="0"
-                    value={satu.Bobot}
-                    onChange={(e) => ubahVarian(indeks, 'Bobot', e.target.value)}
-                    required
-                  />
-                </div>
-                <label className="flex items-center gap-2 text-sm sm:col-span-3">
-                  <Checkbox
-                    checked={satu.Kontrol}
-                    onCheckedChange={(nilai) => ubahVarian(indeks, 'Kontrol', nilai === true)}
-                  />
-                  Varian kontrol
-                </label>
-              </div>
-            ))}
+              ))}
 
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                form.setData('Varian', [
-                  ...form.data.Varian,
-                  {
-                    Kode: String.fromCharCode(65 + form.data.Varian.length),
-                    Nama: '',
-                    Bobot: '1',
-                    Kontrol: false,
-                  },
-                ])
-              }
-            >
-              Tambah varian
-            </Button>
-            {form.errors.Varian ? <p className="text-sm text-destructive">{form.errors.Varian}</p> : null}
-          </fieldset>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  form.setData('Varian', [
+                    ...form.data.Varian,
+                    {
+                      Kode: String.fromCharCode(65 + form.data.Varian.length),
+                      Nama: '',
+                      Bobot: '1',
+                      Kontrol: false,
+                    },
+                  ])
+                }
+              >
+                Tambah varian
+              </Button>
+              {form.errors.Varian ? <p className="text-sm text-destructive">{form.errors.Varian}</p> : null}
+            </fieldset>
 
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

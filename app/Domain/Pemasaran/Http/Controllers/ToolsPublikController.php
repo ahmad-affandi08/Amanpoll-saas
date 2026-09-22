@@ -13,6 +13,7 @@ use App\Domain\Pemasaran\Http\Requests\BuatQrAsetRequest;
 use App\Domain\Pemasaran\Http\Requests\HitungKeandalanPublikRequest;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Qr\PembuatQrAset;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -30,6 +31,7 @@ final class ToolsPublikController extends Controller
     public function kalkulator(Request $request, ToolPublik $tool): Response
     {
         return Inertia::render('Publik/Kalkulator', [
+            'wajib' => ['kalkulator' => AturanWajib::untuk(HitungKeandalanPublikRequest::class)],
             ...$this->propsBersama($request),
             'tool' => $this->ringkasTool($tool),
         ]);

@@ -22,14 +22,17 @@ import type { Prospek, TahapRingkas } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   prospek: Paginasi<Prospek>;
   tahap: TahapRingkas[];
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogProspekBaru() {
+function DialogProspekBaru({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Nama: '', Email: '', Telepon: '', Perusahaan: '', Jabatan: '' });
 
@@ -53,35 +56,36 @@ function DialogProspekBaru() {
         <DialogHeader>
           <DialogTitle>Tambah Prospek</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="grid gap-4">
-          {(
-            [
-              ['Nama', 'Nama', true],
-              ['Email', 'Email', false],
-              ['Telepon', 'Telepon', false],
-              ['Perusahaan', 'Perusahaan', false],
-              ['Jabatan', 'Jabatan', false],
-            ] as const
-          ).map(([kunci, label, wajib]) => (
-            <div key={kunci} className="grid gap-2">
-              <Label htmlFor={kunci}>{label}</Label>
-              <Input
-                id={kunci}
-                value={form.data[kunci]}
-                onChange={(e) => form.setData(kunci, e.target.value)}
-                required={wajib}
-              />
-              {form.errors[kunci] ? (
-                <p className="text-sm text-destructive">{form.errors[kunci]}</p>
-              ) : null}
-            </div>
-          ))}
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="grid gap-4">
+            {(
+              [
+                ['Nama', 'Nama', true],
+                ['Email', 'Email', false],
+                ['Telepon', 'Telepon', false],
+                ['Perusahaan', 'Perusahaan', false],
+                ['Jabatan', 'Jabatan', false],
+              ] as const
+            ).map(([kunci, label, wajib]) => (
+              <div key={kunci} className="grid gap-2">
+                <Label htmlFor={kunci} nama={kunci}>
+                  {label}
+                </Label>
+                <Input
+                  id={kunci}
+                  value={form.data[kunci]}
+                  onChange={(e) => form.setData(kunci, e.target.value)}
+                />
+                {form.errors[kunci] ? <p className="text-sm text-destructive">{form.errors[kunci]}</p> : null}
+              </div>
+            ))}
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -113,7 +117,9 @@ function DialogImpor() {
         </DialogHeader>
         <form onSubmit={submit} className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="Berkas">Berkas CSV</Label>
+            <Label nama="Berkas" htmlFor="Berkas">
+              Berkas CSV
+            </Label>
             <Input
               id="Berkas"
               type="file"
@@ -122,8 +128,8 @@ function DialogImpor() {
               required
             />
             <p className="text-sm text-muted-foreground">
-              Kolom yang dibaca: Nama, Email, Telepon, WhatsApp, Jabatan, Perusahaan, Industri, Kota,
-              Negara. Baris tanpa nama dilewati.
+              Kolom yang dibaca: Nama, Email, Telepon, WhatsApp, Jabatan, Perusahaan, Industri, Kota, Negara.
+              Baris tanpa nama dilewati.
             </p>
             {form.errors.Berkas ? <p className="text-sm text-destructive">{form.errors.Berkas}</p> : null}
           </div>
@@ -138,7 +144,7 @@ function DialogImpor() {
   );
 }
 
-export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props) {
+export default function PemasaranProspekIndex({ prospek, tahap, filter, wajib }: Props) {
   // Pencarian dan urutan ikut dibawa; pindah tahap tidak boleh membuang keduanya.
   const saring = (tahapKode: string | null) => {
     router.get(
@@ -155,10 +161,7 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
         accessorFn: (row) => `${row.Nama} ${row.Email ?? ''}`,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Prospek" />,
         cell: ({ row }) => (
-          <Link
-            href={rutePemasaran.prospekDetail(row.original.Id)}
-            className="block hover:underline"
-          >
+          <Link href={rutePemasaran.prospekDetail(row.original.Id)} className="block hover:underline">
             <div className="font-medium text-foreground">{row.original.Nama}</div>
             <div className="text-xs text-muted-foreground">{row.original.Email ?? '—'}</div>
           </Link>
@@ -221,18 +224,14 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
                 Ekspor
               </a>
             </Button>
-            <DialogProspekBaru />
+            <DialogProspekBaru wajib={wajib.prospek} />
           </div>
         }
         className="mb-6"
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <Button
-          variant={filter.tahap ? 'ghost' : 'secondary'}
-          size="sm"
-          onClick={() => saring(null)}
-        >
+        <Button variant={filter.tahap ? 'ghost' : 'secondary'} size="sm" onClick={() => saring(null)}>
           Semua
         </Button>
         {tahap.map((satu) => (
@@ -253,9 +252,7 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter }: Props)
         server={{ meta: prospek.meta, filter }}
         kartuDiPonsel
         pencarianPlaceholder="Cari nama atau email..."
-        pesanKosong={
-          adaPenyaringAktif(filter) ? 'Tidak ada prospek yang cocok.' : 'Belum ada prospek.'
-        }
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada prospek yang cocok.' : 'Belum ada prospek.'}
       />
     </KerangkaPlatform>
   );

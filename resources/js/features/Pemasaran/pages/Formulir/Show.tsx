@@ -61,9 +61,7 @@ export default function PemasaranFormulirShow({ formulir, pengiriman }: Props) {
                   {Object.entries(satu.Data).map(([kunci, nilai]) => (
                     <div key={kunci} className="text-sm">
                       <dt className="text-muted-foreground">{kunci}</dt>
-                      <dd className="break-words">
-                        {nilai === null || nilai === '' ? '—' : String(nilai)}
-                      </dd>
+                      <dd className="break-words">{nilai === null || nilai === '' ? '—' : String(nilai)}</dd>
                     </div>
                   ))}
                 </dl>

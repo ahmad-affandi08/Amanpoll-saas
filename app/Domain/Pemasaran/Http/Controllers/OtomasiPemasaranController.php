@@ -17,6 +17,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\LogEksekusiOtomasi;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\OtomasiPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\VersiOtomasiPemasaran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -48,6 +49,7 @@ final class OtomasiPemasaranController extends Controller
             ->get();
 
         return Inertia::render('Pemasaran/Otomasi/Index', [
+            'wajib' => ['otomasi' => AturanWajib::untuk(SimpanOtomasiPemasaranRequest::class)],
             'otomasi' => $otomasi->map(fn (OtomasiPemasaran $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,
@@ -69,6 +71,7 @@ final class OtomasiPemasaranController extends Controller
         $otomasi->load(['versi.langkah']);
 
         return Inertia::render('Pemasaran/Otomasi/Show', [
+            'wajib' => ['otomasi' => AturanWajib::untuk(SimpanOtomasiPemasaranRequest::class)],
             'otomasi' => [
                 'Id' => $otomasi->Id,
                 'Kode' => $otomasi->Kode,

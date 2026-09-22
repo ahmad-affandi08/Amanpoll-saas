@@ -13,6 +13,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\LangkahSequenceEmail;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\SequenceEmailPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TemplateEmailPemasaran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -34,6 +35,7 @@ final class SequenceEmailController extends Controller
             ->get();
 
         return Inertia::render('Pemasaran/Email/Sequence', [
+            'wajib' => ['sequence' => AturanWajib::untuk(SimpanSequenceEmailRequest::class), 'langkah' => AturanWajib::untuk(SimpanLangkahSequenceRequest::class)],
             'sequence' => $sequence->map(fn (SequenceEmailPemasaran $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,

@@ -22,15 +22,18 @@ import { Textarea } from '@/components/ui/textarea';
 import type { TemplateEmail } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   template: TemplateEmail[];
   pilihan: { Jenis: string[]; Variabel: string[] };
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const AKAR = rutePemasaran.emailTemplate;
 
-export default function PemasaranEmailTemplate({ template, pilihan }: Props) {
+export default function PemasaranEmailTemplate({ template, pilihan, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
 
   const hapus = async (satu: TemplateEmail) => {
@@ -53,7 +56,7 @@ export default function PemasaranEmailTemplate({ template, pilihan }: Props) {
         judul="Template Email"
         deskripsi="Naskah email pemasaran beserta variabelnya. Variabel yang salah ketik ditolak saat disimpan."
         tanpaBreadcrumb
-        aksi={<DialogTemplate template={null} pilihan={pilihan} />}
+        aksi={<DialogTemplate template={null} pilihan={pilihan} wajib={wajib.template} />}
         className="mb-6"
       />
 
@@ -84,7 +87,7 @@ export default function PemasaranEmailTemplate({ template, pilihan }: Props) {
                   {satu.Subjek}
                 </p>
                 <div className="flex justify-end gap-2">
-                  <DialogTemplate template={satu} pilihan={pilihan} />
+                  <DialogTemplate template={satu} pilihan={pilihan} wajib={wajib.template} />
                   <Button variant="ghost" size="sm" onClick={() => hapus(satu)}>
                     Hapus
                   </Button>
@@ -101,9 +104,11 @@ export default function PemasaranEmailTemplate({ template, pilihan }: Props) {
 function DialogTemplate({
   template,
   pilihan,
+  wajib,
 }: {
   template: TemplateEmail | null;
   pilihan: { Jenis: string[]; Variabel: string[] };
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
 
@@ -147,95 +152,107 @@ function DialogTemplate({
           <DialogTitle>{template ? 'Ubah Template' : 'Tambah Template'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-              contoh="trial-hari-1"
-            />
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={kirim} className="grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+                contoh="trial-hari-1"
+              />
+
+              <div className="grid gap-2">
+                <Label nama="Jenis" htmlFor="Jenis">
+                  Jenis
+                </Label>
+                <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
+                  <SelectTrigger id="Jenis">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pilihan.Jenis.map((jenis) => (
+                      <SelectItem key={jenis} value={jenis}>
+                        {jenis}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="Jenis">Jenis</Label>
-              <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
-                <SelectTrigger id="Jenis">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pilihan.Jenis.map((jenis) => (
-                    <SelectItem key={jenis} value={jenis}>
-                      {jenis}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label nama="Nama" htmlFor="Nama">
+                Nama
+              </Label>
+              <Input
+                id="Nama"
+                value={form.data.Nama}
+                onChange={(e) => form.setData('Nama', e.target.value)}
+                required
+              />
+              {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
             </div>
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Nama">Nama</Label>
-            <Input
-              id="Nama"
-              value={form.data.Nama}
-              onChange={(e) => form.setData('Nama', e.target.value)}
-              required
-            />
-            {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
-          </div>
+            <div className="grid gap-2">
+              <Label nama="Subjek" htmlFor="Subjek">
+                Subjek
+              </Label>
+              <Input
+                id="Subjek"
+                value={form.data.Subjek}
+                onChange={(e) => form.setData('Subjek', e.target.value)}
+                required
+              />
+              {form.errors.Subjek ? <p className="text-sm text-destructive">{form.errors.Subjek}</p> : null}
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="Subjek">Subjek</Label>
-            <Input
-              id="Subjek"
-              value={form.data.Subjek}
-              onChange={(e) => form.setData('Subjek', e.target.value)}
-              required
-            />
-            {form.errors.Subjek ? <p className="text-sm text-destructive">{form.errors.Subjek}</p> : null}
-          </div>
+            <div className="grid gap-2">
+              <Label nama="IsiHtml" htmlFor="IsiHtml">
+                Isi HTML
+              </Label>
+              <Textarea
+                id="IsiHtml"
+                rows={10}
+                className="font-mono text-xs"
+                value={form.data.IsiHtml}
+                onChange={(e) => form.setData('IsiHtml', e.target.value)}
+                required
+              />
+              {form.errors.IsiHtml ? <p className="text-sm text-destructive">{form.errors.IsiHtml}</p> : null}
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="IsiHtml">Isi HTML</Label>
-            <Textarea
-              id="IsiHtml"
-              rows={10}
-              className="font-mono text-xs"
-              value={form.data.IsiHtml}
-              onChange={(e) => form.setData('IsiHtml', e.target.value)}
-              required
-            />
-            {form.errors.IsiHtml ? <p className="text-sm text-destructive">{form.errors.IsiHtml}</p> : null}
-          </div>
+            <div className="grid gap-2">
+              <Label nama="IsiTeks" htmlFor="IsiTeks">
+                Isi Teks
+              </Label>
+              <Textarea
+                id="IsiTeks"
+                rows={5}
+                className="font-mono text-xs"
+                value={form.data.IsiTeks}
+                onChange={(e) => form.setData('IsiTeks', e.target.value)}
+              />
+              <p className="text-sm text-muted-foreground">
+                Versi tanpa format untuk pembaca yang menolak HTML. Kosongkan bila tidak perlu.
+              </p>
+            </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="IsiTeks">Isi Teks</Label>
-            <Textarea
-              id="IsiTeks"
-              rows={5}
-              className="font-mono text-xs"
-              value={form.data.IsiTeks}
-              onChange={(e) => form.setData('IsiTeks', e.target.value)}
-            />
-            <p className="text-sm text-muted-foreground">
-              Versi tanpa format untuk pembaca yang menolak HTML. Kosongkan bila tidak perlu.
-            </p>
-          </div>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.Aktif}
+                onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
+              />
+              Aktif
+            </label>
 
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.Aktif}
-              onCheckedChange={(nilai) => form.setData('Aktif', nilai === true)}
-            />
-            Aktif
-          </label>
-
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );

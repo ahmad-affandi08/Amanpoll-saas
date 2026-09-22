@@ -14,6 +14,7 @@ use App\Domain\Pemasaran\Http\Requests\UbahStatusTrialRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -31,6 +32,7 @@ final class TrialController extends Controller
             ->faset(['Status']);
 
         return Inertia::render('Pemasaran/Trial/Index', [
+            'wajib' => ['perpanjang' => AturanWajib::untuk(PerpanjangTrialRequest::class), 'status' => AturanWajib::untuk(UbahStatusTrialRequest::class)],
             'trial' => $daftar->halamanTerpeta(fn (Trial $satu): array => $this->ringkas($satu)),
             'filter' => $daftar->filterBerlaku(),
             'konfigurasi' => $this->konfigurasi->berlaku()->keArray(),

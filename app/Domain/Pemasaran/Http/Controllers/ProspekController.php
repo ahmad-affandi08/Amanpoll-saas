@@ -20,6 +20,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\RiwayatTahapProspek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TahapPipeline;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -49,6 +50,7 @@ final class ProspekController extends Controller
             });
 
         return Inertia::render('Pemasaran/Prospek/Index', [
+            'wajib' => ['prospek' => AturanWajib::untuk(SimpanProspekRequest::class)],
             'prospek' => $daftar->halamanTerpeta(fn (Prospek $satu): array => $this->ringkas($satu)),
             'tahap' => $this->daftarTahap(),
             'filter' => $daftar->filterBerlaku(),

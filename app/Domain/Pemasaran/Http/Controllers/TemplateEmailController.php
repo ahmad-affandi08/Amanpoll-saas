@@ -10,6 +10,7 @@ use App\Domain\Pemasaran\Domain\Enums\JenisTemplateEmail;
 use App\Domain\Pemasaran\Http\Requests\SimpanTemplateEmailRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\TemplateEmailPemasaran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -27,6 +28,7 @@ final class TemplateEmailController extends Controller
         $template = TemplateEmailPemasaran::query()->orderBy('Kode')->get();
 
         return Inertia::render('Pemasaran/Email/Template', [
+            'wajib' => ['template' => AturanWajib::untuk(SimpanTemplateEmailRequest::class)],
             'template' => $template->map(fn (TemplateEmailPemasaran $satu): array => [
                 'Id' => $satu->Id,
                 'Kode' => $satu->Kode,
