@@ -14,6 +14,7 @@ use App\Domain\Pemasaran\Http\Controllers\OtomasiPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ProspekController;
 use App\Domain\Pemasaran\Http\Controllers\RedirectPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\ReferralController;
 use App\Domain\Pemasaran\Http\Controllers\RingkasanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\SequenceEmailController;
 use App\Domain\Pemasaran\Http\Controllers\TemplateEmailController;
@@ -155,6 +156,25 @@ Route::middleware(['web', 'auth:platform'])
                             ->name('destroy');
                     });
             });
+        });
+
+        // Program referral, kode pelanggan, dan imbalannya.
+        Route::prefix('referral')->name('referral.')->group(function (): void {
+            Route::get('/', [ReferralController::class, 'index'])
+                ->middleware('izin.platform:'.KatalogIzinPemasaran::REFERRAL_LIHAT)
+                ->name('index');
+
+            Route::middleware('izin.platform:'.KatalogIzinPemasaran::REFERRAL_KELOLA)
+                ->group(function (): void {
+                    Route::post('/', [ReferralController::class, 'store'])->name('store');
+                    Route::put('/{program}', [ReferralController::class, 'update'])->name('update');
+                    Route::post('/{program}/kode', [ReferralController::class, 'terbitkanKode'])
+                        ->name('kode');
+                    Route::post('/reward/{reward}/proses', [ReferralController::class, 'prosesReward'])
+                        ->name('reward.proses');
+                    Route::post('/reward/{reward}/batalkan', [ReferralController::class, 'batalkanReward'])
+                        ->name('reward.batalkan');
+                });
         });
 
         // Otomasi pemasaran: Trigger → Condition → Delay → Action.

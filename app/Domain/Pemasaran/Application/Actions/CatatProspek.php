@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Application\Actions;
 
+use App\Domain\Pemasaran\Application\Services\PelacakReferral;
 use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
 use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
@@ -22,6 +23,7 @@ final class CatatProspek
         private readonly TransaksiDatabase $transaksi,
         private readonly PerekamEventPemasaran $event,
         private readonly PindahkanTahapProspek $pindahkanTahap,
+        private readonly PelacakReferral $referral,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -76,6 +78,8 @@ final class CatatProspek
                 pengenalPengunjung: $prospek->PengenalPengunjung,
                 dataTambahan: ['ProspekId' => $prospek->Id, 'Sumber' => $sumber->value, 'Baru' => $baru],
             );
+
+            $this->referral->tandaiLead($prospek);
 
             return $prospek;
         });

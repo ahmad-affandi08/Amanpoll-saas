@@ -6,6 +6,7 @@ use App\Core\Host\PetaHost;
 use App\Domain\Pemasaran\Http\Controllers\BerhentiLanggananController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPublikController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPublikController;
+use App\Domain\Pemasaran\Http\Controllers\KlikReferralController;
 use App\Domain\Pemasaran\Http\Controllers\RobotsController;
 use App\Http\Middleware\AlihkanKeHostKanonik;
 use App\Http\Middleware\CacheResponsPublik;
@@ -54,6 +55,12 @@ if ($host->situsPublikAktif()) {
             Route::get('/berhenti-langganan/{pengiriman}', BerhentiLanggananController::class)
                 ->middleware(['signed', 'throttle:publik', TandaiTidakTerindeks::class])
                 ->name('berhenti-langganan');
+
+            // Tautan referral: menukar kode dengan satu klik tercatat, lalu mengalihkan.
+            Route::get('/r/{kode}', KlikReferralController::class)
+                ->where('kode', '[A-Za-z0-9]+')
+                ->middleware(['throttle:publik', TandaiTidakTerindeks::class])
+                ->name('referral');
 
             Route::post('/formulir/{formulir}', FormulirPublikController::class)
                 ->middleware('throttle:formulir')

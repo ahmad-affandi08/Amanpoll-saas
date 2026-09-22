@@ -321,3 +321,37 @@ export interface DetailOtomasi {
   Aktif: boolean;
   VersiAktifId: string | null;
 }
+
+export interface KodeReferralRingkas {
+  Id: string;
+  Kode: string;
+  Organisasi: string;
+  Url: string | null;
+  Aktif: boolean;
+}
+
+export interface ProgramReferral {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  Keterangan: string | null;
+  JenisReward: string;
+  NilaiReward: number;
+  HariKedaluwarsa: number;
+  Aktif: boolean;
+  JumlahReferral: number;
+  Kodenya: KodeReferralRingkas[];
+}
+
+export interface RewardReferralRingkas {
+  Id: string;
+  Penerima: string;
+  Jenis: string;
+  Nilai: number;
+  Status: string;
+  Percobaan: number;
+  Ringkasan: string | null;
+  Galat: string | null;
+  DibuatPada: string;
+  DiberikanPada: string | null;
+}

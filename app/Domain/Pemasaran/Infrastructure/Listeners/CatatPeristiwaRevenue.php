@@ -6,17 +6,14 @@ namespace App\Domain\Pemasaran\Infrastructure\Listeners;
 
 use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
 use App\Domain\Pemasaran\Application\Actions\KonversiTrial;
+use App\Domain\Pemasaran\Application\Services\PelacakReferral;
+use App\Domain\Pemasaran\Application\Services\PenghitungRewardReferral;
 use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
+use App\Domain\Pemasaran\Jobs\ProsesRewardReferral;
 
-/**
- * Menyalin peristiwa revenue ke taxonomy pemasaran (MARKETING.md 23, 33.05).
- *
- * Arah ketergantungannya sengaja satu arah: Langganan menyiarkan peristiwanya
- * dan tidak tahu ada yang mendengarkan, sehingga domain penagihan tidak pernah
- * bergantung pada modul pemasaran.
- */
+/** Menyalin peristiwa revenue ke taxonomy pemasaran; Langganan menyiarkan tanpa tahu ada yang mendengar (MARKETING.md 23, 33.05). */
 final class CatatPeristiwaRevenue
 {
     private const PETA = [
@@ -31,6 +28,8 @@ final class CatatPeristiwaRevenue
     public function __construct(
         private readonly PerekamEventPemasaran $event,
         private readonly KonversiTrial $konversi,
+        private readonly PelacakReferral $referral,
+        private readonly PenghitungRewardReferral $reward,
     ) {}
 
     public function handle(PeristiwaLangganan $peristiwa): void
@@ -50,8 +49,30 @@ final class CatatPeristiwaRevenue
             organisasiId: $peristiwa->organisasiId,
         );
 
-        if ($peristiwa->kode === PeristiwaLangganan::PEMBAYARAN_BERHASIL && $trial !== null) {
+        if ($peristiwa->kode !== PeristiwaLangganan::PEMBAYARAN_BERHASIL) {
+            return;
+        }
+
+        if ($trial !== null) {
             $this->konversi->jalankan($trial, $peristiwa->langgananId);
+        }
+
+        $this->bayarkanReferral($peristiwa);
+    }
+
+    /** Pembayaran pertama itulah yang mengubah referral menjadi imbalan. */
+    private function bayarkanReferral(PeristiwaLangganan $peristiwa): void
+    {
+        $referral = $this->referral->tandaiPaid($peristiwa->organisasiId, $peristiwa->langgananId);
+
+        if ($referral === null) {
+            return;
+        }
+
+        $imbalan = $this->reward->terbitkan($referral);
+
+        if ($imbalan !== null) {
+            ProsesRewardReferral::dispatch($imbalan->Id);
         }
     }
 }

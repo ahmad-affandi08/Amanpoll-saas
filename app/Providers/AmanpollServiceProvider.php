@@ -19,7 +19,9 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Services\AdapterSinkronisasiRest;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
+use App\Domain\Langganan\Domain\Contracts\PemberiImbalanLangganan;
 use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
+use App\Domain\Langganan\Infrastructure\Services\PemberiImbalanLanggananBawaan;
 use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTransferManual;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use App\Domain\Pelaporan\Application\Queries\QueryAnggaran;
@@ -181,6 +183,9 @@ final class AmanpollServiceProvider extends ServiceProvider
                 default => $app->make(PenyediaEmailLaravel::class),
             };
         });
+
+        // Imbalan referral hanya boleh lewat domain Langganan, tidak pernah dengan menulis Billing dari luar.
+        $this->app->bind(PemberiImbalanLangganan::class, PemberiImbalanLanggananBawaan::class);
 
         // Daftar aksi otomasi disusun sekali; mesinnya hanya mengenal apa yang terdaftar di sini.
         $this->app->singleton(RegistriTindakanOtomasi::class, fn ($app): RegistriTindakanOtomasi => new RegistriTindakanOtomasi([

@@ -33,8 +33,8 @@ final class KatalogPemicuOtomasi
             'LanggananDibatalkan' => KatalogPeristiwaPemasaran::LANGGANAN_DIBATALKAN,
             'PembayaranGagal' => KatalogPeristiwaPemasaran::PEMBAYARAN_GAGAL,
             'PartnerMengirimLead' => KatalogPeristiwaPemasaran::PARTNER_MENGIRIM_LEAD,
-            // Referral lahir di FASE 36, lead tidak aktif menunggu pekerjaan terjadwalnya.
-            'ReferralTerdaftar' => self::BELUM_ADA_SUMBER,
+            'ReferralTerdaftar' => KatalogPeristiwaPemasaran::REFERRAL_MENJADI_LEAD,
+            // Lead tidak aktif menunggu pekerjaan terjadwalnya.
             'LeadTidakAktif' => self::BELUM_ADA_SUMBER,
         ];
     }

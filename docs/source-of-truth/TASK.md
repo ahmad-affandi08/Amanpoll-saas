@@ -2388,29 +2388,94 @@ dimatikan meloloskan bidang serta operator yang tidak ada.
 
 ## 36.01 Program
 
-- [ ] Tabel `ProgramReferral`, `Referral`, `RewardReferral`.
-- [ ] Referral code dan referral URL.
+- [x] Tabel `ProgramReferral`, `Referral`, `RewardReferral`.
+- [x] Referral code dan referral URL.
+
+Ada tabel keempat yang tidak diminta, `KodeReferral`, dan itu disengaja. Satu
+pelanggan punya satu kode yang dipakai berkali-kali, sedangkan satu baris
+`Referral` adalah perjalanan satu orang yang diajak. Menggabungkan keduanya
+memaksa baris tanpa pengunjung hidup di tabel yang setiap barisnya seharusnya
+punya satu, dan membuat state machine-nya berbohong tentang apa yang ia lacak.
+
+URL-nya `/r/{kode}` di host publik. Kode yang tidak dikenal tetap dialihkan ke
+beranda tanpa berkata apa-apa: memberi tahu bahwa satu kode tidak ada mengubah
+tautan itu menjadi alat menebak kode orang lain.
 
 ## 36.02 State
 
-- [ ] State `DIBUAT → DIKLIK → LEAD → TRIAL → PAID → REWARD_PENDING → REWARDED`.
-- [ ] Anti self-referral.
+- [x] State `DIBUAT → DIKLIK → LEAD → TRIAL → PAID → REWARD_PENDING → REWARDED`.
+- [x] Anti self-referral.
+
+Status hanya boleh maju, dan pengunjung yang sama mengklik dua kali tidak
+melahirkan referral kedua — indeks unik pada (program, pengunjung) yang
+menahannya.
+
+Anti self-referral diperiksa dua kali: sekali saat kliknya masuk, dan sekali
+lagi sebelum imbalannya diberikan. Sekali saja tidak cukup, sebab pada klik
+pertama pengunjungnya masih anonim; siapa dia baru terbaca setelah ia mengisi
+formulir atau mendaftar. Yang ditolak: organisasi yang sama dengan perujuknya,
+prospek yang sudah menjadi bagian organisasi perujuk, dan alamat email yang
+terdaftar sebagai pengguna organisasi perujuk.
 
 ## 36.03 Reward
 
-- [ ] Reward configurable: extension, credit, coupon, custom.
-- [ ] Pemberian reward lewat domain contract Langganan, bukan mutasi Billing langsung.
-- [ ] Perubahan reward tercatat di audit.
-- [ ] Job `ProsesRewardReferral`.
+- [x] Reward configurable: extension, credit, coupon, custom.
+- [x] Pemberian reward lewat domain contract Langganan, bukan mutasi Billing langsung.
+- [x] Perubahan reward tercatat di audit.
+- [x] Job `ProsesRewardReferral`.
+
+Keempat bentuk dapat dipilih, tetapi hanya dua yang benar-benar dapat
+diselesaikan hari ini: `Perpanjangan`, karena Billing punya tempatnya, dan
+`Kustom`, karena memang diselesaikan manusia di luar sistem. `Kredit` dan
+`Kupon` tidak punya buku besar maupun tabel kupon di domain Langganan, jadi
+`PemberiImbalanLangganan::mendukung()` menjawab tidak dan program yang
+menjanjikannya ditolak saat disimpan. Janji imbalan yang tidak dapat ditepati
+terbaca pelanggan hari ini sementara gagalnya baru terlihat berminggu kemudian
+di antrean imbalan — itu lebih buruk daripada tidak menawarkannya.
+
+Pemberian lewat kontrak `PemberiImbalanLangganan`, tidak pernah dengan menulis
+ke tabel Billing dari domain Pemasaran. Satu referral paling banyak satu
+imbalan, dijaga indeks unik pada `ReferralId`.
 
 ## 36.04 Test
 
-- [ ] `ReferralConversionTest`.
-- [ ] `HitungRewardReferralTest`.
+- [x] `ReferralConversionTest`.
+- [x] `HitungRewardReferralTest`.
 
 ### Gate 36
 
 Referral dapat ditelusuri dari klik sampai pembayaran, dan seseorang tidak dapat memberi referral kepada dirinya sendiri.
+
+**Terpenuhi.** `ReferralConversionTest::test_referral_tertelusur_dari_klik_sampai_pembayaran`
+menempuh jalurnya utuh lewat jalur sungguhan — klik tautan, formulir prospek,
+`MulaiTrial`, lalu pembayaran yang masuk lewat `CatatPembayaranLangganan` —
+dan memeriksa keempat stempel waktunya terisi serta imbalannya terbit atas nama
+perujuk.
+`test_organisasi_tidak_dapat_mereferensikan_dirinya_sendiri` dan
+`test_email_pengguna_perujuk_ditolak_saat_menjadi_lead` menjaga paruh keduanya,
+dan `test_referral_yang_ditolak_tidak_pernah_menghasilkan_imbalan` membuktikan
+penolakan itu benar-benar memutus rantainya sampai ke imbalan.
+
+Lima sabotase menggigit: mematikan anti self-referral meloloskan tiga test
+sekaligus; membiarkan status mundur merusak urutan perjalanannya; menerima
+semua bentuk imbalan membuat program kredit lolos tersimpan; menerbitkan
+imbalan untuk referral yang belum dibayar melanggar syaratnya; dan mengabaikan
+status final memberi imbalan dua kali.
+
+Sabotase terakhir itu awalnya tidak menggigit. Penjaga "sudah final" di
+layanannya terlindungi oleh penjaga serupa di job-nya, sehingga tidak pernah
+teruji — padahal konsol punya tombol coba lagi yang memanggil layanannya
+langsung. Test idempotensinya kini memanggil kedua jalur.
+
+Satu bug ditemukan saat menulis test: memberi imbalan menyentuh langganan
+tenant perujuk, sementara yang sedang berjalan adalah tenant yang baru saja
+membayar. Barisan auditnya akan tercatat di buku tenant yang salah. Konteks
+tenant kini dikosongkan selama pemberian, seperti yang sudah dilakukan
+`DaftarkanTrial`.
+
+Pemicu otomasi `ReferralTerdaftar` yang di FASE 35 masih dinyatakan belum ada
+sumbernya kini menunjuk `ReferralMenjadiLead`, dan `AutomationTriggerTest`
+berpindah menguji `LeadTidakAktif` yang memang masih menunggu pekerjaannya.
 
 ---
 

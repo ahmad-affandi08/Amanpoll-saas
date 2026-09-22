@@ -94,11 +94,11 @@ final class AutomationTriggerTest extends KasusOtomasi
     /** Pemicu yang belum ada sumbernya tetap boleh disimpan, tetapi jujur dinyatakan belum berlaku. */
     public function test_pemicu_tanpa_sumber_tersimpan_tetapi_tidak_pernah_menyala(): void
     {
-        $this->assertTrue(KatalogPemicuOtomasi::dikenal('ReferralTerdaftar'));
-        $this->assertFalse(KatalogPemicuOtomasi::berlaku('ReferralTerdaftar'));
+        $this->assertTrue(KatalogPemicuOtomasi::dikenal('LeadTidakAktif'));
+        $this->assertFalse(KatalogPemicuOtomasi::berlaku('LeadTidakAktif'));
 
-        $this->buatOtomasi('ReferralTerdaftar', [
-            $this->langkahAksi('TambahTag', ['Tag' => ['referral']]),
+        $this->buatOtomasi('LeadTidakAktif', [
+            $this->langkahAksi('TambahTag', ['Tag' => ['tidak-aktif']]),
         ]);
 
         $this->buatProspek();

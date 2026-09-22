@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Pemasaran\Application\Services\PelacakReferral;
 use App\Domain\Pemasaran\Application\Services\PembacaKonfigurasiTrial;
 use App\Domain\Pemasaran\Application\Services\PendaftarSequenceTrial;
 use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
@@ -26,6 +27,7 @@ final class MulaiTrial
         private readonly PerekamEventPemasaran $event,
         private readonly LayananAudit $audit,
         private readonly PendaftarSequenceTrial $sequence,
+        private readonly PelacakReferral $referral,
     ) {}
 
     public function jalankan(string $organisasiId, ?Prospek $prospek = null, ?string $langgananId = null): Trial
@@ -70,6 +72,7 @@ final class MulaiTrial
             );
 
             $this->sequence->daftarkan($prospek);
+            $this->referral->tandaiTrial($prospek, $organisasiId);
 
             $this->audit->catat('Trial.Dimulai', 'Trial', $trial->Id, dataSesudah: [
                 'OrganisasiId' => $organisasiId,

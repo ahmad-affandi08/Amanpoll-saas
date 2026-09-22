@@ -81,6 +81,12 @@ const PINTASAN = [
     izin: 'platform.email.lihat',
   },
   {
+    label: 'Referral',
+    href: '/admin-platform/pemasaran/referral',
+    keterangan: 'Program referral, kode pelanggan, dan imbalannya.',
+    izin: 'platform.referral.lihat',
+  },
+  {
     label: 'Consent dan Supresi',
     href: '/admin-platform/pemasaran/email/konsen',
     keterangan: 'Siapa boleh dikirimi pesan, dan permintaan penghapusan data.',
