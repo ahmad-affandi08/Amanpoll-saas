@@ -116,3 +116,8 @@ Schedule::command('pemasaran:kedaluwarsakan-referral')
 Schedule::command('pemasaran:proses-reward-referral')
     ->hourly()
     ->withoutOverlapping();
+
+// Dataset demo dibangun ulang tiap lima belas menit; intervalnya sendiri diatur per demo (MARKETING.md 11).
+Schedule::command('pemasaran:reset-demo')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping(15);

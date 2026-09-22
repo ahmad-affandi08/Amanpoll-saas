@@ -6,6 +6,7 @@ use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Http\Controllers\AturanSkorProspekController;
 use App\Domain\Pemasaran\Http\Controllers\DashboardGrowthController;
+use App\Domain\Pemasaran\Http\Controllers\DemoPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
@@ -87,6 +88,18 @@ Route::middleware(['web', 'auth:platform'])
                 Route::middleware('izin.platform:'.KatalogIzinPemasaran::PROSPEK_KELOLA)->group(function (): void {
                     Route::post('/{trial}/perpanjang', [TrialController::class, 'perpanjang'])->name('perpanjang');
                     Route::post('/{trial}/status', [TrialController::class, 'ubahStatus'])->name('status');
+                });
+            });
+
+        // Konsol demo produk: setelan, sesi, dan reset datasetnya (MARKETING.md 11).
+        Route::middleware('izin.platform:'.KatalogIzinPemasaran::PEMASARAN_LIHAT)
+            ->prefix('demo')->name('demo.')->group(function (): void {
+                Route::get('/', [DemoPemasaranController::class, 'index'])->name('index');
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::PEMASARAN_KELOLA)->group(function (): void {
+                    Route::post('/', [DemoPemasaranController::class, 'store'])->name('store');
+                    Route::put('/{demo}', [DemoPemasaranController::class, 'update'])->name('update');
+                    Route::post('/{demo}/reset', [DemoPemasaranController::class, 'reset'])->name('reset');
                 });
             });
 

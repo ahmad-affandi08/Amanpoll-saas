@@ -34,11 +34,13 @@ final class Organisasi extends ModelDasar
         'ZonaWaktu',
         'LogoUrl',
         'Status',
+        'Demo',
     ];
 
     protected function casts(): array
     {
         return [
+            'Demo' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',

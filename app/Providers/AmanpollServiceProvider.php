@@ -43,12 +43,14 @@ use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporPdf;
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
+use App\Domain\Pemasaran\Application\Services\RegistriDatasetDemo;
 use App\Domain\Pemasaran\Application\Services\RegistriTindakanOtomasi;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaEmailPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Listeners\CatatPeristiwaRevenue;
 use App\Domain\Pemasaran\Infrastructure\Listeners\PemicuOtomasiPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Listeners\PerekamAktivasiTrial;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
+use App\Domain\Pemasaran\Infrastructure\Services\DatasetDemoManufaktur;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaEmailLaravel;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanDaftarkanSequence;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHentikanSequence;
@@ -186,6 +188,11 @@ final class AmanpollServiceProvider extends ServiceProvider
 
         // Imbalan referral hanya boleh lewat domain Langganan, tidak pernah dengan menulis Billing dari luar.
         $this->app->bind(PemberiImbalanLangganan::class, PemberiImbalanLanggananBawaan::class);
+
+        // Dataset demo yang boleh dibangun ulang; kode di luar daftar ini ditolak saat disimpan.
+        $this->app->singleton(RegistriDatasetDemo::class, fn ($app): RegistriDatasetDemo => new RegistriDatasetDemo([
+            $app->make(DatasetDemoManufaktur::class),
+        ]));
 
         // Daftar aksi otomasi disusun sekali; mesinnya hanya mengenal apa yang terdaftar di sini.
         $this->app->singleton(RegistriTindakanOtomasi::class, fn ($app): RegistriTindakanOtomasi => new RegistriTindakanOtomasi([

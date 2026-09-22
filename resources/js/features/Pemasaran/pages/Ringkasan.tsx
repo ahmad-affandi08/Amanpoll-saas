@@ -51,6 +51,12 @@ const PINTASAN = [
     izin: 'platform.kampanye.lihat',
   },
   {
+    label: 'Demo Produk',
+    href: '/admin-platform/pemasaran/demo',
+    keterangan: 'Sandbox demo, sesinya, dan reset datasetnya.',
+    izin: 'platform.pemasaran.lihat',
+  },
+  {
     label: 'Halaman Publik',
     href: '/admin-platform/pemasaran/halaman',
     keterangan: 'Landing page beserta versinya.',

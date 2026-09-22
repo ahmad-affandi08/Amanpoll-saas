@@ -2682,16 +2682,32 @@ biaya dibagi pelanggan baru yang dihitung ulang langsung dari tabelnya.
 
 ## 38.03 Demo Management
 
-- [ ] Tabel `DemoPemasaran`, `SesiDemo`, `EventDemo`.
-- [ ] Setelan: demo enabled, dataset, reset interval, visible modules, restricted features, CTA, max session.
-- [ ] Event demo sesuai bagian 11: started, feature opened, asset viewed, work order created, QR viewed, preventive viewed, completed, CTA clicked.
-- [ ] `DEMO_DIMULAI` dan `DEMO_SELESAI` ditulis ke `EventPemasaran`, sehingga tahap Demo di funnel berhenti bernilai nol.
-- [ ] Job terjadwal `ResetDatasetDemo`.
-- [ ] Batas sesi ditegakkan, bukan sekadar disetel.
-- [ ] `SesiDemoTest`, `ResetDemoTest`.
+- [x] Tabel `DemoPemasaran`, `SesiDemo`, `EventDemo`.
+- [x] Setelan: demo enabled, dataset, reset interval, visible modules, restricted features, CTA, max session.
+- [x] Event demo sesuai bagian 11: started, feature opened, asset viewed, work order created, QR viewed, preventive viewed, completed, CTA clicked.
+- [x] `DEMO_DIMULAI` dan `DEMO_SELESAI` ditulis ke `EventPemasaran`, sehingga tahap Demo di funnel berhenti bernilai nol.
+- [x] Job terjadwal `ResetDatasetDemo`.
+- [x] Batas sesi ditegakkan, bukan sekadar disetel.
+- [x] `SesiDemoTest`, `ResetDemoTest`.
 
 Reset menghapus data demo dan membuatnya ulang dari dataset; ia tidak boleh
 dapat menyentuh tenant sungguhan, dan test yang membuktikannya wajib ada.
+
+Penjaganya dibuat dari dua fakta yang saling bebas: kolom `Organisasi.Demo`
+pada tenantnya sendiri, dan tautan `DemoPemasaran.OrganisasiDemoId`. Salah
+tunjuk di satu tempat saja tidak cukup untuk menghapus apa pun. Sapuannya
+dibatasi daftar tabel yang diakui datasetnya, dan tiap tabel itu wajib punya
+kolom `OrganisasiId` supaya penghapusannya tidak dapat melintasi tenant.
+
+"Max session" bagian 11 dibaca sebagai dua batas yang berbeda, sebab keduanya
+nyata: `MaksDurasiMenit` membatasi umur satu sesi, `MaksSesiSerentak`
+membatasi berapa sesi boleh hidup bersamaan di atas satu dataset yang sama.
+
+Dataset demo adalah daftar tertutup (`RegistriDatasetDemo`) berisi pembuat yang
+benar-benar mengisi tenant sandbox. FASE ini mengirim satu pembuat nyata,
+`DatasetDemoManufaktur`: tiga lokasi, lima mesin, tiga perintah kerja, dan satu
+rencana preventif. Modul yang belum punya pembuat tidak dapat dipilih, bukan
+dipilih lalu menghasilkan sandbox kosong.
 
 **Gate 38.03.** Satu sesi demo terbaca utuh dari mulai sampai selesai di funnel
 growth, dan reset terjadwal tidak pernah menghapus data di luar dataset demo.
