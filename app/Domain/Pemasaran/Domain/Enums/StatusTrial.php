@@ -38,10 +38,10 @@ enum StatusTrial: string
         return in_array($tujuan, $this->tujuanYangDiizinkan(), true);
     }
 
-    /** Trial yang masih dapat menerima butir aktivasi baru. */
+    /** Trial yang belum berakhir: masih mencatat butir baru, dan masih dapat kedaluwarsa. */
     public function berjalan(): bool
     {
-        return in_array($this, [self::Terdaftar, self::Setup, self::Aktif, self::Diperpanjang], true);
+        return ! $this->selesai();
     }
 
     public function selesai(): bool

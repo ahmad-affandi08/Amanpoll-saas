@@ -2123,6 +2123,25 @@ pemasaran.
 - [x] `TrialActivationTest`.
 - [x] Konversi trial terhubung ke Langganan.
 
+## 33.07 Pendaftaran Trial Mandiri
+
+- [x] Formulir pendaftaran di host dashboard, bukan host publik.
+- [x] Satu transaksi menghasilkan organisasi, pemilik, langganan uji coba, dan trial.
+- [x] Pengenal kunjungan dibawa dari cookie berdomain induk, attribution tidak putus.
+- [x] Kebutuhan kartu (`trial.kartu_diperlukan`) benar-benar ditegakkan.
+
+`DaftarkanTrial` menulis tanpa konteks tenant mana pun — ia satu-satunya tempat
+yang memang harus membuat baris untuk organisasi yang belum ada saat
+permintaannya dimulai, dan `ScopeOrganisasi` menolak yang sebaliknya. Pemilik
+workspace baru memegang seluruh izin karena tidak ada orang lain yang dapat
+memberinya.
+
+Kebijakan kartu ditegakkan lewat antarmuka `MenerimaKartuDiMuka`, terpisah dari
+`PenyediaPembayaran` karena tidak semua penyedia bisa: transfer manual tidak
+punya kartu untuk disimpan. Gagal tertutup dua kali — kebijakan yang menyala
+sementara penyedianya tidak mendukung menutup pendaftaran mandiri seluruhnya,
+dan formulirnya menyatakan alasannya alih-alih menerima lalu mengabaikan.
+
 ### Gate 33
 
 Perjalanan satu pengunjung dari kunjungan pertama sampai berlangganan terbaca utuh dalam satu timeline, dan revenue-nya tertaut ke channel asalnya.
@@ -2131,18 +2150,14 @@ Perjalanan satu pengunjung dari kunjungan pertama sampai berlangganan terbaca ut
 menelusuri satu orang dari formulir anonim, lewat `TrialDimulai`,
 `AsetPertamaDibuat`, dan `TrialTeraktivasi`, sampai `PembayaranBerhasil` — semua
 dalam satu timeline prospek, dengan attribution kunjungan pertamanya utuh.
+`AktivasiDariModelNyataTest` membuktikan checklist terisi dari pembuatan Lokasi,
+Aset, Pengguna, PerintahKerja, dan RencanaPemeliharaan yang sungguhan, sehingga
+observer yang lupa didaftarkan tidak akan lolos.
 
-Catatan jujur:
-
-- Pendaftaran trial dari UI belum ada. `MulaiTrial` sudah menjadi pintu satu-satunya
-  dan sudah diuji, tetapi yang memanggilnya baru test dan konsol; halaman daftar
-  trial di host dashboard menyusul bersama alur pendaftaran mandiri.
-- `Aset`, `PerintahKerja`, dan `RencanaPemeliharaan` dicentang lewat observer yang
-  sama seperti `Lokasi`, tetapi yang diuji lewat model sungguhan baru `Lokasi`;
-  sisanya diuji lewat `CatatAktivasiTrial` langsung karena menyiapkan aset dan
-  perintah kerja lengkap menuntut sebagian besar fixture domain Pemeliharaan.
-- Kebutuhan kartu (`trial.kartu_diperlukan`) baru tersimpan sebagai setelan; yang
-  menegakkannya adalah alur pendaftaran yang belum ada.
+Satu bug yang ditemukan test model nyata: setelah `TERAKTIVASI`, butir checklist
+yang tersisa berhenti dicatat. Corong onboarding tetap perlu tahu apakah
+preventive akhirnya dibuat, dan trial yang teraktivasi tetap dapat kedaluwarsa,
+jadi `berjalan()` kini berarti "belum berakhir", bukan "belum teraktivasi".
 
 ---
 

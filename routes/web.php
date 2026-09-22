@@ -2,6 +2,7 @@
 
 use App\Core\Host\PetaHost;
 use App\Domain\Pelaporan\Http\Controllers\DasborController;
+use App\Http\Controllers\Auth\DaftarTrialController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LupaKataSandiController;
 use App\Http\Controllers\Auth\ResetKataSandiController;
@@ -14,6 +15,12 @@ Route::domain(app(PetaHost::class)->dashboard())->group(function (): void {
         Route::post('/login', [LoginController::class, 'store'])
             ->middleware('throttle:masuk')
             ->name('login.store');
+
+        // Formulir trial ada di host dashboard, bukan host publik (MARKETING.md 34.1).
+        Route::get('/daftar', [DaftarTrialController::class, 'create'])->name('daftar');
+        Route::post('/daftar', [DaftarTrialController::class, 'store'])
+            ->middleware('throttle:daftar')
+            ->name('daftar.store');
 
         Route::get('/lupa-kata-sandi', [LupaKataSandiController::class, 'create'])->name('lupa-kata-sandi');
         Route::post('/lupa-kata-sandi', [LupaKataSandiController::class, 'store'])

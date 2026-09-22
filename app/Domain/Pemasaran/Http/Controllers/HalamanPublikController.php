@@ -87,7 +87,7 @@ final class HalamanPublikController extends Controller
         return [
             'kanonik' => $this->host->urlKanonik($request->path()),
             'urlMasuk' => $this->penaut->tautan(route('login'), $pengenal),
-            'urlDaftar' => $this->penaut->tautan(route('login'), $pengenal),
+            'urlDaftar' => $this->penaut->tautan(route('daftar'), $pengenal),
         ];
     }
 }

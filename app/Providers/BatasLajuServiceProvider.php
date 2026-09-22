@@ -33,6 +33,10 @@ final class BatasLajuServiceProvider extends ServiceProvider
         RateLimiter::for('webhook', fn (Request $request): Limit => Limit::perMinute(120)
             ->by((string) $request->ip()));
 
+        // Satu pendaftaran trial melahirkan organisasi, pengguna, dan langganan sekaligus.
+        RateLimiter::for('daftar', fn (Request $request): Limit => Limit::perMinute(3)
+            ->by((string) $request->ip()));
+
         // Pengiriman formulir pemasaran.
         RateLimiter::for('formulir', fn (Request $request): Limit => Limit::perMinute(5)
             ->by((string) $request->ip()));
