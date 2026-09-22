@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Partner;
 use App\Domain\Platform\Infrastructure\Persistence\Models\AdminPlatform;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
@@ -20,6 +21,12 @@ return [
             'driver' => 'session',
             'provider' => 'admin_platform',
         ],
+
+        // Portal partner hidup di hostnya sendiri dengan guard sendiri; ia bukan tenant dan bukan admin.
+        'partner' => [
+            'driver' => 'session',
+            'provider' => 'partner',
+        ],
     ],
 
     'providers' => [
@@ -31,6 +38,11 @@ return [
         'admin_platform' => [
             'driver' => 'eloquent',
             'model' => AdminPlatform::class,
+        ],
+
+        'partner' => [
+            'driver' => 'eloquent',
+            'model' => Partner::class,
         ],
     ],
 

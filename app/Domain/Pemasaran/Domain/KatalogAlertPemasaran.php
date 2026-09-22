@@ -87,7 +87,7 @@ final class KatalogAlertPemasaran
                 'tingkat' => TingkatAlertPemasaran::Peringatan,
                 'judul' => 'Komisi partner tertunda',
                 'sumber' => 'KomisiPartner',
-                'belumTersedia' => 'Program partner lahir di FASE 38.09; belum ada komisi yang dapat tertunda.',
+                'belumTersedia' => null,
             ],
         ];
     }

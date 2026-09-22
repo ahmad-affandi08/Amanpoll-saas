@@ -7,6 +7,7 @@ namespace App\Domain\Pemasaran\Infrastructure\Listeners;
 use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
 use App\Domain\Pemasaran\Application\Actions\KonversiTrial;
 use App\Domain\Pemasaran\Application\Services\PelacakReferral;
+use App\Domain\Pemasaran\Application\Services\PenghitungKomisiPartner;
 use App\Domain\Pemasaran\Application\Services\PenghitungRewardReferral;
 use App\Domain\Pemasaran\Application\Services\PerekamEventPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
@@ -30,6 +31,7 @@ final class CatatPeristiwaRevenue
         private readonly KonversiTrial $konversi,
         private readonly PelacakReferral $referral,
         private readonly PenghitungRewardReferral $reward,
+        private readonly PenghitungKomisiPartner $komisi,
     ) {}
 
     public function handle(PeristiwaLangganan $peristiwa): void
@@ -58,6 +60,22 @@ final class CatatPeristiwaRevenue
         }
 
         $this->bayarkanReferral($peristiwa);
+        $this->komisikanPartner($peristiwa);
+    }
+
+    /**
+     * Komisi partner lahir dari id pembayarannya, bukan dari jumlah yang ikut di
+     * muatan peristiwa: domain Langganan yang memastikan pembayarannya nyata.
+     */
+    private function komisikanPartner(PeristiwaLangganan $peristiwa): void
+    {
+        $this->komisi->tandaiLeadLunas($peristiwa->organisasiId);
+
+        $pembayaranId = $peristiwa->data['PembayaranId'] ?? null;
+
+        if (is_string($pembayaranId) && $pembayaranId !== '') {
+            $this->komisi->dariPembayaran($pembayaranId);
+        }
     }
 
     /** Pembayaran pertama itulah yang mengubah referral menjadi imbalan. */

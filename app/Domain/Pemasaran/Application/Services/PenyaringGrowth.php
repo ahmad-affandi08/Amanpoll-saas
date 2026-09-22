@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Application\Services;
 
+use App\Domain\Pemasaran\Domain\Enums\StatusLeadPartner;
 use App\Domain\Pemasaran\Domain\Enums\StatusReferral;
 use App\Domain\Pemasaran\Domain\ValueObjects\FilterGrowth;
 use Illuminate\Database\Query\Builder;
@@ -25,6 +26,7 @@ final class PenyaringGrowth
         $this->batasiAttribution($kueri, $filter);
         $this->batasiProspek($kueri, $filter);
         $this->batasiReferral($kueri, $filter);
+        $this->batasiPartner($kueri, $filter);
 
         return $kueri;
     }
@@ -84,6 +86,24 @@ final class PenyaringGrowth
                         ->where('PaketLangganan.Kode', $filter->paket);
                 });
             }
+        });
+    }
+
+    /** Pengunjung milik partner adalah pengunjung di balik prospek yang ditautkan lead kirimannya. */
+    private function batasiPartner(Builder $kueri, FilterGrowth $filter): void
+    {
+        if ($filter->partner === null) {
+            return;
+        }
+
+        $kueri->whereIn('SesiPengunjung.PengenalPengunjung', function (Builder $sub) use ($filter): void {
+            $sub->select('Prospek.PengenalPengunjung')
+                ->from('LeadPartner')
+                ->join('Partner', 'Partner.Id', '=', 'LeadPartner.PartnerId')
+                ->join('Prospek', 'Prospek.Id', '=', 'LeadPartner.ProspekId')
+                ->whereNotNull('Prospek.PengenalPengunjung')
+                ->where('Partner.Kode', $filter->partner)
+                ->where('LeadPartner.Status', '!=', StatusLeadPartner::Ditolak->value);
         });
     }
 

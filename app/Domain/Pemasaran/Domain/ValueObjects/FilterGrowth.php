@@ -19,7 +19,7 @@ final readonly class FilterGrowth
         public ?string $perangkat = null,
         public ?string $paket = null,
         public ?string $programReferral = null,
-        /** Penyaring partner menunggu FASE 38.09; disimpan agar bentuk filternya tidak berubah kelak. */
+        /** Kode partner pengirim lead; menyaring pengunjung lewat prospek yang ditautkan lead itu. */
         public ?string $partner = null,
     ) {}
 
@@ -52,7 +52,8 @@ final readonly class FilterGrowth
             || $this->landing !== null
             || $this->perangkat !== null
             || $this->paket !== null
-            || $this->programReferral !== null;
+            || $this->programReferral !== null
+            || $this->partner !== null;
     }
 
     /** @return array<string, string|null> */

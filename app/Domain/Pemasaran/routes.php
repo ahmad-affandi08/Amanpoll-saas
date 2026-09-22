@@ -17,6 +17,7 @@ use App\Domain\Pemasaran\Http\Controllers\KonsenPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\KontenPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\KontenSosialController;
 use App\Domain\Pemasaran\Http\Controllers\OtomasiPemasaranController;
+use App\Domain\Pemasaran\Http\Controllers\PartnerKonsolController;
 use App\Domain\Pemasaran\Http\Controllers\PengaturanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ProspekController;
 use App\Domain\Pemasaran\Http\Controllers\RedirectPemasaranController;
@@ -327,6 +328,47 @@ Route::middleware(['web', 'auth:platform'])
                         ->name('reward.batalkan');
                 });
         });
+
+        // Program partner, lead kiriman, komisi, dan payout.
+        Route::middleware('fitur.platform:'.KatalogFiturPlatform::PARTNER)
+            ->prefix('partner')
+            ->name('partner.')
+            ->group(function (): void {
+                Route::get('/', [PartnerKonsolController::class, 'index'])
+                    ->middleware('izin.platform:'.KatalogIzinPemasaran::PARTNER_LIHAT)
+                    ->name('index');
+
+                Route::middleware('izin.platform:'.KatalogIzinPemasaran::PARTNER_KELOLA)
+                    ->group(function (): void {
+                        // Ruas tetap didaftarkan lebih dulu agar tidak tertelan pengikatan {partner}.
+                        Route::post('/program', [PartnerKonsolController::class, 'simpanProgram'])
+                            ->name('program.store');
+                        Route::put('/program/{programPartner}', [PartnerKonsolController::class, 'simpanProgram'])
+                            ->name('program.update');
+                        Route::post('/aturan', [PartnerKonsolController::class, 'simpanAturan'])
+                            ->name('aturan.store');
+                        Route::put('/aturan/{aturan}', [PartnerKonsolController::class, 'simpanAturan'])
+                            ->name('aturan.update');
+                        Route::post('/lead/{lead}/terima', [PartnerKonsolController::class, 'terimaLead'])
+                            ->name('lead.terima');
+                        Route::post('/lead/{lead}/tolak', [PartnerKonsolController::class, 'tolakLead'])
+                            ->name('lead.tolak');
+                        Route::post('/komisi/{komisi}/setujui', [PartnerKonsolController::class, 'setujuiKomisi'])
+                            ->name('komisi.setujui');
+                        Route::post('/komisi/{komisi}/batalkan', [PartnerKonsolController::class, 'batalkanKomisi'])
+                            ->name('komisi.batalkan');
+                        Route::post('/payout/{payout}/bayar', [PartnerKonsolController::class, 'bayarPayout'])
+                            ->name('payout.bayar');
+                        Route::post('/payout/{payout}/batalkan', [PartnerKonsolController::class, 'batalkanPayout'])
+                            ->name('payout.batalkan');
+
+                        Route::post('/', [PartnerKonsolController::class, 'simpanPartner'])->name('store');
+                        Route::put('/{partner}', [PartnerKonsolController::class, 'simpanPartner'])
+                            ->name('update');
+                        Route::post('/{partner}/payout', [PartnerKonsolController::class, 'susunPayout'])
+                            ->name('payout.susun');
+                    });
+            });
 
         // Otomasi pemasaran: Trigger → Condition → Delay → Action.
         Route::prefix('otomasi')->name('otomasi.')->group(function (): void {

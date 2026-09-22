@@ -61,6 +61,8 @@ final class KatalogKonfigurasiPemasaran
 
     public const ALERT_WHATSAPP_GAGAL_MAKS = 'alert.whatsapp_gagal_maks_persen';
 
+    public const ALERT_KOMISI_TERTUNDA_HARI = 'alert.komisi_partner_tertunda_hari';
+
     public const EKSPERIMEN_MINIMUM_SAMPEL = 'eksperimen.minimum_sampel';
 
     /**
@@ -176,6 +178,10 @@ final class KatalogKonfigurasiPemasaran
             self::ALERT_HALAMAN_VIEW_MIN => [
                 'bawaan' => 200,
                 'keterangan' => 'Kunjungan halaman sebanyak ini tanpa satu pun formulir memicu alert.',
+            ],
+            self::ALERT_KOMISI_TERTUNDA_HARI => [
+                'bawaan' => 7,
+                'keterangan' => 'Komisi partner yang tertunda lebih lama dari ini memicu alert.',
             ],
         ];
     }

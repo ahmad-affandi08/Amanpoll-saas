@@ -33,6 +33,7 @@ final class KatalogPemicuOtomasi
             'LanggananDibatalkan' => KatalogPeristiwaPemasaran::LANGGANAN_DIBATALKAN,
             'PembayaranGagal' => KatalogPeristiwaPemasaran::PEMBAYARAN_GAGAL,
             'PartnerMengirimLead' => KatalogPeristiwaPemasaran::PARTNER_MENGIRIM_LEAD,
+            'KomisiPartnerDibuat' => KatalogPeristiwaPemasaran::KOMISI_PARTNER_DIBUAT,
             'ReferralTerdaftar' => KatalogPeristiwaPemasaran::REFERRAL_MENJADI_LEAD,
             // Lead tidak aktif menunggu pekerjaan terjadwalnya.
             'LeadTidakAktif' => self::BELUM_ADA_SUMBER,

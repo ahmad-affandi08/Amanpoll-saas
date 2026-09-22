@@ -2614,6 +2614,10 @@ lama, dan pemicu otomasi `PartnerMengirimLead` tetap tanpa sumber sampai butir
 itu dikerjakan. Ketiganya sudah menyatakan alasannya sendiri di katalog
 masing-masing, jadi dashboard tidak berbohong selama penundaan ini.
 
+Penundaan itu berakhir bersama 38.09. Sejak butir itu selesai, tidak ada lagi
+KPI maupun alert di katalog yang menunggu sumbernya, dan seluruh pemicu otomasi
+punya produsennya.
+
 Tiap butir dikerjakan dan di-commit sendiri, dengan gate-nya sendiri. Satu gate
 untuk sepuluh modul yang saling lepas berarti tidak ada yang dapat diverifikasi
 sampai semuanya selesai, dan itu bertentangan dengan cara FASE 29–37 dikerjakan.
@@ -2648,7 +2652,7 @@ FORMULIR_DIMULAI                                blok formulir, belum ada produse
 DEMO_DIMULAI, DEMO_SELESAI                      38.03 — sudah punya produsen
 ARTIKEL_DILIHAT                                 38.04 — sudah punya produsen
 TEMPLATE_DIUNDUH                                38.05 — sudah punya produsen
-PARTNER_MENGIRIM_LEAD, KOMISI_PARTNER_DIBUAT    38.09
+PARTNER_MENGIRIM_LEAD, KOMISI_PARTNER_DIBUAT    38.09 — sudah punya produsen
 CHECKOUT_DIMULAI                                domain Langganan, di luar FASE 38
 ```
 
@@ -2781,19 +2785,106 @@ menjalankan ulang penerbitannya tidak menghasilkan posting ganda.
 
 ## 38.09 Partner Program
 
-- [ ] Tabel `ProgramPartner`, `Partner`, `LeadPartner`, `AturanKomisiPartner`, `KomisiPartner`, `PayoutPartner`.
-- [ ] Jenis partner sesuai daftar tertutup bagian 21.
-- [ ] Host `partner.amanpoll.com` beserta rute dan autentikasinya.
-- [ ] Portal partner: lead, trial, paid customer, komisi, payout, materi pemasaran.
-- [ ] Host partner tidak dapat diindeks, sama seperti host dashboard.
-- [ ] Komisi lewat kontrak domain Langganan, bukan mutasi Billing langsung.
-- [ ] `PARTNER_MENGIRIM_LEAD` dan `KOMISI_PARTNER_DIBUAT` ditulis ke `EventPemasaran`.
-- [ ] `revenue_partner` dihidupkan di `KatalogKpiPemasaran`; alert `komisi_partner_tertunda` dihidupkan.
-- [ ] Partner hanya melihat lead miliknya sendiri, dan ada test yang membuktikannya.
-- [ ] `PartnerLeadTest`, `KomisiPartnerTest`, `IsolasiPortalPartnerTest`.
+- [x] Tabel `ProgramPartner`, `Partner`, `LeadPartner`, `AturanKomisiPartner`, `KomisiPartner`, `PayoutPartner`.
+- [x] Jenis partner sesuai daftar tertutup bagian 21.
+- [x] Host `partner.amanpoll.com` beserta rute dan autentikasinya.
+- [x] Portal partner: lead, trial, paid customer, komisi, payout, materi pemasaran.
+- [x] Host partner tidak dapat diindeks, sama seperti host dashboard.
+- [x] Komisi lewat kontrak domain Langganan, bukan mutasi Billing langsung.
+- [x] `PARTNER_MENGIRIM_LEAD` dan `KOMISI_PARTNER_DIBUAT` ditulis ke `EventPemasaran`.
+- [x] `revenue_partner` dihidupkan di `KatalogKpiPemasaran`; alert `komisi_partner_tertunda` dihidupkan.
+- [x] Partner hanya melihat lead miliknya sendiri, dan ada test yang membuktikannya.
+- [x] `PartnerLeadTest`, `KomisiPartnerTest`, `IsolasiPortalPartnerTest`.
 
 Butir terbesar di FASE 38: enam tabel, satu host baru, dan satu batas akses
 baru. Isolasi antar partner setara isolasi antar tenant dan diuji seketat itu.
+
+Gate ini punya dua bagian, dan keduanya dijaga oleh bentuk kodenya, bukan oleh
+kedisiplinan pemanggilnya.
+
+Bagian kedua lebih dulu, karena ia yang menentukan bentuk seluruh butir ini.
+Muatan `PeristiwaLangganan` dapat dikarang siapa pun yang dapat menyiarkan
+event, termasuk jumlah rupiahnya. Karena itu komisi tidak pernah lahir dari
+muatan peristiwa. Yang dibawa peristiwa hanyalah `PembayaranId`; jumlah dan
+keberhasilannya ditanyakan ulang ke domain Langganan lewat kontrak baru
+`PembacaPembayaranLangganan`, yang hanya menjawab untuk pembayaran berstatus
+Berhasil dan bertanggal bayar. Pembayaran gagal, pembayaran yang masih
+menunggu, dan id yang tidak ada sama-sama menghasilkan nol komisi. Kolom
+`PembayaranId` yang unik menahan kelahiran komisi kedua atas pembayaran yang
+sama, sehingga webhook kembar tidak melipatgandakan utang.
+
+Kontraknya sengaja kontrak baca, bukan `PemberiImbalanLangganan` yang sudah
+ada. Kontrak itu memberi nilai kepada satu `OrganisasiId` dalam bentuk
+perpanjangan langganan, sedangkan komisi partner adalah uang keluar kepada
+pihak yang sering tidak punya organisasi sama sekali. Menumpangkannya ke sana
+berarti memalsukan artinya. Yang dilakukan di sini adalah yang jujur: Billing
+tidak pernah ditulis dari domain Pemasaran, dan pembayaran komisi dicatat
+sebagai `PayoutPartner` berisi referensi transfer yang dimasukkan admin
+platform. Transfernya sendiri terjadi di luar aplikasi, karena Billing memang
+hanya mengenal uang yang masuk dan tidak punya kanal untuk mengeluarkannya.
+Menyatakannya begitu lebih baik daripada membuat tombol yang seolah membayar.
+
+Bagian pertama, isolasi antar partner, dijaga dengan tidak pernah menerima id
+partner dari permintaan. Seluruh kueri di `PortalPartnerController` berangkat
+dari partner yang sedang masuk, termasuk ringkasan angkanya, dan mengirim
+`PartnerId` milik orang lain di badan permintaan tidak mengubah pemilik lead
+yang tersimpan. Guard `partner` berdiri sendiri di `config/auth.php`: admin
+platform bukan partner, dan partner tidak dapat membuka konsol platform.
+Statusnya diperiksa tiap permintaan, bukan hanya saat masuk, sehingga partner
+yang ditangguhkan kehilangan sesinya seketika alih-alih menunggu sesinya habis
+sendiri.
+
+Host portalnya lahir sebagai `routes/partner.php` yang di-`require` dari
+`bootstrap/app.php`, bukan sebagai `app/Domain/*/routes.php`, karena
+`DomainServiceProvider` memasang seluruh berkas rute domain di host dashboard.
+Rutenya hanya terdaftar bila `AMANPOLL_DOMAIN_PARTNER` diisi dan berbeda dari
+dua host lain. Noindex-nya datang gratis dari `TandaiHostTidakTerindeks` yang
+sudah menandai setiap host selain host publik, dan `robots.txt`-nya memakai
+`robotsTertutup` yang sama dengan host dashboard.
+
+Satu alamat email hanya boleh diklaim satu partner, dijaga indeks unik pada
+`LeadPartner.Email`. Pengirim pertama yang memilikinya; pengirim kedua ditolak
+dengan pesan yang menyebut apakah alamat itu miliknya sendiri atau sudah
+diklaim partner lain. Lead yang masuk ikut menjadi `Prospek` bersumber
+`Partner` supaya tim penjualan mengerjakannya di CRM yang sama, tetapi ia tidak
+dicatat sebagai `FORMULIR_DIKIRIM` — tidak ada formulir yang diisi, dan
+menghitungnya sebagai formulir akan menggelembungkan konversi halaman. Untuk
+itu `CatatProspek::jalankan()` mendapat parameter `dariFormulir`; pemanggil
+lama tidak berubah perilakunya.
+
+Aturan komisi dipisah dari programnya supaya satu partner dapat diberi angka
+berbeda tanpa menyalin seluruh program. Aturan berisi `PartnerId` mengalahkan
+aturan bawaan programnya. `MaksPembayaran` menutup komisi berulang tanpa akhir,
+dan komisi yang dibatalkan tidak ikut memakan jatahnya. Komisi nominal tetap
+tidak pernah melampaui pembayaran yang melahirkannya.
+
+Dua slot yang selama ini kosong kini terisi. `revenue_partner` dihitung dari
+`PembayaranLangganan` milik organisasi yang punya `LeadPartner` tidak ditolak —
+dibaca dari pembayarannya, bukan dari komisinya, karena komisi masih dapat
+dibatalkan sedangkan uang yang sudah masuk tetap masuk. Alert
+`komisi_partner_tertunda` memakai ambang hari dari setelan, bukan angka di
+kode. Penyaring `partner` di dashboard growth yang sejak FASE 37 tersimpan
+tanpa menyaring apa pun kini benar-benar menyaring, lewat prospek yang
+ditautkan lead kiriman partner itu.
+
+Satu hal sengaja tidak dibuat: tautan pelacak klik per partner. Bagian 21
+menyebut `referral code` sebagai data partner, dan kodenya memang diterbitkan
+unik dan tampil di portalnya, tetapi lead masuk lewat portal, bukan lewat klik
+yang dilacak. Membangun corong klik kedua di samping corong referral FASE 36
+berarti dua jalur atribusi yang harus dijaga tetap sepakat, dan butir ini tidak
+memintanya.
+
+Sabotase dijalankan atas dua puluh delapan penjaga; enam lolos pada putaran
+pertama dan seluruhnya ditutup. Empat adalah celah uji yang nyata: pembayaran
+gagal dan pembayaran menunggu tidak pernah diuji, kata sandi wajib dan daftar
+jenis tertutup tidak pernah diuji lewat konsolnya, dan `revenue_partner` tidak
+pernah diuji terhadap lead yang ditolak. Satu lagi, pesan penolakan klaim
+alamat, hanya terjaga oleh indeks unik sehingga pesannya sendiri tidak terikat.
+Yang keenam mengungkap kelemahan rancangan, bukan kelemahan uji: kelayakan lead
+diperiksa dua kali, di kueri pencariannya dan sekali lagi di penghitung
+komisinya. Pemeriksaan kedua tidak dapat dijangkau uji mana pun karena yang
+pertama sudah menyaringnya, jadi ia dihapus dan aturannya ditinggalkan di satu
+tempat saja, pada enum `StatusLeadPartner`.
 
 **Gate 38.09.** Satu partner tidak dapat melihat lead partner lain, dan komisi
 hanya lahir dari pembayaran yang benar-benar terjadi.
@@ -3033,6 +3124,11 @@ ditagihkan, dan harga yang tampil selalu sama dengan harga paket di Langganan.
 
 Seluruh gate 38.01 sampai 38.10 terpenuhi. Tiap butir dikerjakan, diuji, dan
 di-commit sendiri; gate ini hanya menyatakan bahwa kesepuluhnya sudah lulus.
+
+Kesepuluhnya lulus. Dengan 38.09 sebagai yang terakhir, tidak ada lagi KPI atau
+alert di katalog pemasaran yang menunggu sumbernya, dan seluruh kode peristiwa
+di `KatalogPeristiwaPemasaran` punya produsennya kecuali `FORMULIR_DIMULAI` dan
+`CHECKOUT_DIMULAI`, yang memang bukan milik FASE 38.
 
 ---
 

@@ -19,8 +19,10 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Services\AdapterSinkronisasiRest;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
+use App\Domain\Langganan\Domain\Contracts\PembacaPembayaranLangganan;
 use App\Domain\Langganan\Domain\Contracts\PemberiImbalanLangganan;
 use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
+use App\Domain\Langganan\Infrastructure\Services\PembacaPembayaranLanggananBawaan;
 use App\Domain\Langganan\Infrastructure\Services\PemberiImbalanLanggananBawaan;
 use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTransferManual;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
@@ -211,6 +213,9 @@ final class AmanpollServiceProvider extends ServiceProvider
 
         // Imbalan referral hanya boleh lewat domain Langganan, tidak pernah dengan menulis Billing dari luar.
         $this->app->bind(PemberiImbalanLangganan::class, PemberiImbalanLanggananBawaan::class);
+
+        // Komisi partner bertanya ke domain Langganan apakah pembayarannya sungguh terjadi.
+        $this->app->bind(PembacaPembayaranLangganan::class, PembacaPembayaranLanggananBawaan::class);
 
         // Dataset demo yang boleh dibangun ulang; kode di luar daftar ini ditolak saat disimpan.
         $this->app->singleton(RegistriDatasetDemo::class, fn ($app): RegistriDatasetDemo => new RegistriDatasetDemo([

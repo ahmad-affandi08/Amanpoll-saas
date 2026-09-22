@@ -35,6 +35,24 @@ enum JenisKontenPemasaran: string
         };
     }
 
+    /** Jenis yang pantas dibagikan partner: bahan penjualan, bukan halaman rujukan atau alat interaktif. */
+    public function materiPartner(): bool
+    {
+        return match ($this) {
+            self::CaseStudy, self::Ebook, self::Panduan, self::Checklist, self::Template => true,
+            self::Artikel, self::Glossary, self::FreeTool, self::ComparisonPage, self::IntegrationPage => false,
+        };
+    }
+
+    /** @return list<string> */
+    public static function nilaiMateriPartner(): array
+    {
+        return array_values(array_map(
+            fn (self $satu): string => $satu->value,
+            array_filter(self::cases(), fn (self $satu): bool => $satu->materiPartner()),
+        ));
+    }
+
     /** Pola ruas pertama rute konten; daftarnya tertutup supaya jalur lain tidak ikut tersapu. */
     public static function polaRak(): string
     {

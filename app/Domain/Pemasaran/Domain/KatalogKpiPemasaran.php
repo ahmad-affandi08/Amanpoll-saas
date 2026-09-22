@@ -197,12 +197,10 @@ final class KatalogKpiPemasaran
                 naikItuBaik: false,
             ),
 
-            // Menunggu fase berikutnya ------------------------------------
             new DefinisiKpiPemasaran(
                 self::REVENUE_PARTNER, 'Partner-sourced Revenue', KelompokKpiPemasaran::Channel, SatuanKpi::Uang,
-                'SUM(PembayaranLangganan.Jumlah) dari pelanggan yang sumbernya satu partner.',
-                'Partner',
-                belumTersedia: 'Program partner lahir di FASE 38.09; belum ada yang menandai pelanggan sebagai kiriman partner.',
+                'SUM(PembayaranLangganan.Jumlah) dari organisasi yang punya LeadPartner tidak ditolak.',
+                'LeadPartner, PembayaranLangganan',
             ),
         ];
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Application\Services;
 
 use App\Domain\Pemasaran\Domain\Enums\StatusEksekusiOtomasi;
+use App\Domain\Pemasaran\Domain\Enums\StatusKomisiPartner;
 use App\Domain\Pemasaran\Domain\Enums\StatusPengirimanEmail;
 use App\Domain\Pemasaran\Domain\Enums\StatusPengirimanWhatsApp;
 use App\Domain\Pemasaran\Domain\Enums\StatusRewardReferral;
@@ -35,6 +36,7 @@ final class PemeriksaAlertPemasaran
             $this->kampanyeTanpaTrial($pada),
             $this->rewardReferralGagal($pada),
             $this->konversiHalamanAnomali($pada),
+            $this->komisiPartnerTertunda($pada),
         ]));
     }
 
@@ -240,6 +242,28 @@ final class PemeriksaAlertPemasaran
             KatalogAlertPemasaran::REWARD_REFERRAL_GAGAL,
             "{$gagal} imbalan referral gagal diberikan dan masih menunggu.",
             ['Jumlah' => $gagal],
+            $pada,
+        );
+    }
+
+    /** Komisi yang lama menggantung berarti partner sudah bekerja tetapi belum dibayar. */
+    private function komisiPartnerTertunda(CarbonImmutable $pada): ?AlertPemasaran
+    {
+        $hari = $this->konfigurasi->angka(KatalogKonfigurasiPemasaran::ALERT_KOMISI_TERTUNDA_HARI);
+
+        $tertunda = DB::table('KomisiPartner')
+            ->where('Status', StatusKomisiPartner::Tertunda->value)
+            ->where('DibuatPada', '<', $pada->subDays($hari))
+            ->count();
+
+        if ($tertunda < 1) {
+            return null;
+        }
+
+        return $this->catat(
+            KatalogAlertPemasaran::KOMISI_PARTNER_TERTUNDA,
+            "{$tertunda} komisi partner tertunda lebih dari {$hari} hari.",
+            ['Jumlah' => $tertunda, 'Hari' => $hari],
             $pada,
         );
     }

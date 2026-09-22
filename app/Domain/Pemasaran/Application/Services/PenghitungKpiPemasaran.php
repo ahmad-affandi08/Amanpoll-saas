@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Application\Services;
 
 use App\Domain\Langganan\Domain\Enums\StatusPembayaranLangganan;
+use App\Domain\Pemasaran\Domain\Enums\StatusLeadPartner;
 use App\Domain\Pemasaran\Domain\Enums\StatusReferral;
 use App\Domain\Pemasaran\Domain\Enums\TahapFunnelGrowth;
 use App\Domain\Pemasaran\Domain\KatalogKpiPemasaran;
@@ -63,6 +64,7 @@ final class PenghitungKpiPemasaran
             KatalogKpiPemasaran::REVENUE_PER_CHANNEL => array_sum($this->revenuePerChannel($filter)),
             KatalogKpiPemasaran::CAC_PER_CHANNEL => $this->cac->gabungan($filter),
             KatalogKpiPemasaran::REFERRAL_KONVERSI => $this->referralKonversi($filter),
+            KatalogKpiPemasaran::REVENUE_PARTNER => $this->revenuePartner($filter),
         ];
     }
 
@@ -137,6 +139,35 @@ final class PenghitungKpiPemasaran
             ->where('Status', StatusPembayaranLangganan::Berhasil->value)
             ->whereBetween('DibayarPada', [$filter->dari, $filter->sampai])
             ->whereIn('OrganisasiId', $trial)
+            ->sum('Jumlah');
+
+        return round((float) $total, 2);
+    }
+
+    /**
+     * Revenue dari organisasi yang datang lewat partner.
+     *
+     * Dihitung dari pembayaran yang benar-benar berhasil, bukan dari komisi yang
+     * lahir darinya: komisi masih dapat dibatalkan, sedangkan uang yang masuk
+     * tetap uang yang masuk.
+     */
+    private function revenuePartner(FilterGrowth $filter): float
+    {
+        $lead = DB::table('LeadPartner')
+            ->select('OrganisasiId')
+            ->whereNotNull('OrganisasiId')
+            ->where('Status', '!=', StatusLeadPartner::Ditolak->value)
+            ->when(
+                $filter->partner !== null,
+                fn ($kueri) => $kueri->whereIn('PartnerId', function (Builder $sub) use ($filter): void {
+                    $sub->select('Id')->from('Partner')->where('Kode', $filter->partner);
+                }),
+            );
+
+        $total = DB::table('PembayaranLangganan')
+            ->where('Status', StatusPembayaranLangganan::Berhasil->value)
+            ->whereBetween('DibayarPada', [$filter->dari, $filter->sampai])
+            ->whereIn('OrganisasiId', $lead)
             ->sum('Jumlah');
 
         return round((float) $total, 2);

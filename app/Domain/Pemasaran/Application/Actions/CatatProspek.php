@@ -26,10 +26,17 @@ final class CatatProspek
         private readonly PelacakReferral $referral,
     ) {}
 
-    /** @param array<string, mixed> $data */
-    public function jalankan(array $data, SumberProspek $sumber, ?string $pengenalPengunjung = null): Prospek
-    {
-        return $this->transaksi->jalankan(function () use ($data, $sumber, $pengenalPengunjung): Prospek {
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  bool  $dariFormulir  Sumber yang bukan formulir tidak boleh menambah hitungan formulir terkirim.
+     */
+    public function jalankan(
+        array $data,
+        SumberProspek $sumber,
+        ?string $pengenalPengunjung = null,
+        bool $dariFormulir = true,
+    ): Prospek {
+        return $this->transaksi->jalankan(function () use ($data, $sumber, $pengenalPengunjung, $dariFormulir): Prospek {
             $prospek = $this->cariYangSudahAda($data, $pengenalPengunjung);
             $baru = $prospek === null;
 
@@ -73,11 +80,13 @@ final class CatatProspek
                 );
             }
 
-            $this->event->catat(
-                KatalogPeristiwaPemasaran::FORMULIR_DIKIRIM,
-                pengenalPengunjung: $prospek->PengenalPengunjung,
-                dataTambahan: ['ProspekId' => $prospek->Id, 'Sumber' => $sumber->value, 'Baru' => $baru],
-            );
+            if ($dariFormulir) {
+                $this->event->catat(
+                    KatalogPeristiwaPemasaran::FORMULIR_DIKIRIM,
+                    pengenalPengunjung: $prospek->PengenalPengunjung,
+                    dataTambahan: ['ProspekId' => $prospek->Id, 'Sumber' => $sumber->value, 'Baru' => $baru],
+                );
+            }
 
             $this->referral->tandaiLead($prospek);
 

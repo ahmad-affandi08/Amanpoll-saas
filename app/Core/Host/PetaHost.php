@@ -30,6 +30,23 @@ final class PetaHost
         return $publik !== null && $publik !== $this->dashboard();
     }
 
+    /** Portal partner baru hidup setelah hostnya dikonfigurasi terpisah dari dua host lain. */
+    public function portalPartnerAktif(): bool
+    {
+        $partner = $this->partner();
+
+        return $partner !== null
+            && $partner !== $this->dashboard()
+            && $partner !== $this->publik();
+    }
+
+    public function adalahHostPartner(string $host): bool
+    {
+        $partner = $this->partner();
+
+        return $partner !== null && $this->tanpaWww($host) === $this->tanpaWww($partner);
+    }
+
     public function adalahHostPublik(string $host): bool
     {
         $publik = $this->publik();

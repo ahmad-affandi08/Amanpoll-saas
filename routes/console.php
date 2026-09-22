@@ -122,6 +122,12 @@ Schedule::command('pemasaran:kedaluwarsakan-referral')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
     ->withoutOverlapping();
 
+// Lead partner yang lewat jendela atribusinya ditutup tiap hari (MARKETING.md 21).
+Schedule::command('pemasaran:kedaluwarsakan-lead-partner')
+    ->dailyAt('02:15')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();
+
 // Imbalan referral yang masih terutang diantrekan tiap jam (MARKETING.md 20).
 Schedule::command('pemasaran:proses-reward-referral')
     ->hourly()

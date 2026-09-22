@@ -32,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function (): void {
             require __DIR__.'/../routes/publik.php';
+            require __DIR__.'/../routes/partner.php';
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -62,16 +63,25 @@ return Application::configure(basePath: dirname(__DIR__))
         // Konsol platform punya halaman masuk sendiri. Tanpa ini, admin platform
         // yang sesinya habis akan dilempar ke halaman masuk tenant, yang meminta
         // kode organisasi — kredensial yang memang tidak ia miliki.
-        $middleware->redirectGuestsTo(
-            fn (Request $request): string => $request->is('admin-platform', 'admin-platform/*')
+        // Portal partner hidup di hostnya sendiri, jadi ia dikenali dari host, bukan dari jalurnya.
+        $middleware->redirectGuestsTo(function (Request $request): string {
+            if (app(PetaHost::class)->adalahHostPartner($request->getHost())) {
+                return route('partner.login');
+            }
+
+            return $request->is('admin-platform', 'admin-platform/*')
                 ? route('adminPlatform.login')
-                : route('login'),
-        );
-        $middleware->redirectUsersTo(
-            fn (Request $request): string => $request->is('admin-platform', 'admin-platform/*')
+                : route('login');
+        });
+        $middleware->redirectUsersTo(function (Request $request): string {
+            if (app(PetaHost::class)->adalahHostPartner($request->getHost())) {
+                return route('partner.beranda');
+            }
+
+            return $request->is('admin-platform', 'admin-platform/*')
                 ? route('adminPlatform.paket.index')
-                : route('dashboard'),
-        );
+                : route('dashboard');
+        });
 
         $middleware->alias([
             'organisasi' => TetapkanKonteksOrganisasi::class,

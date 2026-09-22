@@ -186,15 +186,23 @@ final class AuditPemasaranTest extends KasusGrowth
         }
     }
 
-    /** KPI yang dinyatakan belum tersedia harus menyebut alasannya, bukan diam-diam bernilai nol. */
+    /**
+     * Sejak FASE 38.09 seluruh KPI punya sumbernya, jadi daftar yang belum tersedia kosong.
+     *
+     * Penjaga di bawahnya tetap dipasang: KPI yang kelak ditambahkan sebelum sumbernya ada
+     * harus menyebut alasannya dan tidak boleh ikut dihitung, bukan diam-diam bernilai nol.
+     */
     public function test_kpi_belum_tersedia_menyebut_alasannya(): void
     {
+        $this->assertSame(
+            array_keys(KatalogKpiPemasaran::semua()),
+            KatalogKpiPemasaran::kunciTersedia(),
+        );
+
         $belum = array_filter(
             KatalogKpiPemasaran::semua(),
             fn (DefinisiKpiPemasaran $satu): bool => ! $satu->tersedia(),
         );
-
-        $this->assertNotEmpty($belum);
 
         foreach ($belum as $satu) {
             $this->assertNotSame('', (string) $satu->belumTersedia, "KPI {$satu->kunci} tanpa alasan.");
