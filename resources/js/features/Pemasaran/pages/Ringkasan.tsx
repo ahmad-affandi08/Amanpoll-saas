@@ -21,6 +21,12 @@ interface Props {
 
 const PINTASAN = [
   {
+    label: 'Dashboard Growth',
+    href: '/admin-platform/pemasaran/growth',
+    keterangan: 'Funnel, KPI, revenue per channel, dan alert growth.',
+    izin: 'platform.analytics.lihat',
+  },
+  {
     label: 'Prospek',
     href: '/admin-platform/pemasaran/prospek',
     keterangan: 'Pipeline, skor, dan aktivitas prospek.',

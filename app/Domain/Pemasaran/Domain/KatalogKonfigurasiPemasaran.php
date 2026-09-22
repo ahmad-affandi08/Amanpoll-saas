@@ -29,6 +29,18 @@ final class KatalogKonfigurasiPemasaran
 
     public const REFERRAL_HARI_KEDALUWARSA = 'referral.hari_kedaluwarsa';
 
+    public const ALERT_TRIAL_KONVERSI_MIN = 'alert.trial_konversi_min_persen';
+
+    public const ALERT_LEAD_DIAM_HARI = 'alert.lead_diam_hari';
+
+    public const ALERT_LEAD_DIAM_MIN = 'alert.lead_diam_min_jumlah';
+
+    public const ALERT_BOUNCE_MAKS = 'alert.bounce_maks_persen';
+
+    public const ALERT_KAMPANYE_VISITOR_MIN = 'alert.kampanye_visitor_min';
+
+    public const ALERT_HALAMAN_VIEW_MIN = 'alert.halaman_view_min';
+
     /**
      * @return array<string, array{bawaan: mixed, keterangan: string}>
      */
@@ -78,6 +90,30 @@ final class KatalogKonfigurasiPemasaran
             self::REFERRAL_HARI_KEDALUWARSA => [
                 'bawaan' => 90,
                 'keterangan' => 'Umur tautan referral sebelum kliknya tidak lagi dihitung.',
+            ],
+            self::ALERT_TRIAL_KONVERSI_MIN => [
+                'bawaan' => 20,
+                'keterangan' => 'Konversi trial ke bayar di bawah persen ini memicu alert.',
+            ],
+            self::ALERT_LEAD_DIAM_HARI => [
+                'bawaan' => 14,
+                'keterangan' => 'Berapa hari prospek boleh diam sebelum dihitung tanpa aktivitas.',
+            ],
+            self::ALERT_LEAD_DIAM_MIN => [
+                'bawaan' => 10,
+                'keterangan' => 'Jumlah prospek diam yang memicu alert.',
+            ],
+            self::ALERT_BOUNCE_MAKS => [
+                'bawaan' => 5,
+                'keterangan' => 'Rasio bounce email di atas persen ini memicu alert.',
+            ],
+            self::ALERT_KAMPANYE_VISITOR_MIN => [
+                'bawaan' => 100,
+                'keterangan' => 'Kampanye dengan visitor sebanyak ini tetapi nol trial memicu alert.',
+            ],
+            self::ALERT_HALAMAN_VIEW_MIN => [
+                'bawaan' => 200,
+                'keterangan' => 'Kunjungan halaman sebanyak ini tanpa satu pun formulir memicu alert.',
             ],
         ];
     }

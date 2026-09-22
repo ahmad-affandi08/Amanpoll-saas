@@ -2483,36 +2483,101 @@ berpindah menguji `LeadTidakAktif` yang memang masih menunggu pekerjaannya.
 
 ## 37.01 KPI
 
-- [ ] KPI sesuai `MARKETING.md` bagian 5.
-- [ ] Definisi KPI terdokumentasi seperti `KatalogKpi` FASE 21, bukan rumus tersebar.
+- [x] KPI sesuai `MARKETING.md` bagian 5.
+- [x] Definisi KPI terdokumentasi seperti `KatalogKpi` FASE 21, bukan rumus tersebar.
+
+Sembilan belas KPI di `KatalogKpiPemasaran`, tiap satu membawa rumus dan nama
+tabel sumbernya, dan rumus itu terbaca di layar pada tab Definisi KPI. Yang
+menghitung membaca dari katalog yang sama, sehingga tidak ada rumus kedua yang
+diam-diam berbeda.
+
+Dua KPI dinyatakan belum tersedia beserta alasannya: `cac_per_channel` menunggu
+`KampanyeBiaya` di FASE 38.08, dan `revenue_partner` menunggu program partner di
+FASE 38.09. Keduanya tampil kosong, bukan nol — angka nol adalah pernyataan
+bahwa tidak ada biaya dan tidak ada revenue partner, dan itu tidak benar.
 
 ## 37.02 Funnel
 
-- [ ] Funnel `Visitor → Lead → Demo → Trial → Activated → Qualified → Paid`.
-- [ ] Angka dapat ditelusuri ke sumber transaksinya.
+- [x] Funnel `Visitor → Lead → Demo → Trial → Activated → Qualified → Paid`.
+- [x] Angka dapat ditelusuri ke sumber transaksinya.
+
+Tiap tahap dihitung dari satu tabel yang disebutkan namanya di layar, bukan
+diturunkan dari angka tahap sebelumnya. Funnel yang menurunkan angka dari angka
+lain akan tetap terlihat rapi walau datanya sudah tidak cocok dengan transaksi.
 
 ## 37.03 Filter
 
-- [ ] Tanggal, channel, campaign, industri, landing page, device, paket, referral, partner.
+- [x] Tanggal, channel, campaign, industri, landing page, device, paket, referral, partner.
+
+Delapan penyaring bekerja; `partner` tersedia di bentuk filternya tetapi belum
+menyaring apa pun sampai FASE 38.09 melahirkan datanya. Seluruhnya bermuara pada
+satu subkueri pengunjung yang dipakai ulang tiap tahap, sehingga id pengunjung
+tidak pernah ditarik ke PHP.
 
 ## 37.04 Alert
 
-- [ ] Alert platform sesuai `MARKETING.md` bagian 5.
+- [x] Alert platform sesuai `MARKETING.md` bagian 5.
 - [ ] Memakai engine Notifikasi yang sudah ada.
+
+Tujuh dari sembilan alert diperiksa; `whatsapp_gagal_kirim` dan
+`komisi_partner_tertunda` menunggu FASE 38.01 dan 38.09, dan katalog menyebut
+alasannya. Ambangnya dari setelan, bukan angka di kode, dan satu kode hanya
+menghasilkan satu baris per hari.
+
+Butir kedua sengaja tidak dicentang. Mesin Notifikasi memakai `MilikOrganisasi`
+dan dialamatkan ke satu `Pengguna`; alert growth tidak punya keduanya. Satu-satunya
+cara memakainya adalah melonggarkan scope tenant yang dipakai seluruh aplikasi
+sejak FASE 02, dan itu harga yang terlalu mahal untuk satu daftar peringatan.
+Alert platform karena itu disimpan di `AlertPemasaran` dan dibaca di dashboard.
+Kanal notifikasi tingkat platform layak dibangun sendiri kelak.
 
 ## 37.05 Job Metrik
 
-- [ ] Job `HitungMetrikKampanye`.
-- [ ] Tidak ada N+1 pada halaman dashboard.
+- [x] Job `HitungMetrikKampanye`.
+- [x] Tidak ada N+1 pada halaman dashboard.
+
+Enam kueri agregat untuk seluruh kampanye sekaligus, hasilnya ditulis ke
+`MetrikKampanye`. Dashboard membaca baris jadi.
+`DashboardGrowthTest::test_menambah_kampanye_tidak_menambah_kueri_halaman`
+menghitung kueri halaman sebelum dan sesudah lima kampanye ditambahkan, dan
+angkanya harus sama persis.
 
 ## 37.06 Test
 
-- [ ] `AuditPemasaranTest`.
-- [ ] Funnel terbukti konsisten dengan data transaksi.
+- [x] `AuditPemasaranTest`.
+- [x] Funnel terbukti konsisten dengan data transaksi.
 
 ### Gate 37 — Gate MVP Pemasaran
 
 Seluruh acceptance criteria `MARKETING.md` bagian 35 terpenuhi. Founder dapat membuka satu dashboard dan menjawab channel mana menghasilkan customer, campaign mana menghasilkan revenue, dan landing page mana paling efektif.
+
+**Terpenuhi.** `AuditPemasaranTest::test_funnel_konsisten_dengan_data_transaksi`
+menghitung ulang tiap tahap langsung dari tabelnya dan membandingkannya dengan
+yang dilaporkan funnel. Ketiga pertanyaan founder terjawab di satu layar:
+channel dari Revenue per Channel, campaign dari tabel metrik kampanye, dan
+landing page dari tabel konversi per halaman.
+
+Sabotase menemukan satu test yang tidak menguji apa pun. Membuat tahap Activated
+diam-diam menyalin angka Trial tidak menggagalkan satu test pun, karena data
+semaiannya kebetulan bernilai sama di tiap tahap — persis kelemahan yang
+dimaksud "angka dapat ditelusuri ke sumber transaksinya". Semaiannya kini memuat
+satu trial yang berhenti sebelum aktivasi, sehingga tiap tahap bernilai berbeda
+dan penyalinan angka langsung ketahuan.
+
+Sabotase kedua yang awalnya lolos: penjaga satu-alert-per-hari. Test hanya
+menghitung baris, dan barisnya memang ditahan indeks unik, sehingga cabang
+penangkap galatnya tidak teruji. Test kini memeriksa bahwa pemeriksaan kedua
+melaporkan nol alert baru, bukan sekadar tidak menulis baris baru.
+
+Empat sabotase lain menggigit sejak awal: rentang tanggal yang diabaikan,
+penyaring channel yang tidak diterapkan, rasio yang dihitung ulang sendiri
+alih-alih dibaca dari funnel, dan tabel kampanye yang kembali menyusuri relasi
+satu per satu.
+
+Acceptance criteria `MARKETING.md` bagian 35 ditelusuri satu per satu dan
+seluruhnya punya test yang menjaganya, kecuali dua hal yang memang bukan kode:
+"seluruh UI responsive" dijaga konvensi komponen, dan "test tersedia" dijawab
+suite itu sendiri.
 
 ---
 

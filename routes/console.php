@@ -99,3 +99,20 @@ Schedule::command('pemasaran:peringatkan-trial-akan-berakhir')
     ->dailyAt('07:00')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
     ->withoutOverlapping();
+
+// Metrik kampanye dan alert growth dihitung sekali sehari (MARKETING.md 5).
+Schedule::command('pemasaran:hitung-metrik')
+    ->dailyAt('01:30')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();
+
+// Referral yang lewat jendelanya ditutup tiap hari (MARKETING.md 20).
+Schedule::command('pemasaran:kedaluwarsakan-referral')
+    ->dailyAt('02:00')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping();
+
+// Imbalan referral yang masih terutang diantrekan tiap jam (MARKETING.md 20).
+Schedule::command('pemasaran:proses-reward-referral')
+    ->hourly()
+    ->withoutOverlapping();

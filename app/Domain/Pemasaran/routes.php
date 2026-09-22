@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Pemasaran\Domain\KatalogFiturPlatform;
 use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Http\Controllers\AturanSkorProspekController;
+use App\Domain\Pemasaran\Http\Controllers\DashboardGrowthController;
 use App\Domain\Pemasaran\Http\Controllers\FormulirPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\HalamanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\ImporEksporProspekController;
@@ -156,6 +157,17 @@ Route::middleware(['web', 'auth:platform'])
                             ->name('destroy');
                     });
             });
+        });
+
+        // Dashboard growth: satu layar untuk seluruh corong pemasaran.
+        Route::prefix('growth')->name('growth.')->group(function (): void {
+            Route::get('/', [DashboardGrowthController::class, 'index'])
+                ->middleware('izin.platform:'.KatalogIzinPemasaran::ANALYTICS_LIHAT)
+                ->name('index');
+
+            Route::post('/alert/{alert}/selesai', [DashboardGrowthController::class, 'selesaikanAlert'])
+                ->middleware('izin.platform:'.KatalogIzinPemasaran::PEMASARAN_KELOLA)
+                ->name('alert.selesai');
         });
 
         // Program referral, kode pelanggan, dan imbalannya.
