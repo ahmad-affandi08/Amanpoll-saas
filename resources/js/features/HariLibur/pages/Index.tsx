@@ -24,13 +24,16 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   hariLibur: Paginasi<HariLibur>;
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogTambahHariLibur() {
+function DialogTambahHariLibur({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ Tanggal: '', Nama: '', BerulangTahunan: false });
 
@@ -53,34 +56,36 @@ function DialogTambahHariLibur() {
         <DialogHeader>
           <DialogTitle>Tambah Hari Libur</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Tanggal</Label>
-            <DatePicker
-              value={form.data.Tanggal}
-              onChange={(v) => form.setData('Tanggal', v)}
-              placeholder="Pilih tanggal libur"
-            />
-            {form.errors.Tanggal && <p className="text-sm text-destructive">{form.errors.Tanggal}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={form.data.BerulangTahunan}
-              onCheckedChange={(v) => form.setData('BerulangTahunan', Boolean(v))}
-            />
-            Berulang setiap tahun (tanggal-bulan yang sama)
-          </label>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label nama="Tanggal">Tanggal</Label>
+              <DatePicker
+                value={form.data.Tanggal}
+                onChange={(v) => form.setData('Tanggal', v)}
+                placeholder="Pilih tanggal libur"
+              />
+              {form.errors.Tanggal && <p className="text-sm text-destructive">{form.errors.Tanggal}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.BerulangTahunan}
+                onCheckedChange={(v) => form.setData('BerulangTahunan', Boolean(v))}
+              />
+              Berulang setiap tahun (tanggal-bulan yang sama)
+            </label>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -95,7 +100,7 @@ function formatTanggal(tanggal: string): string {
   });
 }
 
-export default function HariLiburIndex({ hariLibur, filter }: Props) {
+export default function HariLiburIndex({ hariLibur, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (libur: HariLibur) => {
     if (
@@ -151,7 +156,7 @@ export default function HariLiburIndex({ hariLibur, filter }: Props) {
         meta: { label: 'Aksi' },
       },
     ],
-    [],
+    [wajib],
   );
 
   return (
@@ -162,7 +167,7 @@ export default function HariLiburIndex({ hariLibur, filter }: Props) {
         deskripsi="Dipakai untuk menghindari penjadwalan pekerjaan di hari libur."
         aksi={
           <>
-            <DialogTambahHariLibur />
+            <DialogTambahHariLibur wajib={wajib.hariLibur} />
           </>
         }
         className="mb-6"

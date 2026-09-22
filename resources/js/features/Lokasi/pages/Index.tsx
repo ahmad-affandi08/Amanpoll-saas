@@ -28,15 +28,24 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   lokasi: Paginasi<Lokasi>;
   filter: FilterDaftar;
   unitOrganisasi: UnitOrganisasi[];
   kategoriLokasi: KategoriLokasi[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogKelolaKategori({ kategoriLokasi }: { kategoriLokasi: KategoriLokasi[] }) {
+function DialogKelolaKategori({
+  kategoriLokasi,
+  wajib,
+}: {
+  kategoriLokasi: KategoriLokasi[];
+  wajib: AturanWajib;
+}) {
   const konfirmasi = useKonfirmasi();
   const [buka, setBuka] = useState(false);
   const form = useForm({ Kode: '', Nama: '', Keterangan: '' });
@@ -86,17 +95,19 @@ function DialogKelolaKategori({ kategoriLokasi }: { kategoriLokasi: KategoriLoka
             <p className="text-sm text-muted-foreground">Belum ada kategori.</p>
           )}
         </div>
-        <form onSubmit={submit} className="flex gap-2 border-t border-border pt-4">
-          <Input
-            placeholder="Nama kategori"
-            value={form.data.Nama}
-            onChange={(e) => form.setData('Nama', e.target.value)}
-            className="flex-1"
-          />
-          <Button type="submit" disabled={form.processing}>
-            Tambah
-          </Button>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="flex gap-2 border-t border-border pt-4">
+            <Input
+              placeholder="Nama kategori"
+              value={form.data.Nama}
+              onChange={(e) => form.setData('Nama', e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit" disabled={form.processing}>
+              Tambah
+            </Button>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -106,10 +117,12 @@ function DialogFormLokasi({
   lokasi,
   unitOrganisasi,
   kategoriLokasi,
+  wajib,
 }: {
   lokasi: Lokasi | null;
   unitOrganisasi: UnitOrganisasi[];
   kategoriLokasi: KategoriLokasi[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
@@ -165,97 +178,99 @@ function DialogFormLokasi({
         <DialogHeader>
           <DialogTitle>{lokasi ? 'Ubah Lokasi' : 'Tambah Lokasi'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
+              />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Unit Organisasi</Label>
-              <Select
-                value={form.data.UnitOrganisasiId}
-                onValueChange={(v) => form.setData('UnitOrganisasiId', v)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tidak ditautkan</SelectItem>
-                  {unitOrganisasi.map((u) => (
-                    <SelectItem key={u.Id} value={u.Id}>
-                      {u.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="UnitOrganisasiId">Unit Organisasi</Label>
+                <Select
+                  value={form.data.UnitOrganisasiId}
+                  onValueChange={(v) => form.setData('UnitOrganisasiId', v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Tidak ditautkan</SelectItem>
+                    {unitOrganisasi.map((u) => (
+                      <SelectItem key={u.Id} value={u.Id}>
+                        {u.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label nama="KategoriLokasiId">Kategori</Label>
+                <Select
+                  value={form.data.KategoriLokasiId}
+                  onValueChange={(v) => form.setData('KategoriLokasiId', v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TANPA_PILIHAN}>Tanpa kategori</SelectItem>
+                    {kategoriLokasi.map((k) => (
+                      <SelectItem key={k.Id} value={k.Id}>
+                        {k.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="Lantai">Lantai</Label>
+                <Input value={form.data.Lantai} onChange={(e) => form.setData('Lantai', e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label nama="Status">Status</Label>
+                <Select
+                  value={form.data.Status}
+                  onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Aktif">Aktif</SelectItem>
+                    <SelectItem value="Nonaktif">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Kategori</Label>
-              <Select
-                value={form.data.KategoriLokasiId}
-                onValueChange={(v) => form.setData('KategoriLokasiId', v)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TANPA_PILIHAN}>Tanpa kategori</SelectItem>
-                  {kategoriLokasi.map((k) => (
-                    <SelectItem key={k.Id} value={k.Id}>
-                      {k.Nama}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label nama="Alamat">Alamat</Label>
+              <Input value={form.data.Alamat} onChange={(e) => form.setData('Alamat', e.target.value)} />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Lantai</Label>
-              <Input value={form.data.Lantai} onChange={(e) => form.setData('Lantai', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={form.data.Status}
-                onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Aktif">Aktif</SelectItem>
-                  <SelectItem value="Nonaktif">Nonaktif</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Alamat</Label>
-            <Input value={form.data.Alamat} onChange={(e) => form.setData('Alamat', e.target.value)} />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
         {lokasi && <PanelKolaborasi jenisEntitas="Lokasi" entitasId={lokasi.Id} />}
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, filter }: Props) {
+export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Lokasi) => {
     if (
@@ -320,6 +335,7 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, fi
               lokasi={row.original}
               unitOrganisasi={unitOrganisasi}
               kategoriLokasi={kategoriLokasi}
+              wajib={wajib.lokasi}
             />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
@@ -343,11 +359,12 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, fi
         aksi={
           <>
             <div className="flex gap-2">
-              <DialogKelolaKategori kategoriLokasi={kategoriLokasi} />
+              <DialogKelolaKategori kategoriLokasi={kategoriLokasi} wajib={wajib.kategori} />
               <DialogFormLokasi
                 lokasi={null}
                 unitOrganisasi={unitOrganisasi}
                 kategoriLokasi={kategoriLokasi}
+                wajib={wajib.lokasi}
               />
             </div>
           </>

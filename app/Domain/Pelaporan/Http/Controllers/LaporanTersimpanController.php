@@ -16,6 +16,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -44,6 +45,7 @@ final class LaporanTersimpanController extends Controller
         $dibuka = $this->laporanDibuka($request, $laporan);
 
         return Inertia::render('Laporan/Index', [
+            'wajib' => ['laporan' => AturanWajib::untuk(SimpanLaporanTersimpanRequest::class)],
             'laporan' => $laporan->map(fn (LaporanTersimpan $satu): array => $this->ringkas($satu, $pengguna->Id))->all(),
             'dibuka' => $dibuka === null ? null : $this->ringkas($dibuka, $pengguna->Id),
             'metrik' => $dibuka === null

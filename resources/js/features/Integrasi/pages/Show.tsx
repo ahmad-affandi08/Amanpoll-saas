@@ -28,11 +28,14 @@ import type {
 } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   integrasi: IntegrasiEksternal;
   pemetaan: PemetaanDataEksternal[];
   sinkronisasi: SinkronisasiEksternal[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const STATUS: StatusIntegrasi[] = ['Aktif', 'Nonaktif', 'Bermasalah'];
@@ -44,7 +47,7 @@ const VARIAN_SINKRON = {
   Gagal: 'bahaya',
 } as const;
 
-function DialogPemetaan({ integrasi }: { integrasi: IntegrasiEksternal }) {
+function DialogPemetaan({ integrasi, wajib }: { integrasi: IntegrasiEksternal; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({ JenisEntitas: 'Aset', EntitasId: '', KodeEksternal: '' });
 
@@ -73,45 +76,53 @@ function DialogPemetaan({ integrasi }: { integrasi: IntegrasiEksternal }) {
             Menghubungkan identitas internal Amanpoll dengan kode pada sistem eksternal.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="JenisEntitas">Jenis entitas</Label>
-            <Input
-              id="JenisEntitas"
-              placeholder="mis. Aset, Penyedia"
-              value={form.data.JenisEntitas}
-              onChange={(event) => form.setData('JenisEntitas', event.target.value)}
-            />
-            {form.errors.JenisEntitas && (
-              <p className="text-sm text-destructive">{form.errors.JenisEntitas}</p>
-            )}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="EntitasId">ID internal</Label>
-            <Input
-              id="EntitasId"
-              value={form.data.EntitasId}
-              onChange={(event) => form.setData('EntitasId', event.target.value)}
-            />
-            {form.errors.EntitasId && <p className="text-sm text-destructive">{form.errors.EntitasId}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="KodeEksternal">Kode eksternal</Label>
-            <Input
-              id="KodeEksternal"
-              value={form.data.KodeEksternal}
-              onChange={(event) => form.setData('KodeEksternal', event.target.value)}
-            />
-            {form.errors.KodeEksternal && (
-              <p className="text-sm text-destructive">{form.errors.KodeEksternal}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Pemetaan
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label nama="JenisEntitas" htmlFor="JenisEntitas">
+                Jenis entitas
+              </Label>
+              <Input
+                id="JenisEntitas"
+                placeholder="mis. Aset, Penyedia"
+                value={form.data.JenisEntitas}
+                onChange={(event) => form.setData('JenisEntitas', event.target.value)}
+              />
+              {form.errors.JenisEntitas && (
+                <p className="text-sm text-destructive">{form.errors.JenisEntitas}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="EntitasId" htmlFor="EntitasId">
+                ID internal
+              </Label>
+              <Input
+                id="EntitasId"
+                value={form.data.EntitasId}
+                onChange={(event) => form.setData('EntitasId', event.target.value)}
+              />
+              {form.errors.EntitasId && <p className="text-sm text-destructive">{form.errors.EntitasId}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="KodeEksternal" htmlFor="KodeEksternal">
+                Kode eksternal
+              </Label>
+              <Input
+                id="KodeEksternal"
+                value={form.data.KodeEksternal}
+                onChange={(event) => form.setData('KodeEksternal', event.target.value)}
+              />
+              {form.errors.KodeEksternal && (
+                <p className="text-sm text-destructive">{form.errors.KodeEksternal}</p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Pemetaan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -149,7 +160,9 @@ function DialogSinkronisasi({ integrasi }: { integrasi: IntegrasiEksternal }) {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="JenisProses">Jenis Proses</Label>
+              <Label nama="JenisProses" htmlFor="JenisProses">
+                Jenis Proses
+              </Label>
               <Input
                 id="JenisProses"
                 value={form.data.JenisProses}
@@ -161,7 +174,9 @@ function DialogSinkronisasi({ integrasi }: { integrasi: IntegrasiEksternal }) {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="Arah">Arah</Label>
+              <Label nama="Arah" htmlFor="Arah">
+                Arah
+              </Label>
               <Select value={form.data.Arah} onValueChange={(nilai) => form.setData('Arah', nilai)}>
                 <SelectTrigger id="Arah">
                   <SelectValue />
@@ -184,7 +199,7 @@ function DialogSinkronisasi({ integrasi }: { integrasi: IntegrasiEksternal }) {
   );
 }
 
-export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi }: Props) {
+export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const [memproses, setMemproses] = useState(false);
   const berkonflik = pemetaan.filter((item) => item.Konflik);
@@ -305,7 +320,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi }: Pro
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Pemetaan Data</CardTitle>
-            <DialogPemetaan integrasi={integrasi} />
+            <DialogPemetaan integrasi={integrasi} wajib={wajib.pemetaan} />
           </CardHeader>
           <CardContent className="space-y-3">
             {pemetaan.length === 0 ? (

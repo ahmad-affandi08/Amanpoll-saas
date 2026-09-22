@@ -12,6 +12,7 @@ use App\Domain\Platform\Http\Resources\NomorDokumenResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\NomorDokumen;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,6 +30,7 @@ final class NomorDokumenController extends Controller
             ->faset(['ResetPeriode']);
 
         return Inertia::render('NomorDokumen/Index', [
+            'wajib' => ['nomorDokumen' => AturanWajib::untuk(SimpanNomorDokumenRequest::class)],
             'nomorDokumen' => NomorDokumenResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
         ]);

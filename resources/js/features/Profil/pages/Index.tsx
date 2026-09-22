@@ -9,12 +9,15 @@ import { Badge } from '@/components/ui/badge';
 import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteProfil } from '@/features/Profil/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   pengguna: Pengguna;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function FormProfil({ pengguna }: { pengguna: Pengguna }) {
+function FormProfil({ pengguna, wajib }: { pengguna: Pengguna; wajib: AturanWajib }) {
   const form = useForm({ Nama: pengguna.Nama, Email: pengguna.Email, Telepon: pengguna.Telepon ?? '' });
 
   const submit = (e: FormEvent) => {
@@ -28,35 +31,37 @@ function FormProfil({ pengguna }: { pengguna: Pengguna }) {
         <CardTitle>Data Diri</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Email</Label>
-            <Input
-              type="email"
-              value={form.data.Email}
-              onChange={(e) => form.setData('Email', e.target.value)}
-            />
-            {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Telepon</Label>
-            <Input value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
-          </div>
-          <Button type="submit" disabled={form.processing}>
-            Simpan Perubahan
-          </Button>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="Email">Email</Label>
+              <Input
+                type="email"
+                value={form.data.Email}
+                onChange={(e) => form.setData('Email', e.target.value)}
+              />
+              {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="Telepon">Telepon</Label>
+              <Input value={form.data.Telepon} onChange={(e) => form.setData('Telepon', e.target.value)} />
+            </div>
+            <Button type="submit" disabled={form.processing}>
+              Simpan Perubahan
+            </Button>
+          </form>
+        </AturanWajibProvider>
       </CardContent>
     </Card>
   );
 }
 
-function FormKataSandi() {
+function FormKataSandi({ wajib }: { wajib: AturanWajib }) {
   const form = useForm({ KataSandiLama: '', KataSandiBaru: '', KataSandiBaru_confirmation: '' });
 
   const submit = (e: FormEvent) => {
@@ -70,41 +75,43 @@ function FormKataSandi() {
         <CardTitle>Ganti Kata Sandi</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Kata Sandi Lama</Label>
-            <Input
-              type="password"
-              value={form.data.KataSandiLama}
-              onChange={(e) => form.setData('KataSandiLama', e.target.value)}
-            />
-            {form.errors.KataSandiLama && (
-              <p className="text-sm text-destructive">{form.errors.KataSandiLama}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label>Kata Sandi Baru</Label>
-            <Input
-              type="password"
-              value={form.data.KataSandiBaru}
-              onChange={(e) => form.setData('KataSandiBaru', e.target.value)}
-            />
-            {form.errors.KataSandiBaru && (
-              <p className="text-sm text-destructive">{form.errors.KataSandiBaru}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label>Konfirmasi Kata Sandi Baru</Label>
-            <Input
-              type="password"
-              value={form.data.KataSandiBaru_confirmation}
-              onChange={(e) => form.setData('KataSandiBaru_confirmation', e.target.value)}
-            />
-          </div>
-          <Button type="submit" disabled={form.processing}>
-            Ganti Kata Sandi
-          </Button>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label nama="KataSandiLama">Kata Sandi Lama</Label>
+              <Input
+                type="password"
+                value={form.data.KataSandiLama}
+                onChange={(e) => form.setData('KataSandiLama', e.target.value)}
+              />
+              {form.errors.KataSandiLama && (
+                <p className="text-sm text-destructive">{form.errors.KataSandiLama}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label nama="KataSandiBaru">Kata Sandi Baru</Label>
+              <Input
+                type="password"
+                value={form.data.KataSandiBaru}
+                onChange={(e) => form.setData('KataSandiBaru', e.target.value)}
+              />
+              {form.errors.KataSandiBaru && (
+                <p className="text-sm text-destructive">{form.errors.KataSandiBaru}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label nama="KataSandiBaru_confirmation">Konfirmasi Kata Sandi Baru</Label>
+              <Input
+                type="password"
+                value={form.data.KataSandiBaru_confirmation}
+                onChange={(e) => form.setData('KataSandiBaru_confirmation', e.target.value)}
+              />
+            </div>
+            <Button type="submit" disabled={form.processing}>
+              Ganti Kata Sandi
+            </Button>
+          </form>
+        </AturanWajibProvider>
       </CardContent>
     </Card>
   );
@@ -150,14 +157,14 @@ function KartuPerangkat({ pengguna }: { pengguna: Pengguna }) {
   );
 }
 
-export default function ProfilIndex({ pengguna }: Props) {
+export default function ProfilIndex({ pengguna, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title="Profil" />
       <KepalaHalaman judul="Profil" deskripsi="Kelola data diri, kata sandi, dan perangkat Anda." />
       <div className="grid gap-4 md:grid-cols-2">
-        <FormProfil pengguna={pengguna} />
-        <FormKataSandi />
+        <FormProfil pengguna={pengguna} wajib={wajib.profil} />
+        <FormKataSandi wajib={wajib.kataSandi} />
         <div className="md:col-span-2">
           <KartuPerangkat pengguna={pengguna} />
         </div>

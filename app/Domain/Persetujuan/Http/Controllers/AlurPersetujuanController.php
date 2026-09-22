@@ -19,6 +19,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -41,6 +42,7 @@ final class AlurPersetujuanController extends Controller
             ->faset(['JenisEntitas', 'Aktif']);
 
         return Inertia::render('AlurPersetujuan/Index', [
+            'wajib' => ['alur' => AturanWajib::untuk(SimpanAlurPersetujuanRequest::class)],
             'alurPersetujuan' => AlurPersetujuanResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             'jenisEntitasTersedia' => $this->registriEntitas->jenisDikenal(),

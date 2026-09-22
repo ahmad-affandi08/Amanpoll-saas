@@ -12,6 +12,7 @@ use App\Domain\Notifikasi\Http\Resources\TemplatNotifikasiResource;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,6 +30,7 @@ final class TemplatNotifikasiController extends Controller
             ->faset(['Kanal']);
 
         return Inertia::render('TemplatNotifikasi/Index', [
+            'wajib' => ['templat' => AturanWajib::untuk(SimpanTemplatNotifikasiRequest::class)],
             'templatNotifikasi' => TemplatNotifikasiResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
         ]);

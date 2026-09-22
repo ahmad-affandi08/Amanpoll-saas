@@ -20,6 +20,7 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PemetaanDataEksternal;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,6 +34,7 @@ final class IntegrasiEksternalController extends Controller
         $this->authorize('viewAny', IntegrasiEksternal::class);
 
         return Inertia::render('Integrasi/Index', [
+            'wajib' => ['integrasi' => AturanWajib::untuk(SimpanIntegrasiEksternalRequest::class)],
             'integrasi' => IntegrasiEksternal::query()
                 ->withCount(['pemetaan', 'sinkronisasi'])
                 ->orderBy('Kode')
@@ -82,6 +84,7 @@ final class IntegrasiEksternalController extends Controller
         $integrasi->loadCount(['pemetaan', 'sinkronisasi']);
 
         return Inertia::render('Integrasi/Show', [
+            'wajib' => ['pemetaan' => AturanWajib::untuk(SimpanPemetaanDataEksternalRequest::class)],
             'integrasi' => $this->ringkas($integrasi),
             'pemetaan' => $integrasi->pemetaan()->orderByDesc('DiperbaruiPada')->limit(100)->get()
                 ->map(fn (PemetaanDataEksternal $item): array => [

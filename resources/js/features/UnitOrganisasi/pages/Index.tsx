@@ -24,6 +24,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 /** Hanya Id dan Nama: pemilih induk memuat seluruh unit, bukan barisnya. */
 interface IndukRingkas {
@@ -35,11 +36,21 @@ interface Props {
   unitOrganisasi: Paginasi<UnitOrganisasi>;
   pilihanInduk: IndukRingkas[];
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const TANPA_INDUK = '__tanpa_induk__';
 
-function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semuaUnit: IndukRingkas[] }) {
+function DialogFormUnit({
+  unit,
+  semuaUnit,
+  wajib,
+}: {
+  unit: UnitOrganisasi | null;
+  semuaUnit: IndukRingkas[];
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     unit
@@ -82,73 +93,75 @@ function DialogFormUnit({ unit, semuaUnit }: { unit: UnitOrganisasi | null; semu
         <DialogHeader>
           <DialogTitle>{unit ? 'Ubah Unit Organisasi' : 'Tambah Unit Organisasi'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-2">
-              <Label>Nama</Label>
-              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Jenis</Label>
-              <Input
-                value={form.data.Jenis}
-                onChange={(e) => form.setData('Jenis', e.target.value)}
-                placeholder="Divisi, Departemen, dst."
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
               />
+              <div className="space-y-2">
+                <Label nama="Nama">Nama</Label>
+                <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="Jenis">Jenis</Label>
+                <Input
+                  value={form.data.Jenis}
+                  onChange={(e) => form.setData('Jenis', e.target.value)}
+                  placeholder="Divisi, Departemen, dst."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="Status">Status</Label>
+                <Select
+                  value={form.data.Status}
+                  onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Aktif">Aktif</SelectItem>
+                    <SelectItem value="Nonaktif">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={form.data.Status}
-                onValueChange={(v) => form.setData('Status', v as 'Aktif' | 'Nonaktif')}
-              >
+              <Label nama="IndukId">Induk</Label>
+              <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Aktif">Aktif</SelectItem>
-                  <SelectItem value="Nonaktif">Nonaktif</SelectItem>
+                  <SelectItem value={TANPA_INDUK}>Tanpa induk</SelectItem>
+                  {pilihanInduk.map((u) => (
+                    <SelectItem key={u.Id} value={u.Id}>
+                      {u.Nama}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {form.errors.IndukId && <p className="text-sm text-destructive">{form.errors.IndukId}</p>}
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Induk</Label>
-            <Select value={form.data.IndukId} onValueChange={(v) => form.setData('IndukId', v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={TANPA_INDUK}>Tanpa induk</SelectItem>
-                {pilihanInduk.map((u) => (
-                  <SelectItem key={u.Id} value={u.Id}>
-                    {u.Nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.errors.IndukId && <p className="text-sm text-destructive">{form.errors.IndukId}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filter }: Props) {
+export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   // Dipetakan dari daftar penuh: induk sebuah unit bisa saja ada di halaman lain.
   const namaIndukDari = useMemo(() => {
@@ -208,7 +221,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormUnit unit={row.original} semuaUnit={pilihanInduk} />
+            <DialogFormUnit unit={row.original} semuaUnit={pilihanInduk} wajib={wajib.unit} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -219,7 +232,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
         meta: { label: 'Aksi' },
       },
     ],
-    [unitOrganisasi, namaIndukDari],
+    [unitOrganisasi, namaIndukDari, wajib],
   );
 
   return (
@@ -230,7 +243,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
         deskripsi="Kelola struktur divisi dan hierarki organisasi."
         aksi={
           <>
-            <DialogFormUnit unit={null} semuaUnit={pilihanInduk} />
+            <DialogFormUnit unit={null} semuaUnit={pilihanInduk} wajib={wajib.unit} />
           </>
         }
         className="mb-6"
@@ -251,9 +264,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
             ],
           },
         ]}
-        pesanKosong={
-          adaPenyaringAktif(filter) ? 'Tidak ada unit yang cocok.' : 'Belum ada unit organisasi.'
-        }
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada unit yang cocok.' : 'Belum ada unit organisasi.'}
       />
     </KerangkaAplikasi>
   );

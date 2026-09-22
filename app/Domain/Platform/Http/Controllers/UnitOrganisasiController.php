@@ -12,6 +12,7 @@ use App\Domain\Platform\Http\Resources\UnitOrganisasiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,6 +30,7 @@ final class UnitOrganisasiController extends Controller
             ->faset(['Jenis', 'Status']);
 
         return Inertia::render('UnitOrganisasi/Index', [
+            'wajib' => ['unit' => AturanWajib::untuk(SimpanUnitOrganisasiRequest::class)],
             'unitOrganisasi' => UnitOrganisasiResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             // Pemilih induk harus memuat seluruh unit, bukan hanya yang tampil di halaman ini.

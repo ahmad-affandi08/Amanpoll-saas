@@ -23,13 +23,16 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   nomorDokumen: Paginasi<NomorDokumen>;
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogFormPola({ pola }: { pola: NomorDokumen | null }) {
+function DialogFormPola({ pola, wajib }: { pola: NomorDokumen | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     pola
@@ -73,70 +76,74 @@ function DialogFormPola({ pola }: { pola: NomorDokumen | null }) {
         <DialogHeader>
           <DialogTitle>{pola ? 'Ubah Pola Nomor Dokumen' : 'Tambah Pola Nomor Dokumen'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Jenis Dokumen</Label>
-            <Input
-              value={form.data.JenisDokumen}
-              onChange={(e) => form.setData('JenisDokumen', e.target.value)}
-              placeholder="PerintahKerja, PesananPembelian, dst."
-              disabled={!!pola}
-            />
-            {form.errors.JenisDokumen && (
-              <p className="text-sm text-destructive">{form.errors.JenisDokumen}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Awalan</Label>
+              <Label nama="JenisDokumen">Jenis Dokumen</Label>
               <Input
-                value={form.data.Awalan}
-                onChange={(e) => form.setData('Awalan', e.target.value)}
+                value={form.data.JenisDokumen}
+                onChange={(e) => form.setData('JenisDokumen', e.target.value)}
+                placeholder="PerintahKerja, PesananPembelian, dst."
+                disabled={!!pola}
+              />
+              {form.errors.JenisDokumen && (
+                <p className="text-sm text-destructive">{form.errors.JenisDokumen}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label nama="Awalan">Awalan</Label>
+                <Input
+                  value={form.data.Awalan}
+                  onChange={(e) => form.setData('Awalan', e.target.value)}
+                  className="font-mono"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label nama="ResetPeriode">Reset Periode</Label>
+                <Select
+                  value={form.data.ResetPeriode}
+                  onValueChange={(v) => form.setData('ResetPeriode', v as 'Tahunan' | 'Bulanan' | 'TidakAda')}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Tahunan">Tahunan</SelectItem>
+                    <SelectItem value="Bulanan">Bulanan</SelectItem>
+                    <SelectItem value="TidakAda">Tidak Reset</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label nama="FormatNomor">Format Nomor</Label>
+              <Input
+                value={form.data.FormatNomor}
+                onChange={(e) => form.setData('FormatNomor', e.target.value)}
                 className="font-mono"
               />
+              <p className="text-xs text-muted-foreground">
+                Placeholder: {'{Awalan}'}, {'{Nomor}'} atau {'{Nomor:4}'} (padding), {'{Tahun}'},{' '}
+                {'{TahunPendek}'}, {'{Bulan}'}, {'{Periode}'}.
+              </p>
+              {form.errors.FormatNomor && (
+                <p className="text-sm text-destructive">{form.errors.FormatNomor}</p>
+              )}
             </div>
-            <div className="space-y-2">
-              <Label>Reset Periode</Label>
-              <Select
-                value={form.data.ResetPeriode}
-                onValueChange={(v) => form.setData('ResetPeriode', v as 'Tahunan' | 'Bulanan' | 'TidakAda')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Tahunan">Tahunan</SelectItem>
-                  <SelectItem value="Bulanan">Bulanan</SelectItem>
-                  <SelectItem value="TidakAda">Tidak Reset</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Format Nomor</Label>
-            <Input
-              value={form.data.FormatNomor}
-              onChange={(e) => form.setData('FormatNomor', e.target.value)}
-              className="font-mono"
-            />
-            <p className="text-xs text-muted-foreground">
-              Placeholder: {'{Awalan}'}, {'{Nomor}'} atau {'{Nomor:4}'} (padding), {'{Tahun}'},{' '}
-              {'{TahunPendek}'}, {'{Bulan}'}, {'{Periode}'}.
-            </p>
-            {form.errors.FormatNomor && <p className="text-sm text-destructive">{form.errors.FormatNomor}</p>}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function NomorDokumenIndex({ nomorDokumen, filter }: Props) {
+export default function NomorDokumenIndex({ nomorDokumen, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (pola: NomorDokumen) => {
     if (
@@ -182,7 +189,7 @@ export default function NomorDokumenIndex({ nomorDokumen, filter }: Props) {
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormPola pola={row.original} />
+            <DialogFormPola pola={row.original} wajib={wajib.nomorDokumen} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -193,7 +200,7 @@ export default function NomorDokumenIndex({ nomorDokumen, filter }: Props) {
         meta: { label: 'Aksi' },
       },
     ],
-    [],
+    [wajib],
   );
 
   return (
@@ -204,7 +211,7 @@ export default function NomorDokumenIndex({ nomorDokumen, filter }: Props) {
         deskripsi="Pola penomoran otomatis untuk dokumen operasional."
         aksi={
           <>
-            <DialogFormPola pola={null} />
+            <DialogFormPola pola={null} wajib={wajib.nomorDokumen} />
           </>
         }
         className="mb-6"

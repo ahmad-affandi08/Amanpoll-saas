@@ -12,6 +12,7 @@ use App\Domain\Kolaborasi\Http\Resources\TagResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Tag;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -35,6 +36,7 @@ final class TagController extends Controller
             ->urut(['Nama'], bawaan: 'Nama');
 
         return Inertia::render('Tag/Index', [
+            'wajib' => ['tag' => AturanWajib::untuk(SimpanTagRequest::class)],
             'tag' => TagResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
         ]);

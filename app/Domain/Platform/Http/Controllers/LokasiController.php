@@ -7,6 +7,7 @@ namespace App\Domain\Platform\Http\Controllers;
 use App\Domain\Platform\Application\Actions\BuatLokasi;
 use App\Domain\Platform\Application\Actions\HapusLokasi;
 use App\Domain\Platform\Application\Actions\UbahLokasi;
+use App\Domain\Platform\Http\Requests\SimpanKategoriLokasiRequest;
 use App\Domain\Platform\Http\Requests\SimpanLokasiRequest;
 use App\Domain\Platform\Http\Resources\KategoriLokasiResource;
 use App\Domain\Platform\Http\Resources\LokasiResource;
@@ -16,6 +17,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,6 +35,7 @@ final class LokasiController extends Controller
             ->faset(['Status', 'KategoriLokasiId', 'UnitOrganisasiId']);
 
         return Inertia::render('Lokasi/Index', [
+            'wajib' => ['lokasi' => AturanWajib::untuk(SimpanLokasiRequest::class), 'kategori' => AturanWajib::untuk(SimpanKategoriLokasiRequest::class)],
             'lokasi' => LokasiResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             'unitOrganisasi' => UnitOrganisasiResource::collection(UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),

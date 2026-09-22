@@ -10,9 +10,12 @@ import { Badge } from '@/components/ui/badge';
 import type { Organisasi } from '@/features/Organisasi/types';
 import { ruteOrganisasi } from '@/features/Organisasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   organisasi: Organisasi;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const ZONA_WAKTU = ['Asia/Jakarta', 'Asia/Makassar', 'Asia/Jayapura'];
@@ -64,7 +67,7 @@ function FormLogo({ organisasi }: { organisasi: Organisasi }) {
   );
 }
 
-export default function OrganisasiIndex({ organisasi }: Props) {
+export default function OrganisasiIndex({ organisasi, wajib }: Props) {
   const form = useForm({
     Nama: organisasi.Nama,
     NamaLegal: organisasi.NamaLegal ?? '',
@@ -109,103 +112,105 @@ export default function OrganisasiIndex({ organisasi }: Props) {
               <CardTitle>Profil Organisasi</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={submit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Nama</Label>
-                    <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-                    {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              <AturanWajibProvider aturan={wajib.organisasi}>
+                <form onSubmit={submit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label nama="Nama">Nama</Label>
+                      <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+                      {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label nama="NamaLegal">Nama Legal</Label>
+                      <Input
+                        value={form.data.NamaLegal}
+                        onChange={(e) => form.setData('NamaLegal', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label nama="JenisUsaha">Jenis Usaha</Label>
+                      <Input
+                        value={form.data.JenisUsaha}
+                        onChange={(e) => form.setData('JenisUsaha', e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label nama="NomorIdentitasPajak">NPWP</Label>
+                      <Input
+                        value={form.data.NomorIdentitasPajak}
+                        onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label nama="Email">Email</Label>
+                      <Input
+                        type="email"
+                        value={form.data.Email}
+                        onChange={(e) => form.setData('Email', e.target.value)}
+                      />
+                      {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label nama="Telepon">Telepon</Label>
+                      <Input
+                        value={form.data.Telepon}
+                        onChange={(e) => form.setData('Telepon', e.target.value)}
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Nama Legal</Label>
-                    <Input
-                      value={form.data.NamaLegal}
-                      onChange={(e) => form.setData('NamaLegal', e.target.value)}
+                    <Label nama="Alamat">Alamat</Label>
+                    <Textarea
+                      value={form.data.Alamat}
+                      onChange={(e) => form.setData('Alamat', e.target.value)}
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Jenis Usaha</Label>
-                    <Input
-                      value={form.data.JenisUsaha}
-                      onChange={(e) => form.setData('JenisUsaha', e.target.value)}
-                    />
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label nama="Negara">Negara</Label>
+                      <Input
+                        value={form.data.Negara}
+                        onChange={(e) => form.setData('Negara', e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label nama="Provinsi">Provinsi</Label>
+                      <Input
+                        value={form.data.Provinsi}
+                        onChange={(e) => form.setData('Provinsi', e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label nama="Kota">Kota</Label>
+                      <Input value={form.data.Kota} onChange={(e) => form.setData('Kota', e.target.value)} />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>NPWP</Label>
-                    <Input
-                      value={form.data.NomorIdentitasPajak}
-                      onChange={(e) => form.setData('NomorIdentitasPajak', e.target.value)}
-                    />
+                    <Label nama="ZonaWaktu">Zona Waktu</Label>
+                    <select
+                      className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                      value={form.data.ZonaWaktu}
+                      onChange={(e) => form.setData('ZonaWaktu', e.target.value)}
+                    >
+                      {ZONA_WAKTU.map((zona) => (
+                        <option key={zona} value={zona}>
+                          {zona}
+                        </option>
+                      ))}
+                    </select>
+                    {form.errors.ZonaWaktu && (
+                      <p className="text-sm text-destructive">{form.errors.ZonaWaktu}</p>
+                    )}
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input
-                      type="email"
-                      value={form.data.Email}
-                      onChange={(e) => form.setData('Email', e.target.value)}
-                    />
-                    {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Telepon</Label>
-                    <Input
-                      value={form.data.Telepon}
-                      onChange={(e) => form.setData('Telepon', e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Alamat</Label>
-                  <Textarea
-                    value={form.data.Alamat}
-                    onChange={(e) => form.setData('Alamat', e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Negara</Label>
-                    <Input
-                      value={form.data.Negara}
-                      onChange={(e) => form.setData('Negara', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Provinsi</Label>
-                    <Input
-                      value={form.data.Provinsi}
-                      onChange={(e) => form.setData('Provinsi', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Kota</Label>
-                    <Input value={form.data.Kota} onChange={(e) => form.setData('Kota', e.target.value)} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Zona Waktu</Label>
-                  <select
-                    className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                    value={form.data.ZonaWaktu}
-                    onChange={(e) => form.setData('ZonaWaktu', e.target.value)}
-                  >
-                    {ZONA_WAKTU.map((zona) => (
-                      <option key={zona} value={zona}>
-                        {zona}
-                      </option>
-                    ))}
-                  </select>
-                  {form.errors.ZonaWaktu && (
-                    <p className="text-sm text-destructive">{form.errors.ZonaWaktu}</p>
-                  )}
-                </div>
-                <Button type="submit" disabled={form.processing}>
-                  Simpan Perubahan
-                </Button>
-              </form>
+                  <Button type="submit" disabled={form.processing}>
+                    Simpan Perubahan
+                  </Button>
+                </form>
+              </AturanWajibProvider>
             </CardContent>
           </Card>
         </div>

@@ -12,6 +12,7 @@ use App\Domain\Kolaborasi\Http\Requests\SimpanDefinisiKolomKustomRequest;
 use App\Domain\Kolaborasi\Http\Resources\DefinisiKolomKustomResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\DefinisiKolomKustom;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -25,6 +26,7 @@ final class DefinisiKolomKustomController extends Controller
     public function halaman(): Response
     {
         return Inertia::render('KolomKustom/Index', [
+            'wajib' => ['kolomKustom' => AturanWajib::untuk(SimpanDefinisiKolomKustomRequest::class)],
             'jenisEntitasTersedia' => $this->registriEntitas->jenisDikenal(),
         ]);
     }

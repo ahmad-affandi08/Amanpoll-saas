@@ -12,6 +12,7 @@ use App\Domain\Pelaporan\Domain\KatalogKpi;
 use App\Domain\Pelaporan\Http\Requests\SimpanDasborTersimpanRequest;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\DasborTersimpan;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,6 +28,7 @@ final class DasborTersimpanController extends Controller
         $pengguna = $request->user('web');
 
         return Inertia::render('DashboardKustom/Index', [
+            'wajib' => ['dasbor' => AturanWajib::untuk(SimpanDasborTersimpanRequest::class)],
             'dasbor' => $layananDasbor->dasborUntuk($pengguna)
                 ->map(fn (DasborTersimpan $dasbor): array => [
                     ...$layananDasbor->dariTersimpan($dasbor),

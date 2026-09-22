@@ -14,6 +14,7 @@ use App\Domain\Platform\Http\Resources\PeranResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,6 +34,7 @@ final class PeranController extends Controller
             ->urut(['Nama', 'Kode'], bawaan: 'Nama');
 
         return Inertia::render('PeranIzin/Index', [
+            'wajib' => ['peran' => AturanWajib::untuk(SimpanPeranRequest::class)],
             'peran' => PeranResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
         ]);

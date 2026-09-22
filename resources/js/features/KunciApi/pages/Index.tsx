@@ -29,10 +29,13 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   kunciApi: Paginasi<KunciApi>;
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 function DialogTampilkanToken({ token, onTutup }: { token: string; onTutup: () => void }) {
@@ -66,7 +69,7 @@ function DialogTampilkanToken({ token, onTutup }: { token: string; onTutup: () =
   );
 }
 
-function DialogBuatKunci() {
+function DialogBuatKunci({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const [katalog, setKatalog] = useState<KatalogIzin | null>(null);
   const form = useForm<{
@@ -130,59 +133,61 @@ function DialogBuatKunci() {
         <DialogHeader>
           <DialogTitle>Buat Kunci API</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Kadaluarsa (opsional)</Label>
-            <DatePicker
-              value={form.data.KadaluarsaPada}
-              onChange={(val) => form.setData('KadaluarsaPada', val)}
-              placeholder="Pilih tanggal kadaluarsa"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Alamat IP Diizinkan (opsional, pisahkan dengan koma)</Label>
-            <Input
-              value={form.data.AlamatIpDiizinkan}
-              onChange={(e) => form.setData('AlamatIpDiizinkan', e.target.value)}
-              placeholder="203.0.113.1, 203.0.113.2"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Cakupan (opsional, kosongkan untuk akses penuh)</Label>
-            {!katalog && <p className="text-sm text-muted-foreground">Memuat katalog izin...</p>}
-            {katalog &&
-              Object.entries(katalog).map(([modul, daftar]) => (
-                <div key={modul} className="mb-3">
-                  <h4 className="mb-1 text-xs font-semibold uppercase text-muted-foreground">{modul}</h4>
-                  {daftar.map((izin) => (
-                    <label key={izin.Id} className="flex items-center gap-2 text-sm">
-                      <Checkbox
-                        checked={form.data.Cakupan.includes(izin.Kode)}
-                        onCheckedChange={() => toggleCakupan(izin.Kode)}
-                      />
-                      {izin.Nama}
-                    </label>
-                  ))}
-                </div>
-              ))}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Buat
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="KadaluarsaPada">Kadaluarsa (opsional)</Label>
+              <DatePicker
+                value={form.data.KadaluarsaPada}
+                onChange={(val) => form.setData('KadaluarsaPada', val)}
+                placeholder="Pilih tanggal kadaluarsa"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label nama="AlamatIpDiizinkan">Alamat IP Diizinkan (opsional, pisahkan dengan koma)</Label>
+              <Input
+                value={form.data.AlamatIpDiizinkan}
+                onChange={(e) => form.setData('AlamatIpDiizinkan', e.target.value)}
+                placeholder="203.0.113.1, 203.0.113.2"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Cakupan (opsional, kosongkan untuk akses penuh)</Label>
+              {!katalog && <p className="text-sm text-muted-foreground">Memuat katalog izin...</p>}
+              {katalog &&
+                Object.entries(katalog).map(([modul, daftar]) => (
+                  <div key={modul} className="mb-3">
+                    <h4 className="mb-1 text-xs font-semibold uppercase text-muted-foreground">{modul}</h4>
+                    {daftar.map((izin) => (
+                      <label key={izin.Id} className="flex items-center gap-2 text-sm">
+                        <Checkbox
+                          checked={form.data.Cakupan.includes(izin.Kode)}
+                          onCheckedChange={() => toggleCakupan(izin.Kode)}
+                        />
+                        {izin.Nama}
+                      </label>
+                    ))}
+                  </div>
+                ))}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Buat
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function KunciApiIndex({ kunciApi, filter }: Props) {
+export default function KunciApiIndex({ kunciApi, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const { flash } = usePage<PageProps>().props;
   const [tokenTampil, setTokenTampil] = useState<string | null>(null);
@@ -278,7 +283,7 @@ export default function KunciApiIndex({ kunciApi, filter }: Props) {
         meta: { label: 'Aksi' },
       },
     ],
-    [],
+    [wajib],
   );
 
   return (
@@ -290,7 +295,7 @@ export default function KunciApiIndex({ kunciApi, filter }: Props) {
         deskripsi="Kelola akses integrasi eksternal ke Amanpoll."
         aksi={
           <>
-            <DialogBuatKunci />
+            <DialogBuatKunci wajib={wajib.kunciApi} />
           </>
         }
         className="mb-6"
@@ -311,9 +316,7 @@ export default function KunciApiIndex({ kunciApi, filter }: Props) {
             ],
           },
         ]}
-        pesanKosong={
-          adaPenyaringAktif(filter) ? 'Tidak ada kunci yang cocok.' : 'Belum ada kunci API.'
-        }
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada kunci yang cocok.' : 'Belum ada kunci API.'}
         ilustrasiKosong="/assets/3d/integrasi.webp"
       />
     </KerangkaAplikasi>

@@ -28,6 +28,7 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   alurPersetujuan: Paginasi<AlurPersetujuan>;
@@ -35,15 +36,19 @@ interface Props {
   jenisEntitasTersedia: string[];
   peran: Peran[];
   pengguna: Pengguna[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const JENIS_PENYETUJU: JenisPenyetuju[] = ['Pengguna', 'Peran', 'Unit'];
 function DialogFormAlur({
   alur,
   jenisEntitasTersedia,
+  wajib,
 }: {
   alur: AlurPersetujuan | null;
   jenisEntitasTersedia: string[];
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -78,38 +83,40 @@ function DialogFormAlur({
         <DialogHeader>
           <DialogTitle>{alur ? 'Ubah Alur Persetujuan' : 'Tambah Alur Persetujuan'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <BidangKode
-            nilai={form.data.Kode}
-            onUbah={(nilai) => form.setData('Kode', nilai)}
-            galat={form.errors.Kode}
-          />
-          <div className="space-y-2">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Jenis Entitas</Label>
-            <Select value={form.data.JenisEntitas} onValueChange={(v) => form.setData('JenisEntitas', v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {jenisEntitasTersedia.map((j) => (
-                  <SelectItem key={j} value={j}>
-                    {j}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
+            />
+            <div className="space-y-2">
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="JenisEntitas">Jenis Entitas</Label>
+              <Select value={form.data.JenisEntitas} onValueChange={(v) => form.setData('JenisEntitas', v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {jenisEntitasTersedia.map((j) => (
+                    <SelectItem key={j} value={j}>
+                      {j}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -161,7 +168,7 @@ function FormTahap({
   return (
     <form onSubmit={submit} className="grid grid-cols-2 gap-3 rounded-md border border-border p-3">
       <div className="space-y-1.5">
-        <Label>Urutan</Label>
+        <Label nama="Urutan">Urutan</Label>
         <Input
           type="number"
           min={1}
@@ -170,11 +177,11 @@ function FormTahap({
         />
       </div>
       <div className="space-y-1.5">
-        <Label>Nama Tahap</Label>
+        <Label nama="Nama">Nama Tahap</Label>
         <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
       </div>
       <div className="space-y-1.5">
-        <Label>Jenis Penyetuju</Label>
+        <Label nama="JenisPenyetuju">Jenis Penyetuju</Label>
         <Select
           value={form.data.JenisPenyetuju}
           onValueChange={(v) => form.setData('JenisPenyetuju', v as JenisPenyetuju)}
@@ -193,7 +200,7 @@ function FormTahap({
       </div>
       {form.data.JenisPenyetuju === 'Pengguna' && (
         <div className="space-y-1.5">
-          <Label>Pengguna</Label>
+          <Label nama="PenggunaId">Pengguna</Label>
           <Select
             value={form.data.PenggunaId || TANPA_PILIHAN}
             onValueChange={(v) => form.setData('PenggunaId', v === TANPA_PILIHAN ? '' : v)}
@@ -213,7 +220,7 @@ function FormTahap({
       )}
       {(form.data.JenisPenyetuju === 'Peran' || form.data.JenisPenyetuju === 'Unit') && (
         <div className="space-y-1.5">
-          <Label>Peran {form.data.JenisPenyetuju === 'Unit' && '(opsional)'}</Label>
+          <Label nama="PeranId">Peran {form.data.JenisPenyetuju === 'Unit' && '(opsional)'}</Label>
           <Select
             value={form.data.PeranId || TANPA_PILIHAN}
             onValueChange={(v) => form.setData('PeranId', v === TANPA_PILIHAN ? '' : v)}
@@ -235,7 +242,7 @@ function FormTahap({
         </div>
       )}
       <div className="space-y-1.5">
-        <Label>Jumlah Minimum Penyetuju</Label>
+        <Label nama="JumlahMinimumPenyetuju">Jumlah Minimum Penyetuju</Label>
         <Input
           type="number"
           min={1}
@@ -358,6 +365,7 @@ export default function AlurPersetujuanIndex({
   jenisEntitasTersedia,
   peran,
   pengguna,
+  wajib,
 }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (alur: AlurPersetujuan) => {
@@ -421,7 +429,11 @@ export default function AlurPersetujuanIndex({
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
             <DialogKelolaTahap alur={row.original} peran={peran} pengguna={pengguna} />
-            <DialogFormAlur alur={row.original} jenisEntitasTersedia={jenisEntitasTersedia} />
+            <DialogFormAlur
+              alur={row.original}
+              jenisEntitasTersedia={jenisEntitasTersedia}
+              wajib={wajib.alur}
+            />
             <Button variant="outline" size="sm" onClick={() => toggleAktif(row.original)}>
               {row.original.Aktif ? 'Nonaktifkan' : 'Aktifkan'}
             </Button>
@@ -435,7 +447,7 @@ export default function AlurPersetujuanIndex({
         meta: { label: 'Aksi' },
       },
     ],
-    [jenisEntitasTersedia, peran, pengguna],
+    [jenisEntitasTersedia, peran, pengguna, wajib],
   );
 
   return (
@@ -446,7 +458,7 @@ export default function AlurPersetujuanIndex({
         deskripsi="Definisikan tahapan persetujuan untuk berbagai jenis entitas."
         aksi={
           <>
-            <DialogFormAlur alur={null} jenisEntitasTersedia={jenisEntitasTersedia} />
+            <DialogFormAlur alur={null} jenisEntitasTersedia={jenisEntitasTersedia} wajib={wajib.alur} />
           </>
         }
         className="mb-6"
@@ -472,9 +484,7 @@ export default function AlurPersetujuanIndex({
             options: jenisEntitasTersedia.map((satu) => ({ label: satu, value: satu })),
           },
         ]}
-        pesanKosong={
-          adaPenyaringAktif(filter) ? 'Tidak ada alur yang cocok.' : 'Belum ada alur persetujuan.'
-        }
+        pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada alur yang cocok.' : 'Belum ada alur persetujuan.'}
         ilustrasiKosong="/assets/3d/persetujuan-kepatuhan.webp"
       />
     </KerangkaAplikasi>

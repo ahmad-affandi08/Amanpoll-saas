@@ -12,6 +12,7 @@ use App\Domain\Platform\Http\Requests\UbahProfilRequest;
 use App\Domain\Platform\Http\Resources\PenggunaResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PerangkatPengguna;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -22,6 +23,7 @@ final class ProfilController extends Controller
     public function edit(Request $request): Response
     {
         return Inertia::render('Profil/Index', [
+            'wajib' => ['profil' => AturanWajib::untuk(UbahProfilRequest::class), 'kataSandi' => AturanWajib::untuk(GantiKataSandiRequest::class)],
             'pengguna' => new PenggunaResource($request->user('web')->load('perangkat')),
         ]);
     }

@@ -12,6 +12,7 @@ use App\Domain\Platform\Http\Requests\UnggahLogoOrganisasiRequest;
 use App\Domain\Platform\Http\Resources\OrganisasiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,6 +27,7 @@ final class OrganisasiController extends Controller
         $this->authorize('view', $organisasi);
 
         return Inertia::render('Organisasi/Index', [
+            'wajib' => ['organisasi' => AturanWajib::untuk(SimpanOrganisasiRequest::class)],
             'organisasi' => new OrganisasiResource($organisasi),
         ]);
     }

@@ -22,9 +22,12 @@ import { ruteKolomKustom } from '@/features/KolomKustom/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   jenisEntitasTersedia: string[];
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const TIPE_DATA: TipeDataKolomKustom[] = ['Teks', 'Angka', 'Tanggal', 'Boolean', 'Pilihan', 'PilihanGanda'];
@@ -33,10 +36,12 @@ function DialogFormDefinisi({
   jenisEntitas,
   definisi,
   onSelesai,
+  wajib,
 }: {
   jenisEntitas: string;
   definisi: DefinisiKolomKustom | null;
   onSelesai: () => void;
+  wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -85,64 +90,69 @@ function DialogFormDefinisi({
         <DialogHeader>
           <DialogTitle>{definisi ? 'Ubah Kolom Kustom' : 'Tambah Kolom Kustom'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BidangKode
-              nilai={form.data.Kode}
-              onUbah={(nilai) => form.setData('Kode', nilai)}
-              galat={form.errors.Kode}
-            />
-            <div className="space-y-2">
-              <Label>Label</Label>
-              <Input value={form.data.Label} onChange={(e) => form.setData('Label', e.target.value)} />
-              {form.errors.Label && <p className="text-sm text-destructive">{form.errors.Label}</p>}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Tipe Data</Label>
-            <Select
-              value={form.data.TipeData}
-              onValueChange={(v) => form.setData('TipeData', v as TipeDataKolomKustom)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TIPE_DATA.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {perluPilihan && (
-            <div className="space-y-2">
-              <Label>Opsi (pisahkan dengan koma)</Label>
-              <Input
-                value={form.data.Pilihan}
-                onChange={(e) => form.setData('Pilihan', e.target.value)}
-                placeholder="Baik, Rusak, Perlu Servis"
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BidangKode
+                nilai={form.data.Kode}
+                onUbah={(nilai) => form.setData('Kode', nilai)}
+                galat={form.errors.Kode}
               />
-              {form.errors.Pilihan && <p className="text-sm text-destructive">{form.errors.Pilihan}</p>}
+              <div className="space-y-2">
+                <Label nama="Label">Label</Label>
+                <Input value={form.data.Label} onChange={(e) => form.setData('Label', e.target.value)} />
+                {form.errors.Label && <p className="text-sm text-destructive">{form.errors.Label}</p>}
+              </div>
             </div>
-          )}
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked={form.data.Wajib} onCheckedChange={(v) => form.setData('Wajib', Boolean(v))} />
-            Wajib diisi
-          </label>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-2">
+              <Label nama="TipeData">Tipe Data</Label>
+              <Select
+                value={form.data.TipeData}
+                onValueChange={(v) => form.setData('TipeData', v as TipeDataKolomKustom)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIPE_DATA.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {perluPilihan && (
+              <div className="space-y-2">
+                <Label nama="Pilihan">Opsi (pisahkan dengan koma)</Label>
+                <Input
+                  value={form.data.Pilihan}
+                  onChange={(e) => form.setData('Pilihan', e.target.value)}
+                  placeholder="Baik, Rusak, Perlu Servis"
+                />
+                {form.errors.Pilihan && <p className="text-sm text-destructive">{form.errors.Pilihan}</p>}
+              </div>
+            )}
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.data.Wajib}
+                onCheckedChange={(v) => form.setData('Wajib', Boolean(v))}
+              />
+              Wajib diisi
+            </label>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
+export default function KolomKustomIndex({ jenisEntitasTersedia, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const [jenisEntitas, setJenisEntitas] = useState(jenisEntitasTersedia[0] ?? '');
   const [definisi, setDefinisi] = useState<DefinisiKolomKustom[]>([]);
@@ -180,7 +190,12 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
         aksi={
           <>
             {jenisEntitas && (
-              <DialogFormDefinisi jenisEntitas={jenisEntitas} definisi={null} onSelesai={muat} />
+              <DialogFormDefinisi
+                jenisEntitas={jenisEntitas}
+                definisi={null}
+                onSelesai={muat}
+                wajib={wajib.kolomKustom}
+              />
             )}
           </>
         }
@@ -231,7 +246,12 @@ export default function KolomKustomIndex({ jenisEntitasTersedia }: Props) {
                 </TableCell>
                 <TableCell>{item.Wajib ? 'Ya' : '-'}</TableCell>
                 <TableCell className="flex justify-end gap-2">
-                  <DialogFormDefinisi jenisEntitas={jenisEntitas} definisi={item} onSelesai={muat} />
+                  <DialogFormDefinisi
+                    jenisEntitas={jenisEntitas}
+                    definisi={item}
+                    onSelesai={muat}
+                    wajib={wajib.kolomKustom}
+                  />
                   <Button variant="ghost" size="sm" onClick={() => hapus(item)}>
                     Hapus
                   </Button>

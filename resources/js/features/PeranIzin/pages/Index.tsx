@@ -27,13 +27,16 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   peran: Paginasi<Peran>;
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogFormPeran({ peran }: { peran: Peran | null }) {
+function DialogFormPeran({ peran, wajib }: { peran: Peran | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
     peran
@@ -67,30 +70,32 @@ function DialogFormPeran({ peran }: { peran: Peran | null }) {
         <DialogHeader>
           <DialogTitle>{peran ? 'Ubah Peran' : 'Tambah Peran'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <BidangKode
-            nilai={form.data.Kode}
-            onUbah={(nilai) => form.setData('Kode', nilai)}
-            galat={form.errors.Kode}
-          />
-          <div className="space-y-2">
-            <Label>Nama</Label>
-            <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Keterangan</Label>
-            <Textarea
-              value={form.data.Keterangan}
-              onChange={(e) => form.setData('Keterangan', e.target.value)}
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <BidangKode
+              nilai={form.data.Kode}
+              onUbah={(nilai) => form.setData('Kode', nilai)}
+              galat={form.errors.Kode}
             />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="space-y-2">
+              <Label nama="Nama">Nama</Label>
+              <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
+              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="Keterangan">Keterangan</Label>
+              <Textarea
+                value={form.data.Keterangan}
+                onChange={(e) => form.setData('Keterangan', e.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -161,7 +166,7 @@ function DialogKelolaIzin({ peran }: { peran: Peran }) {
   );
 }
 
-export default function PeranIzinIndex({ peran, filter }: Props) {
+export default function PeranIzinIndex({ peran, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
@@ -217,7 +222,7 @@ export default function PeranIzinIndex({ peran, filter }: Props) {
               header: 'Aksi',
               cell: ({ row }: { row: { original: Peran } }) => (
                 <div className="flex justify-end gap-2">
-                  <DialogFormPeran peran={row.original} />
+                  <DialogFormPeran peran={row.original} wajib={wajib.peran} />
                   <DialogKelolaIzin peran={row.original} />
                   {!row.original.BawaanSistem && (
                     <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
@@ -233,7 +238,7 @@ export default function PeranIzinIndex({ peran, filter }: Props) {
           ]
         : []),
     ],
-    [bolehKelola],
+    [bolehKelola, wajib],
   );
 
   return (
@@ -242,7 +247,7 @@ export default function PeranIzinIndex({ peran, filter }: Props) {
       <KepalaHalaman
         judul="Peran & Izin"
         deskripsi="Kelola peran dan hak akses per organisasi."
-        aksi={<>{bolehKelola && <DialogFormPeran peran={null} />}</>}
+        aksi={<>{bolehKelola && <DialogFormPeran peran={null} wajib={wajib.peran} />}</>}
         className="mb-6"
       />
 

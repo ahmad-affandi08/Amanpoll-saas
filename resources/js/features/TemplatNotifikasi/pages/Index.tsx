@@ -25,13 +25,16 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   templatNotifikasi: Paginasi<TemplatNotifikasi>;
   filter: FilterDaftar;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
-function DialogFormTemplat({ templat }: { templat: TemplatNotifikasi | null }) {
+function DialogFormTemplat({ templat, wajib }: { templat: TemplatNotifikasi | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: templat?.Kode ?? '',
@@ -67,59 +70,61 @@ function DialogFormTemplat({ templat }: { templat: TemplatNotifikasi | null }) {
         <DialogHeader>
           <DialogTitle>{templat ? 'Ubah Templat' : 'Tambah Templat'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Kode</Label>
-            <Input value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} />
-            {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Kanal</Label>
-            <Select
-              value={form.data.Kanal}
-              onValueChange={(v) => form.setData('Kanal', v as 'InApp' | 'Email')}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="InApp">In-App</SelectItem>
-                <SelectItem value="Email">Email</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Judul Templat</Label>
-            <Input
-              value={form.data.JudulTemplat}
-              onChange={(e) => form.setData('JudulTemplat', e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Isi Templat</Label>
-            <Textarea
-              value={form.data.IsiTemplat}
-              onChange={(e) => form.setData('IsiTemplat', e.target.value)}
-              rows={4}
-            />
-            {form.errors.IsiTemplat && <p className="text-sm text-destructive">{form.errors.IsiTemplat}</p>}
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch checked={form.data.Aktif} onCheckedChange={(v) => form.setData('Aktif', v)} />
-            <Label>Aktif</Label>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan
-            </Button>
-          </DialogFooter>
-        </form>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label nama="Kode">Kode</Label>
+              <Input value={form.data.Kode} onChange={(e) => form.setData('Kode', e.target.value)} />
+              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label nama="Kanal">Kanal</Label>
+              <Select
+                value={form.data.Kanal}
+                onValueChange={(v) => form.setData('Kanal', v as 'InApp' | 'Email')}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="InApp">In-App</SelectItem>
+                  <SelectItem value="Email">Email</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label nama="JudulTemplat">Judul Templat</Label>
+              <Input
+                value={form.data.JudulTemplat}
+                onChange={(e) => form.setData('JudulTemplat', e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label nama="IsiTemplat">Isi Templat</Label>
+              <Textarea
+                value={form.data.IsiTemplat}
+                onChange={(e) => form.setData('IsiTemplat', e.target.value)}
+                rows={4}
+              />
+              {form.errors.IsiTemplat && <p className="text-sm text-destructive">{form.errors.IsiTemplat}</p>}
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={form.data.Aktif} onCheckedChange={(v) => form.setData('Aktif', v)} />
+              <Label>Aktif</Label>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-export default function TemplatNotifikasiIndex({ templatNotifikasi, filter }: Props) {
+export default function TemplatNotifikasiIndex({ templatNotifikasi, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: TemplatNotifikasi) => {
     if (
@@ -161,7 +166,7 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi, filter }: Pr
         header: 'Aksi',
         cell: ({ row }) => (
           <div className="flex justify-end gap-2">
-            <DialogFormTemplat templat={row.original} />
+            <DialogFormTemplat templat={row.original} wajib={wajib.templat} />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -172,7 +177,7 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi, filter }: Pr
         meta: { label: 'Aksi' },
       },
     ],
-    [],
+    [wajib],
   );
 
   return (
@@ -183,7 +188,7 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi, filter }: Pr
         deskripsi="Kelola isi pesan notifikasi per peristiwa dan kanal."
         aksi={
           <>
-            <DialogFormTemplat templat={null} />
+            <DialogFormTemplat templat={null} wajib={wajib.templat} />
           </>
         }
         className="mb-6"

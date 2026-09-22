@@ -29,17 +29,20 @@ import type {
 } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   integrasi: IntegrasiEksternal[];
   webhook: PanggilanBalikWeb[];
   antrianPeristiwa: AntrianPeristiwa;
+  /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
+  wajib: Record<string, AturanWajib>;
 }
 
 const METODE: MetodeAutentikasi[] = ['Bearer', 'ApiKey', 'Basic', 'TanpaAutentikasi'];
 const VARIAN_STATUS = { Aktif: 'sukses', Nonaktif: 'netral', Bermasalah: 'bahaya' } as const;
 
-function DialogBuatIntegrasi() {
+function DialogBuatIntegrasi({ wajib }: { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Kode: '',
@@ -77,85 +80,97 @@ function DialogBuatIntegrasi() {
             Kredensial disimpan terenkripsi dan tidak pernah ditampilkan kembali setelah disimpan.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
+              <div className="space-y-1.5">
+                <Label nama="KodeIntegrasi" htmlFor="KodeIntegrasi">
+                  Kode
+                </Label>
+                <Input
+                  id="KodeIntegrasi"
+                  value={form.data.Kode}
+                  onChange={(event) => form.setData('Kode', event.target.value)}
+                />
+                {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="NamaIntegrasi" htmlFor="NamaIntegrasi">
+                  Nama
+                </Label>
+                <Input
+                  id="NamaIntegrasi"
+                  value={form.data.Nama}
+                  onChange={(event) => form.setData('Nama', event.target.value)}
+                />
+                {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label nama="JenisIntegrasi" htmlFor="JenisIntegrasi">
+                  Jenis sistem
+                </Label>
+                <Input
+                  id="JenisIntegrasi"
+                  placeholder="mis. ERP, HRIS, IoT"
+                  value={form.data.Jenis}
+                  onChange={(event) => form.setData('Jenis', event.target.value)}
+                />
+                {form.errors.Jenis && <p className="text-sm text-destructive">{form.errors.Jenis}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label nama="MetodeAutentikasi">Metode autentikasi</Label>
+                <Select
+                  value={form.data.MetodeAutentikasi}
+                  onValueChange={(value) => form.setData('MetodeAutentikasi', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {METODE.map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="space-y-1.5">
-              <Label htmlFor="KodeIntegrasi">Kode</Label>
+              <Label nama="UrlDasar" htmlFor="UrlDasar">
+                URL dasar
+              </Label>
               <Input
-                id="KodeIntegrasi"
-                value={form.data.Kode}
-                onChange={(event) => form.setData('Kode', event.target.value)}
+                id="UrlDasar"
+                placeholder="https://sistem-tujuan.test/api"
+                value={form.data.UrlDasar}
+                onChange={(event) => form.setData('UrlDasar', event.target.value)}
               />
-              {form.errors.Kode && <p className="text-sm text-destructive">{form.errors.Kode}</p>}
+              {form.errors.UrlDasar && <p className="text-sm text-destructive">{form.errors.UrlDasar}</p>}
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="NamaIntegrasi">Nama</Label>
-              <Input
-                id="NamaIntegrasi"
-                value={form.data.Nama}
-                onChange={(event) => form.setData('Nama', event.target.value)}
-              />
-              {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="JenisIntegrasi">Jenis sistem</Label>
-              <Input
-                id="JenisIntegrasi"
-                placeholder="mis. ERP, HRIS, IoT"
-                value={form.data.Jenis}
-                onChange={(event) => form.setData('Jenis', event.target.value)}
-              />
-              {form.errors.Jenis && <p className="text-sm text-destructive">{form.errors.Jenis}</p>}
-            </div>
-            <div className="space-y-1.5">
-              <Label>Metode autentikasi</Label>
-              <Select
-                value={form.data.MetodeAutentikasi}
-                onValueChange={(value) => form.setData('MetodeAutentikasi', value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {METODE.map((item) => (
-                    <SelectItem key={item} value={item}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="UrlDasar">URL dasar</Label>
-            <Input
-              id="UrlDasar"
-              placeholder="https://sistem-tujuan.test/api"
-              value={form.data.UrlDasar}
-              onChange={(event) => form.setData('UrlDasar', event.target.value)}
-            />
-            {form.errors.UrlDasar && <p className="text-sm text-destructive">{form.errors.UrlDasar}</p>}
-          </div>
-          {form.data.MetodeAutentikasi !== 'TanpaAutentikasi' && (
-            <div className="space-y-1.5">
-              <Label htmlFor="TokenIntegrasi">Token / kunci</Label>
-              <Input
-                id="TokenIntegrasi"
-                type="password"
-                autoComplete="off"
-                value={form.data.Token}
-                onChange={(event) => form.setData('Token', event.target.value)}
-              />
-            </div>
-          )}
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              Simpan Integrasi
-            </Button>
-          </DialogFooter>
-        </form>
+            {form.data.MetodeAutentikasi !== 'TanpaAutentikasi' && (
+              <div className="space-y-1.5">
+                <Label nama="TokenIntegrasi" htmlFor="TokenIntegrasi">
+                  Token / kunci
+                </Label>
+                <Input
+                  id="TokenIntegrasi"
+                  type="password"
+                  autoComplete="off"
+                  value={form.data.Token}
+                  onChange={(event) => form.setData('Token', event.target.value)}
+                />
+              </div>
+            )}
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Simpan Integrasi
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
       </DialogContent>
     </Dialog>
   );
@@ -193,7 +208,9 @@ function DialogBuatWebhook() {
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="NamaWebhook">Nama</Label>
+            <Label nama="NamaWebhook" htmlFor="NamaWebhook">
+              Nama
+            </Label>
             <Input
               id="NamaWebhook"
               value={form.data.Nama}
@@ -202,7 +219,9 @@ function DialogBuatWebhook() {
             {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="UrlWebhook">URL tujuan</Label>
+            <Label nama="UrlWebhook" htmlFor="UrlWebhook">
+              URL tujuan
+            </Label>
             <Input
               id="UrlWebhook"
               placeholder="https://sistem-anda.test/hook"
@@ -212,7 +231,9 @@ function DialogBuatWebhook() {
             {form.errors.Url && <p className="text-sm text-destructive">{form.errors.Url}</p>}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="RahasiaWebhook">Rahasia penandatanganan</Label>
+            <Label nama="RahasiaWebhook" htmlFor="RahasiaWebhook">
+              Rahasia penandatanganan
+            </Label>
             <Input
               id="RahasiaWebhook"
               type="password"
@@ -223,7 +244,9 @@ function DialogBuatWebhook() {
             {form.errors.Rahasia && <p className="text-sm text-destructive">{form.errors.Rahasia}</p>}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="PeristiwaWebhook">Peristiwa (pisahkan dengan koma)</Label>
+            <Label nama="PeristiwaWebhook" htmlFor="PeristiwaWebhook">
+              Peristiwa (pisahkan dengan koma)
+            </Label>
             <Input
               id="PeristiwaWebhook"
               placeholder="Keluhan.*, PerintahKerja.Selesai"
@@ -250,7 +273,7 @@ function DialogBuatWebhook() {
   );
 }
 
-export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa }: Props) {
+export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
 
   async function hapusWebhook(item: PanggilanBalikWeb): Promise<void> {
@@ -273,7 +296,7 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa }:
             <>
               <div className="flex flex-wrap gap-2">
                 <DialogBuatWebhook />
-                <DialogBuatIntegrasi />
+                <DialogBuatIntegrasi wajib={wajib.integrasi} />
               </div>
             </>
           }

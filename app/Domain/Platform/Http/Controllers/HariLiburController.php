@@ -12,6 +12,7 @@ use App\Domain\Platform\Http\Resources\HariLiburResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\HariLibur;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,6 +30,7 @@ final class HariLiburController extends Controller
             ->faset(['BerulangTahunan']);
 
         return Inertia::render('HariLibur/Index', [
+            'wajib' => ['hariLibur' => AturanWajib::untuk(SimpanHariLiburRequest::class)],
             'hariLibur' => HariLiburResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
         ]);

@@ -11,6 +11,7 @@ use App\Domain\Platform\Http\Resources\KunciApiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KunciApi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use App\Shared\Infrastructure\Validasi\AturanWajib;
 use DateTimeImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ final class KunciApiController extends Controller
             ->faset(['Status']);
 
         return Inertia::render('KunciApi/Index', [
+            'wajib' => ['kunciApi' => AturanWajib::untuk(BuatKunciApiRequest::class)],
             'kunciApi' => KunciApiResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
         ]);
