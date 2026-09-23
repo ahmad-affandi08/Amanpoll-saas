@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Keamanan;
 
 use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
+use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
+use ZipArchive;
 
 /** Isi ekspor berasal dari data tenant. */
 final class InjeksiRumusEksporTest extends TestCase
@@ -47,6 +49,54 @@ final class InjeksiRumusEksporTest extends TestCase
         $this->assertStringContainsString("'=Label", $isi);
         $this->assertStringContainsString("'=Judul", $isi);
         $this->assertStringContainsString("'=Nilai", $isi);
+    }
+
+    /**
+     * XLSX punya tipe sel, sehingga `+1+1` dan kawannya tersimpan sebagai teks
+     * dengan sendirinya. Yang tidak aman dengan sendirinya adalah awalan `=`:
+     * OpenSpout mendeteksinya dan menulis sel rumus `<f>` yang sungguhan.
+     */
+    public function test_xlsx_tidak_pernah_memuat_sel_rumus(): void
+    {
+        $xml = $this->sheetXlsx(['Label'], [['=cmd|\' /c calc\'!A0'], ['=1+1']]);
+
+        $this->assertStringNotContainsString('<f>', $xml, 'Nilai dari tenant tidak boleh menjadi sel rumus.');
+        $this->assertStringContainsString('inlineStr', $xml, 'Nilainya harus tersimpan sebagai teks.');
+    }
+
+    public function test_xlsx_tidak_mengubah_nilai_biasa(): void
+    {
+        $xml = $this->sheetXlsx(['Label'], [['Pompa Air Utama']]);
+
+        $this->assertStringContainsString('Pompa Air Utama', $xml);
+        $this->assertStringNotContainsString('&#039;Pompa', $xml);
+    }
+
+    /**
+     * Isi sheet1.xml, bukan sekadar teks berkasnya: bedanya sel rumus dan sel
+     * teks hanya terlihat di XML-nya.
+     *
+     * @param  list<string>  $kepala
+     * @param  list<list<mixed>>  $baris
+     */
+    private function sheetXlsx(array $kepala, array $baris): string
+    {
+        $path = tempnam(sys_get_temp_dir(), 'ekspor').'.xlsx';
+
+        try {
+            (new PenulisEksporXlsx)->tulis($path, $kepala, $baris, []);
+
+            $zip = new ZipArchive;
+            $this->assertTrue($zip->open($path) === true, 'Berkas XLSX tidak dapat dibuka.');
+            $xml = (string) $zip->getFromName('xl/worksheets/sheet1.xml');
+            $zip->close();
+
+            $this->assertNotSame('', $xml, 'sheet1.xml tidak ditemukan di dalam XLSX.');
+
+            return $xml;
+        } finally {
+            @unlink($path);
+        }
     }
 
     /**

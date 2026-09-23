@@ -6,11 +6,18 @@ namespace App\Domain\Pelaporan\Infrastructure\Services;
 
 use App\Domain\Pelaporan\Domain\Contracts\PenulisEkspor;
 use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
+use App\Shared\Infrastructure\Ekspor\NetralkanRumus;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\XLSX\Writer;
 
-/** Penulis XLSX lewat OpenSpout, yang menulis secara streaming. */
+/**
+ * Penulis XLSX lewat OpenSpout, yang menulis secara streaming.
+ *
+ * Nilainya dinetralkan meski XLSX punya tipe sel: OpenSpout mendeteksi awalan
+ * `=` dan menuliskannya sebagai sel rumus `<f>` yang sungguhan, sehingga nama
+ * aset bikinan tenant dapat berubah menjadi rumus yang hidup saat dibuka.
+ */
 final class PenulisEksporXlsx implements PenulisEkspor
 {
     public function format(): FormatEkspor
@@ -27,15 +34,15 @@ final class PenulisEksporXlsx implements PenulisEkspor
             $gayaTebal = (new Style)->withFontBold(true);
 
             foreach ($meta as $kunci => $nilai) {
-                $penulis->addRow(Row::fromValues([$kunci, $nilai]));
+                $penulis->addRow(Row::fromValues(NetralkanRumus::barisXlsx([$kunci, $nilai])));
             }
             if ($meta !== []) {
                 $penulis->addRow(Row::fromValues([]));
             }
 
-            $penulis->addRow(Row::fromValuesWithStyle($kepala, $gayaTebal));
+            $penulis->addRow(Row::fromValuesWithStyle(NetralkanRumus::barisXlsx($kepala), $gayaTebal));
             foreach ($baris as $satu) {
-                $penulis->addRow(Row::fromValues($satu));
+                $penulis->addRow(Row::fromValues(NetralkanRumus::barisXlsx($satu)));
             }
         } finally {
             $penulis->close();
