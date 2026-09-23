@@ -193,6 +193,53 @@ final class KepatuhanController extends Controller
         return back()->with('sukses', 'Kewajiban kepatuhan dilepas dari aset.');
     }
 
+    /**
+     * Penyaring daftar sertifikasi, dipakai bersama halaman dan ekspornya.
+     *
+     * Satu tempat supaya berkas ekspor tidak pernah berisi baris yang berbeda
+     * dari yang sedang dilihat peminta berkasnya.
+     *
+     * @param  array{cari?: string|null, status?: string|null}  $filter
+     * @return Builder<SertifikasiAset>
+     */
+    private function kueriSertifikasiTersaring(array $filter): Builder
+    {
+        return SertifikasiAset::query()
+            ->with('aset')
+            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where(fn ($sub) => $sub
+                ->where('NomorSertifikat', 'like', "%{$cari}%")
+                ->orWhere('JenisSertifikasi', 'like', "%{$cari}%")))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->orderByRaw('BerlakuSampai is null, BerlakuSampai asc');
+    }
+
+    /** Daftar sertifikasi alat beserta masa berlakunya, untuk berkas akreditasi. */
+    public function eksporSertifikasi(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', SertifikasiAset::class);
+
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:120'],
+            'status' => ['nullable', 'string', Rule::enum(StatusSertifikasiAset::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriSertifikasiTersaring($filter),
+            [
+                KolomEkspor::dari('Kode Aset', fn (SertifikasiAset $s): string => BacaRelasi::teks(BacaRelasi::model($s, 'aset'), 'KodeAset')),
+                KolomEkspor::dari('Aset', fn (SertifikasiAset $s): string => BacaRelasi::teks(BacaRelasi::model($s, 'aset'), 'Nama')),
+                KolomEkspor::atribut('Jenis Sertifikasi', 'JenisSertifikasi'),
+                KolomEkspor::atribut('Nomor Sertifikat', 'NomorSertifikat'),
+                KolomEkspor::atribut('Penerbit', 'Penerbit'),
+                KolomEkspor::tanggal('Terbit', 'TerbitPada'),
+                KolomEkspor::tanggal('Berlaku Sampai', 'BerlakuSampai'),
+                KolomEkspor::atribut('Status', 'Status'),
+            ],
+            'daftar-sertifikasi-aset',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function indexSertifikasi(Request $request): Response
     {
         $this->authorize('viewAny', SertifikasiAset::class);
@@ -201,13 +248,7 @@ final class KepatuhanController extends Controller
             'status' => ['nullable', 'string', Rule::enum(StatusSertifikasiAset::class)],
         ]);
 
-        $sertifikasi = SertifikasiAset::query()
-            ->with('aset')
-            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where(fn ($sub) => $sub
-                ->where('NomorSertifikat', 'like', "%{$cari}%")
-                ->orWhere('JenisSertifikasi', 'like', "%{$cari}%")))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->orderByRaw('BerlakuSampai is null, BerlakuSampai asc')
+        $sertifikasi = $this->kueriSertifikasiTersaring($filter)
             ->paginate(20)
             ->withQueryString();
 

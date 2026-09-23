@@ -23,6 +23,7 @@ import type { Paginasi } from '@/types/global';
 import type { SertifikasiAset, StatusSertifikasi } from '@/features/Sertifikasi/types';
 import { ruteSertifikasi } from '@/features/Sertifikasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
@@ -248,6 +249,10 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
           deskripsi="Sertifikat aset beserta penerbit, masa berlaku, dan statusnya."
           aksi={
             <>
+              <TombolEkspor
+                url={ruteSertifikasi.ekspor}
+                filter={{ cari: filter.cari, status: filter.status }}
+              />
               <DialogTerbitkan aset={aset} wajib={wajib.terbitkan} />
             </>
           }

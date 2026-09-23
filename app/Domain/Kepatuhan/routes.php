@@ -24,6 +24,9 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.kepatuhan'])
         Route::delete('/kewajiban/{kepatuhanAset}', [KepatuhanController::class, 'destroyKepatuhan'])->name('kewajiban.destroy');
 
         Route::get('/sertifikasi', [KepatuhanController::class, 'indexSertifikasi'])->name('sertifikasi.index');
+        Route::get('/sertifikasi/ekspor', [KepatuhanController::class, 'eksporSertifikasi'])
+            ->middleware('throttle:ekspor')
+            ->name('sertifikasi.ekspor');
         Route::post('/sertifikasi', [KepatuhanController::class, 'storeSertifikasi'])->name('sertifikasi.store');
         Route::put('/sertifikasi/{sertifikasiAset}', [KepatuhanController::class, 'updateSertifikasi'])->name('sertifikasi.update');
         Route::post('/sertifikasi/{sertifikasiAset}/cabut', [KepatuhanController::class, 'cabutSertifikasi'])->name('sertifikasi.cabut');
