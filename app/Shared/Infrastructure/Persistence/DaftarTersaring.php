@@ -172,6 +172,28 @@ final class DaftarTersaring
      */
     public function halaman(int $perHalaman = self::PER_HALAMAN): LengthAwarePaginator
     {
+        $kueri = $this->kueriTersaring();
+
+        // Nomor halaman dibaca dari permintaan yang diserahkan ke kelas ini, bukan dari
+        // resolver global Laravel, supaya hasilnya hanya bergantung pada apa yang dioper.
+        $halaman = max(1, (int) $this->permintaan->query('page', '1'));
+
+        return $kueri->paginate($perHalaman, ['*'], 'page', $halaman)->withQueryString();
+    }
+
+    /**
+     * Kueri yang sudah membawa seluruh penyaring dan urutan, tetapi belum
+     * dipaginasi.
+     *
+     * Dipakai ekspor, supaya berkas yang diunduh berisi tepat apa yang tampil
+     * di layar. Menyusun ulang penyaringnya di sisi ekspor cepat atau lambat
+     * akan berselisih dengan daftarnya, dan yang memegang berkasnya tidak punya
+     * cara tahu bahwa isinya bukan yang ia lihat.
+     *
+     * @return Builder<TModel>
+     */
+    public function kueriTersaring(): Builder
+    {
         $kueri = $this->kueri;
 
         $cari = trim((string) $this->permintaan->query('cari', ''));
@@ -208,11 +230,7 @@ final class DaftarTersaring
         // satu baris muncul di dua halaman sementara baris lain tidak muncul sama sekali.
         $kueri->orderBy($kueri->getModel()->getQualifiedKeyName());
 
-        // Nomor halaman dibaca dari permintaan yang diserahkan ke kelas ini, bukan dari
-        // resolver global Laravel, supaya hasilnya hanya bergantung pada apa yang dioper.
-        $halaman = max(1, (int) $this->permintaan->query('page', '1'));
-
-        return $kueri->paginate($perHalaman, ['*'], 'page', $halaman)->withQueryString();
+        return $kueri;
     }
 
     /**

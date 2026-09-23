@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Pelaporan\Infrastructure\Services;
+namespace App\Shared\Infrastructure\Ekspor;
 
-use App\Domain\Pelaporan\Domain\Contracts\PenulisEkspor;
-use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use RuntimeException;
@@ -21,10 +19,22 @@ final class PenulisEksporPdf implements PenulisEkspor
         return FormatEkspor::Pdf;
     }
 
-    public function tulis(string $pathLokal, array $kepala, array $baris, array $meta): void
+    public function tulis(string $pathLokal, array $kepala, iterable $baris, array $meta): void
     {
-        $dipotong = count($baris) > self::BATAS_BARIS;
-        $barisCetak = $dipotong ? array_slice($baris, 0, self::BATAS_BARIS) : $baris;
+        // Barisnya dikumpulkan sambil dihitung, bukan dihitung lebih dulu:
+        // sumbernya dapat berupa generator yang hanya bisa dilalui sekali.
+        $barisCetak = [];
+        $totalBaris = 0;
+
+        foreach ($baris as $satu) {
+            $totalBaris++;
+
+            if ($totalBaris <= self::BATAS_BARIS) {
+                $barisCetak[] = $satu;
+            }
+        }
+
+        $dipotong = $totalBaris > self::BATAS_BARIS;
 
         $opsi = new Options;
         $opsi->set('isRemoteEnabled', false);
@@ -32,7 +42,7 @@ final class PenulisEksporPdf implements PenulisEkspor
         $opsi->set('defaultFont', 'DejaVu Sans');
 
         $dompdf = new Dompdf($opsi);
-        $dompdf->loadHtml($this->html($kepala, $barisCetak, $meta, $dipotong, count($baris)), 'UTF-8');
+        $dompdf->loadHtml($this->html($kepala, $barisCetak, $meta, $dipotong, $totalBaris), 'UTF-8');
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
 

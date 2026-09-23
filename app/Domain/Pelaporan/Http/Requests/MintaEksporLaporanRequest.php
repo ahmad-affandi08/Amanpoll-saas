@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Http\Requests;
 
-use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
 use App\Domain\Pelaporan\Domain\KatalogKpi;
+use App\Shared\Infrastructure\Ekspor\FormatEkspor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

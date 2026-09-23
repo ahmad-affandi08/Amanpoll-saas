@@ -6,9 +6,9 @@ namespace App\Domain\Pelaporan\Jobs;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
-use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Shared\Infrastructure\Ekspor\FormatEkspor;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

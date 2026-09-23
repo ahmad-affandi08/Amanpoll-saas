@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Keamanan;
 
-use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporCsv;
-use App\Domain\Pelaporan\Infrastructure\Services\PenulisEksporXlsx;
+use App\Shared\Infrastructure\Ekspor\PenulisEksporCsv;
+use App\Shared\Infrastructure\Ekspor\PenulisEksporXlsx;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 use ZipArchive;

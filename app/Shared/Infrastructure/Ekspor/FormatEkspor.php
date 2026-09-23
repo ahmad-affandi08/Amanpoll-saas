@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Pelaporan\Domain\Enums;
+namespace App\Shared\Infrastructure\Ekspor;
 
 /** Format berkas hasil ekspor laporan (21.05). */
 enum FormatEkspor: string

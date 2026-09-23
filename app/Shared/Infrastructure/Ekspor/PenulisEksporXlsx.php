@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Pelaporan\Infrastructure\Services;
+namespace App\Shared\Infrastructure\Ekspor;
 
-use App\Domain\Pelaporan\Domain\Contracts\PenulisEkspor;
-use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
-use App\Shared\Infrastructure\Ekspor\NetralkanRumus;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\XLSX\Writer;
@@ -25,7 +22,7 @@ final class PenulisEksporXlsx implements PenulisEkspor
         return FormatEkspor::Xlsx;
     }
 
-    public function tulis(string $pathLokal, array $kepala, array $baris, array $meta): void
+    public function tulis(string $pathLokal, array $kepala, iterable $baris, array $meta): void
     {
         $penulis = new Writer;
         $penulis->openToFile($pathLokal);

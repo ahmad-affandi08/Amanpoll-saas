@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Pelaporan\Infrastructure\Services;
+namespace App\Shared\Infrastructure\Ekspor;
 
-use App\Domain\Pelaporan\Domain\Contracts\PenulisEkspor;
-use App\Domain\Pelaporan\Domain\Enums\FormatEkspor;
-use App\Shared\Infrastructure\Ekspor\NetralkanRumus;
 use RuntimeException;
 
 /** Penulis CSV. */
@@ -17,7 +14,7 @@ final class PenulisEksporCsv implements PenulisEkspor
         return FormatEkspor::Csv;
     }
 
-    public function tulis(string $pathLokal, array $kepala, array $baris, array $meta): void
+    public function tulis(string $pathLokal, array $kepala, iterable $baris, array $meta): void
     {
         $berkas = fopen($pathLokal, 'wb');
         if ($berkas === false) {
