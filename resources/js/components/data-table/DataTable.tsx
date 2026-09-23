@@ -32,7 +32,11 @@ interface DataTableProps<TData, TValue> {
   aksi?: ReactNode;
   pesanKosong?: string;
   ilustrasiKosong?: string;
-  /** Menyalakan tampilan kartu di bawah 640px. */
+  /**
+   * Tampilan kartu di bawah 640px. Menyala bawaan: tabel lebar yang harus
+   * digeser ke samping hampir tidak terpakai di ponsel. Matikan hanya bila
+   * isinya memang harus dibaca berdampingan per kolom.
+   */
   kartuDiPonsel?: boolean;
   /**
    * Mengalihkan paginasi, pengurutan, dan penyaringan ke server.
@@ -58,7 +62,7 @@ export function DataTable<TData, TValue>({
   ekspor,
   pesanKosong = 'Tidak ada data.',
   ilustrasiKosong,
-  kartuDiPonsel = false,
+  kartuDiPonsel = true,
   server,
 }: DataTableProps<TData, TValue>) {
   // Tombolnya disusun di sini, bukan di dalam kedua varian tabel, supaya mode
@@ -255,6 +259,7 @@ function TabelServer<TData, TValue>({
       ilustrasiKosong={ilustrasiKosong}
       kartuDiPonsel={kartuDiPonsel}
       totalBaris={server.meta.total}
+      ukuranHalamanTetap
     />
   );
 }
@@ -270,6 +275,7 @@ interface KerangkaProps<TData, TValue> {
   kartuDiPonsel?: boolean;
   catatan?: string;
   totalBaris?: number;
+  ukuranHalamanTetap?: boolean;
 }
 
 function Kerangka<TData, TValue>({
@@ -280,12 +286,16 @@ function Kerangka<TData, TValue>({
   aksi,
   pesanKosong = 'Tidak ada data.',
   ilustrasiKosong,
-  kartuDiPonsel = false,
+  kartuDiPonsel = true,
   catatan,
   totalBaris,
+  ukuranHalamanTetap = false,
 }: KerangkaProps<TData, TValue>) {
   return (
-    <div className="rounded-[9px] border border-border bg-card">
+    // min-w-0: di dalam induk flex/grid, kartu ini boleh lebih sempit daripada
+    // isinya. Tabel lebar lalu menggulung di wadahnya sendiri, bukan
+    // melebarkan seluruh halaman ke samping.
+    <div className="min-w-0 rounded-[9px] border border-border bg-card">
       {catatan && (
         <p className="border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
           {catatan}
@@ -337,7 +347,7 @@ function Kerangka<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <DataTablePagination table={table} totalBaris={totalBaris} />
+      <DataTablePagination table={table} totalBaris={totalBaris} ukuranTetap={ukuranHalamanTetap} />
     </div>
   );
 }

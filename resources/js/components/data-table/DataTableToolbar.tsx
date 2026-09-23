@@ -27,14 +27,18 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const adaFilterAktif = table.getState().columnFilters.length > 0 || !!table.getState().globalFilter;
 
+  // Di layar sempit dua kelompok ini bertumpuk dan boleh membungkus. Tanpa itu
+  // kelompok kanan -- berisi aksi utama halaman seperti "Tambah" -- tidak dapat
+  // menyusut dan terdorong keluar layar, sehingga tidak terjangkau sama sekali
+  // di ponsel dan ikut melebarkan seluruh kartu tabel.
   return (
-    <div className="flex items-center justify-between gap-2 p-4">
-      <div className="flex flex-1 flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
         <Input
           placeholder={pencarianPlaceholder ?? 'Cari...'}
           value={(table.getState().globalFilter as string) ?? ''}
           onChange={(e) => table.setGlobalFilter(e.target.value)}
-          className="h-8 w-56"
+          className="h-9 w-full sm:h-8 sm:w-56"
         />
         {facetedFilters?.map((filter) => (
           <DataTableFacetedFilter
@@ -58,7 +62,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {aksi}
         <DataTableViewOptions table={table} />
       </div>

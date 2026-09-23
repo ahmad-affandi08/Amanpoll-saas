@@ -18,9 +18,10 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto h-8">
-          <SlidersHorizontal className="mr-1 size-3.5" />
-          Kolom
+        {/* Hanya ikon di ponsel: dengan teksnya, tombol ini turun sendirian ke baris baru di bawah aksi halaman. */}
+        <Button variant="outline" size="sm" className="ml-auto h-9 sm:h-8" aria-label="Tampilkan kolom">
+          <SlidersHorizontal className="size-3.5 sm:mr-1" />
+          <span className="hidden sm:inline">Kolom</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
