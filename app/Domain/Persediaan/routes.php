@@ -27,6 +27,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
 
     Route::prefix('kategori-suku-cadang')->name('kategori-suku-cadang.')->group(function (): void {
         Route::get('/', [KategoriSukuCadangController::class, 'index'])->name('index');
+        Route::get('/ekspor', [KategoriSukuCadangController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::post('/', [KategoriSukuCadangController::class, 'store'])->name('store');
         Route::put('/{kategoriSukuCadang}', [KategoriSukuCadangController::class, 'update'])->name('update');
         Route::delete('/{kategoriSukuCadang}', [KategoriSukuCadangController::class, 'destroy'])->name('destroy');

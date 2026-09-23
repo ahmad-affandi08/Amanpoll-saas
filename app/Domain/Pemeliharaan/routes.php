@@ -23,6 +23,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::delete('/tingkat-layanan/{tingkatLayanan}', [TingkatLayananController::class, 'destroy'])->name('tingkat-layanan.destroy');
 
         Route::get('/kategori-keluhan', [KategoriKeluhanController::class, 'index'])->name('kategori-keluhan.index');
+        Route::get('/kategori-keluhan/ekspor', [KategoriKeluhanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('kategori-keluhan.ekspor');
         Route::post('/kategori-keluhan', [KategoriKeluhanController::class, 'store'])->name('kategori-keluhan.store');
         Route::put('/kategori-keluhan/{kategoriKeluhan}', [KategoriKeluhanController::class, 'update'])->name('kategori-keluhan.update');
         Route::delete('/kategori-keluhan/{kategoriKeluhan}', [KategoriKeluhanController::class, 'destroy'])->name('kategori-keluhan.destroy');

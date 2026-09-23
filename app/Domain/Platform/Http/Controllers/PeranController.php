@@ -16,25 +16,55 @@ use App\Domain\Platform\Http\Requests\SimpanPeranRequest;
 use App\Domain\Platform\Http\Resources\PeranResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PeranController extends Controller
 {
-    public function index(Request $request): Response
+    /**
+     * Penyaring daftar, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<Peran>
+     */
+    private function daftar(Request $request): DaftarTersaring
     {
-        $this->authorize('viewAny', Peran::class);
-
-        $daftar = DaftarTersaring::untuk(
+        return DaftarTersaring::untuk(
             $request,
             Peran::query()->withCount(['penggunaPeran', 'peranIzin'])->with('peranIzin'),
         )
             ->cari(['Kode', 'Nama', 'Keterangan'])
             ->urut(['Nama', 'Kode'], bawaan: 'Nama');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Peran::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Keterangan', 'Keterangan'),
+                KolomEkspor::dari('Bawaan Sistem', fn (Peran $p): string => $p->BawaanSistem ? 'Ya' : 'Tidak'),
+            ],
+            'daftar-peran',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
+    public function index(Request $request): Response
+    {
+        $this->authorize('viewAny', Peran::class);
+
+        $daftar = $this->daftar($request);
 
         return Inertia::render('PeranIzin/Index', [
             'wajib' => ['peran' => AturanWajib::untuk(SimpanPeranRequest::class)],

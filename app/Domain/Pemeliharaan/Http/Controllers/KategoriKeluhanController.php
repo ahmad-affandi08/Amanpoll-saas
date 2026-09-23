@@ -12,26 +12,57 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class KategoriKeluhanController extends Controller
 {
-    public function index(Request $request): Response
+    /**
+     * Penyaring daftar, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<KategoriKeluhan>
+     */
+    private function daftar(Request $request): DaftarTersaring
     {
-        $this->authorize('viewAny', KategoriKeluhan::class);
-
-        $daftar = DaftarTersaring::untuk(
+        return DaftarTersaring::untuk(
             $request,
             KategoriKeluhan::query()->with(['induk', 'tingkatLayanan', 'peranPenanggungJawab']),
         )
             ->cari(['Kode', 'Nama'])
             ->urut(['Nama', 'Kode', 'PrioritasBawaan'], bawaan: 'Nama')
             ->faset(['PrioritasBawaan']);
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', KategoriKeluhan::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Prioritas Bawaan', 'PrioritasBawaan'),
+                KolomEkspor::dari('Aset Wajib', fn (KategoriKeluhan $k): string => $k->AsetWajib ? 'Ya' : 'Tidak'),
+                KolomEkspor::dari('Aktif', fn (KategoriKeluhan $k): string => $k->Aktif ? 'Ya' : 'Tidak'),
+            ],
+            'daftar-kategori-keluhan',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
+    public function index(Request $request): Response
+    {
+        $this->authorize('viewAny', KategoriKeluhan::class);
+
+        $daftar = $this->daftar($request);
 
         return Inertia::render('KategoriKeluhan/Index', [
             'wajib' => ['kategoriKeluhan' => AturanWajib::untuk(SimpanKategoriKeluhanRequest::class)],

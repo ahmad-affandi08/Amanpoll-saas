@@ -27,10 +27,8 @@ final class EksporDaftar
     public function __construct(private readonly KonteksOrganisasi $konteks) {}
 
     /**
-     * @template TModel of Model
-     *
-     * @param  Builder<TModel>  $kueri
-     * @param  list<KolomEkspor<TModel>>  $kolom
+     * @param  Builder<covariant Model>  $kueri
+     * @param  list<KolomEkspor>  $kolom
      * @param  array<string, string>  $meta
      */
     public function unduh(
@@ -83,10 +81,8 @@ final class EksporDaftar
      * yang pasti -- tanpa itu, potongan berbasis offset dapat melewatkan atau
      * menggandakan baris.
      *
-     * @template TModel of Model
-     *
-     * @param  Builder<TModel>  $kueri
-     * @param  list<KolomEkspor<TModel>>  $kolom
+     * @param  Builder<covariant Model>  $kueri
+     * @param  list<KolomEkspor>  $kolom
      * @return Generator<int, list<string|float|int|null>>
      */
     private function baris(Builder $kueri, array $kolom): Generator

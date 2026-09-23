@@ -26,13 +26,16 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::put('/kategori/{kategoriAset}', [KategoriAsetController::class, 'update'])->name('kategori.update');
             Route::delete('/kategori/{kategoriAset}', [KategoriAsetController::class, 'destroy'])->name('kategori.destroy');
             Route::get('/kategori', [KategoriAsetController::class, 'index'])->name('kategori.index');
+            Route::get('/kategori/ekspor', [KategoriAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('kategori.ekspor');
 
             Route::get('/merek', [MerekController::class, 'index'])->name('merek.index');
+            Route::get('/merek/ekspor', [MerekController::class, 'ekspor'])->middleware('throttle:ekspor')->name('merek.ekspor');
             Route::post('/merek', [MerekController::class, 'store'])->name('merek.store');
             Route::put('/merek/{merek}', [MerekController::class, 'update'])->name('merek.update');
             Route::delete('/merek/{merek}', [MerekController::class, 'destroy'])->name('merek.destroy');
 
             Route::get('/model', [ModelAsetController::class, 'index'])->name('model.index');
+            Route::get('/model/ekspor', [ModelAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('model.ekspor');
             Route::post('/model', [ModelAsetController::class, 'store'])->name('model.store');
             Route::put('/model/{modelAset}', [ModelAsetController::class, 'update'])->name('model.update');
             Route::delete('/model/{modelAset}', [ModelAsetController::class, 'destroy'])->name('model.destroy');

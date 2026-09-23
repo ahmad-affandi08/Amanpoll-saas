@@ -11,6 +11,8 @@ use App\Domain\Kolaborasi\Http\Requests\SimpanTagRequest;
 use App\Domain\Kolaborasi\Http\Resources\TagResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Tag;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
@@ -18,9 +20,37 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class TagController extends Controller
 {
+    /**
+     * Penyaring daftar, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<Tag>
+     */
+    private function daftar(Request $request): DaftarTersaring
+    {
+        return DaftarTersaring::untuk($request, Tag::query())
+            ->cari(['Nama'])
+            ->urut(['Nama'], bawaan: 'Nama');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Tag::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Warna', 'Warna'),
+            ],
+            'daftar-tag',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     /** Dipakai baik untuk halaman admin Tag maupun sebagai daftar sumber pemilihan tag (mis. */
     public function index(Request $request): Response|AnonymousResourceCollection
     {
@@ -31,9 +61,7 @@ final class TagController extends Controller
             return TagResource::collection(Tag::query()->orderBy('Nama')->get());
         }
 
-        $daftar = DaftarTersaring::untuk($request, Tag::query())
-            ->cari(['Nama'])
-            ->urut(['Nama'], bawaan: 'Nama');
+        $daftar = $this->daftar($request);
 
         return Inertia::render('Tag/Index', [
             'wajib' => ['tag' => AturanWajib::untuk(SimpanTagRequest::class)],

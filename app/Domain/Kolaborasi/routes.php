@@ -26,6 +26,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::get('/kolom-kustom', [DefinisiKolomKustomController::class, 'halaman'])->name('definisiKolomKustom.halaman');
 
         Route::get('/tag', [TagController::class, 'index'])->name('tag.index');
+        Route::get('/tag/ekspor', [TagController::class, 'ekspor'])->middleware('throttle:ekspor')->name('tag.ekspor');
         Route::post('/tag', [TagController::class, 'store'])->name('tag.store');
         Route::put('/tag/{tag}', [TagController::class, 'update'])->name('tag.update');
         Route::delete('/tag/{tag}', [TagController::class, 'destroy'])->name('tag.destroy');

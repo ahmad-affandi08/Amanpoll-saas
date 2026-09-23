@@ -299,6 +299,7 @@ export default function PeranIzinIndex({ peran, filter, wajib, bawaanBelumTerpas
         columns={columns}
         data={peran.data}
         server={{ meta: peran.meta, filter }}
+        ekspor="/platform/peran/ekspor"
         pencarianPlaceholder="Cari nama atau kode peran..."
         pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada peran yang cocok.' : 'Belum ada peran.'}
         ilustrasiKosong="/assets/3d/peran-izin.webp"

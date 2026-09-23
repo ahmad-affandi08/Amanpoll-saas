@@ -309,6 +309,7 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter,
           columns={columns}
           data={modelAset.data}
           server={{ meta: modelAset.meta, filter }}
+          ekspor="/aset-master/model/ekspor"
           facetedFilters={[
             {
               columnId: 'KategoriAsetId',

@@ -18,28 +18,58 @@ use App\Domain\Platform\Http\Resources\PeranResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class AlurPersetujuanController extends Controller
 {
     public function __construct(private readonly RegistriEntitas $registriEntitas) {}
 
-    public function index(Request $request): Response
+    /**
+     * Penyaring daftar, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<AlurPersetujuan>
+     */
+    private function daftar(Request $request): DaftarTersaring
     {
-        $this->authorize('viewAny', AlurPersetujuan::class);
-
-        $daftar = DaftarTersaring::untuk(
+        return DaftarTersaring::untuk(
             $request,
             AlurPersetujuan::query()->with(['tahapPersetujuan.peran', 'tahapPersetujuan.pengguna']),
         )
             ->cari(['Kode', 'Nama'])
             ->urut(['Nama', 'Kode', 'JenisEntitas'], bawaan: 'Nama')
             ->faset(['JenisEntitas', 'Aktif']);
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', AlurPersetujuan::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Jenis Entitas', 'JenisEntitas'),
+                KolomEkspor::dari('Aktif', fn (AlurPersetujuan $a): string => $a->Aktif ? 'Ya' : 'Tidak'),
+            ],
+            'daftar-alur-persetujuan',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
+    public function index(Request $request): Response
+    {
+        $this->authorize('viewAny', AlurPersetujuan::class);
+
+        $daftar = $this->daftar($request);
 
         return Inertia::render('AlurPersetujuan/Index', [
             'wajib' => ['alur' => AturanWajib::untuk(SimpanAlurPersetujuanRequest::class)],

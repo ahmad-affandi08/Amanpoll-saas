@@ -12,6 +12,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('persetujuan.')
     ->group(function (): void {
         Route::get('/alur', [AlurPersetujuanController::class, 'index'])->name('alur.index');
+        Route::get('/alur/ekspor', [AlurPersetujuanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('alur.ekspor');
         Route::post('/alur', [AlurPersetujuanController::class, 'store'])->name('alur.store');
         Route::put('/alur/{alurPersetujuan}', [AlurPersetujuanController::class, 'update'])->name('alur.update');
         Route::delete('/alur/{alurPersetujuan}', [AlurPersetujuanController::class, 'destroy'])->name('alur.destroy');

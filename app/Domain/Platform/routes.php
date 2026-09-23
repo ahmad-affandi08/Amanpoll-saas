@@ -26,6 +26,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::get('/izin', [IzinController::class, 'index'])->name('izin.index');
 
         Route::get('/peran', [PeranController::class, 'index'])->name('peran.index');
+        Route::get('/peran/ekspor', [PeranController::class, 'ekspor'])->middleware('throttle:ekspor')->name('peran.ekspor');
         Route::post('/peran', [PeranController::class, 'store'])->name('peran.store');
         Route::post('/peran/bawaan', [PeranController::class, 'pasangBawaan'])->name('peran.bawaan');
         Route::put('/peran/{peran}', [PeranController::class, 'update'])->name('peran.update');
@@ -33,6 +34,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::put('/peran/{peran}/izin', [PeranController::class, 'sinkronkanIzin'])->name('peran.izin');
 
         Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna.index');
+        Route::get('/pengguna/ekspor', [PenggunaController::class, 'ekspor'])->middleware('throttle:ekspor')->name('pengguna.ekspor');
         Route::post('/pengguna', [PenggunaController::class, 'store'])->name('pengguna.store');
         Route::get('/pengguna/{pengguna}', [PenggunaController::class, 'show'])->name('pengguna.show');
         Route::get('/pengguna/{pengguna}/beban-kerja', [RiwayatPenggunaController::class, 'bebanKerja'])->name('pengguna.bebanKerja');
@@ -59,16 +61,19 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/organisasi/logo', [OrganisasiController::class, 'unggahLogo'])->name('organisasi.logo');
 
         Route::get('/unit-organisasi', [UnitOrganisasiController::class, 'index'])->name('unit-organisasi.index');
+        Route::get('/unit-organisasi/ekspor', [UnitOrganisasiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('unit-organisasi.ekspor');
         Route::post('/unit-organisasi', [UnitOrganisasiController::class, 'store'])->name('unit-organisasi.store');
         Route::put('/unit-organisasi/{unit}', [UnitOrganisasiController::class, 'update'])->name('unit-organisasi.update');
         Route::delete('/unit-organisasi/{unit}', [UnitOrganisasiController::class, 'destroy'])->name('unit-organisasi.destroy');
 
         Route::get('/kategori-lokasi', [KategoriLokasiController::class, 'index'])->name('kategori-lokasi.index');
+        Route::get('/kategori-lokasi/ekspor', [KategoriLokasiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('kategori-lokasi.ekspor');
         Route::post('/kategori-lokasi', [KategoriLokasiController::class, 'store'])->name('kategori-lokasi.store');
         Route::put('/kategori-lokasi/{kategoriLokasi}', [KategoriLokasiController::class, 'update'])->name('kategori-lokasi.update');
         Route::delete('/kategori-lokasi/{kategoriLokasi}', [KategoriLokasiController::class, 'destroy'])->name('kategori-lokasi.destroy');
 
         Route::get('/lokasi', [LokasiController::class, 'index'])->name('lokasi.index');
+        Route::get('/lokasi/ekspor', [LokasiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('lokasi.ekspor');
         Route::post('/lokasi', [LokasiController::class, 'store'])->name('lokasi.store');
         Route::put('/lokasi/{lokasi}', [LokasiController::class, 'update'])->name('lokasi.update');
         Route::delete('/lokasi/{lokasi}', [LokasiController::class, 'destroy'])->name('lokasi.destroy');
@@ -77,11 +82,13 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::put('/konfigurasi/{kunci}', [KonfigurasiOrganisasiController::class, 'update'])->name('konfigurasi.update');
 
         Route::get('/nomor-dokumen', [NomorDokumenController::class, 'index'])->name('nomor-dokumen.index');
+        Route::get('/nomor-dokumen/ekspor', [NomorDokumenController::class, 'ekspor'])->middleware('throttle:ekspor')->name('nomor-dokumen.ekspor');
         Route::post('/nomor-dokumen', [NomorDokumenController::class, 'store'])->name('nomor-dokumen.store');
         Route::put('/nomor-dokumen/{nomorDokumen}', [NomorDokumenController::class, 'update'])->name('nomor-dokumen.update');
         Route::delete('/nomor-dokumen/{nomorDokumen}', [NomorDokumenController::class, 'destroy'])->name('nomor-dokumen.destroy');
 
         Route::get('/hari-libur', [HariLiburController::class, 'index'])->name('hari-libur.index');
+        Route::get('/hari-libur/ekspor', [HariLiburController::class, 'ekspor'])->middleware('throttle:ekspor')->name('hari-libur.ekspor');
         Route::post('/hari-libur', [HariLiburController::class, 'store'])->name('hari-libur.store');
         Route::put('/hari-libur/{hariLibur}', [HariLiburController::class, 'update'])->name('hari-libur.update');
         Route::delete('/hari-libur/{hariLibur}', [HariLiburController::class, 'destroy'])->name('hari-libur.destroy');

@@ -445,6 +445,7 @@ export default function AlurPersetujuanIndex({
         columns={columns}
         data={alurPersetujuan.data}
         server={{ meta: alurPersetujuan.meta, filter }}
+        ekspor="/persetujuan/alur/ekspor"
         pencarianPlaceholder="Cari nama atau kode alur..."
         facetedFilters={[
           {

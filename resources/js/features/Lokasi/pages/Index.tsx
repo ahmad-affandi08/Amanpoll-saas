@@ -375,6 +375,7 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, fi
           columns={columns}
           data={lokasi.data}
           server={{ meta: lokasi.meta, filter }}
+          ekspor="/platform/lokasi/ekspor"
           pencarianPlaceholder="Cari nama atau kode lokasi..."
           facetedFilters={[
             {

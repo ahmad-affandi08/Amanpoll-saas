@@ -250,6 +250,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
         columns={columns}
         data={unitOrganisasi.data}
         server={{ meta: unitOrganisasi.meta, filter }}
+        ekspor="/platform/unit-organisasi/ekspor"
         pencarianPlaceholder="Cari nama, kode, atau email unit..."
         facetedFilters={[
           {

@@ -200,6 +200,7 @@ export default function KategoriLokasiIndex({ kategoriLokasi, filter, wajib }: P
         columns={columns}
         data={kategoriLokasi.data}
         server={{ meta: kategoriLokasi.meta, filter }}
+        ekspor="/platform/kategori-lokasi/ekspor"
         pencarianPlaceholder="Cari nama atau kode kategori..."
         pesanKosong={
           adaPenyaringAktif(filter) ? 'Tidak ada kategori yang cocok.' : 'Belum ada kategori lokasi.'

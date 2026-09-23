@@ -221,6 +221,7 @@ export default function NomorDokumenIndex({ nomorDokumen, filter, wajib }: Props
         columns={columns}
         data={nomorDokumen.data}
         server={{ meta: nomorDokumen.meta, filter }}
+        ekspor="/platform/nomor-dokumen/ekspor"
         pencarianPlaceholder="Cari jenis dokumen atau awalan..."
         facetedFilters={[
           {

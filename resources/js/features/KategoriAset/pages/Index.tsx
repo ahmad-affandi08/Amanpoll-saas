@@ -280,6 +280,7 @@ export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter, 
         columns={columns}
         data={kategoriAset.data}
         server={{ meta: kategoriAset.meta, filter }}
+        ekspor="/aset-master/kategori/ekspor"
         pencarianPlaceholder="Cari nama atau kode kategori..."
         pesanKosong={
           adaPenyaringAktif(filter) ? 'Tidak ada kategori yang cocok.' : 'Belum ada kategori aset.'

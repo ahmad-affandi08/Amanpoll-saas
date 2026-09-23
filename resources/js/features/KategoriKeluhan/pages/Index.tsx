@@ -296,6 +296,7 @@ export default function KategoriKeluhanIndex({
         columns={columns}
         data={kategori.data}
         server={{ meta: kategori.meta, filter }}
+        ekspor="/pemeliharaan/kategori-keluhan/ekspor"
         facetedFilters={[
           {
             columnId: 'PrioritasBawaan',

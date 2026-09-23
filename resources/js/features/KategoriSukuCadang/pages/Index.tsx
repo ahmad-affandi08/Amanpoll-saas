@@ -207,6 +207,7 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInd
         columns={columns}
         data={kategoriSukuCadang.data}
         server={{ meta: kategoriSukuCadang.meta, filter }}
+        ekspor="/kategori-suku-cadang/ekspor"
         pencarianPlaceholder="Cari nama atau kode kategori..."
         pesanKosong={
           adaPenyaringAktif(filter) ? 'Tidak ada kategori yang cocok.' : 'Belum ada kategori suku cadang.'

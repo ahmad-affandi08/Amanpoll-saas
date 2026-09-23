@@ -168,6 +168,7 @@ export default function TagIndex({ tag, filter, wajib }: Props) {
           columns={columns}
           data={tag.data}
           server={{ meta: tag.meta, filter }}
+          ekspor="/kolaborasi/tag/ekspor"
           pencarianPlaceholder="Cari nama tag..."
           pesanKosong="Tidak ada tag yang cocok."
         />

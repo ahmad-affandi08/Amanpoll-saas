@@ -400,6 +400,7 @@ export default function PenggunaIndex({
           columns={columns}
           data={pengguna.data}
           server={{ meta: pengguna.meta, filter }}
+          ekspor="/platform/pengguna/ekspor"
           pencarianPlaceholder="Cari nama, email, jabatan..."
           facetedFilters={[
             {

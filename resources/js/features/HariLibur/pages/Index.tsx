@@ -177,6 +177,7 @@ export default function HariLiburIndex({ hariLibur, filter, wajib }: Props) {
         columns={columns}
         data={hariLibur.data}
         server={{ meta: hariLibur.meta, filter }}
+        ekspor="/platform/hari-libur/ekspor"
         pencarianPlaceholder="Cari nama hari libur..."
         facetedFilters={[
           {

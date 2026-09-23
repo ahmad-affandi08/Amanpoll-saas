@@ -171,6 +171,7 @@ export default function MerekIndex({ merek, filter, wajib }: Props) {
           columns={columns}
           data={merek.data}
           server={{ meta: merek.meta, filter }}
+          ekspor="/aset-master/merek/ekspor"
           pencarianPlaceholder="Cari nama merek..."
           pesanKosong="Tidak ada merek yang cocok."
         />

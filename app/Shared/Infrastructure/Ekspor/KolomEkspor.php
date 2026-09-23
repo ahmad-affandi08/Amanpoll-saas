@@ -14,37 +14,31 @@ use Illuminate\Database\Eloquent\Model;
  * pernah berselisih dengan isinya -- kesalahan yang baru ketahuan setelah
  * berkasnya sampai ke tangan orang lain.
  *
- * Kontravarian pada modelnya: kolom yang sanggup membaca Model apa pun boleh
- * dipakai di daftar kolom untuk model yang lebih khusus. Itu yang membuat
- * `atribut()` yang umum dapat berdampingan dengan `dari()` yang menyebut
- * modelnya secara tepat.
- *
- * @template-contravariant TModel of Model
+ * Kelasnya sengaja tidak generic. Satu daftar kolom biasanya mencampur
+ * `atribut()` yang berlaku bagi Model apa pun dengan `dari()` yang menyebut
+ * modelnya secara tepat; mengikat keduanya pada satu parameter tipe membuat
+ * PHPStan menyatukannya menjadi Model dan kemudian menolak kuerinya sendiri.
+ * Tipe modelnya tetap diperiksa di tempat yang penting, yaitu closure
+ * `dari()`.
  */
 final class KolomEkspor
 {
-    /** @param  Closure(TModel): (string|float|int|null)  $ambil */
     private function __construct(
         public readonly string $judul,
         private readonly Closure $ambil,
     ) {}
 
     /**
-     * @template TBaru of Model
+     * @template TModel of Model
      *
-     * @param  callable(TBaru): (string|float|int|null)  $ambil
-     * @return self<TBaru>
+     * @param  callable(TModel): (string|float|int|null)  $ambil
      */
     public static function dari(string $judul, callable $ambil): self
     {
         return new self($judul, $ambil(...));
     }
 
-    /**
-     * Kolom yang nilainya cukup dibaca apa adanya dari atribut model.
-     *
-     * @return self<Model>
-     */
+    /** Kolom yang nilainya cukup dibaca apa adanya dari atribut model. */
     public static function atribut(string $judul, string $atribut): self
     {
         return new self($judul, static function (Model $baris) use ($atribut): string {
@@ -54,11 +48,7 @@ final class KolomEkspor
         });
     }
 
-    /**
-     * Kolom tanggal, diseragamkan supaya dapat diurutkan di Excel.
-     *
-     * @return self<Model>
-     */
+    /** Kolom tanggal, diseragamkan supaya dapat diurutkan di Excel. */
     public static function tanggal(string $judul, string $atribut, string $format = 'Y-m-d'): self
     {
         return new self($judul, static function (Model $baris) use ($atribut, $format): string {
@@ -68,7 +58,6 @@ final class KolomEkspor
         });
     }
 
-    /** @param  TModel  $baris */
     public function nilai(Model $baris): string|float|int|null
     {
         return ($this->ambil)($baris);

@@ -15,6 +15,9 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
@@ -22,17 +25,53 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PenggunaController extends Controller
 {
+    /**
+     * Penyaring daftar, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<Pengguna>
+     */
+    private function daftar(Request $request): DaftarTersaring
+    {
+        return DaftarTersaring::untuk($request, Pengguna::query()->with(['penggunaPeran.peran']))
+            ->cari(['Nama', 'Email', 'Jabatan'])
+            ->urut(['Nama', 'Jabatan', 'JenisPengguna', 'Status'], bawaan: 'Nama')
+            ->faset(['Status', 'JenisPengguna']);
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Pengguna::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Email', 'Email'),
+                KolomEkspor::atribut('Telepon', 'Telepon'),
+                KolomEkspor::atribut('Nomor Pegawai', 'NomorPegawai'),
+                KolomEkspor::atribut('Jabatan', 'Jabatan'),
+                KolomEkspor::atribut('Jenis Pengguna', 'JenisPengguna'),
+                KolomEkspor::dari('Peran', fn (Pengguna $p): string => $p->penggunaPeran
+                    ->map(fn ($satu): string => BacaRelasi::teks(BacaRelasi::model($satu, 'peran'), 'Nama'))
+                    ->filter()
+                    ->implode(', ')),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::tanggal('Terakhir Masuk', 'TerakhirMasukPada', 'Y-m-d H:i'),
+            ],
+            'daftar-pengguna',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', Pengguna::class);
 
-        $daftar = DaftarTersaring::untuk($request, Pengguna::query()->with(['penggunaPeran.peran']))
-            ->cari(['Nama', 'Email', 'Jabatan'])
-            ->urut(['Nama', 'Jabatan', 'JenisPengguna', 'Status'], bawaan: 'Nama')
-            ->faset(['Status', 'JenisPengguna']);
+        $daftar = $this->daftar($request);
 
         return Inertia::render('Pengguna/Index', [
             'pengguna' => PenggunaResource::collection($daftar->halaman()),
