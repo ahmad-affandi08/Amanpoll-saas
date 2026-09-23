@@ -134,7 +134,7 @@ final class EksporDaftar
     private function kop(?Organisasi $organisasi, string $judul, string $penyaring): array
     {
         $kop = [
-            'Organisasi' => $this->namaOrganisasi($organisasi),
+            'Organisasi' => KopOrganisasi::nama($organisasi),
             'Judul' => $judul,
             'Dicetak' => $this->dicetakPada($organisasi),
         ];
@@ -144,19 +144,6 @@ final class EksporDaftar
         }
 
         return $kop;
-    }
-
-    /** Nama legal ikut disebut bila berbeda, karena itu yang dikenali di luar rumah sakit. */
-    private function namaOrganisasi(?Organisasi $organisasi): string
-    {
-        $nama = trim((string) ($organisasi->Nama ?? ''));
-        $namaLegal = trim((string) ($organisasi->NamaLegal ?? ''));
-
-        if ($namaLegal === '' || $namaLegal === $nama) {
-            return $nama;
-        }
-
-        return $nama === '' ? $namaLegal : $nama.' ('.$namaLegal.')';
     }
 
     /** Waktu cetak dalam zona waktu organisasinya, bukan zona waktu server. */

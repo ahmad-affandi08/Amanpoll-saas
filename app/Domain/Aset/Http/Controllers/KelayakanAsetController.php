@@ -12,6 +12,8 @@ use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -48,9 +50,13 @@ final class KelayakanAsetController extends Controller
      *
      * @return DaftarTersaring<Aset>
      */
-    private function daftar(Request $request): DaftarTersaring
+    /**
+     * @param  Builder<Aset>|null  $kueri  kueri dasar, bila pemanggilnya perlu menambahkan kolom hitungan
+     * @return DaftarTersaring<Aset>
+     */
+    private function daftar(Request $request, ?EloquentBuilder $kueri = null): DaftarTersaring
     {
-        return DaftarTersaring::untuk($request, Aset::query()->with(['kategoriAset', 'lokasi']))
+        return DaftarTersaring::untuk($request, $kueri ?? Aset::query()->with(['kategoriAset', 'lokasi']))
             ->cari(['KodeAset', 'Nama', 'NomorSeri'])
             ->urut(['Nama', 'KodeAset', 'HargaPerolehan', 'TanggalPerolehan'], bawaan: 'Nama')
             ->faset(['Status', 'Kondisi']);
@@ -81,8 +87,19 @@ final class KelayakanAsetController extends Controller
             return $angkaTerakhir;
         };
 
+        // Biaya kumulatifnya diikutkan sebagai subkueri, bukan dihitung per
+        // aset: ekspor tidak punya halaman, dan satu kueri agregat per baris
+        // membuat unduhan 8.000 aset putus di tengah tanpa pesan galat.
+        $kueri = Aset::query()
+            ->with(['kategoriAset', 'lokasi'])
+            ->select('Aset.*')
+            ->selectSub(
+                PenghitungKelayakanAset::subkueriBiayaKumulatif(),
+                PenghitungKelayakanAset::ALIAS_BIAYA_KUMULATIF,
+            );
+
         return $ekspor->unduh(
-            $this->daftar($request)->kueriTersaring(),
+            $this->daftar($request, $kueri)->kueriTersaring(),
             [
                 KolomEkspor::atribut('Kode Aset', 'KodeAset'),
                 KolomEkspor::atribut('Nama', 'Nama'),

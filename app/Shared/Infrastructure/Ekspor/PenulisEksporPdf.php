@@ -22,6 +22,20 @@ final class PenulisEksporPdf implements PenulisEkspor
      */
     public function __construct(private readonly ?string $logoDataUri = null) {}
 
+    /**
+     * Salinan penulis ini dengan logo kop terpasang.
+     *
+     * Penulis PDF didaftarkan sekali lewat container, sedangkan logonya milik
+     * masing-masing organisasi. Menyalin instansinya lebih aman daripada
+     * menyimpan logo pada instansi bersama: satu pekerja antrean melayani
+     * banyak organisasi berturut-turut, dan logo yang tertinggal dari pekerjaan
+     * sebelumnya akan tercetak di kop rumah sakit lain.
+     */
+    public function denganLogo(?string $logoDataUri): self
+    {
+        return new self($logoDataUri);
+    }
+
     public function format(): FormatEkspor
     {
         return FormatEkspor::Pdf;

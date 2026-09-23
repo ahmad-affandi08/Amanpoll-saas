@@ -20,7 +20,9 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
@@ -231,6 +233,64 @@ class KelayakanAsetTest extends TestCase
         ]);
 
         $this->actingAs($pengguna)->getJson('/aset/'.$aset->Id.'/kelayakan')->assertForbidden();
+    }
+
+    /**
+     * Biaya kumulatif dihitung satu kueri untuk seluruh daftar, bukan per aset.
+     *
+     * Halaman index memanggil penghitungnya 25 kali dan tidak terganggu, tetapi
+     * ekspor tidak punya halaman: satu kueri agregat per aset berarti 8.000
+     * kueri berurutan untuk rumah sakit dengan 8.000 aset, dan unduhannya putus
+     * di tengah tanpa pesan galat karena headernya sudah telanjur dikirim.
+     */
+    public function test_biaya_kumulatif_tidak_dikueri_ulang_untuk_setiap_baris_ekspor(): void
+    {
+        foreach (range(1, 10) as $nomor) {
+            $aset = $this->buatAset(100_000_000, 120, '2020-01-01');
+            $this->catatBiaya($aset, 1_000_000 * $nomor);
+        }
+
+        $agregat = 0;
+        DB::listen(function (QueryExecuted $kueri) use (&$agregat): void {
+            if (str_contains($kueri->sql, 'BiayaPerintahKerja')) {
+                $agregat++;
+            }
+        });
+
+        $respons = $this->actingAs($this->buatPengguna())->get('/aset/kelayakan/ekspor');
+        $respons->assertOk();
+        $isi = $respons->streamedContent();
+
+        // Kesepuluh barisnya memang ikut: tanpa ini, nol kueri agregat juga
+        // akan "lulus" karena berkasnya kebetulan kosong.
+        $this->assertSame(10, substr_count($isi, 'AST-'));
+        $this->assertLessThanOrEqual(
+            1,
+            $agregat,
+            "Biaya kumulatif dikueri {$agregat} kali untuk 10 baris; satu subkueri sudah cukup.",
+        );
+    }
+
+    /**
+     * Subkueri dan hitungan per aset harus menghasilkan angka yang sama.
+     *
+     * Ekspor yang angkanya berbeda dari layar adalah cacat yang tidak akan
+     * dilaporkan siapa pun -- hanya dipercaya, lalu dipakai mengusulkan
+     * penggantian alat.
+     */
+    public function test_angka_biaya_di_ekspor_sama_dengan_hitungan_per_aset(): void
+    {
+        $aset = $this->buatAset(100_000_000, 120, '2020-01-01');
+        $this->catatBiaya($aset, 7_250_000);
+        $this->catatBiaya($aset, 1_750_000);
+
+        $perAset = app(PenghitungKelayakanAset::class)
+            ->untuk($aset->fresh(), ParameterKelayakan::dariKonfigurasi())['BiayaPerbaikanKumulatif'];
+
+        $isi = $this->actingAs($this->buatPengguna())->get('/aset/kelayakan/ekspor')->streamedContent();
+
+        $this->assertSame(9000000.0, $perAset);
+        $this->assertStringContainsString('9000000', $isi);
     }
 
     private function buatAset(float $harga, int $umurBulan, string $mulai): Aset

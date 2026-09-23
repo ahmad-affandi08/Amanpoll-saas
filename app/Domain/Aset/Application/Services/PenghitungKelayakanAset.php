@@ -6,6 +6,7 @@ namespace App\Domain\Aset\Application\Services;
 
 use App\Domain\Aset\Domain\ValueObjects\ParameterKelayakan;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -32,6 +33,9 @@ use Illuminate\Support\Facades\DB;
  */
 final class PenghitungKelayakanAset
 {
+    /** Nama kolom hasil subkueri biaya, bila kueri daftarnya sudah membawanya. */
+    public const ALIAS_BIAYA_KUMULATIF = 'BiayaPerbaikanKumulatifTerhitung';
+
     /**
      * @return array{
      *     HargaPerolehan: float,
@@ -51,6 +55,15 @@ final class PenghitungKelayakanAset
      */
     public function untuk(Aset $aset, ParameterKelayakan $parameter): array
     {
+        /*
+         * Bila kuerinya sudah membawa jumlah biayanya sebagai subkueri, itu
+         * yang dipakai. Halaman index memanggil ini 25 kali dan tidak
+         * terganggu, tetapi ekspor tidak punya halaman: tanpa jalan pintas ini
+         * rumah sakit dengan 8.000 aset menerbitkan 8.000 kueri agregat
+         * berurutan, dan unduhannya putus di tengah tanpa pesan galat.
+         */
+        $biayaTerbawa = $aset->getAttribute(self::ALIAS_BIAYA_KUMULATIF);
+
         $harga = (float) ($aset->HargaPerolehan ?? 0.0);
         $usiaTeknis = ((int) ($aset->UmurManfaatBulan ?? 0)) / 12;
         $usiaPakai = $this->usiaPakaiTahun($aset);
@@ -65,7 +78,9 @@ final class PenghitungKelayakanAset
         $aic = $usiaTeknis > 0 ? $penggantiTeoretis / $usiaTeknis : 0.0;
         $mmel = $parameter->faktorMel * $persentaseUsia * $penggantiTeoretis;
 
-        $kumulatif = $this->biayaPerbaikanKumulatif($aset);
+        $kumulatif = $biayaTerbawa === null
+            ? $this->biayaPerbaikanKumulatif($aset)
+            : (float) $biayaTerbawa;
 
         return [
             'HargaPerolehan' => $harga,
@@ -145,5 +160,21 @@ final class PenghitungKelayakanAset
             ->where('PerintahKerjaAset.AsetId', $aset->Id)
             ->where('BiayaPerintahKerja.OrganisasiId', $aset->OrganisasiId)
             ->sum('BiayaPerintahKerja.Jumlah');
+    }
+
+    /**
+     * Subkueri jumlah biaya per aset, untuk dipasang pada kueri daftar.
+     *
+     * Bentuknya harus sama persis dengan `biayaPerbaikanKumulatif()` di atas,
+     * jadi keduanya tinggal bersebelahan: angka ekspor yang berbeda dari angka
+     * layar adalah cacat yang tidak akan dilaporkan siapa pun, hanya dipercaya.
+     */
+    public static function subkueriBiayaKumulatif(): QueryBuilder
+    {
+        return DB::table('BiayaPerintahKerja')
+            ->selectRaw('COALESCE(SUM(BiayaPerintahKerja.Jumlah), 0)')
+            ->join('PerintahKerjaAset', 'PerintahKerjaAset.PerintahKerjaId', '=', 'BiayaPerintahKerja.PerintahKerjaId')
+            ->whereColumn('PerintahKerjaAset.AsetId', 'Aset.Id')
+            ->whereColumn('BiayaPerintahKerja.OrganisasiId', 'Aset.OrganisasiId');
     }
 }

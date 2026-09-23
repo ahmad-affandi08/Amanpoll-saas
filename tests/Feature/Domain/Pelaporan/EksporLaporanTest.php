@@ -191,6 +191,65 @@ final class EksporLaporanTest extends KasusPelaporan
         $this->assertSame(0, Berkas::query()->where('DiunggahOleh', $pengguna->Id)->count());
     }
 
+    /**
+     * Laporan KPI adalah dokumen yang paling mungkin diedarkan ke luar
+     * aplikasi, jadi ia harus menyebut rumah sakitnya sendiri -- sama seperti
+     * seluruh ekspor daftar. Tanpa kop, penerimanya tidak punya cara tahu
+     * berkas ini milik siapa.
+     */
+    public function test_pdf_laporan_memuat_nama_organisasinya(): void
+    {
+        $pengguna = $this->buatPengguna(['Laporan.Lihat']);
+        $this->buatPerintahKerja();
+
+        $this->jalankanJob($pengguna, FormatEkspor::Pdf, 'Kinerja Triwulan');
+
+        $berkas = Berkas::query()->where('DiunggahOleh', $pengguna->Id)->firstOrFail();
+        $teks = $this->teksPdf((string) Storage::disk($berkas->MediaPenyimpanan)->get($berkas->LokasiPenyimpanan));
+
+        $this->assertStringContainsString('Organisasi Pelaporan', $teks);
+        $this->assertStringContainsString('Kinerja Triwulan', $teks);
+    }
+
+    /** Nama legal ikut disebut, karena itu yang dikenali di luar rumah sakit. */
+    public function test_kop_laporan_menyebut_nama_legal_bila_berbeda(): void
+    {
+        $this->organisasi->update(['NamaLegal' => 'RSUD Kabupaten Sragen']);
+        $pengguna = $this->buatPengguna(['Laporan.Lihat']);
+        $this->buatPerintahKerja();
+
+        $this->jalankanJob($pengguna, FormatEkspor::Csv, 'Kinerja Triwulan');
+
+        $berkas = Berkas::query()->where('DiunggahOleh', $pengguna->Id)->firstOrFail();
+        $isi = (string) Storage::disk($berkas->MediaPenyimpanan)->get($berkas->LokasiPenyimpanan);
+
+        $this->assertStringContainsString('Organisasi Pelaporan (RSUD Kabupaten Sragen)', $isi);
+    }
+
+    /**
+     * Teks yang sungguh tercetak di PDF-nya: Dompdf memampatkan alirannya dan
+     * menulis teks sebagai UTF-16BE, jadi berkasnya dibuka dulu.
+     */
+    private function teksPdf(string $isi): string
+    {
+        $this->assertStringStartsWith('%PDF', $isi);
+
+        preg_match_all('/stream\r?\n(.*?)endstream/s', $isi, $cocok);
+
+        $teks = '';
+        foreach ($cocok[1] as $aliran) {
+            $lepas = @gzuncompress($aliran);
+
+            if ($lepas !== false) {
+                $teks .= $lepas;
+            }
+        }
+
+        $this->assertNotSame('', $teks, 'Tidak ada aliran PDF yang dapat dibaca.');
+
+        return str_replace("\x00", '', $teks);
+    }
+
     private function jalankanJob(Pengguna $pengguna, FormatEkspor $format, string $judul): void
     {
         $job = new BuatEksporLaporan(

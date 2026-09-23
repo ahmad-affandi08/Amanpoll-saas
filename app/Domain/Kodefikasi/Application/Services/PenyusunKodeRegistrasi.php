@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kodefikasi\Application\Services;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Kodefikasi\Domain\Enums\StandarKodefikasi;
 use App\Domain\Kodefikasi\Infrastructure\Persistence\Models\KodeBarangAset;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KonfigurasiOrganisasi;
@@ -25,6 +26,26 @@ final class PenyusunKodeRegistrasi
     public const KUNCI_KODE_LOKASI = 'Kodefikasi.KodeLokasiBmn';
 
     private const PANJANG_KODE_LOKASI = 18;
+
+    /**
+     * Kode lokasi yang sudah dibaca, per organisasi.
+     *
+     * Nilainya satu per organisasi dan tidak berubah di tengah unduhan, tetapi
+     * `untuk()` dipanggil sekali PER BARIS di dalam ekspor yang tidak
+     * dipaginasi. Tanpa ingatan ini, ekspor 12.000 aset menerbitkan 12.000
+     * kueri yang seluruhnya mengembalikan jawaban yang sama, dan di shared
+     * hosting unduhannya habis waktu eksekusi -- lalu terkirim terpotong,
+     * karena headernya sudah telanjur dikirim.
+     *
+     * Dikunci pada id organisasi, bukan disimpan sebagai satu nilai: instansi
+     * yang sama dapat melayani lebih dari satu organisasi bila suatu saat
+     * dipakai dari pekerja antrean.
+     *
+     * @var array<string, string|null>
+     */
+    private array $kodeLokasiTerbaca = [];
+
+    public function __construct(private readonly KonteksOrganisasi $konteks) {}
 
     public function untuk(KodeBarangAset $penetapan): ?string
     {
@@ -68,6 +89,17 @@ final class PenyusunKodeRegistrasi
     }
 
     private function kodeLokasi(): ?string
+    {
+        $kunciIngatan = $this->konteks->id() ?? '';
+
+        if (array_key_exists($kunciIngatan, $this->kodeLokasiTerbaca)) {
+            return $this->kodeLokasiTerbaca[$kunciIngatan];
+        }
+
+        return $this->kodeLokasiTerbaca[$kunciIngatan] = $this->bacaKodeLokasi();
+    }
+
+    private function bacaKodeLokasi(): ?string
     {
         $nilai = KonfigurasiOrganisasi::query()
             ->where('Kunci', self::KUNCI_KODE_LOKASI)

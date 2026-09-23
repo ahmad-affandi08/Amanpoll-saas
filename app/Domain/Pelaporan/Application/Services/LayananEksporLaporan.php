@@ -8,9 +8,13 @@ use App\Core\Audit\LayananAudit;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Ekspor\FormatEkspor;
+use App\Shared\Infrastructure\Ekspor\KopOrganisasi;
+use App\Shared\Infrastructure\Ekspor\LogoKopEkspor;
 use App\Shared\Infrastructure\Ekspor\PenulisEkspor;
+use App\Shared\Infrastructure\Ekspor\PenulisEksporPdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -48,6 +52,22 @@ final class LayananEksporLaporan
 
         $baris = $this->penyusun->baris($kunciKpi, $filter, $pengguna);
 
+        /*
+         * Dibaca dari penggunanya, bukan dari konteks yang sedang berlaku.
+         * Bukan karena konteksnya dapat bocor -- Berkas menolak ditulis bila
+         * OrganisasiId-nya tidak cocok dengan konteks, jadi jalur ini memang
+         * sudah gagal tertutup -- melainkan supaya method publik ini tidak
+         * menuntut pemanggilnya menyetel konteks lebih dulu. Satu-satunya nilai
+         * yang benar di sini adalah organisasi pemesan laporannya.
+         */
+        $organisasi = Organisasi::query()->find($pengguna->OrganisasiId);
+
+        // Hanya PDF yang punya tempat untuk logo; CSV dan XLSX tidak. Cabang
+        // yang sama ada di EksporDaftar, dengan alasan yang sama.
+        if ($penulis instanceof PenulisEksporPdf) {
+            $penulis = $penulis->denganLogo(LogoKopEkspor::dataUri($organisasi?->LogoUrl));
+        }
+
         $disk = (string) config('amanpoll.disk_berkas', 'local');
         $namaPenyimpanan = (string) Str::ulid().'.'.$format->ekstensi();
         $tujuan = 'ekspor-laporan/'.$pengguna->OrganisasiId.'/'.$namaPenyimpanan;
@@ -60,6 +80,10 @@ final class LayananEksporLaporan
 
         try {
             $penulis->tulis($pathSementara, PenyusunBarisLaporan::KEPALA, $baris, [
+                // Laporan KPI justru yang paling mungkin diedarkan ke luar
+                // aplikasi, jadi ia harus menyebut rumah sakitnya sendiri --
+                // sama seperti seluruh ekspor daftar.
+                'Organisasi' => KopOrganisasi::nama($organisasi),
                 'Judul' => $judul,
                 'Rentang' => $filter->dari->toDateString().' s.d. '.$filter->sampai->toDateString(),
                 'Dibuat' => now()->toDateTimeString(),

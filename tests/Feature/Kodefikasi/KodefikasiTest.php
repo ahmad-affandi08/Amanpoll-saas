@@ -19,8 +19,10 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -232,6 +234,53 @@ class KodefikasiTest extends TestCase
         );
 
         $this->assertNull(app(PenyusunKodeRegistrasi::class)->untuk($penetapan->fresh(['kodeBarang', 'aset'])));
+    }
+
+    /**
+     * Kode lokasi dibaca sekali, bukan sekali per baris.
+     *
+     * `PenyusunKodeRegistrasi::untuk()` dipanggil untuk tiap baris ekspor, dan
+     * ekspor tidak punya halaman. Tanpa ingatan di penyusunnya, rumah sakit
+     * dengan 12.000 aset menerbitkan 12.000 kueri yang seluruhnya mengembalikan
+     * nilai yang sama; di shared hosting unduhannya habis waktu eksekusi dan
+     * terkirim TERPOTONG -- berkas yang terlihat sah bagi yang memegangnya,
+     * karena headernya sudah telanjur dikirim.
+     */
+    public function test_kode_lokasi_tidak_dibaca_ulang_untuk_setiap_baris_ekspor(): void
+    {
+        KonfigurasiOrganisasi::create([
+            'Kunci' => PenyusunKodeRegistrasi::KUNCI_KODE_LOKASI,
+            'Nilai' => '024015400012345678',
+        ]);
+
+        $kode = $this->buatKode('3.05.01.04.001', 'Tempat Tidur');
+
+        foreach (range(1, 12) as $nomor) {
+            app(TetapkanKodeBarang::class)->jalankan(
+                $this->buatAset('Tempat Tidur '.$nomor, tanggalPerolehan: '2023-05-10'),
+                $kode,
+            );
+        }
+
+        $pembacaan = 0;
+        DB::listen(function (QueryExecuted $kueri) use (&$pembacaan): void {
+            if (str_contains($kueri->sql, 'KonfigurasiOrganisasi')) {
+                $pembacaan++;
+            }
+        });
+
+        $respons = $this->actingAs($this->buatPengguna(['Aset.Lihat']))->get('/kodefikasi/ekspor?standar=SimakBmn');
+        $respons->assertOk();
+        $isi = $respons->streamedContent();
+
+        // Seluruh 12 baris memang ikut: tanpa ini, nol pembacaan juga akan
+        // "lulus" karena berkasnya kebetulan kosong.
+        $this->assertSame(12, substr_count($isi, '024015400012345678'));
+        $this->assertLessThanOrEqual(
+            1,
+            $pembacaan,
+            "Kode lokasi dibaca {$pembacaan} kali untuk 12 baris; seharusnya cukup sekali.",
+        );
     }
 
     public function test_ekspor_memuat_nup_dan_kode_registrasi(): void
