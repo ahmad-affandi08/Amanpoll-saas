@@ -112,7 +112,7 @@ export default function LaporanIndex({
         />
 
         {flash.sukses && (
-          <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-600">
+          <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-700">
             {flash.sukses}
           </p>
         )}
@@ -183,7 +183,7 @@ export default function LaporanIndex({
                     <li key={ekspor.Id}>
                       <a
                         href={rutePelaporan.eksporUnduh(ekspor.Id)}
-                        className="flex items-center gap-2 rounded-[5px] border border-border px-2.5 py-2 hover:bg-permukaan-100"
+                        className="flex items-center gap-2 rounded-[5px] border border-border px-2.5 py-2 hover:bg-accent"
                       >
                         <Download className="size-4 shrink-0 text-muted-foreground" />
                         <span className="min-w-0 flex-1">
@@ -333,10 +333,7 @@ function DialogLaporanBaru({
             <legend className="text-sm font-medium">KPI ({form.data.KunciKpi.length} dipilih)</legend>
             <div className="max-h-64 space-y-1.5 overflow-y-auto rounded-[5px] border border-border p-2">
               {katalogKpi.map((kpi) => (
-                <label
-                  key={kpi.Kunci}
-                  className="flex items-start gap-2 rounded-[5px] p-1.5 hover:bg-permukaan-100"
-                >
+                <label key={kpi.Kunci} className="flex items-start gap-2 rounded-[5px] p-1.5 hover:bg-accent">
                   <Checkbox
                     checked={form.data.KunciKpi.includes(kpi.Kunci)}
                     onCheckedChange={() => alihkan(kpi.Kunci)}

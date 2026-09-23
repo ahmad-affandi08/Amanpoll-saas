@@ -204,13 +204,13 @@ export function DialogBuatPerintahKerja({
                   return (
                     <label
                       key={a.Id}
-                      className="flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-muted cursor-pointer"
+                      className="flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-accent cursor-pointer"
                     >
                       <input
                         type="checkbox"
                         checked={dipilih}
                         onChange={() => toggleAset(a.Id)}
-                        className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
+                        className="cursor-pointer rounded border-input text-teknisi-700 focus:ring-teknisi-600"
                       />
                       <span className="font-mono text-xs text-muted-foreground">{a.KodeAset}</span>
                       <span>{a.Nama}</span>
@@ -257,7 +257,7 @@ export function DialogBuatPerintahKerja({
                   type="checkbox"
                   checked={form.data.MembutuhkanWaktuHenti}
                   onChange={(e) => form.setData('MembutuhkanWaktuHenti', e.target.checked)}
-                  className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
+                  className="cursor-pointer rounded border-input text-teknisi-700 focus:ring-teknisi-600"
                 />
                 Membutuhkan Downtime Mesin / Aset
               </label>
@@ -266,7 +266,7 @@ export function DialogBuatPerintahKerja({
                   type="checkbox"
                   checked={form.data.MembutuhkanPersetujuan}
                   onChange={(e) => form.setData('MembutuhkanPersetujuan', e.target.checked)}
-                  className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
+                  className="cursor-pointer rounded border-input text-teknisi-700 focus:ring-teknisi-600"
                 />
                 Perlu Verifikasi / Persetujuan Hasil
               </label>

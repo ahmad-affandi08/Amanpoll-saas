@@ -3,6 +3,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Formulir, PengirimanFormulir } from '@/features/Pemasaran/types';
@@ -22,7 +23,7 @@ export default function PemasaranFormulirShow({ formulir, pengiriman }: Props) {
         judul={formulir.Nama}
         deskripsi={`Kode ${formulir.Kode} · ${formulir.JumlahPengiriman} pengiriman`}
         tanpaBreadcrumb
-        lencana={formulir.Aktif ? <Badge>Aktif</Badge> : <Badge variant="outline">Nonaktif</Badge>}
+        lencana={<Badge variant={varianAktif(formulir.Aktif)}>{formulir.Aktif ? 'Aktif' : 'Nonaktif'}</Badge>}
         aksi={
           <Button variant="ghost" asChild>
             <Link href={rutePemasaran.formulir}>Kembali</Link>

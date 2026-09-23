@@ -191,7 +191,7 @@ function DialogFormKodeKegagalan({
                 id="kode-aktif"
                 checked={form.data.Aktif}
                 onChange={(e) => form.setData('Aktif', e.target.checked)}
-                className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
+                className="cursor-pointer rounded border-input text-teknisi-700 focus:ring-teknisi-600"
               />
               <label htmlFor="kode-aktif" className="text-sm font-medium cursor-pointer">
                 Aktif dan dapat dipilih pada perintah kerja

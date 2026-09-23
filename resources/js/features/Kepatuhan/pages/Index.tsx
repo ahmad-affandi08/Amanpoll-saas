@@ -86,7 +86,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           }
         />
 
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             { label: 'Kepatuhan', nilai: `${ringkasan.persentaseKepatuhan}%`, kelas: 'text-foreground' },
             { label: 'Belum diperiksa', nilai: ringkasan.belumDiperiksa, kelas: 'text-muted-foreground' },
@@ -187,7 +187,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
                 </thead>
                 <tbody className="divide-y divide-border">
                   {kewajiban.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         {item.NamaAset}
                         <p className="font-mono text-xs text-muted-foreground">{item.KodeAset}</p>

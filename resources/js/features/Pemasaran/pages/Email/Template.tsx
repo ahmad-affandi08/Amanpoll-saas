@@ -78,7 +78,7 @@ export default function PemasaranEmailTemplate({ template, pilihan, wajib }: Pro
                 </div>
                 <div className="flex shrink-0 gap-1">
                   <Badge variant="outline">{satu.Jenis}</Badge>
-                  {satu.Aktif ? null : <Badge variant="secondary">Nonaktif</Badge>}
+                  {satu.Aktif ? null : <Badge variant="netral">Nonaktif</Badge>}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -162,7 +162,7 @@ function DialogTemplate({
                 contoh="trial-hari-1"
               />
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Jenis" htmlFor="Jenis">
                   Jenis
                 </Label>
@@ -181,7 +181,7 @@ function DialogTemplate({
               </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Nama" htmlFor="Nama">
                 Nama
               </Label>
@@ -194,7 +194,7 @@ function DialogTemplate({
               {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Subjek" htmlFor="Subjek">
                 Subjek
               </Label>
@@ -207,7 +207,7 @@ function DialogTemplate({
               {form.errors.Subjek ? <p className="text-sm text-destructive">{form.errors.Subjek}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="IsiHtml" htmlFor="IsiHtml">
                 Isi HTML
               </Label>
@@ -222,7 +222,7 @@ function DialogTemplate({
               {form.errors.IsiHtml ? <p className="text-sm text-destructive">{form.errors.IsiHtml}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="IsiTeks" htmlFor="IsiTeks">
                 Isi Teks
               </Label>

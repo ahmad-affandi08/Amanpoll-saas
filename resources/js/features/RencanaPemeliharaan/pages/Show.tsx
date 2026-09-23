@@ -78,7 +78,7 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
         <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
             href={ruteRencanaPemeliharaan.index}
-            className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1 rounded-[5px] underline-offset-4 hover:text-grafit-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Daftar Rencana</span>
@@ -95,7 +95,7 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                 </span>
                 <Badge
                   variant={rencana.Aktif ? 'default' : 'secondary'}
-                  className={rencana.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                  className={rencana.Aktif ? 'bg-sukses-50 text-sukses-700 border-sukses-200' : ''}
                 >
                   {rencana.Aktif ? 'Aktif' : 'Nonaktif'}
                 </Badge>
@@ -120,11 +120,11 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                     Horizon WO: <strong>{rencana.BuatPerintahKerjaHariSebelum} Hari Sebelum</strong>
                   </span>
                 </div>
-                {rencana.templatDaftarPeriksa && (
+                {rencana.templat_daftar_periksa && (
                   <div className="flex items-center gap-1.5">
                     <Wrench className="h-4 w-4 text-grafit-500" />
                     <span>
-                      Checklist: <strong>{rencana.templatDaftarPeriksa.Kode}</strong>
+                      Checklist: <strong>{rencana.templat_daftar_periksa.Kode}</strong>
                     </span>
                   </div>
                 )}
@@ -148,7 +148,7 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                     <div className="grid gap-4 py-4">
                       <div className="space-y-1.5">
                         <Label nama="AsetId" htmlFor="AsetId">
-                          Pilih Aset <span className="text-rose-500">*</span>
+                          Pilih Aset <span className="text-destructive">*</span>
                         </Label>
                         <Combobox
                           nilai={formAset.data.AsetId}
@@ -158,13 +158,13 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                           className="cursor-pointer"
                         />
                         {formAset.errors.AsetId && (
-                          <p className="text-xs text-rose-500">{formAset.errors.AsetId}</p>
+                          <p className="text-xs text-destructive">{formAset.errors.AsetId}</p>
                         )}
                       </div>
 
                       <div className="space-y-1.5">
                         <Label nama="TanggalMulai" htmlFor="TanggalMulai">
-                          Tanggal Mulai Berlaku <span className="text-rose-500">*</span>
+                          Tanggal Mulai Berlaku <span className="text-destructive">*</span>
                         </Label>
                         <DatePicker
                           value={formAset.data.TanggalMulai}
@@ -244,7 +244,7 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                   </thead>
                   <tbody className="divide-y divide-permukaan-100">
                     {rencana.aset.map((item) => (
-                      <tr key={item.Id} className="hover:bg-permukaan-50/50 transition-colors">
+                      <tr key={item.Id} className="hover:bg-accent transition-colors">
                         <td className="px-5 py-4 font-medium text-grafit-950">
                           <div>
                             <span className="font-mono text-xs font-semibold text-grafit-500">
@@ -274,7 +274,7 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                           <Button
                             variant="outline"
                             size="sm"
-                            className="cursor-pointer h-8 px-2.5 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+                            className="cursor-pointer h-8 px-2.5 text-xs text-destructive hover:text-bahaya-700 hover:bg-bahaya-600/10 border-bahaya-600/25"
                             onClick={() => lepasAset(item.AsetId, item.aset?.Nama ?? 'Aset')}
                           >
                             <Trash2 className="h-3.5 w-3.5 mr-1" />

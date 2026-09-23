@@ -38,7 +38,9 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
         <KepalaHalaman
           judul="Penerimaan Pembelian"
           deskripsi="Riwayat penerimaan barang; stok dan registrasi aset dibuat otomatis saat dokumen dicatat."
-          aksi={<TombolEkspor url={rutePenerimaanPembelian.ekspor} filter={filter as Record<string, string>} />}
+          aksi={
+            <TombolEkspor url={rutePenerimaanPembelian.ekspor} filter={filter as Record<string, string>} />
+          }
         />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_auto]">
@@ -78,7 +80,7 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
                 </thead>
                 <tbody className="divide-y divide-border">
                   {penerimaan.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         <span className="font-mono font-medium">{item.Nomor}</span>
                         <p className="text-xs text-muted-foreground">
@@ -109,7 +111,7 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
                 <Link
                   key={item.Id}
                   href={rutePesananPembelian.detail(item.PesananPembelianId)}
-                  className="flex min-h-24 items-center gap-3 p-4"
+                  className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <PackageCheck className="size-5 shrink-0 text-primary" />
                   <div className="min-w-0 flex-1">

@@ -4,6 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif, varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -127,7 +128,7 @@ function KartuProgram({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {program.Aktif ? <Badge>Aktif</Badge> : <Badge variant="secondary">Nonaktif</Badge>}
+          <Badge variant={varianAktif(program.Aktif)}>{program.Aktif ? 'Aktif' : 'Nonaktif'}</Badge>
           <DialogProgram program={program} pilihan={pilihan} wajib={wajib.program} />
         </div>
       </CardHeader>
@@ -148,7 +149,7 @@ function KartuProgram({
                   <p className="truncate text-sm font-medium">{kode.Organisasi}</p>
                   <p className="break-all font-mono text-xs text-muted-foreground">{kode.Url ?? kode.Kode}</p>
                 </div>
-                {kode.Aktif ? null : <Badge variant="secondary">Nonaktif</Badge>}
+                {kode.Aktif ? null : <Badge variant="netral">Nonaktif</Badge>}
               </li>
             ))}
           </ul>
@@ -230,7 +231,7 @@ function DialogProgram({
               contoh="ajak-teman"
             />
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="NamaProgram" htmlFor="NamaProgram">
                 Nama
               </Label>
@@ -244,7 +245,7 @@ function DialogProgram({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="JenisReward" htmlFor="JenisReward">
                   Jenis imbalan
                 </Label>
@@ -262,7 +263,7 @@ function DialogProgram({
                 </Select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="NilaiReward" htmlFor="NilaiReward">
                   Nilai
                 </Label>
@@ -284,7 +285,7 @@ function DialogProgram({
               </p>
             )}
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="HariKedaluwarsa" htmlFor="HariKedaluwarsa">
                 Jendela (hari)
               </Label>
@@ -301,7 +302,7 @@ function DialogProgram({
               </p>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="KeteranganProgram" htmlFor="KeteranganProgram">
                 Keterangan
               </Label>
@@ -362,7 +363,7 @@ function DialogKode({ program }: { program: ProgramReferral }) {
         </DialogHeader>
 
         <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label nama="OrganisasiKode" htmlFor="OrganisasiKode">
               ID organisasi pelanggan
             </Label>
@@ -429,7 +430,7 @@ function DaftarReward({ reward }: { reward: RewardReferralRingkas[] }) {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Badge variant={satu.Status === 'Gagal' ? 'destructive' : 'outline'}>{satu.Status}</Badge>
+                <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
                 {satu.Status === 'Tertunda' || satu.Status === 'Gagal' ? (
                   <>
                     <Button

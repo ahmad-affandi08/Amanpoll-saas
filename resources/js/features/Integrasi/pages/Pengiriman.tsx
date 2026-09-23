@@ -33,7 +33,7 @@ export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
       <div className="space-y-6">
         <Link
           href={ruteIntegrasi.index}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
         >
           <ArrowLeft className="size-4" /> Kembali ke Integrasi
         </Link>
@@ -69,7 +69,7 @@ export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {pengiriman.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         {item.Peristiwa}
                         {item.Respons && (

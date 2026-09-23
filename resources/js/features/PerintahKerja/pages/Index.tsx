@@ -226,7 +226,7 @@ export default function PerintahKerjaIndex({
                 {perintahKerja.data.map((item) => {
                   const asetUtama = item.Aset?.find((a) => a.Utama) ?? item.Aset?.[0];
                   return (
-                    <tr key={item.Id} className="hover:bg-muted/30 transition-colors">
+                    <tr key={item.Id} className="hover:bg-accent transition-colors">
                       <td className="px-4 py-3 font-mono text-xs font-medium">
                         <Link
                           href={rutePerintahKerja.detail(item.Id)}

@@ -11,15 +11,16 @@ function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGr
   );
 }
 
+/** Tepi Grafit-500 (5,5:1), sama dengan Checkbox. */
 function RadioGroupItem({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
   return (
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
       className={cn(
-        'aspect-square size-4 shrink-0 rounded-full border border-input text-primary shadow-xs transition-[color,box-shadow] outline-none',
-        'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        'aspect-square size-4 shrink-0 cursor-pointer rounded-full border border-grafit-500 bg-card text-primary shadow-xs transition-[color,box-shadow] outline-none data-[state=checked]:border-primary',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         'disabled:cursor-not-allowed disabled:opacity-50',
-        'aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+        'aria-invalid:border-destructive',
         className,
       )}
       {...props}

@@ -105,7 +105,7 @@ export function Combobox({
           )}
         >
           <span className="truncate">{terpilih?.label ?? placeholder}</span>
-          <ChevronsUpDown aria-hidden="true" className="ms-2 size-4 shrink-0 opacity-50" />
+          <ChevronsUpDown aria-hidden="true" className="ms-2 size-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
 
@@ -155,8 +155,8 @@ export function Combobox({
                     onClick={() => pilih(o.nilai)}
                     className={cn(
                       'flex w-full items-start gap-2 rounded-[5px] px-2 py-2 text-start text-sm',
-                      'hover:bg-accent focus-visible:bg-accent focus-visible:outline-none',
-                      aktif && 'bg-accent/60',
+                      'hover:bg-accent focus-visible:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset',
+                      aktif && 'bg-accent font-medium',
                     )}
                   >
                     <Check

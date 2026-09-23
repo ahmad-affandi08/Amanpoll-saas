@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatAngka } from '@/lib/angka';
 import type { Kampanye, PilihanKampanye } from '@/features/Pemasaran/types';
@@ -36,7 +37,10 @@ export function RingkasanKampanye({
           <CardTitle className="text-base">Rencana</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 text-sm sm:grid-cols-2">
-          <Butir label="Status" isi={<Badge variant="secondary">{kampanye.Status}</Badge>} />
+          <Butir
+            label="Status"
+            isi={<Badge variant={varianStatus(kampanye.Status)}>{kampanye.Status}</Badge>}
+          />
           <Butir label="Objective" isi={kampanye.Objective} />
           <Butir
             label="Budget"

@@ -129,7 +129,7 @@ export default function PerintahKerjaShow({
       <div className="mb-5">
         <Link
           href={rutePerintahKerja.index}
-          className="text-sm text-muted-foreground hover:text-foreground cursor-pointer"
+          className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
         >
           ← Kembali ke Daftar Perintah Kerja
         </Link>
@@ -226,7 +226,7 @@ export default function PerintahKerjaShow({
           {waktuHentiAktif && (
             <div className="flex items-center justify-between rounded-lg border border-bahaya-600/30 bg-bahaya-600/10 p-3 text-sm">
               <div>
-                <span className="font-semibold text-bahaya-600">Downtime Aktif: </span>
+                <span className="font-semibold text-bahaya-700">Downtime Aktif: </span>
                 <span>
                   {waktuHentiAktif.NamaAset ?? 'Aset'} ({waktuHentiAktif.Alasan})
                 </span>
@@ -252,7 +252,7 @@ export default function PerintahKerjaShow({
 
               {perintahKerja.RingkasanPenyelesaian && (
                 <div className="rounded-md border border-sukses-600/20 bg-sukses-600/5 p-3">
-                  <div className="text-xs font-semibold text-sukses-600 uppercase tracking-wider">
+                  <div className="text-xs font-semibold text-sukses-700 uppercase tracking-wider">
                     Ringkasan Penyelesaian
                   </div>
                   <p className="mt-1 text-sm text-foreground">{perintahKerja.RingkasanPenyelesaian}</p>

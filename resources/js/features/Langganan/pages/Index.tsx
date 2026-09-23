@@ -121,7 +121,7 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
                 return (
                   <div key={fitur.Kode} className="flex items-start gap-3">
                     {aktif ? (
-                      <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                      <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sukses-700" />
                     ) : (
                       <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                     )}

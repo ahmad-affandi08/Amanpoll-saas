@@ -97,7 +97,7 @@ export default function PemasaranAturanSkorIndex({
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
             <Badge variant="outline">{row.original.Asal ?? 'Tidak dikenal'}</Badge>
-            {row.original.Aktif ? null : <Badge variant="secondary">Nonaktif</Badge>}
+            {row.original.Aktif ? null : <Badge variant="netral">Nonaktif</Badge>}
           </div>
         ),
         meta: { label: 'Asal' },
@@ -108,7 +108,7 @@ export default function PemasaranAturanSkorIndex({
         header: ({ column }) => <DataTableColumnHeader column={column} title="Berlaku" />,
         cell: ({ row }) =>
           row.original.Berlaku ? (
-            <Badge>Berlaku</Badge>
+            <Badge variant="sukses">Berlaku</Badge>
           ) : (
             <Badge variant="outline" title="Belum ada yang menghasilkan sinyal ini.">
               Belum berlaku
@@ -232,7 +232,7 @@ function DialogAturan({
 
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={kirim} className="grid gap-4">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Peristiwa" htmlFor="Peristiwa">
                 Sinyal
               </Label>
@@ -258,7 +258,7 @@ function DialogAturan({
               ) : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Bobot" htmlFor="Bobot">
                 Bobot
               </Label>
@@ -275,7 +275,7 @@ function DialogAturan({
               {form.errors.Bobot ? <p className="text-sm text-destructive">{form.errors.Bobot}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Keterangan" htmlFor="Keterangan">
                 Keterangan
               </Label>

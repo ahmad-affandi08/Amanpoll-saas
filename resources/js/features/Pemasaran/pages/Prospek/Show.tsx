@@ -48,7 +48,7 @@ export default function PemasaranProspekShow({
         lencana={
           <div className="flex flex-wrap gap-2">
             {prospek.Tahap ? <Badge variant="secondary">{prospek.Tahap}</Badge> : null}
-            {prospek.Qualified ? <Badge>Qualified</Badge> : null}
+            {prospek.Qualified ? <Badge variant="sukses">Qualified</Badge> : null}
           </div>
         }
         meta={
@@ -135,7 +135,7 @@ function KartuTahap({
       <CardContent>
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={pindahkan} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="tahap" htmlFor="tahap">
                 Tahap
               </Label>
@@ -145,7 +145,7 @@ function KartuTahap({
                 opsi={tahap.map((satu) => ({ nilai: satu.Kode, label: satu.Nama }))}
               />
             </div>
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="alasan" htmlFor="alasan">
                 Alasan
               </Label>
@@ -189,7 +189,7 @@ function KartuAktivitasBaru({
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={submit} className="grid gap-3">
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="jenis" htmlFor="jenis">
                   Jenis
                 </Label>
@@ -199,7 +199,7 @@ function KartuAktivitasBaru({
                   opsi={jenisAktivitas.map((satu) => ({ nilai: satu, label: satu }))}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="judul" htmlFor="judul">
                   Judul
                 </Label>
@@ -212,7 +212,7 @@ function KartuAktivitasBaru({
                 {form.errors.Judul ? <p className="text-sm text-destructive">{form.errors.Judul}</p> : null}
               </div>
             </div>
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="isi" htmlFor="isi">
                 Catatan
               </Label>

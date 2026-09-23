@@ -35,10 +35,10 @@ function NavIsi({ slug, onPilih }: { slug: string; onPilih?: () => void }) {
               onClick={onPilih}
               aria-current={satu.slug === slug ? 'page' : undefined}
               className={cn(
-                'block rounded-[6px] px-2 py-1.5 text-sm transition-colors',
+                'block rounded-[6px] px-2 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                 satu.slug === slug
-                  ? 'bg-permukaan-100 font-medium text-foreground'
-                  : 'text-grafit-700 hover:bg-permukaan-100 hover:text-foreground',
+                  ? 'bg-teknisi-100 font-medium text-teknisi-900'
+                  : 'text-grafit-700 hover:bg-card hover:text-teknisi-900',
               )}
             >
               {satu.judul}
@@ -113,7 +113,8 @@ export function KerangkaDokumentasi({ slug, judul, ringkas, daftarIsi, children 
             <Button variant="outline" size="sm" asChild>
               <Link href="/">
                 <ArrowLeft aria-hidden="true" className="size-3.5" />
-                Kembali ke aplikasi
+                <span className="sm:hidden">Kembali</span>
+                <span className="hidden sm:inline">Kembali ke aplikasi</span>
               </Link>
             </Button>
           </div>
@@ -152,7 +153,7 @@ export function KerangkaDokumentasi({ slug, judul, ringkas, daftarIsi, children 
               {sebelum ? (
                 <Link
                   href={ruteDokumentasi.halaman(sebelum.slug)}
-                  className="group flex flex-1 items-center gap-3 rounded-[9px] border border-border p-4 transition-colors hover:border-primary/40"
+                  className="group flex flex-1 items-center gap-3 rounded-[9px] border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <ArrowLeft aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
                   <span className="min-w-0">
@@ -169,7 +170,7 @@ export function KerangkaDokumentasi({ slug, judul, ringkas, daftarIsi, children 
               {sesudah ? (
                 <Link
                   href={ruteDokumentasi.halaman(sesudah.slug)}
-                  className="group flex flex-1 items-center justify-end gap-3 rounded-[9px] border border-border p-4 text-right transition-colors hover:border-primary/40"
+                  className="group flex flex-1 items-center justify-end gap-3 rounded-[9px] border border-border bg-card p-4 text-right transition-colors hover:border-primary/40 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <span className="min-w-0">
                     <span className="block text-xs text-muted-foreground">Berikutnya</span>

@@ -290,7 +290,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
           }
         />
 
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             { label: 'Kontrak aktif', nilai: ringkasan.aktif, kelas: 'text-foreground' },
             { label: 'Akan berakhir', nilai: ringkasan.akanBerakhir, kelas: 'text-safety-600' },
@@ -362,7 +362,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
                   {kontrak.data.map((item) => {
                     const sisa = labelSisa(item);
                     return (
-                      <tr key={item.Id} className="hover:bg-muted/30">
+                      <tr key={item.Id} className="hover:bg-accent">
                         <td className="px-4 py-3">
                           <Link className="font-medium hover:text-primary" href={ruteKontrak.detail(item.Id)}>
                             {item.Nama}
@@ -404,11 +404,11 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
                   <Link
                     key={item.Id}
                     href={ruteKontrak.detail(item.Id)}
-                    className="flex min-h-24 items-center gap-3 p-4"
+                    className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                   >
                     <FileSignature className="size-5 shrink-0 text-primary" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{item.Nama}</p>
+                      <p className="line-clamp-2 font-medium">{item.Nama}</p>
                       <p className="truncate font-mono text-xs text-muted-foreground">{item.Nomor}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {item.NamaPenyedia ?? 'Tanpa penyedia'} · {sisa.teks}

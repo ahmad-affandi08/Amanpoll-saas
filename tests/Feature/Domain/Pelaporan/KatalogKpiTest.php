@@ -7,6 +7,7 @@ namespace Tests\Feature\Domain\Pelaporan;
 use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pelaporan\Domain\Enums\BentukKomponen;
 use App\Domain\Pelaporan\Domain\Enums\KelompokKpi;
+use App\Domain\Pelaporan\Domain\Enums\SatuanKpi;
 use App\Domain\Pelaporan\Domain\KatalogKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\DefinisiKpi;
 use Tests\TestCase;
@@ -90,5 +91,20 @@ final class KatalogKpiTest extends TestCase
             );
             $this->assertInstanceOf(DefinisiKpi::class, $definisi);
         }
+    }
+
+    public function test_rincian_kpi_persen_memakai_satuan_isinya_bukan_persen(): void
+    {
+        // Rincian KPI persen berisi jumlah, jam, atau uang; memformatnya dengan "%" membuat 4 aset terbaca 4%.
+        foreach (KatalogKpi::semua() as $kunci => $definisi) {
+            if ($definisi->satuan === SatuanKpi::Persen) {
+                $this->assertNotSame(SatuanKpi::Persen, $definisi->satuanRincian, "Rincian KPI {$kunci} bukan persen.");
+            }
+        }
+
+        $this->assertSame('Jumlah', KatalogKpi::ambil('aset.kondisi')->keArray()['SatuanRincian']);
+        $this->assertSame('Uang', KatalogKpi::ambil('anggaran.serapan')->keArray()['SatuanRincian']);
+        $this->assertSame('Jam', KatalogKpi::ambil('downtime.ketersediaan')->keArray()['SatuanRincian']);
+        $this->assertSame('Uang', KatalogKpi::ambil('biaya.pemeliharaan')->keArray()['SatuanRincian']);
     }
 }

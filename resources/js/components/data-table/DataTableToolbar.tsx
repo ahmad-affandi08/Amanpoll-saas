@@ -38,7 +38,7 @@ export function DataTableToolbar<TData>({
           placeholder={pencarianPlaceholder ?? 'Cari...'}
           value={(table.getState().globalFilter as string) ?? ''}
           onChange={(e) => table.setGlobalFilter(e.target.value)}
-          className="h-9 w-full sm:h-8 sm:w-56"
+          className="h-10 w-full sm:h-8 sm:w-56"
         />
         {facetedFilters?.map((filter) => (
           <DataTableFacetedFilter

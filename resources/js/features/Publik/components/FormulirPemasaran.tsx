@@ -71,7 +71,7 @@ export function FormulirPemasaran({ formulir, judul, deskripsi }: Props) {
       </div>
 
       {formulir.Field.map((field) => (
-        <div key={field.Kode} className="grid gap-2">
+        <div key={field.Kode} className="grid content-start gap-2">
           {field.Jenis === 'Persetujuan' || field.Jenis === 'KotakCentang' ? (
             <label className="flex items-start gap-2 text-sm">
               <Checkbox

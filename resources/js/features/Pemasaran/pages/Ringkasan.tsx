@@ -158,7 +158,7 @@ export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Prop
             <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
               <CardTitle className="text-base">{satu.Nama}</CardTitle>
               {satu.Aktif ? (
-                <Badge variant="secondary" className="gap-1">
+                <Badge variant="sukses" className="gap-1">
                   <CircleCheck aria-hidden="true" className="size-3.5" />
                   Aktif
                 </Badge>
@@ -181,7 +181,7 @@ export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Prop
             <li key={satu.href}>
               <Link
                 href={satu.href}
-                className="block rounded-md border p-3 text-sm transition-colors hover:bg-accent"
+                className="block rounded-md border bg-card p-3 text-sm transition-colors hover:border-primary/40 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >
                 <span className="font-medium text-foreground">{satu.label}</span>
                 <span className="mt-0.5 block text-xs text-muted-foreground">{satu.keterangan}</span>

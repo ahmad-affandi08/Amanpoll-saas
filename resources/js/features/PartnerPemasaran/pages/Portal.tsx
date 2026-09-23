@@ -122,7 +122,7 @@ export default function PartnerPemasaranPortal({
           </Button>
         </header>
 
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {[
             { label: 'Lead dikirim', nilai: String(ringkasan.Lead ?? 0) },
             { label: 'Menjadi trial', nilai: String(ringkasan.Trial ?? 0) },
@@ -134,7 +134,9 @@ export default function PartnerPemasaranPortal({
           ].map((kartu) => (
             <div key={kartu.label} className="rounded-[10px] border border-border bg-card p-4">
               <p className="text-sm text-muted-foreground">{kartu.label}</p>
-              <p className="text-lg font-semibold text-foreground">{kartu.nilai}</p>
+              <p className="text-base font-semibold break-words text-foreground tabular-nums sm:text-lg">
+                {kartu.nilai}
+              </p>
             </div>
           ))}
         </section>

@@ -20,17 +20,23 @@ export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandi
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-6">
+    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 p-6">
       <Head title="Reset Kata Sandi" />
       <form
         onSubmit={submit}
-        className="w-full max-w-sm space-y-5 rounded-lg border border-border bg-card p-6 shadow-sm"
+        className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
       >
-        <KepalaHalaman judul="Reset Kata Sandi" deskripsi="Masukkan kata sandi baru untuk akun Anda." />
+        <KepalaHalaman
+          judul="Reset Kata Sandi"
+          deskripsi="Masukkan kata sandi baru untuk akun Anda."
+          tanpaBreadcrumb
+        />
         <div className="space-y-1.5">
-          <Label>Kata Sandi Baru</Label>
+          <Label htmlFor="kata-sandi-baru">Kata Sandi Baru</Label>
           <Input
+            id="kata-sandi-baru"
             type="password"
+            autoComplete="new-password"
             value={form.data.KataSandiBaru}
             onChange={(e) => form.setData('KataSandiBaru', e.target.value)}
           />
@@ -39,9 +45,11 @@ export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandi
           )}
         </div>
         <div className="space-y-1.5">
-          <Label>Konfirmasi Kata Sandi Baru</Label>
+          <Label htmlFor="konfirmasi-kata-sandi">Konfirmasi Kata Sandi Baru</Label>
           <Input
+            id="konfirmasi-kata-sandi"
             type="password"
+            autoComplete="new-password"
             value={form.data.KataSandiBaru_confirmation}
             onChange={(e) => form.setData('KataSandiBaru_confirmation', e.target.value)}
           />

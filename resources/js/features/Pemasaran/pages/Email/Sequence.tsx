@@ -4,6 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -103,7 +104,7 @@ function KartuSequence({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {sequence.Aktif ? <Badge>Aktif</Badge> : <Badge variant="secondary">Nonaktif</Badge>}
+          <Badge variant={varianAktif(sequence.Aktif)}>{sequence.Aktif ? 'Aktif' : 'Nonaktif'}</Badge>
           <DialogSequence sequence={sequence} wajib={wajib.sequence} />
         </div>
       </CardHeader>
@@ -208,7 +209,7 @@ function DialogSequence({ sequence, wajib }: { sequence: SequenceEmail | null; w
               contoh="onboarding-trial"
             />
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="NamaSequence" htmlFor="NamaSequence">
                 Nama
               </Label>
@@ -221,7 +222,7 @@ function DialogSequence({ sequence, wajib }: { sequence: SequenceEmail | null; w
               {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="KeteranganSequence" htmlFor="KeteranganSequence">
                 Keterangan
               </Label>
@@ -317,7 +318,7 @@ function DialogLangkah({
         ) : (
           <AturanWajibProvider aturan={wajib}>
             <form onSubmit={kirim} className="grid gap-4">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="TemplateLangkah" htmlFor="TemplateLangkah">
                   Template
                 </Label>
@@ -332,7 +333,7 @@ function DialogLangkah({
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label nama="UrutanLangkah" htmlFor="UrutanLangkah">
                     Urutan
                   </Label>
@@ -349,7 +350,7 @@ function DialogLangkah({
                   ) : null}
                 </div>
 
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label nama="HariLangkah" htmlFor="HariLangkah">
                     Hari ke
                   </Label>

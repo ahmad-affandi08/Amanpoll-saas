@@ -309,7 +309,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
                 </thead>
                 <tbody className="divide-y divide-border">
                   {sertifikasi.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         {item.JenisSertifikasi}
                         <p className="font-mono text-xs text-muted-foreground">

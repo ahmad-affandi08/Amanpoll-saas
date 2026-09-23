@@ -8,6 +8,7 @@ import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { tanggal } from '@/components/shared/riwayat';
 import { DialogFinalisasiKalibrasi } from '@/features/Kalibrasi/components/DialogFinalisasiKalibrasi';
 import { EditorTitikUkur } from '@/features/Kalibrasi/components/EditorTitikUkur';
 import type { AturanWajib } from '@/lib/aturan-wajib';
@@ -33,7 +34,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Button asChild variant="outline" size="icon" className="size-8">
+            <Button asChild variant="outline" size="icon" className="sm:size-8">
               <Link href={ruteKalibrasi.pelaksanaan}>
                 <ArrowLeft className="size-4" />
               </Link>
@@ -47,7 +48,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
                   {badgeHasil.label}
                 </Badge>
                 {sudahVerifikasi && (
-                  <Badge variant="outline" className="bg-sukses-50 text-sukses-600 border-sukses-200 gap-1">
+                  <Badge variant="outline" className="border-sukses-200 bg-sukses-50 text-sukses-700 gap-1">
                     <ShieldCheck className="size-3" />
                     Terverifikasi
                   </Badge>
@@ -81,7 +82,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
                   {pelaksanaan.diverifikasiOleh?.Nama ?? 'Petugas Berwenang'}
                 </span>{' '}
                 pada {pelaksanaan.DiverifikasiPada}. Berlaku sampai dengan{' '}
-                <span className="font-bold font-mono">{pelaksanaan.TanggalBerlakuSampai ?? '—'}</span>. Siklus
+                <span className="font-bold">{tanggal(pelaksanaan.TanggalBerlakuSampai ?? null)}</span>. Siklus
                 kalibrasi berikutnya pada instrumen telah otomatis diperbarui.
               </p>
             </div>
@@ -100,12 +101,12 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
             <CardContent className="pt-3 space-y-2.5 text-xs">
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Tanggal Kalibrasi:</span>
-                <span className="font-medium font-mono text-foreground">{pelaksanaan.TanggalKalibrasi}</span>
+                <span className="font-medium text-foreground">{tanggal(pelaksanaan.TanggalKalibrasi)}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Berlaku Sampai:</span>
-                <span className="font-semibold font-mono text-foreground">
-                  {pelaksanaan.TanggalBerlakuSampai || (
+                <span className="font-semibold text-foreground">
+                  {(pelaksanaan.TanggalBerlakuSampai && tanggal(pelaksanaan.TanggalBerlakuSampai)) || (
                     <span className="text-muted-foreground italic">Belum diatur</span>
                   )}
                 </span>

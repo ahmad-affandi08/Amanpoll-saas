@@ -120,7 +120,7 @@ export function DatePicker({
           type="button"
           disabled={disabled}
           className={cn(
-            'flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
+            'flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-permukaan-100 disabled:text-grafit-500 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
             !parsedValue && 'text-muted-foreground',
             className,
           )}
@@ -141,13 +141,13 @@ export function DatePicker({
               role="button"
               tabIndex={0}
               onClick={handleClear}
-              className="rounded-full p-1 hover:bg-permukaan-100 text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+              className="rounded-full p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors cursor-pointer shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               title="Hapus tanggal"
             >
               <X className="size-3.5" />
             </span>
           ) : (
-            <ChevronDown className="size-4 opacity-50 shrink-0 text-muted-foreground" />
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
           )}
         </button>
       </PopoverTrigger>
@@ -179,7 +179,7 @@ export function DatePicker({
                 'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
                 isTodaySelected
                   ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
-                  : 'text-grafit-700 hover:bg-permukaan-100 font-medium',
+                  : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900 font-medium',
               )}
               onClick={() => handleSelect(new Date())}
             >
@@ -193,7 +193,7 @@ export function DatePicker({
                 'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
                 isTomorrowSelected
                   ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
-                  : 'text-grafit-700 hover:bg-permukaan-100 font-medium',
+                  : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900 font-medium',
               )}
               onClick={() => handleSelect(addDays(new Date(), 1))}
             >
@@ -207,7 +207,7 @@ export function DatePicker({
                 'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
                 isYesterdaySelected
                   ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
-                  : 'text-grafit-700 hover:bg-permukaan-100 font-medium',
+                  : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900 font-medium',
               )}
               onClick={() => handleSelect(subDays(new Date(), 1))}
             >
@@ -223,7 +223,7 @@ export function DatePicker({
               type="button"
               variant="ghost"
               size="icon"
-              className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
+              className="size-7 rounded-md text-grafit-700 hover:text-teknisi-900 hover:bg-accent cursor-pointer"
               onClick={() => setViewDate((d) => subMonths(d, 1))}
               title="Bulan sebelumnya"
             >
@@ -236,7 +236,7 @@ export function DatePicker({
               type="button"
               variant="ghost"
               size="icon"
-              className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
+              className="size-7 rounded-md text-grafit-700 hover:text-teknisi-900 hover:bg-accent cursor-pointer"
               onClick={() => setViewDate((d) => addMonths(d, 1))}
               title="Bulan berikutnya"
             >
@@ -271,16 +271,17 @@ export function DatePicker({
                     disabled={isDisabled}
                     onClick={() => handleSelect(day)}
                     className={cn(
-                      'size-8 flex items-center justify-center rounded-full text-xs font-medium transition-all cursor-pointer select-none',
-                      // Warna teks bulan aktif vs luar bulan
-                      isCurrentMonth ? 'text-grafit-950' : 'text-grafit-500/60 hover:text-grafit-500',
+                      'size-8 flex items-center justify-center rounded-full text-xs font-medium transition-all cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+                      // Hari di luar bulan Grafit-500 (teks 60% semula 2,5:1).
+                      isCurrentMonth ? 'text-grafit-950' : 'text-grafit-500',
                       // Hari ini
                       isDayToday && !isSelected && 'border border-teknisi-600 font-bold text-teknisi-700',
                       // Tanggal terpilih
                       isSelected
                         ? 'bg-teknisi-700 text-white font-bold shadow-sm hover:bg-teknisi-800 hover:text-white'
-                        : 'hover:bg-permukaan-100',
-                      isDisabled && 'pointer-events-none opacity-30',
+                        : 'hover:bg-teknisi-100 hover:text-teknisi-900',
+                      // Tetap terbaca; coretan menandai bahwa tanggal ini tidak bisa dipilih.
+                      isDisabled && 'pointer-events-none text-grafit-500 line-through',
                     )}
                   >
                     {format(day, 'd')}
@@ -308,7 +309,7 @@ export function DatePicker({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-7 px-2.5 text-xs rounded-lg cursor-pointer border-garis-200 hover:bg-permukaan-100 text-grafit-700"
+                className="h-7 px-2.5 text-xs rounded-lg cursor-pointer text-grafit-700"
                 onClick={() => handleClear()}
               >
                 Kosongkan

@@ -1,11 +1,13 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
+import { Check } from 'lucide-react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { Badge } from '@/components/ui/badge';
+import { varianStatusTrial } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -36,17 +38,6 @@ interface Props {
 
 const AKAR = rutePemasaran.trial;
 
-const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-  Konversi: 'default',
-  Teraktivasi: 'default',
-  Aktif: 'secondary',
-  Diperpanjang: 'secondary',
-  Setup: 'outline',
-  Terdaftar: 'outline',
-  Kadaluarsa: 'destructive',
-  Dibatalkan: 'destructive',
-};
-
 export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filter, wajib }: Props) {
   const columns = useMemo<ColumnDef<Trial>[]>(
     () => [
@@ -76,7 +67,7 @@ export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filte
         accessorFn: (row) => row.Status,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
-          <Badge variant={RAGAM_STATUS[row.original.Status] ?? 'outline'}>{row.original.Status}</Badge>
+          <Badge variant={varianStatusTrial(row.original.Status)}>{row.original.Status}</Badge>
         ),
         meta: { label: 'Status' },
       },
@@ -190,11 +181,13 @@ function Checklist({ trial, pilihan }: { trial: Trial; pilihan: PilihanTrial }) 
         return (
           <Badge
             key={butir.Kode}
-            variant={selesai ? 'default' : 'outline'}
-            title={`${butir.Label}${wajib ? ' (wajib untuk aktivasi)' : ''}`}
-            className={selesai ? undefined : 'text-muted-foreground'}
+            variant={selesai ? 'sukses' : 'outline'}
+            title={`${butir.Label}${selesai ? ' (selesai)' : ' (belum)'}${wajib ? ' (wajib untuk aktivasi)' : ''}`}
+            className={selesai ? undefined : 'border-dashed text-muted-foreground'}
           >
+            {selesai ? <Check aria-hidden="true" /> : null}
             {butir.Label}
+            <span className="sr-only">{selesai ? ', selesai' : ', belum'}</span>
           </Badge>
         );
       })}
@@ -238,7 +231,7 @@ function DialogPerpanjang({
 
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={kirim} className="grid gap-4">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Hari" htmlFor="Hari">
                 Tambahan hari
               </Label>
@@ -254,7 +247,7 @@ function DialogPerpanjang({
               {form.errors.Hari ? <p className="text-sm text-destructive">{form.errors.Hari}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Alasan" htmlFor="Alasan">
                 Alasan
               </Label>
@@ -304,7 +297,7 @@ function DialogStatus({ trial, wajib }: { trial: Trial; wajib: AturanWajib }) {
 
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={kirim} className="grid gap-4">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Status" htmlFor="Status">
                 Status
               </Label>
@@ -316,7 +309,7 @@ function DialogStatus({ trial, wajib }: { trial: Trial; wajib: AturanWajib }) {
               {form.errors.Status ? <p className="text-sm text-destructive">{form.errors.Status}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="AlasanStatus" htmlFor="AlasanStatus">
                 Alasan
               </Label>

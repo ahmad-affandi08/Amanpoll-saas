@@ -6,6 +6,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import type { HalamanRingkas, PilihanHalaman } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
@@ -17,14 +18,6 @@ interface Props {
   pilihan: PilihanHalaman;
   filter: FilterDaftar;
 }
-
-const RAGAM_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-  Terbit: 'default',
-  Terjadwal: 'secondary',
-  Review: 'secondary',
-  Draf: 'outline',
-  Diarsipkan: 'destructive',
-};
 
 export default function PemasaranHalamanIndex({ halaman, pilihan, filter }: Props) {
   const columns = useMemo<ColumnDef<HalamanRingkas>[]>(
@@ -52,7 +45,7 @@ export default function PemasaranHalamanIndex({ halaman, pilihan, filter }: Prop
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
-            <Badge variant={RAGAM_STATUS[row.original.Status] ?? 'outline'}>{row.original.Status}</Badge>
+            <Badge variant={varianStatus(row.original.Status)}>{row.original.Status}</Badge>
             {row.original.NoIndex ? <Badge variant="outline">noindex</Badge> : null}
           </div>
         ),

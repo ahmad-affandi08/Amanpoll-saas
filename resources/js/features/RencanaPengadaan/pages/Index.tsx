@@ -134,7 +134,7 @@ function DialogBuatRencana({
                   {usulanDisetujui.map((item) => (
                     <label
                       key={item.Id}
-                      className="flex min-h-11 cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-muted/40"
+                      className="flex min-h-11 cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-accent"
                     >
                       <Checkbox
                         checked={form.data.UsulanAsetIds.includes(item.Id)}
@@ -260,7 +260,7 @@ export default function RencanaPengadaanIndex({
                 </thead>
                 <tbody className="divide-y divide-border">
                   {rencana.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         <Link
                           className="font-medium hover:text-primary"
@@ -292,11 +292,11 @@ export default function RencanaPengadaanIndex({
                 <Link
                   key={item.Id}
                   href={ruteRencanaPengadaan.detail(item.Id)}
-                  className="flex min-h-24 items-center gap-3 p-4"
+                  className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <ListChecks className="size-5 shrink-0 text-primary" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{item.Nama}</p>
+                    <p className="line-clamp-2 font-medium">{item.Nama}</p>
                     <p className="font-mono text-xs text-muted-foreground">
                       {item.Nomor} · {item.Tahun}
                     </p>

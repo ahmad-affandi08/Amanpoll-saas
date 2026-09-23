@@ -3,6 +3,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -59,7 +60,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
         className="mb-6"
         aksi={
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={konten.Status === 'Terbit' ? 'default' : 'secondary'}>{konten.Status}</Badge>
+            <Badge variant={varianStatus(konten.Status)}>{konten.Status}</Badge>
             <Badge variant="outline">{konten.DiSitemap ? 'Di sitemap' : 'Tidak di sitemap'}</Badge>
             <Button
               size="sm"
@@ -89,7 +90,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
           <CardContent>
             <form onSubmit={submit} className="grid gap-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label htmlFor="Jenis">Jenis</Label>
                   <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
                     <SelectTrigger id="Jenis">
@@ -104,7 +105,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label htmlFor="Slug">Slug</Label>
                   <Input
                     id="Slug"
@@ -121,7 +122,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                 alamat konten yang pernah terbit membuat redirect 301 dari alamat lamanya.
               </p>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Judul">Judul</Label>
                 <Input
                   id="Judul"
@@ -131,7 +132,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                 />
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Ringkasan">Ringkasan</Label>
                 <Textarea
                   id="Ringkasan"
@@ -141,7 +142,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                 />
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="IsiMarkdown">Naskah</Label>
                 <Textarea
                   id="IsiMarkdown"
@@ -156,7 +157,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
               <fieldset className="grid gap-4 rounded-lg border p-4">
                 <legend className="px-1 text-sm font-medium">Metadata SEO</legend>
 
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label htmlFor="MetaJudul">Meta title</Label>
                   <Input
                     id="MetaJudul"
@@ -164,7 +165,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                     onChange={(e) => form.setData('MetaJudul', e.target.value)}
                   />
                 </div>
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label htmlFor="MetaDeskripsi">Meta description</Label>
                   <Textarea
                     id="MetaDeskripsi"
@@ -173,7 +174,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                     onChange={(e) => form.setData('MetaDeskripsi', e.target.value)}
                   />
                 </div>
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label htmlFor="Kanonik">Canonical</Label>
                   <Input
                     id="Kanonik"
@@ -185,7 +186,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                   ) : null}
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="grid gap-2">
+                  <div className="grid content-start gap-2">
                     <Label htmlFor="OgJudul">Open Graph title</Label>
                     <Input
                       id="OgJudul"
@@ -193,7 +194,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                       onChange={(e) => form.setData('OgJudul', e.target.value)}
                     />
                   </div>
-                  <div className="grid gap-2">
+                  <div className="grid content-start gap-2">
                     <Label htmlFor="SkemaTipe">Schema type</Label>
                     <Input
                       id="SkemaTipe"
@@ -202,7 +203,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                     />
                   </div>
                 </div>
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label htmlFor="OgDeskripsi">Open Graph description</Label>
                   <Textarea
                     id="OgDeskripsi"
@@ -211,7 +212,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                     onChange={(e) => form.setData('OgDeskripsi', e.target.value)}
                   />
                 </div>
-                <div className="grid gap-2">
+                <div className="grid content-start gap-2">
                   <Label htmlFor="OgGambar">Open Graph image</Label>
                   <Input
                     id="OgGambar"
@@ -232,7 +233,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                 </label>
               </fieldset>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Catatan">Catatan versi</Label>
                 <Input
                   id="Catatan"
@@ -286,15 +287,15 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
             <CardHeader>
               <CardTitle className="text-base">Riwayat versi</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-2">
+            <CardContent className="grid content-start gap-2">
               {versi.map((satu) => (
                 <div key={satu.Id} className="flex items-center justify-between gap-2 text-sm">
                   <span className="truncate">
                     #{satu.Nomor} {satu.Catatan ? `· ${satu.Catatan}` : ''}
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
-                    {satu.Terbit ? <Badge>tayang</Badge> : null}
-                    {satu.Draf ? <Badge variant="secondary">draf</Badge> : null}
+                    {satu.Terbit ? <Badge variant="sukses">tayang</Badge> : null}
+                    {satu.Draf ? <Badge variant="netral">draf</Badge> : null}
                     <a
                       className="text-xs underline"
                       href={`${AKAR}/${konten.Id}/pratinjau/${satu.Id}`}

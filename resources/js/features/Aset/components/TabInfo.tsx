@@ -75,7 +75,7 @@ export function TabInfo({
   return (
     <AturanWajibProvider aturan={wajib}>
       <form onSubmit={submit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <BidangKode
             nilai={form.data.KodeAset}
             onUbah={(nilai) => form.setData('KodeAset', nilai)}
@@ -89,7 +89,7 @@ export function TabInfo({
             {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label nama="KategoriAsetId">Kategori</Label>
             <Combobox
@@ -136,7 +136,7 @@ export function TabInfo({
           </p>
           {form.errors.AlkesAspakId && <p className="text-sm text-destructive">{form.errors.AlkesAspakId}</p>}
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label nama="UnitOrganisasiId">Unit Organisasi</Label>
             <Combobox
@@ -157,7 +157,7 @@ export function TabInfo({
             />
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label nama="TanggalPerolehan">Tanggal Perolehan</Label>
             <DatePicker
@@ -183,7 +183,7 @@ export function TabInfo({
             />
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label nama="HargaPerolehan">Harga Perolehan</Label>
             <InputUang
@@ -210,7 +210,7 @@ export function TabInfo({
             />
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label nama="Status">Status</Label>
             <Combobox

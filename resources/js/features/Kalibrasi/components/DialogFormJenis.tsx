@@ -62,7 +62,11 @@ export function DialogFormJenis({ jenis, wajib }: { jenis: JenisKalibrasi | null
     <Dialog open={buka} onOpenChange={ubahBuka}>
       <DialogTrigger asChild>
         {jenis ? (
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="sm:size-7 text-muted-foreground hover:text-foreground"
+          >
             <Pencil className="size-3.5" />
           </Button>
         ) : (
@@ -101,7 +105,7 @@ export function DialogFormJenis({ jenis, wajib }: { jenis: JenisKalibrasi | null
                 onChange={(e) => form.setData('Nama', e.target.value)}
                 required
               />
-              {form.errors.Nama && <p className="text-xs text-rose-600">{form.errors.Nama}</p>}
+              {form.errors.Nama && <p className="text-xs text-destructive">{form.errors.Nama}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -122,7 +126,7 @@ export function DialogFormJenis({ jenis, wajib }: { jenis: JenisKalibrasi | null
                 <Label nama="Aktif" htmlFor="Aktif">
                   Status Aktif
                 </Label>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-grafit-500">
                   Jenis ini dapat dipilih saat membuat rencana kalibrasi baru.
                 </p>
               </div>

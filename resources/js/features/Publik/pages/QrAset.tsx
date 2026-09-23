@@ -54,8 +54,8 @@ export default function PublikQrAset({ tool, batas, kanonik, urlMasuk, urlDaftar
             Tempel kode aset Anda, satu per baris. Paling banyak {batas.MaksKode} kode sekali cetak.
           </p>
 
-          <form onSubmit={submit} className="mt-8 grid gap-4">
-            <div className="grid gap-2">
+          <form onSubmit={submit} className="mt-8 grid gap-4 rounded-lg border bg-card p-6">
+            <div className="grid content-start gap-2">
               <Label htmlFor="Kode">Kode aset</Label>
               <Textarea
                 id="Kode"

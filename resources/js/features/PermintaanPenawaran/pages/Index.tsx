@@ -137,7 +137,7 @@ function DialogBuatRfq({
                   {penyedia.map((item) => (
                     <label
                       key={item.Id}
-                      className="flex min-h-11 items-center gap-3 rounded-[5px] p-2 hover:bg-muted"
+                      className="flex min-h-11 items-center gap-3 rounded-[5px] p-2 hover:bg-accent"
                     >
                       <Checkbox
                         checked={form.data.PenyediaIds.includes(item.Id)}
@@ -263,7 +263,7 @@ export default function PermintaanPenawaranIndex({
                 </thead>
                 <tbody className="divide-y divide-border">
                   {rfq.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         <Link
                           className="font-mono font-medium hover:text-primary"
@@ -291,7 +291,7 @@ export default function PermintaanPenawaranIndex({
                 <Link
                   key={item.Id}
                   href={rutePermintaanPenawaran.detail(item.Id)}
-                  className="flex min-h-24 items-center gap-3 p-4"
+                  className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <FileText className="size-5 shrink-0 text-primary" />
                   <div className="min-w-0 flex-1">

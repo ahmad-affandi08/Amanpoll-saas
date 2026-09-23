@@ -145,7 +145,7 @@ function DialogFormSukuCadang({
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label nama="StokMinimum">Stok Minimum</Label>
                 <Input
@@ -285,7 +285,7 @@ export default function SukuCadangIndex({
       />
 
       {jumlahDibawahMinimum > 0 && (
-        <div className="mb-4 rounded-[9px] border border-bahaya-600/25 bg-bahaya-600/10 px-4 py-3 text-sm text-bahaya-600">
+        <div className="mb-4 rounded-[9px] border border-bahaya-600/25 bg-bahaya-600/10 px-4 py-3 text-sm text-bahaya-700">
           {jumlahDibawahMinimum} suku cadang berada di bawah atau sama dengan stok minimum.
         </div>
       )}

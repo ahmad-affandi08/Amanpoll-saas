@@ -31,7 +31,7 @@ function PilihRelasi({
   ubah: (nilai: string) => void;
 }) {
   return (
-    <div className="grid gap-2">
+    <div className="grid content-start gap-2">
       <Label htmlFor={id}>{label}</Label>
       <Select value={nilai === '' ? 'kosong' : nilai} onValueChange={(v) => ubah(v === 'kosong' ? '' : v)}>
         <SelectTrigger id={id}>
@@ -103,7 +103,7 @@ export function DialogFormKonten({
             galat={form.errors.Kode}
           />
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="Judul">Judul</Label>
             <Input
               id="Judul"
@@ -113,7 +113,7 @@ export function DialogFormKonten({
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="Ringkasan">Ringkasan</Label>
             <Textarea
               id="Ringkasan"

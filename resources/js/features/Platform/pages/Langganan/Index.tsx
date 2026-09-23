@@ -38,12 +38,13 @@ interface Props {
   siklus: PilihanSiklus[];
 }
 
-const VARIAN_STATUS: Record<StatusLangganan, 'default' | 'secondary' | 'destructive'> = {
-  UjiCoba: 'secondary',
-  Aktif: 'default',
-  Tenggang: 'secondary',
-  Kedaluwarsa: 'destructive',
-  Dibatalkan: 'destructive',
+/* DESIGN.md 18: uji coba berjalan, aktif berhasil, tenggang menunggu bayar, kedaluwarsa gagal, batal netral. */
+const VARIAN_STATUS: Record<StatusLangganan, 'proses' | 'sukses' | 'perhatian' | 'bahaya' | 'netral'> = {
+  UjiCoba: 'proses',
+  Aktif: 'sukses',
+  Tenggang: 'perhatian',
+  Kedaluwarsa: 'bahaya',
+  Dibatalkan: 'netral',
 };
 
 export default function PlatformLanggananIndex({ langganan, organisasi, paket, siklus }: Props) {

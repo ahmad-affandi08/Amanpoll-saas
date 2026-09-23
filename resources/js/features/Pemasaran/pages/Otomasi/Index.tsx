@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -71,7 +72,7 @@ export default function PemasaranOtomasiIndex({ otomasi, pilihan, wajib }: Props
                   <p className="font-mono text-xs text-muted-foreground">{satu.Kode}</p>
                 </div>
                 <div className="flex shrink-0 flex-wrap justify-end gap-1">
-                  {satu.Aktif ? <Badge>Menyala</Badge> : <Badge variant="secondary">Mati</Badge>}
+                  <Badge variant={varianAktif(satu.Aktif)}>{satu.Aktif ? 'Menyala' : 'Mati'}</Badge>
                   {satu.PemicuBerlaku ? null : <Badge variant="outline">Pemicu belum berlaku</Badge>}
                 </div>
               </CardHeader>
@@ -144,7 +145,7 @@ function DialogOtomasi({
               contoh="sapa-prospek-baru"
             />
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="NamaOtomasi" htmlFor="NamaOtomasi">
                 Nama
               </Label>
@@ -157,7 +158,7 @@ function DialogOtomasi({
               {form.errors.Nama ? <p className="text-sm text-destructive">{form.errors.Nama}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="PemicuOtomasi" htmlFor="PemicuOtomasi">
                 Pemicu
               </Label>
@@ -182,7 +183,7 @@ function DialogOtomasi({
               {form.errors.Pemicu ? <p className="text-sm text-destructive">{form.errors.Pemicu}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="KeteranganOtomasi" htmlFor="KeteranganOtomasi">
                 Keterangan
               </Label>

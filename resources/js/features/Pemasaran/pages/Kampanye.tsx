@@ -6,6 +6,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -141,7 +142,7 @@ function DialogFormKampanye({
               galat={form.errors.Kode}
             />
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Nama" htmlFor="Nama">
                 Nama
               </Label>
@@ -155,7 +156,7 @@ function DialogFormKampanye({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Objective" htmlFor="Objective">
                   Objective
                 </Label>
@@ -173,7 +174,7 @@ function DialogFormKampanye({
                 </Select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Status" htmlFor="Status">
                   Status
                 </Label>
@@ -201,7 +202,7 @@ function DialogFormKampanye({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="MulaiPada" htmlFor="MulaiPada">
                   Mulai
                 </Label>
@@ -211,7 +212,7 @@ function DialogFormKampanye({
                   id="MulaiPada"
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="SelesaiPada" htmlFor="SelesaiPada">
                   Selesai
                 </Label>
@@ -227,7 +228,7 @@ function DialogFormKampanye({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Budget" htmlFor="Budget">
                   Budget
                 </Label>
@@ -240,7 +241,7 @@ function DialogFormKampanye({
                   Rencana belanja. Realisasinya dicatat per hari di halaman detail.
                 </p>
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Offer" htmlFor="Offer">
                   Offer
                 </Label>
@@ -252,7 +253,7 @@ function DialogFormKampanye({
               </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Audience" htmlFor="Audience">
                 Audience
               </Label>
@@ -264,7 +265,7 @@ function DialogFormKampanye({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="HalamanId" htmlFor="HalamanId">
                   Landing page
                 </Label>
@@ -285,7 +286,7 @@ function DialogFormKampanye({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="FormulirId" htmlFor="FormulirId">
                   Formulir
                 </Label>
@@ -308,7 +309,7 @@ function DialogFormKampanye({
               </div>
             </div>
 
-            <fieldset className="grid gap-2">
+            <fieldset className="grid content-start gap-2">
               <legend className="text-sm font-medium">Tag UTM</legend>
               <p className="text-sm text-muted-foreground">
                 <code className="font-mono">utm_campaign</code> selalu memakai kode di atas.
@@ -322,7 +323,7 @@ function DialogFormKampanye({
                     ['UtmContent', 'utm_content'],
                   ] as const
                 ).map(([kunci, label]) => (
-                  <div key={kunci} className="grid gap-2">
+                  <div key={kunci} className="grid content-start gap-2">
                     <Label htmlFor={kunci}>{label}</Label>
                     <Input
                       id={kunci}
@@ -334,7 +335,7 @@ function DialogFormKampanye({
               </div>
             </fieldset>
 
-            <fieldset className="grid gap-2">
+            <fieldset className="grid content-start gap-2">
               <legend className="text-sm font-medium">Channel</legend>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {pilihan.Channel.map((satu) => (
@@ -380,7 +381,7 @@ export default function PemasaranKampanye({ kampanye, pilihan, filter, wajib }: 
         id: 'Status',
         accessorFn: (row) => row.Status,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: ({ row }) => <Badge variant="secondary">{row.original.Status}</Badge>,
+        cell: ({ row }) => <Badge variant={varianStatus(row.original.Status)}>{row.original.Status}</Badge>,
         meta: { label: 'Status' },
       },
       {

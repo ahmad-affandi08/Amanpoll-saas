@@ -240,7 +240,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
                 </thead>
                 <tbody className="divide-y divide-border">
                   {pesanan.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         <Link
                           className="font-mono font-medium hover:text-primary"
@@ -268,7 +268,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
                 <Link
                   key={item.Id}
                   href={rutePesananPembelian.detail(item.Id)}
-                  className="flex min-h-24 items-center gap-3 p-4"
+                  className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <PackageCheck className="size-5 shrink-0 text-primary" />
                   <div className="min-w-0 flex-1">

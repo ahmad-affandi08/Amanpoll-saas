@@ -70,7 +70,7 @@ export function DialogFormDistribusi({
         </DialogHeader>
 
         <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="Channel">Channel</Label>
             <Select value={form.data.Channel} onValueChange={(v) => form.setData('Channel', v)}>
               <SelectTrigger id="Channel">
@@ -87,7 +87,7 @@ export function DialogFormDistribusi({
             {form.errors.Channel ? <p className="text-sm text-destructive">{form.errors.Channel}</p> : null}
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="Caption">Caption</Label>
             <Textarea
               id="Caption"
@@ -98,7 +98,7 @@ export function DialogFormDistribusi({
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="MediaUrl">Media</Label>
             <Input
               id="MediaUrl"
@@ -116,11 +116,11 @@ export function DialogFormDistribusi({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label htmlFor="Cta">CTA</Label>
               <Input id="Cta" value={form.data.Cta} onChange={(e) => form.setData('Cta', e.target.value)} />
             </div>
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label htmlFor="TautanTujuan">Tautan tujuan</Label>
               <Input
                 id="TautanTujuan"
@@ -131,7 +131,7 @@ export function DialogFormDistribusi({
             </div>
           </div>
 
-          <fieldset className="grid gap-2">
+          <fieldset className="grid content-start gap-2">
             <legend className="text-sm font-medium">UTM distribusi</legend>
             <p className="text-sm text-muted-foreground">
               Dikosongkan berarti memakai bawaan: channel sebagai{' '}
@@ -147,7 +147,7 @@ export function DialogFormDistribusi({
                   ['UtmContent', 'utm_content'],
                 ] as const
               ).map(([kunci, label]) => (
-                <div key={kunci} className="grid gap-2">
+                <div key={kunci} className="grid content-start gap-2">
                   <Label htmlFor={kunci}>{label}</Label>
                   <Input
                     id={kunci}

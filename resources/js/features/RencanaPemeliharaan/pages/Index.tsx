@@ -141,7 +141,7 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
 
                           <div className="space-y-1.5">
                             <Label nama="Nama" htmlFor="Nama">
-                              Nama Rencana <span className="text-rose-500">*</span>
+                              Nama Rencana <span className="text-destructive">*</span>
                             </Label>
                             <Input
                               id="Nama"
@@ -150,13 +150,15 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                               onChange={(e) => form.setData('Nama', e.target.value)}
                               required
                             />
-                            {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
+                            {form.errors.Nama && (
+                              <p className="text-xs text-destructive">{form.errors.Nama}</p>
+                            )}
                           </div>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
                               <Label nama="IntervalNilai" htmlFor="IntervalNilai">
-                                Interval <span className="text-rose-500">*</span>
+                                Interval <span className="text-destructive">*</span>
                               </Label>
                               <Input
                                 id="IntervalNilai"
@@ -284,7 +286,7 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
           </div>
           <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-grafit-500 font-medium">Siklus Penjadwalan</span>
-            <div className="text-sm font-semibold text-emerald-700 mt-2 flex items-center gap-1.5">
+            <div className="text-sm font-semibold text-sukses-700 mt-2 flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
               Otomatis (Harian Pukul 01:00)
             </div>
@@ -326,7 +328,7 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                     </span>
                     <Badge
                       variant={r.Aktif ? 'default' : 'secondary'}
-                      className={r.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                      className={r.Aktif ? 'bg-sukses-50 text-sukses-700 border-sukses-200' : ''}
                     >
                       {r.Aktif ? 'Aktif' : 'Nonaktif'}
                     </Badge>
@@ -350,14 +352,14 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                         {r.aset_count ?? r.aset?.length ?? 0} Aset
                       </span>
                     </div>
-                    {r.templatDaftarPeriksa && (
+                    {r.templat_daftar_periksa && (
                       <div className="flex items-center justify-between pt-1">
                         <span className="text-grafit-500">Checklist:</span>
                         <span
                           className="text-grafit-700 truncate max-w-[160px]"
-                          title={r.templatDaftarPeriksa.Nama}
+                          title={r.templat_daftar_periksa.Nama}
                         >
-                          {r.templatDaftarPeriksa.Kode}
+                          {r.templat_daftar_periksa.Kode}
                         </span>
                       </div>
                     )}

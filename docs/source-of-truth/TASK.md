@@ -1409,6 +1409,47 @@ Test minimal:
 - [x] 1440x900.
 - [x] 1920x1080.
 
+Audit keterbacaan menyusul setelah pengguna mengeluhkan teks yang hilang saat
+di-hover. Pemindai Playwright membaca kontras setiap teks dalam keadaan diam,
+hover, dan fokus di 81 halaman tenant dan platform. Pada kode lama ada 944
+pelanggaran diam, 190 hover, dan 332 fokus; pada kode baru nol untuk ketiganya.
+Tiga jalur persetujuan dan izin yang ikut terpindai ternyata endpoint JSON, jadi
+tidak dihitung.
+
+Akar masalahnya sedikit, tetapi menyebar ke mana-mana:
+- Token `accent` shadcn, yaitu latar hover, fokus, dan opsi tersorot, bernilai
+  biru pekat Teknisi-500, sehingga teks gelap berdiri di atas biru. Kini nilainya
+  tint Teknisi-50.
+- Grafit-500 sebagai abu metadata tidak lolos 4,5:1.
+- Sekitar 200 kelas warna menunjuk shade yang tidak punya token. Tailwind 4 diam
+  saja dan tidak menghasilkan CSS untuk kelas itu.
+- Aturan `* { border-color }` di luar `@layer` menimpa setiap utilitas border.
+- Teks status memakai shade -600 di atas tint.
+
+Opsi mengganti palet ditolak. Cukup menambah tint dan shade -700 lalu memetakan
+ulang pemakaiannya. `WarnaPaletTerdefinisiTest` menjaga agar shade tanpa token
+tidak kembali. Pekerjaan dibagi ke tiga agen: komponen bersama, halaman
+operasional tenant, dan konsol/publik. Tiap agen mengukur, memperbaiki, lalu
+mengukur ulang.
+
+Pemindaian itu juga membuka bug yang bukan soal warna:
+- Daftar gudang jatuh 500 begitu ada satu gudang.
+- Butir checklist dan templat inspeksi tidak pernah tampil, karena halaman membaca
+  relasi camelCase sementara model mentah berserialisasi snake_case. Jebakannya:
+  dua halaman daftar templat justru menyusun barisnya sendiri dengan camelCase.
+  Karena itu tipe barisnya dipisah (`BarisTemplatInspeksi`), bukan diseragamkan.
+- Kalkulator publik jatuh 500 karena angka dari formulir tiba sebagai teks,
+  padahal aturan `integer` tidak mengubah tipenya. Hasil kalkulator dan label QR
+  pun tidak pernah sampai ke halaman.
+- Legenda donat kondisi aset menulis 4 aset sebagai "4%". Rincian KPI persen
+  berisi jumlah, jam, atau uang, sehingga kini punya `SatuanRincian` sendiri yang
+  juga dipakai ekspor.
+
+Yang sengaja belum disentuh adalah pesan validasi bawaan Laravel. `APP_LOCALE=id`
+tanpa folder `lang/` membuat setiap aturan tanpa `messages()` tampil sebagai kunci
+mentah (`validation.required`). Perbaikannya butuh folder dasar baru, jadi
+menunggu persetujuan.
+
 ### Gate 23
 
 Tidak ada halaman utama yang memerlukan desktop untuk menyelesaikan pekerjaan teknisi dasar. (Terpenuhi)

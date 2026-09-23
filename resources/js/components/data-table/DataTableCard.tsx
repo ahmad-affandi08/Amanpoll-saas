@@ -72,7 +72,7 @@ function KartuBaris<TData>({ row }: { row: Row<TData> }) {
         // Tombol aksi di tabel dirancang untuk tetikus (28px). Di kartu ia
         // disentuh jari, jadi diberi ukuran minimum 36px tanpa mengubah
         // komponen halaman yang merendernya.
-        <div className="flex flex-wrap items-center gap-2 pt-1 [&_button]:min-h-9 [&_button]:min-w-9">
+        <div className="flex flex-wrap items-center gap-2 pt-1 [&_button]:min-h-10 [&_button]:min-w-10">
           {aksi.map((cell) => (
             <div key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</div>
           ))}

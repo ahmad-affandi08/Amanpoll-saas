@@ -13,7 +13,7 @@ interface Props {
 export function KerangkaPublik({ urlMasuk, urlDaftar, children }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b">
+      <header className="border-b bg-card">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4">
           <a href={rutePublik.beranda} aria-label="Beranda Amanpoll">
             <LogoLambang />

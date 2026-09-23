@@ -4,6 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif, varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -94,7 +95,7 @@ export default function PemasaranOtomasiShow({ otomasi, versi, eksekusi, pilihan
         <Badge variant="outline" className="font-mono">
           {otomasi.Pemicu}
         </Badge>
-        {otomasi.Aktif ? <Badge>Menyala</Badge> : <Badge variant="secondary">Mati</Badge>}
+        <Badge variant={varianAktif(otomasi.Aktif)}>{otomasi.Aktif ? 'Menyala' : 'Mati'}</Badge>
         {otomasi.PemicuBerlaku ? null : (
           <Badge variant="outline">Belum ada yang menghasilkan pemicu ini</Badge>
         )}
@@ -300,7 +301,7 @@ function DialogLangkah({
         </DialogHeader>
 
         <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="JenisLangkah">Jenis</Label>
             <Select value={jenis} onValueChange={setJenis}>
               <SelectTrigger id="JenisLangkah">
@@ -317,7 +318,7 @@ function DialogLangkah({
           </div>
 
           {jenis === 'Jeda' ? (
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label htmlFor="MenitJeda">Jeda (menit)</Label>
               <Input
                 id="MenitJeda"
@@ -332,7 +333,7 @@ function DialogLangkah({
 
           {jenis === 'Kondisi' ? (
             <>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="BidangKondisi">Bidang</Label>
                 <Combobox
                   nilai={bidang}
@@ -341,7 +342,7 @@ function DialogLangkah({
                 />
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="OperatorKondisi">Operator</Label>
                 <Select value={operator} onValueChange={setOperator}>
                   <SelectTrigger id="OperatorKondisi">
@@ -357,7 +358,7 @@ function DialogLangkah({
                 </Select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="NilaiKondisi">Nilai</Label>
                 <Input
                   id="NilaiKondisi"
@@ -371,7 +372,7 @@ function DialogLangkah({
 
           {jenis === 'Aksi' ? (
             <>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="KodeAksi">Aksi</Label>
                 <Select value={aksi} onValueChange={setAksi}>
                   <SelectTrigger id="KodeAksi">
@@ -387,7 +388,7 @@ function DialogLangkah({
                 </Select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="KonfigurasiAksi">Konfigurasi (JSON)</Label>
                 <Input
                   id="KonfigurasiAksi"
@@ -435,9 +436,7 @@ function DaftarEksekusi({ eksekusi }: { eksekusi: EksekusiOtomasi[] }) {
                   {satu.Percobaan > 0 ? ` · percobaan ${satu.Percobaan}` : ''}
                 </p>
               </div>
-              <Badge variant={satu.Status === 'GagalPermanen' ? 'destructive' : 'outline'}>
-                {satu.Status}
-              </Badge>
+              <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
             </div>
 
             {satu.Galat ? <p className="text-xs text-destructive">{satu.Galat}</p> : null}

@@ -17,8 +17,8 @@ interface DataTablePaginationProps<TData> {
   ukuranTetap?: boolean;
 }
 
-/** Tombol navigasi: 36px di ponsel supaya mudah disentuh, 32px di layar lebar. */
-const KELAS_TOMBOL = 'size-9 sm:size-8';
+/** Tombol navigasi: 40px di ponsel supaya mudah disentuh, 32px di layar lebar. */
+const KELAS_TOMBOL = 'size-10 sm:size-8';
 
 export function DataTablePagination<TData>({
   table,

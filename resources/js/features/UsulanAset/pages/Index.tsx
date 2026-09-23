@@ -330,7 +330,7 @@ export default function UsulanAsetIndex({
                 </thead>
                 <tbody className="divide-y divide-border">
                   {usulan.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         <Link
                           href={ruteUsulanAset.detail(item.Id)}
@@ -366,11 +366,11 @@ export default function UsulanAsetIndex({
                 <Link
                   key={item.Id}
                   href={ruteUsulanAset.detail(item.Id)}
-                  className="flex min-h-24 items-center gap-3 p-4"
+                  className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <ClipboardPlus className="size-5 shrink-0 text-primary" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{item.NamaKebutuhan}</p>
+                    <p className="line-clamp-2 font-medium">{item.NamaKebutuhan}</p>
                     <p className="font-mono text-xs text-muted-foreground">{item.Nomor}</p>
                     <div className="mt-2 flex gap-2">
                       <Badge variant={VARIAN_PRIORITAS[item.Prioritas]}>{item.Prioritas}</Badge>

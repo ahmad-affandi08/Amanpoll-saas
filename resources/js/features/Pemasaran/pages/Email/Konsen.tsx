@@ -143,7 +143,11 @@ function RiwayatKonsenTabel({ riwayat, cari }: { riwayat: RiwayatKonsen[]; cari:
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              {satu.Diberikan ? <Badge>Disetujui</Badge> : <Badge variant="destructive">Dicabut</Badge>}
+              {satu.Diberikan ? (
+                <Badge variant="sukses">Disetujui</Badge>
+              ) : (
+                <Badge variant="bahaya">Dicabut</Badge>
+              )}
               <span className="text-xs text-muted-foreground">{waktu(satu.DicatatPada)}</span>
             </div>
           </CardContent>
@@ -238,7 +242,7 @@ function DialogSupresi({ pilihan }: { pilihan: { Alasan: string[] } }) {
         </DialogHeader>
 
         <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="EmailSupresi">Email</Label>
             <Input
               id="EmailSupresi"
@@ -250,7 +254,7 @@ function DialogSupresi({ pilihan }: { pilihan: { Alasan: string[] } }) {
             {form.errors.Email ? <p className="text-sm text-destructive">{form.errors.Email}</p> : null}
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="AlasanSupresi">Alasan</Label>
             <Select value={form.data.Alasan} onValueChange={(v) => form.setData('Alasan', v)}>
               <SelectTrigger id="AlasanSupresi">
@@ -266,7 +270,7 @@ function DialogSupresi({ pilihan }: { pilihan: { Alasan: string[] } }) {
             </Select>
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="CatatanSupresi">Catatan</Label>
             <Input
               id="CatatanSupresi"
@@ -318,7 +322,7 @@ function DialogPermintaan({ pilihan }: { pilihan: { Jenis: string[] } }) {
         </DialogHeader>
 
         <form onSubmit={kirim} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="EmailPermintaan">Email</Label>
             <Input
               id="EmailPermintaan"
@@ -330,7 +334,7 @@ function DialogPermintaan({ pilihan }: { pilihan: { Jenis: string[] } }) {
             {form.errors.Email ? <p className="text-sm text-destructive">{form.errors.Email}</p> : null}
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="JenisPermintaan">Jenis</Label>
             <Select value={form.data.Jenis} onValueChange={(v) => form.setData('Jenis', v)}>
               <SelectTrigger id="JenisPermintaan">
@@ -346,7 +350,7 @@ function DialogPermintaan({ pilihan }: { pilihan: { Jenis: string[] } }) {
             </Select>
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="CatatanPermintaan">Catatan</Label>
             <Input
               id="CatatanPermintaan"

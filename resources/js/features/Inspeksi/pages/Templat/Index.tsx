@@ -18,7 +18,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Plus } from 'lucide-react';
-import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
+import type { BarisTemplatInspeksi } from '@/features/PreventifInspeksi/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { BidangKode } from '@/components/shared/BidangKode';
@@ -40,7 +40,7 @@ interface TemplatDaftarPeriksaRingkas {
 }
 
 interface Props {
-  templat: Paginasi<TemplatInspeksi>;
+  templat: Paginasi<BarisTemplatInspeksi>;
   // Pemilih formulir memuat seluruh kategori dan checklist, bukan hanya baris halaman ini.
   kategoriAset: KategoriAsetRingkas[];
   templatDaftarPeriksa: TemplatDaftarPeriksaRingkas[];
@@ -105,7 +105,7 @@ function DialogBuatTemplatInspeksi({
 
               <div className="space-y-1.5">
                 <Label nama="Nama" htmlFor="Nama">
-                  Nama Templat <span className="text-rose-500">*</span>
+                  Nama Templat <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="Nama"
@@ -114,7 +114,7 @@ function DialogBuatTemplatInspeksi({
                   onChange={(e) => form.setData('Nama', e.target.value)}
                   required
                 />
-                {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
+                {form.errors.Nama && <p className="text-xs text-destructive">{form.errors.Nama}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -151,7 +151,7 @@ function DialogBuatTemplatInspeksi({
 
               <div className="space-y-1.5">
                 <Label nama="IntervalHari" htmlFor="IntervalHari">
-                  Interval Siklus (Hari) <span className="text-rose-500">*</span>
+                  Interval Siklus (Hari) <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="IntervalHari"
@@ -195,7 +195,7 @@ export default function InspeksiTemplatIndex({
   filter,
   wajib,
 }: Props) {
-  const columns = useMemo<ColumnDef<TemplatInspeksi>[]>(
+  const columns = useMemo<ColumnDef<BarisTemplatInspeksi>[]>(
     () => [
       {
         id: 'Nama',

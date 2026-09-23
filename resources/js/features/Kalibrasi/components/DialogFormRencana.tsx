@@ -104,7 +104,11 @@ export function DialogFormRencana({
     <Dialog open={buka} onOpenChange={ubahBuka}>
       <DialogTrigger asChild>
         {rencana ? (
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="sm:size-7 text-muted-foreground hover:text-foreground"
+          >
             <Pencil className="size-3.5" />
           </Button>
         ) : (
@@ -135,7 +139,7 @@ export function DialogFormRencana({
                 placeholder="Pilih Aset"
                 className="h-9 text-xs"
               />
-              {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
+              {form.errors.AsetId && <p className="text-xs text-destructive">{form.errors.AsetId}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -243,7 +247,7 @@ export function DialogFormRencana({
                 onChange={(e) => form.setData('PeringatanHariSebelum', Number(e.target.value))}
                 className="h-9 text-xs"
               />
-              <p className="text-[11px] text-zinc-500">
+              <p className="text-[11px] text-grafit-500">
                 Sistem akan memicu status "Segera Jatuh Tempo" dan mengirim notifikasi saat waktu tersisa
                 mencapai nilai ini.
               </p>
@@ -254,7 +258,7 @@ export function DialogFormRencana({
                 <Label nama="AktifRencana" htmlFor="AktifRencana">
                   Status Aktif
                 </Label>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-grafit-500">
                   Rencana aktif diperhitungkan dalam kepatuhan dan notifikasi.
                 </p>
               </div>

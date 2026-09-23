@@ -127,7 +127,7 @@ export function FormInfoPenyedia({
             rows={2}
           />
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label nama="Kota">Kota</Label>
             <Input value={form.data.Kota} onChange={(e) => form.setData('Kota', e.target.value)} />

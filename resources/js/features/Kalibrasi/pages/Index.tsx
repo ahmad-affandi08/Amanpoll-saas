@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { tanggal } from '@/components/shared/riwayat';
 import { BellRing, Search, ArrowRight, Calendar } from 'lucide-react';
 import type { PelaksanaanKalibrasi, RencanaKalibrasi, StatistikKepatuhan } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
@@ -161,7 +162,8 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
                       key={item.key}
                       type="button"
                       onClick={() => setFilterStatus(item.key)}
-                      className={`text-xs px-3 py-1.5 rounded-[7px] font-medium transition-colors ${
+                      aria-pressed={filterStatus === item.key}
+                      className={`inline-flex min-h-11 items-center whitespace-nowrap text-xs px-3 py-1.5 rounded-[7px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:min-h-0 ${
                         filterStatus === item.key
                           ? 'bg-teknisi-700 text-white'
                           : 'bg-permukaan-100 text-grafit-700 hover:bg-garis-200'
@@ -202,7 +204,7 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
                         {filteredRencana.map((rk) => {
                           const badge = statusKalibrasiBadge(rk.StatusKalibrasi);
                           return (
-                            <tr key={rk.Id} className="hover:bg-permukaan-50 transition-colors">
+                            <tr key={rk.Id} className="hover:bg-accent transition-colors">
                               <td className="px-4 py-3 font-medium text-foreground">
                                 <Link
                                   href={ruteKalibrasi.rencanaDetail(rk.Id)}
@@ -221,14 +223,14 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
                                 Setiap {rk.IntervalHari} hari
                               </td>
                               <td className="px-3 py-3 text-muted-foreground whitespace-nowrap">
-                                <div className="font-mono">{rk.TanggalBerikutnya}</div>
+                                <div>{tanggal(rk.TanggalBerikutnya)}</div>
                                 {rk.SisaHari !== undefined && (
                                   <div
                                     className={`text-[11px] ${
                                       rk.SisaHari < 0
                                         ? 'text-bahaya-600 font-semibold'
                                         : rk.SisaHari <= rk.PeringatanHariSebelum
-                                          ? 'text-safety-600 font-medium'
+                                          ? 'text-safety-700 font-medium'
                                           : 'text-muted-foreground'
                                     }`}
                                   >
@@ -287,7 +289,7 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
                     return (
                       <div
                         key={pk.Id}
-                        className="p-3.5 hover:bg-permukaan-50 transition-colors flex items-start justify-between gap-2"
+                        className="p-3.5 hover:bg-accent transition-colors flex items-start justify-between gap-2"
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
@@ -306,7 +308,7 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
                           </p>
                           <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-1 font-mono">
                             <Calendar className="size-3" />
-                            <span>{pk.TanggalKalibrasi}</span>
+                            <span>{tanggal(pk.TanggalKalibrasi)}</span>
                             {pk.NomorSertifikat && (
                               <>
                                 <span>•</span>
@@ -319,7 +321,7 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
                           asChild
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                          className="sm:size-7 text-muted-foreground hover:text-foreground"
                         >
                           <Link href={ruteKalibrasi.pelaksanaanDetail(pk.Id)}>
                             <ArrowRight className="size-3.5" />

@@ -184,7 +184,7 @@ export function EditorTitikUkur({
                   return (
                     <tr
                       key={idx}
-                      className={`hover:bg-permukaan-50 transition-colors ${isGagal ? 'bg-rose-50/50' : ''}`}
+                      className={`transition-colors ${isGagal ? 'bg-bahaya-600/5 hover:bg-bahaya-600/10' : 'hover:bg-accent'}`}
                     >
                       <td className="px-3 py-2 text-center text-muted-foreground font-mono text-[11px]">
                         {idx + 1}
@@ -257,7 +257,7 @@ export function EditorTitikUkur({
                             value={row.NilaiTerukur}
                             onChange={(e) => updateNilaiTerukur(idx, e.target.value)}
                             className={`h-7 text-xs font-mono font-semibold ${
-                              isGagal ? 'border-bahaya-600 bg-rose-50 text-bahaya-600' : ''
+                              isGagal ? 'border-bahaya-600 bg-bahaya-600/5 text-bahaya-700' : ''
                             }`}
                           />
                         )}
@@ -289,7 +289,7 @@ export function EditorTitikUkur({
                         {isLolos && (
                           <Badge
                             variant="outline"
-                            className="bg-sukses-50 text-sukses-600 border-sukses-200 text-[10px] py-0 px-2 gap-1"
+                            className="border-sukses-200 bg-sukses-50 text-sukses-700 text-[10px] py-0 px-2 gap-1"
                           >
                             <Check className="size-3" /> Lolos
                           </Badge>
@@ -297,7 +297,7 @@ export function EditorTitikUkur({
                         {isGagal && (
                           <Badge
                             variant="outline"
-                            className="bg-rose-50 text-bahaya-600 border-rose-200 text-[10px] py-0 px-2 gap-1"
+                            className="border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-700 text-[10px] py-0 px-2 gap-1"
                           >
                             <AlertTriangle className="size-3" /> Gagal
                           </Badge>
@@ -305,7 +305,7 @@ export function EditorTitikUkur({
                         {!isLolos && !isGagal && (
                           <Badge
                             variant="outline"
-                            className="bg-permukaan-100 text-muted-foreground border-garis-300 text-[10px] py-0 px-2"
+                            className="border-garis-300 bg-permukaan-100 text-grafit-700 text-[10px] py-0 px-2"
                           >
                             Belum Diuji
                           </Badge>
@@ -332,7 +332,7 @@ export function EditorTitikUkur({
                             variant="ghost"
                             size="icon"
                             onClick={() => hapusBaris(idx)}
-                            className="size-6 text-muted-foreground hover:text-bahaya-600"
+                            className="sm:size-6 text-muted-foreground hover:bg-bahaya-600/10 hover:text-bahaya-700"
                           >
                             <Trash2 className="size-3.5" />
                           </Button>
@@ -347,8 +347,8 @@ export function EditorTitikUkur({
         )}
 
         {adaTitikGagal && !sudahVerifikasi && (
-          <div className="p-3 bg-amber-50 border-t border-safety-500/30 text-xs text-safety-600 flex items-center gap-2">
-            <AlertTriangle className="size-4 shrink-0 text-safety-600" />
+          <div className="p-3 bg-safety-500/10 border-t border-safety-600/30 text-xs text-safety-700 flex items-center gap-2">
+            <AlertTriangle className="size-4 shrink-0 text-safety-700" />
             <span>
               Perhatian: Terdapat nilai titik ukur di luar batas toleransi yang diizinkan. Pertimbangkan untuk
               memberi status <strong>Gagal</strong> atau <strong>Lolos dengan Catatan</strong> saat

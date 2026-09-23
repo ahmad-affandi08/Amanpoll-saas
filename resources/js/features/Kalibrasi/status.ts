@@ -1,25 +1,29 @@
+/**
+ * Kelas badge mengikuti DESIGN.md 18: tint tipis + teks shade 700 agar teks
+ * lolos WCAG AA (>= 4,5:1) di atas tint-nya; label selalu menyertai warna.
+ */
 export function statusKalibrasiBadge(status?: string): { label: string; className: string } {
   switch (status) {
     case 'Valid':
       return {
         label: 'Valid',
-        className: 'bg-sukses-50 text-sukses-600 border-sukses-200',
+        className: 'border-sukses-200 bg-sukses-50 text-sukses-700',
       };
     case 'SegeraJatuhTempo':
       return {
         label: 'Segera Jatuh Tempo',
-        className: 'bg-amber-50 text-safety-600 border-amber-200',
+        className: 'border-safety-600/30 bg-safety-500/15 text-safety-700',
       };
     case 'Terlambat':
       return {
         label: 'Terlambat',
-        className: 'bg-rose-50 text-bahaya-600 border-rose-200',
+        className: 'border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-700',
       };
     case 'TidakAktif':
     default:
       return {
         label: 'Tidak Aktif',
-        className: 'bg-permukaan-100 text-grafit-500 border-garis-300',
+        className: 'border-garis-300 bg-permukaan-100 text-grafit-700',
       };
   }
 }
@@ -29,28 +33,28 @@ export function hasilKalibrasiBadge(hasil?: string | null): { label: string; cla
     case 'Lolos':
       return {
         label: 'Lolos',
-        className: 'bg-sukses-50 text-sukses-600 border-sukses-200',
+        className: 'border-sukses-200 bg-sukses-50 text-sukses-700',
       };
     case 'Gagal':
       return {
         label: 'Gagal',
-        className: 'bg-rose-50 text-bahaya-600 border-rose-200',
+        className: 'border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-700',
       };
     case 'LolosDenganCatatan':
       return {
         label: 'Lolos dgn Catatan',
-        className: 'bg-amber-50 text-safety-600 border-amber-200',
+        className: 'border-safety-600/30 bg-safety-500/15 text-safety-700',
       };
     case 'Terjadwal':
       return {
         label: 'Terjadwal',
-        className: 'bg-blue-50 text-info-600 border-blue-200',
+        className: 'border-info-600/25 bg-info-600/10 text-info-700',
       };
     case 'BelumDiuji':
     default:
       return {
         label: 'Belum Diuji',
-        className: 'bg-permukaan-100 text-grafit-500 border-garis-300',
+        className: 'border-garis-300 bg-permukaan-100 text-grafit-700',
       };
   }
 }

@@ -158,7 +158,7 @@ function DialogFormModelAset({
               <Label nama="Produsen">Produsen</Label>
               <Input value={form.data.Produsen} onChange={(e) => form.setData('Produsen', e.target.value)} />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label nama="IntervalPemeliharaanHari">Interval Pemeliharaan (hari)</Label>
                 <Input

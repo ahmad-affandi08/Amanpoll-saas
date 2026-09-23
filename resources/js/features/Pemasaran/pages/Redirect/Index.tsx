@@ -72,7 +72,7 @@ export default function PemasaranRedirectIndex({ redirect, pilihan, filter, waji
         cell: ({ row }) => (
           <div className="flex gap-1">
             <Badge variant="secondary">{row.original.Kode}</Badge>
-            {row.original.Aktif ? null : <Badge variant="outline">Nonaktif</Badge>}
+            {row.original.Aktif ? null : <Badge variant="netral">Nonaktif</Badge>}
           </div>
         ),
         meta: { label: 'Kode' },
@@ -187,7 +187,7 @@ function DialogRedirect({
 
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={kirim} className="grid gap-4">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Dari" htmlFor="Dari">
                 Dari
               </Label>
@@ -201,7 +201,7 @@ function DialogRedirect({
               {form.errors.Dari ? <p className="text-sm text-destructive">{form.errors.Dari}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Kode" htmlFor="Kode">
                 Kode
               </Label>
@@ -220,7 +220,7 @@ function DialogRedirect({
             </div>
 
             {butuhTujuan ? (
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Ke" htmlFor="Ke">
                   Ke
                 </Label>
@@ -238,7 +238,7 @@ function DialogRedirect({
               </p>
             )}
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Catatan" htmlFor="Catatan">
                 Catatan
               </Label>

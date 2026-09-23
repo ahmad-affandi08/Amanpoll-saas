@@ -18,6 +18,9 @@ export interface MetrikKpi {
   LabelKelompok: string;
   Satuan: SatuanKpi;
   Desimal: number;
+  /** Satuan tiap baris Rincian; KPI persen biasanya merinci jumlah, bukan persen. */
+  SatuanRincian: SatuanKpi;
+  DesimalRincian: number;
   /** Rumus terdokumentasi; ditampilkan pada tiap kartu (Gate 21). */
   Formula: string;
   Sumber: string;
@@ -46,6 +49,8 @@ export interface DefinisiKpi {
   LabelKelompok: string;
   Satuan: SatuanKpi;
   Desimal: number;
+  SatuanRincian: SatuanKpi;
+  DesimalRincian: number;
   Formula: string;
   Sumber: string;
   NaikItuBaik: boolean | null;

@@ -69,7 +69,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
         <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
             href={ruteInspeksi.index}
-            className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1 rounded-[5px] underline-offset-4 hover:text-grafit-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Daftar Inspeksi</span>
@@ -93,7 +93,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
               </div>
 
               <h1 className="text-xl font-bold text-grafit-950">
-                {inspeksi.templatInspeksi?.Nama ?? 'Inspeksi Aset'}
+                {inspeksi.templat_inspeksi?.Nama ?? 'Inspeksi Aset'}
               </h1>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-grafit-700 pt-2">
@@ -133,14 +133,14 @@ export default function InspeksiShow({ inspeksi }: Props) {
                   className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-teknisi-50 text-teknisi-700 border border-teknisi-200 hover:bg-teknisi-100 cursor-pointer"
                 >
                   <Wrench className="h-3.5 w-3.5" />
-                  Buka WO ({inspeksi.perintahKerja?.Nomor ?? 'Tindak Lanjut'})
+                  Buka WO ({inspeksi.perintah_kerja?.Nomor ?? 'Tindak Lanjut'})
                 </Link>
               ) : (
                 (inspeksi.Hasil === 'Gagal' ||
                   inspeksi.Hasil === 'PerluPerhatian' ||
                   Boolean(inspeksi.Temuan)) && (
                   <Button
-                    className="cursor-pointer bg-rose-600 hover:bg-rose-700 text-white gap-1.5 text-xs"
+                    className="cursor-pointer bg-destructive hover:bg-bahaya-700 text-white gap-1.5 text-xs"
                     onClick={() => setBukaDialogPK(true)}
                   >
                     <PlusCircle className="h-4 w-4" />
@@ -154,12 +154,12 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
         {/* Tautan Lembar Checklist jika terhubung */}
         {inspeksi.PelaksanaanDaftarPeriksaId && (
-          <div className="bg-sky-50/50 border border-sky-200 rounded-xl p-5 flex items-center justify-between">
+          <div className="bg-info-600/5 border border-info-600/25 rounded-xl p-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <FileCheck className="h-5 w-5 text-sky-600" />
+              <FileCheck className="h-5 w-5 text-info-700" />
               <div>
-                <h3 className="font-semibold text-sky-900 text-sm">Lembar Checklist Terlampir</h3>
-                <p className="text-xs text-sky-600">
+                <h3 className="font-semibold text-info-700 text-sm">Lembar Checklist Terlampir</h3>
+                <p className="text-xs text-info-700">
                   Inspeksi ini dilengkapi lembar parameter periksa lapangan terstandar.
                 </p>
               </div>
@@ -167,7 +167,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
             <Link
               href={ruteDaftarPeriksa.pelaksanaanDetail(inspeksi.PelaksanaanDaftarPeriksaId)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-sky-700 border border-sky-300 hover:bg-sky-50 shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-info-700 border border-info-600/40 hover:bg-info-600/10 shadow-sm cursor-pointer"
             >
               <span>Buka Checklist</span>
               <ExternalLink className="h-3.5 w-3.5" />
@@ -199,7 +199,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
                 {inspeksi.DilaksanakanPada ? (
                   <span>
                     Dilaksanakan pada {tanggalLokal(inspeksi.DilaksanakanPada)} oleh{' '}
-                    {inspeksi.dilaksanakanOleh?.Nama ?? 'Petugas'}
+                    {inspeksi.dilaksanakan_oleh?.Nama ?? 'Petugas'}
                   </span>
                 ) : (
                   <span className="text-grafit-500 font-normal">Belum dilaksanakan</span>
@@ -237,7 +237,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
             <div className="grid gap-4 py-4">
               <div className="space-y-1.5">
                 <Label htmlFor="Hasil">
-                  Hasil Evaluasi <span className="text-rose-500">*</span>
+                  Hasil Evaluasi <span className="text-destructive">*</span>
                 </Label>
                 <Select
                   value={formHasil.data.Hasil}
@@ -311,7 +311,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
             <div className="grid gap-4 py-4">
               <div className="space-y-1.5">
                 <Label htmlFor="Judul">
-                  Judul Pekerjaan <span className="text-rose-500">*</span>
+                  Judul Pekerjaan <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="Judul"
@@ -361,7 +361,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
               </Button>
               <Button
                 type="submit"
-                className="cursor-pointer bg-rose-600 hover:bg-rose-700 text-white"
+                className="cursor-pointer bg-destructive hover:bg-bahaya-700 text-white"
                 disabled={formPK.processing}
               >
                 {formPK.processing ? 'Membuat WO...' : 'Buat Perintah Kerja'}

@@ -77,8 +77,8 @@ export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar, w
           </p>
 
           <AturanWajibProvider aturan={wajib.kalkulator}>
-            <form onSubmit={submit} className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+            <form onSubmit={submit} className="mt-8 grid gap-4 rounded-lg border bg-card p-6 sm:grid-cols-2">
+              <div className="grid content-start gap-2">
                 <Label nama="JumlahAset" htmlFor="JumlahAset">
                   Jumlah aset dipantau
                 </Label>
@@ -95,7 +95,7 @@ export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar, w
                 ) : null}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="HariRentang" htmlFor="HariRentang">
                   Panjang rentang (hari)
                 </Label>
@@ -112,7 +112,7 @@ export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar, w
                 ) : null}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="JumlahKegagalan" htmlFor="JumlahKegagalan">
                   Jumlah kegagalan
                 </Label>
@@ -129,7 +129,7 @@ export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar, w
                 ) : null}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="MenitDowntime" htmlFor="MenitDowntime">
                   Total downtime (menit)
                 </Label>
@@ -171,7 +171,7 @@ export default function PublikKalkulator({ tool, kanonik, urlMasuk, urlDaftar, w
           {hasil ? (
             <div className="mt-10">
               {hasil.Peringatan ? (
-                <p className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <p className="mb-4 rounded-md border border-safety-600/30 bg-safety-500/10 px-4 py-3 text-sm text-safety-700">
                   {hasil.Peringatan}
                 </p>
               ) : null}

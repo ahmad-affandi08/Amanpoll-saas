@@ -35,7 +35,7 @@ export interface TemplatDaftarPeriksa {
   DiperbaruiPada?: string;
   butir_count?: number;
   butir?: ButirTemplatDaftarPeriksa[];
-  kategoriAset?: { Id: string; Nama: string } | null;
+  kategori_aset?: { Id: string; Nama: string } | null;
   modelAset?: { Id: string; Nama: string } | null;
 }
 
@@ -68,11 +68,11 @@ export interface PelaksanaanDaftarPeriksa {
   Skor?: number | null;
   Catatan?: string | null;
   DibuatPada?: string;
-  templatDaftarPeriksa?: TemplatDaftarPeriksa;
+  templat_daftar_periksa?: TemplatDaftarPeriksa;
   jawaban?: JawabanDaftarPeriksa[];
   aset?: { Id: string; KodeAset: string; Nama: string } | null;
-  perintahKerja?: { Id: string; Nomor: string; Judul: string } | null;
-  dilaksanakanOleh?: { Id: string; Nama: string } | null;
+  perintah_kerja?: { Id: string; Nomor: string; Judul: string } | null;
+  dilaksanakan_oleh?: { Id: string; Nama: string } | null;
 }
 
 export interface RencanaPemeliharaan {
@@ -94,7 +94,7 @@ export interface RencanaPemeliharaan {
   DibuatPada?: string;
   DiperbaruiPada?: string;
   aset_count?: number;
-  templatDaftarPeriksa?: TemplatDaftarPeriksa | null;
+  templat_daftar_periksa?: TemplatDaftarPeriksa | null;
   aset?: RencanaPemeliharaanAset[];
 }
 
@@ -142,9 +142,22 @@ export interface TemplatInspeksi {
   Aktif: boolean;
   DibuatPada?: string;
   inspeksi_count?: number;
-  kategoriAset?: { Id: string; Nama: string } | null;
-  templatDaftarPeriksa?: TemplatDaftarPeriksa | null;
+  kategori_aset?: { Id: string; Nama: string } | null;
+  templat_daftar_periksa?: TemplatDaftarPeriksa | null;
 }
+
+/**
+ * Baris daftar templat disusun manual di controller dengan relasi camelCase,
+ * berbeda dari model mentah di halaman detail yang relasinya snake_case.
+ */
+export type BarisTemplatInspeksi = Omit<TemplatInspeksi, 'kategori_aset' | 'templat_daftar_periksa'> & {
+  kategoriAset?: { Id: string; Nama: string } | null;
+  templatDaftarPeriksa?: { Id: string; Kode: string; Nama: string } | null;
+};
+
+export type BarisTemplatDaftarPeriksa = Omit<TemplatDaftarPeriksa, 'kategori_aset'> & {
+  kategoriAset?: { Id: string; Nama: string } | null;
+};
 
 export interface Inspeksi {
   Id: string;
@@ -163,7 +176,7 @@ export interface Inspeksi {
   DilaksanakanOleh?: string | null;
   DibuatPada?: string;
   DiperbaruiPada?: string;
-  templatInspeksi?: TemplatInspeksi;
+  templat_inspeksi?: TemplatInspeksi;
   aset?: {
     Id: string;
     KodeAset: string;
@@ -171,7 +184,7 @@ export interface Inspeksi {
     LokasiId?: string | null;
     lokasi?: { Id: string; Nama: string } | null;
   };
-  pelaksanaanDaftarPeriksa?: PelaksanaanDaftarPeriksa | null;
-  perintahKerja?: { Id: string; Nomor: string; Judul: string } | null;
-  dilaksanakanOleh?: { Id: string; Nama: string } | null;
+  pelaksanaan_daftar_periksa?: PelaksanaanDaftarPeriksa | null;
+  perintah_kerja?: { Id: string; Nomor: string; Judul: string } | null;
+  dilaksanakan_oleh?: { Id: string; Nama: string } | null;
 }

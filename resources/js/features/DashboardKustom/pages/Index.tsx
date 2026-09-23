@@ -92,7 +92,7 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
         />
 
         {flash.sukses && (
-          <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-600">
+          <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-700">
             {flash.sukses}
           </p>
         )}

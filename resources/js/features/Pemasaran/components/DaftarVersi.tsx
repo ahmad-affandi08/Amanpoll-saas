@@ -14,8 +14,8 @@ export function DaftarVersi({ halaman, versi }: { halaman: HalamanDetail; versi:
             <div className="grid gap-1">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Versi {satu.Nomor}</span>
-                {satu.Terbit ? <Badge>Terbit</Badge> : null}
-                {satu.Draf ? <Badge variant="secondary">Draf</Badge> : null}
+                {satu.Terbit ? <Badge variant="sukses">Terbit</Badge> : null}
+                {satu.Draf ? <Badge variant="netral">Draf</Badge> : null}
               </div>
               <span className="text-sm text-muted-foreground">
                 {satu.Judul}

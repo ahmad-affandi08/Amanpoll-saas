@@ -18,6 +18,7 @@ import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { formatAngkaUkur } from '@/lib/angka';
 
 interface Props {
   templat: TemplatDaftarPeriksa;
@@ -152,7 +153,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
         <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
             href={ruteDaftarPeriksa.index}
-            className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1 rounded-[5px] underline-offset-4 hover:text-grafit-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Daftar Templat</span>
@@ -167,12 +168,12 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                 <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700 border border-garis-300">
                   {templat.Kode}
                 </span>
-                <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200">
+                <Badge variant="outline" className="bg-info-600/10 text-info-700 border-info-600/25">
                   Versi {templat.VersiTemplat}
                 </Badge>
                 <Badge
                   variant={templat.Aktif ? 'default' : 'secondary'}
-                  className={templat.Aktif ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
+                  className={templat.Aktif ? 'bg-sukses-50 text-sukses-700 border-sukses-200' : ''}
                 >
                   {templat.Aktif ? 'Aktif' : 'Nonaktif'}
                 </Badge>
@@ -180,7 +181,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
 
               <h1 className="text-xl font-bold text-grafit-950 mt-2">{templat.Nama}</h1>
               <p className="text-sm text-grafit-500 mt-1">
-                Kategori Aset: {templat.kategoriAset?.Nama ?? 'Semua Kategori'} • Jenis: {templat.Jenis}
+                Kategori Aset: {templat.kategori_aset?.Nama ?? 'Semua Kategori'} • Jenis: {templat.Jenis}
               </p>
             </div>
 
@@ -243,7 +244,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                         {b.Wajib && (
                           <Badge
                             variant="destructive"
-                            className="text-[10px] px-1.5 py-0 bg-rose-50 text-rose-600 border border-rose-200"
+                            className="text-[10px] px-1.5 py-0 border border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-700"
                           >
                             Wajib
                           </Badge>
@@ -251,7 +252,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                         {b.BuktiFotoWajib && (
                           <Badge
                             variant="outline"
-                            className="text-[10px] px-1.5 py-0 bg-purple-50 text-purple-700 border-purple-200 gap-1"
+                            className="text-[10px] px-1.5 py-0 border-info-600/25 bg-info-600/10 text-info-700 gap-1"
                           >
                             <Camera className="h-2.5 w-2.5" /> Foto Wajib
                           </Badge>
@@ -260,19 +261,19 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
 
                       <div className="flex items-center gap-3 text-xs text-grafit-500 flex-wrap">
                         <span className="inline-flex items-center gap-1">
-                          {b.TipeJawaban === 'Angka' && <Hash className="h-3.5 w-3.5 text-blue-500" />}
+                          {b.TipeJawaban === 'Angka' && <Hash className="h-3.5 w-3.5 text-info-600" />}
                           {b.TipeJawaban === 'YaTidak' && (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                            <CheckCircle2 className="h-3.5 w-3.5 text-sukses-600" />
                           )}
-                          {b.TipeJawaban === 'Pilihan' && <List className="h-3.5 w-3.5 text-amber-500" />}
+                          {b.TipeJawaban === 'Pilihan' && <List className="h-3.5 w-3.5 text-safety-600" />}
                           {b.TipeJawaban === 'Teks' && <Type className="h-3.5 w-3.5 text-grafit-500" />}
                           Tipe: <strong className="text-grafit-700">{b.TipeJawaban}</strong>
                         </span>
 
                         {b.TipeJawaban === 'Angka' && (
                           <span>
-                            Rentang: <strong>{b.NilaiMinimum ?? '∞'}</strong> s/d{' '}
-                            <strong>{b.NilaiMaksimum ?? '∞'}</strong> {b.Satuan || ''}
+                            Rentang: <strong>{formatAngkaUkur(b.NilaiMinimum)}</strong> s/d{' '}
+                            <strong>{formatAngkaUkur(b.NilaiMaksimum)}</strong> {b.Satuan || ''}
                           </span>
                         )}
 
@@ -281,7 +282,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                         )}
 
                         {b.MemicuTemuanJika?.nilai !== undefined && (
-                          <span className="text-amber-600 font-medium">
+                          <span className="text-safety-700 font-medium">
                             Pemicu Temuan: "{String(b.MemicuTemuanJika.nilai)}"
                           </span>
                         )}
@@ -302,7 +303,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                     <Button
                       variant="outline"
                       size="sm"
-                      className="cursor-pointer h-8 px-2.5 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+                      className="cursor-pointer h-8 px-2.5 text-xs text-destructive hover:text-bahaya-700 hover:bg-bahaya-600/10 border-bahaya-600/25"
                       onClick={() => hapusButir(b.Id)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -327,7 +328,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
               <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-1">
                 <div className="space-y-1.5">
                   <Label nama="Pertanyaan" htmlFor="Pertanyaan">
-                    Pertanyaan / Parameter Pemeriksaan <span className="text-rose-500">*</span>
+                    Pertanyaan / Parameter Pemeriksaan <span className="text-destructive">*</span>
                   </Label>
                   <Textarea
                     id="Pertanyaan"

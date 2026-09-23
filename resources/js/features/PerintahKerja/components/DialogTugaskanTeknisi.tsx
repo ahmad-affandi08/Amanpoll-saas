@@ -95,14 +95,14 @@ export function DialogTugaskanTeknisi({
                   return (
                     <label
                       key={t.Id}
-                      className="flex items-center justify-between rounded px-2 py-1 text-sm hover:bg-muted cursor-pointer"
+                      className="flex items-center justify-between rounded px-2 py-1 text-sm hover:bg-accent cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
                           checked={dipilih}
                           onChange={() => toggleTeknisi(t.Id)}
-                          className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
+                          className="cursor-pointer rounded border-input text-teknisi-700 focus:ring-teknisi-600"
                         />
                         <span className="font-medium">{t.Nama}</span>
                         {t.Jabatan && <span className="text-xs text-muted-foreground">({t.Jabatan})</span>}
@@ -124,7 +124,7 @@ export function DialogTugaskanTeknisi({
                 type="checkbox"
                 checked={form.data.GantiPenugasanAktif}
                 onChange={(e) => form.setData('GantiPenugasanAktif', e.target.checked)}
-                className="cursor-pointer rounded border-gray-300 text-teknisi-700 focus:ring-teknisi-600"
+                className="cursor-pointer rounded border-input text-teknisi-700 focus:ring-teknisi-600"
               />
               Gantikan penugasan aktif sebelumnya
             </label>

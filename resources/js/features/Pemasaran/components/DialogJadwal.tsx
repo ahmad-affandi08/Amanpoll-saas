@@ -42,7 +42,7 @@ export function DialogJadwal({ akar }: { akar: string }) {
         </DialogHeader>
 
         <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="JadwalPada">Terbit pada</Label>
             <Input
               id="JadwalPada"

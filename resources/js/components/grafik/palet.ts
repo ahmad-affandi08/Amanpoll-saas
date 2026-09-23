@@ -18,7 +18,7 @@ export const WARNA_STATUS = {
   perhatian: '#D97706',
   bahaya: '#C2413B',
   info: '#376FA6',
-  netral: '#6E7A82',
+  netral: '#5F6B73',
 } as const;
 
 /** Abu-abu redaksi untuk deret latar pada grafik beraksen. */

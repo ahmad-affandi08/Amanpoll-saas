@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
+import { tanggal } from '@/components/shared/riwayat';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -226,7 +227,7 @@ export default function KalibrasiPelaksanaanIndex({
                     {filteredList.map((pk) => {
                       const badge = hasilKalibrasiBadge(pk.Hasil);
                       return (
-                        <tr key={pk.Id} className="hover:bg-permukaan-50 transition-colors">
+                        <tr key={pk.Id} className="hover:bg-accent transition-colors">
                           <td className="px-4 py-3 font-mono font-semibold text-foreground whitespace-nowrap">
                             <Link href={ruteKalibrasi.pelaksanaanDetail(pk.Id)} className="hover:underline">
                               {pk.Nomor}
@@ -239,7 +240,7 @@ export default function KalibrasiPelaksanaanIndex({
                             </div>
                           </td>
                           <td className="px-3 py-3 text-muted-foreground whitespace-nowrap font-mono">
-                            {pk.TanggalKalibrasi}
+                            {tanggal(pk.TanggalKalibrasi)}
                           </td>
                           <td className="px-3 py-3 whitespace-nowrap">
                             <Badge variant="outline" className={badge.className}>
@@ -264,7 +265,7 @@ export default function KalibrasiPelaksanaanIndex({
                             )}
                           </td>
                           <td className="px-3 py-3 text-muted-foreground whitespace-nowrap font-mono">
-                            {pk.TanggalBerlakuSampai || '—'}
+                            {tanggal(pk.TanggalBerlakuSampai ?? null)}
                           </td>
                           <td className="px-3 py-3 text-muted-foreground whitespace-nowrap">
                             {pk.dilaksanakanOleh?.Nama ?? pk.penyedia?.Nama ?? '—'}
@@ -309,7 +310,7 @@ export default function KalibrasiPelaksanaanIndex({
                 placeholder="Pilih Aset"
                 className="h-9 text-xs"
               />
-              {form.errors.AsetId && <p className="text-xs text-rose-600">{form.errors.AsetId}</p>}
+              {form.errors.AsetId && <p className="text-xs text-destructive">{form.errors.AsetId}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

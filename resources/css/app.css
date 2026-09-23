@@ -34,6 +34,8 @@
     --color-teknisi-100: #dcebf1;
     --color-teknisi-50: #eef5f8;
 
+    /* Teks amber di atas tint amber: Safety-600 hanya 2,9:1 di sana (WCAG AA 4,5:1). */
+    --color-safety-700: #9a4508;
     --color-safety-600: #d97706;
     --color-safety-500: #f59e0b;
 
@@ -43,6 +45,8 @@
     --color-sukses-50: #ecf7f2;
     --color-bahaya-700: #a3342f;
     --color-bahaya-600: #c2413b;
+    /* Teks info di atas tint info: Info-600 hanya 4,3:1 di sana. */
+    --color-info-700: #2c5a87;
     --color-info-600: #376fa6;
 
     --color-grafit-950: #172027;
@@ -102,7 +106,8 @@
     --sidebar-accent: rgb(255 255 255 / 0.1);
     --sidebar-accent-foreground: #ffffff;
     --sidebar-border: rgb(255 255 255 / 0.1);
-    --sidebar-ring: var(--color-teknisi-500);
+    /* Teknisi-500 hanya 3,2:1 di atas Teknisi-900 dan 2,4:1 di atas item yang di-hover. */
+    --sidebar-ring: var(--color-teknisi-300);
 }
 
 /* Pemetaan agar utility shadcn/ui (bg-background, text-primary, dst) memakai token di atas. */
@@ -138,14 +143,25 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Amanpoll tidak menyediakan dark mode; tema gelap browser diabaikan secara sengaja. */
-* {
-    border-color: var(--border);
-}
-body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: var(--font-sans);
+/*
+ * Amanpoll tidak menyediakan dark mode; tema gelap browser diabaikan secara sengaja.
+ *
+ * Wajib di dalam `@layer base`. Aturan tanpa layer selalu menang atas utility
+ * Tailwind (yang berada di `@layer utilities`), sehingga `* { border-color }`
+ * di luar layer diam-diam menimpa SETIAP kelas warna border: `border-ring` saat
+ * fokus, `aria-invalid:border-destructive` pada isian yang galat, `border-primary`
+ * pada kotak centang tercentang, `border-transparent` pada tab, dan penanda hari
+ * ini di pemilih tanggal semuanya tampil abu-abu Garis-300.
+ */
+@layer base {
+    * {
+        border-color: var(--border);
+    }
+    body {
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-sans);
+    }
 }
 
 /* Pastikan semua tombol dan elemen interaktif yang bisa diklik menggunakan cursor: pointer */
@@ -230,4 +246,25 @@ button:disabled,
 [data-slot='sidebar-content']::-webkit-scrollbar-thumb:hover,
 [data-sidebar='sidebar'] *::-webkit-scrollbar-thumb:hover {
     background: rgb(255 255 255 / 0.35);
+}
+
+/*
+ * Toast sonner (`richColors`): teks bawaannya hanya 4,3:1 di atas latarnya (hijau
+ * hsl 140/27% dan merah hsl 360/45%). Ditimpa ke token Amanpoll dengan pasangan
+ * yang sama seperti Badge dan Alert (teks -700 di atas tint). Sengaja di luar
+ * layer dan lebih spesifik, karena sonner menyuntikkan CSS-nya sendiri saat runtime.
+ */
+html [data-sonner-toaster][data-sonner-theme='light'] {
+    --success-bg: var(--color-sukses-50);
+    --success-border: var(--color-sukses-200);
+    --success-text: var(--color-sukses-700);
+    --error-bg: color-mix(in srgb, var(--color-bahaya-600) 8%, #ffffff);
+    --error-border: color-mix(in srgb, var(--color-bahaya-600) 25%, #ffffff);
+    --error-text: var(--color-bahaya-700);
+    --info-bg: color-mix(in srgb, var(--color-info-600) 8%, #ffffff);
+    --info-border: color-mix(in srgb, var(--color-info-600) 25%, #ffffff);
+    --info-text: var(--color-info-700);
+    --warning-bg: color-mix(in srgb, var(--color-safety-500) 12%, #ffffff);
+    --warning-border: color-mix(in srgb, var(--color-safety-600) 30%, #ffffff);
+    --warning-text: var(--color-safety-700);
 }

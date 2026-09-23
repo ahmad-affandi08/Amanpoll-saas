@@ -27,7 +27,7 @@ export default function PublikHalaman({ halaman, kanonik, urlMasuk, urlDaftar }:
 
       <KerangkaPublik urlMasuk={urlMasuk} urlDaftar={urlDaftar}>
         {halaman.Pratinjau ? (
-          <div className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-900">
+          <div className="border-b border-safety-600/30 bg-safety-500/15 px-4 py-2 text-center text-sm text-safety-700">
             Pratinjau versi {halaman.VersiNomor}. Halaman ini belum tentu yang sedang terbit.
           </div>
         ) : null}

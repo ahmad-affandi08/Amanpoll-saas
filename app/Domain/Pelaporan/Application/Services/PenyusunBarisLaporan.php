@@ -39,7 +39,7 @@ final class PenyusunBarisLaporan
                     (string) $kpi['LabelKelompok'],
                     (string) ($rincian['Label'] ?? '-'),
                     (float) ($rincian['Nilai'] ?? 0),
-                    (string) $kpi['Satuan'],
+                    (string) $kpi['SatuanRincian'],
                     '',
                 ];
             }

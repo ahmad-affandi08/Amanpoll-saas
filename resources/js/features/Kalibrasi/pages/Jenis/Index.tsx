@@ -101,7 +101,7 @@ export default function KalibrasiJenisIndex({ jenisKalibrasi, filter, wajib }: P
               variant="ghost"
               size="icon"
               onClick={() => hapusJenis(row.original)}
-              className="h-7 w-7 text-bahaya-600 hover:bg-rose-50 hover:text-bahaya-700"
+              className="sm:size-7 text-bahaya-600 hover:bg-bahaya-600/10 hover:text-bahaya-700"
             >
               <Trash2 className="size-3.5" />
             </Button>

@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Boxes, LogOut, Package, ShieldCheck, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { rutePlatform } from '@/features/Platform/api';
 
 const MENU = [
@@ -51,11 +52,12 @@ export function KerangkaPlatform({ children }: PropsWithChildren) {
                   key={href}
                   href={href}
                   aria-current={aktif ? 'page' : undefined}
-                  className={
+                  className={cn(
+                    'flex items-center gap-2 rounded-[6px] px-3 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                     aktif
-                      ? 'flex items-center gap-2 rounded-[6px] bg-muted px-3 py-1.5 text-sm font-medium text-foreground'
-                      : 'flex items-center gap-2 rounded-[6px] px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted/60'
-                  }
+                      ? 'bg-teknisi-100 font-medium text-teknisi-900'
+                      : 'text-grafit-700 hover:bg-accent hover:text-accent-foreground',
+                  )}
                 >
                   <Ikon aria-hidden="true" className="size-4" />
                   {label}

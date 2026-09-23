@@ -4,6 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -94,7 +95,7 @@ function KartuDemo({ demo, pilihan, wajib }: { demo: Demo; pilihan: Pilihan; waj
           <p className="font-mono text-xs text-muted-foreground">{demo.Kode}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Badge variant={demo.Aktif ? 'default' : 'secondary'}>{demo.Aktif ? 'Aktif' : 'Dimatikan'}</Badge>
+          <Badge variant={varianAktif(demo.Aktif)}>{demo.Aktif ? 'Aktif' : 'Dimatikan'}</Badge>
           <DialogFormDemo demo={demo} pilihan={pilihan} wajib={wajib} />
           <Button
             variant="outline"
@@ -269,7 +270,7 @@ function DialogFormDemo({
                 onUbah={(nilai) => form.setData('Kode', nilai)}
                 galat={form.errors.Kode}
               />
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Nama" htmlFor="Nama">
                   Nama
                 </Label>
@@ -290,7 +291,7 @@ function DialogFormDemo({
               Demo aktif dan dapat dimulai pengunjung
             </label>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Dataset" htmlFor="Dataset">
                 Dataset
               </Label>
@@ -310,7 +311,7 @@ function DialogFormDemo({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="ResetIntervalMenit" htmlFor="ResetIntervalMenit">
                   Interval reset (menit)
                 </Label>
@@ -322,7 +323,7 @@ function DialogFormDemo({
                   onChange={(e) => form.setData('ResetIntervalMenit', e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="MaksDurasiMenit" htmlFor="MaksDurasiMenit">
                   Durasi sesi (menit)
                 </Label>
@@ -334,7 +335,7 @@ function DialogFormDemo({
                   onChange={(e) => form.setData('MaksDurasiMenit', e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="MaksSesiSerentak" htmlFor="MaksSesiSerentak">
                   Sesi serentak
                 </Label>
@@ -348,7 +349,7 @@ function DialogFormDemo({
               </div>
             </div>
 
-            <fieldset className="grid gap-2">
+            <fieldset className="grid content-start gap-2">
               <legend className="text-sm font-medium">Modul yang ditampilkan</legend>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {pilihan.Modul.map((satu) => (
@@ -366,7 +367,7 @@ function DialogFormDemo({
               ) : null}
             </fieldset>
 
-            <fieldset className="grid gap-2">
+            <fieldset className="grid content-start gap-2">
               <legend className="text-sm font-medium">Fitur yang dibatasi</legend>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {pilihan.Fitur.map((satu) => (
@@ -382,7 +383,7 @@ function DialogFormDemo({
             </fieldset>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="CtaLabel" htmlFor="CtaLabel">
                   Label CTA
                 </Label>
@@ -392,7 +393,7 @@ function DialogFormDemo({
                   onChange={(e) => form.setData('CtaLabel', e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="CtaUrl" htmlFor="CtaUrl">
                   Tautan CTA
                 </Label>

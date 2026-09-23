@@ -4,7 +4,13 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Opsi {
   label: string;
@@ -67,37 +73,48 @@ export function DataTableFacetedFilter<TData, TValue>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48 p-1">
+        {/*
+          Opsi adalah item menu, bukan <button> biasa: Radix menahan Tab di dalam
+          menu, sehingga tombol biasa tidak pernah bisa dicapai dengan keyboard.
+          onSelect dibatalkan agar menu tetap terbuka untuk memilih beberapa opsi.
+        */}
         {options.map((opsi) => {
           const dipilih = nilaiTerpilih.has(opsi.value);
           return (
-            <button
+            <DropdownMenuItem
               key={opsi.value}
-              type="button"
-              onClick={() => toggle(opsi.value)}
-              className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+              role="menuitemcheckbox"
+              aria-checked={dipilih}
+              onSelect={(event) => {
+                event.preventDefault();
+                toggle(opsi.value);
+              }}
             >
               <span
+                aria-hidden="true"
                 className={cn(
-                  'flex size-4 items-center justify-center rounded-sm border border-primary',
-                  dipilih ? 'bg-primary text-primary-foreground' : 'opacity-50',
+                  'flex size-4 items-center justify-center rounded-sm border',
+                  dipilih ? 'border-primary bg-primary text-primary-foreground' : 'border-grafit-500 bg-card',
                 )}
               >
-                {dipilih && <CheckIcon className="size-3" />}
+                {dipilih && <CheckIcon className="size-3 text-primary-foreground" />}
               </span>
               {opsi.label}
-            </button>
+            </DropdownMenuItem>
           );
         })}
         {nilaiTerpilih.size > 0 && (
           <>
-            <div className="my-1 h-px bg-border" />
-            <button
-              type="button"
-              onClick={() => column?.setFilterValue(undefined)}
-              className="w-full rounded-sm px-2 py-1.5 text-center text-sm hover:bg-accent hover:text-accent-foreground"
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="justify-center"
+              onSelect={(event) => {
+                event.preventDefault();
+                column?.setFilterValue(undefined);
+              }}
             >
               Hapus Filter
-            </button>
+            </DropdownMenuItem>
           </>
         )}
       </DropdownMenuContent>

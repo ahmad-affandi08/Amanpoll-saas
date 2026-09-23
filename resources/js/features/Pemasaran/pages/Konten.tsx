@@ -3,6 +3,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -78,7 +79,7 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan, waj
             {keyword.length === 0 ? (
               <p className="text-sm text-muted-foreground">Belum ada keyword yang digarap.</p>
             ) : (
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 {[...keyword]
                   .sort((a, b) => a.Urutan - b.Urutan || a.Keyword.localeCompare(b.Keyword))
                   .map((satu) => (
@@ -130,7 +131,7 @@ function BarisKonten({ konten }: { konten: KontenPemasaran }) {
         </p>
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-2">
-        <Badge variant={konten.Status === 'Terbit' ? 'default' : 'secondary'}>{konten.Status}</Badge>
+        <Badge variant={varianStatus(konten.Status)}>{konten.Status}</Badge>
         {konten.NoIndex ? <Badge variant="outline">noindex</Badge> : null}
         <Badge variant="outline">{konten.DiSitemap ? 'Di sitemap' : 'Tidak di sitemap'}</Badge>
       </div>
@@ -170,7 +171,7 @@ function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: Atura
 
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={submit} className="grid gap-4">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Jenis" htmlFor="Jenis">
                 Jenis
               </Label>
@@ -188,7 +189,7 @@ function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: Atura
               </Select>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Slug" htmlFor="Slug">
                 Slug
               </Label>
@@ -204,7 +205,7 @@ function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: Atura
               {form.errors.Slug ? <p className="text-sm text-destructive">{form.errors.Slug}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Judul" htmlFor="Judul">
                 Judul
               </Label>
@@ -216,7 +217,7 @@ function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: Atura
               />
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Ringkasan" htmlFor="Ringkasan">
                 Ringkasan
               </Label>
@@ -228,7 +229,7 @@ function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: Atura
               />
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="IsiMarkdown" htmlFor="IsiMarkdown">
                 Naskah
               </Label>
@@ -241,7 +242,7 @@ function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: Atura
               />
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="PenulisNama" htmlFor="PenulisNama">
                 Penulis
               </Label>
@@ -320,7 +321,7 @@ function DialogKeyword({
 
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={submit} className="grid gap-4">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Keyword" htmlFor="Keyword">
                 Keyword
               </Label>
@@ -333,7 +334,7 @@ function DialogKeyword({
               {form.errors.Keyword ? <p className="text-sm text-destructive">{form.errors.Keyword}</p> : null}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Intent" htmlFor="Intent">
                 Niat pencarian
               </Label>
@@ -352,7 +353,7 @@ function DialogKeyword({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Prioritas" htmlFor="Prioritas">
                   Prioritas
                 </Label>
@@ -369,7 +370,7 @@ function DialogKeyword({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="StatusKeyword" htmlFor="StatusKeyword">
                   Status
                 </Label>
@@ -388,7 +389,7 @@ function DialogKeyword({
               </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="ClusterSeoId" htmlFor="ClusterSeoId">
                 Cluster
               </Label>
@@ -399,7 +400,7 @@ function DialogKeyword({
               />
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="TargetUrl" htmlFor="TargetUrl">
                 Halaman target
               </Label>
@@ -450,7 +451,7 @@ function DialogCluster() {
         </DialogHeader>
 
         <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label nama="KodeCluster" htmlFor="KodeCluster">
               Kode
             </Label>
@@ -462,7 +463,7 @@ function DialogCluster() {
             />
             {form.errors.Kode ? <p className="text-sm text-destructive">{form.errors.Kode}</p> : null}
           </div>
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label nama="NamaCluster" htmlFor="NamaCluster">
               Nama
             </Label>
@@ -473,7 +474,7 @@ function DialogCluster() {
               required
             />
           </div>
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label nama="KeteranganCluster" htmlFor="KeteranganCluster">
               Keterangan
             </Label>

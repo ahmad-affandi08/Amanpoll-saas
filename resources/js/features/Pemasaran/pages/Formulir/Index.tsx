@@ -4,6 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -72,7 +73,7 @@ export default function PemasaranFormulirIndex({ formulir, pilihan, wajib }: Pro
                   <span className="font-mono text-xs text-muted-foreground">{satu.Kode}</span>
                 </div>
                 <div className="flex gap-1">
-                  {satu.Aktif ? <Badge>Aktif</Badge> : <Badge variant="outline">Nonaktif</Badge>}
+                  <Badge variant={varianAktif(satu.Aktif)}>{satu.Aktif ? 'Aktif' : 'Nonaktif'}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="grid gap-4">
@@ -194,7 +195,7 @@ function DialogFormulir({
                 contoh="demo-manufaktur"
               />
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Nama" htmlFor="Nama">
                   Nama
                 </Label>
@@ -206,7 +207,7 @@ function DialogFormulir({
                 />
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Sumber" htmlFor="Sumber">
                   Sumber prospek
                 </Label>
@@ -224,7 +225,7 @@ function DialogFormulir({
                 </Select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Tag" htmlFor="Tag">
                   Tag (dipisah koma)
                 </Label>
@@ -243,7 +244,7 @@ function DialogFormulir({
                 />
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="UrlRedirect" htmlFor="UrlRedirect">
                   Redirect setelah kirim
                 </Label>
@@ -257,7 +258,7 @@ function DialogFormulir({
                 ) : null}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="UrlWebhook" htmlFor="UrlWebhook">
                   Webhook
                 </Label>
@@ -324,18 +325,18 @@ function DialogFormulir({
             {field.map((satu, urutan) => (
               <div key={urutan} className="grid gap-3 rounded-lg border p-3">
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="grid gap-2">
+                  <div className="grid content-start gap-2">
                     <Label>Kode</Label>
                     <Input value={satu.Kode} onChange={(e) => ubahField(urutan, { Kode: e.target.value })} />
                   </div>
-                  <div className="grid gap-2">
+                  <div className="grid content-start gap-2">
                     <Label>Label</Label>
                     <Input
                       value={satu.Label}
                       onChange={(e) => ubahField(urutan, { Label: e.target.value })}
                     />
                   </div>
-                  <div className="grid gap-2">
+                  <div className="grid content-start gap-2">
                     <Label>Jenis</Label>
                     <Select value={satu.Jenis} onValueChange={(v) => ubahField(urutan, { Jenis: v })}>
                       <SelectTrigger>
@@ -353,7 +354,7 @@ function DialogFormulir({
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="grid gap-2">
+                  <div className="grid content-start gap-2">
                     <Label>Pilihan (dipisah koma)</Label>
                     <Input
                       value={satu.Pilihan.join(', ')}

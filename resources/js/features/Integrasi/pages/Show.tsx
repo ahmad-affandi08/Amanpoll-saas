@@ -251,7 +251,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
       <div className="space-y-6">
         <Link
           href={ruteIntegrasi.index}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
         >
           <ArrowLeft className="size-4" /> Kembali ke Integrasi
         </Link>
@@ -352,7 +352,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
                   </div>
                   {item.Konflik && (
                     <div className="flex flex-wrap items-center gap-2 rounded-[9px] bg-bahaya-600/10 p-2">
-                      <p className="min-w-0 flex-1 text-xs text-bahaya-600">{item.AlasanKonflik}</p>
+                      <p className="min-w-0 flex-1 text-xs text-bahaya-700">{item.AlasanKonflik}</p>
                       <Button size="sm" variant="outline" onClick={() => selesaikanKonflik(item, true)}>
                         Pertahankan ini
                       </Button>

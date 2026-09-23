@@ -192,6 +192,7 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 | `Teknisi-200` | `#B9D7E3` | Rentang terpilih, garis tepi aktif |
 | `Teknisi-100` | `#DCEBF1` | Latar terpilih |
 | `Teknisi-50` | `#EEF5F8` | Latar hover dan fokus (token `accent`) |
+| `Safety-700` | `#9A4508` | Teks peringatan di atas tint |
 | `Safety-600` | `#D97706` | Warning utama |
 | `Safety-500` | `#F59E0B` | Due soon / attention |
 | `Sukses-700` | `#116A4A` | Teks sukses di atas tint |
@@ -200,6 +201,7 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 | `Sukses-50` | `#ECF7F2` | Latar sukses lembut |
 | `Bahaya-700` | `#A3342F` | Hover destructive, teks bahaya di atas tint |
 | `Bahaya-600` | `#C2413B` | Gagal / overdue / destructive |
+| `Info-700` | `#2C5A87` | Teks informasi di atas tint |
 | `Info-600` | `#376FA6` | Informasi |
 | `Grafit-950` | `#172027` | Teks utama |
 | `Grafit-700` | `#44515A` | Teks sekunder |
@@ -253,6 +255,15 @@ terbaca di atas biru pekat. Setiap teks memenuhi WCAG AA (4,5:1; 3:1 untuk teks
 hanya boleh menunjuk token yang ada di `app.css`; shade tanpa token tidak
 menghasilkan CSS sama sekali (`WarnaPaletTerdefinisiTest`).
 
+Teks status di atas latar tint (badge, alert, banner) memakai shade -700
+(`Sukses-700`, `Safety-700`, `Bahaya-700`, `Info-700`); shade -600 di atas tint
+jatuh di bawah 4,5:1. Baris tabel dan item menu yang di-hover memakai `accent`.
+Latar halaman `Permukaan-100` tidak dipakai sebagai latar komponen di atas
+halaman: tombol sekunder, chip, dan panel di atasnya memakai putih atau
+Teknisi-100, sebab Permukaan-100 di atas Permukaan-100 lenyap. Dialog dan sheet
+berlatar putih. Item sidebar aktif ditandai garis kiri selain latarnya, dan
+cincin fokus sidebar memakai Teknisi-300 agar terlihat di atas Teknisi-900.
+
 ---
 
 # 5. CSS Token Tailwind 4
@@ -276,6 +287,7 @@ Contoh baseline:
   --color-teknisi-100: #DCEBF1;
   --color-teknisi-50: #EEF5F8;
 
+  --color-safety-700: #9A4508;
   --color-safety-600: #D97706;
   --color-safety-500: #F59E0B;
 
@@ -285,6 +297,7 @@ Contoh baseline:
   --color-sukses-50: #ECF7F2;
   --color-bahaya-700: #A3342F;
   --color-bahaya-600: #C2413B;
+  --color-info-700: #2C5A87;
   --color-info-600: #376FA6;
 
   --color-grafit-950: #172027;
@@ -570,6 +583,10 @@ Ukuran:
 - lg 40px.
 - mobile primary action minimal 44px.
 
+Keadaan nonaktif memakai warna (`Garis-200` dengan teks `Grafit-500`), bukan
+`opacity-50`: separuh transparansi menurunkan teks tombol utama ke sekitar 1,6:1.
+Tombol sekunder bersifat tonal (Teknisi-100 dengan teks Teknisi-900).
+
 Button text menggunakan kata kerja:
 
 ```text
@@ -617,7 +634,9 @@ Overdue
 Dibatalkan
 ```
 
-Badge terdiri dari background tipis + text kuat.
+Badge terdiri dari background tipis + text kuat. Setiap makna status punya
+varian warnanya sendiri (netral, info, proses, perhatian, sukses, bahaya); dua
+status yang berlawanan (Aktif/Nonaktif, Terbit/Draf) tidak boleh sama-sama abu.
 
 ## 13.4 DataTable
 
@@ -1312,6 +1331,12 @@ Rekomendasi:
 - Tooltip harus menampilkan nilai tepat.
 
 Chart memakai palet teknisi dan semantic colors secara konsisten.
+
+Rincian KPI diformat dengan satuan rinciannya sendiri (`SatuanRincian`), bukan
+satuan nilai utama: KPI persen seperti kondisi aset atau kepatuhan SLA merinci
+jumlah, sehingga 4 aset tidak boleh terbaca "4%". Label sumbu uang diringkas
+(`Rp 1,8 jt`) agar tidak terpotong, sumbu jumlah hanya menampilkan bilangan
+bulat, dan nilai enum (`PerluPerhatian`) ditampilkan sebagai kata (`Perlu Perhatian`).
 
 ---
 

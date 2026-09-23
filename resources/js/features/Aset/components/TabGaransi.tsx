@@ -88,7 +88,7 @@ export function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[
         ))}
       </div>
       <form onSubmit={submit} className="space-y-2 border-t border-border pt-4">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <Combobox
             nilai={form.data.PenyediaId}
             onPilih={(v) => form.setData('PenyediaId', v)}
@@ -100,7 +100,7 @@ export function TabGaransi({ aset, penyedia }: { aset: Aset; penyedia: Penyedia[
             onChange={(e) => form.setData('NomorGaransi', e.target.value)}
           />
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <div className="space-y-1">
             <Label className="text-xs">Mulai</Label>
             <DatePicker

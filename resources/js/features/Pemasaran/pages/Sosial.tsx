@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { rutePemasaran } from '@/features/Pemasaran/api';
@@ -14,15 +15,6 @@ interface Props {
   konten: KontenSosial[];
   pilihan: PilihanSosial;
 }
-
-const WARNA_STATUS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-  Draf: 'outline',
-  Review: 'secondary',
-  Terjadwal: 'secondary',
-  Diproses: 'secondary',
-  Terbit: 'default',
-  Gagal: 'destructive',
-};
 
 export default function PemasaranSosial({ konten, pilihan }: Props) {
   return (
@@ -101,7 +93,7 @@ function BarisDistribusi({
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <Badge variant="outline">{distribusi.Channel}</Badge>
-          <Badge variant={WARNA_STATUS[distribusi.Status] ?? 'secondary'}>{distribusi.Status}</Badge>
+          <Badge variant={varianStatus(distribusi.Status)}>{distribusi.Status}</Badge>
           {distribusi.JadwalPada ? (
             <span className="text-xs text-muted-foreground">Terjadwal {distribusi.JadwalPada}</span>
           ) : null}

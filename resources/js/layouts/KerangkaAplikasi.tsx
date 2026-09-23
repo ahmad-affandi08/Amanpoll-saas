@@ -106,7 +106,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                     <span className="truncate text-base font-bold text-white tracking-tight">Amanpoll</span>
                     <span
-                      className="truncate text-[11px] text-sidebar-foreground/75 font-medium leading-tight"
+                      className="truncate text-[11px] text-sidebar-foreground font-medium leading-tight"
                       title="Asset & Maintenance Management Multi-Industri"
                     >
                       Asset & Maintenance Management Multi-Industri
@@ -210,7 +210,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                                       'flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-md cursor-pointer transition-colors',
                                       tautanAktif(pathSekarang, subItem.href)
                                         ? 'bg-teknisi-700 text-white font-semibold'
-                                        : 'text-foreground hover:bg-permukaan-100',
+                                        : 'text-foreground',
                                     )}
                                   >
                                     <span>{subItem.label}</span>
@@ -308,7 +308,7 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                     <span className="truncate font-semibold text-white">
                       {auth.pengguna?.Nama ?? 'Pengguna'}
                     </span>
-                    <span className="truncate text-xs text-sidebar-foreground/70">
+                    <span className="truncate text-xs text-sidebar-foreground">
                       {auth.pengguna?.Email ?? ''}
                     </span>
                   </div>
@@ -364,8 +364,9 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
+                  variant="destructive"
                   onClick={keluar}
-                  className="flex items-center gap-2 text-destructive cursor-pointer focus:text-destructive focus:bg-destructive/10"
+                  className="flex items-center gap-2 cursor-pointer"
                 >
                   <LogOut className="size-4" />
                   <span>Keluar</span>
@@ -454,7 +455,7 @@ function KerangkaDalam({ children }: PropsWithChildren) {
                 type="button"
                 onClick={terapkanPembaruanAplikasi}
                 title="Versi baru tersedia. Muat ulang untuk memakainya."
-                className="inline-flex items-center gap-1.5 rounded-[5px] border border-info-600/25 bg-info-600/10 px-2 py-1 text-xs font-medium text-info-600"
+                className="inline-flex items-center gap-1.5 rounded-[5px] border border-info-600/25 bg-info-600/10 px-2 py-1 text-xs font-medium text-info-700 hover:bg-info-600/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <RotateCw className="size-3.5 shrink-0" />
                 <span className="hidden sm:inline">Versi baru tersedia</span>

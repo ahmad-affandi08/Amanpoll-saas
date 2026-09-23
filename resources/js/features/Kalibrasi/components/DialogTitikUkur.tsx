@@ -121,8 +121,8 @@ export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib
 
         <div className="space-y-6 pt-2">
           <AturanWajibProvider aturan={wajib}>
-            <form onSubmit={simpan} className="p-4 rounded-lg bg-zinc-50 border border-border space-y-3">
-              <div className="font-semibold text-xs text-zinc-900 flex items-center justify-between">
+            <form onSubmit={simpan} className="p-4 rounded-lg bg-permukaan-50 border border-border space-y-3">
+              <div className="font-semibold text-xs text-grafit-950 flex items-center justify-between">
                 <span>{titikDiedit ? 'Edit Titik Ukur' : 'Tambah Titik Ukur Baru'}</span>
                 {titikDiedit && (
                   <Button
@@ -130,7 +130,7 @@ export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib
                     variant="ghost"
                     size="sm"
                     onClick={() => kosongkan(titikUkur.length + 1)}
-                    className="h-6 text-[11px] text-zinc-500"
+                    className="h-6 text-[11px] text-grafit-500"
                   >
                     Batal Edit
                   </Button>
@@ -232,18 +232,18 @@ export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib
           </AturanWajibProvider>
 
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-zinc-700">
+            <h4 className="text-xs font-semibold text-grafit-700">
               Daftar Titik Ukur Terdaftar ({titikUkur.length})
             </h4>
 
             {titikUkur.length === 0 ? (
-              <div className="p-4 border border-dashed rounded-lg text-center text-xs text-zinc-500">
+              <div className="p-4 border border-dashed rounded-lg text-center text-xs text-grafit-500">
                 Belum ada titik ukur standar untuk jenis kalibrasi ini.
               </div>
             ) : (
               <div className="border border-border rounded-lg overflow-hidden">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-zinc-50 text-zinc-500 border-b border-border">
+                  <thead className="bg-permukaan-50 text-grafit-500 border-b border-border">
                     <tr>
                       <th className="px-3 py-2 w-10 text-center">#</th>
                       <th className="px-3 py-2">Nama Titik</th>
@@ -255,23 +255,23 @@ export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib
                   </thead>
                   <tbody className="divide-y divide-border">
                     {titikUkur.map((tu, idx) => (
-                      <tr key={tu.Id} className="hover:bg-zinc-50/50">
-                        <td className="px-3 py-2 text-center text-zinc-400 font-mono">
+                      <tr key={tu.Id} className="hover:bg-accent">
+                        <td className="px-3 py-2 text-center text-grafit-500 font-mono">
                           {tu.Urutan ?? idx + 1}
                         </td>
-                        <td className="px-3 py-2 font-medium text-zinc-900">{tu.Nama}</td>
-                        <td className="px-3 py-2 text-zinc-700">{tu.NilaiReferensi ?? '-'}</td>
-                        <td className="px-3 py-2 font-mono text-[11px] text-zinc-600">
+                        <td className="px-3 py-2 font-medium text-grafit-950">{tu.Nama}</td>
+                        <td className="px-3 py-2 text-grafit-700">{tu.NilaiReferensi ?? '-'}</td>
+                        <td className="px-3 py-2 font-mono text-[11px] text-grafit-700">
                           -{tu.ToleransiMinus ?? 0} / +{tu.ToleransiPlus ?? 0}
                         </td>
-                        <td className="px-3 py-2 text-zinc-600">{tu.Satuan ?? '-'}</td>
+                        <td className="px-3 py-2 text-grafit-700">{tu.Satuan ?? '-'}</td>
                         <td className="px-3 py-2 text-right">
                           <div className="flex items-center justify-end gap-1">
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => mulaiEdit(tu)}
-                              className="h-6 w-6 text-zinc-400 hover:text-zinc-900"
+                              className="sm:size-6 text-grafit-500 hover:text-grafit-950"
                             >
                               <Pencil className="h-3 w-3" />
                             </Button>
@@ -279,7 +279,7 @@ export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib
                               variant="ghost"
                               size="icon"
                               onClick={() => hapus(tu)}
-                              className="h-6 w-6 text-rose-500 hover:text-rose-700"
+                              className="sm:size-6 text-destructive hover:text-bahaya-700"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>

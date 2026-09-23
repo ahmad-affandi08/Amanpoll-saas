@@ -648,4 +648,33 @@ final class PreventifInspeksiTest extends TestCase
         $perintahKerja = PerintahKerja::query()->where('OrganisasiId', $organisasi->Id)->sole();
         $this->assertSame('2026-09-28 15:00:00', $perintahKerja->DijadwalkanMulaiPada?->utc()->format('Y-m-d H:i:s'));
     }
+
+    /**
+     * Halaman pelaksanaan membaca relasi dengan nama yang benar-benar dikirim.
+     *
+     * Model dikirim mentah ke Inertia, jadi relasinya berkunci snake_case
+     * (`templat_daftar_periksa`). Halaman sempat membaca `templatDaftarPeriksa`,
+     * sehingga judul templat dan SELURUH butir daftar periksa tidak tampil --
+     * teknisi membuka checklist yang kosong. Test ini mengunci kunci props yang
+     * dibaca halamannya.
+     */
+    public function test_halaman_pelaksanaan_menerima_templat_dan_butir_dengan_kunci_yang_dibaca_halaman(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-PL3-'.uniqid(), 'Nama' => 'Organisasi Pelaksanaan 3']);
+        $teknisi = $this->buatPengguna($organisasi, ['Pemeliharaan.Kelola']);
+        $this->tetapkanKonteks($organisasi);
+
+        $templat = app(KelolaTemplatDaftarPeriksa::class)->buat(['Kode' => 'CK-KUNCI', 'Nama' => 'Pemeriksaan Ventilator'], $teknisi->Id);
+        app(KelolaButirDaftarPeriksa::class)->simpan($templat, ['Pertanyaan' => 'Alarm tekanan berfungsi?', 'TipeJawaban' => 'YaTidak', 'Wajib' => true]);
+        $pelaksanaan = app(KelolaPelaksanaanDaftarPeriksa::class)->mulai(['TemplatDaftarPeriksaId' => $templat->Id], $teknisi->Id);
+
+        $this->actingAs($teknisi)
+            ->get(route('preventifInspeksi.pelaksanaan-daftar-periksa.show', $pelaksanaan->Id))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('DaftarPeriksa/Pelaksanaan/Show')
+                ->where('pelaksanaan.templat_daftar_periksa.Nama', 'Pemeriksaan Ventilator')
+                ->where('pelaksanaan.templat_daftar_periksa.butir.0.Pertanyaan', 'Alarm tekanan berfungsi?')
+                ->has('pelaksanaan.dilaksanakan_oleh'));
+    }
 }

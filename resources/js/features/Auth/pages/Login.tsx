@@ -1,11 +1,15 @@
 import { FormEvent } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { LogoLambang } from '@/components/shared/Logo';
 import { ruteAuth } from '@/features/Auth/api';
+
+/** Tautan teks: warna primer supaya terbaca sebagai tautan, garis bawah saat hover, cincin saat fokus. */
+const TAUTAN =
+  'rounded-sm text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none';
 
 export default function AuthLogin() {
   const form = useForm({ KodeOrganisasi: '', Email: '', KataSandi: '', IngatSaya: false });
@@ -61,16 +65,27 @@ export default function AuthLogin() {
           />
           {form.errors.KataSandi && <p className="text-sm text-destructive">{form.errors.KataSandi}</p>}
         </div>
-        <label className="flex items-center gap-2 text-sm text-foreground">
-          <Checkbox
-            checked={form.data.IngatSaya}
-            onCheckedChange={(v) => form.setData('IngatSaya', v === true)}
-          />
-          Ingat saya
-        </label>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <Checkbox
+              checked={form.data.IngatSaya}
+              onCheckedChange={(v) => form.setData('IngatSaya', v === true)}
+            />
+            Ingat saya
+          </label>
+          <Link href={ruteAuth.lupaKataSandi} className={TAUTAN}>
+            Lupa kata sandi?
+          </Link>
+        </div>
         <Button className="w-full" disabled={form.processing}>
           Masuk
         </Button>
+        <p className="text-center text-sm text-muted-foreground">
+          Belum punya akun?{' '}
+          <Link href={ruteAuth.daftar} className={TAUTAN}>
+            Coba gratis
+          </Link>
+        </p>
       </form>
     </div>
   );

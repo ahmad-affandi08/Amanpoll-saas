@@ -9,11 +9,11 @@ const TAMPILAN: Record<
   StatusSinkronisasi,
   { label: string; ikon: typeof Wifi; kelas: string; berputar?: boolean }
 > = {
-  Online: { label: 'Online', ikon: Wifi, kelas: 'border-sukses-600/25 bg-sukses-600/10 text-sukses-600' },
+  Online: { label: 'Online', ikon: Wifi, kelas: 'border-sukses-600/25 bg-sukses-600/10 text-sukses-700' },
   Offline: {
     label: 'Offline',
     ikon: CloudOff,
-    kelas: 'border-safety-600/30 bg-safety-500/15 text-safety-600',
+    kelas: 'border-safety-600/30 bg-safety-500/15 text-safety-700',
   },
   Menyinkronkan: {
     label: 'Menyinkronkan',
@@ -24,12 +24,12 @@ const TAMPILAN: Record<
   GagalSinkron: {
     label: 'Sinkron gagal',
     ikon: TriangleAlert,
-    kelas: 'border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-600',
+    kelas: 'border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-700',
   },
   Konflik: {
     label: 'Konflik',
     ikon: AlertTriangle,
-    kelas: 'border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-600',
+    kelas: 'border-bahaya-600/25 bg-bahaya-600/10 text-bahaya-700',
   },
 };
 
@@ -62,7 +62,7 @@ export function IndikatorSinkronisasi({ className }: { className?: string }) {
     >
       <Ikon className={cn('size-3.5 shrink-0', berputar && 'animate-spin')} />
       <span>{label}</span>
-      {keterangan && <span className="hidden font-normal opacity-80 sm:inline">· {keterangan}</span>}
+      {keterangan && <span className="hidden font-normal sm:inline">· {keterangan}</span>}
     </Link>
   );
 }

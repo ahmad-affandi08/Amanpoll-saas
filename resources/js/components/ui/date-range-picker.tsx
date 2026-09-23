@@ -248,7 +248,7 @@ export function DateRangePicker({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
+            className="size-7 rounded-md text-grafit-700 hover:text-teknisi-900 hover:bg-accent cursor-pointer"
             onClick={onPrev}
             title="Bulan sebelumnya"
           >
@@ -263,7 +263,7 @@ export function DateRangePicker({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
+            className="size-7 rounded-md text-grafit-700 hover:text-teknisi-900 hover:bg-accent cursor-pointer"
             onClick={onNext}
             title="Bulan berikutnya"
           >
@@ -319,9 +319,9 @@ export function DateRangePicker({
                     if (tempDari && !tempSampai) setHoverDate(day);
                   }}
                   className={cn(
-                    'relative z-10 size-8 flex items-center justify-center text-xs transition-all cursor-pointer select-none rounded-full',
-                    // Warna teks bulan aktif vs luar bulan
-                    isCurrentMonth ? 'text-grafit-950' : 'text-grafit-500/60 hover:text-grafit-500',
+                    'relative z-10 size-8 flex items-center justify-center text-xs transition-all cursor-pointer select-none rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+                    // Hari di luar bulan Grafit-500 (teks 60% semula 2,5:1).
+                    isCurrentMonth ? 'text-grafit-950' : 'text-grafit-500',
                     // Hari ini
                     isDayToday &&
                       !isStart &&
@@ -334,7 +334,7 @@ export function DateRangePicker({
                     // Tanggal di antara rentang
                     inRange && !isStart && !isEnd && 'font-semibold text-teknisi-900 hover:bg-teknisi-200/80',
                     // Hover normal
-                    !inRange && !isStart && !isEnd && 'hover:bg-permukaan-100',
+                    !inRange && !isStart && !isEnd && 'hover:bg-teknisi-100 hover:text-teknisi-900',
                   )}
                 >
                   {format(day, 'd')}
@@ -354,7 +354,7 @@ export function DateRangePicker({
           type="button"
           disabled={disabled}
           className={cn(
-            'flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
+            'flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-permukaan-100 disabled:text-grafit-500 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
             !parsedDari && 'text-muted-foreground',
             className,
           )}
@@ -372,13 +372,13 @@ export function DateRangePicker({
               role="button"
               tabIndex={0}
               onClick={handleReset}
-              className="rounded-full p-1 hover:bg-permukaan-100 text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+              className="rounded-full p-1 hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors cursor-pointer shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring"
               title="Reset rentang tanggal"
             >
               <X className="size-3.5" />
             </span>
           ) : (
-            <ChevronDown className="size-4 opacity-50 shrink-0 text-muted-foreground" />
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
           )}
         </button>
       </PopoverTrigger>
@@ -403,7 +403,7 @@ export function DateRangePicker({
                   'h-7 px-2.5 text-xs whitespace-nowrap rounded-lg shrink-0 cursor-pointer',
                   isActive
                     ? 'bg-teknisi-700 text-white hover:bg-teknisi-800'
-                    : 'text-grafit-700 hover:bg-permukaan-100',
+                    : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900',
                 )}
                 onClick={() => handleApplyPreset(p.getRange)}
               >
@@ -433,7 +433,7 @@ export function DateRangePicker({
                     'justify-start h-8 px-2.5 text-xs font-medium rounded-lg cursor-pointer transition-all',
                     isActive
                       ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 shadow-xs'
-                      : 'text-grafit-700 hover:bg-permukaan-100 hover:text-grafit-950',
+                      : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900',
                   )}
                   onClick={() => handleApplyPreset(p.getRange)}
                 >
@@ -520,7 +520,7 @@ export function DateRangePicker({
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 px-3.5 text-xs rounded-lg cursor-pointer border-garis-200 hover:bg-permukaan-100 text-grafit-700"
+              className="h-8 px-3.5 text-xs rounded-lg cursor-pointer text-grafit-700"
               onClick={() => {
                 setTempDari(null);
                 setTempSampai(null);

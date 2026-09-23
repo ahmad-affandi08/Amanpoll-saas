@@ -56,7 +56,7 @@ export function DialogKeputusan({
         </DialogHeader>
 
         <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="Status">Status</Label>
             <Select value={form.data.Status} onValueChange={(v) => form.setData('Status', v)}>
               <SelectTrigger id="Status">
@@ -75,7 +75,7 @@ export function DialogKeputusan({
             </p>
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="IdTemplatePenyedia">Id template penyedia</Label>
             <Input
               id="IdTemplatePenyedia"
@@ -84,7 +84,7 @@ export function DialogKeputusan({
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="Alasan">Alasan</Label>
             <Textarea
               id="Alasan"

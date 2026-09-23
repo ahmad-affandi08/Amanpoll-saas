@@ -58,6 +58,38 @@ final class KalkulatorPublikTest extends KasusLeadMagnet
         $this->assertEqualsWithDelta(1.5, $hasil['Mttr'], 0.001);
     }
 
+    /** Hasil yang dikirim lewat flash sesi harus sampai ke halaman sebagai prop, bukan hanya ke sesi. */
+    public function test_hasil_perhitungan_tampil_di_halaman_setelah_kembali(): void
+    {
+        $halaman = $this->urlPublik(ToolPublik::KalkulatorMttr->jalur());
+
+        $this->from($halaman)
+            ->followingRedirects()
+            ->post($this->urlPublik('/tools/kalkulator'), [
+                'JumlahAset' => 1,
+                'HariRentang' => 1,
+                'JumlahKegagalan' => 2,
+                'MenitDowntime' => 180,
+            ])
+            ->assertOk()
+            ->assertInertia(fn ($props) => $props
+                ->component('Publik/Kalkulator')
+                ->where('hasil.Mttr', fn ($nilai): bool => abs((float) $nilai - 1.5) < 0.001));
+    }
+
+    /** Formulir HTML mengirim angka sebagai teks; aturan `integer` menerimanya, jadi controller wajib mengubahnya ke int. */
+    public function test_masukan_angka_berupa_teks_tetap_dihitung(): void
+    {
+        $this->post($this->urlPublik('/tools/kalkulator'), [
+            'JumlahAset' => '1',
+            'HariRentang' => '1',
+            'JumlahKegagalan' => '2',
+            'MenitDowntime' => '180',
+        ])
+            ->assertRedirect()
+            ->assertSessionHas('hasil', fn (array $hasil): bool => abs((float) $hasil['Mttr'] - 1.5) < 0.001);
+    }
+
     /** Tanpa kegagalan, MTTR dan MTBF dinyatakan belum tersedia, bukan dijawab nol. */
     public function test_tanpa_kegagalan_mttr_dan_mtbf_belum_tersedia(): void
     {
@@ -157,6 +189,17 @@ final class KalkulatorPublikTest extends KasusLeadMagnet
         $this->assertCount(2, $qr);
         $this->assertSame('AST-0001', $qr[0]['Kode']);
         $this->assertStringContainsString('<svg', $qr[0]['Svg']);
+    }
+
+    public function test_label_qr_tampil_di_halaman_setelah_kembali(): void
+    {
+        $this->from($this->urlPublik(ToolPublik::QrAset->jalur()))
+            ->followingRedirects()
+            ->post($this->urlPublik('/tools/qr'), ['Kode' => ['AST-0001']])
+            ->assertOk()
+            ->assertInertia(fn ($props) => $props
+                ->component('Publik/QrAset')
+                ->where('qr.0.Kode', 'AST-0001'));
     }
 
     /** Kode yang dimasukkan tidak pernah muncul mentah di markup SVG-nya. */

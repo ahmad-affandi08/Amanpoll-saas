@@ -147,7 +147,10 @@ export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan
     <KerangkaAplikasi>
       <Head title={keluhan.Nomor} />
       <div className="mb-5">
-        <Link href={ruteKeluhan.index} className="text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          href={ruteKeluhan.index}
+          className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
+        >
           ← Kembali ke Keluhan
         </Link>
       </div>

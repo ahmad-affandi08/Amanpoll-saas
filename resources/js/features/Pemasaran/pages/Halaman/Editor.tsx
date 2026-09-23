@@ -4,6 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -108,7 +109,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
         judul={halaman ? halaman.Judul : 'Halaman Baru'}
         deskripsi={halaman ? halaman.Slug : 'Setiap penyimpanan melahirkan versi baru.'}
         tanpaBreadcrumb
-        lencana={halaman ? <Badge variant="secondary">{halaman.Status}</Badge> : undefined}
+        lencana={halaman ? <Badge variant={varianStatus(halaman.Status)}>{halaman.Status}</Badge> : undefined}
         aksi={
           <div className="flex flex-wrap gap-2">
             <Button variant="ghost" asChild>
@@ -136,7 +137,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
               <CardTitle className="text-base">Identitas</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Judul">Judul</Label>
                 <Input
                   id="Judul"
@@ -146,7 +147,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                 {form.errors.Judul ? <p className="text-sm text-destructive">{form.errors.Judul}</p> : null}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Slug">Slug</Label>
                 <Input
                   id="Slug"
@@ -157,7 +158,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                 {form.errors.Slug ? <p className="text-sm text-destructive">{form.errors.Slug}</p> : null}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Tipe">Tipe</Label>
                 <Select value={form.data.Tipe} onValueChange={(v) => form.setData('Tipe', v)}>
                   <SelectTrigger id="Tipe">
@@ -173,7 +174,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                 </Select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Segmen">Segmen</Label>
                 <Input
                   id="Segmen"
@@ -226,7 +227,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
               <CardTitle className="text-base">Metadata</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="MetaJudul">Meta title</Label>
                 <Input
                   id="MetaJudul"
@@ -234,7 +235,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                   onChange={(e) => form.setData('MetaJudul', e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="Kanonik">Canonical</Label>
                 <Input
                   id="Kanonik"
@@ -254,7 +255,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                   onChange={(e) => form.setData('MetaDeskripsi', e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="OgJudul">Open Graph title</Label>
                 <Input
                   id="OgJudul"
@@ -262,7 +263,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                   onChange={(e) => form.setData('OgJudul', e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="OgGambar">Open Graph image</Label>
                 <Input
                   id="OgGambar"
@@ -279,7 +280,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                   onChange={(e) => form.setData('OgDeskripsi', e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor="SkemaTipe">Schema type</Label>
                 <Input
                   id="SkemaTipe"

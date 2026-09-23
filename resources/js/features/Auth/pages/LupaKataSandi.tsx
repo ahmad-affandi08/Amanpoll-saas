@@ -16,22 +16,30 @@ export default function AuthLupaKataSandi() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-6">
+    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 p-6">
       <Head title="Lupa Kata Sandi" />
       <form
         onSubmit={submit}
-        className="w-full max-w-sm space-y-5 rounded-lg border border-border bg-card p-6 shadow-sm"
+        className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
       >
         <KepalaHalaman
           judul="Lupa Kata Sandi"
           deskripsi="Masukkan kode organisasi dan email untuk menerima tautan reset kata sandi."
+          tanpaBreadcrumb
         />
         {props.flash?.sukses && (
-          <p className="rounded-md bg-sukses-600/10 p-3 text-sm text-sukses-600">{props.flash.sukses}</p>
+          <p
+            role="status"
+            className="rounded-md border border-sukses-200 bg-sukses-50 p-3 text-sm text-sukses-700"
+          >
+            {props.flash.sukses}
+          </p>
         )}
         <div className="space-y-1.5">
-          <Label>Kode Organisasi</Label>
+          <Label htmlFor="kode-organisasi">Kode Organisasi</Label>
           <Input
+            id="kode-organisasi"
+            autoComplete="organization"
             value={form.data.KodeOrganisasi}
             onChange={(e) => form.setData('KodeOrganisasi', e.target.value)}
           />
@@ -40,8 +48,9 @@ export default function AuthLupaKataSandi() {
           )}
         </div>
         <div className="space-y-1.5">
-          <Label>Email</Label>
+          <Label htmlFor="email">Email</Label>
           <Input
+            id="email"
             type="email"
             value={form.data.Email}
             onChange={(e) => form.setData('Email', e.target.value)}
@@ -53,7 +62,7 @@ export default function AuthLupaKataSandi() {
         </Button>
         <a
           href={ruteAuth.login}
-          className="block text-center text-sm text-muted-foreground hover:text-foreground"
+          className="block rounded-sm text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
           Kembali ke halaman masuk
         </a>

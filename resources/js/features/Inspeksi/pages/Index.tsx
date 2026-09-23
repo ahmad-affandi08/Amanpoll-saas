@@ -131,7 +131,7 @@ export default function InspeksiIndex({
                       <div className="grid gap-4 py-4">
                         <div className="space-y-1.5">
                           <Label nama="TemplatInspeksiId" htmlFor="TemplatInspeksiId">
-                            Templat Inspeksi <span className="text-rose-500">*</span>
+                            Templat Inspeksi <span className="text-destructive">*</span>
                           </Label>
                           <Combobox
                             nilai={form.data.TemplatInspeksiId}
@@ -144,7 +144,7 @@ export default function InspeksiIndex({
 
                         <div className="space-y-1.5">
                           <Label nama="AsetId" htmlFor="AsetId">
-                            Unit Aset yang Diinspeksi <span className="text-rose-500">*</span>
+                            Unit Aset yang Diinspeksi <span className="text-destructive">*</span>
                           </Label>
                           <Combobox
                             nilai={form.data.AsetId}
@@ -157,7 +157,7 @@ export default function InspeksiIndex({
 
                         <div className="space-y-1.5">
                           <Label nama="DijadwalkanPada" htmlFor="DijadwalkanPada">
-                            Tanggal Jadwal Inspeksi <span className="text-rose-500">*</span>
+                            Tanggal Jadwal Inspeksi <span className="text-destructive">*</span>
                           </Label>
                           <DatePicker
                             value={form.data.DijadwalkanPada}
@@ -165,7 +165,7 @@ export default function InspeksiIndex({
                             placeholder="Pilih tanggal jadwal..."
                           />
                           {form.errors.DijadwalkanPada && (
-                            <p className="text-xs text-rose-500">{form.errors.DijadwalkanPada}</p>
+                            <p className="text-xs text-destructive">{form.errors.DijadwalkanPada}</p>
                           )}
                         </div>
 
@@ -218,22 +218,22 @@ export default function InspeksiIndex({
             <div className="text-2xl font-bold text-grafit-950 mt-1">{inspeksi.data.length}</div>
           </div>
           <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
+            <span className="text-xs text-sukses-700 font-medium flex items-center gap-1">
               <CheckCircle2 className="h-3.5 w-3.5" /> Lolos Normal
             </span>
-            <div className="text-2xl font-bold text-emerald-700 mt-1">{lolosCount}</div>
+            <div className="text-2xl font-bold text-sukses-700 mt-1">{lolosCount}</div>
           </div>
           <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-amber-600 font-medium flex items-center gap-1">
+            <span className="text-xs text-safety-700 font-medium flex items-center gap-1">
               <AlertTriangle className="h-3.5 w-3.5" /> Perlu Perhatian
             </span>
-            <div className="text-2xl font-bold text-amber-700 mt-1">{perhatianCount}</div>
+            <div className="text-2xl font-bold text-safety-700 mt-1">{perhatianCount}</div>
           </div>
           <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-rose-600 font-medium flex items-center gap-1">
+            <span className="text-xs text-destructive font-medium flex items-center gap-1">
               <XCircle className="h-3.5 w-3.5" /> Gagal / Temuan
             </span>
-            <div className="text-2xl font-bold text-rose-700 mt-1">{gagalCount}</div>
+            <div className="text-2xl font-bold text-bahaya-700 mt-1">{gagalCount}</div>
           </div>
         </div>
 
@@ -310,7 +310,7 @@ export default function InspeksiIndex({
                     const hasilBadge = item.Hasil ? hasilInspeksiBadge[item.Hasil] : null;
 
                     return (
-                      <tr key={item.Id} className="hover:bg-permukaan-50/50 transition-colors">
+                      <tr key={item.Id} className="hover:bg-accent transition-colors">
                         <td className="px-5 py-4 font-mono font-bold text-xs text-grafit-950">
                           {item.Nomor}
                         </td>
@@ -321,7 +321,7 @@ export default function InspeksiIndex({
                           </span>
                         </td>
                         <td className="px-5 py-4 text-xs text-grafit-700">
-                          {item.templatInspeksi?.Nama ?? '-'}
+                          {item.templat_inspeksi?.Nama ?? '-'}
                         </td>
                         <td className="px-5 py-4 text-xs text-grafit-700">
                           <div className="flex items-center gap-1.5">

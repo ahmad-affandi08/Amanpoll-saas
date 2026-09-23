@@ -122,7 +122,7 @@ export default function PlatformPaketIndex({ paket, katalogFitur }: Props) {
                       </TableCell>
                       <TableCell className="text-right tabular-nums">{item.JumlahLangganan}</TableCell>
                       <TableCell>
-                        <Badge variant={item.Aktif ? 'default' : 'secondary'}>
+                        <Badge variant={item.Aktif ? 'sukses' : 'netral'}>
                           {item.Aktif ? 'Aktif' : 'Nonaktif'}
                         </Badge>
                       </TableCell>

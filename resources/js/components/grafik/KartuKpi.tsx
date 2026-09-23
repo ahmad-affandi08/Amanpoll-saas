@@ -34,14 +34,14 @@ export function KartuKpi({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="truncate text-sm text-muted-foreground">{judul ?? kpi.Nama}</p>
-            <p className="text-xs text-muted-foreground/80">{kpi.LabelKelompok}</p>
+            <p className="text-xs text-muted-foreground">{kpi.LabelKelompok}</p>
           </div>
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 type="button"
                 aria-label={`Rumus ${kpi.Nama}`}
-                className="flex size-11 shrink-0 items-center justify-center rounded-[5px] text-muted-foreground hover:bg-permukaan-100 hover:text-foreground sm:size-7"
+                className="flex size-11 shrink-0 items-center justify-center rounded-[5px] text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:size-7"
               >
                 <Info className="size-4" />
               </button>
@@ -49,7 +49,7 @@ export function KartuKpi({
             <TooltipContent className="max-w-xs text-xs leading-relaxed">
               <p className="mb-1 font-semibold">{kpi.Nama}</p>
               <p>{kpi.Formula}</p>
-              <p className="mt-1 text-muted-foreground">Sumber: {kpi.Sumber}</p>
+              <p className="mt-1 text-white/75">Sumber: {kpi.Sumber}</p>
               {kpi.Konteks.FilterDimensiBerlaku === false && (
                 <p className="mt-1 text-safety-600">Filter unit dan lokasi tidak berlaku untuk KPI ini.</p>
               )}

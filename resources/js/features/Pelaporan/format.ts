@@ -38,6 +38,16 @@ export function formatRingkas(nilai: number, satuan: SatuanKpi, desimal: number)
   return formatNilai(nilai, satuan, desimal);
 }
 
+/** Label sumbu grafik: uang diringkas (`Rp 1,8 jt`) agar tidak terpotong lebar sumbu. */
+export function formatSumbu(nilai: number, satuan: SatuanKpi, desimal: number): string {
+  if (satuan === 'Uang') {
+    // Spasi tak terputus: recharts membungkus label sumbu pada spasi biasa.
+    return `Rp\u00a0${nilai.toLocaleString(LOKAL, { notation: 'compact', maximumFractionDigits: 1 })}`;
+  }
+
+  return formatNilai(nilai, satuan, desimal);
+}
+
 export function formatNilaiKpi(kpi: MetrikKpi, ringkas = false): string {
   return ringkas
     ? formatRingkas(kpi.Nilai, kpi.Satuan, kpi.Desimal)

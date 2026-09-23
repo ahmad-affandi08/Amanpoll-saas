@@ -294,7 +294,7 @@ function Perbandingan({ isi }: { isi: Isi }) {
   return (
     <Bagian>
       <JudulBagian isi={isi} />
-      <div className="overflow-x-auto rounded-lg border">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-muted/50">
             <tr>
@@ -332,9 +332,11 @@ function Faq({ isi }: { isi: Isi }) {
       <JudulBagian isi={isi} />
       <div className="grid gap-4">
         {butir.map((satu, urutan) => (
-          <details key={urutan} className="rounded-lg border p-4">
-            <summary className="cursor-pointer font-medium">{teks(satu, 'tanya')}</summary>
-            <p className="mt-3 text-sm text-muted-foreground">{teks(satu, 'jawab')}</p>
+          <details key={urutan} className="rounded-lg border bg-card">
+            <summary className="cursor-pointer rounded-lg p-4 font-medium hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+              {teks(satu, 'tanya')}
+            </summary>
+            <p className="px-4 pb-4 text-sm text-muted-foreground">{teks(satu, 'jawab')}</p>
           </details>
         ))}
       </div>
@@ -380,7 +382,7 @@ function KartuPaket({ paket }: { paket: Isi }) {
 
   return (
     <Card className={benar(paket, 'Disorot') ? 'border-foreground shadow-sm' : undefined}>
-      <CardHeader className="grid gap-2">
+      <CardHeader className="grid content-start gap-2">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-base">{nama}</CardTitle>
           {badge ? <Badge>{badge}</Badge> : null}
@@ -440,7 +442,7 @@ function BlokFormulir({ blok }: { blok: BlokHalaman }) {
 
   return (
     <Bagian>
-      <div className="mx-auto w-full max-w-xl rounded-lg border p-6">
+      <div className="mx-auto w-full max-w-xl rounded-lg border bg-card p-6">
         <FormulirPemasaran
           formulir={blok.Formulir}
           judul={teksOpsional(blok.Isi, 'judul') ?? undefined}

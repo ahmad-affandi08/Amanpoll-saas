@@ -50,7 +50,7 @@ export function KonsolMenu({ menu, pratinjau }: { menu: MenuWhatsApp[]; pratinja
         {baris.map((satu, indeks) => (
           <Card key={satu.Id}>
             <CardContent className="grid gap-3 p-4 sm:grid-cols-[6rem_1fr]">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor={`Kunci-${indeks}`}>Balasan</Label>
                 <Input
                   id={`Kunci-${indeks}`}
@@ -59,7 +59,7 @@ export function KonsolMenu({ menu, pratinjau }: { menu: MenuWhatsApp[]; pratinja
                   required
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label htmlFor={`Label-${indeks}`}>Label menu</Label>
                 <Input
                   id={`Label-${indeks}`}

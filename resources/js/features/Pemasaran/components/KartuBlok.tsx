@@ -108,7 +108,7 @@ export function KartuBlok({
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label>Jenis</Label>
             <Select value={blok.Jenis} onValueChange={(v) => ubah({ Jenis: v })}>
               <SelectTrigger>
@@ -125,7 +125,7 @@ export function KartuBlok({
           </div>
 
           {blok.Jenis === 'Formulir' ? (
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label>Formulir</Label>
               <Select value={blok.FormulirKode ?? ''} onValueChange={(v) => ubah({ FormulirKode: v })}>
                 <SelectTrigger>
@@ -143,7 +143,7 @@ export function KartuBlok({
           ) : null}
         </div>
 
-        <div className="grid gap-2">
+        <div className="grid content-start gap-2">
           <Label>Isi (JSON)</Label>
           <Textarea
             rows={8}

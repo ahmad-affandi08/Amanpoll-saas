@@ -67,7 +67,7 @@ function DialogProspekBaru({ wajib }: { wajib: AturanWajib }) {
                 ['Jabatan', 'Jabatan', false],
               ] as const
             ).map(([kunci, label, wajib]) => (
-              <div key={kunci} className="grid gap-2">
+              <div key={kunci} className="grid content-start gap-2">
                 <Label htmlFor={kunci} nama={kunci}>
                   {label}
                 </Label>
@@ -116,7 +116,7 @@ function DialogImpor() {
           <DialogTitle>Impor Prospek</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="grid gap-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label nama="Berkas" htmlFor="Berkas">
               Berkas CSV
             </Label>

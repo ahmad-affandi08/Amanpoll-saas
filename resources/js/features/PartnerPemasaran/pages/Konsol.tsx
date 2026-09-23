@@ -2,6 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Badge } from '@/components/ui/badge';
+import { varianAktif, varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -91,7 +92,7 @@ export default function PartnerPemasaranKonsol({
           )}
           {partner.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base">{satu.NamaPerusahaan}</CardTitle>
                   <p className="text-sm text-muted-foreground">
@@ -101,8 +102,8 @@ export default function PartnerPemasaranKonsol({
                     {satu.NamaPic} · {satu.EmailPic}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={satu.Status === 'Aktif' ? 'default' : 'secondary'}>{satu.Status}</Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
                   <DialogPartner partner={satu} program={program} pilihan={pilihan} />
                   <Button
                     variant="outline"
@@ -129,17 +130,15 @@ export default function PartnerPemasaranKonsol({
           )}
           {program.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base">{satu.Nama}</CardTitle>
                   <p className="text-sm text-muted-foreground">
                     Kode {satu.Kode} · atribusi {satu.HariAtribusi} hari · {satu.JumlahPartner} partner
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={satu.Aktif ? 'default' : 'secondary'}>
-                    {satu.Aktif ? 'Aktif' : 'Nonaktif'}
-                  </Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={varianAktif(satu.Aktif)}>{satu.Aktif ? 'Aktif' : 'Nonaktif'}</Badge>
                   <DialogProgram program={satu} />
                 </div>
               </CardHeader>
@@ -155,7 +154,7 @@ export default function PartnerPemasaranKonsol({
           {aturan.length === 0 && <p className="text-sm text-muted-foreground">Belum ada aturan komisi.</p>}
           {aturan.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base">{satu.Nama}</CardTitle>
                   <p className="text-sm text-muted-foreground">
@@ -165,10 +164,8 @@ export default function PartnerPemasaranKonsol({
                     {satu.MaksPembayaran ? ` · maksimal ${satu.MaksPembayaran} pembayaran` : ''}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={satu.Aktif ? 'default' : 'secondary'}>
-                    {satu.Aktif ? 'Aktif' : 'Nonaktif'}
-                  </Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={varianAktif(satu.Aktif)}>{satu.Aktif ? 'Aktif' : 'Nonaktif'}</Badge>
                   <DialogAturan aturan={satu} program={program} partner={partner} pilihan={pilihan} />
                 </div>
               </CardHeader>
@@ -182,7 +179,7 @@ export default function PartnerPemasaranKonsol({
           )}
           {lead.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base">{satu.NamaPerusahaan}</CardTitle>
                   <p className="text-sm text-muted-foreground">
@@ -193,8 +190,8 @@ export default function PartnerPemasaranKonsol({
                     <p className="text-sm text-muted-foreground">Ditolak: {satu.AlasanDitolak}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={satu.Status === 'Ditolak' ? 'secondary' : 'default'}>{satu.Status}</Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
                   {satu.Status === 'Dikirim' && (
                     <Button
                       size="sm"
@@ -227,7 +224,7 @@ export default function PartnerPemasaranKonsol({
           )}
           {komisi.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base">
                     {formatUang(satu.Jumlah)} untuk {satu.Partner}
@@ -237,10 +234,8 @@ export default function PartnerPemasaranKonsol({
                     {waktu(satu.DibuatPada)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={satu.Status === 'Dibatalkan' ? 'secondary' : 'default'}>
-                    {satu.Status}
-                  </Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
                   {satu.Status === 'Tertunda' && (
                     <Button
                       size="sm"
@@ -269,7 +264,7 @@ export default function PartnerPemasaranKonsol({
           {payout.length === 0 && <p className="text-sm text-muted-foreground">Belum ada payout disusun.</p>}
           {payout.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base">
                     {satu.Nomor} · {formatUang(satu.Jumlah)}
@@ -281,8 +276,8 @@ export default function PartnerPemasaranKonsol({
                     <p className="text-sm text-muted-foreground">Referensi: {satu.ReferensiPembayaran}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={satu.Status === 'Dibayar' ? 'default' : 'secondary'}>{satu.Status}</Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
                   {satu.Status !== 'Dibayar' && <DialogBayar payout={satu} />}
                   {satu.Status !== 'Dibayar' && (
                     <DialogAlasan

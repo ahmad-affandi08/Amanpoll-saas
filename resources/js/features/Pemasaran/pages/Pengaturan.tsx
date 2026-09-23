@@ -207,7 +207,7 @@ function BarisKonfigurasi({
   const idKolom = `konfigurasi-${konfigurasi.Kunci}`;
 
   return (
-    <div className="grid gap-2">
+    <div className="grid content-start gap-2">
       <Label htmlFor={idKolom} className="font-mono text-xs">
         {konfigurasi.Kunci}
       </Label>

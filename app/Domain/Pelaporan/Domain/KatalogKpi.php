@@ -70,6 +70,7 @@ final class KatalogKpi
                 'Aset',
                 'Aset.Lihat',
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jumlah,
             ),
 
             // 21.01 Complaint ----------------------------------------------
@@ -122,6 +123,7 @@ final class KatalogKpi
                 'PerintahKerja',
                 null,
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jumlah,
             ),
 
             // 21.01 SLA ------------------------------------------------------
@@ -131,6 +133,7 @@ final class KatalogKpi
                 'PerintahKerja',
                 null,
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jumlah,
             ),
             new DefinisiKpi(
                 'sla.kepatuhan_respons', 'Kepatuhan SLA Respons', KelompokKpi::TingkatLayanan, SatuanKpi::Persen,
@@ -138,6 +141,7 @@ final class KatalogKpi
                 'PerintahKerja',
                 null,
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jumlah,
             ),
             new DefinisiKpi(
                 'sla.berisiko', 'SLA Berisiko', KelompokKpi::TingkatLayanan, SatuanKpi::Jumlah,
@@ -161,6 +165,7 @@ final class KatalogKpi
                 'WaktuHentiAset',
                 null,
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jam,
             ),
             new DefinisiKpi(
                 'keandalan.mttr', 'MTTR', KelompokKpi::Keandalan, SatuanKpi::Jam,
@@ -222,6 +227,7 @@ final class KatalogKpi
                 'RencanaKalibrasi',
                 'Kalibrasi.Kelola',
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jumlah,
             ),
 
             // 21.01 Preventive -------------------------------------------------
@@ -238,6 +244,7 @@ final class KatalogKpi
                 'JadwalPemeliharaan',
                 'Pemeliharaan.Kelola',
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jumlah,
             ),
 
             // 21.01 Procurement -------------------------------------------------
@@ -260,6 +267,7 @@ final class KatalogKpi
                 'SUM(PosAnggaran.Terpakai) / SUM(PosAnggaran.Jumlah) x 100 atas anggaran tahun berjalan pada rentang. Rincian memuat pagu, terpakai, dan ditahan per anggaran.',
                 'PosAnggaran',
                 'Pengadaan.Kelola',
+                satuanRincian: SatuanKpi::Uang,
             ),
             new DefinisiKpi(
                 'anggaran.sisa', 'Sisa Anggaran', KelompokKpi::Anggaran, SatuanKpi::Uang,
@@ -291,6 +299,7 @@ final class KatalogKpi
                 'KepatuhanAset',
                 'Kepatuhan.Kelola',
                 naikItuBaik: true,
+                satuanRincian: SatuanKpi::Jumlah,
             ),
             new DefinisiKpi(
                 'kepatuhan.akan_kedaluwarsa', 'Kepatuhan Akan Kedaluwarsa', KelompokKpi::Kepatuhan, SatuanKpi::Jumlah,

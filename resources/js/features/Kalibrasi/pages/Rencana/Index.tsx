@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
+import { tanggal } from '@/components/shared/riwayat';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -189,7 +190,7 @@ export default function KalibrasiRencanaIndex({
                     {filteredList.map((rk) => {
                       const badge = statusKalibrasiBadge(rk.StatusKalibrasi);
                       return (
-                        <tr key={rk.Id} className="hover:bg-permukaan-50 transition-colors">
+                        <tr key={rk.Id} className="hover:bg-accent transition-colors">
                           <td className="px-4 py-3 font-medium text-foreground">
                             <Link
                               href={ruteKalibrasi.rencanaDetail(rk.Id)}
@@ -215,14 +216,14 @@ export default function KalibrasiRencanaIndex({
                             Setiap {rk.IntervalHari} hari
                           </td>
                           <td className="px-3 py-3 text-muted-foreground whitespace-nowrap">
-                            <div className="font-mono">{rk.TanggalBerikutnya}</div>
+                            <div>{tanggal(rk.TanggalBerikutnya)}</div>
                             {rk.SisaHari !== undefined && (
                               <div
                                 className={`text-[11px] ${
                                   rk.SisaHari < 0
                                     ? 'text-bahaya-600 font-semibold'
                                     : rk.SisaHari <= rk.PeringatanHariSebelum
-                                      ? 'text-safety-600 font-medium'
+                                      ? 'text-safety-700 font-medium'
                                       : 'text-muted-foreground'
                                 }`}
                               >
@@ -256,7 +257,7 @@ export default function KalibrasiRencanaIndex({
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => hapusRencana(rk)}
-                                className="h-7 w-7 text-bahaya-600 hover:text-bahaya-700 hover:bg-rose-50"
+                                className="sm:size-7 text-bahaya-600 hover:text-bahaya-700 hover:bg-bahaya-600/10"
                               >
                                 <Trash2 className="size-3.5" />
                               </Button>

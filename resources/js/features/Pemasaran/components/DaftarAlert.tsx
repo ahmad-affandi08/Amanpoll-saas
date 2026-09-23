@@ -2,6 +2,7 @@ import { router } from '@inertiajs/react';
 import { AlertTriangle, CircleAlert, Info } from 'lucide-react';
 import { WARNA_STATUS } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
+import { varianTingkatAlert } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { rutePemasaran } from '@/features/Pemasaran/api';
@@ -36,7 +37,7 @@ export function DaftarAlert({ alert }: { alert: AlertGrowth[] }) {
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <Badge variant="outline">{satu.Tingkat}</Badge>
+              <Badge variant={varianTingkatAlert(satu.Tingkat)}>{satu.Tingkat}</Badge>
               <Button
                 variant="ghost"
                 size="sm"

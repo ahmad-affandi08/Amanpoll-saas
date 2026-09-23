@@ -243,7 +243,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
                 </thead>
                 <tbody className="divide-y divide-border">
                   {anggaran.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-muted/30">
+                    <tr key={item.Id} className="hover:bg-accent">
                       <td className="px-4 py-3">
                         <Link
                           className="font-medium text-foreground hover:text-primary"
@@ -277,11 +277,11 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
                 <Link
                   key={item.Id}
                   href={ruteAnggaran.detail(item.Id)}
-                  className="flex min-h-24 items-center gap-3 p-4"
+                  className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <WalletCards className="size-5 shrink-0 text-primary" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{item.Nama}</p>
+                    <p className="line-clamp-2 font-medium">{item.Nama}</p>
                     <p className="font-mono text-xs text-muted-foreground">
                       {item.Kode} · {item.Tahun}
                     </p>

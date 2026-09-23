@@ -19,7 +19,7 @@ import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Plus, ArrowRight } from 'lucide-react';
-import type { TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
+import type { BarisTemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
@@ -37,7 +37,7 @@ interface KategoriAsetRingkas {
 }
 
 interface Props {
-  templat: Paginasi<TemplatDaftarPeriksa>;
+  templat: Paginasi<BarisTemplatDaftarPeriksa>;
   // Pemilih formulir memuat seluruh kategori dan model, bukan hanya baris halaman ini.
   kategoriAset: KategoriAsetRingkas[];
   modelAset: { Id: string; Nama: string; KategoriAsetId?: string }[];
@@ -100,7 +100,7 @@ function DialogBuatTemplat({
 
               <div className="space-y-1.5">
                 <Label nama="Nama" htmlFor="Nama">
-                  Nama Templat <span className="text-rose-500">*</span>
+                  Nama Templat <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="Nama"
@@ -109,7 +109,7 @@ function DialogBuatTemplat({
                   onChange={(e) => form.setData('Nama', e.target.value)}
                   required
                 />
-                {form.errors.Nama && <p className="text-xs text-rose-500">{form.errors.Nama}</p>}
+                {form.errors.Nama && <p className="text-xs text-destructive">{form.errors.Nama}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -172,7 +172,7 @@ function DialogBuatTemplat({
 }
 
 export default function DaftarPeriksaTemplatIndex({ templat, kategoriAset, filter, wajib }: Props) {
-  const columns = useMemo<ColumnDef<TemplatDaftarPeriksa>[]>(
+  const columns = useMemo<ColumnDef<BarisTemplatDaftarPeriksa>[]>(
     () => [
       {
         id: 'Nama',

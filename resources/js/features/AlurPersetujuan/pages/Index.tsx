@@ -280,7 +280,7 @@ function DialogKelolaTahap({
           <DialogTitle>Tahap Persetujuan -- {alur.Nama}</DialogTitle>
         </DialogHeader>
         {alur.Aktif && (
-          <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+          <p className="rounded-md bg-safety-500/10 p-3 text-sm text-safety-700">
             Nonaktifkan alur ini terlebih dahulu untuk mengubah tahapnya.
           </p>
         )}

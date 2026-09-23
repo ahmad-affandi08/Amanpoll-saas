@@ -311,7 +311,7 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
       <div className="space-y-6">
         <Link
           href={ruteRencanaPengadaan.index}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
         >
           <ArrowLeft className="size-4" /> Kembali ke Rencana Pengadaan
         </Link>

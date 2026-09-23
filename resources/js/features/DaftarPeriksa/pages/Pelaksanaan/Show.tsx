@@ -12,6 +12,7 @@ import { statusPelaksanaanBadge } from '@/features/PreventifInspeksi/status';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { formatAngkaUkur } from '@/lib/angka';
 
 interface Props {
   pelaksanaan: PelaksanaanDaftarPeriksa;
@@ -20,7 +21,7 @@ interface Props {
 export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
   const konfirmasi = useKonfirmasi();
   const terkunci = pelaksanaan.Status === 'Selesai';
-  const butirList = pelaksanaan.templatDaftarPeriksa?.butir ?? [];
+  const butirList = pelaksanaan.templat_daftar_periksa?.butir ?? [];
 
   // Inisialisasi state jawaban dari data tersimpan
   const jawabanAwal: Record<
@@ -114,7 +115,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
 
   return (
     <KerangkaAplikasi>
-      <Head title={`Pelaksanaan: ${pelaksanaan.templatDaftarPeriksa?.Nama ?? 'Checklist'}`} />
+      <Head title={`Pelaksanaan: ${pelaksanaan.templat_daftar_periksa?.Nama ?? 'Checklist'}`} />
       <BreadcrumbHalaman />
 
       <div className="space-y-6 max-w-4xl mx-auto">
@@ -123,15 +124,15 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
           {pelaksanaan.PerintahKerjaId ? (
             <Link
               href={`/pemeliharaan/perintah-kerja/${pelaksanaan.PerintahKerjaId}`}
-              className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
+              className="inline-flex min-h-11 items-center gap-1 rounded-[5px] underline-offset-4 hover:text-grafit-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Kembali ke Perintah Kerja ({pelaksanaan.perintahKerja?.Nomor ?? 'PK'})</span>
+              <span>Kembali ke Perintah Kerja ({pelaksanaan.perintah_kerja?.Nomor ?? 'PK'})</span>
             </Link>
           ) : (
             <Link
               href={ruteDaftarPeriksa.index}
-              className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
+              className="inline-flex min-h-11 items-center gap-1 rounded-[5px] underline-offset-4 hover:text-grafit-950 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Kembali ke Templat</span>
@@ -145,20 +146,23 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700">
-                  {pelaksanaan.templatDaftarPeriksa?.Kode}
+                  {pelaksanaan.templat_daftar_periksa?.Kode}
                 </span>
                 <Badge variant="outline" className={badgeInfo.kelas}>
                   {badgeInfo.label}
                 </Badge>
                 {terkunci && (
-                  <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 gap-1">
+                  <Badge
+                    variant="outline"
+                    className="bg-safety-500/10 text-safety-700 border-safety-600/30 gap-1"
+                  >
                     <Lock className="h-3 w-3" /> Terkunci
                   </Badge>
                 )}
               </div>
 
               <h1 className="text-xl font-bold text-grafit-950">
-                {pelaksanaan.templatDaftarPeriksa?.Nama}
+                {pelaksanaan.templat_daftar_periksa?.Nama}
               </h1>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-grafit-700 pt-2">
@@ -173,19 +177,19 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                     </span>
                   </div>
                 )}
-                {pelaksanaan.perintahKerja && (
+                {pelaksanaan.perintah_kerja && (
                   <div className="flex items-center gap-1.5">
                     <Wrench className="h-3.5 w-3.5 text-grafit-500" />
                     <span>
-                      Perintah Kerja: <strong>{pelaksanaan.perintahKerja.Nomor}</strong>
+                      Perintah Kerja: <strong>{pelaksanaan.perintah_kerja.Nomor}</strong>
                     </span>
                   </div>
                 )}
-                {pelaksanaan.dilaksanakanOleh && (
+                {pelaksanaan.dilaksanakan_oleh && (
                   <div className="flex items-center gap-1.5">
                     <User className="h-3.5 w-3.5 text-grafit-500" />
                     <span>
-                      Pelaksana: <strong>{pelaksanaan.dilaksanakanOleh.Nama}</strong>
+                      Pelaksana: <strong>{pelaksanaan.dilaksanakan_oleh.Nama}</strong>
                     </span>
                   </div>
                 )}
@@ -194,9 +198,9 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
 
             {/* Skor Card jika selesai */}
             {pelaksanaan.Skor !== null && pelaksanaan.Skor !== undefined && (
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center self-start sm:self-auto min-w-[140px]">
-                <span className="text-xs font-medium text-emerald-800">Skor Kepatuhan</span>
-                <div className="text-3xl font-black text-emerald-700 mt-0.5">{pelaksanaan.Skor}%</div>
+              <div className="p-4 bg-sukses-50 border border-sukses-200 rounded-xl text-center self-start sm:self-auto min-w-[140px]">
+                <span className="text-xs font-medium text-sukses-700">Skor Kepatuhan</span>
+                <div className="text-3xl font-black text-sukses-700 mt-0.5">{pelaksanaan.Skor}%</div>
               </div>
             )}
           </div>
@@ -238,7 +242,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                 <div
                   key={b.Id}
                   className={`bg-card border rounded-xl p-4 transition-all ${
-                    outOfRange ? 'border-rose-300 bg-rose-50/30' : 'border-garis-200'
+                    outOfRange ? 'border-bahaya-600/40 bg-bahaya-600/5' : 'border-garis-200'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -250,7 +254,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-medium text-grafit-950 text-sm">{b.Pertanyaan}</span>
-                          {b.Wajib && <span className="text-xs text-rose-500 font-semibold">*Wajib</span>}
+                          {b.Wajib && <span className="text-xs text-destructive font-semibold">*Wajib</span>}
                         </div>
                         {b.Satuan && <span className="text-xs text-grafit-500">Satuan: {b.Satuan}</span>}
                       </div>
@@ -264,8 +268,8 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                               disabled={terkunci}
                               className={`px-4 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
                                 current.NilaiBoolean === true
-                                  ? 'bg-emerald-600 text-white border-emerald-600'
-                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-permukaan-50'
+                                  ? 'bg-sukses-600 text-white border-sukses-600'
+                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-accent'
                               }`}
                               onClick={() => updateJawaban(b.Id, 'NilaiBoolean', true)}
                             >
@@ -276,8 +280,8 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                               disabled={terkunci}
                               className={`px-4 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
                                 current.NilaiBoolean === false
-                                  ? 'bg-rose-600 text-white border-rose-600'
-                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-permukaan-50'
+                                  ? 'bg-destructive text-white border-bahaya-600'
+                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-accent'
                               }`}
                               onClick={() => updateJawaban(b.Id, 'NilaiBoolean', false)}
                             >
@@ -293,15 +297,15 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                                 type="number"
                                 step="any"
                                 disabled={terkunci}
-                                placeholder={`Rentang: ${b.NilaiMinimum ?? '∞'} - ${b.NilaiMaksimum ?? '∞'}`}
+                                placeholder={`Rentang: ${formatAngkaUkur(b.NilaiMinimum)} - ${formatAngkaUkur(b.NilaiMaksimum)}`}
                                 value={current.NilaiAngka}
                                 onChange={(e) => updateJawaban(b.Id, 'NilaiAngka', e.target.value)}
-                                className={outOfRange ? 'border-rose-400 focus:ring-rose-400' : ''}
+                                className={outOfRange ? 'border-bahaya-600 focus:ring-bahaya-600' : ''}
                               />
                               {b.Satuan && <span className="text-xs text-grafit-500">{b.Satuan}</span>}
                             </div>
                             {outOfRange && (
-                              <p className="text-xs text-rose-600 flex items-center gap-1 font-medium">
+                              <p className="text-xs text-destructive flex items-center gap-1 font-medium">
                                 <AlertTriangle className="h-3 w-3" />
                                 Nilai di luar batas normal ({b.NilaiMinimum} - {b.NilaiMaksimum})
                               </p>
@@ -385,7 +389,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
             </Button>
             <Button
               type="button"
-              className="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+              className="cursor-pointer bg-sukses-600 hover:bg-sukses-700 text-white gap-2"
               onClick={finalisasi}
               disabled={sedangMenyimpan}
             >

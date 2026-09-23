@@ -3,6 +3,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -144,7 +145,7 @@ function KartuTemplate({
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Badge variant={template.SiapKirim ? 'default' : 'secondary'}>{template.StatusPersetujuan}</Badge>
+          <Badge variant={varianStatus(template.StatusPersetujuan)}>{template.StatusPersetujuan}</Badge>
           <DialogFormTemplate template={template} variabel={variabel} />
           <Button
             variant="outline"

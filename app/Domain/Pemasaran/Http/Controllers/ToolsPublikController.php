@@ -34,6 +34,8 @@ final class ToolsPublikController extends Controller
             'wajib' => ['kalkulator' => AturanWajib::untuk(HitungKeandalanPublikRequest::class)],
             ...$this->propsBersama($request),
             'tool' => $this->ringkasTool($tool),
+            // Hasil hitung dikirim `hitung()` lewat flash sesi; tanpa ini halaman tidak pernah menampilkannya.
+            'hasil' => $request->session()->get('hasil'),
         ]);
     }
 
@@ -46,14 +48,12 @@ final class ToolsPublikController extends Controller
             return back();
         }
 
-        /** @var array{JumlahAset: int, HariRentang: int, JumlahKegagalan: int, MenitDowntime: int} $sah */
-        $sah = $request->validated();
-
+        // Formulir mengirim angka sebagai teks; aturan `integer` menerimanya tanpa mengubah tipenya.
         $hasil = $kalkulator->hitung(
-            $sah['JumlahAset'],
-            $sah['HariRentang'],
-            $sah['JumlahKegagalan'],
-            $sah['MenitDowntime'],
+            $request->integer('JumlahAset'),
+            $request->integer('HariRentang'),
+            $request->integer('JumlahKegagalan'),
+            $request->integer('MenitDowntime'),
         );
 
         return back()->with('hasil', $hasil->keArray());
@@ -64,6 +64,7 @@ final class ToolsPublikController extends Controller
         return Inertia::render('Publik/QrAset', [
             ...$this->propsBersama($request),
             'tool' => $this->ringkasTool(ToolPublik::QrAset),
+            'qr' => $request->session()->get('qr'),
             'batas' => [
                 'MaksKode' => BuatQrAsetRequest::MAKS_KODE,
                 'MaksPanjangKode' => PembuatQrAset::MAKS_PANJANG_KODE,

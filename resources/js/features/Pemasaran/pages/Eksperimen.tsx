@@ -4,6 +4,7 @@ import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatfor
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Badge } from '@/components/ui/badge';
+import { varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -124,7 +125,7 @@ function KartuEksperimen({
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Badge variant={eksperimen.Status === 'Aktif' ? 'default' : 'secondary'}>{eksperimen.Status}</Badge>
+          <Badge variant={varianStatus(eksperimen.Status)}>{eksperimen.Status}</Badge>
           {eksperimen.Pemenang ? <Badge variant="outline">Pemenang {eksperimen.Pemenang}</Badge> : null}
           <DialogFormEksperimen eksperimen={eksperimen} pilihan={pilihan} wajib={wajib} />
           {eksperimen.TujuanStatus.map((tujuan) => (
@@ -306,7 +307,7 @@ function DialogFormEksperimen({
                 onUbah={(nilai) => form.setData('Kode', nilai)}
                 galat={form.errors.Kode}
               />
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Nama" htmlFor="Nama">
                   Nama
                 </Label>
@@ -320,7 +321,7 @@ function DialogFormEksperimen({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="Target" htmlFor="Target">
                   Target uji
                 </Label>
@@ -337,7 +338,7 @@ function DialogFormEksperimen({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2">
+              <div className="grid content-start gap-2">
                 <Label nama="MetrikUtama" htmlFor="MetrikUtama">
                   Metrik utama
                 </Label>
@@ -356,7 +357,7 @@ function DialogFormEksperimen({
               </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="Hipotesis" htmlFor="Hipotesis">
                 Hipotesis
               </Label>
@@ -368,7 +369,7 @@ function DialogFormEksperimen({
               />
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label nama="MinimumSampel" htmlFor="MinimumSampel">
                 Minimum sampel tiap varian
               </Label>

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { tanggal } from '@/components/shared/riwayat';
 import { ArrowLeft, Sliders, Clock, Building2, Plus } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
@@ -28,7 +29,7 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Button asChild variant="outline" size="icon" className="size-8">
+            <Button asChild variant="outline" size="icon" className="sm:size-8">
               <Link href={ruteKalibrasi.rencana}>
                 <ArrowLeft className="size-4" />
               </Link>
@@ -78,7 +79,7 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Jatuh Tempo Berikutnya:</span>
-                <span className="font-bold font-mono text-foreground">{rencana.TanggalBerikutnya}</span>
+                <span className="font-bold text-foreground">{tanggal(rencana.TanggalBerikutnya)}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Sisa Waktu:</span>
@@ -87,7 +88,7 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
                     (rencana.SisaHari ?? 0) < 0
                       ? 'text-bahaya-600'
                       : (rencana.SisaHari ?? 0) <= rencana.PeringatanHariSebelum
-                        ? 'text-safety-600'
+                        ? 'text-safety-700'
                         : 'text-sukses-600'
                   }`}
                 >
@@ -201,9 +202,9 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
                     {rencana.pelaksanaanKalibrasi.map((pk) => {
                       const badge = hasilKalibrasiBadge(pk.Hasil);
                       return (
-                        <tr key={pk.Id} className="hover:bg-permukaan-50 transition-colors">
+                        <tr key={pk.Id} className="hover:bg-accent transition-colors">
                           <td className="px-4 py-3 font-semibold font-mono text-foreground">{pk.Nomor}</td>
-                          <td className="px-4 py-3 text-muted-foreground font-mono">{pk.TanggalKalibrasi}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{tanggal(pk.TanggalKalibrasi)}</td>
                           <td className="px-4 py-3 font-medium font-mono text-foreground">
                             {pk.NomorSertifikat || (
                               <span className="text-muted-foreground italic">Belum Ada</span>
@@ -215,7 +216,7 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
                             </Badge>
                           </td>
                           <td className="px-3 py-3 text-muted-foreground font-mono">
-                            {pk.TanggalBerlakuSampai || '—'}
+                            {tanggal(pk.TanggalBerlakuSampai ?? null)}
                           </td>
                           <td className="px-3 py-3 text-muted-foreground">
                             {pk.diverifikasiOleh?.Nama ?? (

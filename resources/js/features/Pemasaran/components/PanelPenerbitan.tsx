@@ -39,7 +39,7 @@ export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; 
         <Separator />
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label>Status</Label>
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger>
@@ -55,7 +55,7 @@ export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; 
             </Select>
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="TerbitPada">Terbit pada</Label>
             <Input
               id="TerbitPada"
@@ -65,7 +65,7 @@ export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; 
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="TarikPada">Tarik pada</Label>
             <Input
               id="TarikPada"

@@ -70,7 +70,7 @@ export function DialogFormTemplate({
               onUbah={(nilai) => form.setData('Kode', nilai)}
               galat={form.errors.Kode}
             />
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label htmlFor="Nama">Nama</Label>
               <Input
                 id="Nama"
@@ -82,7 +82,7 @@ export function DialogFormTemplate({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label htmlFor="Bahasa">Bahasa</Label>
               <Input
                 id="Bahasa"
@@ -91,7 +91,7 @@ export function DialogFormTemplate({
                 required
               />
             </div>
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <Label htmlFor="Kategori">Kategori</Label>
               <Input
                 id="Kategori"
@@ -102,7 +102,7 @@ export function DialogFormTemplate({
             </div>
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="IsiTeks">Naskah</Label>
             <Textarea
               id="IsiTeks"

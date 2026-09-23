@@ -92,7 +92,7 @@ export function TabNilai({ aset }: { aset: Aset }) {
           </Button>
         </div>
         {errorPratinjau && <p className="text-sm text-destructive">{errorPratinjau}</p>}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           <InputUang
             placeholder="Nilai Buku"
             value={form.data.NilaiBuku}

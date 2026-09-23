@@ -24,7 +24,7 @@ import {
   WARNA_SUMBU,
   warnaIrisan,
 } from '@/components/grafik/palet';
-import { formatNilai, labelPeriode } from '@/features/Pelaporan/format';
+import { formatNilai, formatSumbu, labelPeriode } from '@/features/Pelaporan/format';
 import type { BentukKomponen, MetrikKpi, RincianKpi } from '@/features/Pelaporan/types';
 
 const TINGGI_PLOT = 200;
@@ -35,8 +35,18 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
   const idJudul = useId();
 
   const deretWaktu = bentuk === 'Garis';
-  const data = useMemo(() => (deretWaktu ? kpi.Rincian : lipatEkor(kpi.Rincian)), [kpi.Rincian, deretWaktu]);
-  const formatter = (nilai: number) => formatNilai(nilai, kpi.Satuan, kpi.Desimal);
+  const data = useMemo(
+    () =>
+      (deretWaktu ? kpi.Rincian : lipatEkor(kpi.Rincian)).map((baris) => ({
+        ...baris,
+        Label: labelTampil(baris.Label),
+        Kunci: baris.Label,
+      })),
+    [kpi.Rincian, deretWaktu],
+  );
+  const formatter = (nilai: number) => formatNilai(nilai, kpi.SatuanRincian, kpi.DesimalRincian);
+  const formatterSumbu = (nilai: number) => formatSumbu(nilai, kpi.SatuanRincian, kpi.DesimalRincian);
+  const sumbuBilanganBulat = kpi.SatuanRincian === 'Jumlah';
 
   if (data.length === 0) {
     return (
@@ -68,7 +78,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
                 <span
                   aria-hidden="true"
                   className="size-2.5 shrink-0 rounded-[2px]"
-                  style={{ backgroundColor: warnaIrisan(baris.Label, indeks) }}
+                  style={{ backgroundColor: warnaIrisan(baris.Kunci, indeks) }}
                 />
                 <span className="truncate">{deretWaktu ? labelPeriode(baris.Label) : baris.Label}</span>
               </td>
@@ -103,8 +113,9 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
                 tick={{ fill: WARNA_SUMBU, fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
-                width={52}
-                tickFormatter={(nilai: number) => formatter(nilai)}
+                width={64}
+                allowDecimals={!sumbuBilanganBulat}
+                tickFormatter={formatterSumbu}
               />
               <Tooltip
                 cursor={{ stroke: WARNA_SUMBU, strokeWidth: 1 }}
@@ -138,7 +149,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
                 strokeWidth={2}
               >
                 {data.map((baris, indeks) => (
-                  <Cell key={baris.Label} fill={warnaIrisan(baris.Label, indeks)} />
+                  <Cell key={baris.Label} fill={warnaIrisan(baris.Kunci, indeks)} />
                 ))}
               </Pie>
             </PieChart>
@@ -150,7 +161,8 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
                 tick={{ fill: WARNA_SUMBU, fontSize: 11 }}
                 tickLine={false}
                 axisLine={{ stroke: WARNA_GRID }}
-                tickFormatter={(nilai: number) => formatter(nilai)}
+                allowDecimals={!sumbuBilanganBulat}
+                tickFormatter={formatterSumbu}
               />
               <YAxis
                 type="category"
@@ -172,7 +184,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
                 isAnimationActive={false}
               >
                 {data.map((baris, indeks) => (
-                  <Cell key={baris.Label} fill={warnaIrisan(baris.Label, indeks)} />
+                  <Cell key={baris.Label} fill={warnaIrisan(baris.Kunci, indeks)} />
                 ))}
               </Bar>
             </BarChart>
@@ -188,7 +200,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
               <span
                 aria-hidden="true"
                 className="size-2.5 shrink-0 rounded-[2px]"
-                style={{ backgroundColor: warnaIrisan(baris.Label, indeks) }}
+                style={{ backgroundColor: warnaIrisan(baris.Kunci, indeks) }}
               />
               <span className="truncate">{baris.Label}</span>
               <span className="tabular-nums text-foreground">{formatter(baris.Nilai)}</span>
@@ -213,6 +225,11 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
       </span>
     </div>
   );
+}
+
+/** Nilai enum dari basis data (`PerluPerhatian`) dipecah menjadi kata agar terbaca: `Perlu Perhatian`. */
+function labelTampil(label: string): string {
+  return /^[A-Z][a-z]+(?:[A-Z][a-z]+)+$/.test(label) ? label.replace(/([a-z])([A-Z])/g, '$1 $2') : label;
 }
 
 /** Melipat ekor menjadi "Lainnya" alih-alih menghasilkan warna kelima. */
