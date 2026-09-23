@@ -6,6 +6,7 @@ use App\Domain\Aset\Http\Controllers\AsetController;
 use App\Domain\Aset\Http\Controllers\AsetPindaiController;
 use App\Domain\Aset\Http\Controllers\GaransiAsetController;
 use App\Domain\Aset\Http\Controllers\KategoriAsetController;
+use App\Domain\Aset\Http\Controllers\KelayakanAsetController;
 use App\Domain\Aset\Http\Controllers\LabelAsetController;
 use App\Domain\Aset\Http\Controllers\MerekController;
 use App\Domain\Aset\Http\Controllers\MeterAsetController;
@@ -43,10 +44,12 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::get('/pindai/{kode}', [AsetPindaiController::class, 'tampilkan'])->name('pindai');
             // Sebelum '/{aset}' supaya 'label' tidak tertelan sebagai id aset.
             Route::get('/label', LabelAsetController::class)->name('label');
+            Route::get('/kelayakan', [KelayakanAsetController::class, 'index'])->name('kelayakan.index');
             Route::get('/{aset}', [AsetController::class, 'show'])->name('show');
             Route::put('/{aset}', [AsetController::class, 'update'])->name('update');
             Route::delete('/{aset}', [AsetController::class, 'destroy'])->name('destroy');
 
+            Route::get('/{aset}/kelayakan', [KelayakanAsetController::class, 'satu'])->name('kelayakan.satu');
             Route::get('/{aset}/riwayat-pemeliharaan', [RiwayatAsetController::class, 'pemeliharaan'])->name('riwayat-pemeliharaan.index');
             Route::get('/{aset}/riwayat-kalibrasi', [RiwayatAsetController::class, 'kalibrasi'])->name('riwayat-kalibrasi.index');
 

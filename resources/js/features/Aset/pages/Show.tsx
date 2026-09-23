@@ -15,6 +15,7 @@ import { TabPenanggungJawab } from '@/features/Aset/components/TabPenanggungJawa
 import { TabRelasi } from '@/features/Aset/components/TabRelasi';
 import { TabGaransi } from '@/features/Aset/components/TabGaransi';
 import { TabNilai } from '@/features/Aset/components/TabNilai';
+import { TabKelayakan } from '@/features/Aset/components/TabKelayakan';
 import { TabMeter } from '@/features/Aset/components/TabMeter';
 import { TabPemeliharaan } from '@/features/Aset/components/TabPemeliharaan';
 import { TabKalibrasi } from '@/features/Aset/components/TabKalibrasi';
@@ -77,6 +78,7 @@ export default function AsetShow({
           <TabsTrigger value="relasi">Relasi</TabsTrigger>
           <TabsTrigger value="garansi">Garansi</TabsTrigger>
           <TabsTrigger value="nilai">Nilai</TabsTrigger>
+          <TabsTrigger value="kelayakan">Kelayakan</TabsTrigger>
           <TabsTrigger value="meter">Meter</TabsTrigger>
           <TabsTrigger value="pemeliharaan">Pemeliharaan</TabsTrigger>
           <TabsTrigger value="kalibrasi">Kalibrasi</TabsTrigger>
@@ -106,6 +108,9 @@ export default function AsetShow({
         </TabsContent>
         <TabsContent value="nilai">
           <TabNilai aset={aset} />
+        </TabsContent>
+        <TabsContent value="kelayakan">
+          <TabKelayakan aset={aset} />
         </TabsContent>
         <TabsContent value="meter">
           <TabMeter aset={aset} />

@@ -4,6 +4,8 @@ export const ruteAset = {
   meterPembacaan: (id: string) => `/aset/meter/${id}/pembacaan`,
   relasiDetail: (id: string) => `/aset/relasi/${id}`,
   detail: (id: string) => `/aset/${id}`,
+  kelayakan: (id: string) => `/aset/${id}/kelayakan`,
+  kelayakanIndex: '/aset/kelayakan',
   garansi: (id: string) => `/aset/${id}/garansi`,
   meter: (id: string) => `/aset/${id}/meter`,
   nilai: (id: string) => `/aset/${id}/nilai`,
