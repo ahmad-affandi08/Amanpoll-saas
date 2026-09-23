@@ -3,6 +3,14 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnPhpunitDeprecation="true"
+         failOnIncomplete="true"
+         failOnEmptyTestSuite="true"
 >
     <testsuites>
         <testsuite name="Unit">
@@ -15,7 +23,13 @@
             <directory>tests/Architecture</directory>
         </testsuite>
     </testsuites>
-    <source>
+    <!-- failOnSkipped sengaja tidak dipasang: tiga test memang melewati dirinya
+         saat pcntl atau biner mysqldump tidak ada, dan itu keadaan lingkungan,
+         bukan cacat. failOnDeprecation juga tidak: deprecation dari PHP atau
+         paket pihak ketiga akan memerahkan build karena hal di luar perubahan
+         yang sedang dikerjakan. beStrictAboutChangesToGlobalState tidak berguna
+         di sini karena PHPUnit melewatinya bila backupGlobals mati. -->
+    <source restrictNotices="true" restrictWarnings="true">
         <include>
             <directory>app</directory>
         </include>
