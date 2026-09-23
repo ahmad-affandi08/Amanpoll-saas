@@ -305,6 +305,7 @@ export default function KunciApiIndex({ kunciApi, filter, wajib }: Props) {
         columns={columns}
         data={kunciApi.data}
         server={{ meta: kunciApi.meta, filter }}
+        ekspor="/platform/kunci-api/ekspor"
         pencarianPlaceholder="Cari nama atau awalan kunci..."
         facetedFilters={[
           {

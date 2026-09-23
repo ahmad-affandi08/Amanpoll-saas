@@ -36,6 +36,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::delete('/entitas-tag/{entitasTag}', [EntitasTagController::class, 'destroy'])->name('entitasTag.destroy');
 
         Route::get('/definisi-kolom-kustom', [DefinisiKolomKustomController::class, 'index'])->name('definisiKolomKustom.index');
+        Route::get('/definisi-kolom-kustom/ekspor', [DefinisiKolomKustomController::class, 'ekspor'])->middleware('throttle:ekspor')->name('definisiKolomKustom.ekspor');
         Route::post('/definisi-kolom-kustom', [DefinisiKolomKustomController::class, 'store'])->name('definisiKolomKustom.store');
         Route::put('/definisi-kolom-kustom/{definisiKolomKustom}', [DefinisiKolomKustomController::class, 'update'])->name('definisiKolomKustom.update');
         Route::delete('/definisi-kolom-kustom/{definisiKolomKustom}', [DefinisiKolomKustomController::class, 'destroy'])->name('definisiKolomKustom.destroy');

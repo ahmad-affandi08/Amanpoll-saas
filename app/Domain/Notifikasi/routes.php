@@ -12,6 +12,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('notifikasi.')
     ->group(function (): void {
         Route::get('/templat', [TemplatNotifikasiController::class, 'index'])->name('templat.index');
+        Route::get('/templat/ekspor', [TemplatNotifikasiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('templat.ekspor');
         Route::post('/templat', [TemplatNotifikasiController::class, 'store'])->name('templat.store');
         Route::put('/templat/{templatNotifikasi}', [TemplatNotifikasiController::class, 'update'])->name('templat.update');
         Route::delete('/templat/{templatNotifikasi}', [TemplatNotifikasiController::class, 'destroy'])->name('templat.destroy');

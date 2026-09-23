@@ -14,9 +14,14 @@ use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Http\Controllers\Controller;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Halaman langganan milik tenant: paket berjalan, pemakaian terhadap batas, dan tagihannya (22.04/22.06). */
 final class LanggananTenantController extends Controller
@@ -25,6 +30,48 @@ final class LanggananTenantController extends Controller
         private readonly PemeriksaEntitlement $entitlement,
         private readonly PenjagaBatasLangganan $penjagaBatas,
     ) {}
+
+    /**
+     * Tagihan yang tampil di kartu "Tagihan", dipakai bersama halaman dan ekspornya.
+     *
+     * Batasnya ikut ke ekspor dengan sengaja: `lazy()` menghormati limit yang
+     * sudah terpasang pada kueri, jadi berkasnya berisi periode yang sama
+     * persis dengan tabelnya, bukan seluruh riwayat.
+     *
+     * @return Builder<TagihanLangganan>
+     */
+    private function kueriTagihan(): Builder
+    {
+        return TagihanLangganan::query()
+            ->orderByDesc('PeriodeMulai')
+            ->orderBy('Id')
+            ->limit(24);
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Langganan::class);
+
+        return $ekspor->unduh(
+            $this->kueriTagihan(),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::tanggal('Periode Mulai', 'PeriodeMulai'),
+                KolomEkspor::tanggal('Periode Selesai', 'PeriodeSelesai'),
+                KolomEkspor::tanggal('Jatuh Tempo', 'JatuhTempo'),
+                KolomEkspor::dari('Subtotal', fn (TagihanLangganan $tagihan): float => (float) $tagihan->Subtotal),
+                KolomEkspor::dari('Pajak', fn (TagihanLangganan $tagihan): float => (float) $tagihan->Pajak),
+                KolomEkspor::dari('Total', fn (TagihanLangganan $tagihan): float => (float) $tagihan->Total),
+                KolomEkspor::dari(
+                    'Status',
+                    fn (TagihanLangganan $tagihan): string => StatusTagihanLangganan::tryFrom((string) $tagihan->Status)?->label()
+                        ?? (string) $tagihan->Status,
+                ),
+            ],
+            'daftar-tagihan-langganan',
+            EksporDaftar::formatDari($request),
+        );
+    }
 
     public function index(): Response
     {
@@ -37,9 +84,7 @@ final class LanggananTenantController extends Controller
                 fn (DefinisiFitur $definisi): array => $definisi->keArray(),
                 KatalogFitur::semua(),
             )),
-            'tagihan' => TagihanLangganan::query()
-                ->orderByDesc('PeriodeMulai')
-                ->limit(24)
+            'tagihan' => $this->kueriTagihan()
                 ->get()
                 ->map(fn (TagihanLangganan $tagihan): array => $this->ringkasTagihan($tagihan))
                 ->all(),

@@ -16,6 +16,7 @@ import type {
   TagihanItem,
 } from '@/features/Langganan/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { ruteLangganan } from '@/features/Langganan/api';
 
 interface Props {
@@ -63,6 +64,7 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
         <KepalaHalaman
           judul="Langganan"
           deskripsi="Paket yang sedang berjalan, pemakaian terhadap batasnya, dan riwayat tagihan organisasi Anda."
+          aksi={<TombolEkspor url="/langganan/ekspor" label="Ekspor Tagihan" />}
         />
 
         {!entitlement.AksesPenuh && (

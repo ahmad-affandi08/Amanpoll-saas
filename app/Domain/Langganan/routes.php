@@ -54,6 +54,9 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('langganan.')
     ->group(function (): void {
         Route::get('/', [LanggananTenantController::class, 'index'])->name('index');
+        Route::get('/ekspor', [LanggananTenantController::class, 'ekspor'])
+            ->middleware('throttle:ekspor')
+            ->name('ekspor');
 
         // Dikecualikan dari pemblokiran tulis: justru lewat sini tenant yang kedaluwarsa memulihkan langganannya.
         Route::post('/tagihan/{tagihan}/bayar', [LanggananTenantController::class, 'bayar'])

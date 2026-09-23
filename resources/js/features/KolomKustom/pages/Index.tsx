@@ -21,6 +21,7 @@ import type { DefinisiKolomKustom, TipeDataKolomKustom } from '@/features/Kolabo
 import { ruteKolomKustom } from '@/features/KolomKustom/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
@@ -190,6 +191,8 @@ export default function KolomKustomIndex({ jenisEntitasTersedia, wajib }: Props)
         deskripsi="Tambahkan field tambahan khusus organisasi Anda untuk setiap jenis data."
         aksi={
           <>
+            {/* Jenis entitas ikut diteruskan: layarnya hanya memuat satu jenis, jadi berkasnya pun. */}
+            {jenisEntitas && <TombolEkspor url={ruteKolomKustom.ekspor} filter={{ jenisEntitas }} />}
             {jenisEntitas && (
               <DialogFormDefinisi
                 jenisEntitas={jenisEntitas}

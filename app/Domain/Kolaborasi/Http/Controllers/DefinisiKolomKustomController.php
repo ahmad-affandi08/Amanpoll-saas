@@ -12,12 +12,17 @@ use App\Domain\Kolaborasi\Http\Requests\SimpanDefinisiKolomKustomRequest;
 use App\Domain\Kolaborasi\Http\Resources\DefinisiKolomKustomResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\DefinisiKolomKustom;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class DefinisiKolomKustomController extends Controller
 {
@@ -31,18 +36,51 @@ final class DefinisiKolomKustomController extends Controller
         ]);
     }
 
+    /**
+     * Definisi milik satu jenis entitas, dalam urutan yang sama seperti di layar.
+     *
+     * @return Builder<DefinisiKolomKustom>
+     */
+    private function kueriTersaring(string $jenisEntitas): Builder
+    {
+        return DefinisiKolomKustom::query()
+            ->where('JenisEntitas', $jenisEntitas)
+            ->orderBy('Urutan')
+            ->orderBy('Label')
+            // Urutan dan label boleh kembar; tanpa pemutus seri, potongan baca
+            // berbasis offset dapat melewatkan satu baris dan menggandakan lainnya.
+            ->orderBy('Id');
+    }
+
     public function index(Request $request): AnonymousResourceCollection
     {
         $data = $request->validate(['jenisEntitas' => ['required', 'string']]);
         $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
 
-        $definisi = DefinisiKolomKustom::query()
-            ->where('JenisEntitas', $data['jenisEntitas'])
-            ->orderBy('Urutan')
-            ->orderBy('Label')
-            ->get();
+        return DefinisiKolomKustomResource::collection($this->kueriTersaring($data['jenisEntitas'])->get());
+    }
 
-        return DefinisiKolomKustomResource::collection($definisi);
+    /**
+     * Layarnya selalu menampilkan satu jenis entitas sekaligus, jadi ekspornya
+     * pun terikat jenis yang sedang dipilih; izin kelolanya diperiksa dengan
+     * pemeriksaan yang sama seperti daftarnya, bukan pemeriksaan yang lebih longgar.
+     */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $data = $request->validate(['jenisEntitas' => ['required', 'string']]);
+        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($data['jenisEntitas']),
+            [
+                KolomEkspor::atribut('Label', 'Label'),
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Tipe Data', 'TipeData'),
+                KolomEkspor::dari('Wajib', fn (DefinisiKolomKustom $d): string => $d->Wajib ? 'Ya' : 'Tidak'),
+            ],
+            'daftar-kolom-kustom-'.Str::slug($data['jenisEntitas']),
+            EksporDaftar::formatDari($request),
+        );
     }
 
     public function store(SimpanDefinisiKolomKustomRequest $request, BuatDefinisiKolomKustom $aksi): RedirectResponse

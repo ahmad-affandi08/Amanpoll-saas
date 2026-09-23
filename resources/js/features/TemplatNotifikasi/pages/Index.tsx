@@ -198,6 +198,7 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi, filter, waji
         columns={columns}
         data={templatNotifikasi.data}
         server={{ meta: templatNotifikasi.meta, filter }}
+        ekspor={ruteTemplatNotifikasi.ekspor}
         facetedFilters={[
           {
             columnId: 'Kanal',

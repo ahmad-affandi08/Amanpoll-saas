@@ -11,23 +11,56 @@ use App\Domain\Notifikasi\Http\Requests\SimpanTemplatNotifikasiRequest;
 use App\Domain\Notifikasi\Http\Resources\TemplatNotifikasiResource;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\TemplatNotifikasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class TemplatNotifikasiController extends Controller
 {
+    /**
+     * Penyaring daftar templat, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<TemplatNotifikasi>
+     */
+    private function daftar(Request $request): DaftarTersaring
+    {
+        return DaftarTersaring::untuk($request, TemplatNotifikasi::query())
+            ->cari(['Kode', 'JudulTemplat'])
+            ->urut(['Kode', 'Kanal'], bawaan: 'Kode')
+            ->faset(['Kanal']);
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', TemplatNotifikasi::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Kanal', 'Kanal'),
+                KolomEkspor::atribut('Judul Templat', 'JudulTemplat'),
+                // Isi templat sengaja tidak ikut: yang tampil di daftar hanya
+                // identitas templatnya, dan badan pesan berisi placeholder mentah
+                // yang tidak berarti apa-apa di luar mesin notifikasi.
+                KolomEkspor::dari('Status', fn (TemplatNotifikasi $t): string => $t->Aktif ? 'Aktif' : 'Nonaktif'),
+            ],
+            'daftar-templat-notifikasi',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', TemplatNotifikasi::class);
 
-        $daftar = DaftarTersaring::untuk($request, TemplatNotifikasi::query())
-            ->cari(['Kode', 'JudulTemplat'])
-            ->urut(['Kode', 'Kanal'], bawaan: 'Kode')
-            ->faset(['Kanal']);
+        $daftar = $this->daftar($request);
 
         return Inertia::render('TemplatNotifikasi/Index', [
             'wajib' => ['templat' => AturanWajib::untuk(SimpanTemplatNotifikasiRequest::class)],

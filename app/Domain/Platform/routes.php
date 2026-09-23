@@ -52,6 +52,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         // Kunci API adalah pintu masuk integrasi, jadi ikut gerbang fitur yang sama dengan modul integrasi (22.05).
         Route::middleware('fitur:modul.integrasi')->group(function (): void {
             Route::get('/kunci-api', [KunciApiController::class, 'index'])->name('kunci-api.index');
+            Route::get('/kunci-api/ekspor', [KunciApiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('kunci-api.ekspor');
             Route::post('/kunci-api', [KunciApiController::class, 'store'])->name('kunci-api.store');
             Route::delete('/kunci-api/{kunciApi}', [KunciApiController::class, 'destroy'])->name('kunci-api.destroy');
         });
