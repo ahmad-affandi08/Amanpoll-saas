@@ -14,8 +14,8 @@ use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,17 +29,19 @@ final class TemplatDaftarPeriksaController extends Controller
     ) {}
 
     /**
-     * Daftar templat daftar periksa, dipakai bersama halaman dan ekspornya.
+     * Penyaring daftar templat daftar periksa, dipakai bersama halaman dan ekspornya.
      *
-     * @return Builder<TemplatDaftarPeriksa>
+     * @return DaftarTersaring<TemplatDaftarPeriksa>
      */
-    private function kueriTersaring(): Builder
+    private function daftar(Request $request): DaftarTersaring
     {
-        return TemplatDaftarPeriksa::query()
-            ->with(['kategoriAset', 'modelAset'])
-            ->withCount('butir')
-            ->orderBy('Nama')
-            ->orderBy('Id');
+        return DaftarTersaring::untuk(
+            $request,
+            TemplatDaftarPeriksa::query()->with(['kategoriAset', 'modelAset'])->withCount('butir'),
+        )
+            ->cari(['Kode', 'Nama'])
+            ->urut(['Kode', 'Nama', 'Jenis', 'VersiTemplat', 'Aktif'], bawaan: 'Nama')
+            ->faset(['Jenis', 'KategoriAsetId', 'Aktif']);
     }
 
     /** Daftar templat beserta versinya, untuk ditinjau saat audit lembar periksa. */
@@ -48,7 +50,7 @@ final class TemplatDaftarPeriksaController extends Controller
         $this->authorize('viewAny', TemplatDaftarPeriksa::class);
 
         return $ekspor->unduh(
-            $this->kueriTersaring(),
+            $this->daftar($request)->kueriTersaring(),
             [
                 KolomEkspor::atribut('Kode', 'Kode'),
                 KolomEkspor::atribut('Nama', 'Nama'),
@@ -68,11 +70,28 @@ final class TemplatDaftarPeriksaController extends Controller
     {
         $this->authorize('viewAny', TemplatDaftarPeriksa::class);
 
-        $daftarTemplat = $this->kueriTersaring()->get();
+        $daftar = $this->daftar($request);
 
         return Inertia::render('DaftarPeriksa/Templat/Index', [
             'wajib' => ['templat' => AturanWajib::untuk(SimpanTemplatDaftarPeriksaRequest::class)],
-            'templat' => $daftarTemplat,
+            // Barisnya disusun di sini supaya nama relasinya tetap camelCase; serialisasi
+            // bawaan Eloquent mengubahnya jadi 'kategori_aset' dan halaman kehilangan isinya.
+            'templat' => $daftar->halamanTerpeta(fn (TemplatDaftarPeriksa $satu): array => [
+                'Id' => $satu->Id,
+                'OrganisasiId' => $satu->OrganisasiId,
+                'Kode' => $satu->Kode,
+                'Nama' => $satu->Nama,
+                'Jenis' => $satu->Jenis,
+                'KategoriAsetId' => $satu->KategoriAsetId,
+                'ModelAsetId' => $satu->ModelAsetId,
+                'VersiTemplat' => $satu->VersiTemplat,
+                'Aktif' => $satu->Aktif,
+                'butir_count' => (int) ($satu->butir_count ?? 0),
+                'kategoriAset' => $satu->kategoriAset?->only(['Id', 'Nama']),
+                'modelAset' => $satu->modelAset?->only(['Id', 'Nama']),
+            ]),
+            'filter' => $daftar->filterBerlaku(),
+            // Pemilih formulir memuat seluruh kategori dan model, bukan hanya baris halaman ini.
             'kategoriAset' => KategoriAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'modelAset' => ModelAset::query()->orderBy('Nama')->get(['Id', 'Nama', 'KategoriAsetId']),
         ]);

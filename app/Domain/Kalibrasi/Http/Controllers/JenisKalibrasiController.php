@@ -12,8 +12,8 @@ use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\TitikUkurKalibrasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,17 +27,21 @@ final class JenisKalibrasiController extends Controller
     ) {}
 
     /**
-     * Daftar jenis kalibrasi, dipakai bersama halaman dan ekspornya.
+     * Penyaring daftar jenis kalibrasi, dipakai bersama halaman dan ekspornya.
      *
-     * @return Builder<JenisKalibrasi>
+     * @return DaftarTersaring<JenisKalibrasi>
      */
-    private function kueriTersaring(): Builder
+    private function daftar(Request $request): DaftarTersaring
     {
-        return JenisKalibrasi::query()
-            ->with(['titikUkur'])
-            ->withCount(['titikUkur', 'rencanaKalibrasi', 'pelaksanaanKalibrasi'])
-            ->orderBy('Nama')
-            ->orderBy('Id');
+        return DaftarTersaring::untuk(
+            $request,
+            JenisKalibrasi::query()
+                ->with(['titikUkur'])
+                ->withCount(['titikUkur', 'rencanaKalibrasi', 'pelaksanaanKalibrasi']),
+        )
+            ->cari(['Kode', 'Nama', 'Deskripsi'])
+            ->urut(['Kode', 'Nama', 'Aktif'], bawaan: 'Nama')
+            ->faset(['Aktif']);
     }
 
     /** Katalog metode kalibrasi beserta seberapa sering dipakai. */
@@ -46,7 +50,7 @@ final class JenisKalibrasiController extends Controller
         $this->authorize('viewAny', JenisKalibrasi::class);
 
         return $ekspor->unduh(
-            $this->kueriTersaring(),
+            $this->daftar($request)->kueriTersaring(),
             [
                 KolomEkspor::atribut('Kode', 'Kode'),
                 KolomEkspor::atribut('Nama', 'Nama'),
@@ -65,11 +69,22 @@ final class JenisKalibrasiController extends Controller
     {
         $this->authorize('viewAny', JenisKalibrasi::class);
 
-        $daftarJenis = $this->kueriTersaring()->get();
+        $daftar = $this->daftar($request);
 
         return Inertia::render('Kalibrasi/Jenis/Index', [
             'wajib' => ['jenis' => AturanWajib::untuk(SimpanJenisKalibrasiRequest::class), 'titikUkur' => AturanWajib::untuk(SimpanTitikUkurKalibrasiRequest::class)],
-            'jenisKalibrasi' => $daftarJenis,
+            // Barisnya disusun di sini karena serialisasi bawaan Eloquent mengubah nama
+            // relasi jadi 'titik_ukur', sementara dialog titik ukur membaca 'titikUkur'.
+            'jenisKalibrasi' => $daftar->halamanTerpeta(fn (JenisKalibrasi $satu): array => [
+                'Id' => $satu->Id,
+                'OrganisasiId' => $satu->OrganisasiId,
+                'Kode' => $satu->Kode,
+                'Nama' => $satu->Nama,
+                'Deskripsi' => $satu->Deskripsi,
+                'Aktif' => $satu->Aktif,
+                'titikUkur' => $satu->titikUkur,
+            ]),
+            'filter' => $daftar->filterBerlaku(),
         ]);
     }
 

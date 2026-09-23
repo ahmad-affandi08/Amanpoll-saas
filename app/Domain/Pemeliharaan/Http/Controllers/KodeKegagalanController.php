@@ -13,8 +13,8 @@ use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,17 +26,16 @@ final class KodeKegagalanController extends Controller
     public function __construct(private readonly PemeriksaIzin $izin) {}
 
     /**
-     * Daftar kode kegagalan, dipakai bersama halaman dan ekspornya.
+     * Penyaring daftar kode kegagalan, dipakai bersama halaman dan ekspornya.
      *
-     * @return Builder<KodeKegagalan>
+     * @return DaftarTersaring<KodeKegagalan>
      */
-    private function kueriTersaring(): Builder
+    private function daftar(Request $request): DaftarTersaring
     {
-        return KodeKegagalan::query()
-            ->with('kategoriAset')
-            ->orderBy('Jenis')
-            ->orderBy('Kode')
-            ->orderBy('Id');
+        return DaftarTersaring::untuk($request, KodeKegagalan::query()->with('kategoriAset'))
+            ->cari(['Kode', 'Nama', 'Keterangan'])
+            ->urut(['Kode', 'Nama', 'Jenis', 'Aktif'], bawaan: 'Kode')
+            ->faset(['Jenis', 'KategoriAsetId', 'Aktif']);
     }
 
     /** Taksonomi Problem-Cause-Remedy, untuk disepakati bersama di luar aplikasi. */
@@ -45,7 +44,7 @@ final class KodeKegagalanController extends Controller
         $this->pastikanBerizin($request);
 
         return $ekspor->unduh(
-            $this->kueriTersaring(),
+            $this->daftar($request)->kueriTersaring(),
             [
                 KolomEkspor::atribut('Kode', 'Kode'),
                 KolomEkspor::atribut('Nama', 'Nama'),
@@ -63,9 +62,22 @@ final class KodeKegagalanController extends Controller
     {
         $this->pastikanBerizin($request);
 
+        $daftar = $this->daftar($request);
+
         return Inertia::render('KodeKegagalan/Index', [
             'wajib' => ['kodeKegagalan' => AturanWajib::untuk(SimpanKodeKegagalanRequest::class)],
-            'kodeKegagalan' => $this->kueriTersaring()->get(),
+            'kodeKegagalan' => $daftar->halamanTerpeta(fn (KodeKegagalan $satu): array => [
+                'Id' => $satu->Id,
+                'Kode' => $satu->Kode,
+                'Nama' => $satu->Nama,
+                'Jenis' => $satu->Jenis,
+                'KategoriAsetId' => $satu->KategoriAsetId,
+                'NamaKategoriAset' => $satu->kategoriAset?->Nama,
+                'Keterangan' => $satu->Keterangan,
+                'Aktif' => $satu->Aktif,
+            ]),
+            'filter' => $daftar->filterBerlaku(),
+            // Pemilih formulir memuat seluruh kategori, bukan hanya baris halaman ini.
             'kategoriAset' => KategoriAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }

@@ -1,5 +1,6 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
+import type { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,14 +16,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import { Combobox } from '@/components/ui/combobox';
+
+type JenisKodeKegagalan = 'Masalah' | 'Penyebab' | 'Tindakan';
+
+const JENIS_KODE: JenisKodeKegagalan[] = ['Masalah', 'Penyebab', 'Tindakan'];
+
+const VARIAN_JENIS: Record<JenisKodeKegagalan, 'perhatian' | 'destructive' | 'sukses'> = {
+  Masalah: 'perhatian',
+  Penyebab: 'destructive',
+  Tindakan: 'sukses',
+};
 
 interface KategoriAsetRingkas {
   Id: string;
@@ -33,16 +47,18 @@ interface ItemKodeKegagalan {
   Id: string;
   Kode: string;
   Nama: string;
-  Jenis: 'Masalah' | 'Penyebab' | 'Tindakan';
+  Jenis: JenisKodeKegagalan;
   KategoriAsetId: string | null;
-  kategori_aset?: KategoriAsetRingkas | null;
+  NamaKategoriAset: string | null;
   Keterangan: string | null;
   Aktif: boolean;
 }
 
 interface Props {
-  kodeKegagalan: ItemKodeKegagalan[];
+  kodeKegagalan: Paginasi<ItemKodeKegagalan>;
+  // Pemilih formulir memuat seluruh kategori, bukan hanya baris halaman ini.
   kategoriAset: KategoriAsetRingkas[];
+  filter: FilterDaftar;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
@@ -62,7 +78,7 @@ function DialogFormKodeKegagalan({
   const sedangEdit = Boolean(itemEdit);
 
   const form = useForm({
-    Jenis: itemEdit?.Jenis ?? ('Masalah' as 'Masalah' | 'Penyebab' | 'Tindakan'),
+    Jenis: itemEdit?.Jenis ?? ('Masalah' as JenisKodeKegagalan),
     Kode: itemEdit?.Kode ?? '',
     Nama: itemEdit?.Nama ?? '',
     KategoriAsetId: itemEdit?.KategoriAsetId ?? TANPA_PILIHAN,
@@ -108,7 +124,7 @@ function DialogFormKodeKegagalan({
               <Label nama="Jenis">Jenis Taksonomi</Label>
               <Select
                 value={form.data.Jenis}
-                onValueChange={(val) => form.setData('Jenis', val as 'Masalah' | 'Penyebab' | 'Tindakan')}
+                onValueChange={(val) => form.setData('Jenis', val as JenisKodeKegagalan)}
               >
                 <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue />
@@ -194,17 +210,92 @@ function DialogFormKodeKegagalan({
   );
 }
 
-export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset, wajib }: Props) {
-  const [tabJenis, setTabJenis] = useState<'Semua' | 'Masalah' | 'Penyebab' | 'Tindakan'>('Semua');
-
-  const daftarTersaring =
-    tabJenis === 'Semua' ? kodeKegagalan : kodeKegagalan.filter((k) => k.Jenis === tabJenis);
-
-  const varianJenis: Record<'Masalah' | 'Penyebab' | 'Tindakan', 'perhatian' | 'destructive' | 'sukses'> = {
-    Masalah: 'perhatian',
-    Penyebab: 'destructive',
-    Tindakan: 'sukses',
-  };
+export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset, filter, wajib }: Props) {
+  const columns = useMemo<ColumnDef<ItemKodeKegagalan>[]>(
+    () => [
+      {
+        id: 'Kode',
+        accessorFn: (row) => row.Kode,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Kode" />,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs font-semibold text-foreground">{row.original.Kode}</span>
+        ),
+        meta: { label: 'Kode' },
+      },
+      {
+        id: 'Nama',
+        accessorFn: (row) => row.Nama,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nama" />,
+        cell: ({ row }) => <span className="font-medium text-foreground">{row.original.Nama}</span>,
+        meta: { label: 'Nama' },
+      },
+      {
+        id: 'Jenis',
+        accessorFn: (row) => row.Jenis,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Jenis" />,
+        cell: ({ row }) => <Badge variant={VARIAN_JENIS[row.original.Jenis]}>{row.original.Jenis}</Badge>,
+        meta: { label: 'Jenis' },
+      },
+      {
+        id: 'kategoriAset',
+        accessorFn: (row) => row.NamaKategoriAset ?? '',
+        header: 'Kategori Aset',
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground">
+            {row.original.NamaKategoriAset ?? 'Semua Kategori'}
+          </span>
+        ),
+        // Nama kategori datang dari relasi; server hanya menyaringnya lewat KategoriAsetId.
+        enableSorting: false,
+        meta: { label: 'Kategori Aset' },
+      },
+      {
+        id: 'Keterangan',
+        accessorFn: (row) => row.Keterangan ?? '',
+        header: 'Keterangan',
+        cell: ({ row }) => (
+          <span className="block max-w-xs truncate text-xs text-muted-foreground">
+            {row.original.Keterangan ?? '—'}
+          </span>
+        ),
+        enableSorting: false,
+        meta: { label: 'Keterangan' },
+      },
+      {
+        id: 'Aktif',
+        accessorFn: (row) => (row.Aktif ? '1' : '0'),
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+        cell: ({ row }) => (
+          <Badge variant={row.original.Aktif ? 'sukses' : 'netral'}>
+            {row.original.Aktif ? 'Aktif' : 'Nonaktif'}
+          </Badge>
+        ),
+        meta: { label: 'Status' },
+      },
+      {
+        id: 'aksi',
+        header: 'Aksi',
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <DialogFormKodeKegagalan
+              kategoriAset={kategoriAset}
+              itemEdit={row.original}
+              pemicu={
+                <Button size="sm" variant="outline" className="h-7 cursor-pointer text-xs">
+                  Edit
+                </Button>
+              }
+              wajib={wajib.kodeKegagalan}
+            />
+          </div>
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        meta: { label: 'Aksi' },
+      },
+    ],
+    [kategoriAset, wajib],
+  );
 
   return (
     <KerangkaAplikasi>
@@ -213,97 +304,44 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset, wajib 
       <KepalaHalaman
         judul="Kode Kegagalan"
         deskripsi="Katalog taksonomi Problem-Cause-Remedy untuk standarisasi analisis kegagalan aset."
-        aksi={
-          <>
-            <TombolEkspor url="/pemeliharaan/kode-kegagalan/ekspor" />
-            <DialogFormKodeKegagalan kategoriAset={kategoriAset} wajib={wajib.kodeKegagalan} />
-          </>
-        }
+        aksi={<DialogFormKodeKegagalan kategoriAset={kategoriAset} wajib={wajib.kodeKegagalan} />}
         className="mb-6"
       />
 
-      {/* FILTER TAB JENIS */}
-      <div className="mb-4 flex flex-wrap gap-2">
-        {(['Semua', 'Masalah', 'Penyebab', 'Tindakan'] as const).map((jenis) => {
-          const aktif = tabJenis === jenis;
-          const hitung =
-            jenis === 'Semua' ? kodeKegagalan.length : kodeKegagalan.filter((k) => k.Jenis === jenis).length;
-          return (
-            <button
-              key={jenis}
-              onClick={() => setTabJenis(jenis)}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors ${
-                aktif ? 'bg-teknisi-700 text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              <span>{jenis}</span>
-              <span
-                className={`rounded-full px-1.5 py-0.2 text-[10px] ${
-                  aktif ? 'bg-white/20 text-white' : 'bg-background text-foreground'
-                }`}
-              >
-                {hitung}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {daftarTersaring.length === 0 ? (
+      {kodeKegagalan.meta.total === 0 && !adaPenyaringAktif(filter) ? (
         <KeadaanKosong
           judul="Belum ada kode kegagalan"
           deskripsi="Tambahkan master data kode masalah, penyebab, atau tindakan untuk memudahkan teknisi."
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border bg-muted/40 text-xs font-medium text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Kode</th>
-                <th className="px-4 py-3">Nama</th>
-                <th className="px-4 py-3">Jenis</th>
-                <th className="px-4 py-3">Kategori Aset</th>
-                <th className="px-4 py-3">Keterangan</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {daftarTersaring.map((item) => (
-                <tr key={item.Id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs font-semibold text-foreground">{item.Kode}</td>
-                  <td className="px-4 py-3 font-medium text-foreground">{item.Nama}</td>
-                  <td className="px-4 py-3">
-                    <Badge variant={varianJenis[item.Jenis]}>{item.Jenis}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
-                    {item.kategori_aset?.Nama ?? 'Semua Kategori'}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground max-w-xs truncate">
-                    {item.Keterangan ?? '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={item.Aktif ? 'sukses' : 'netral'}>
-                      {item.Aktif ? 'Aktif' : 'Nonaktif'}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <DialogFormKodeKegagalan
-                      kategoriAset={kategoriAset}
-                      itemEdit={item}
-                      pemicu={
-                        <Button size="sm" variant="outline" className="cursor-pointer h-7 text-xs">
-                          Edit
-                        </Button>
-                      }
-                      wajib={wajib.kodeKegagalan}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={columns}
+          data={kodeKegagalan.data}
+          server={{ meta: kodeKegagalan.meta, filter }}
+          ekspor="/pemeliharaan/kode-kegagalan/ekspor"
+          facetedFilters={[
+            {
+              columnId: 'Jenis',
+              title: 'Jenis',
+              options: JENIS_KODE.map((jenis) => ({ label: jenis, value: jenis })),
+            },
+            {
+              columnId: 'KategoriAsetId',
+              title: 'Kategori Aset',
+              options: kategoriAset.map((satu) => ({ label: satu.Nama, value: satu.Id })),
+            },
+            {
+              columnId: 'Aktif',
+              title: 'Status',
+              options: [
+                { label: 'Aktif', value: '1' },
+                { label: 'Nonaktif', value: '0' },
+              ],
+            },
+          ]}
+          pencarianPlaceholder="Cari kode, nama, atau keterangan..."
+          pesanKosong="Tidak ada kode kegagalan yang cocok."
+        />
       )}
     </KerangkaAplikasi>
   );

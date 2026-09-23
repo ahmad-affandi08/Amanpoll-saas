@@ -1,30 +1,32 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Head, router } from '@inertiajs/react';
+import type { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { DataTable } from '@/components/data-table/DataTable';
+import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import { Trash2, Search } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import type { JenisKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { DialogFormJenis } from '@/features/Kalibrasi/components/DialogFormJenis';
 import { DialogTitikUkur } from '@/features/Kalibrasi/components/DialogTitikUkur';
+import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { Paginasi } from '@/types/global';
 import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
-  jenisKalibrasi: JenisKalibrasi[];
+  jenisKalibrasi: Paginasi<JenisKalibrasi>;
+  filter: FilterDaftar;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
 
-export default function KalibrasiJenisIndex({ jenisKalibrasi, wajib }: Props) {
+export default function KalibrasiJenisIndex({ jenisKalibrasi, filter, wajib }: Props) {
   const konfirmasi = useKonfirmasi();
-  const [pencarian, setPencarian] = useState('');
 
   const hapusJenis = async (jenis: JenisKalibrasi) => {
     if (
@@ -34,121 +36,121 @@ export default function KalibrasiJenisIndex({ jenisKalibrasi, wajib }: Props) {
         ragam: 'bahaya',
       })
     ) {
-      router.delete(ruteKalibrasi.jenisDetail(jenis.Id));
+      router.delete(ruteKalibrasi.jenisDetail(jenis.Id), { preserveScroll: true });
     }
   };
 
-  const filteredJenis = jenisKalibrasi.filter(
-    (jk) =>
-      jk.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
-      jk.Kode.toLowerCase().includes(pencarian.toLowerCase()) ||
-      (jk.Deskripsi ?? '').toLowerCase().includes(pencarian.toLowerCase()),
+  const columns = useMemo<ColumnDef<JenisKalibrasi>[]>(
+    () => [
+      {
+        id: 'Kode',
+        accessorFn: (row) => row.Kode,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Kode" />,
+        cell: ({ row }) => (
+          <span className="font-mono font-semibold text-foreground">{row.original.Kode}</span>
+        ),
+        meta: { label: 'Kode' },
+      },
+      {
+        id: 'Nama',
+        accessorFn: (row) => row.Nama,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nama Metode / Jenis" />,
+        cell: ({ row }) => <span className="font-medium text-foreground">{row.original.Nama}</span>,
+        meta: { label: 'Nama Metode / Jenis' },
+      },
+      {
+        id: 'Deskripsi',
+        accessorFn: (row) => row.Deskripsi ?? '',
+        header: 'Deskripsi & Standar Acuan',
+        cell: ({ row }) =>
+          row.original.Deskripsi ? (
+            <span className="block max-w-xs truncate text-muted-foreground">{row.original.Deskripsi}</span>
+          ) : (
+            <span className="italic text-muted-foreground">Tidak ada deskripsi</span>
+          ),
+        // Isinya panjang dan tidak dipakai mengurutkan; kunci urutnya pun tidak didaftarkan server.
+        enableSorting: false,
+        meta: { label: 'Deskripsi & Standar Acuan' },
+      },
+      {
+        id: 'titikUkur',
+        header: 'Titik Ukur Default',
+        cell: ({ row }) => <DialogTitikUkur jenis={row.original} wajib={wajib.titikUkur} />,
+        // Jumlah titik ukur dihitung dari relasi, bukan kolom yang dapat diurutkan server.
+        enableSorting: false,
+        meta: { label: 'Titik Ukur Default' },
+      },
+      {
+        id: 'Aktif',
+        accessorFn: (row) => (row.Aktif ? '1' : '0'),
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+        cell: ({ row }) => (
+          <Badge variant={row.original.Aktif ? 'sukses' : 'netral'}>
+            {row.original.Aktif ? 'Aktif' : 'Nonaktif'}
+          </Badge>
+        ),
+        meta: { label: 'Status' },
+      },
+      {
+        id: 'aksi',
+        header: 'Aksi',
+        cell: ({ row }) => (
+          <div className="flex items-center justify-end gap-1">
+            <DialogFormJenis jenis={row.original} wajib={wajib.jenis} />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => hapusJenis(row.original)}
+              className="h-7 w-7 text-bahaya-600 hover:bg-rose-50 hover:text-bahaya-700"
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        meta: { label: 'Aksi' },
+      },
+    ],
+    [wajib],
   );
 
   return (
     <KerangkaAplikasi>
       <Head title="Jenis Kalibrasi & Titik Ukur Standar" />
 
-      <div className="space-y-6">
-        {/* Header */}
-        <KepalaHalaman
-          judul="Jenis Kalibrasi"
-          deskripsi="Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji."
-          aksi={
-            <>
-              <TombolEkspor url="/kalibrasi/jenis/ekspor" />
-              <DialogFormJenis jenis={null} wajib={wajib.jenis} />
-            </>
-          }
+      <KepalaHalaman
+        judul="Jenis Kalibrasi"
+        deskripsi="Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji."
+        aksi={<DialogFormJenis jenis={null} wajib={wajib.jenis} />}
+        className="mb-6"
+      />
+
+      {jenisKalibrasi.meta.total === 0 && !adaPenyaringAktif(filter) ? (
+        <KeadaanKosong
+          judul="Belum ada jenis kalibrasi."
+          deskripsi="Tambahkan jenis kalibrasi seperti Kalibrasi Suhu, Tekanan, Dimensi, atau Listrik."
         />
-
-        {/* List Card */}
-        <Card className="border-border">
-          <CardHeader className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="relative w-full sm:w-72">
-              <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-              <Input
-                placeholder="Cari kode atau metode kalibrasi..."
-                value={pencarian}
-                onChange={(e) => setPencarian(e.target.value)}
-                className="pl-8 h-9 text-xs"
-              />
-            </div>
-            <span className="text-xs text-muted-foreground">Menampilkan {filteredJenis.length} jenis</span>
-          </CardHeader>
-
-          <CardContent className="p-0">
-            {filteredJenis.length === 0 ? (
-              <div className="py-12">
-                <KeadaanKosong
-                  judul="Belum ada jenis kalibrasi."
-                  deskripsi="Tambahkan jenis kalibrasi seperti Kalibrasi Suhu, Tekanan, Dimensi, atau Listrik."
-                />
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-permukaan-50 text-muted-foreground border-b border-border">
-                    <tr>
-                      <th className="px-4 py-3 font-medium">Kode</th>
-                      <th className="px-4 py-3 font-medium">Nama Metode / Jenis</th>
-                      <th className="px-4 py-3 font-medium">Deskripsi & Standar Acuan</th>
-                      <th className="px-3 py-3 font-medium text-center">Titik Ukur Default</th>
-                      <th className="px-3 py-3 font-medium text-center">Status</th>
-                      <th className="px-4 py-3 font-medium text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {filteredJenis.map((jk) => (
-                      <tr key={jk.Id} className="hover:bg-permukaan-50 transition-colors">
-                        <td className="px-4 py-3 font-mono font-semibold text-foreground whitespace-nowrap">
-                          {jk.Kode}
-                        </td>
-                        <td className="px-4 py-3 font-medium text-foreground">{jk.Nama}</td>
-                        <td className="px-4 py-3 text-muted-foreground max-w-xs truncate">
-                          {jk.Deskripsi || (
-                            <span className="text-muted-foreground italic">Tidak ada deskripsi</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-3 text-center whitespace-nowrap">
-                          <DialogTitikUkur jenis={jk} wajib={wajib.titikUkur} />
-                        </td>
-                        <td className="px-3 py-3 text-center whitespace-nowrap">
-                          {jk.Aktif ? (
-                            <Badge
-                              variant="outline"
-                              className="bg-emerald-50 text-emerald-700 border-emerald-200"
-                            >
-                              Aktif
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-zinc-100 text-zinc-600 border-zinc-200">
-                              Nonaktif
-                            </Badge>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1">
-                            <DialogFormJenis jenis={jk} wajib={wajib.jenis} />
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => hapusJenis(jk)}
-                              className="h-7 w-7 text-bahaya-600 hover:text-bahaya-700 hover:bg-rose-50"
-                            >
-                              <Trash2 className="size-3.5" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={jenisKalibrasi.data}
+          server={{ meta: jenisKalibrasi.meta, filter }}
+          ekspor="/kalibrasi/jenis/ekspor"
+          facetedFilters={[
+            {
+              columnId: 'Aktif',
+              title: 'Status',
+              options: [
+                { label: 'Aktif', value: '1' },
+                { label: 'Nonaktif', value: '0' },
+              ],
+            },
+          ]}
+          pencarianPlaceholder="Cari kode, metode, atau deskripsi kalibrasi..."
+          pesanKosong="Tidak ada jenis kalibrasi yang cocok."
+        />
+      )}
     </KerangkaAplikasi>
   );
 }
