@@ -55,7 +55,7 @@ Jika Composer melalui SSH memakai versi PHP berbeda dari website, panggil binary
 
 ## Database utama
 
-`php artisan migrate --force` (langkah 7 di atas) sudah membangun seluruh schema Amanpoll — 136 tabel domain, 4 view operasional, dan tabel infrastruktur Laravel — langsung dari migration di `database/migrations/`. Tidak perlu import manual SQL untuk instalasi baru.
+`php artisan migrate --force` (langkah 7 di atas) sudah membangun seluruh schema Amanpoll langsung dari migration di `database/migrations/`. Tidak perlu import manual SQL untuk instalasi baru. Jumlah tabel dan view-nya sengaja tidak diulang di sini — `docs/PETA-SCHEMA.md` adalah satu-satunya tempat angka itu dicatat, dan `tests/Feature/Shared/PetaSchemaTest.php` menjaganya tetap sama dengan schema yang sebenarnya. Angka yang sama ditulis di dua tempat pasti berselisih: yang tertulis di sini sebelumnya sudah tertinggal 83 tabel.
 
 `database/schema/Amanpoll_Schema_Hosting.sql` tetap disimpan sebagai dokumentasi/rujukan skema yang mudah dibaca dan sebagai jalur alternatif bila suatu saat `php artisan migrate` tidak dapat dijalankan (mis. akses SSH terbatas), dengan tetap menjalankan `php artisan migrate --force` sesudahnya untuk melengkapi tabel infrastruktur Laravel yang tidak ada di file SQL tersebut.
 
