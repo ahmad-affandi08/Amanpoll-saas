@@ -60,6 +60,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::get('/{aset}/riwayat-kalibrasi', [RiwayatAsetController::class, 'kalibrasi'])->name('riwayat-kalibrasi.index');
 
             Route::get('/{aset}/riwayat-lokasi', [RiwayatLokasiAsetController::class, 'index'])->name('riwayat-lokasi.index');
+            Route::get('/{aset}/riwayat-lokasi/ekspor', [RiwayatLokasiAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('riwayat-lokasi.ekspor');
             Route::post('/{aset}/riwayat-lokasi', [RiwayatLokasiAsetController::class, 'store'])->name('riwayat-lokasi.store');
 
             Route::get('/{aset}/penanggung-jawab', [RiwayatPenanggungJawabAsetController::class, 'index'])->name('penanggung-jawab.index');

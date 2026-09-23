@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { http } from '@/lib/http';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import type { Aset, RiwayatLokasiAset } from '@/features/Aset/types';
 import type { Lokasi } from '@/features/Lokasi/types';
 import { ruteAset } from '@/features/Aset/api';
@@ -36,9 +37,12 @@ export function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">
-        Lokasi saat ini:{' '}
-        <span className="font-semibold text-foreground">{aset.NamaLokasi ?? 'Belum ditentukan'}</span>
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">
+        <span>
+          Lokasi saat ini:{' '}
+          <span className="font-semibold text-foreground">{aset.NamaLokasi ?? 'Belum ditentukan'}</span>
+        </span>
+        <TombolEkspor url={`${ruteAset.riwayatLokasi(aset.Id)}/ekspor`} label="Ekspor Riwayat" />
       </div>
       <form onSubmit={submit} className="flex flex-wrap items-end gap-2 border-b border-border pb-4">
         <div className="space-y-1">
