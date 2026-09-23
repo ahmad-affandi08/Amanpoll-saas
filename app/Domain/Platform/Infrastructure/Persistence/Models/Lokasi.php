@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 
+use App\Core\Izin\BerlingkupUnit;
+use App\Core\Izin\DibatasiLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class Lokasi extends ModelDasar
+final class Lokasi extends ModelDasar implements BerlingkupUnit
 {
-    use MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
+    use DibatasiLingkup, MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
 
     protected $table = 'Lokasi';
 
@@ -47,6 +49,12 @@ final class Lokasi extends ModelDasar
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    /** @return array<string, 'unit'|'lokasi'> */
+    public function kolomLingkup(): array
+    {
+        return ['Id' => 'lokasi'];
     }
 
     public function awalanKode(): string

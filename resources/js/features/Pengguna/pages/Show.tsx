@@ -72,7 +72,14 @@ export default function PenggunaShow({ pengguna, ringkasan }: Props) {
             <ul className="divide-y divide-border">
               {pengguna.Peran.map((satu) => (
                 <li key={satu.Id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
-                  <span className="text-sm font-medium text-foreground">{satu.NamaPeran ?? 'Peran'}</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {satu.NamaPeran ?? 'Peran'}
+                    <span className="ml-2 text-xs font-normal text-muted-foreground">
+                      {satu.NamaUnitOrganisasi || satu.NamaLokasi
+                        ? `terbatas pada ${[satu.NamaUnitOrganisasi, satu.NamaLokasi].filter(Boolean).join(' · ')}`
+                        : 'seluruh organisasi'}
+                    </span>
+                  </span>
                   <span className="text-xs text-muted-foreground">
                     {satu.BerlakuMulai || satu.BerlakuSampai
                       ? `${tanggal(satu.BerlakuMulai)} s/d ${tanggal(satu.BerlakuSampai)}`

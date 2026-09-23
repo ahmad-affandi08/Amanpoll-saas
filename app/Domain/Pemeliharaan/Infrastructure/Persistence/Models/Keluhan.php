@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Infrastructure\Persistence\Models;
 
+use App\Core\Izin\BerlingkupUnit;
+use App\Core\Izin\DibatasiLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
@@ -16,9 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class Keluhan extends ModelDasar
+final class Keluhan extends ModelDasar implements BerlingkupUnit
 {
-    use MilikOrganisasi, SoftDeletes;
+    use DibatasiLingkup, MilikOrganisasi, SoftDeletes;
 
     protected $attributes = [
         'Prioritas' => PrioritasKeluhan::Normal->value,
@@ -75,6 +77,12 @@ final class Keluhan extends ModelDasar
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    /** @return array<string, 'unit'|'lokasi'> */
+    public function kolomLingkup(): array
+    {
+        return ['LokasiId' => 'lokasi'];
     }
 
     /** @return BelongsTo<Organisasi, $this> */

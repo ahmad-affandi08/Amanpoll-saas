@@ -10,8 +10,10 @@ use App\Domain\Platform\Application\Actions\UbahStatusPengguna;
 use App\Domain\Platform\Application\DTO\PenggunaData;
 use App\Domain\Platform\Http\Requests\SimpanPenggunaRequest;
 use App\Domain\Platform\Http\Resources\PenggunaResource;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
@@ -36,6 +38,10 @@ final class PenggunaController extends Controller
             'pengguna' => PenggunaResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
             'peranTersedia' => Peran::query()->orderBy('Nama')->get(['Id', 'Nama']),
+            // Dipakai membatasi cakupan penugasan peran; tanpa keduanya peran
+            // hanya dapat ditetapkan untuk seluruh organisasi.
+            'unitOrganisasi' => UnitOrganisasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
+            'lokasi' => Lokasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'wajib' => ['pengguna' => AturanWajib::untuk(SimpanPenggunaRequest::class)],
         ]);
     }
@@ -51,7 +57,7 @@ final class PenggunaController extends Controller
     {
         $this->authorize('view', $pengguna);
 
-        $pengguna->load(['penggunaPeran.peran', 'unitOrganisasi']);
+        $pengguna->load(['penggunaPeran.peran', 'penggunaPeran.unitOrganisasi', 'penggunaPeran.lokasi', 'unitOrganisasi']);
 
         return Inertia::render('Pengguna/Show', [
             'pengguna' => new PenggunaResource($pengguna),

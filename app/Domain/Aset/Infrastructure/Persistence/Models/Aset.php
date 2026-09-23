@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
+use App\Core\Izin\BerlingkupUnit;
+use App\Core\Izin\DibatasiLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
@@ -23,9 +25,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class Aset extends ModelDasar
+final class Aset extends ModelDasar implements BerlingkupUnit
 {
-    use MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
+    use DibatasiLingkup, MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
 
     protected $table = 'Aset';
 

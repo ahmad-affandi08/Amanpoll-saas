@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models;
 
+use App\Core\Izin\BerlingkupUnit;
+use App\Core\Izin\DibatasiLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -12,9 +14,9 @@ use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-final class PermintaanPembelian extends ModelDasar
+final class PermintaanPembelian extends ModelDasar implements BerlingkupUnit
 {
-    use MilikOrganisasi;
+    use DibatasiLingkup, MilikOrganisasi;
 
     protected $table = 'PermintaanPembelian';
 
@@ -46,6 +48,12 @@ final class PermintaanPembelian extends ModelDasar
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
         ];
+    }
+
+    /** @return array<string, 'unit'|'lokasi'> */
+    public function kolomLingkup(): array
+    {
+        return ['UnitOrganisasiId' => 'unit'];
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Application\Actions;
 
+use App\Core\Izin\LingkupAkses;
 use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
@@ -12,7 +13,10 @@ use App\Shared\Domain\Exceptions\KonflikData;
 
 final class TetapkanPeranKePengguna
 {
-    public function __construct(private readonly PemeriksaIzin $pemeriksaIzin) {}
+    public function __construct(
+        private readonly PemeriksaIzin $pemeriksaIzin,
+        private readonly LingkupAkses $lingkupAkses,
+    ) {}
 
     public function jalankan(
         Pengguna $pengguna,
@@ -47,6 +51,8 @@ final class TetapkanPeranKePengguna
         ]);
 
         $this->pemeriksaIzin->bersihkanCache((string) $peran->OrganisasiId, (string) $pengguna->Id);
+        // Cakupan pengguna ikut berubah, bukan hanya daftar izinnya.
+        $this->lingkupAkses->bersihkanCache((string) $peran->OrganisasiId, (string) $pengguna->Id);
 
         return $penggunaPeran;
     }

@@ -20,7 +20,9 @@ final class PenggunaPeranResource extends JsonResource
             'PeranId' => $penugasan->PeranId,
             'NamaPeran' => $this->whenLoaded('peran', fn () => $penugasan->peran->Nama),
             'UnitOrganisasiId' => $penugasan->UnitOrganisasiId,
+            'NamaUnitOrganisasi' => $this->whenLoaded('unitOrganisasi', fn () => $penugasan->unitOrganisasi?->Nama),
             'LokasiId' => $penugasan->LokasiId,
+            'NamaLokasi' => $this->whenLoaded('lokasi', fn () => $penugasan->lokasi?->Nama),
             'BerlakuMulai' => $penugasan->BerlakuMulai?->toIso8601String(),
             'BerlakuSampai' => $penugasan->BerlakuSampai?->toIso8601String(),
         ];

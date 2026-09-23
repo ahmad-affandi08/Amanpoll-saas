@@ -26,12 +26,19 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { Combobox } from '@/components/ui/combobox';
-import { opsiDari } from '@/lib/pilihan';
+import { opsiDari, opsiKosong, TANPA_PILIHAN } from '@/lib/pilihan';
+
+interface Acuan {
+  Id: string;
+  Nama: string;
+}
 
 interface Props {
   pengguna: Paginasi<Pengguna>;
   filter: FilterDaftar;
   peranTersedia: PeranRingkas[];
+  unitOrganisasi: Acuan[];
+  lokasi: Acuan[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
@@ -164,24 +171,41 @@ function DialogFormPengguna({ pengguna, wajib }: { pengguna: Pengguna | null; wa
 function DialogKelolaPeran({
   pengguna,
   peranTersedia,
+  unitOrganisasi,
+  lokasi,
 }: {
   pengguna: Pengguna;
   peranTersedia: PeranRingkas[];
+  unitOrganisasi: Acuan[];
+  lokasi: Acuan[];
 }) {
   const [buka, setBuka] = useState(false);
   const [peranTerpilih, setPeranTerpilih] = useState('');
+  const [unitTerpilih, setUnitTerpilih] = useState(TANPA_PILIHAN);
+  const [lokasiTerpilih, setLokasiTerpilih] = useState(TANPA_PILIHAN);
 
   const tambahkan = () => {
     if (!peranTerpilih) return;
     router.post(
       rutePengguna.peran(pengguna.Id),
-      { PeranId: peranTerpilih },
+      {
+        PeranId: peranTerpilih,
+        UnitOrganisasiId: unitTerpilih === TANPA_PILIHAN ? null : unitTerpilih,
+        LokasiId: lokasiTerpilih === TANPA_PILIHAN ? null : lokasiTerpilih,
+      },
       {
         preserveScroll: true,
-        onSuccess: () => setPeranTerpilih(''),
+        onSuccess: () => {
+          setPeranTerpilih('');
+          setUnitTerpilih(TANPA_PILIHAN);
+          setLokasiTerpilih(TANPA_PILIHAN);
+        },
       },
     );
   };
+
+  const namaUnit = (id: string | null) => unitOrganisasi.find((u) => u.Id === id)?.Nama;
+  const namaLokasi = (id: string | null) => lokasi.find((l) => l.Id === id)?.Nama;
 
   const cabut = (penggunaPeranId: string) => {
     router.delete(rutePengguna.peranDetail(penggunaPeranId), { preserveScroll: true });
@@ -207,21 +231,47 @@ function DialogKelolaPeran({
               key={p.Id}
               className="flex items-center justify-between rounded-md border border-border px-3 py-2"
             >
-              <span className="text-sm">{p.NamaPeran}</span>
+              <div className="min-w-0">
+                <div className="text-sm">{p.NamaPeran}</div>
+                <div className="text-xs text-muted-foreground">
+                  {p.UnitOrganisasiId || p.LokasiId
+                    ? `Terbatas pada ${[namaUnit(p.UnitOrganisasiId), namaLokasi(p.LokasiId)]
+                        .filter(Boolean)
+                        .join(' · ')}`
+                    : 'Seluruh organisasi'}
+                </div>
+              </div>
               <Button variant="ghost" size="sm" onClick={() => cabut(p.Id)}>
                 Cabut
               </Button>
             </div>
           ))}
-          <div className="flex gap-2 pt-2">
+          <div className="space-y-2 border-t border-border pt-3">
             <Combobox
               nilai={peranTerpilih}
               onPilih={setPeranTerpilih}
               opsi={opsiDari(peranTersedia, (p) => p.Nama)}
               placeholder="Pilih peran"
-              className="flex-1"
             />
-            <Button onClick={tambahkan}>Tetapkan</Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Combobox
+                nilai={unitTerpilih}
+                onPilih={setUnitTerpilih}
+                opsi={[opsiKosong('Semua unit'), ...opsiDari(unitOrganisasi, (u) => u.Nama)]}
+              />
+              <Combobox
+                nilai={lokasiTerpilih}
+                onPilih={setLokasiTerpilih}
+                opsi={[opsiKosong('Semua ruangan'), ...opsiDari(lokasi, (l) => l.Nama)]}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Membatasi unit atau ruangan membuat pengguna ini hanya melihat data di dalamnya, beserta
+              sub-unit dan ruangan di bawahnya. Dibiarkan kosong berarti seluruh organisasi.
+            </p>
+            <Button onClick={tambahkan} className="w-full">
+              Tetapkan
+            </Button>
           </div>
         </div>
       </DialogContent>
@@ -229,7 +279,14 @@ function DialogKelolaPeran({
   );
 }
 
-export default function PenggunaIndex({ pengguna, peranTersedia, filter, wajib }: Props) {
+export default function PenggunaIndex({
+  pengguna,
+  peranTersedia,
+  unitOrganisasi,
+  lokasi,
+  filter,
+  wajib,
+}: Props) {
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
 
@@ -301,7 +358,12 @@ export default function PenggunaIndex({ pengguna, peranTersedia, filter, wajib }
               cell: ({ row }: { row: { original: Pengguna } }) => (
                 <div className="flex justify-end gap-2">
                   <DialogFormPengguna pengguna={row.original} wajib={wajib.pengguna} />
-                  <DialogKelolaPeran pengguna={row.original} peranTersedia={peranTersedia} />
+                  <DialogKelolaPeran
+                    pengguna={row.original}
+                    peranTersedia={peranTersedia}
+                    unitOrganisasi={unitOrganisasi}
+                    lokasi={lokasi}
+                  />
                   <Button variant="ghost" size="sm" onClick={() => ubahStatus(row.original)}>
                     {row.original.Status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}
                   </Button>
@@ -314,7 +376,7 @@ export default function PenggunaIndex({ pengguna, peranTersedia, filter, wajib }
           ]
         : []),
     ],
-    [bolehKelola, peranTersedia, wajib],
+    [bolehKelola, peranTersedia, unitOrganisasi, lokasi, wajib],
   );
 
   return (

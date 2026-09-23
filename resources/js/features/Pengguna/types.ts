@@ -5,7 +5,9 @@ export interface PenggunaPeranBaris {
   PeranId: string;
   NamaPeran: string | null;
   UnitOrganisasiId: string | null;
+  NamaUnitOrganisasi?: string | null;
   LokasiId: string | null;
+  NamaLokasi?: string | null;
   BerlakuMulai: string | null;
   BerlakuSampai: string | null;
 }

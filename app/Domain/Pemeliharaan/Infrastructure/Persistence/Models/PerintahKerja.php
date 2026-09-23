@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Infrastructure\Persistence\Models;
 
+use App\Core\Izin\BerlingkupUnit;
+use App\Core\Izin\DibatasiLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
@@ -21,9 +23,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class PerintahKerja extends ModelDasar
+final class PerintahKerja extends ModelDasar implements BerlingkupUnit
 {
-    use MilikOrganisasi, SoftDeletes;
+    use DibatasiLingkup, MilikOrganisasi, SoftDeletes;
 
     protected $attributes = [
         'Prioritas' => 'Normal',
