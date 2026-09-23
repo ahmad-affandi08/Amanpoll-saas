@@ -7,7 +7,7 @@ namespace App\Domain\Aspak\Application\Services;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aspak\Domain\Enums\KondisiAspak;
 use App\Domain\Aspak\Infrastructure\Persistence\Models\PemetaanAspak;
-use Illuminate\Database\Eloquent\Model;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 
 /**
  * Mengubah satu aset menjadi nilai per ruas ASPAK.
@@ -34,19 +34,19 @@ final class PenyusunBarisAspak
         $alkes = $this->alkesUntuk($aset);
         $kalibrasi = $aset->pelaksanaanKalibrasi->sortByDesc('TanggalKalibrasi')->first();
 
-        $lokasi = $this->relasi($aset, 'lokasi');
-        $model = $this->relasi($aset, 'modelAset');
-        $merek = $model === null ? null : $this->relasi($model, 'merek');
+        $lokasi = BacaRelasi::model($aset, 'lokasi');
+        $model = BacaRelasi::model($aset, 'modelAset');
+        $merek = $model === null ? null : BacaRelasi::model($model, 'merek');
 
         return [
             'KodeAlkes' => $alkes['Kode'] ?? '',
             'NamaAlkes' => $alkes['Nama'] ?? '',
-            'KodeRuang' => $this->atribut($lokasi, 'KodeRuangAspak'),
-            'NamaRuang' => $this->atribut($lokasi, 'Nama'),
+            'KodeRuang' => BacaRelasi::teks($lokasi, 'KodeRuangAspak'),
+            'NamaRuang' => BacaRelasi::teks($lokasi, 'Nama'),
             'KodeAset' => (string) $aset->KodeAset,
             'NamaAset' => (string) $aset->Nama,
-            'Merek' => $this->atribut($merek, 'Nama'),
-            'Tipe' => $this->atribut($model, 'Nama'),
+            'Merek' => BacaRelasi::teks($merek, 'Nama'),
+            'Tipe' => BacaRelasi::teks($model, 'Nama'),
             'NomorSeri' => (string) ($aset->NomorSeri ?? ''),
             'TahunPerolehan' => $aset->TanggalPerolehan?->format('Y') ?? '',
             'Kondisi' => KondisiAspak::dariKondisiAset($aset->Kondisi)->value,
@@ -57,32 +57,6 @@ final class PenyusunBarisAspak
             'TanggalKalibrasiTerakhir' => $kalibrasi?->TanggalKalibrasi?->format('Y-m-d') ?? '',
             'BerlakuKalibrasiSampai' => $kalibrasi?->TanggalBerlakuSampai?->format('Y-m-d') ?? '',
         ];
-    }
-
-    /**
-     * Relasi terkait, atau null bila belum terisi.
-     *
-     * LokasiId, ModelAsetId, dan MerekId boleh kosong di basis data, tetapi
-     * tipe relasi belongsTo tidak menyatakannya. Diambil lewat tipe Model dasar
-     * supaya nullnya tidak hilang: aset tanpa lokasi harus menghasilkan sel
-     * kosong, bukan peringatan "property on null" di tengah ekspor.
-     */
-    private function relasi(Model $induk, string $nama): ?Model
-    {
-        $terkait = $induk->getRelationValue($nama);
-
-        return $terkait instanceof Model ? $terkait : null;
-    }
-
-    private function atribut(?Model $model, string $atribut): string
-    {
-        if ($model === null) {
-            return '';
-        }
-
-        $nilai = $model->getAttribute($atribut);
-
-        return is_scalar($nilai) ? (string) $nilai : '';
     }
 
     /** Aset tanpa pemetaan tidak dapat dilaporkan; ASPAK menolak baris tanpa kode alat. */
@@ -106,12 +80,12 @@ final class PenyusunBarisAspak
     private function alkesUntuk(Aset $aset): array
     {
         if ($aset->AlkesAspakId !== null) {
-            $sendiri = $this->relasi($aset, 'alkesAspak');
+            $sendiri = BacaRelasi::model($aset, 'alkesAspak');
 
             if ($sendiri !== null) {
                 return [
-                    'Kode' => $this->atribut($sendiri, 'Kode'),
-                    'Nama' => $this->atribut($sendiri, 'Nama'),
+                    'Kode' => BacaRelasi::teks($sendiri, 'Kode'),
+                    'Nama' => BacaRelasi::teks($sendiri, 'Nama'),
                 ];
             }
         }

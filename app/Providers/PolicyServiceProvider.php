@@ -32,6 +32,9 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\StandarKepatuhan;
+use App\Domain\Kodefikasi\Http\Policies\KodefikasiPolicy;
+use App\Domain\Kodefikasi\Infrastructure\Persistence\Models\KodeBarang;
+use App\Domain\Kodefikasi\Infrastructure\Persistence\Models\KodeBarangAset;
 use App\Domain\Kolaborasi\Http\Policies\BerkasPolicy;
 use App\Domain\Kolaborasi\Http\Policies\TagPolicy;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
@@ -198,6 +201,8 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(PermintaanPembelian::class, PengadaanPolicy::class);
         Gate::policy(IntegrasiEksternal::class, IntegrasiPolicy::class);
         Gate::policy(PanggilanBalikWeb::class, IntegrasiPolicy::class);
+        Gate::policy(KodeBarang::class, KodefikasiPolicy::class);
+        Gate::policy(KodeBarangAset::class, KodefikasiPolicy::class);
         Gate::policy(AlkesAspak::class, AspakPolicy::class);
         Gate::policy(PemetaanAspak::class, AspakPolicy::class);
         Gate::policy(StandarKepatuhan::class, KepatuhanPolicy::class);

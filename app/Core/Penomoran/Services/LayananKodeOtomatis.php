@@ -25,6 +25,30 @@ final class LayananKodeOtomatis
     private const MAKS_PERCOBAAN = 5;
 
     /**
+     * Nomor urut mentah berikutnya untuk satu entitas.
+     *
+     * Dipakai penomoran yang bentuknya bukan "AWALAN-0001", misalnya NUP barang
+     * milik negara yang berupa enam angka tanpa awalan. Memakai penghitung
+     * terkunci yang sama supaya dua permintaan bersamaan tidak memperoleh nomor
+     * kembar -- itu sebabnya ia di sini, bukan disalin ke domain pemakainya.
+     */
+    public function nomorBerikutnya(string $entitas, ?string $organisasiId): int
+    {
+        $lingkup = $organisasiId ?? self::PLATFORM;
+
+        return DB::transaction(function () use ($entitas, $lingkup): int {
+            $penghitung = $this->penghitungTerkunci($entitas, $lingkup);
+            $nomor = $penghitung['Terakhir'] + 1;
+
+            DB::table('UrutanKode')
+                ->where('Id', $penghitung['Id'])
+                ->update(['Terakhir' => $nomor, 'DiperbaruiPada' => now()]);
+
+            return $nomor;
+        }, self::MAKS_PERCOBAAN);
+    }
+
+    /**
      * @param  callable(string): bool  $sudahDipakai  memeriksa kode calon pada tabel sasaran
      */
     public function berikutnya(

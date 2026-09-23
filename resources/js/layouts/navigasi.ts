@@ -68,6 +68,7 @@ const navOperasionalAset: GrupNav = {
       subItems: [
         { label: 'Daftar Aset', href: '/aset' },
         { label: 'Kelayakan Aset', href: '/aset/kelayakan', kodeIzin: 'Aset.Lihat' },
+        { label: 'Kodefikasi (BMN/BMD)', href: '/kodefikasi', kodeIzin: 'Aset.Lihat' },
         { label: 'Mutasi Aset', href: '/mutasi-aset', kodeIzin: 'Aset.Ubah' },
         { label: 'Serah Terima', href: '/serah-terima-aset', kodeIzin: 'Aset.Ubah' },
         { label: 'Penghapusan', href: '/penghapusan-aset', kodeIzin: 'Aset.Hapus' },
