@@ -8,6 +8,7 @@ import { http } from '@/lib/http';
 import { formatUang } from '@/lib/uang';
 import type { Aset, NilaiAset } from '@/features/Aset/types';
 import { ruteAset } from '@/features/Aset/api';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function TabNilai({ aset }: { aset: Aset }) {
   const [data, setData] = useState<NilaiAset[]>([]);
@@ -92,23 +93,23 @@ export function TabNilai({ aset }: { aset: Aset }) {
         </div>
         {errorPratinjau && <p className="text-sm text-destructive">{errorPratinjau}</p>}
         <div className="grid grid-cols-3 gap-2">
-          <Input
+          <InputUang
             placeholder="Nilai Buku"
-            type="number"
             value={form.data.NilaiBuku}
-            onChange={(e) => form.setData('NilaiBuku', e.target.value)}
+            onChange={(nilai) => form.setData('NilaiBuku', nilai)}
+            mataUang={aset.MataUang || 'IDR'}
           />
-          <Input
+          <InputUang
             placeholder="Akumulasi Penyusutan"
-            type="number"
             value={form.data.AkumulasiPenyusutan}
-            onChange={(e) => form.setData('AkumulasiPenyusutan', e.target.value)}
+            onChange={(nilai) => form.setData('AkumulasiPenyusutan', nilai)}
+            mataUang={aset.MataUang || 'IDR'}
           />
-          <Input
+          <InputUang
             placeholder="Beban Periode"
-            type="number"
             value={form.data.BebanPenyusutanPeriode}
-            onChange={(e) => form.setData('BebanPenyusutanPeriode', e.target.value)}
+            onChange={(nilai) => form.setData('BebanPenyusutanPeriode', nilai)}
+            mataUang={aset.MataUang || 'IDR'}
           />
         </div>
         <Button type="submit" disabled={form.processing}>

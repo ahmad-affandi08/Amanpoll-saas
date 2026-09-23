@@ -33,6 +33,7 @@ import { TANPA_PILIHAN, opsiDari } from '@/lib/pilihan';
 import { PanelPemakaian, PanelReservasi, PanelStok } from '@/features/SukuCadang/components/PanelStok';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Ringkas {
   Id: string;
@@ -119,11 +120,9 @@ function DialogTambahKelompok({ sukuCadang, wajib }: { sukuCadang: SukuCadang; w
             </div>
             <div className="space-y-1.5">
               <Label nama="HargaPerolehan">Harga Perolehan</Label>
-              <Input
-                type="number"
-                min={0}
+              <InputUang
                 value={form.data.HargaPerolehan}
-                onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
+                onChange={(nilai) => form.setData('HargaPerolehan', nilai)}
               />
             </div>
             <DialogFooter>

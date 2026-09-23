@@ -22,6 +22,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface SukuCadangRingkas {
   Id: string;
@@ -93,11 +94,9 @@ function DialogTambahDetail({
               </div>
               <div className="space-y-1.5">
                 <Label nama="HargaSatuan">Harga Satuan</Label>
-                <Input
-                  type="number"
-                  min={0}
+                <InputUang
                   value={form.data.HargaSatuan}
-                  onChange={(e) => form.setData('HargaSatuan', e.target.value)}
+                  onChange={(nilai) => form.setData('HargaSatuan', nilai)}
                 />
               </div>
             </div>

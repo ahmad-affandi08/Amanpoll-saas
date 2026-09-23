@@ -27,6 +27,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Props {
   tagihan: TagihanPenyedia;
@@ -104,13 +105,10 @@ function DialogCatatPembayaran({ tagihan, wajib }: { tagihan: Props['tagihan']; 
                 <Label nama="Jumlah" htmlFor="Jumlah">
                   Jumlah
                 </Label>
-                <Input
+                <InputUang
                   id="Jumlah"
-                  type="number"
-                  min="0.01"
-                  step="0.01"
                   value={form.data.Jumlah}
-                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                  onChange={(nilai) => form.setData('Jumlah', nilai)}
                 />
                 {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
               </div>

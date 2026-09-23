@@ -21,6 +21,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { PRIORITAS } from '@/features/UsulanAset/status';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function DialogUbahUsulan({
   usulan,
@@ -144,11 +145,9 @@ export function DialogUbahUsulan({
               </div>
               <div className="space-y-1.5">
                 <Label nama="EstimasiHargaSatuan">Harga / Unit</Label>
-                <Input
-                  type="number"
-                  step="0.01"
+                <InputUang
                   value={form.data.EstimasiHargaSatuan}
-                  onChange={(event) => form.setData('EstimasiHargaSatuan', event.target.value)}
+                  onChange={(nilai) => form.setData('EstimasiHargaSatuan', nilai)}
                 />
               </div>
               <div className="space-y-1.5">

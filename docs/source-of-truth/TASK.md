@@ -155,6 +155,24 @@ Method `jalankan()` diperbolehkan sebagai convention internal. Method kontrak fr
 - [x] Kalkulasi total selalu diverifikasi server.
 - [x] Tentukan aturan pembulatan.
 
+Isian nominal memakai `InputUang` (`components/shared`), bukan
+`<Input type="number">`: pemisah ribuan muncul selagi mengetik, lambang mata
+uang tampil di depan (`Rp`, `US$`), dan yang dikirim ke server tetap angka
+kanonik tanpa pemisah (`1500000.5`), jadi validasi `numeric` tidak berubah.
+Nilai dari server dirapikan ke kebiasaan mata uangnya (rupiah tanpa `,00`).
+Kursor dijaga di antara digit yang sama walau titik pemisah bertambah di
+depannya.
+
+Dua jebakan ditemukan saat komponennya diuji mengetik di Chromium. Menolak koma
+pada rupiah membuat komanya hilang dan digit sesudahnya menempel ke angka bulat:
+`15.200,50` menjadi `1.520.050`, seratus kali lipat tanpa peringatan. Karena itu
+isian menerima dua desimal untuk semua mata uang. Lalu, tempelan dari sistem
+lain (`1500000.50`) dibaca dengan titik desimal, tetapi hanya untuk tempelan:
+menghapus digit dari `15.200` meninggalkan `15.20`, yang rupanya sama.
+`NominalUangMemakaiInputUangTest` menolak kolom bernama uang yang kembali ke
+isian angka mentah; `Jumlah` sengaja tidak ikut dikenali karena dipakai untuk
+kuantitas maupun nominal.
+
 ### Gate 01
 
 Shared convention terdokumentasi dan minimal satu test membuktikan exception mapping, timezone, serta transaction behavior.

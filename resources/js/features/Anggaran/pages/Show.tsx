@@ -185,6 +185,7 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan, w
                           {anggaran.Status === 'Aktif' && (
                             <DialogTransaksi
                               pos={pos}
+                              mataUang={anggaran.MataUang}
                               dapatMenyesuaikan={dapatMenyesuaikan}
                               wajib={wajib.transaksi}
                             />

@@ -28,6 +28,7 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface KategoriRingkas {
   Id: string;
@@ -138,11 +139,9 @@ function DialogFormSukuCadang({
               </div>
               <div className="space-y-2">
                 <Label nama="HargaRataRata">Harga Rata-rata</Label>
-                <Input
-                  type="number"
-                  min={0}
+                <InputUang
                   value={form.data.HargaRataRata}
-                  onChange={(e) => form.setData('HargaRataRata', e.target.value)}
+                  onChange={(nilai) => form.setData('HargaRataRata', nilai)}
                 />
               </div>
             </div>

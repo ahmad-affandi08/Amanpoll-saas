@@ -14,6 +14,7 @@ import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { PemilihNomenklatur } from '@/features/Aset/components/PemilihNomenklatur';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function TabInfo({
   aset,
@@ -121,17 +122,19 @@ export function TabInfo({
             onPilih={(v) => form.setData('AlkesAspakId', v)}
             terpasang={
               aset.AlkesAspakId
-                ? { Id: aset.AlkesAspakId, Kode: aset.KodeAlkesAspak ?? null, Nama: aset.NamaAlkesAspak ?? null }
+                ? {
+                    Id: aset.AlkesAspakId,
+                    Kode: aset.KodeAlkesAspak ?? null,
+                    Nama: aset.NamaAlkesAspak ?? null,
+                  }
                 : null
             }
           />
           <p className="text-sm text-muted-foreground">
-            Nama alat menurut standar Kemenkes. Dipakai saat data aset diekspor ke ASPAK, dan menang
-            atas pemetaan model maupun kategori.
+            Nama alat menurut standar Kemenkes. Dipakai saat data aset diekspor ke ASPAK, dan menang atas
+            pemetaan model maupun kategori.
           </p>
-          {form.errors.AlkesAspakId && (
-            <p className="text-sm text-destructive">{form.errors.AlkesAspakId}</p>
-          )}
+          {form.errors.AlkesAspakId && <p className="text-sm text-destructive">{form.errors.AlkesAspakId}</p>}
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
@@ -183,20 +186,18 @@ export function TabInfo({
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label nama="HargaPerolehan">Harga Perolehan</Label>
-            <Input
-              type="number"
-              min={0}
+            <InputUang
               value={form.data.HargaPerolehan}
-              onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
+              onChange={(nilai) => form.setData('HargaPerolehan', nilai)}
+              mataUang={form.data.MataUang || 'IDR'}
             />
           </div>
           <div className="space-y-2">
             <Label nama="NilaiResidu">Nilai Residu</Label>
-            <Input
-              type="number"
-              min={0}
+            <InputUang
               value={form.data.NilaiResidu}
-              onChange={(e) => form.setData('NilaiResidu', e.target.value)}
+              onChange={(nilai) => form.setData('NilaiResidu', nilai)}
+              mataUang={form.data.MataUang || 'IDR'}
             />
           </div>
           <div className="space-y-2">

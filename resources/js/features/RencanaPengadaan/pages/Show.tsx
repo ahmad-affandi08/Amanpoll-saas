@@ -24,6 +24,7 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { Combobox } from '@/components/ui/combobox';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface PosRingkas {
   Id: string;
@@ -231,13 +232,10 @@ function DialogTambahDetail({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label nama="HargaEstimasi">Harga Estimasi</Label>
-              <Input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.data.HargaEstimasi}
-                onChange={(event) => form.setData('HargaEstimasi', event.target.value)}
+              <InputUang
                 placeholder={manual ? '' : 'Gunakan harga usulan'}
+                value={form.data.HargaEstimasi}
+                onChange={(nilai) => form.setData('HargaEstimasi', nilai)}
               />
             </div>
             <div className="space-y-1.5">

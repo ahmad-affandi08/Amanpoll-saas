@@ -26,6 +26,7 @@ import { formatAngka } from '@/lib/angka';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Kampanye {
   Id: string;
@@ -230,12 +231,10 @@ function DialogFormKampanye({
                 <Label nama="Budget" htmlFor="Budget">
                   Budget
                 </Label>
-                <Input
+                <InputUang
                   id="Budget"
-                  type="number"
-                  min="0"
                   value={form.data.Budget}
-                  onChange={(e) => form.setData('Budget', e.target.value)}
+                  onChange={(nilai) => form.setData('Budget', nilai)}
                 />
                 <p className="text-sm text-muted-foreground">
                   Rencana belanja. Realisasinya dicatat per hari di halaman detail.

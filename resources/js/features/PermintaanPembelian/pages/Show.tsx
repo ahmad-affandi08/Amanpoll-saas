@@ -25,6 +25,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface AsetRingkas {
   Id: string;
@@ -181,13 +182,10 @@ function DialogTambahItem({ permintaan, aset, sukuCadang, wajib }: Props) {
                 <Label nama="HargaEstimasi" htmlFor="HargaEstimasi">
                   Harga Estimasi
                 </Label>
-                <Input
+                <InputUang
                   id="HargaEstimasi"
-                  type="number"
-                  min="0"
-                  step="0.01"
                   value={form.data.HargaEstimasi}
-                  onChange={(event) => form.setData('HargaEstimasi', event.target.value)}
+                  onChange={(nilai) => form.setData('HargaEstimasi', nilai)}
                 />
                 {form.errors.HargaEstimasi && (
                   <p className="text-sm text-destructive">{form.errors.HargaEstimasi}</p>

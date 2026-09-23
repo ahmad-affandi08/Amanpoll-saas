@@ -518,6 +518,7 @@ export interface PilihanKampanye {
   Objective: string[];
   Channel: string[];
   Metrik: string[];
+  MetrikUang: string[];
   JenisKonten: string[];
   Halaman: Record<string, string>;
   Formulir: Record<string, string>;

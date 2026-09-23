@@ -17,6 +17,7 @@ import type { Aturan, Partner, Pilihan, Program } from '@/features/PartnerPemasa
 import { Bidang } from '@/features/PartnerPemasaran/components/Bidang';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function DialogAturan({
   aturan,
@@ -105,18 +106,21 @@ export function DialogAturan({
             label={form.data.Jenis === 'Persentase' ? 'Nilai (persen)' : 'Nilai (rupiah)'}
             galat={form.errors.Nilai}
           >
-            <Input
-              type="number"
-              step="0.01"
-              value={form.data.Nilai}
-              onChange={(e) => form.setData('Nilai', Number(e.target.value))}
-            />
+            {form.data.Jenis === 'Persentase' ? (
+              <Input
+                type="number"
+                step="0.01"
+                value={form.data.Nilai}
+                onChange={(e) => form.setData('Nilai', Number(e.target.value))}
+              />
+            ) : (
+              <InputUang value={form.data.Nilai} onChange={(nilai) => form.setData('Nilai', Number(nilai))} />
+            )}
           </Bidang>
           <Bidang label="Maksimal pembayaran (kosong = tanpa batas)" galat={form.errors.MaksPembayaran}>
-            <Input
-              type="number"
+            <InputUang
               value={form.data.MaksPembayaran}
-              onChange={(e) => form.setData('MaksPembayaran', e.target.value)}
+              onChange={(nilai) => form.setData('MaksPembayaran', nilai)}
             />
           </Bidang>
           <label className="flex items-center gap-2 text-sm">

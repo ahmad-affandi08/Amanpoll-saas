@@ -212,6 +212,11 @@ final class KampanyeController extends Controller
             'Objective' => array_column(ObjectiveKampanye::cases(), 'value'),
             'Channel' => array_column(ChannelKampanye::cases(), 'value'),
             'Metrik' => array_column(MetrikTargetKampanye::cases(), 'value'),
+            // Target bernilai uang diisi seperti uang, bukan sebagai hitungan.
+            'MetrikUang' => array_values(array_map(
+                fn (MetrikTargetKampanye $satu): string => $satu->value,
+                array_filter(MetrikTargetKampanye::cases(), fn (MetrikTargetKampanye $satu): bool => $satu->satuanUang()),
+            )),
             'JenisKonten' => array_column(JenisKontenKampanye::cases(), 'value'),
             'Halaman' => HalamanPemasaran::query()->orderBy('Slug')->pluck('Slug', 'Id')->all(),
             'Formulir' => FormulirPemasaran::query()->orderBy('Kode')->pluck('Kode', 'Id')->all(),

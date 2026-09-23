@@ -17,6 +17,7 @@ import type { PerintahKerja } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { tanggalHariIni } from '@/lib/waktu';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function DialogCatatBiaya({
   perintahKerja,
@@ -29,7 +30,7 @@ export function DialogCatatBiaya({
   const form = useForm({
     JenisBiaya: 'Vendor',
     Deskripsi: '',
-    Jumlah: 0,
+    Jumlah: '',
     MataUang: 'IDR',
     TanggalBiaya: tanggalHariIni(),
   });
@@ -94,12 +95,11 @@ export function DialogCatatBiaya({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label nama="Jumlah">Nominal (IDR)</Label>
-                <Input
-                  type="number"
-                  min={0}
+                <Label nama="Jumlah">Nominal</Label>
+                <InputUang
                   value={form.data.Jumlah}
-                  onChange={(e) => form.setData('Jumlah', Number(e.target.value))}
+                  onChange={(nilai) => form.setData('Jumlah', nilai)}
+                  mataUang={form.data.MataUang}
                 />
                 {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
               </div>
@@ -117,7 +117,7 @@ export function DialogCatatBiaya({
             <DialogFooter>
               <Button
                 type="submit"
-                disabled={form.processing || form.data.Jumlah <= 0}
+                disabled={form.processing || !(Number(form.data.Jumlah) > 0)}
                 className="cursor-pointer"
               >
                 Simpan Biaya

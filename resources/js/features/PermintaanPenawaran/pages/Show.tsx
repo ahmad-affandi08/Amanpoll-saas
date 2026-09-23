@@ -27,6 +27,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Props {
   rfq: PermintaanPenawaran;
@@ -178,36 +179,30 @@ function DialogCatatPenawaran({ rfq, wajib }: { rfq: Props['rfq']; wajib: Aturan
                     <Label nama="Detail" className="text-xs">
                       Harga
                     </Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
+                    <InputUang
                       value={form.data.Detail[indeks].HargaSatuan}
-                      onChange={(event) => ubahBaris(indeks, 'HargaSatuan', event.target.value)}
+                      onChange={(nilai) => ubahBaris(indeks, 'HargaSatuan', nilai)}
+                      mataUang={form.data.MataUang}
                     />
                   </div>
                   <div className="space-y-1">
                     <Label nama="Detail" className="text-xs">
                       Diskon
                     </Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
+                    <InputUang
                       value={form.data.Detail[indeks].Diskon}
-                      onChange={(event) => ubahBaris(indeks, 'Diskon', event.target.value)}
+                      onChange={(nilai) => ubahBaris(indeks, 'Diskon', nilai)}
+                      mataUang={form.data.MataUang}
                     />
                   </div>
                   <div className="space-y-1">
                     <Label nama="Detail" className="text-xs">
                       Pajak
                     </Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
+                    <InputUang
                       value={form.data.Detail[indeks].Pajak}
-                      onChange={(event) => ubahBaris(indeks, 'Pajak', event.target.value)}
+                      onChange={(nilai) => ubahBaris(indeks, 'Pajak', nilai)}
+                      mataUang={form.data.MataUang}
                     />
                   </div>
                   <div className="space-y-1">

@@ -20,13 +20,16 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function DialogTransaksi({
   pos,
+  mataUang,
   dapatMenyesuaikan,
   wajib,
 }: {
   pos: PosAnggaran;
+  mataUang: string;
   dapatMenyesuaikan: boolean;
   wajib: AturanWajib;
 }) {
@@ -101,12 +104,12 @@ export function DialogTransaksi({
                 <Label nama="Jumlah" htmlFor={`jumlah-${pos.Id}`}>
                   Jumlah
                 </Label>
-                <Input
+                <InputUang
                   id={`jumlah-${pos.Id}`}
-                  type="number"
-                  step="0.01"
                   value={form.data.Jumlah}
-                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                  onChange={(nilai) => form.setData('Jumlah', nilai)}
+                  mataUang={mataUang}
+                  bolehNegatif
                 />
                 {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
               </div>

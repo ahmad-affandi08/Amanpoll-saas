@@ -33,6 +33,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { PemilihNomenklatur } from '@/features/Aset/components/PemilihNomenklatur';
 import { opsiDari, TANPA_PILIHAN } from '@/lib/pilihan';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -209,11 +210,9 @@ function DialogTambahAset({
               </div>
               <div className="space-y-2">
                 <Label nama="HargaPerolehan">Harga Perolehan</Label>
-                <Input
-                  type="number"
-                  min={0}
+                <InputUang
                   value={form.data.HargaPerolehan}
-                  onChange={(e) => form.setData('HargaPerolehan', e.target.value)}
+                  onChange={(nilai) => form.setData('HargaPerolehan', nilai)}
                 />
               </div>
             </div>

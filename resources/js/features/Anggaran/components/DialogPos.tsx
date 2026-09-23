@@ -19,6 +19,7 @@ import { ruteAnggaran } from '@/features/Anggaran/api';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function DialogPos({
   anggaran,
@@ -97,13 +98,11 @@ export function DialogPos({
                 <Label nama="Jumlah" htmlFor="nilai-pos">
                   Nilai
                 </Label>
-                <Input
+                <InputUang
                   id="nilai-pos"
-                  type="number"
-                  min="0.01"
-                  step="0.01"
                   value={form.data.Jumlah}
-                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                  onChange={(nilai) => form.setData('Jumlah', nilai)}
+                  mataUang={anggaran.MataUang}
                 />
                 {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
               </div>

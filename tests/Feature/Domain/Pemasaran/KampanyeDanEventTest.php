@@ -225,4 +225,16 @@ final class KampanyeDanEventTest extends KasusPemasaran
             'Channel' => ['GoogleAds', 'LinkedIn'],
         ];
     }
+
+    /** Hanya target bernilai uang yang diisi dengan isian uang di halaman kampanye. */
+    public function test_pilihan_kampanye_menandai_metrik_target_bernilai_uang(): void
+    {
+        $this->nyalakanFitur(KatalogFiturPlatform::ANALITIK);
+
+        $props = $this->actingAs($this->buatAdmin([KatalogIzinPemasaran::KAMPANYE_LIHAT]), 'platform')
+            ->get(route('pemasaran.kampanye.index'))
+            ->viewData('page')['props'];
+
+        $this->assertSame(['Revenue'], $props['pilihan']['MetrikUang']);
+    }
 }

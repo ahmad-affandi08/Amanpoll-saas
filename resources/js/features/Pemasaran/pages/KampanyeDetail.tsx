@@ -58,7 +58,7 @@ export default function PemasaranKampanyeDetail({ kampanye, biaya, target, konte
         </TabsContent>
 
         <TabsContent value="target" className="mt-4">
-          <KonsolTarget akar={akar} target={target} metrik={pilihan.Metrik} />
+          <KonsolTarget akar={akar} target={target} metrik={pilihan.Metrik} metrikUang={pilihan.MetrikUang} />
         </TabsContent>
 
         <TabsContent value="konten" className="mt-4">

@@ -29,6 +29,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface PenyediaRingkas {
   Id: string;
@@ -190,13 +191,11 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
               <Label nama="Nilai" htmlFor="Nilai">
                 Nilai Kontrak
               </Label>
-              <Input
+              <InputUang
                 id="Nilai"
-                type="number"
-                min="0"
-                step="0.01"
                 value={form.data.Nilai}
-                onChange={(event) => form.setData('Nilai', event.target.value)}
+                onChange={(nilai) => form.setData('Nilai', nilai)}
+                mataUang={form.data.MataUang || 'IDR'}
               />
               {form.errors.Nilai && <p className="text-sm text-destructive">{form.errors.Nilai}</p>}
             </div>

@@ -19,6 +19,7 @@ import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
+import { InputUang } from '@/components/shared/InputUang';
 
 export function DialogCatatTagihan({ pesanan, wajib }: { pesanan: PesananPembelian; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
@@ -99,13 +100,11 @@ export function DialogCatatTagihan({ pesanan, wajib }: { pesanan: PesananPembeli
                 <Label nama="Subtotal" htmlFor="Subtotal">
                   Subtotal
                 </Label>
-                <Input
+                <InputUang
                   id="Subtotal"
-                  type="number"
-                  min="0"
-                  step="0.01"
                   value={form.data.Subtotal}
-                  onChange={(event) => form.setData('Subtotal', event.target.value)}
+                  onChange={(nilai) => form.setData('Subtotal', nilai)}
+                  mataUang={pesanan.MataUang || 'IDR'}
                 />
                 {form.errors.Subtotal && <p className="text-sm text-destructive">{form.errors.Subtotal}</p>}
               </div>
@@ -113,13 +112,11 @@ export function DialogCatatTagihan({ pesanan, wajib }: { pesanan: PesananPembeli
                 <Label nama="Pajak" htmlFor="Pajak">
                   Pajak
                 </Label>
-                <Input
+                <InputUang
                   id="Pajak"
-                  type="number"
-                  min="0"
-                  step="0.01"
                   value={form.data.Pajak}
-                  onChange={(event) => form.setData('Pajak', event.target.value)}
+                  onChange={(nilai) => form.setData('Pajak', nilai)}
+                  mataUang={pesanan.MataUang || 'IDR'}
                 />
               </div>
             </div>

@@ -24,6 +24,7 @@ import { labelBatas, rupiah } from '@/features/Langganan/format';
 import type { DefinisiFitur, PaketItem } from '@/features/Langganan/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { rutePlatform } from '@/features/Platform/api';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Props {
   paket: PaketItem[];
@@ -238,20 +239,20 @@ function DialogPaket({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="harga-bulanan">Harga bulanan</Label>
-              <Input
+              <InputUang
                 id="harga-bulanan"
-                inputMode="numeric"
                 value={form.data.HargaBulanan}
-                onChange={(e) => form.setData('HargaBulanan', e.target.value)}
+                onChange={(nilai) => form.setData('HargaBulanan', nilai)}
+                mataUang={form.data.MataUang || 'IDR'}
               />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="harga-tahunan">Harga tahunan</Label>
-              <Input
+              <InputUang
                 id="harga-tahunan"
-                inputMode="numeric"
                 value={form.data.HargaTahunan}
-                onChange={(e) => form.setData('HargaTahunan', e.target.value)}
+                onChange={(nilai) => form.setData('HargaTahunan', nilai)}
+                mataUang={form.data.MataUang || 'IDR'}
               />
             </div>
           </div>

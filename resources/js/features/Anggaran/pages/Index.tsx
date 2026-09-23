@@ -27,6 +27,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Ringkas {
   Id: string;
@@ -131,13 +132,11 @@ function DialogBuatAnggaran({ unitOrganisasi, wajib }: { unitOrganisasi: Ringkas
                 <Label nama="Jumlah" htmlFor="jumlah-anggaran">
                   Total Anggaran
                 </Label>
-                <Input
+                <InputUang
                   id="jumlah-anggaran"
-                  type="number"
-                  min="0.01"
-                  step="0.01"
                   value={form.data.Jumlah}
-                  onChange={(event) => form.setData('Jumlah', event.target.value)}
+                  onChange={(nilai) => form.setData('Jumlah', nilai)}
+                  mataUang={form.data.MataUang || 'IDR'}
                 />
                 {form.errors.Jumlah && <p className="text-sm text-destructive">{form.errors.Jumlah}</p>}
               </div>

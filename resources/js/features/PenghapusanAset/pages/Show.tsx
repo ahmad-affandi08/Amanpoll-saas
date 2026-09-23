@@ -24,6 +24,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { InputUang } from '@/components/shared/InputUang';
 
 interface Props {
   pengajuan: PengajuanPenghapusanAset;
@@ -82,20 +83,16 @@ function DialogTambahAset({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label nama="NilaiBukuSaatPenghapusan">Nilai Buku Saat Ini</Label>
-                <Input
-                  type="number"
-                  min={0}
+                <InputUang
                   value={form.data.NilaiBukuSaatPenghapusan}
-                  onChange={(e) => form.setData('NilaiBukuSaatPenghapusan', e.target.value)}
+                  onChange={(nilai) => form.setData('NilaiBukuSaatPenghapusan', nilai)}
                 />
               </div>
               <div className="space-y-1.5">
                 <Label nama="HasilPelepasan">Estimasi Hasil Pelepasan</Label>
-                <Input
-                  type="number"
-                  min={0}
+                <InputUang
                   value={form.data.HasilPelepasan}
-                  onChange={(e) => form.setData('HasilPelepasan', e.target.value)}
+                  onChange={(nilai) => form.setData('HasilPelepasan', nilai)}
                 />
               </div>
             </div>
