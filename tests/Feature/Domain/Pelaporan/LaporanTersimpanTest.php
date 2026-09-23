@@ -153,6 +153,60 @@ final class LaporanTersimpanTest extends KasusPelaporan
         $this->assertNotSame('', $metrik['perintah_kerja.aktif']['Formula']);
     }
 
+    /**
+     * Kewenangan melihat laporan dibagikan pindah dari saringan koleksi ke
+     * syarat kueri saat ekspor dibuat -- saringan di luar kueri tidak dapat
+     * ikut ke unduhan yang dialirkan per potongan.
+     *
+     * Yang sudah dijaga sebelumnya hanya pengguna BERIZIN. Justru kebalikannya
+     * yang menentukan: tanpa Laporan.Lihat, laporan dibagikan milik orang lain
+     * tidak boleh terlihat -- di layar maupun di berkas.
+     */
+    public function test_tanpa_izin_lihat_laporan_dibagikan_orang_lain_tidak_terlihat(): void
+    {
+        $pemilik = $this->buatPengguna();
+        $tanpaIzin = $this->buatPengguna();
+
+        $dibagikan = $this->simpanLaporan($pemilik, 'Untuk tim', pribadi: false);
+        $miliknyaSendiri = $this->simpanLaporan($tanpaIzin, 'Punya saya', pribadi: true);
+
+        $respons = $this->actingAs($tanpaIzin)->get(route('pelaporan.laporan.index'));
+        $respons->assertOk();
+        $nama = array_column($respons->viewData('page')['props']['laporan'], 'Nama');
+
+        $this->assertContains($miliknyaSendiri->Nama, $nama, 'Laporannya sendiri harus tetap terlihat.');
+        $this->assertNotContains($dibagikan->Nama, $nama);
+    }
+
+    /** Berkas ekspornya tunduk pada batas yang sama dengan layarnya. */
+    public function test_ekspor_daftar_laporan_menghormati_batas_kewenangan_yang_sama(): void
+    {
+        $pemilik = $this->buatPengguna();
+        $tanpaIzin = $this->buatPengguna();
+        $berizin = $this->buatPengguna(['Laporan.Lihat']);
+
+        $dibagikan = $this->simpanLaporan($pemilik, 'Untuk tim', pribadi: false);
+        $pribadi = $this->simpanLaporan($pemilik, 'Rahasia saya', pribadi: true);
+
+        $isiTanpaIzin = $this->actingAs($tanpaIzin)
+            ->get(route('pelaporan.laporan.ekspor'))
+            ->assertOk()
+            ->streamedContent();
+
+        $this->assertStringNotContainsString($dibagikan->Nama, $isiTanpaIzin);
+        $this->assertStringNotContainsString($pribadi->Nama, $isiTanpaIzin);
+
+        // Pembanding: yang berizin memang mendapat laporan dibagikan, jadi
+        // ketiadaan di atas bukan karena ekspornya tidak pernah memuat apa pun.
+        $isiBerizin = $this->actingAs($berizin)
+            ->get(route('pelaporan.laporan.ekspor'))
+            ->assertOk()
+            ->streamedContent();
+
+        $this->assertStringContainsString($dibagikan->Nama, $isiBerizin);
+        $this->assertStringNotContainsString($pribadi->Nama, $isiBerizin);
+    }
+
     private function simpanLaporan(
         Pengguna $pemilik,
         string $nama,

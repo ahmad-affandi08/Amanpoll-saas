@@ -58,6 +58,52 @@ class KartuRiwayatAsetTest extends TestCase
         $this->pengguna = $this->buatPengguna($this->organisasi);
     }
 
+    /**
+     * Angka "dari M yang tercatat" adalah klaim faktual di dokumen yang
+     * ditandatangani. Bila kueri hitungannya lepas dari asetnya, jumlahnya
+     * ikut memuat riwayat alat lain tanpa ada satu baris pun yang keliru --
+     * kesalahan yang tidak terlihat dari isi tabelnya.
+     */
+    public function test_jumlah_total_riwayat_hanya_menghitung_asetnya_sendiri(): void
+    {
+        $organisasi = $this->organisasi;
+        $satu = $this->buatAset($organisasi, ['Nama' => 'Alat Berhitung']);
+        $dua = $this->buatAset($organisasi, ['Nama' => 'Alat Pembanding']);
+
+        $this->konteks()->tetapkan($organisasi->Id);
+        $lokasi = Lokasi::create(['Kode' => 'LOK-'.strtoupper(Str::random(6)), 'Nama' => 'Ruang Hitung']);
+
+        $lewatBatas = PenyusunKartuRiwayatAset::MAKS_BARIS + 1;
+        foreach (range(1, $lewatBatas) as $ke) {
+            RiwayatLokasiAset::create([
+                'AsetId' => $satu->Id,
+                'LokasiTujuanId' => $lokasi->Id,
+                'JenisPerpindahan' => JenisRiwayatLokasiAset::Manual->value,
+                'Alasan' => 'Perpindahan ke-'.$ke,
+                'DipindahkanPada' => now()->subDays($ke),
+            ]);
+        }
+
+        // Milik alat lain, yang tidak boleh ikut terhitung.
+        RiwayatLokasiAset::create([
+            'AsetId' => $dua->Id,
+            'LokasiTujuanId' => $lokasi->Id,
+            'JenisPerpindahan' => JenisRiwayatLokasiAset::Manual->value,
+            'Alasan' => 'Milik alat pembanding',
+            'DipindahkanPada' => now()->subDay(),
+        ]);
+        $this->konteks()->bersihkan();
+
+        $html = $this->htmlKartu($satu);
+
+        $this->assertStringContainsString(
+            'dari '.$lewatBatas.' yang tercatat',
+            $html,
+            'Jumlah total harus menghitung riwayat asetnya sendiri saja.',
+        );
+        $this->assertStringNotContainsString('dari '.($lewatBatas + 1).' yang tercatat', $html);
+    }
+
     private function konteks(): KonteksOrganisasi
     {
         return app(KonteksOrganisasi::class);

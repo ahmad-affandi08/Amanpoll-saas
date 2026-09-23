@@ -6,6 +6,7 @@ namespace App\Shared\Infrastructure\Ekspor;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 
 /**
  * Satu kolom pada berkas ekspor daftar.
@@ -23,9 +24,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 final class KolomEkspor
 {
+    /**
+     * @param  string|null  $atribut  Nama atribut yang dibaca, bila kolom ini memang membaca satu atribut.
+     */
     private function __construct(
         public readonly string $judul,
         private readonly Closure $ambil,
+        private readonly ?string $atribut = null,
     ) {}
 
     /**
@@ -45,7 +50,7 @@ final class KolomEkspor
             $nilai = $baris->getAttribute($atribut);
 
             return $nilai === null ? '' : (string) $nilai;
-        });
+        }, $atribut);
     }
 
     /** Kolom tanggal, diseragamkan supaya dapat diurutkan di Excel. */
@@ -55,11 +60,42 @@ final class KolomEkspor
             $nilai = $baris->getAttribute($atribut);
 
             return $nilai instanceof \DateTimeInterface ? $nilai->format($format) : '';
-        });
+        }, $atribut);
     }
 
     public function nilai(Model $baris): string|float|int|null
     {
+        $this->tolakAtributTersembunyi($baris);
+
         return ($this->ambil)($baris);
+    }
+
+    /**
+     * Menolak kolom yang menyebut atribut ber-`$hidden`.
+     *
+     * `$hidden` hanya menahan serialisasi, dan ekspor tidak lewat sana:
+     * `getAttribute()` membaca nilainya tanpa pernah menyentuh daftar itu --
+     * diperiksa di HasAttributes pada framework yang terpasang. Jadi model yang
+     * menyembunyikan HashKunci tetap menyerahkannya bulat-bulat ke berkas bila
+     * ada yang menuliskan kolomnya.
+     *
+     * Selama ini yang menahan hanya ingatan penulis kolomnya. Penjaga ini
+     * mengubah kebocoran senyap menjadi kegagalan keras pada baris pertama,
+     * karena berkas ekspor beredar di luar aplikasi dan tidak dapat ditarik
+     * kembali.
+     */
+    private function tolakAtributTersembunyi(Model $baris): void
+    {
+        if ($this->atribut === null || ! in_array($this->atribut, $baris->getHidden(), true)) {
+            return;
+        }
+
+        throw new RuntimeException(sprintf(
+            'Kolom ekspor "%s" menyebut atribut %s yang ditandai $hidden pada %s. '
+            .'Atribut tersembunyi tidak boleh keluar lewat berkas ekspor.',
+            $this->judul,
+            $this->atribut,
+            $baris::class,
+        ));
     }
 }
