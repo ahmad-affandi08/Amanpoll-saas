@@ -17,6 +17,7 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Plus, Search } from 'lucide-react';
 import type { TemplatInspeksi } from '@/features/PreventifInspeksi/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
@@ -70,6 +71,7 @@ export default function InspeksiTemplatIndex({ templat, kategoriAset, templatDaf
           deskripsi="Konfigurasi siklus inspeksi rutin dan lembar periksa per kategori aset."
           aksi={
             <>
+              <TombolEkspor url="/preventif-inspeksi/templat-inspeksi/ekspor" />
               <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
                 <DialogTrigger asChild>
                   <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">

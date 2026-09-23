@@ -34,6 +34,7 @@ import type {
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
@@ -93,6 +94,8 @@ export default function LaporanIndex({
           aksi={
             <>
               <div className="flex flex-wrap gap-2">
+                {/* Daftar laporannya sendiri; tombol "Ekspor" di sebelah mengunduh isi laporan yang dibuka. */}
+                <TombolEkspor url="/pelaporan/laporan/ekspor" label="Ekspor daftar" />
                 <Button size="sm" onClick={() => setDialogBaru(true)}>
                   <Plus className="size-4" />
                   Laporan baru

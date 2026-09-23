@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Http\Controllers;
 
+use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Actions\KelolaLaporanTersimpan;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
@@ -14,18 +15,76 @@ use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\FormatEkspor;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Laporan tersimpan (21.03) beserta pemicu ekspornya (21.05). */
 final class LaporanTersimpanController extends Controller
 {
+    public function __construct(private readonly PemeriksaIzin $izin) {}
+
+    /**
+     * Laporan yang boleh dilihat pemesan: miliknya sendiri, ditambah yang
+     * dibagikan bila ia berwenang melihatnya.
+     *
+     * Kewenangan itu dinyatakan sebagai syarat kueri, bukan saringan atas
+     * koleksi yang sudah terambil, supaya ekspor tunduk pada batas yang sama
+     * dengan layar -- saringan di luar kueri tidak dapat ikut ke dalam
+     * unduhan yang dialirkan per potongan.
+     *
+     * @return Builder<LaporanTersimpan>
+     */
+    private function kueriTersaring(Request $request): Builder
+    {
+        $pengguna = $request->user('web');
+        $bolehLihatDibagikan = $this->izin->boleh($pengguna->Id, 'Laporan.Lihat');
+
+        return LaporanTersimpan::query()
+            ->with('pemilik:Id,Nama')
+            ->where(fn ($query) => $query
+                ->where('PemilikId', $pengguna->Id)
+                ->when($bolehLihatDibagikan, fn ($dibagikan) => $dibagikan->orWhere('Pribadi', false)))
+            ->orderBy('Nama')
+            ->orderBy('Id');
+    }
+
+    /**
+     * Daftar laporan tersimpan itu sendiri, bukan isi salah satunya.
+     *
+     * Batas BatasDaftar::MAKS sengaja tidak ikut: layar memotong diam-diam
+     * demi kecepatan, sedangkan ekspor ada justru supaya yang terpotong tetap
+     * dapat dibaca.
+     */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', LaporanTersimpan::class);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($request),
+            [
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::dari('Pemilik', fn (LaporanTersimpan $laporan): string => BacaRelasi::teks(BacaRelasi::model($laporan, 'pemilik'), 'Nama')),
+                KolomEkspor::dari('Pribadi', fn (LaporanTersimpan $laporan): string => $laporan->Pribadi ? 'Ya' : 'Tidak'),
+                KolomEkspor::dari('KPI', fn (LaporanTersimpan $laporan): string => implode(', ', array_map('strval', (array) ($laporan->Konfigurasi['KunciKpi'] ?? [])))),
+                KolomEkspor::tanggal('Diperbarui Pada', 'DiperbaruiPada', 'Y-m-d H:i'),
+            ],
+            'daftar-laporan-tersimpan',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request, LayananMetrik $layananMetrik): Response
     {
         $this->authorize('viewAny', LaporanTersimpan::class);
@@ -33,14 +92,9 @@ final class LaporanTersimpanController extends Controller
         $pengguna = $request->user('web');
         $filter = FilterMetrik::dariArray($request->all());
 
-        $laporan = LaporanTersimpan::query()
-            ->with('pemilik:Id,Nama')
-            ->where(fn ($query) => $query->where('PemilikId', $pengguna->Id)->orWhere('Pribadi', false))
-            ->orderBy('Nama')
+        $laporan = $this->kueriTersaring($request)
             ->limit(BatasDaftar::MAKS)
-            ->get()
-            ->filter(fn (LaporanTersimpan $satu): bool => $request->user('web')->can('view', $satu))
-            ->values();
+            ->get();
 
         $dibuka = $this->laporanDibuka($request, $laporan);
 

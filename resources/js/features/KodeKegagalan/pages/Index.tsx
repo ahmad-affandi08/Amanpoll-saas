@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { ruteKodeKegagalan } from '@/features/KodeKegagalan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
@@ -214,6 +215,7 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset, wajib 
         deskripsi="Katalog taksonomi Problem-Cause-Remedy untuk standarisasi analisis kegagalan aset."
         aksi={
           <>
+            <TombolEkspor url="/pemeliharaan/kode-kegagalan/ekspor" />
             <DialogFormKodeKegagalan kategoriAset={kategoriAset} wajib={wajib.kodeKegagalan} />
           </>
         }

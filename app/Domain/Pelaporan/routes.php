@@ -13,6 +13,8 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.pelaporan_lanjutan'
     ->group(function (): void {
         // Laporan tersimpan (21.03).
         Route::get('/laporan', [LaporanTersimpanController::class, 'index'])->name('laporan.index');
+        // Sebelum '/laporan/{laporanTersimpan}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/laporan/ekspor', [LaporanTersimpanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('laporan.ekspor');
         Route::post('/laporan', [LaporanTersimpanController::class, 'store'])->name('laporan.store');
         Route::put('/laporan/{laporanTersimpan}', [LaporanTersimpanController::class, 'update'])->name('laporan.update');
         Route::delete('/laporan/{laporanTersimpan}', [LaporanTersimpanController::class, 'destroy'])->name('laporan.destroy');
@@ -25,6 +27,8 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.pelaporan_lanjutan'
 
         // Dasbor kustom (21.04).
         Route::get('/dasbor', [DasborTersimpanController::class, 'index'])->name('dasbor.index');
+        // Sebelum '/dasbor/{dasborTersimpan}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/dasbor/ekspor', [DasborTersimpanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('dasbor.ekspor');
         Route::post('/dasbor', [DasborTersimpanController::class, 'store'])->name('dasbor.store');
         Route::put('/dasbor/{dasborTersimpan}', [DasborTersimpanController::class, 'update'])->name('dasbor.update');
         Route::delete('/dasbor/{dasborTersimpan}', [DasborTersimpanController::class, 'destroy'])->name('dasbor.destroy');

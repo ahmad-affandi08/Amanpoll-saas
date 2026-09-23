@@ -11,11 +11,16 @@ use App\Domain\PreventifInspeksi\Http\Requests\SimpanButirTemplatDaftarPeriksaRe
 use App\Domain\PreventifInspeksi\Http\Requests\SimpanTemplatDaftarPeriksaRequest;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftarPeriksa;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class TemplatDaftarPeriksaController extends Controller
 {
@@ -23,15 +28,47 @@ final class TemplatDaftarPeriksaController extends Controller
         private readonly KelolaTemplatDaftarPeriksa $kelolaTemplat,
     ) {}
 
+    /**
+     * Daftar templat daftar periksa, dipakai bersama halaman dan ekspornya.
+     *
+     * @return Builder<TemplatDaftarPeriksa>
+     */
+    private function kueriTersaring(): Builder
+    {
+        return TemplatDaftarPeriksa::query()
+            ->with(['kategoriAset', 'modelAset'])
+            ->withCount('butir')
+            ->orderBy('Nama')
+            ->orderBy('Id');
+    }
+
+    /** Daftar templat beserta versinya, untuk ditinjau saat audit lembar periksa. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', TemplatDaftarPeriksa::class);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::dari('Kategori Aset', fn (TemplatDaftarPeriksa $templat): string => BacaRelasi::teks(BacaRelasi::model($templat, 'kategoriAset'), 'Nama')),
+                KolomEkspor::dari('Model Aset', fn (TemplatDaftarPeriksa $templat): string => BacaRelasi::teks(BacaRelasi::model($templat, 'modelAset'), 'Nama')),
+                KolomEkspor::atribut('Versi', 'VersiTemplat'),
+                KolomEkspor::atribut('Jumlah Butir', 'butir_count'),
+                KolomEkspor::dari('Aktif', fn (TemplatDaftarPeriksa $templat): string => $templat->Aktif ? 'Ya' : 'Tidak'),
+            ],
+            'daftar-templat-daftar-periksa',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', TemplatDaftarPeriksa::class);
 
-        $daftarTemplat = TemplatDaftarPeriksa::query()
-            ->with(['kategoriAset', 'modelAset'])
-            ->withCount('butir')
-            ->orderBy('Nama')
-            ->get();
+        $daftarTemplat = $this->kueriTersaring()->get();
 
         return Inertia::render('DaftarPeriksa/Templat/Index', [
             'wajib' => ['templat' => AturanWajib::untuk(SimpanTemplatDaftarPeriksaRequest::class)],

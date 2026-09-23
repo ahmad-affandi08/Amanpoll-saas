@@ -11,6 +11,7 @@ import type { JenisKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { DialogFormJenis } from '@/features/Kalibrasi/components/DialogFormJenis';
 import { DialogTitikUkur } from '@/features/Kalibrasi/components/DialogTitikUkur';
 import type { AturanWajib } from '@/lib/aturan-wajib';
@@ -53,7 +54,12 @@ export default function KalibrasiJenisIndex({ jenisKalibrasi, wajib }: Props) {
         <KepalaHalaman
           judul="Jenis Kalibrasi"
           deskripsi="Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji."
-          aksi={<DialogFormJenis jenis={null} wajib={wajib.jenis} />}
+          aksi={
+            <>
+              <TombolEkspor url="/kalibrasi/jenis/ekspor" />
+              <DialogFormJenis jenis={null} wajib={wajib.jenis} />
+            </>
+          }
         />
 
         {/* List Card */}

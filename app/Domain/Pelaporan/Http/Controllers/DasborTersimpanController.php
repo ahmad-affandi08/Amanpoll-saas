@@ -12,15 +12,44 @@ use App\Domain\Pelaporan\Domain\KatalogKpi;
 use App\Domain\Pelaporan\Http\Requests\SimpanDasborTersimpanRequest;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\DasborTersimpan;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Dasbor kustom milik pengguna (21.04). */
 final class DasborTersimpanController extends Controller
 {
+    /**
+     * Daftar dasbor tersimpan itu sendiri, bukan angka di dalamnya.
+     *
+     * Kuerinya sama dengan yang mengisi layar, termasuk batas kepemilikannya:
+     * dasbor pribadi orang lain tidak pernah ikut terbawa.
+     */
+    public function ekspor(Request $request, LayananDasbor $layananDasbor, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', DasborTersimpan::class);
+
+        return $ekspor->unduh(
+            $layananDasbor->kueriUntuk($request->user('web')),
+            [
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::dari('Pemilik', fn (DasborTersimpan $dasbor): string => BacaRelasi::teks(BacaRelasi::model($dasbor, 'pemilik'), 'Nama')),
+                KolomEkspor::dari('Lingkup', fn (DasborTersimpan $dasbor): string => $dasbor->PemilikId === null ? 'Organisasi' : 'Pribadi'),
+                KolomEkspor::dari('Bawaan', fn (DasborTersimpan $dasbor): string => $dasbor->Bawaan ? 'Ya' : 'Tidak'),
+                KolomEkspor::atribut('Jumlah Komponen', 'komponen_count'),
+                KolomEkspor::tanggal('Diperbarui Pada', 'DiperbaruiPada', 'Y-m-d H:i'),
+            ],
+            'daftar-dasbor-tersimpan',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request, LayananDasbor $layananDasbor, LayananMetrik $layananMetrik): Response
     {
         $this->authorize('viewAny', DasborTersimpan::class);

@@ -16,6 +16,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->group(function (): void {
         // Templat Daftar Periksa
         Route::get('/templat-daftar-periksa', [TemplatDaftarPeriksaController::class, 'index'])->name('templat-daftar-periksa.index');
+        // Sebelum '/templat-daftar-periksa/{templatDaftarPeriksa}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/templat-daftar-periksa/ekspor', [TemplatDaftarPeriksaController::class, 'ekspor'])->middleware('throttle:ekspor')->name('templat-daftar-periksa.ekspor');
         Route::post('/templat-daftar-periksa', [TemplatDaftarPeriksaController::class, 'store'])->name('templat-daftar-periksa.store');
         Route::get('/templat-daftar-periksa/{templatDaftarPeriksa}', [TemplatDaftarPeriksaController::class, 'show'])->name('templat-daftar-periksa.show');
         Route::put('/templat-daftar-periksa/{templatDaftarPeriksa}', [TemplatDaftarPeriksaController::class, 'update'])->name('templat-daftar-periksa.update');
@@ -46,6 +48,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
         // Templat Inspeksi
         Route::get('/templat-inspeksi', [TemplatInspeksiController::class, 'index'])->name('templat-inspeksi.index');
+        // Sebelum '/templat-inspeksi/{templatInspeksi}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/templat-inspeksi/ekspor', [TemplatInspeksiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('templat-inspeksi.ekspor');
         Route::post('/templat-inspeksi', [TemplatInspeksiController::class, 'store'])->name('templat-inspeksi.store');
         Route::put('/templat-inspeksi/{templatInspeksi}', [TemplatInspeksiController::class, 'update'])->name('templat-inspeksi.update');
 

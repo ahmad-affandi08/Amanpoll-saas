@@ -22,6 +22,7 @@ import type {
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { Combobox } from '@/components/ui/combobox';
 
 interface Props {
@@ -68,6 +69,7 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
           aksi={
             <>
               <div className="flex flex-wrap gap-2">
+                <TombolEkspor url="/pelaporan/dasbor/ekspor" label="Ekspor daftar" />
                 <Button variant="outline" size="sm" asChild>
                   <Link href={rutePelaporan.dasbor}>
                     <LayoutDashboard className="size-4" />

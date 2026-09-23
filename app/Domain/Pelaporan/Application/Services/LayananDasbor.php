@@ -9,6 +9,7 @@ use App\Domain\Pelaporan\Domain\Enums\BentukKomponen;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\DasborTersimpan;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\KomponenDasbor;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 /** Susunan dasbor: preset per peran (21.02) dan dasbor tersimpan (21.04). */
@@ -147,11 +148,23 @@ final class LayananDasbor
      */
     public function dasborUntuk(Pengguna $pengguna): Collection
     {
+        return $this->kueriUntuk($pengguna)->get();
+    }
+
+    /**
+     * Kueri di balik dasborUntuk(), terbuka supaya ekspor daftar dapat
+     * mengalirkannya per potongan dengan batas kepemilikan yang sama persis.
+     *
+     * @return Builder<DasborTersimpan>
+     */
+    public function kueriUntuk(Pengguna $pengguna): Builder
+    {
         return DasborTersimpan::query()
-            ->with('komponen')
+            ->with(['komponen', 'pemilik:Id,Nama'])
+            ->withCount('komponen')
             ->where(fn ($query) => $query->where('PemilikId', $pengguna->Id)->orWhereNull('PemilikId'))
             ->orderByDesc('Bawaan')
             ->orderBy('Nama')
-            ->get();
+            ->orderBy('Id');
     }
 }

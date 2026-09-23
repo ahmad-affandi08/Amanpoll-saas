@@ -10,11 +10,15 @@ use App\Domain\Kalibrasi\Http\Requests\SimpanTitikUkurKalibrasiRequest;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\TitikUkurKalibrasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class JenisKalibrasiController extends Controller
 {
@@ -22,15 +26,46 @@ final class JenisKalibrasiController extends Controller
         private readonly KelolaJenisKalibrasi $kelolaJenis,
     ) {}
 
+    /**
+     * Daftar jenis kalibrasi, dipakai bersama halaman dan ekspornya.
+     *
+     * @return Builder<JenisKalibrasi>
+     */
+    private function kueriTersaring(): Builder
+    {
+        return JenisKalibrasi::query()
+            ->with(['titikUkur'])
+            ->withCount(['titikUkur', 'rencanaKalibrasi', 'pelaksanaanKalibrasi'])
+            ->orderBy('Nama')
+            ->orderBy('Id');
+    }
+
+    /** Katalog metode kalibrasi beserta seberapa sering dipakai. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', JenisKalibrasi::class);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Deskripsi', 'Deskripsi'),
+                KolomEkspor::atribut('Jumlah Titik Ukur Standar', 'titik_ukur_count'),
+                KolomEkspor::atribut('Jumlah Rencana', 'rencana_kalibrasi_count'),
+                KolomEkspor::atribut('Jumlah Pelaksanaan', 'pelaksanaan_kalibrasi_count'),
+                KolomEkspor::dari('Aktif', fn (JenisKalibrasi $jenis): string => $jenis->Aktif ? 'Ya' : 'Tidak'),
+            ],
+            'daftar-jenis-kalibrasi',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', JenisKalibrasi::class);
 
-        $daftarJenis = JenisKalibrasi::query()
-            ->with(['titikUkur'])
-            ->withCount(['rencanaKalibrasi', 'pelaksanaanKalibrasi'])
-            ->orderBy('Nama')
-            ->get();
+        $daftarJenis = $this->kueriTersaring()->get();
 
         return Inertia::render('Kalibrasi/Jenis/Index', [
             'wajib' => ['jenis' => AturanWajib::untuk(SimpanJenisKalibrasiRequest::class), 'titikUkur' => AturanWajib::untuk(SimpanTitikUkurKalibrasiRequest::class)],

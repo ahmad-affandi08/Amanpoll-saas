@@ -10,15 +10,54 @@ use App\Domain\Pemeliharaan\Application\Actions\SimpanKodeKegagalan;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanKodeKegagalanRequest;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KodeKegagalan;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class KodeKegagalanController extends Controller
 {
     public function __construct(private readonly PemeriksaIzin $izin) {}
+
+    /**
+     * Daftar kode kegagalan, dipakai bersama halaman dan ekspornya.
+     *
+     * @return Builder<KodeKegagalan>
+     */
+    private function kueriTersaring(): Builder
+    {
+        return KodeKegagalan::query()
+            ->with('kategoriAset')
+            ->orderBy('Jenis')
+            ->orderBy('Kode')
+            ->orderBy('Id');
+    }
+
+    /** Taksonomi Problem-Cause-Remedy, untuk disepakati bersama di luar aplikasi. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->pastikanBerizin($request);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::dari('Kategori Aset', fn (KodeKegagalan $kode): string => BacaRelasi::teks(BacaRelasi::model($kode, 'kategoriAset'), 'Nama')),
+                KolomEkspor::atribut('Keterangan', 'Keterangan'),
+                KolomEkspor::dari('Aktif', fn (KodeKegagalan $kode): string => $kode->Aktif ? 'Ya' : 'Tidak'),
+            ],
+            'daftar-kode-kegagalan',
+            EksporDaftar::formatDari($request),
+        );
+    }
 
     public function index(Request $request): Response
     {
@@ -26,7 +65,7 @@ final class KodeKegagalanController extends Controller
 
         return Inertia::render('KodeKegagalan/Index', [
             'wajib' => ['kodeKegagalan' => AturanWajib::untuk(SimpanKodeKegagalanRequest::class)],
-            'kodeKegagalan' => KodeKegagalan::query()->with('kategoriAset')->orderBy('Jenis')->orderBy('Kode')->get(),
+            'kodeKegagalan' => $this->kueriTersaring()->get(),
             'kategoriAset' => KategoriAset::query()->orderBy('Nama')->get(['Id', 'Nama']),
         ]);
     }

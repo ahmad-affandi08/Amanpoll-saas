@@ -19,6 +19,7 @@ import { Plus, Search, Layers, ArrowRight } from 'lucide-react';
 import type { TemplatDaftarPeriksa } from '@/features/PreventifInspeksi/types';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
@@ -71,6 +72,7 @@ export default function DaftarPeriksaTemplatIndex({ templat, kategoriAset, model
           deskripsi="Kelola lembar periksa terstandarisasi untuk inspeksi dan pemeliharaan preventif."
           aksi={
             <>
+              <TombolEkspor url="/preventif-inspeksi/templat-daftar-periksa/ekspor" />
               <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
                 <DialogTrigger asChild>
                   <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">

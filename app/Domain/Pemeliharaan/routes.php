@@ -18,6 +18,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('pemeliharaan.')
     ->group(function (): void {
         Route::get('/tingkat-layanan', [TingkatLayananController::class, 'index'])->name('tingkat-layanan.index');
+        // Sebelum '/tingkat-layanan/{tingkatLayanan}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/tingkat-layanan/ekspor', [TingkatLayananController::class, 'ekspor'])->middleware('throttle:ekspor')->name('tingkat-layanan.ekspor');
         Route::post('/tingkat-layanan', [TingkatLayananController::class, 'store'])->name('tingkat-layanan.store');
         Route::put('/tingkat-layanan/{tingkatLayanan}', [TingkatLayananController::class, 'update'])->name('tingkat-layanan.update');
         Route::delete('/tingkat-layanan/{tingkatLayanan}', [TingkatLayananController::class, 'destroy'])->name('tingkat-layanan.destroy');
@@ -51,6 +53,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::put('/perintah-kerja/{perintahKerja}/analisis-kegagalan', [OperasionalPerintahKerjaController::class, 'analisis'])->name('perintah-kerja.analisis');
 
         Route::get('/kode-kegagalan', [KodeKegagalanController::class, 'index'])->name('kode-kegagalan.index');
+        // Sebelum '/kode-kegagalan/{kodeKegagalan}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/kode-kegagalan/ekspor', [KodeKegagalanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('kode-kegagalan.ekspor');
         Route::post('/kode-kegagalan', [KodeKegagalanController::class, 'store'])->name('kode-kegagalan.store');
         Route::put('/kode-kegagalan/{kodeKegagalan}', [KodeKegagalanController::class, 'update'])->name('kode-kegagalan.update');
     });

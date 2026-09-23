@@ -27,6 +27,7 @@ import type {
 import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
@@ -379,6 +380,7 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna, w
         deskripsi="Konfigurasi kalender, target respons dan penyelesaian, serta tahapan eskalasi."
         aksi={
           <>
+            <TombolEkspor url="/pemeliharaan/tingkat-layanan/ekspor" />
             <DialogTingkatLayanan
               item={null}
               peran={peran}

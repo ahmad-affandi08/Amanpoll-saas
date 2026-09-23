@@ -17,6 +17,8 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.kalibrasi'])
 
         // Jenis Kalibrasi & Titik Ukur Standar (14.01 & 14.04)
         Route::get('/jenis', [JenisKalibrasiController::class, 'index'])->name('jenis.index');
+        // Sebelum '/jenis/{jenisKalibrasi}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/jenis/ekspor', [JenisKalibrasiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('jenis.ekspor');
         Route::post('/jenis', [JenisKalibrasiController::class, 'store'])->name('jenis.store');
         Route::put('/jenis/{jenisKalibrasi}', [JenisKalibrasiController::class, 'update'])->name('jenis.update');
         Route::delete('/jenis/{jenisKalibrasi}', [JenisKalibrasiController::class, 'destroy'])->name('jenis.destroy');
