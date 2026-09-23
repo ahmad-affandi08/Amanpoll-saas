@@ -16,12 +16,17 @@ final class RobotsController extends Controller
 {
     public function __construct(private readonly PetaHost $host) {}
 
-    /** Host publik: mengundang perayapan dan menunjuk peta situsnya. */
+    /**
+     * Host publik: mengundang perayapan dan menunjuk peta situsnya.
+     *
+     * `/up` dikecualikan karena ia endpoint sistem, bukan halaman: isinya tidak
+     * berguna bagi pencari dan ia tetap dilayani di host publik.
+     */
     public function robotsPublik(): Response
     {
         $peta = $this->host->urlKanonik('sitemap.xml');
 
-        return $this->teks("User-agent: *\nAllow: /\nSitemap: {$peta}\n");
+        return $this->teks("User-agent: *\nAllow: /\nDisallow: /up\nSitemap: {$peta}\n");
     }
 
     /** Host sistem: menutup seluruh perayapan. */

@@ -46,6 +46,15 @@ final class RouteHostPublikTest extends KasusHost
         $this->assertStringContainsString('Sitemap: ', $respons->getContent() ?: '');
     }
 
+    /** `/up` endpoint sistem; ia dilayani host publik tetapi tidak layak diindeks. */
+    public function test_robots_host_publik_melarang_perayapan_endpoint_kesehatan(): void
+    {
+        $respons = $this->get($this->urlPublik('/robots.txt'));
+
+        $respons->assertOk();
+        $this->assertStringContainsString('Disallow: /up', $respons->getContent() ?: '');
+    }
+
     public function test_sitemap_hanya_memuat_url_host_publik(): void
     {
         $respons = $this->get($this->urlPublik('/sitemap.xml'));

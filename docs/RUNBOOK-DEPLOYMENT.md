@@ -155,7 +155,21 @@ php artisan about                     # versi, cache, koneksi basis data
 php artisan route:list --except-vendor | head
 php artisan cadangan:daftar           # pencadangan dapat menulis
 php artisan schedule:list             # scheduler terbaca
+curl -fsS -H 'Accept: application/json' https://<host>/up   # {"status":"up"}
 ```
+
+`/up` adalah satu-satunya endpoint yang aman dipanggil pemantau luar: tanpa
+autentikasi, dan badan responsnya hanya `up`/`down`. Ia menjawab 500 bila salah
+satu dari tiga ini mati — koneksi basis data, direktori tulis
+(`storage/framework/*`, `storage/logs`, `bootstrap/cache`; isinya diabaikan git,
+jadi unggahan baru kerap sampai tanpa direktori itu), atau perjalanan bolak-balik
+cache. Nama pemeriksaan yang gagal hanya ditulis ke `storage/logs`, tidak ikut ke
+respons. Pemeriksaannya ada di `app/Core/Kesehatan/PeriksaKesehatanSistem.php`;
+bawaan Laravel tanpa itu hanya membuktikan PHP hidup dan tetap menjawab 200 di
+atas basis data yang kredensialnya salah.
+
+Rute `/up` didaftarkan framework, jadi ia **tidak** muncul di
+`route:list --except-vendor` di atas. Ketiadaannya di sana bukan tanda ia hilang.
 
 Lalu buka satu halaman tenant dan satu halaman publik. Kalau situs publik
 menampilkan 404 sementara dashboard normal, penyebabnya hampir selalu

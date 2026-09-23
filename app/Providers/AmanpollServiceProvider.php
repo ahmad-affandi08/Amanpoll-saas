@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Core\Audit\KorelasiId;
 use App\Core\Audit\LayananAudit;
 use App\Core\Entitas\RegistriEntitas;
+use App\Core\Kesehatan\PeriksaKesehatanSistem;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
@@ -100,6 +101,7 @@ use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganUbahStatusPerintahKe
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -289,6 +291,10 @@ final class AmanpollServiceProvider extends ServiceProvider
         }
 
         Event::listen(PeristiwaLangganan::class, CatatPeristiwaRevenue::class);
+
+        // Tanpa ini rute `/up` hanya membuktikan PHP hidup; ia tetap menjawab
+        // 200 di atas basis data yang mati.
+        Event::listen(DiagnosingHealth::class, PeriksaKesehatanSistem::class);
 
         // Otomasi menyala dari peristiwa yang ditulis, bukan dari pemanggil yang harus ingat memicunya.
         EventPemasaran::observe(PemicuOtomasiPemasaran::class);

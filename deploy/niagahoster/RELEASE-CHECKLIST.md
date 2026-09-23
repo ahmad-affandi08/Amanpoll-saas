@@ -10,4 +10,8 @@
 - [ ] Cron `schedule:run` berjalan setiap menit.
 - [ ] Queue tidak menumpuk.
 - [ ] HTTPS aktif.
-- [ ] Smoke test login per organisasi, dashboard, upload, dan health endpoint selesai.
+- [ ] Smoke test login per organisasi, dashboard, dan upload selesai.
+- [ ] `curl -fsS -H 'Accept: application/json' https://<host>/up` menjawab `{"status":"up"}`.
+      Endpoint itu memeriksa koneksi basis data, direktori tulis, dan perjalanan
+      bolak-balik cache; jawaban 500 berarti salah satunya mati dan alasannya ada
+      di `storage/logs`.
