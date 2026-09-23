@@ -9,6 +9,7 @@ use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\RiwayatStatusPerintahKerja;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\JadwalPemeliharaan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use App\Shared\Domain\Exceptions\VersiDataBerubah;
@@ -89,6 +90,7 @@ final class UbahStatusPerintahKerja
             }
 
             $terkunci->save();
+            $this->sinkronkanJadwalPreventif($terkunci, $tujuan);
             RiwayatStatusPerintahKerja::create([
                 'PerintahKerjaId' => $terkunci->Id,
                 'StatusSebelum' => $asal->value,
@@ -101,6 +103,33 @@ final class UbahStatusPerintahKerja
 
             return $terkunci;
         });
+    }
+
+    /**
+     * Menyelaraskan jadwal preventif dengan perintah kerja yang dihasilkannya.
+     *
+     * Jadwal dibuat "Terjadwal" oleh penjadwal dan sebelumnya tidak pernah
+     * disentuh lagi. Laporan preventif menghitung keterlambatan dari jadwal
+     * yang masih Terjadwal dan kepatuhan dari jadwal yang Selesai, jadi
+     * pekerjaan yang sudah tuntas tetap tampil terlambat dan kepatuhan
+     * preventif selalu nol.
+     *
+     * Diturunkan dari status tujuan, bukan hanya pada penutupan: perintah kerja
+     * yang dibuka kembali mengembalikan jadwalnya ke Terjadwal, dan yang
+     * dibatalkan berhenti tampil terlambat tanpa ikut terhitung patuh.
+     */
+    private function sinkronkanJadwalPreventif(PerintahKerja $perintahKerja, StatusPerintahKerja $tujuan): void
+    {
+        $statusJadwal = match ($tujuan) {
+            StatusPerintahKerja::Selesai, StatusPerintahKerja::Ditutup => 'Selesai',
+            StatusPerintahKerja::Dibatalkan => 'Dibatalkan',
+            default => 'Terjadwal',
+        };
+
+        JadwalPemeliharaan::query()
+            ->where('PerintahKerjaId', $perintahKerja->Id)
+            ->where('Status', '!=', $statusJadwal)
+            ->update(['Status' => $statusJadwal]);
     }
 
     private function pastikanTidakAdaAktivitasTerbuka(PerintahKerja $perintahKerja): void

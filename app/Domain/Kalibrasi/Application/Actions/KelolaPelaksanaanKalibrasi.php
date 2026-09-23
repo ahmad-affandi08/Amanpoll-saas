@@ -142,11 +142,6 @@ final class KelolaPelaksanaanKalibrasi
                     ? (float) $item['NilaiTerukur']
                     : null;
 
-                // Hitung Koreksi: NilaiTerukur - NilaiReferensi
-                $koreksi = ($nilaiTerukur !== null && $nilaiReferensi !== null)
-                    ? ($nilaiTerukur - $nilaiReferensi)
-                    : null;
-
                 // Ambil toleransi dari template TitikUkur jika terhubung
                 $toleransiMinus = isset($item['ToleransiMinus']) ? (float) $item['ToleransiMinus'] : null;
                 $toleransiPlus = isset($item['ToleransiPlus']) ? (float) $item['ToleransiPlus'] : null;
@@ -159,6 +154,14 @@ final class KelolaPelaksanaanKalibrasi
                         $nilaiReferensi ??= (float) $tu->NilaiReferensi;
                     }
                 }
+
+                // Koreksi: NilaiTerukur - NilaiReferensi. Dihitung SESUDAH referensi
+                // dilengkapi dari templat: dihitung sebelumnya, titik yang referensinya
+                // diambil dari templat tersimpan dengan referensi dan putusan
+                // lolos/gagal yang benar, tetapi koreksinya kosong di sertifikat.
+                $koreksi = ($nilaiTerukur !== null && $nilaiReferensi !== null)
+                    ? ($nilaiTerukur - $nilaiReferensi)
+                    : null;
 
                 // Evaluasi otomatis Hasil (Pass/Fail)
                 $hasil = $item['Hasil'] ?? null;
