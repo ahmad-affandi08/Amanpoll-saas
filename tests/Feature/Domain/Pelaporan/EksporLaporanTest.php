@@ -255,7 +255,7 @@ final class EksporLaporanTest extends KasusPelaporan
         $job = new BuatEksporLaporan(
             $pengguna->Id,
             ['perintah_kerja.aktif'],
-            FilterMetrik::bawaan()->keArray(),
+            FilterMetrik::bawaan('Asia/Jakarta')->keArray(),
             $format->value,
             $judul,
         );

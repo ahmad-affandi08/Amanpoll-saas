@@ -28,6 +28,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { dariMasukanWaktu } from '@/lib/waktu';
 
 interface PermintaanRingkas {
   Id: string;
@@ -74,7 +75,11 @@ function DialogBuatRfq({
 
   function submit(event: FormEvent): void {
     event.preventDefault();
-    form.transform((data) => ({ ...data, Catatan: data.Catatan || null }));
+    form.transform((data) => ({
+      ...data,
+      BatasPenawaran: dariMasukanWaktu(data.BatasPenawaran),
+      Catatan: data.Catatan || null,
+    }));
     form.post(rutePermintaanPenawaran.index, { onSuccess: () => setBuka(false) });
   }
 

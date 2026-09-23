@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Application\Actions\BuatPerintahKerja;
@@ -25,6 +26,7 @@ final class KelolaInspeksi
         private readonly LayananNomorDokumen $layananNomorDokumen,
         private readonly BuatPerintahKerja $buatPerintahKerja,
         private readonly LayananAudit $layananAudit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -127,7 +129,7 @@ final class KelolaInspeksi
                 try {
                     $nomor = $this->layananNomorDokumen->berikutnya($organisasiId, 'Inspeksi');
                 } catch (DataTidakDitemukan) {
-                    $nomor = 'INSP-'.now()->format('Ymd').'-'.str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
+                    $nomor = 'INSP-'.$this->kalender->sekarang($organisasiId)->format('Ymd').'-'.str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
                 }
             }
 

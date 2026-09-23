@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pemeliharaan\Application\Actions\BuatPerintahKerja;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\JadwalPemeliharaan;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\PelaksanaanDaftarPeriksa;
@@ -19,6 +20,7 @@ final class JadwalkanPemeliharaanPreventif
         private readonly BuatPerintahKerja $buatPerintahKerja,
         private readonly KelolaRencanaPemeliharaan $kelolaRencana,
         private readonly LayananAudit $layananAudit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -32,7 +34,6 @@ final class JadwalkanPemeliharaanPreventif
         ?string $organisasiId = null,
         ?string $penggunaId = null,
     ): array {
-        $acuan = $tanggalAcuan ?? CarbonImmutable::now();
         $penggunaSistem = $penggunaId ?? '01JAMANPOLL000000000000001';
 
         $query = RencanaPemeliharaanAset::query()
@@ -60,6 +61,9 @@ final class JadwalkanPemeliharaanPreventif
                 continue;
             }
 
+            // Tanggal acuan dibaca per organisasi: rencana di Jayapura sudah
+            // berganti hari dua jam sebelum rencana di Jakarta.
+            $acuan = $tanggalAcuan ?? $this->kalender->hariIni($asetPlan->OrganisasiId);
             $hariSebelum = $horizonHari ?? ($rencana->BuatPerintahKerjaHariSebelum ?? 7);
             $batasJadwal = $acuan->addDays($hariSebelum);
             $tanggalJadwal = CarbonImmutable::parse($asetPlan->TanggalBerikutnya);
@@ -90,7 +94,7 @@ final class JadwalkanPemeliharaanPreventif
                     'Prioritas' => $rencana->Prioritas ?? 'Normal',
                     'LokasiId' => $aset->LokasiId,
                     'AsetIds' => [$aset->Id],
-                    'DijadwalkanMulaiPada' => $tanggalJadwal->startOfDay(),
+                    'DijadwalkanMulaiPada' => $this->kalender->awalHari($tanggalJadwal, $asetPlan->OrganisasiId),
                 ], $penggunaSistem);
 
                 // Buat Pelaksanaan Daftar Periksa jika templat terhubung

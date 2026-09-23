@@ -24,6 +24,7 @@ import { hitungSisa } from '@/features/PesananPembelian/perhitungan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 const KONDISI: KondisiPenerimaan[] = ['Baik', 'RusakRingan', 'Rusak'];
 
@@ -51,7 +52,7 @@ export function DialogCatatPenerimaan({
   const form = useForm({
     Nomor: '',
     GudangId: perluGudang && gudang.length > 0 ? gudang[0].Id : TANPA_PILIHAN,
-    TanggalTerima: new Date().toISOString().slice(0, 10),
+    TanggalTerima: tanggalHariIni(),
     NomorSuratJalan: '',
     Catatan: '',
     Detail: detail.map((item): BarisPenerimaan => ({

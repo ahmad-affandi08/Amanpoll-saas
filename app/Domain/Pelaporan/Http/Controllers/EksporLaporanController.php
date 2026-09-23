@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Http\Controllers;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
@@ -24,6 +25,7 @@ final class EksporLaporanController extends Controller
     public function store(
         MintaEksporLaporanRequest $request,
         LayananMetrik $layananMetrik,
+        KalenderOrganisasi $kalender,
     ): RedirectResponse {
         $pengguna = $request->user('web');
         $data = $request->validated();
@@ -40,7 +42,7 @@ final class EksporLaporanController extends Controller
         BuatEksporLaporan::dispatch(
             $pengguna->Id,
             $diizinkan,
-            FilterMetrik::dariArray($data['Filter'] ?? [])->keArray(),
+            FilterMetrik::dariArray($data['Filter'] ?? [], $kalender->zona())->keArray(),
             $data['Format'],
             $data['Judul'],
         );

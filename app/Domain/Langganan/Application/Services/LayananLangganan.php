@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Langganan\Application\Services;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Langganan\Domain\Enums\StatusLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use Carbon\CarbonImmutable;
@@ -11,7 +12,10 @@ use Carbon\CarbonImmutable;
 /** Pembacaan status langganan satu organisasi (22.04). */
 final class LayananLangganan
 {
-    public function __construct(private readonly LayananKebijakanTenggang $kebijakan) {}
+    public function __construct(
+        private readonly LayananKebijakanTenggang $kebijakan,
+        private readonly KalenderOrganisasi $kalender,
+    ) {}
 
     /** Langganan yang sedang berlaku untuk sebuah organisasi. */
     public function untukOrganisasi(string $organisasiId): ?Langganan
@@ -28,8 +32,7 @@ final class LayananLangganan
     /** Status efektif hari ini. */
     public function statusEfektif(Langganan $langganan, ?CarbonImmutable $pada = null): StatusLangganan
     {
-        $pada ??= CarbonImmutable::now();
-        $hariIni = $pada->startOfDay();
+        $hariIni = $this->kalender->hariPada($pada ?? CarbonImmutable::now(), (string) $langganan->OrganisasiId);
 
         $tersimpan = StatusLangganan::tryFrom((string) $langganan->Status);
         if ($tersimpan === StatusLangganan::Dibatalkan) {
@@ -67,8 +70,8 @@ final class LayananLangganan
             return false;
         }
 
-        $pada ??= CarbonImmutable::now();
+        $hariIni = $this->kalender->hariPada($pada ?? CarbonImmutable::now(), (string) $langganan->OrganisasiId);
 
-        return $pada->startOfDay()->lessThanOrEqualTo(CarbonImmutable::parse($ujiCobaSampai)->startOfDay());
+        return $hariIni->lessThanOrEqualTo(CarbonImmutable::parse($ujiCobaSampai)->startOfDay());
     }
 }

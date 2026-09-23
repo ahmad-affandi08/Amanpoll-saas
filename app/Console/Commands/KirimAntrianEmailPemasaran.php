@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pemasaran\Application\Services\LayananKonfigurasiPemasaran;
 use App\Domain\Pemasaran\Domain\Enums\StatusPengirimanEmail;
 use App\Domain\Pemasaran\Domain\KatalogKonfigurasiPemasaran;
@@ -57,7 +58,7 @@ final class KirimAntrianEmailPemasaran extends Command
 
         $terkirim = PengirimanEmailPemasaran::query()
             ->whereNotNull('DikirimPada')
-            ->where('DikirimPada', '>=', CarbonImmutable::now()->startOfDay())
+            ->where('DikirimPada', '>=', CarbonImmutable::now(KalenderOrganisasi::zonaBawaan())->startOfDay()->utc())
             ->count();
 
         return max($cap - $terkirim, 0);

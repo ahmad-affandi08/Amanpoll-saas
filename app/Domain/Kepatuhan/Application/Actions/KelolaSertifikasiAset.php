@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kepatuhan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kepatuhan\Domain\Enums\StatusSertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
@@ -17,6 +18,7 @@ final class KelolaSertifikasiAset
     public function __construct(
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -63,7 +65,7 @@ final class KelolaSertifikasiAset
         // Perpanjangan masa berlaku mengembalikan sertifikat kedaluwarsa menjadi aktif.
         if ($sertifikasi->Status === StatusSertifikasiAset::Kedaluwarsa->value
             && $sertifikasi->BerlakuSampai !== null
-            && CarbonImmutable::parse((string) $sertifikasi->BerlakuSampai)->gte(CarbonImmutable::today())) {
+            && CarbonImmutable::parse((string) $sertifikasi->BerlakuSampai)->gte($this->kalender->hariIni($sertifikasi->OrganisasiId))) {
             $sertifikasi->Status = StatusSertifikasiAset::Aktif->value;
         }
 

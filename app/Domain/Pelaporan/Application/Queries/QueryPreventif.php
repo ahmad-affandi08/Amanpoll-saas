@@ -10,7 +10,6 @@ use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\JadwalPemeliharaan;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaanAset;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
 /** KPI pemeliharaan preventif (21.01: preventive). */
@@ -34,7 +33,7 @@ final class QueryPreventif implements PenyediaKpi
 
     private function jatuhTempo(FilterMetrik $filter): HasilKpi
     {
-        $hariIni = CarbonImmutable::now()->toDateString();
+        $hariIni = $filter->hariIni()->toDateString();
 
         $terlambat = (int) $this->lingkup($filter)
             ->where('Status', 'Terjadwal')
@@ -55,7 +54,7 @@ final class QueryPreventif implements PenyediaKpi
     private function kepatuhan(FilterMetrik $filter): HasilKpi
     {
         $perStatus = $this->lingkup($filter)
-            ->whereBetween('TanggalJadwal', [$filter->dari->toDateString(), $filter->sampai->toDateString()])
+            ->whereBetween('TanggalJadwal', [$filter->tanggalDari(), $filter->tanggalSampai()])
             ->selectRaw('Status, COUNT(*) as Jumlah')
             ->groupBy('Status')
             ->pluck('Jumlah', 'Status');

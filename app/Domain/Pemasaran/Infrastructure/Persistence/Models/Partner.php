@@ -6,6 +6,7 @@ namespace App\Domain\Pemasaran\Infrastructure\Persistence\Models;
 
 use App\Domain\Pemasaran\Domain\Enums\JenisPartner;
 use App\Domain\Pemasaran\Domain\Enums\StatusPartner;
+use App\Shared\Infrastructure\Persistence\MenyimpanWaktuDalamUtc;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 /** Satu partner sekaligus identitas yang masuk ke portal partner (MARKETING.md 21). */
 final class Partner extends Authenticatable
 {
-    use HasUlids;
+    use HasUlids, MenyimpanWaktuDalamUtc;
 
     protected $table = 'Partner';
 

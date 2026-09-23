@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\Domain\Langganan;
 
 use App\Domain\Langganan\Application\Actions\TerbitkanTagihanLangganan;
+use App\Domain\Langganan\Application\Services\LayananKebijakanTenggang;
 use App\Domain\Langganan\Domain\Enums\StatusLangganan;
 use App\Domain\Langganan\Domain\Enums\StatusPembayaranLangganan;
 use App\Domain\Langganan\Domain\Enums\StatusTagihanLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\PembayaranLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTransferManual;
+use Carbon\CarbonImmutable;
 use Illuminate\Testing\TestResponse;
 
 /** Tagihan, pembayaran, webhook idempoten, dan rekonsiliasi (22.06). */
@@ -236,6 +238,28 @@ final class TagihanDanPembayaranTest extends KasusLangganan
             route('langganan.webhook.pembayaran', ['penyedia' => PenyediaPembayaranTransferManual::KODE]),
             $muatan,
             ['X-Amanpoll-Tanda-Tangan' => $tandaTangan],
+        );
+    }
+
+    /**
+     * Periode dan jatuh tempo tagihan adalah tanggal di kalender tenant.
+     *
+     * Tagihan yang diterbitkan 01:30 WIB tanggal 22 untuk langganan tanpa
+     * tanggal akhir dimulai tanggal 22, bukan tanggal 21 menurut UTC.
+     */
+    public function test_periode_tagihan_dimulai_pada_hari_ini_tenant(): void
+    {
+        $paket = $this->buatPaketLengkap();
+        $langganan = $this->buatLangganan($paket);
+        $langganan->update(['BerakhirPada' => null]);
+
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-21 18:30:00', 'UTC'));
+        $tagihan = app(TerbitkanTagihanLangganan::class)->jalankan($langganan->refresh());
+
+        $this->assertSame('2026-09-22', $tagihan->PeriodeMulai->toDateString());
+        $this->assertSame(
+            CarbonImmutable::parse('2026-09-22')->addDays(app(LayananKebijakanTenggang::class)->hariJatuhTempo())->toDateString(),
+            $tagihan->JatuhTempo->toDateString(),
         );
     }
 }

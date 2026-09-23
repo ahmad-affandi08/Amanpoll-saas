@@ -26,6 +26,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 interface Props {
   pelaksanaanKalibrasi: PelaksanaanKalibrasi[];
@@ -64,7 +65,7 @@ export default function KalibrasiPelaksanaanIndex({
     RencanaKalibrasiId: '',
     JenisKalibrasiId: '',
     PenyediaId: '',
-    TanggalKalibrasi: new Date().toISOString().split('T')[0],
+    TanggalKalibrasi: tanggalHariIni(),
     Laboratorium: '',
     DilaksanakanOleh: '',
     Catatan: '',

@@ -65,7 +65,7 @@ final class QueryPerintahKerja implements PenyediaKpi
         $perHari = $this->lingkup($filter)
             ->whereNotNull('DiselesaikanPada')
             ->whereBetween('DiselesaikanPada', [$filter->dari, $filter->sampai])
-            ->selectRaw('DATE(DiselesaikanPada) as Tanggal, COUNT(*) as Jumlah')
+            ->selectRaw('DATE(CONVERT_TZ(DiselesaikanPada, ?, ?)) as Tanggal, COUNT(*) as Jumlah', ['+00:00', $filter->offsetSql()])
             ->groupBy('Tanggal')
             ->pluck('Jumlah', 'Tanggal')
             ->all();

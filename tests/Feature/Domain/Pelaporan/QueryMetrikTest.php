@@ -20,6 +20,8 @@ use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\BiayaPerintahKerja;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerjaAset;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuHentiAset;
@@ -80,7 +82,7 @@ final class QueryMetrikTest extends TestCase
     public function test_setiap_kpi_dapat_dihitung_tanpa_data_dan_menghasilkan_angka(): void
     {
         $registri = app(RegistriKpi::class);
-        $filter = FilterMetrik::bawaan();
+        $filter = FilterMetrik::bawaan('Asia/Jakarta');
 
         foreach (KatalogKpi::kunci() as $kunci) {
             $hasil = $registri->untuk($kunci)->hitung($kunci, $filter);
@@ -408,17 +410,126 @@ final class QueryMetrikTest extends TestCase
 
     public function test_rentang_tanggal_terbalik_dinormalkan(): void
     {
-        $filter = FilterMetrik::dariArray(['Dari' => '2026-06-30', 'Sampai' => '2026-06-01']);
+        $filter = FilterMetrik::dariArray(['Dari' => '2026-06-30', 'Sampai' => '2026-06-01'], 'Asia/Jakarta');
 
-        $this->assertSame('2026-06-01', $filter->dari->toDateString());
-        $this->assertSame('2026-06-30', $filter->sampai->toDateString());
+        $this->assertSame('2026-06-01', $filter->tanggalDari());
+        $this->assertSame('2026-06-30', $filter->tanggalSampai());
+    }
+
+    /**
+     * Rentang laporan adalah tanggal kalender rumah sakit, disaring sebagai momen UTC.
+     *
+     * Pukul 18:30 UTC tanggal 21 sudah 01:30 WIB tanggal 22. "Hari ini" dasbor
+     * harus tanggal 22, dan tanggal 22 dimulai pukul 17:00 UTC tanggal 21 --
+     * batas yang harus dipakai kolom waktu berjam. Kolom `date` tetap memakai
+     * tanggal kalendernya.
+     */
+    public function test_rentang_laporan_adalah_tanggal_rumah_sakit_yang_disaring_sebagai_momen_utc(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-21 18:30:00', 'UTC'));
+
+        $filter = FilterMetrik::dariArray(['Dari' => '2026-09-22', 'Sampai' => '2026-09-22'], 'Asia/Jakarta');
+
+        $this->assertSame('2026-09-21 17:00:00', $filter->dari->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-22 16:59:59', $filter->sampai->format('Y-m-d H:i:s'));
+        $this->assertSame('UTC', $filter->dari->timezoneName);
+        $this->assertSame(['2026-09-22', '2026-09-22'], [$filter->tanggalDari(), $filter->tanggalSampai()]);
+        $this->assertSame(1, $filter->jumlahHari());
+        $this->assertSame('+07:00', $filter->offsetSql());
+
+        $bawaan = FilterMetrik::bawaan('Asia/Jakarta');
+        $this->assertSame('2026-09-22', $bawaan->tanggalSampai(), 'Hari ini dasbor adalah tanggal rumah sakit, bukan tanggal UTC.');
+        $this->assertSame('2026-08-24', $bawaan->tanggalDari());
+        $this->assertSame('2026-09-22', $bawaan->hariIni()->toDateString());
+    }
+
+    /**
+     * Pekerjaan yang selesai 01:00 WIB tanggal 22 adalah pekerjaan tanggal 22.
+     *
+     * Disimpan sebagai 18:00 UTC tanggal 21, jadi `DATE(kolom)` menaruhnya di
+     * tanggal 21 dan rentang yang dibatasi tengah malam UTC tidak menemukannya
+     * pada tanggal 22 sama sekali.
+     */
+    public function test_pekerjaan_selesai_dini_hari_dihitung_pada_tanggal_rumah_sakit(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-22 03:00:00', 'UTC'));
+        $this->buatPerintahKerja([
+            'Status' => StatusPerintahKerja::Selesai->value,
+            'DiselesaikanPada' => CarbonImmutable::parse('2026-09-21 18:00:00', 'UTC'),
+        ]);
+
+        $tanggal22 = $this->hitung('perintah_kerja.selesai', FilterMetrik::dariArray(['Dari' => '2026-09-22', 'Sampai' => '2026-09-22'], 'Asia/Jakarta'));
+        $this->assertSame(1.0, $tanggal22->nilai);
+        $this->assertSame([['Label' => '2026-09-22', 'Nilai' => 1.0]], $tanggal22->rincian);
+
+        $tanggal21 = $this->hitung('perintah_kerja.selesai', FilterMetrik::dariArray(['Dari' => '2026-09-21', 'Sampai' => '2026-09-21'], 'Asia/Jakarta'));
+        $this->assertSame(0.0, $tanggal21->nilai);
+    }
+
+    /** Sama seperti pekerjaan selesai, untuk tren keluhan masuk. */
+    public function test_keluhan_dini_hari_dihitung_pada_tanggal_rumah_sakit(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-22 03:00:00', 'UTC'));
+        $kategori = KategoriKeluhan::create([
+            'OrganisasiId' => $this->organisasi->Id,
+            'Kode' => 'KAT-'.uniqid(),
+            'Nama' => 'Kategori uji',
+        ]);
+        Keluhan::create([
+            'OrganisasiId' => $this->organisasi->Id,
+            'Nomor' => 'KLH-'.uniqid(),
+            'KategoriKeluhanId' => $kategori->Id,
+            'LokasiId' => $this->lokasi->Id,
+            'Judul' => 'Alat mati dini hari',
+            'Deskripsi' => 'Dilaporkan pukul 01:00 WIB.',
+            'Prioritas' => 'Normal',
+            'Status' => 'Baru',
+            'NamaPelaporEksternal' => 'Perawat jaga',
+            'DilaporkanPada' => CarbonImmutable::parse('2026-09-21 18:00:00', 'UTC'),
+        ]);
+
+        $hasil = $this->hitung('keluhan.masuk', FilterMetrik::dariArray(['Dari' => '2026-09-22', 'Sampai' => '2026-09-22'], 'Asia/Jakarta'));
+
+        $this->assertSame(1.0, $hasil->nilai);
+        $this->assertSame([['Label' => '2026-09-22', 'Nilai' => 1.0]], $hasil->rincian);
+    }
+
+    /**
+     * Jatuh tempo dihitung dari hari ini rumah sakit, termasuk jendela peringatannya.
+     *
+     * Pukul 01:30 WIB tanggal 22, alat yang jatuh tempo tanggal 21 sudah
+     * terlambat, dan jendela 30 hari mencakup sampai 22 Oktober. `CURRENT_DATE`
+     * sesi basis data adalah tanggal UTC, satu hari di belakang -- dan
+     * mengikuti jam server basis data, yang tidak ikut dibekukan test. Tahun
+     * jauh di depan dipakai supaya jendela menurut jam server itu pun tidak
+     * menjangkau tanggal ujinya.
+     */
+    public function test_kalibrasi_dan_kontrak_jatuh_tempo_memakai_hari_ini_rumah_sakit(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2099-09-21 18:30:00', 'UTC'));
+        $kemarin = CarbonImmutable::parse('2099-09-21');
+        $ujungJendela = CarbonImmutable::parse('2099-10-22');
+
+        $this->buatRencanaKalibrasi($this->buatAset('AST-KAL-B1', KondisiAset::Baik->value, 1), $kemarin);
+        $this->buatRencanaKalibrasi($this->buatAset('AST-KAL-B2', KondisiAset::Baik->value, 1), $ujungJendela);
+        $this->assertSame([
+            ['Label' => 'Terlambat', 'Nilai' => 1.0],
+            ['Label' => 'Segera jatuh tempo', 'Nilai' => 1.0],
+        ], $this->hitung('kalibrasi.jatuh_tempo')->rincian);
+
+        $this->buatKontrak($kemarin, 1);
+        $this->buatKontrak($ujungJendela, 1);
+        $this->assertSame([
+            ['Label' => 'Lewat tanggal berakhir', 'Nilai' => 1.0],
+            ['Label' => 'Segera berakhir', 'Nilai' => 1.0],
+        ], $this->hitung('kontrak.akan_berakhir')->rincian);
     }
 
     private function hitung(string $kunci, ?FilterMetrik $filter = null): HasilKpi
     {
         return app(RegistriKpi::class)
             ->untuk($kunci)
-            ->hitung($kunci, $filter ?? FilterMetrik::bawaan());
+            ->hitung($kunci, $filter ?? FilterMetrik::bawaan('Asia/Jakarta'));
     }
 
     private function buatAset(string $kode, string $kondisi, float $harga): Aset

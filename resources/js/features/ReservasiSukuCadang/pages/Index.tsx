@@ -25,6 +25,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { dariMasukanWaktu } from '@/lib/waktu';
 
 interface Ringkas {
   Id: string;
@@ -61,7 +62,7 @@ function DialogBuatReservasi({
     e.preventDefault();
     router.post(
       ruteReservasiSukuCadang.index,
-      { ...form.data, KadaluarsaPada: form.data.KadaluarsaPada || null },
+      { ...form.data, KadaluarsaPada: dariMasukanWaktu(form.data.KadaluarsaPada) },
       {
         onSuccess: () => {
           setBuka(false);

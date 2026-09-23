@@ -78,6 +78,23 @@ yang ditulis di dalam callback yang melempar exception tidak pernah tersimpan.
 - Edge case pergantian tanggal lokal (waktu UTC yang melewati tengah malam
   saat dikonversi, termasuk offset negatif) diuji di
   `tests/Unit/Shared/LayananZonaWaktuTest.php`.
+- UTC ditegakkan di tiga lapis, bukan diandalkan pada disiplin pemanggil:
+  `config/app.php` mengunci `'UTC'` (tidak dibaca dari `APP_TIMEZONE`), sesi
+  basis data disetel `+00:00` di `config/database.php` supaya
+  `DEFAULT CURRENT_TIMESTAMP` ikut UTC, dan objek waktu berzona dinormalkan ke
+  UTC baik saat disetel ke atribut model (`MenyimpanWaktuDalamUtc`) maupun saat
+  diikat ke kueri (`MengikatWaktuDalamUtc` pada koneksi MySQL/MariaDB).
+- Keputusan kalender ("hari ini", jatuh tempo, rentang laporan, periode
+  penomoran) memakai `App\Core\Organisasi\KalenderOrganisasi`, bukan tanggal
+  UTC. `hariIni()` mengembalikan tengah malam UTC dari tanggal lokal, bentuk
+  yang sama dengan kolom `date`, sehingga dapat dibandingkan langsung. Kolom
+  berjam disaring dengan rentang `awalHari() .. awalHariBerikutnya()`, dan
+  pengelompokan per tanggal memakai `CONVERT_TZ(kolom, '+00:00', offsetSql())`.
+  Pekerjaan tingkat vendor (pemasaran, penagihan) memakai zona bawaan
+  `amanpoll.zona_waktu_default`.
+- Pola yang menghasilkan tanggal UTC (`Carbon::today()`, `now()->toDateString()`,
+  `CURRENT_DATE`, `whereDate` pada kolom `...Pada`, `toISOString().slice(0, 10)`
+  di frontend) ditolak `tests/Architecture/TanggalKalenderTidakDariJamUtcTest.php`.
 
 ## 5. Uang dan Angka
 

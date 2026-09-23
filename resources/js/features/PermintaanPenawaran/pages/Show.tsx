@@ -26,6 +26,7 @@ import { rutePermintaanPenawaran } from '@/features/PermintaanPenawaran/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 interface Props {
   rfq: PermintaanPenawaran;
@@ -51,7 +52,7 @@ function DialogCatatPenawaran({ rfq, wajib }: { rfq: Props['rfq']; wajib: Aturan
   const form = useForm({
     PenyediaId: '',
     NomorPenawaran: '',
-    TanggalPenawaran: new Date().toISOString().slice(0, 10),
+    TanggalPenawaran: tanggalHariIni(),
     BerlakuSampai: '',
     MataUang: 'IDR',
     Catatan: '',

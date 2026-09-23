@@ -32,6 +32,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 interface UnitRingkas {
   Id: string;
@@ -79,7 +80,7 @@ function DialogBuatPermintaan({
     UnitOrganisasiId: TANPA_PILIHAN,
     RencanaPengadaanId: TANPA_PILIHAN,
     PosAnggaranId: '',
-    TanggalPermintaan: new Date().toISOString().slice(0, 10),
+    TanggalPermintaan: tanggalHariIni(),
     TanggalDibutuhkan: '',
     Prioritas: 'Normal',
     Alasan: '',

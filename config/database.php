@@ -58,6 +58,12 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
+            // Sesi basis data dikunci ke UTC, sama dengan zona aplikasi. Tanpa ini
+            // DEFAULT CURRENT_TIMESTAMP dan ON UPDATE CURRENT_TIMESTAMP -- dipakai
+            // ratusan kolom -- mengikuti zona sistem server basis data, yang di
+            // shared hosting tidak dapat dipilih, sehingga satu tabel berisi
+            // campuran jam UTC dari aplikasi dan jam zona server dari MySQL.
+            'timezone' => '+00:00',
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
@@ -78,6 +84,8 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
+            // Sama dengan koneksi mysql: sesi dikunci ke UTC.
+            'timezone' => '+00:00',
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),

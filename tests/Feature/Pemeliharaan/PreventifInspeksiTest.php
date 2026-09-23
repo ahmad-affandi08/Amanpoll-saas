@@ -606,4 +606,46 @@ final class PreventifInspeksiTest extends TestCase
             'Nama' => 'Kategori '.uniqid(),
         ]);
     }
+
+    /**
+     * Horizon penjadwalan dihitung dari hari ini rumah sakitnya.
+     *
+     * Pukul 18:30 UTC tanggal 21 sudah 03:30 WIT tanggal 22 di Jayapura.
+     * Rencana jatuh tempo tanggal 29 sudah masuk horizon 7 hari (22 + 7),
+     * sedangkan menurut tanggal UTC (21 + 7 = 28) belum. Perintah kerjanya
+     * dijadwalkan mulai 00:00 WIT, bukan tengah malam UTC.
+     */
+    public function test_penjadwalan_preventif_memakai_hari_ini_dan_awal_hari_di_zona_organisasi(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-21 18:30:00', 'UTC'));
+
+        $organisasi = Organisasi::create(['Kode' => 'ORG-PM-'.uniqid(), 'Nama' => 'RS Jayapura', 'ZonaWaktu' => 'Asia/Jayapura']);
+        $manajer = $this->buatPengguna($organisasi, ['Pemeliharaan.Kelola', 'PerintahKerja.Kelola']);
+        $this->tetapkanKonteks($organisasi);
+        $this->siapkanNomorDokumen($organisasi);
+
+        $aset = Aset::create([
+            'OrganisasiId' => $organisasi->Id,
+            'KategoriAsetId' => $this->buatKategoriAset($organisasi)->Id,
+            'KodeAset' => 'AST-WIT-01',
+            'Nama' => 'Ventilator',
+            'Status' => StatusAset::Aktif->value,
+        ]);
+        $kelolaRencana = app(KelolaRencanaPemeliharaan::class);
+        $rencana = $kelolaRencana->buat([
+            'Kode' => 'PM-WIT',
+            'Nama' => 'Preventif Ventilator',
+            'IntervalNilai' => 1,
+            'IntervalSatuan' => 'Bulan',
+            'BuatPerintahKerjaHariSebelum' => 7,
+            'Prioritas' => 'Normal',
+        ], $manajer->Id);
+        $kelolaRencana->tetapkanAset($rencana, $aset->Id, '2026-08-29', '2026-09-29');
+
+        $hasil = app(JadwalkanPemeliharaanPreventif::class)->jalankan(organisasiId: $organisasi->Id, penggunaId: $manajer->Id);
+
+        $this->assertSame(1, $hasil['jadwalDibuat']);
+        $perintahKerja = PerintahKerja::query()->where('OrganisasiId', $organisasi->Id)->sole();
+        $this->assertSame('2026-09-28 15:00:00', $perintahKerja->DijadwalkanMulaiPada?->utc()->format('Y-m-d H:i:s'));
+    }
 }

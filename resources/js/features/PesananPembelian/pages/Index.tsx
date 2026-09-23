@@ -28,6 +28,7 @@ import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 interface Props {
   pesanan: Paginasi<PesananPembelian>;
@@ -60,7 +61,7 @@ const VARIAN_STATUS = {
 function DialogBuatPesanan({ penawaran, wajib }: { penawaran: PenawaranPenyedia; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
-    TanggalPesanan: new Date().toISOString().slice(0, 10),
+    TanggalPesanan: tanggalHariIni(),
     TanggalKirimRencana: '',
     Catatan: '',
   });

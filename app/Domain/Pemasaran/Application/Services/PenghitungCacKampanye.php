@@ -118,7 +118,7 @@ final class PenghitungCacKampanye
     public function biayaPerKampanye(FilterGrowth $filter): array
     {
         $baris = DB::table('KampanyeBiaya')
-            ->whereBetween('Tanggal', [$filter->dari->toDateString(), $filter->sampai->toDateString()])
+            ->whereBetween('Tanggal', [$filter->tanggalDari(), $filter->tanggalSampai()])
             ->when($filter->kampanye !== null, fn ($kueri) => $kueri->whereIn(
                 'KampanyeId',
                 fn (Builder $sub) => $sub->select('Id')->from('Kampanye')->where('Kode', $filter->kampanye),

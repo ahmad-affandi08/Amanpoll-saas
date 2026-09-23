@@ -16,6 +16,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import type { PerintahKerja } from '@/features/PerintahKerja/types';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { tanggalHariIni } from '@/lib/waktu';
 
 export function DialogCatatBiaya({
   perintahKerja,
@@ -30,7 +31,7 @@ export function DialogCatatBiaya({
     Deskripsi: '',
     Jumlah: 0,
     MataUang: 'IDR',
-    TanggalBiaya: new Date().toISOString().slice(0, 10),
+    TanggalBiaya: tanggalHariIni(),
   });
 
   const submit = (event: FormEvent) => {

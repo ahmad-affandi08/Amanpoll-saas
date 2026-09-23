@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Ekspor;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Infrastructure\Clock\LayananZonaWaktu;
@@ -46,6 +47,7 @@ final class EksporDaftar
         private readonly KonteksOrganisasi $konteks,
         private readonly Request $permintaan,
         private readonly LayananZonaWaktu $zonaWaktu,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -64,7 +66,7 @@ final class EksporDaftar
     ): StreamedResponse {
         $kepala = array_map(static fn (KolomEkspor $satu): string => $satu->judul, $kolom);
         $organisasiId = $this->konteks->wajibId();
-        $namaBerkas = $namaDasar.'-'.now()->format('Ymd-His').'.'.$format->ekstensi();
+        $namaBerkas = $namaDasar.'-'.$this->kalender->sekarang($organisasiId)->format('Ymd-His').'.'.$format->ekstensi();
 
         // Penyaringnya dibaca sekarang, bukan di dalam closure: query string
         // adalah milik permintaan yang sedang berjalan, dan membacanya di sini
@@ -105,7 +107,7 @@ final class EksporDaftar
                     $penulis->tulis(
                         $sementara,
                         $kepala,
-                        $this->baris($kueri, $kolom),
+                        $this->baris($kueri, $kolom, $this->zonaOrganisasi($organisasi)),
                         // Meta dari pemanggil menimpa kop, bukan sebaliknya:
                         // pemanggil yang menyebut kunci yang sama berarti ia
                         // memang punya keterangan yang lebih tepat.
@@ -149,9 +151,14 @@ final class EksporDaftar
     /** Waktu cetak dalam zona waktu organisasinya, bukan zona waktu server. */
     private function dicetakPada(?Organisasi $organisasi): string
     {
-        $zona = trim((string) ($organisasi->ZonaWaktu ?? '')) ?: self::ZONA_WAKTU_BAKU;
+        $zona = $this->zonaOrganisasi($organisasi);
 
         return $this->zonaWaktu->keZonaWaktu($this->zonaWaktu->sekarangUtc(), $zona)->format('d-m-Y H:i').' '.$zona;
+    }
+
+    private function zonaOrganisasi(?Organisasi $organisasi): string
+    {
+        return trim((string) ($organisasi->ZonaWaktu ?? '')) ?: self::ZONA_WAKTU_BAKU;
     }
 
     /**
@@ -217,13 +224,13 @@ final class EksporDaftar
      * @param  list<KolomEkspor>  $kolom
      * @return Generator<int, list<string|float|int|null>>
      */
-    private function baris(Builder $kueri, array $kolom): Generator
+    private function baris(Builder $kueri, array $kolom, string $zona): Generator
     {
         foreach ($kueri->lazy(self::UKURAN_POTONGAN) as $model) {
             $baris = [];
 
             foreach ($kolom as $satu) {
-                $baris[] = $satu->nilai($model);
+                $baris[] = $satu->nilai($model, $zona);
             }
 
             yield $baris;

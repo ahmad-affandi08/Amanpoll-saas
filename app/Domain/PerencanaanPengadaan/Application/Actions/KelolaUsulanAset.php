@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\PrioritasUsulanAset;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusUsulanAset;
@@ -26,6 +27,7 @@ final class KelolaUsulanAset
         private readonly LayananNomorDokumen $nomorDokumen,
         private readonly AjukanPermintaanPersetujuan $ajukanPersetujuan,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -40,7 +42,7 @@ final class KelolaUsulanAset
                 try {
                     $nomor = $this->nomorDokumen->berikutnya($organisasiId, 'UsulanAset');
                 } catch (DataTidakDitemukan) {
-                    $nomor = 'USL-'.now()->format('Ym').'-'.Str::upper(Str::random(6));
+                    $nomor = 'USL-'.$this->kalender->sekarang($organisasiId)->format('Ym').'-'.Str::upper(Str::random(6));
                 }
             }
 

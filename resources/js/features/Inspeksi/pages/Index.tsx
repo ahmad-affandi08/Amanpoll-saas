@@ -36,6 +36,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { tanggalHariIni, tanggalLokal } from '@/lib/waktu';
 
 interface Props {
   inspeksi: Paginasi<Inspeksi>;
@@ -70,7 +71,7 @@ export default function InspeksiIndex({
   const form = useForm({
     TemplatInspeksiId: '',
     AsetId: '',
-    DijadwalkanPada: new Date().toISOString().split('T')[0],
+    DijadwalkanPada: tanggalHariIni(),
     DilaksanakanOleh: '',
   });
 
@@ -325,7 +326,7 @@ export default function InspeksiIndex({
                         <td className="px-5 py-4 text-xs text-permukaan-600">
                           <div className="flex items-center gap-1.5">
                             <Calendar className="h-3.5 w-3.5 text-permukaan-400" />
-                            <span>{item.DijadwalkanPada ? item.DijadwalkanPada.substring(0, 10) : '-'}</span>
+                            <span>{item.DijadwalkanPada ? tanggalLokal(item.DijadwalkanPada) : '-'}</span>
                           </div>
                         </td>
                         <td className="px-5 py-4">

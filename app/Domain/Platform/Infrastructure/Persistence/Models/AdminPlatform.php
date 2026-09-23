@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 
+use App\Shared\Infrastructure\Persistence\MenyimpanWaktuDalamUtc;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /** Administrator platform Amanpoll (22.02). */
 final class AdminPlatform extends Authenticatable
 {
-    use HasUlids;
+    use HasUlids, MenyimpanWaktuDalamUtc;
 
     protected $table = 'AdminPlatform';
 

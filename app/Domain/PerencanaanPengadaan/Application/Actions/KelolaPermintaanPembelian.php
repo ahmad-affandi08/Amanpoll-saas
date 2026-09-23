@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananKalkulasiPengadaan;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananSaldoAnggaran;
@@ -32,6 +33,7 @@ final class KelolaPermintaanPembelian
         private readonly LayananSaldoAnggaran $saldoAnggaran,
         private readonly AjukanPermintaanPersetujuan $ajukanPersetujuan,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -42,7 +44,7 @@ final class KelolaPermintaanPembelian
             try {
                 $nomor = $this->nomorDokumen->berikutnya($organisasiId, 'PermintaanPembelian');
             } catch (DataTidakDitemukan) {
-                $nomor = 'PR-'.now()->format('Ym').'-'.Str::upper(Str::random(6));
+                $nomor = 'PR-'.$this->kalender->sekarang($organisasiId)->format('Ym').'-'.Str::upper(Str::random(6));
             }
 
             $permintaan = PermintaanPembelian::create([
@@ -51,7 +53,7 @@ final class KelolaPermintaanPembelian
                 'UnitOrganisasiId' => $data['UnitOrganisasiId'] ?? null,
                 'RencanaPengadaanId' => $data['RencanaPengadaanId'] ?? null,
                 'PosAnggaranId' => $data['PosAnggaranId'] ?? null,
-                'TanggalPermintaan' => $data['TanggalPermintaan'] ?? now()->toDateString(),
+                'TanggalPermintaan' => $data['TanggalPermintaan'] ?? $this->kalender->hariIni($organisasiId)->toDateString(),
                 'TanggalDibutuhkan' => $data['TanggalDibutuhkan'] ?? null,
                 'Prioritas' => $data['Prioritas'] ?? 'Normal',
                 'Status' => StatusPermintaanPembelian::Draft->value,

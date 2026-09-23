@@ -26,6 +26,7 @@ import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 interface Props {
   tagihan: TagihanPenyedia;
@@ -40,7 +41,7 @@ function DialogCatatPembayaran({ tagihan, wajib }: { tagihan: Props['tagihan']; 
   const [buka, setBuka] = useState(false);
   const form = useForm({
     NomorPembayaran: '',
-    TanggalBayar: new Date().toISOString().slice(0, 10),
+    TanggalBayar: tanggalHariIni(),
     Jumlah: tagihan.Sisa,
     Metode: 'Transfer',
     Referensi: '',

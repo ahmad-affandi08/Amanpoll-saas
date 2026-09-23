@@ -81,7 +81,7 @@ final class TransisiPelaksanaanKalibrasiTest extends TestCase
         $this->assertSame('LolosDenganCatatan', $final->Hasil);
         $this->assertSame('SERT-TRANS-001', $final->NomorSertifikat);
         $this->assertSame($this->pengguna->Id, $final->DiverifikasiOleh);
-        $this->assertSame('2026-09-21 10:00:00', $final->DiverifikasiPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 10:00:00', $final->DiverifikasiPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
     }
 
     /** Pembanding: tanpa finalisasi, penghapusan memang berjalan dan ikut membuang titik ukurnya. */

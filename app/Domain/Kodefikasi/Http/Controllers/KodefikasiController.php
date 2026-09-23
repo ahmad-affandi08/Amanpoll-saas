@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kodefikasi\Http\Controllers;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kodefikasi\Application\Actions\ImporKatalogKodeBarang;
@@ -40,6 +41,7 @@ final class KodefikasiController extends Controller
     public function __construct(
         private readonly LayananAudit $audit,
         private readonly PenyusunKodeRegistrasi $registrasi,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     public function index(Request $request): Response
@@ -269,7 +271,7 @@ final class KodefikasiController extends Controller
                 $konteks->bersihkan();
                 fclose($keluaran);
             }
-        }, 'kodefikasi-'.strtolower($standar->value).'-'.now()->format('Ymd-His').'.csv', [
+        }, 'kodefikasi-'.strtolower($standar->value).'-'.$this->kalender->sekarang()->format('Ymd-His').'.csv', [
             'Content-Type' => 'text/csv',
         ]);
     }

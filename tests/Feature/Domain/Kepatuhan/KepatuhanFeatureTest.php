@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Kepatuhan;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Domain\Enums\KondisiAset;
 use App\Domain\Aset\Domain\Enums\StatusAset;
@@ -16,6 +17,7 @@ use App\Domain\Kepatuhan\Application\Actions\KelolaStandarKepatuhan;
 use App\Domain\Kepatuhan\Application\Services\LayananKepatuhan;
 use App\Domain\Kepatuhan\Domain\Enums\StatusKepatuhanAset;
 use App\Domain\Kepatuhan\Domain\Enums\StatusSertifikasiAset;
+use App\Domain\Kepatuhan\Http\Resources\KepatuhanAsetResource;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\StandarKepatuhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
@@ -150,11 +152,13 @@ final class KepatuhanFeatureTest extends TestCase
             AturanBisnisDilanggar::class,
         );
 
-        // Pemeriksaan bertanggal masa depan ditolak.
+        // Pemeriksaan bertanggal masa depan ditolak. "Besok" dibaca di kalender
+        // rumah sakit: sejak 17:00 UTC, besok-nya UTC sudah hari ini di Jakarta.
+        $besok = app(KalenderOrganisasi::class)->hariIni($kepatuhan->OrganisasiId)->addDay();
         $this->assertThrows(
             fn () => $aksi->catatPemeriksaan($hasil->refresh(), [
                 'Status' => StatusKepatuhanAset::Patuh->value,
-                'TanggalPemeriksaan' => CarbonImmutable::today()->addDay()->toDateString(),
+                'TanggalPemeriksaan' => $besok->toDateString(),
             ], $konteks['pengguna']->Id),
             AturanBisnisDilanggar::class,
         );
@@ -431,5 +435,57 @@ final class KepatuhanFeatureTest extends TestCase
         PenggunaPeran::create(['OrganisasiId' => $organisasi->Id, 'PenggunaId' => $pengguna->Id, 'PeranId' => $peran->Id]);
 
         return $pengguna;
+    }
+
+    /**
+     * "Masa depan" diukur dari tanggal rumah sakit, bukan tanggal UTC.
+     *
+     * Pukul 01:30 WIB tanggal 22 teknisi mencatat pemeriksaan tanggal 22.
+     * Menurut UTC masih tanggal 21, dan pemeriksaan hari ini sempat ditolak
+     * sebagai pemeriksaan bertanggal masa depan.
+     */
+    public function test_pemeriksaan_hari_ini_di_rumah_sakit_diterima_walau_utc_masih_kemarin(): void
+    {
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-21 18:30:00', 'UTC'));
+        $konteks = $this->siapkanKonteks();
+        $kepatuhan = $this->buatKewajiban($konteks, intervalHari: 365);
+
+        try {
+            $hasil = app(KelolaKepatuhanAset::class)->catatPemeriksaan($kepatuhan, [
+                'Status' => StatusKepatuhanAset::Patuh->value,
+                'TanggalPemeriksaan' => '2026-09-22',
+            ], $konteks['pengguna']->Id);
+        } finally {
+            CarbonImmutable::setTestNow();
+        }
+
+        $this->assertSame('2026-09-22', $hasil->TanggalPemeriksaan?->toDateString());
+    }
+
+    /**
+     * Masa berlaku yang habis tanggal 21 sudah lewat pukul 01:30 WIB tanggal 22.
+     *
+     * Status efektif dan sisa hari yang tampil di daftar sama-sama membaca
+     * hari ini dari kalender rumah sakit, bukan tanggal UTC yang masih 21.
+     */
+    public function test_masa_berlaku_habis_diukur_dari_hari_ini_rumah_sakit(): void
+    {
+        $konteks = $this->siapkanKonteks();
+        $kepatuhan = app(KelolaKepatuhanAset::class)->catatPemeriksaan($this->buatKewajiban($konteks, intervalHari: 365), [
+            'Status' => StatusKepatuhanAset::Patuh->value,
+            'TanggalPemeriksaan' => '2025-09-21',
+        ], $konteks['pengguna']->Id);
+        $this->assertSame('2026-09-21', $kepatuhan->BerlakuSampai?->toDateString());
+
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-21 18:30:00', 'UTC'));
+        try {
+            $status = app(LayananKepatuhan::class)->statusEfektif($kepatuhan);
+            $sisaHari = (new KepatuhanAsetResource($kepatuhan))->toArray(request())['SisaHari'];
+        } finally {
+            CarbonImmutable::setTestNow();
+        }
+
+        $this->assertSame(StatusKepatuhanAset::Kedaluwarsa->value, $status);
+        $this->assertSame(-1, $sisaHari);
     }
 }

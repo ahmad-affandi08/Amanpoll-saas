@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { dariMasukanWaktu } from '@/lib/waktu';
 
 export function DialogJadwal({ akar }: { akar: string }) {
   const [buka, setBuka] = useState(false);
@@ -18,10 +19,14 @@ export function DialogJadwal({ akar }: { akar: string }) {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    router.post(`${akar}/jadwal`, form.data, {
-      preserveScroll: true,
-      onSuccess: () => setBuka(false),
-    });
+    router.post(
+      `${akar}/jadwal`,
+      { JadwalPada: dariMasukanWaktu(form.data.JadwalPada) },
+      {
+        preserveScroll: true,
+        onSuccess: () => setBuka(false),
+      },
+    );
   };
 
   return (

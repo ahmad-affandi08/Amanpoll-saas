@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Langganan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Langganan\Application\Services\LayananKebijakanTenggang;
 use App\Domain\Langganan\Domain\Enums\SiklusLangganan;
 use App\Domain\Langganan\Domain\Enums\StatusTagihanLangganan;
@@ -22,17 +23,20 @@ final class TerbitkanTagihanLangganan
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananAudit $audit,
         private readonly LayananKebijakanTenggang $kebijakan,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     public function jalankan(Langganan $langganan, ?CarbonImmutable $pada = null): TagihanLangganan
     {
         return $this->transaksi->jalankan(function () use ($langganan, $pada): TagihanLangganan {
             $pada ??= CarbonImmutable::now();
+            // Periode dan jatuh tempo adalah tanggal di kalender tenant.
+            $hariTagih = $this->kalender->hariPada($pada, (string) $langganan->OrganisasiId);
             $paket = PaketLangganan::query()->find((string) $langganan->PaketLanggananId)
                 ?? throw new AturanBisnisDilanggar('Langganan tidak menunjuk paket mana pun.');
 
             $siklus = SiklusLangganan::from((string) $langganan->Siklus);
-            $periodeMulai = $this->periodeMulai($langganan, $pada);
+            $periodeMulai = $this->periodeMulai($langganan, $hariTagih);
             $periodeSelesai = $siklus->akhirPeriodeSetelah($periodeMulai)->subDay();
 
             $adaYangSama = TagihanLangganan::query()
@@ -57,7 +61,7 @@ final class TerbitkanTagihanLangganan
                 'Nomor' => $this->nomorBerikutnya($pada),
                 'PeriodeMulai' => $periodeMulai->toDateString(),
                 'PeriodeSelesai' => $periodeSelesai->toDateString(),
-                'JatuhTempo' => $pada->addDays($this->kebijakan->hariJatuhTempo())->toDateString(),
+                'JatuhTempo' => $hariTagih->addDays($this->kebijakan->hariJatuhTempo())->toDateString(),
                 'Subtotal' => $subtotal,
                 'Pajak' => $pajak,
                 'Total' => round($subtotal + $pajak, 2),
@@ -75,19 +79,24 @@ final class TerbitkanTagihanLangganan
     }
 
     /** Periode yang ditagih adalah periode yang akan dimulai setelah periode berjalan berakhir. */
-    private function periodeMulai(Langganan $langganan, CarbonImmutable $pada): CarbonImmutable
+    private function periodeMulai(Langganan $langganan, CarbonImmutable $hariTagih): CarbonImmutable
     {
         $berakhir = $langganan->BerakhirPada;
 
         return $berakhir === null
-            ? $pada->startOfDay()
+            ? $hariTagih
             : CarbonImmutable::parse($berakhir)->startOfDay()->addDay();
     }
 
-    /** Nomor berurut per bulan. */
+    /**
+     * Nomor berurut per bulan.
+     *
+     * Urutannya milik vendor, satu deret untuk seluruh tenant, jadi bulannya
+     * dibaca di zona bawaan vendor, bukan di zona tenant yang ditagih.
+     */
     private function nomorBerikutnya(CarbonImmutable $pada): string
     {
-        $awalan = 'INV-'.$pada->format('Ym').'-';
+        $awalan = 'INV-'.$pada->setTimezone(KalenderOrganisasi::zonaBawaan())->format('Ym').'-';
 
         $terakhir = TagihanLangganan::query()
             ->withoutGlobalScopes()

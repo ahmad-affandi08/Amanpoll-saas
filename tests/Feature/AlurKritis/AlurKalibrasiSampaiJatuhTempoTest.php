@@ -159,7 +159,7 @@ final class AlurKalibrasiSampaiJatuhTempoTest extends TestCase
         $this->assertSame('Lolos', $pelaksanaan->Hasil);
         $this->assertSame('SERT/KAL/2026/0917', $pelaksanaan->NomorSertifikat);
         $this->assertSame($manajer->Id, $pelaksanaan->DiverifikasiOleh);
-        $this->assertSame('2026-09-21 14:30:00', $pelaksanaan->DiverifikasiPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 14:30:00', $pelaksanaan->DiverifikasiPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
         $this->assertSame('2027-09-21', $pelaksanaan->TanggalBerlakuSampai?->toDateString());
         $this->assertSame('2027-09-21', $rencana->fresh()?->TanggalBerikutnya->toDateString());
         $this->assertSame(1, DB::table('CatatanAudit')

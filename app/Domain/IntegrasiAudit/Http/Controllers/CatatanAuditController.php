@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\IntegrasiAudit\Http\Controllers;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\IntegrasiAudit\Http\Resources\CatatanAuditResource;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
 use App\Http\Controllers\Controller;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class CatatanAuditController extends Controller
 {
+    public function __construct(private readonly KalenderOrganisasi $kalender) {}
+
     /**
      * @param  array<string, mixed>  $filter
      * @return Builder<CatatanAudit>
@@ -30,8 +33,8 @@ final class CatatanAuditController extends Controller
             ->when($filter['entitasId'] ?? null, fn ($q, $v) => $q->where('EntitasId', $v))
             ->when($filter['penggunaId'] ?? null, fn ($q, $v) => $q->where('PenggunaId', $v))
             ->when($filter['aksi'] ?? null, fn ($q, $v) => $q->where('Aksi', 'like', "%{$v}%"))
-            ->when($filter['dariTanggal'] ?? null, fn ($q, $v) => $q->whereDate('DibuatPada', '>=', $v))
-            ->when($filter['sampaiTanggal'] ?? null, fn ($q, $v) => $q->whereDate('DibuatPada', '<=', $v))
+            ->when($filter['dariTanggal'] ?? null, fn ($q, $v) => $q->where('DibuatPada', '>=', $this->kalender->awalHari((string) $v)))
+            ->when($filter['sampaiTanggal'] ?? null, fn ($q, $v) => $q->where('DibuatPada', '<', $this->kalender->awalHariBerikutnya((string) $v)))
             ->orderByDesc('DibuatPada')
             ->orderBy('Id');
     }

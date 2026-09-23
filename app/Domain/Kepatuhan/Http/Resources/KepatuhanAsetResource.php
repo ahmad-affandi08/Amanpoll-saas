@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kepatuhan\Http\Resources;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ final class KepatuhanAsetResource extends JsonResource
             'BerlakuSampai' => $kepatuhan->BerlakuSampai?->toDateString(),
             'SisaHari' => $kepatuhan->BerlakuSampai === null
                 ? null
-                : (int) CarbonImmutable::today()->diffInDays(CarbonImmutable::parse((string) $kepatuhan->BerlakuSampai), false),
+                : (int) app(KalenderOrganisasi::class)->hariIni($kepatuhan->OrganisasiId)->diffInDays(CarbonImmutable::parse((string) $kepatuhan->BerlakuSampai), false),
             'Catatan' => $kepatuhan->Catatan,
             'NamaPemeriksa' => $this->whenLoaded('diperiksaOleh', fn (): ?string => $kepatuhan->diperiksaOleh?->Nama),
             'DiperbaruiPada' => $kepatuhan->DiperbaruiPada->toIso8601String(),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Aspak\Http\Controllers;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
@@ -45,7 +46,10 @@ final class AspakController extends Controller
     /** Cukup untuk dipindai mata; sisanya disaring dengan mengetik lebih spesifik. */
     private const MAKS_HASIL_CARI = 50;
 
-    public function __construct(private readonly LayananAudit $audit) {}
+    public function __construct(
+        private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -256,7 +260,7 @@ final class AspakController extends Controller
                 $konteks->bersihkan();
                 fclose($keluaran);
             }
-        }, 'aspak-'.now()->format('Ymd-His').'.csv', ['Content-Type' => 'text/csv']);
+        }, 'aspak-'.$this->kalender->sekarang()->format('Ymd-His').'.csv', ['Content-Type' => 'text/csv']);
     }
 
     private function profil(): ProfilKolomAspak

@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 /**
  * Pelengkap LayananKalkulasiSlaTest: jalur yang belum dijaga di sana, yaitu
- * zona waktu lokasi yang berbeda dari zona aplikasi, aturan berjam kalender
+ * zona waktu lokasi yang berbeda dari zona penyimpanan, aturan berjam kalender
  * penuh, batas yang sengaja tidak diisi, dan laporan sebelum jam buka.
  */
 final class KalkulasiSlaZonaDanKalenderTest extends TestCase
@@ -24,10 +24,10 @@ final class KalkulasiSlaZonaDanKalenderTest extends TestCase
     /**
      * Jumat 16:30 WIB sudah 17:30 WITA: bagi lokasi di Makassar jam kerja
      * hari itu telah usai, jadi hitungan mulai Senin 08:00 WITA. Hasilnya
-     * disimpan kembali dalam zona aplikasi (WIB), sejam lebih awal dari
-     * hitungan yang keliru memakai jam kerja WIB (09:30 dan 08:30).
+     * disimpan sebagai momen UTC -- Senin 10:00 WITA adalah 02:00 UTC --
+     * sejam lebih awal dari hitungan yang keliru memakai jam kerja WIB.
      */
-    public function test_jam_kerja_dihitung_pada_zona_lokasi_lalu_disimpan_pada_zona_aplikasi(): void
+    public function test_jam_kerja_dihitung_pada_zona_lokasi_lalu_disimpan_dalam_utc(): void
     {
         $hasil = $this->layanan()->hitungBatas(
             $this->organisasi()->Id,
@@ -37,9 +37,9 @@ final class KalkulasiSlaZonaDanKalenderTest extends TestCase
             'Asia/Makassar',
         );
 
-        $this->assertSame('2026-09-21 09:00:00', $hasil['respons']?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-22 08:00:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
-        $this->assertSame('Asia/Jakarta', $hasil['respons']?->timezoneName);
+        $this->assertSame('2026-09-21 02:00:00', $hasil['respons']?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-22 01:00:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
+        $this->assertSame('UTC', $hasil['respons']?->timezoneName);
     }
 
     public function test_aturan_tanpa_jam_kerja_menghitung_menit_kalender_termasuk_akhir_pekan(): void
@@ -52,8 +52,9 @@ final class KalkulasiSlaZonaDanKalenderTest extends TestCase
             'Asia/Jakarta',
         );
 
-        $this->assertSame('2026-09-18 18:30:00', $hasil['respons']?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-19 02:30:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
+        // 18:30 dan 02:30 WIB.
+        $this->assertSame('2026-09-18 11:30:00', $hasil['respons']?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-18 19:30:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
     }
 
     public function test_batas_tanpa_menit_dibiarkan_kosong_sementara_batas_lain_tetap_dihitung(): void
@@ -67,7 +68,8 @@ final class KalkulasiSlaZonaDanKalenderTest extends TestCase
         );
 
         $this->assertNull($hasil['respons']);
-        $this->assertSame('2026-09-21 11:00:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
+        // 11:00 WIB.
+        $this->assertSame('2026-09-21 04:00:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
     }
 
     public function test_laporan_sebelum_jam_buka_mulai_dihitung_dari_jam_kerja_mulai(): void
@@ -80,8 +82,9 @@ final class KalkulasiSlaZonaDanKalenderTest extends TestCase
             'Asia/Jakarta',
         );
 
-        $this->assertSame('2026-09-21 10:00:00', $hasil['respons']?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-21 17:00:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
+        // 10:00 dan 17:00 WIB.
+        $this->assertSame('2026-09-21 03:00:00', $hasil['respons']?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 10:00:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
     }
 
     private function layanan(): LayananKalkulasiSla

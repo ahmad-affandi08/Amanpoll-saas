@@ -8,11 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import type { HalamanDetail, PilihanHalaman } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { dariMasukanWaktu, keMasukanWaktu } from '@/lib/waktu';
 
 export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; pilihan: PilihanHalaman }) {
   const [status, setStatus] = useState(halaman.Status);
-  const [terbitPada, setTerbitPada] = useState(halaman.TerbitPada?.slice(0, 16) ?? '');
-  const [tarikPada, setTarikPada] = useState(halaman.TarikPada?.slice(0, 16) ?? '');
+  const [terbitPada, setTerbitPada] = useState(keMasukanWaktu(halaman.TerbitPada));
+  const [tarikPada, setTarikPada] = useState(keMasukanWaktu(halaman.TarikPada));
 
   const akar = rutePemasaran.halamanDetail(halaman.Id);
 
@@ -83,8 +84,8 @@ export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; 
                 `${akar}/status`,
                 {
                   Status: status,
-                  TerbitPada: terbitPada === '' ? null : terbitPada,
-                  TarikPada: tarikPada === '' ? null : tarikPada,
+                  TerbitPada: dariMasukanWaktu(terbitPada),
+                  TarikPada: dariMasukanWaktu(tarikPada),
                 },
                 { preserveScroll: true },
               )

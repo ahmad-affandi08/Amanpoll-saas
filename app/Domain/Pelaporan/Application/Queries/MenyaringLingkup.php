@@ -6,6 +6,7 @@ namespace App\Domain\Pelaporan\Application\Queries;
 
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Database\Query\Builder as KontrakBuilder;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -78,9 +79,10 @@ trait MenyaringLingkup
     private function deretHarian(FilterMetrik $filter, array $nilaiPerTanggal): array
     {
         $deret = [];
-        $tanggal = $filter->dari->startOfDay();
+        $tanggal = CarbonImmutable::parse($filter->tanggalDari());
+        $akhir = CarbonImmutable::parse($filter->tanggalSampai());
 
-        while ($tanggal->lessThanOrEqualTo($filter->sampai)) {
+        while ($tanggal->lessThanOrEqualTo($akhir)) {
             $kunci = $tanggal->toDateString();
             $deret[] = ['Label' => $kunci, 'Nilai' => (float) ($nilaiPerTanggal[$kunci] ?? 0)];
             $tanggal = $tanggal->addDay();
@@ -99,9 +101,10 @@ trait MenyaringLingkup
     private function deretBulanan(FilterMetrik $filter, array $nilaiPerBulan): array
     {
         $deret = [];
-        $bulan = $filter->dari->startOfMonth();
+        $bulan = CarbonImmutable::parse($filter->tanggalDari())->startOfMonth();
+        $akhir = CarbonImmutable::parse($filter->tanggalSampai());
 
-        while ($bulan->lessThanOrEqualTo($filter->sampai)) {
+        while ($bulan->lessThanOrEqualTo($akhir)) {
             $kunci = $bulan->format('Y-m');
             $deret[] = ['Label' => $kunci, 'Nilai' => (float) ($nilaiPerBulan[$kunci] ?? 0)];
             $bulan = $bulan->addMonth();

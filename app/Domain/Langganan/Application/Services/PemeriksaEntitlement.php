@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Langganan\Application\Services;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Langganan\Domain\Enums\StatusLangganan;
 use App\Domain\Langganan\Domain\KatalogFitur;
@@ -23,6 +24,7 @@ final class PemeriksaEntitlement
         private readonly KonteksOrganisasi $konteks,
         private readonly LayananLangganan $layananLangganan,
         private readonly LayananKebijakanTenggang $kebijakan,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     public function untukOrganisasi(string $organisasiId): Entitlement
@@ -133,8 +135,7 @@ final class PemeriksaEntitlement
             return Entitlement::tanpaTenant();
         }
 
-        $sampai = CarbonImmutable::parse((string) $dibuatPada)
-            ->startOfDay()
+        $sampai = $this->kalender->hariPada(CarbonImmutable::parse((string) $dibuatPada, 'UTC'), $organisasiId)
             ->addDays($this->kebijakan->hariUjiCoba());
 
         $fitur = [];
@@ -145,7 +146,7 @@ final class PemeriksaEntitlement
 
         return Entitlement::ujiCobaAwal(
             $fitur,
-            CarbonImmutable::now()->startOfDay()->lessThanOrEqualTo($sampai),
+            $this->kalender->hariIni($organisasiId)->lessThanOrEqualTo($sampai),
             $sampai->toDateString(),
         );
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pelaporan\Http\Controllers;
 
 use App\Core\Izin\PemeriksaIzin;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Actions\KelolaLaporanTersimpan;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
@@ -85,12 +86,12 @@ final class LaporanTersimpanController extends Controller
         );
     }
 
-    public function index(Request $request, LayananMetrik $layananMetrik): Response
+    public function index(Request $request, LayananMetrik $layananMetrik, KalenderOrganisasi $kalender): Response
     {
         $this->authorize('viewAny', LaporanTersimpan::class);
 
         $pengguna = $request->user('web');
-        $filter = FilterMetrik::dariArray($request->all());
+        $filter = FilterMetrik::dariArray($request->all(), $kalender->zona());
 
         $laporan = $this->kueriTersaring($request)
             ->limit(BatasDaftar::MAKS)

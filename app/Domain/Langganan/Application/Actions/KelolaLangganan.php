@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Langganan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Langganan\Application\Services\LayananKebijakanTenggang;
 use App\Domain\Langganan\Application\Services\LayananLangganan;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
@@ -27,6 +28,7 @@ final class KelolaLangganan
         private readonly LayananLangganan $layananLangganan,
         private readonly LayananKebijakanTenggang $kebijakan,
         private readonly PemeriksaEntitlement $entitlement,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -46,7 +48,7 @@ final class KelolaLangganan
             $siklus = SiklusLangganan::from((string) ($data['Siklus'] ?? SiklusLangganan::Bulanan->value));
             $mulai = isset($data['MulaiPada'])
                 ? CarbonImmutable::parse((string) $data['MulaiPada'])->startOfDay()
-                : CarbonImmutable::now()->startOfDay();
+                : $this->kalender->hariIni($organisasiId);
 
             $ujiCoba = $this->tanggalUjiCoba($data, $mulai);
             $berakhir = $this->tanggalBerakhir($data, $siklus, $mulai, $ujiCoba);
@@ -107,16 +109,16 @@ final class KelolaLangganan
     public function perpanjang(Langganan $langganan, ?CarbonImmutable $pada = null): Langganan
     {
         return $this->transaksi->jalankan(function () use ($langganan, $pada): Langganan {
-            $pada ??= CarbonImmutable::now();
+            $hariIni = $this->kalender->hariPada($pada ?? CarbonImmutable::now(), (string) $langganan->OrganisasiId);
             $siklus = SiklusLangganan::from((string) $langganan->Siklus);
 
             $berakhir = $langganan->BerakhirPada === null
                 ? null
                 : CarbonImmutable::parse($langganan->BerakhirPada)->startOfDay();
 
-            $titikTolak = $berakhir !== null && $berakhir->greaterThan($pada->startOfDay())
+            $titikTolak = $berakhir !== null && $berakhir->greaterThan($hariIni)
                 ? $berakhir
-                : $pada->startOfDay();
+                : $hariIni;
 
             $langganan->BerakhirPada = $siklus->akhirPeriodeSetelah($titikTolak);
             $langganan->Status = StatusLangganan::Aktif->value;
@@ -148,13 +150,14 @@ final class KelolaLangganan
 
         return $this->transaksi->jalankan(function () use ($langganan, $hari): Langganan {
             $sebelum = $langganan->UjiCobaSampai;
+            $hariIni = $this->kalender->hariIni((string) $langganan->OrganisasiId);
             $titikTolak = $sebelum === null
-                ? CarbonImmutable::now()->startOfDay()
+                ? $hariIni
                 : CarbonImmutable::parse($sebelum)->startOfDay();
 
             // Uji coba yang sudah lewat diperpanjang dari hari ini, bukan dari tanggal mati.
-            if ($titikTolak->lessThan(CarbonImmutable::now()->startOfDay())) {
-                $titikTolak = CarbonImmutable::now()->startOfDay();
+            if ($titikTolak->lessThan($hariIni)) {
+                $titikTolak = $hariIni;
             }
 
             $langganan->UjiCobaSampai = $titikTolak->addDays($hari);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kontrak\Application\Services;
 
 use App\Core\Konfigurasi\LayananKonfigurasi;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
@@ -19,6 +20,7 @@ final class LayananPeringatanKontrak
     public function __construct(
         private readonly LayananNotifikasi $layananNotifikasi,
         private readonly LayananKonfigurasi $layananKonfigurasi,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -26,7 +28,7 @@ final class LayananPeringatanKontrak
      */
     public function ringkasan(string $organisasiId, ?CarbonImmutable $hariIni = null): array
     {
-        $hariIni ??= CarbonImmutable::today();
+        $hariIni ??= $this->kalender->hariIni($organisasiId);
         $ambangTerjauh = max($this->ambangHari($organisasiId));
 
         $daftar = Kontrak::query()->where('OrganisasiId', $organisasiId)->get();
@@ -63,7 +65,7 @@ final class LayananPeringatanKontrak
      */
     public function kirimPeringatan(string $organisasiId, ?CarbonImmutable $hariIni = null): array
     {
-        $hariIni ??= CarbonImmutable::today();
+        $hariIni ??= $this->kalender->hariIni($organisasiId);
         $hasil = ['akanBerakhir' => 0, 'kedaluwarsa' => 0, 'ditutup' => 0, 'dilewati' => 0];
 
         $penerima = $this->penggunaBerizin($organisasiId);

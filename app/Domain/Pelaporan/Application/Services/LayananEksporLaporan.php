@@ -15,6 +15,7 @@ use App\Shared\Infrastructure\Ekspor\KopOrganisasi;
 use App\Shared\Infrastructure\Ekspor\LogoKopEkspor;
 use App\Shared\Infrastructure\Ekspor\PenulisEkspor;
 use App\Shared\Infrastructure\Ekspor\PenulisEksporPdf;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -85,8 +86,8 @@ final class LayananEksporLaporan
                 // sama seperti seluruh ekspor daftar.
                 'Organisasi' => KopOrganisasi::nama($organisasi),
                 'Judul' => $judul,
-                'Rentang' => $filter->dari->toDateString().' s.d. '.$filter->sampai->toDateString(),
-                'Dibuat' => now()->toDateTimeString(),
+                'Rentang' => $filter->tanggalDari().' s.d. '.$filter->tanggalSampai(),
+                'Dibuat' => CarbonImmutable::now($filter->zona)->format('d-m-Y H:i').' '.$filter->zona,
                 'Oleh' => $pengguna->Nama,
             ]);
 
@@ -98,7 +99,7 @@ final class LayananEksporLaporan
 
             $berkas = Berkas::create([
                 'OrganisasiId' => $pengguna->OrganisasiId,
-                'NamaAsli' => $this->namaBerkas($judul, $format),
+                'NamaAsli' => $this->namaBerkas($judul, $format, $filter->zona),
                 'NamaPenyimpanan' => $namaPenyimpanan,
                 'MediaPenyimpanan' => $disk,
                 'LokasiPenyimpanan' => $tujuan,
@@ -137,10 +138,11 @@ final class LayananEksporLaporan
         return $berkas;
     }
 
-    private function namaBerkas(string $judul, FormatEkspor $format): string
+    /** Cap waktu nama berkas mengikuti jam dinding organisasi, sama seperti kop "Dibuat". */
+    private function namaBerkas(string $judul, FormatEkspor $format, string $zona): string
     {
         $dasar = Str::slug($judul) !== '' ? Str::slug($judul) : 'laporan';
 
-        return $dasar.'-'.now()->format('Ymd-His').'.'.$format->ekstensi();
+        return $dasar.'-'.CarbonImmutable::now($zona)->format('Ymd-His').'.'.$format->ekstensi();
     }
 }

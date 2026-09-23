@@ -25,6 +25,7 @@ import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { dariMasukanWaktu } from '@/lib/waktu';
 
 export function DialogBuatPerintahKerja({
   keluhan,
@@ -80,8 +81,8 @@ export function DialogBuatPerintahKerja({
       ...data,
       KeluhanId: data.KeluhanId === TANPA_PILIHAN ? null : data.KeluhanId,
       LokasiId: data.LokasiId ? data.LokasiId : null,
-      DijadwalkanMulaiPada: data.DijadwalkanMulaiPada || null,
-      DijadwalkanSelesaiPada: data.DijadwalkanSelesaiPada || null,
+      DijadwalkanMulaiPada: dariMasukanWaktu(data.DijadwalkanMulaiPada),
+      DijadwalkanSelesaiPada: dariMasukanWaktu(data.DijadwalkanSelesaiPada),
     }));
     form.post(rutePerintahKerja.index, {
       onSuccess: () => {

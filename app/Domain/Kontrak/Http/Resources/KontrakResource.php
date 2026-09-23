@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kontrak\Http\Resources;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ final class KontrakResource extends JsonResource
             'NamaPenyedia' => $this->whenLoaded('penyedia', fn (): ?string => $kontrak->penyedia?->Nama),
             'MulaiPada' => $kontrak->MulaiPada->toDateString(),
             'BerakhirPada' => $kontrak->BerakhirPada->toDateString(),
-            'SisaHari' => (int) CarbonImmutable::today()->diffInDays(CarbonImmutable::parse((string) $kontrak->BerakhirPada), false),
+            'SisaHari' => (int) app(KalenderOrganisasi::class)->hariIni($kontrak->OrganisasiId)->diffInDays(CarbonImmutable::parse((string) $kontrak->BerakhirPada), false),
             'Nilai' => $kontrak->Nilai,
             'MataUang' => $kontrak->MataUang,
             'TingkatLayananId' => $kontrak->TingkatLayananId,

@@ -4,9 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Domain\ValueObjects;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use Carbon\CarbonImmutable;
 
-/** Sembilan penyaring dashboard growth (MARKETING.md 5). */
+/**
+ * Sembilan penyaring dashboard growth (MARKETING.md 5).
+ *
+ * `dari` dan `sampai` adalah momen UTC batas hari di kalender vendor (zona
+ * bawaan), siap untuk kolom waktu berjam. Kolom `date` memakai
+ * `tanggalDari()`/`tanggalSampai()`.
+ */
 final readonly class FilterGrowth
 {
     public function __construct(
@@ -26,12 +33,13 @@ final readonly class FilterGrowth
     /** @param array<string, mixed> $kueri */
     public static function dariKueri(array $kueri): self
     {
-        $sampai = self::tanggal($kueri['sampai'] ?? null) ?? CarbonImmutable::now()->endOfDay();
-        $dari = self::tanggal($kueri['dari'] ?? null) ?? $sampai->subDays(29)->startOfDay();
+        $zona = KalenderOrganisasi::zonaBawaan();
+        $sampai = self::tanggal($kueri['sampai'] ?? null, $zona) ?? CarbonImmutable::now($zona);
+        $dari = self::tanggal($kueri['dari'] ?? null, $zona) ?? $sampai->subDays(29);
 
         return new self(
-            dari: $dari->startOfDay(),
-            sampai: $sampai->endOfDay(),
+            dari: $dari->startOfDay()->utc(),
+            sampai: $sampai->endOfDay()->utc(),
             channel: self::teks($kueri['channel'] ?? null),
             kampanye: self::teks($kueri['kampanye'] ?? null),
             industri: self::teks($kueri['industri'] ?? null),
@@ -56,12 +64,24 @@ final readonly class FilterGrowth
             || $this->partner !== null;
     }
 
+    /** Tanggal kalender hari pertama rentang (Y-m-d), untuk kolom `date`. */
+    public function tanggalDari(): string
+    {
+        return $this->dari->setTimezone(KalenderOrganisasi::zonaBawaan())->toDateString();
+    }
+
+    /** Tanggal kalender hari terakhir rentang (Y-m-d), untuk kolom `date`. */
+    public function tanggalSampai(): string
+    {
+        return $this->sampai->setTimezone(KalenderOrganisasi::zonaBawaan())->toDateString();
+    }
+
     /** @return array<string, string|null> */
     public function keArray(): array
     {
         return [
-            'dari' => $this->dari->toDateString(),
-            'sampai' => $this->sampai->toDateString(),
+            'dari' => $this->tanggalDari(),
+            'sampai' => $this->tanggalSampai(),
             'channel' => $this->channel,
             'kampanye' => $this->kampanye,
             'industri' => $this->industri,
@@ -73,14 +93,14 @@ final readonly class FilterGrowth
         ];
     }
 
-    private static function tanggal(mixed $nilai): ?CarbonImmutable
+    private static function tanggal(mixed $nilai, string $zona): ?CarbonImmutable
     {
         if (! is_string($nilai) || trim($nilai) === '') {
             return null;
         }
 
         try {
-            return CarbonImmutable::parse($nilai);
+            return CarbonImmutable::parse(substr(trim($nilai), 0, 10), $zona);
         } catch (\Throwable) {
             return null;
         }

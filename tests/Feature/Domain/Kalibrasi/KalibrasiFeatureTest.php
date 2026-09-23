@@ -416,4 +416,37 @@ final class KalibrasiFeatureTest extends TestCase
             'Status' => StatusAset::Aktif->value,
         ], $atribut));
     }
+
+    /**
+     * Pengingat kalibrasi memakai hari rumah sakit, termasuk pencegah duplikatnya.
+     *
+     * Pukul 01:00 WIB tanggal 22 (18:00 UTC tanggal 21) alat bertanggal 21
+     * sudah terlambat. Pengingat yang dikirim saat itu tersimpan bertanggal
+     * UTC 21, jadi pencegah duplikat yang membandingkan tanggal UTC mengirim
+     * ulang pengingat yang sama pukul 10:00 WIB di hari yang sama.
+     */
+    public function test_pengingat_kalibrasi_dan_pencegah_duplikatnya_memakai_hari_rumah_sakit(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-CAL-'.uniqid(), 'Nama' => 'Organisasi Kalibrasi']);
+        $this->buatPengguna($organisasi, ['Kalibrasi.Kelola']);
+        $this->tetapkanKonteks($organisasi);
+        RencanaKalibrasi::create([
+            'OrganisasiId' => $organisasi->Id,
+            'AsetId' => $this->buatAset($organisasi, ['KodeAset' => 'AST-DINI-01'])->Id,
+            'IntervalHari' => 365,
+            'TanggalMulai' => '2025-09-21',
+            'TanggalBerikutnya' => '2026-09-21',
+            'PeringatanHariSebelum' => 30,
+            'Aktif' => true,
+        ]);
+        $layananPeringatan = app(LayananPeringatanKalibrasi::class);
+
+        Carbon::setTestNow(CarbonImmutable::parse('2026-09-21 18:00:00', 'UTC'));
+        $this->assertSame(1, $layananPeringatan->kirimPeringatan($organisasi->Id)['terlambat']);
+
+        Carbon::setTestNow(CarbonImmutable::parse('2026-09-22 03:00:00', 'UTC'));
+        $kedua = $layananPeringatan->kirimPeringatan($organisasi->Id);
+        $this->assertSame(0, $kedua['terlambat']);
+        $this->assertSame(1, $kedua['dilewati']);
+    }
 }

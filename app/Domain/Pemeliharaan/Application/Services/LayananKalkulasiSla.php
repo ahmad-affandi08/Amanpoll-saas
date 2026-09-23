@@ -111,8 +111,14 @@ final class LayananKalkulasiSla
         return CarbonImmutable::parse($tanggal->format('Y-m-d').' '.$jam, $tanggal->timezone);
     }
 
+    /**
+     * Jam kerja dihitung di zona lokasi, tetapi batasnya disimpan sebagai momen
+     * UTC seperti seluruh kolom waktu. Disebut langsung, bukan dibaca dari
+     * `app.timezone`, supaya hasilnya tidak ikut berubah bila konfigurasi itu
+     * disentuh.
+     */
     private function keZonaPenyimpanan(CarbonImmutable $waktu): CarbonImmutable
     {
-        return $waktu->setTimezone((string) config('app.timezone', 'UTC'));
+        return $waktu->utc();
     }
 }

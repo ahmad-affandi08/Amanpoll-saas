@@ -96,7 +96,7 @@ final class AlurPreventifSampaiTutupTest extends TestCase
         $this->assertSame('Tinggi', $perintahKerja->Prioritas);
         $this->assertSame('Draf', $perintahKerja->Status);
         $this->assertSame($this->a['manajer']->Id, $perintahKerja->DibuatOleh);
-        $this->assertSame('2026-09-25 00:00:00', $perintahKerja->DijadwalkanMulaiPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-25 00:00:00', $perintahKerja->DijadwalkanMulaiPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
         $this->assertDatabaseHas('PerintahKerjaAset', ['PerintahKerjaId' => $perintahKerja->Id, 'AsetId' => $this->a['aset']->Id, 'Utama' => true]);
 
         $daftarPeriksa = PelaksanaanDaftarPeriksa::query()->where('PerintahKerjaId', $perintahKerja->Id)->sole();
@@ -136,7 +136,7 @@ final class AlurPreventifSampaiTutupTest extends TestCase
         $daftarPeriksa->refresh();
         $this->assertSame('Selesai', $daftarPeriksa->Status);
         $this->assertSame(50.0, (float) $daftarPeriksa->Skor);
-        $this->assertSame('2026-09-25 08:20:00', $daftarPeriksa->SelesaiPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-25 08:20:00', $daftarPeriksa->SelesaiPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
 
         // 7. Setelah final, jawaban terkunci: perubahan ditolak dan nilai lama bertahan.
         $this->actingAs($this->a['teknisi'])->put("/preventif-inspeksi/pelaksanaan-daftar-periksa/{$daftarPeriksa->Id}/jawaban", [
@@ -149,7 +149,7 @@ final class AlurPreventifSampaiTutupTest extends TestCase
         $this->tutupPerintahKerja($perintahKerja);
         $perintahKerja->refresh();
         $this->assertSame('Ditutup', $perintahKerja->Status);
-        $this->assertSame('2026-09-25 08:35:00', $perintahKerja->DitutupPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-25 08:35:00', $perintahKerja->DitutupPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
 
         // 9. Jejak status berurutan dan pembuatan jadwal otomatis teraudit.
         $this->assertSame(

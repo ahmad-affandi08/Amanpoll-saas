@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kalibrasi\Application\Services;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ final class LayananPeringatanKalibrasi
 {
     public function __construct(
         private readonly LayananNotifikasi $layananNotifikasi,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -28,7 +30,7 @@ final class LayananPeringatanKalibrasi
      */
     public function hitungKepatuhan(string $organisasiId): array
     {
-        $hariIni = Carbon::today();
+        $hariIni = $this->kalender->hariIni($organisasiId);
 
         $rencanaAktif = RencanaKalibrasi::query()
             ->where('OrganisasiId', $organisasiId)
@@ -74,7 +76,7 @@ final class LayananPeringatanKalibrasi
      */
     public function kirimPeringatan(string $organisasiId): array
     {
-        $hariIni = Carbon::today();
+        $hariIni = $this->kalender->hariIni($organisasiId);
         $hasil = [
             'segeraJatuhTempo' => 0,
             'terlambat' => 0,
@@ -124,7 +126,11 @@ final class LayananPeringatanKalibrasi
                 ->where('JenisEntitas', 'RencanaKalibrasi')
                 ->where('EntitasId', $rencana->Id)
                 ->where('JenisPeristiwa', $jenisPeristiwa)
-                ->whereDate('JadwalKirimPada', $hariIni->toDateString())
+                // Rentang hari lokal organisasi, bukan whereDate: JadwalKirimPada
+                // tersimpan UTC, dan tanggal UTC-nya berbeda dari tanggal lokal
+                // selama jam-jam pertama tiap hari.
+                ->where('JadwalKirimPada', '>=', $this->kalender->awalHari($hariIni, $organisasiId))
+                ->where('JadwalKirimPada', '<', $this->kalender->awalHariBerikutnya($hariIni, $organisasiId))
                 ->exists();
 
             if ($sudahAdaNotifikasiHariIni) {

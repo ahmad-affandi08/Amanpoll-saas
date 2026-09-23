@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Http\Controllers;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pelaporan\Application\Services\LayananDasbor;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
 use App\Domain\Pelaporan\Domain\Enums\BentukKomponen;
@@ -25,9 +26,10 @@ final class DasborController extends Controller
         Request $request,
         LayananDasbor $layananDasbor,
         LayananMetrik $layananMetrik,
+        KalenderOrganisasi $kalender,
     ): Response {
         $pengguna = $request->user('web');
-        $filter = FilterMetrik::dariArray($request->all());
+        $filter = FilterMetrik::dariArray($request->all(), $kalender->zona());
 
         $tersimpan = $layananDasbor->dasborUntuk($pengguna);
         $dipilih = $this->pilihDasbor($request, $tersimpan);

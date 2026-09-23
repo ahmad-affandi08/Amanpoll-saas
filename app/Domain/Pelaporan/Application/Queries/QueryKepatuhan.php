@@ -9,7 +9,6 @@ use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
 /** KPI kepatuhan aset (21.01: compliance). */
@@ -54,7 +53,7 @@ final class QueryKepatuhan implements PenyediaKpi
 
     private function akanKedaluwarsa(FilterMetrik $filter): HasilKpi
     {
-        $batas = CarbonImmutable::now()->addDays(self::HARI_PERINGATAN)->toDateString();
+        $batas = $filter->hariIni()->addDays(self::HARI_PERINGATAN)->toDateString();
 
         $jumlah = (int) $this->lingkup($filter)
             ->whereNotNull('BerlakuSampai')

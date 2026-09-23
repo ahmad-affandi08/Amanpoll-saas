@@ -8,6 +8,7 @@ import type { FilterMetrik, PilihanDimensi } from '@/features/Pelaporan/types';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
+import { tambahHari, tanggalHariIni } from '@/lib/waktu';
 
 const PRESET = [
   { label: '7 hari', hari: 7 },
@@ -16,11 +17,9 @@ const PRESET = [
 ] as const;
 
 function tanggalMundur(hari: number): { Dari: string; Sampai: string } {
-  const sampai = new Date();
-  const dari = new Date();
-  dari.setDate(dari.getDate() - (hari - 1));
+  const sampai = tanggalHariIni();
 
-  return { Dari: dari.toISOString().slice(0, 10), Sampai: sampai.toISOString().slice(0, 10) };
+  return { Dari: tambahHari(sampai, -(hari - 1)), Sampai: sampai };
 }
 
 /** Satu baris filter di atas seluruh isi yang dicakupnya (21.02). */

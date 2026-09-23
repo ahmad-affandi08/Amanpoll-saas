@@ -16,8 +16,8 @@ use Tests\TestCase;
  * FASE 26.01 — mesin nomor dokumen: reset bulanan, placeholder periode, dan
  * urutan yang terpisah per organisasi serta per jenis dokumen.
  *
- * Jam uji dipilih jauh dari tengah malam, baik UTC maupun WIB, supaya hasilnya
- * tidak bergantung pada zona waktu aplikasi.
+ * Jam uji dipilih jauh dari tengah malam, baik UTC maupun WIB, kecuali pada
+ * test pergantian tahun yang justru menguji jam di antara keduanya.
  */
 final class PenomoranPeriodeDokumenTest extends TestCase
 {
@@ -95,5 +95,25 @@ final class PenomoranPeriodeDokumenTest extends TestCase
             'ResetPeriode' => $reset,
         ]);
         app(KonteksOrganisasi::class)->bersihkan();
+    }
+
+    /**
+     * Periode penomoran dibaca di kalender rumah sakit.
+     *
+     * 1 Januari pukul 06:00 WIB masih 31 Desember di UTC. Dengan jam UTC,
+     * dokumen pertama tahun baru melanjutkan urutan tahun lalu dan bertahun
+     * lama; di Jayapura yang sudah berganti tahun, begitu pula.
+     */
+    public function test_reset_tahunan_mengikuti_pergantian_tahun_di_zona_organisasi(): void
+    {
+        $organisasi = $this->buatOrganisasi('NMR-THN');
+        $this->buatPola($organisasi, 'Keluhan', 'KLH', '{Awalan}/{Tahun}/{Nomor:4}', 'Tahunan');
+
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-12-31 10:00:00', 'UTC'));
+        $this->assertSame('KLH/2026/0001', $this->layanan->berikutnya($organisasi->Id, 'Keluhan'));
+
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-12-31 23:00:00', 'UTC'));
+        $this->assertSame('KLH/2027/0001', $this->layanan->pratinjau($organisasi->Id, 'Keluhan'));
+        $this->assertSame('KLH/2027/0001', $this->layanan->berikutnya($organisasi->Id, 'Keluhan'));
     }
 }

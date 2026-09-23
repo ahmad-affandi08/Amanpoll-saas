@@ -89,8 +89,8 @@ final class AlurKeluhanSampaiTutupTest extends TestCase
         $this->assertSame('Baru', $keluhan->Status);
         $this->assertSame('Tinggi', $keluhan->Prioritas);
         $this->assertSame($a['pelapor']->Id, $keluhan->PelaporId);
-        $this->assertSame('2026-09-21 10:00:00', $keluhan->BatasResponsPada?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-21 17:00:00', $keluhan->BatasPenyelesaianPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 10:00:00', $keluhan->BatasResponsPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 17:00:00', $keluhan->BatasPenyelesaianPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
 
         // 2. Manajer meninjau lalu menerima keluhan. Respons pertama tercatat di dalam batas SLA.
         $this->ubahStatusKeluhan($a, $keluhan, 'Ditinjau');
@@ -98,7 +98,7 @@ final class AlurKeluhanSampaiTutupTest extends TestCase
 
         $keluhan->refresh();
         $this->assertSame('Diterima', $keluhan->Status);
-        $this->assertSame('2026-09-21 09:05:00', $keluhan->DiresponsPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 09:05:00', $keluhan->DiresponsPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
         $this->assertTrue($keluhan->DiresponsPada->lessThanOrEqualTo($keluhan->BatasResponsPada));
 
         // 3. Manajer membuat perintah kerja dari keluhan; judul, lokasi, aset, dan batas SLA diwarisi.
@@ -118,7 +118,7 @@ final class AlurKeluhanSampaiTutupTest extends TestCase
         $this->assertSame($keluhan->Judul, $perintahKerja->Judul);
         $this->assertSame($a['lokasi']->Id, $perintahKerja->LokasiId);
         $this->assertSame($keluhan->TingkatLayananId, $perintahKerja->TingkatLayananId);
-        $this->assertSame('2026-09-21 17:00:00', $perintahKerja->BatasPenyelesaianPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 17:00:00', $perintahKerja->BatasPenyelesaianPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
         $this->assertDatabaseHas('PerintahKerjaAset', [
             'PerintahKerjaId' => $perintahKerja->Id,
             'AsetId' => $a['aset']->Id,
@@ -229,8 +229,8 @@ final class AlurKeluhanSampaiTutupTest extends TestCase
 
         $perintahKerja->refresh();
         $this->assertSame('Ditutup', $perintahKerja->Status);
-        $this->assertSame('2026-09-21 11:30:00', $perintahKerja->DiselesaikanPada?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-21 11:35:00', $perintahKerja->DitutupPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 11:30:00', $perintahKerja->DiselesaikanPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 11:35:00', $perintahKerja->DitutupPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
 
         // 9. Keluhan diselesaikan dan ditutup, di dalam batas penyelesaian SLA.
         $this->ubahStatusKeluhan($a, $keluhan, 'Selesai');
@@ -238,8 +238,8 @@ final class AlurKeluhanSampaiTutupTest extends TestCase
 
         $keluhan->refresh();
         $this->assertSame('Ditutup', $keluhan->Status);
-        $this->assertSame('2026-09-21 11:40:00', $keluhan->DiresolusikanPada?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-21 11:45:00', $keluhan->DitutupPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 11:40:00', $keluhan->DiresolusikanPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 11:45:00', $keluhan->DitutupPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
         $this->assertTrue($keluhan->DiresolusikanPada->lessThanOrEqualTo($keluhan->BatasPenyelesaianPada));
 
         // 10. Jejak lengkap dan berurutan.

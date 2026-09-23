@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\JenisTransaksiAnggaran;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPenawaranPenyedia;
@@ -31,6 +32,7 @@ final class KelolaPesananPembelian
         private readonly AjukanPermintaanPersetujuan $ajukanPersetujuan,
         private readonly CatatTransaksiAnggaran $catatTransaksiAnggaran,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -49,7 +51,7 @@ final class KelolaPesananPembelian
             try {
                 $nomor = $this->nomorDokumen->berikutnya($this->konteks->wajibId(), 'PesananPembelian');
             } catch (DataTidakDitemukan) {
-                $nomor = 'PO-'.now()->format('Ym').'-'.Str::upper(Str::random(6));
+                $nomor = 'PO-'.$this->kalender->sekarang($penawaran->OrganisasiId)->format('Ym').'-'.Str::upper(Str::random(6));
             }
 
             $po = PesananPembelian::create([
@@ -59,7 +61,7 @@ final class KelolaPesananPembelian
                 'PermintaanPembelianId' => $permintaan->Id,
                 'PenawaranPenyediaId' => $penawaran->Id,
                 'PosAnggaranId' => $permintaan->PosAnggaranId,
-                'TanggalPesanan' => $data['TanggalPesanan'] ?? now()->toDateString(),
+                'TanggalPesanan' => $data['TanggalPesanan'] ?? $this->kalender->hariIni($penawaran->OrganisasiId)->toDateString(),
                 'TanggalKirimRencana' => $data['TanggalKirimRencana'] ?? null,
                 'MataUang' => $penawaran->MataUang,
                 'Subtotal' => $penawaran->Subtotal,
@@ -124,7 +126,7 @@ final class KelolaPesananPembelian
                 $this->catatTransaksiAnggaran->jalankan($terkunci->posAnggaran()->firstOrFail(), [
                     'Jenis' => JenisTransaksiAnggaran::Komitmen->value,
                     'Jumlah' => $terkunci->Total,
-                    'Tanggal' => now()->toDateString(),
+                    'Tanggal' => $this->kalender->hariIni($terkunci->OrganisasiId)->toDateString(),
                     'ReferensiJenis' => 'PesananPembelian',
                     'ReferensiId' => $terkunci->Id,
                     'Keterangan' => "Komitmen PO {$terkunci->Nomor}",

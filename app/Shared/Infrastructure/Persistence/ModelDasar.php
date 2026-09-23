@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 abstract class ModelDasar extends Model
 {
-    use HasUlids;
+    use HasUlids, MenyimpanWaktuDalamUtc;
 
     protected $primaryKey = 'Id';
 

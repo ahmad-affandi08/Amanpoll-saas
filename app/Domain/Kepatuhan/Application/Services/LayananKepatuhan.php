@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kepatuhan\Application\Services;
 
 use App\Core\Konfigurasi\LayananKonfigurasi;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kepatuhan\Domain\Enums\StatusKepatuhanAset;
 use App\Domain\Kepatuhan\Domain\Enums\StatusSertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
@@ -22,6 +23,7 @@ final class LayananKepatuhan
     public function __construct(
         private readonly LayananNotifikasi $layananNotifikasi,
         private readonly LayananKonfigurasi $layananKonfigurasi,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -39,7 +41,7 @@ final class LayananKepatuhan
      */
     public function ringkasan(string $organisasiId, ?CarbonImmutable $hariIni = null): array
     {
-        $hariIni ??= CarbonImmutable::today();
+        $hariIni ??= $this->kalender->hariIni($organisasiId);
         $ambangTerjauh = max($this->ambangHari($organisasiId));
 
         $kewajiban = KepatuhanAset::query()->where('OrganisasiId', $organisasiId)->get();
@@ -100,7 +102,7 @@ final class LayananKepatuhan
     /** Status kepatuhan yang sudah memperhitungkan masa berlaku, tanpa mengubah baris di database. */
     public function statusEfektif(KepatuhanAset $kepatuhan, ?CarbonImmutable $hariIni = null): string
     {
-        $hariIni ??= CarbonImmutable::today();
+        $hariIni ??= $this->kalender->hariIni($kepatuhan->OrganisasiId);
         $sisa = $this->sisaHari($kepatuhan->BerlakuSampai, $hariIni);
 
         if ($kepatuhan->Status === StatusKepatuhanAset::Patuh->value && $sisa !== null && $sisa < 0) {
@@ -115,7 +117,7 @@ final class LayananKepatuhan
      */
     public function kirimPeringatan(string $organisasiId, ?CarbonImmutable $hariIni = null): array
     {
-        $hariIni ??= CarbonImmutable::today();
+        $hariIni ??= $this->kalender->hariIni($organisasiId);
         $hasil = [
             'kepatuhanKedaluwarsa' => 0,
             'kepatuhanAkanBerakhir' => 0,

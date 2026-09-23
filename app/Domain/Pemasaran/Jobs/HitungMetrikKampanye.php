@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Jobs;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Langganan\Domain\Enums\StatusPembayaranLangganan;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\MetrikKampanye;
 use Carbon\CarbonImmutable;
@@ -34,21 +35,26 @@ final class HitungMetrikKampanye implements ShouldQueue
 
     public function handle(): void
     {
+        // "Kemarin" dibaca di kalender vendor: metrik pemasaran milik
+        // platform, bukan milik tenant mana pun. Batas harinya lalu dikirim
+        // ke kueri sebagai momen UTC karena begitulah kolom waktunya disimpan.
+        $zona = KalenderOrganisasi::zonaBawaan();
         $hari = $this->tanggal === null
-            ? CarbonImmutable::now()->subDay()->startOfDay()
-            : CarbonImmutable::parse($this->tanggal)->startOfDay();
+            ? CarbonImmutable::now($zona)->subDay()->startOfDay()
+            : CarbonImmutable::parse(substr($this->tanggal, 0, 10), $zona);
 
-        $akhir = $hari->endOfDay();
+        $awal = $hari->utc();
+        $akhir = $hari->endOfDay()->utc();
         $kunci = $this->kunciKampanye();
 
         $ringkasan = [];
 
-        $this->serap($ringkasan, $this->visitor($hari, $akhir), 'Visitor');
-        $this->serap($ringkasan, $this->prospek($hari, $akhir), 'Lead');
-        $this->serap($ringkasan, $this->trial($hari, $akhir, 'MulaiPada'), 'Trial');
-        $this->serap($ringkasan, $this->trial($hari, $akhir, 'TeraktivasiPada'), 'Teraktivasi');
-        $this->serap($ringkasan, $this->trial($hari, $akhir, 'KonversiPada'), 'Bayar');
-        $this->serap($ringkasan, $this->revenue($hari, $akhir), 'Revenue');
+        $this->serap($ringkasan, $this->visitor($awal, $akhir), 'Visitor');
+        $this->serap($ringkasan, $this->prospek($awal, $akhir), 'Lead');
+        $this->serap($ringkasan, $this->trial($awal, $akhir, 'MulaiPada'), 'Trial');
+        $this->serap($ringkasan, $this->trial($awal, $akhir, 'TeraktivasiPada'), 'Teraktivasi');
+        $this->serap($ringkasan, $this->trial($awal, $akhir, 'KonversiPada'), 'Bayar');
+        $this->serap($ringkasan, $this->revenue($awal, $akhir), 'Revenue');
         $this->serap($ringkasan, $this->biaya($hari), 'Biaya');
 
         foreach ($ringkasan as $baris) {

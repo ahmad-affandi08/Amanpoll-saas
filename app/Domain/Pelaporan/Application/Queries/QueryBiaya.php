@@ -79,7 +79,7 @@ final class QueryBiaya implements PenyediaKpi
     private function lingkup(FilterMetrik $filter): Builder
     {
         $query = BiayaPerintahKerja::query()
-            ->whereBetween('TanggalBiaya', [$filter->dari->toDateString(), $filter->sampai->toDateString()]);
+            ->whereBetween('TanggalBiaya', [$filter->tanggalDari(), $filter->tanggalSampai()]);
 
         if ($filter->adaFilterUnit() || $filter->adaFilterLokasi()) {
             $query->whereIn('PerintahKerjaId', $this->perintahKerjaDalamLingkup($filter));

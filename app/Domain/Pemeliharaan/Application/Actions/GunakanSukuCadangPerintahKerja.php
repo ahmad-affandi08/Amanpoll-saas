@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\BiayaPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Persediaan\Application\Actions\KonsumsiReservasiSukuCadang;
@@ -23,6 +24,7 @@ final class GunakanSukuCadangPerintahKerja
         private readonly KonsumsiReservasiSukuCadang $konsumsi,
         private readonly LepaskanReservasiSukuCadang $lepaskan,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     public function jalankan(PerintahKerja $perintahKerja, ReservasiSukuCadang $reservasi, string $aksi, string $penggunaId): void
@@ -65,7 +67,7 @@ final class GunakanSukuCadangPerintahKerja
                 'Deskripsi' => "{$sukuCadang->Kode} · {$sukuCadang->Nama}",
                 'Jumlah' => $jumlahBiaya,
                 'MataUang' => 'IDR',
-                'TanggalBiaya' => today(),
+                'TanggalBiaya' => $this->kalender->hariIni($perintahKerja->OrganisasiId)->toDateString(),
                 'DibuatOleh' => $penggunaId,
             ]);
         });

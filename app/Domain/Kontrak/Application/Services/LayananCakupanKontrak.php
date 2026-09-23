@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kontrak\Application\Services;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kontrak\Domain\Enums\StatusKontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\KontrakAset;
@@ -13,6 +14,10 @@ use Illuminate\Database\Eloquent\Collection;
 /** Menjawab pertanyaan Gate 17. */
 final class LayananCakupanKontrak
 {
+    public function __construct(
+        private readonly KalenderOrganisasi $kalender,
+    ) {}
+
     /**
      * Kontrak aktif yang mencakup aset pada tanggal tertentu.
      *
@@ -20,7 +25,8 @@ final class LayananCakupanKontrak
      */
     public function kontrakAktifUntukAset(string $asetId, ?CarbonImmutable $tanggal = null, ?string $penyediaId = null): Collection
     {
-        $pada = ($tanggal ?? CarbonImmutable::today())->toDateString();
+        // Tanpa tanggal: hari ini menurut kalender organisasi pemanggil.
+        $pada = ($tanggal ?? $this->kalender->hariIni())->toDateString();
 
         return Kontrak::query()
             ->with(['penyedia', 'tingkatLayanan'])

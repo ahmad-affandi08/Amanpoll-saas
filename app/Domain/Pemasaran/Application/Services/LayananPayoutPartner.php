@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Application\Services;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pemasaran\Domain\Enums\StatusKomisiPartner;
 use App\Domain\Pemasaran\Domain\Enums\StatusPayoutPartner;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\KomisiPartner;
@@ -126,7 +127,7 @@ final class LayananPayoutPartner
 
     private function nomorBaru(): string
     {
-        $awalan = 'PYT-'.CarbonImmutable::now()->format('Ymd').'-';
+        $awalan = 'PYT-'.CarbonImmutable::now(KalenderOrganisasi::zonaBawaan())->format('Ymd').'-';
         $urut = PayoutPartner::query()->where('Nomor', 'like', $awalan.'%')->count() + 1;
 
         return $awalan.str_pad((string) $urut, 4, '0', STR_PAD_LEFT);

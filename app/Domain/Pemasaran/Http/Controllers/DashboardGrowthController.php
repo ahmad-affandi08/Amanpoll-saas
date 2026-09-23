@@ -144,7 +144,7 @@ final class DashboardGrowthController extends Controller
     {
         $baris = MetrikKampanye::query()
             ->with('kampanye:Id,Kode,Nama')
-            ->whereBetween('Tanggal', [$filter->dari->toDateString(), $filter->sampai->toDateString()])
+            ->whereBetween('Tanggal', [$filter->tanggalDari(), $filter->tanggalSampai()])
             ->whereNotNull('KampanyeId')
             ->when($filter->channel !== null, fn ($kueri) => $kueri->where('Channel', $filter->channel))
             ->get()

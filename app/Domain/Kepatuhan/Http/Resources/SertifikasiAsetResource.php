@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kepatuhan\Http\Resources;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ final class SertifikasiAsetResource extends JsonResource
             'BerlakuSampai' => $sertifikasi->BerlakuSampai?->toDateString(),
             'SisaHari' => $sertifikasi->BerlakuSampai === null
                 ? null
-                : (int) CarbonImmutable::today()->diffInDays(CarbonImmutable::parse((string) $sertifikasi->BerlakuSampai), false),
+                : (int) app(KalenderOrganisasi::class)->hariIni($sertifikasi->OrganisasiId)->diffInDays(CarbonImmutable::parse((string) $sertifikasi->BerlakuSampai), false),
             'Status' => $sertifikasi->Status,
             'BerkasId' => $sertifikasi->BerkasId,
             'DibuatPada' => $sertifikasi->DibuatPada->toIso8601String(),

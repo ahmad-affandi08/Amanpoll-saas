@@ -84,7 +84,7 @@ final class QueryAnggaran implements PenyediaKpi
     {
         $query = Anggaran::query()
             ->select('Id')
-            ->whereBetween('Tahun', [(int) $filter->dari->format('Y'), (int) $filter->sampai->format('Y')]);
+            ->whereBetween('Tahun', [(int) substr($filter->tanggalDari(), 0, 4), (int) substr($filter->tanggalSampai(), 0, 4)]);
 
         if ($filter->adaFilterUnit()) {
             $query->whereIn('UnitOrganisasiId', $filter->unitOrganisasiId);

@@ -17,12 +17,13 @@ import type { KepatuhanAset } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 export function DialogPemeriksaan({ kewajiban, wajib }: { kewajiban: KepatuhanAset; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     Status: 'Patuh',
-    TanggalPemeriksaan: new Date().toISOString().slice(0, 10),
+    TanggalPemeriksaan: tanggalHariIni(),
     BerlakuSampai: '',
     Catatan: '',
   });

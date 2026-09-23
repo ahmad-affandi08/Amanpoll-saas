@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\PerencanaanPengadaan\Application\Services\LayananSaldoAnggaran;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusAnggaran;
@@ -29,6 +30,7 @@ final class KelolaRencanaPengadaan
         private readonly LayananNomorDokumen $nomorDokumen,
         private readonly LayananSaldoAnggaran $layananSaldo,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -44,7 +46,7 @@ final class KelolaRencanaPengadaan
                 try {
                     $nomor = $this->nomorDokumen->berikutnya($organisasiId, 'RencanaPengadaan');
                 } catch (DataTidakDitemukan) {
-                    $nomor = 'RPG-'.now()->format('Ym').'-'.Str::upper(Str::random(6));
+                    $nomor = 'RPG-'.$this->kalender->sekarang($organisasiId)->format('Ym').'-'.Str::upper(Str::random(6));
                 }
             }
 

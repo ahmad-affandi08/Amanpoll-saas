@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kalibrasi\Http\Controllers;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kalibrasi\Application\Actions\KelolaRencanaKalibrasi;
@@ -31,6 +32,7 @@ final class RencanaKalibrasiController extends Controller
     public function __construct(
         private readonly KelolaRencanaKalibrasi $kelolaRencana,
         private readonly LayananPeringatanKalibrasi $layananPeringatan,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -83,7 +85,7 @@ final class RencanaKalibrasiController extends Controller
         $this->authorize('viewAny', RencanaKalibrasi::class);
 
         $organisasiId = $request->user('web')->OrganisasiId;
-        $hariIni = Carbon::today();
+        $hariIni = $this->kalender->hariIni($organisasiId);
 
         $daftarRencana = RencanaKalibrasi::query()
             ->with(['aset', 'jenisKalibrasi', 'penyedia'])
@@ -175,7 +177,7 @@ final class RencanaKalibrasiController extends Controller
             'pelaksanaanKalibrasi' => fn ($q) => $q->with(['dilaksanakanOleh', 'diverifikasiOleh'])->latest('TanggalKalibrasi'),
         ]);
 
-        $hariIni = Carbon::today();
+        $hariIni = $this->kalender->hariIni($rencanaKalibrasi->OrganisasiId);
         $tglBerikutnya = Carbon::parse($rencanaKalibrasi->TanggalBerikutnya);
         $batasPeringatan = (clone $hariIni)->addDays((int) $rencanaKalibrasi->PeringatanHariSebelum);
 

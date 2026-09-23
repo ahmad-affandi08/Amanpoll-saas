@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Kalibrasi\Http\Controllers;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kalibrasi\Application\Services\LayananPeringatanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
@@ -18,6 +19,7 @@ final class KalibrasiDashboardController extends Controller
 {
     public function __construct(
         private readonly LayananPeringatanKalibrasi $layananPeringatan,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     public function index(Request $request): Response
@@ -28,7 +30,7 @@ final class KalibrasiDashboardController extends Controller
 
         $kepatuhan = $this->layananPeringatan->hitungKepatuhan($organisasiId);
 
-        $hariIni = Carbon::today();
+        $hariIni = $this->kalender->hariIni($organisasiId);
 
         // Rencana kalibrasi aktif beserta asetnya
         $rencanaList = RencanaKalibrasi::query()

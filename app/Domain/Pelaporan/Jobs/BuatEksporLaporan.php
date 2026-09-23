@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Jobs;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
@@ -46,7 +47,7 @@ final class BuatEksporLaporan implements ShouldQueue
         $this->onQueue('low');
     }
 
-    public function handle(LayananEksporLaporan $layanan, KonteksOrganisasi $konteks): void
+    public function handle(LayananEksporLaporan $layanan, KonteksOrganisasi $konteks, KalenderOrganisasi $kalender): void
     {
         $pengguna = Pengguna::query()->withoutGlobalScopes()->find($this->penggunaId);
         if ($pengguna === null || $pengguna->Status !== 'Aktif') {
@@ -59,7 +60,7 @@ final class BuatEksporLaporan implements ShouldQueue
         $layanan->jalankan(
             $pengguna,
             $this->kunciKpi,
-            FilterMetrik::dariArray($this->filter),
+            FilterMetrik::dariArray($this->filter, $kalender->zona($pengguna->OrganisasiId)),
             FormatEkspor::from($this->format),
             $this->judul,
         );

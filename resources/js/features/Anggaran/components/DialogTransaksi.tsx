@@ -19,6 +19,7 @@ import { ruteAnggaran } from '@/features/Anggaran/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 export function DialogTransaksi({
   pos,
@@ -33,7 +34,7 @@ export function DialogTransaksi({
   const form = useForm({
     Jenis: 'Komitmen' as JenisTransaksiAnggaran,
     Jumlah: '',
-    Tanggal: new Date().toISOString().slice(0, 10),
+    Tanggal: tanggalHariIni(),
     ReferensiJenis: '',
     ReferensiId: '',
     Keterangan: '',

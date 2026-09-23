@@ -21,6 +21,7 @@ import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { tanggalHariIni } from '@/lib/waktu';
 
 interface Props {
   rencana: RencanaPemeliharaan;
@@ -36,7 +37,7 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
 
   const formAset = useForm({
     AsetId: '',
-    TanggalMulai: new Date().toISOString().split('T')[0],
+    TanggalMulai: tanggalHariIni(),
     TanggalBerikutnya: '',
   });
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Aset\Application\Actions\BuatAset;
 use App\Domain\Aset\Domain\Enums\KondisiAset;
 use App\Domain\Aset\Domain\Enums\StatusAset;
@@ -33,6 +34,7 @@ final class CatatPenerimaanPembelian
         private readonly PostingMutasiStok $postingMutasiStok,
         private readonly BuatAset $buatAset,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -46,7 +48,7 @@ final class CatatPenerimaanPembelian
             $terkunci = PesananPembelian::query()->lockForUpdate()->findOrFail($po->Id);
             $penerimaan = PenerimaanPembelian::create([
                 'OrganisasiId' => $terkunci->OrganisasiId,
-                'Nomor' => $data['Nomor'] ?? 'RCV-'.now()->format('Ym').'-'.Str::upper(Str::random(6)),
+                'Nomor' => $data['Nomor'] ?? 'RCV-'.$this->kalender->sekarang($terkunci->OrganisasiId)->format('Ym').'-'.Str::upper(Str::random(6)),
                 'PesananPembelianId' => $terkunci->Id,
                 'GudangId' => $data['GudangId'] ?? null,
                 'TanggalTerima' => $data['TanggalTerima'] ?? now(),

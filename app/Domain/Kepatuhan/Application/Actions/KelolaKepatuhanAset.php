@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kepatuhan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kepatuhan\Domain\Enums\StatusKepatuhanAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\KepatuhanAset;
@@ -19,6 +20,7 @@ final class KelolaKepatuhanAset
     public function __construct(
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -86,8 +88,13 @@ final class KelolaKepatuhanAset
             throw new AturanBisnisDilanggar('Hasil pemeriksaan hanya boleh Patuh atau TidakPatuh.');
         }
 
-        $tanggal = CarbonImmutable::parse((string) ($data['TanggalPemeriksaan'] ?? CarbonImmutable::today()->toDateString()));
-        if ($tanggal->isFuture()) {
+        // Dibandingkan dengan tanggal hari ini di rumah sakit itu, bukan dengan saat
+        // ini: tanggal pemeriksaan hari ini bernilai tengah malam UTC, yang selama
+        // jam-jam pertama tiap hari berada di depan "saat ini" dan ikut ditolak
+        // sebagai tanggal masa depan.
+        $hariIni = $this->kalender->hariIni($kepatuhan->OrganisasiId);
+        $tanggal = CarbonImmutable::parse((string) ($data['TanggalPemeriksaan'] ?? $hariIni->toDateString()));
+        if ($tanggal->gt($hariIni)) {
             throw new AturanBisnisDilanggar('Tanggal pemeriksaan tidak boleh berada di masa depan.');
         }
 

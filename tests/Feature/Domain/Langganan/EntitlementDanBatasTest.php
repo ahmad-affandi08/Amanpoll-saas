@@ -15,6 +15,8 @@ use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Platform\Application\Actions\BuatPengguna;
 use App\Domain\Platform\Application\DTO\PenggunaData;
 use App\Shared\Domain\Exceptions\LanggananTidakMengizinkan;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\DB;
 
 /** Entitlement, batas kuota, dan prop untuk UI (22.05). */
 final class EntitlementDanBatasTest extends KasusLangganan
@@ -202,5 +204,26 @@ final class EntitlementDanBatasTest extends KasusLangganan
             'Nama' => 'Aset uji',
             'Status' => StatusAset::Aktif->value,
         ], $dibuatOleh ?? (string) $this->buatPengguna()->Id);
+    }
+
+    /**
+     * Uji coba awal dihitung dalam hari kalender tenant.
+     *
+     * Organisasi yang dibuat 01:30 WIB tanggal 2 (18:30 UTC tanggal 1) mulai
+     * uji coba tanggal 2, jadi 14 harinya berakhir tanggal 16 dan pada sore
+     * tanggal 16 masih berjalan. Dengan tanggal UTC ia sudah berhenti
+     * sehari lebih awal.
+     */
+    public function test_uji_coba_awal_dihitung_dari_tanggal_pembuatan_di_zona_tenant(): void
+    {
+        config(['amanpoll.langganan.hari_uji_coba' => 14]);
+        DB::table('Organisasi')->where('Id', $this->organisasi->Id)->update(['DibuatPada' => '2026-09-01 18:30:00']);
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-16 10:00:00', 'UTC'));
+        $this->segarkanEntitlement();
+
+        $entitlement = app(PemeriksaEntitlement::class)->untukOrganisasi((string) $this->organisasi->Id);
+
+        $this->assertSame(StatusLangganan::UjiCoba, $entitlement->status);
+        $this->assertSame('2026-09-16', $entitlement->berakhirPada);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPermintaanPembelian;
@@ -25,6 +26,7 @@ final class KelolaPermintaanPenawaran
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananNomorDokumen $nomorDokumen,
         private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -38,7 +40,7 @@ final class KelolaPermintaanPenawaran
             try {
                 $nomor = $this->nomorDokumen->berikutnya($this->konteks->wajibId(), 'PermintaanPenawaran');
             } catch (DataTidakDitemukan) {
-                $nomor = 'RFQ-'.now()->format('Ym').'-'.Str::upper(Str::random(6));
+                $nomor = 'RFQ-'.$this->kalender->sekarang($permintaan->OrganisasiId)->format('Ym').'-'.Str::upper(Str::random(6));
             }
 
             $rfq = PermintaanPenawaran::create([

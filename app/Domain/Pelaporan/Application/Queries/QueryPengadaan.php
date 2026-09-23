@@ -71,6 +71,6 @@ final class QueryPengadaan implements PenyediaKpi
     private function lingkup(FilterMetrik $filter): Builder
     {
         return PesananPembelian::query()
-            ->whereBetween('TanggalPesanan', [$filter->dari->toDateString(), $filter->sampai->toDateString()]);
+            ->whereBetween('TanggalPesanan', [$filter->tanggalDari(), $filter->tanggalSampai()]);
     }
 }

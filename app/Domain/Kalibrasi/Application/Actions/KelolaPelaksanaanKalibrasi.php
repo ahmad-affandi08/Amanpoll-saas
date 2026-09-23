@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\HasilTitikUkurKalibrasi;
@@ -25,6 +26,7 @@ final class KelolaPelaksanaanKalibrasi
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananNomorDokumen $layananNomorDokumen,
         private readonly LayananAudit $layananAudit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -56,7 +58,7 @@ final class KelolaPelaksanaanKalibrasi
                 try {
                     $nomor = $this->layananNomorDokumen->berikutnya($organisasiId, 'Kalibrasi');
                 } catch (DataTidakDitemukan) {
-                    $nomor = 'CAL-'.now()->format('Ymd').'-'.str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
+                    $nomor = 'CAL-'.$this->kalender->sekarang($organisasiId)->format('Ymd').'-'.str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
                 }
             }
 
@@ -68,7 +70,7 @@ final class KelolaPelaksanaanKalibrasi
                 'JenisKalibrasiId' => $jenisKalibrasiId,
                 'PenyediaId' => $penyediaId,
                 'PerintahKerjaId' => $data['PerintahKerjaId'] ?? null,
-                'TanggalKalibrasi' => isset($data['TanggalKalibrasi']) ? Carbon::parse($data['TanggalKalibrasi'])->toDateString() : now()->toDateString(),
+                'TanggalKalibrasi' => isset($data['TanggalKalibrasi']) ? Carbon::parse($data['TanggalKalibrasi'])->toDateString() : $this->kalender->hariIni($organisasiId)->toDateString(),
                 'TanggalBerlakuSampai' => isset($data['TanggalBerlakuSampai']) ? Carbon::parse($data['TanggalBerlakuSampai'])->toDateString() : null,
                 'Hasil' => $data['Hasil'] ?? 'Terjadwal',
                 'NomorSertifikat' => $data['NomorSertifikat'] ?? null,

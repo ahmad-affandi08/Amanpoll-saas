@@ -12,6 +12,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -116,5 +117,36 @@ class CatatanAuditControllerTest extends TestCase
 
         $this->assertNotNull($catatan);
         $this->assertArrayNotHasKey('HashKunci', $catatan->DataSesudah);
+    }
+
+    /**
+     * Rentang tanggal jejak audit adalah tanggal di rumah sakitnya.
+     *
+     * Peristiwa pukul 01:00 WIT tanggal 22 tersimpan 16:00 UTC tanggal 21.
+     * `whereDate` membandingkannya dengan tanggal UTC, jadi penyaring "22"
+     * melewatkannya dan penyaring "21" menampilkannya.
+     */
+    public function test_penyaring_tanggal_memakai_kalender_zona_organisasi(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-WIT', 'Nama' => 'RS Jayapura', 'ZonaWaktu' => 'Asia/Jayapura']);
+        $admin = $this->buatPengguna($organisasi, 'Audit.Lihat');
+
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+        (new CatatanAudit)->forceFill([
+            'Aksi' => 'Lokasi.Dibuat',
+            'JenisEntitas' => 'Lokasi',
+            'EntitasId' => '01JDINI',
+            'DibuatPada' => CarbonImmutable::parse('2026-09-21 16:00:00', 'UTC'),
+        ])->save();
+        $konteks->bersihkan();
+
+        $this->actingAs($admin)
+            ->get('/integrasi-audit/audit?dariTanggal=2026-09-22&sampaiTanggal=2026-09-22')
+            ->assertInertia(fn ($page) => $page->has('catatan.data', 1)->where('catatan.data.0.EntitasId', '01JDINI'));
+
+        $this->actingAs($admin)
+            ->get('/integrasi-audit/audit?dariTanggal=2026-09-21&sampaiTanggal=2026-09-21')
+            ->assertInertia(fn ($page) => $page->has('catatan.data', 0));
     }
 }

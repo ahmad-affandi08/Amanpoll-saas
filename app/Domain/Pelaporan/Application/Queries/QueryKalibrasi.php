@@ -9,7 +9,6 @@ use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
 /** KPI kalibrasi (21.01: calibration). */
@@ -33,7 +32,7 @@ final class QueryKalibrasi implements PenyediaKpi
 
     private function jatuhTempo(FilterMetrik $filter): HasilKpi
     {
-        $hariIni = CarbonImmutable::now()->toDateString();
+        $hariIni = $filter->hariIni()->toDateString();
 
         $terlambat = (int) $this->lingkup($filter)
             ->where('Aktif', true)
@@ -43,7 +42,7 @@ final class QueryKalibrasi implements PenyediaKpi
         $segera = (int) $this->lingkup($filter)
             ->where('Aktif', true)
             ->where('TanggalBerikutnya', '>=', $hariIni)
-            ->whereRaw('TanggalBerikutnya <= DATE_ADD(CURRENT_DATE, INTERVAL PeringatanHariSebelum DAY)')
+            ->whereRaw('TanggalBerikutnya <= DATE_ADD(?, INTERVAL PeringatanHariSebelum DAY)', [$hariIni])
             ->count();
 
         return new HasilKpi((float) ($terlambat + $segera), [
@@ -54,7 +53,7 @@ final class QueryKalibrasi implements PenyediaKpi
 
     private function kepatuhan(FilterMetrik $filter): HasilKpi
     {
-        $hariIni = CarbonImmutable::now()->toDateString();
+        $hariIni = $filter->hariIni()->toDateString();
 
         $penyebut = (int) $this->lingkup($filter)->where('Aktif', true)->count();
         $pembilang = (int) $this->lingkup($filter)

@@ -15,6 +15,7 @@ import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { ruteDaftarPeriksa } from '@/features/DaftarPeriksa/api';
+import { tanggalHariIni, tanggalLokal } from '@/lib/waktu';
 
 interface Props {
   inspeksi: Inspeksi;
@@ -28,7 +29,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
     Hasil: inspeksi.Hasil || 'Lolos',
     Temuan: inspeksi.Temuan || '',
     TindakLanjut: inspeksi.TindakLanjut || '',
-    DilaksanakanPada: new Date().toISOString().split('T')[0],
+    DilaksanakanPada: tanggalHariIni(),
   });
 
   const formPK = useForm({
@@ -108,7 +109,8 @@ export default function InspeksiShow({ inspeksi }: Props) {
                 <div className="flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5 text-permukaan-400" />
                   <span>
-                    Jadwal: <strong>{inspeksi.DijadwalkanPada?.substring(0, 10) ?? '-'}</strong>
+                    Jadwal:{' '}
+                    <strong>{inspeksi.DijadwalkanPada ? tanggalLokal(inspeksi.DijadwalkanPada) : '-'}</strong>
                   </span>
                 </div>
               </div>
@@ -196,7 +198,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
               <div className="text-xs font-semibold text-permukaan-800 pt-1">
                 {inspeksi.DilaksanakanPada ? (
                   <span>
-                    Dilaksanakan pada {inspeksi.DilaksanakanPada.substring(0, 10)} oleh{' '}
+                    Dilaksanakan pada {tanggalLokal(inspeksi.DilaksanakanPada)} oleh{' '}
                     {inspeksi.dilaksanakanOleh?.Nama ?? 'Petugas'}
                   </span>
                 ) : (

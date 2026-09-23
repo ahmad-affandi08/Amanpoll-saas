@@ -71,7 +71,7 @@ final class QueryKeluhan implements PenyediaKpi
     {
         $perHari = $this->lingkup($filter)
             ->whereBetween('DilaporkanPada', [$filter->dari, $filter->sampai])
-            ->selectRaw('DATE(DilaporkanPada) as Tanggal, COUNT(*) as Jumlah')
+            ->selectRaw('DATE(CONVERT_TZ(DilaporkanPada, ?, ?)) as Tanggal, COUNT(*) as Jumlah', ['+00:00', $filter->offsetSql()])
             ->groupBy('Tanggal')
             ->pluck('Jumlah', 'Tanggal')
             ->all();

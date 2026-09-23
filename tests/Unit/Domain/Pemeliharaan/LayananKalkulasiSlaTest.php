@@ -29,8 +29,8 @@ final class LayananKalkulasiSlaTest extends TestCase
             'Asia/Jakarta',
         );
 
-        $this->assertSame('2026-09-21 09:30:00', $hasil['respons']?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-22 08:30:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 09:30:00', $hasil['respons']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-22 08:30:00', $hasil['penyelesaian']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
     }
 
     public function test_deadline_melewati_hari_libur_organisasi(): void
@@ -51,8 +51,8 @@ final class LayananKalkulasiSlaTest extends TestCase
             'Asia/Jakarta',
         );
 
-        $this->assertSame('2026-09-22 09:30:00', $hasil['respons']?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-23 08:30:00', $hasil['penyelesaian']?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-22 09:30:00', $hasil['respons']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-23 08:30:00', $hasil['penyelesaian']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
     }
 
     private function layanan(): LayananKalkulasiSla

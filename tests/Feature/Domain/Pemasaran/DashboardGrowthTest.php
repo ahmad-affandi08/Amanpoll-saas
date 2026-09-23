@@ -9,6 +9,7 @@ use App\Domain\Pemasaran\Application\Services\PemeriksaAlertPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogAlertPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogIzinPemasaran;
 use App\Domain\Pemasaran\Domain\KatalogKonfigurasiPemasaran;
+use App\Domain\Pemasaran\Domain\ValueObjects\FilterGrowth;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\AlertPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Kampanye;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\MetrikKampanye;
@@ -215,5 +216,29 @@ final class DashboardGrowthTest extends KasusGrowth
         $this->actingAs($this->buatAdmin($izin), 'platform');
 
         return $this;
+    }
+
+    /**
+     * Hari metrik pemasaran adalah hari di kalender vendor (WIB).
+     *
+     * Kunjungan pukul 01:00 WIB tanggal 22 tersimpan 18:00 UTC tanggal 21.
+     * Ia milik metrik tanggal 22, dan "kemarin" bagi job yang berjalan
+     * 01:30 WIB tanggal 23 adalah tanggal 22 -- bukan 21 menurut UTC.
+     */
+    public function test_hari_metrik_dan_rentang_dashboard_mengikuti_kalender_vendor(): void
+    {
+        $this->buatPengunjung('iklan', CarbonImmutable::parse('2026-09-21 18:00:00', 'UTC'));
+
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-09-22 18:30:00', 'UTC'));
+        (new HitungMetrikKampanye)->handle();
+
+        $baris = MetrikKampanye::query()->where('Channel', 'iklan')->sole();
+        $this->assertSame('2026-09-22', $baris->Tanggal->toDateString());
+        $this->assertSame(1, $baris->Visitor);
+
+        $filter = FilterGrowth::dariKueri(['dari' => '2026-09-22', 'sampai' => '2026-09-22']);
+        $this->assertSame('2026-09-21 17:00:00', $filter->dari->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-22 16:59:59', $filter->sampai->format('Y-m-d H:i:s'));
+        $this->assertSame(['2026-09-22', '2026-09-22'], [$filter->keArray()['dari'], $filter->keArray()['sampai']]);
     }
 }

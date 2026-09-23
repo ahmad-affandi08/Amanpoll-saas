@@ -20,6 +20,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tambahHari, tanggalHariIni } from '@/lib/waktu';
 
 const TANPA_JENIS = '__none__';
 const INTERNAL = '__internal__';
@@ -29,14 +30,11 @@ function hitungTanggalBerikutnya(tanggalMulai: string, intervalHari: number): st
     return '';
   }
 
-  const tanggal = new Date(tanggalMulai);
-  tanggal.setDate(tanggal.getDate() + Number(intervalHari));
-
-  return tanggal.toISOString().split('T')[0];
+  return tambahHari(tanggalMulai, Number(intervalHari));
 }
 
 function nilaiAwal(rencana: RencanaKalibrasi | null) {
-  const hariIni = new Date().toISOString().split('T')[0];
+  const hariIni = tanggalHariIni();
 
   return rencana
     ? {

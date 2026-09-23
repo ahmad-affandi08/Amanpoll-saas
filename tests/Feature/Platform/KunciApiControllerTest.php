@@ -13,6 +13,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
@@ -150,5 +151,27 @@ class KunciApiControllerTest extends TestCase
         $response = $this->actingAs($adminA)->delete("/platform/kunci-api/{$kunciB->Id}");
 
         $response->assertStatus(404);
+    }
+
+    /**
+     * Tanggal kedaluwarsa adalah tanggal kalender rumah sakit.
+     *
+     * Kunci bertanggal 25 berhenti berlaku saat tanggal 25 dimulai di zona
+     * organisasinya -- 00:00 WIT adalah 15:00 UTC tanggal 24 -- bukan pada
+     * tengah malam UTC yang di Jayapura sudah pukul 09:00.
+     */
+    public function test_tanggal_kedaluwarsa_berlaku_mulai_awal_hari_di_zona_organisasi(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-WIT', 'Nama' => 'RS Jayapura', 'ZonaWaktu' => 'Asia/Jayapura']);
+        $admin = $this->buatAdmin($organisasi);
+
+        $this->actingAs($admin)
+            ->post('/platform/kunci-api', ['Nama' => 'Integrasi SIMRS', 'KadaluarsaPada' => '2099-09-25'])
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertSame(
+            '2099-09-24 15:00:00',
+            substr((string) DB::table('KunciApi')->where('Nama', 'Integrasi SIMRS')->value('KadaluarsaPada'), 0, 19),
+        );
     }
 }

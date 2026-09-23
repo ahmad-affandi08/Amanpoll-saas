@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemasaran\Http\Controllers;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pemasaran\Application\Actions\CatatProspek;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
 use App\Domain\Pemasaran\Http\Requests\ImporProspekRequest;
@@ -23,7 +24,10 @@ final class ImporEksporProspekController extends Controller
         'Perusahaan', 'Industri', 'Kota', 'Negara',
     ];
 
-    public function __construct(private readonly LayananAudit $audit) {}
+    public function __construct(
+        private readonly LayananAudit $audit,
+        private readonly KalenderOrganisasi $kalender,
+    ) {}
 
     public function impor(ImporProspekRequest $request, CatatProspek $aksi): RedirectResponse
     {
@@ -116,7 +120,7 @@ final class ImporEksporProspekController extends Controller
                 });
 
             fclose($keluaran);
-        }, 'prospek-'.now()->format('Ymd-His').'.csv', ['Content-Type' => 'text/csv']);
+        }, 'prospek-'.$this->kalender->sekarang()->format('Ymd-His').'.csv', ['Content-Type' => 'text/csv']);
     }
 
     /**

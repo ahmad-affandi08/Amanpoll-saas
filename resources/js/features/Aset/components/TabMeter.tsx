@@ -15,6 +15,7 @@ import { http } from '@/lib/http';
 import type { Aset, MeterAset, PembacaanMeterAset } from '@/features/Aset/types';
 import { ruteAset } from '@/features/Aset/api';
 import { DialogTambahMeter } from '@/features/Aset/components/DialogTambahMeter';
+import { dariMasukanWaktu } from '@/lib/waktu';
 
 function KartuMeter({ meter, onUbah }: { meter: MeterAset; onUbah: () => void }) {
   const [data, setData] = useState<PembacaanMeterAset[]>([]);
@@ -29,15 +30,19 @@ function KartuMeter({ meter, onUbah }: { meter: MeterAset; onUbah: () => void })
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    router.post(ruteAset.meterPembacaan(meter.Id), form.data, {
-      preserveScroll: true,
-      onSuccess: () => {
-        setBuka(false);
-        form.reset();
-        muat();
-        onUbah();
+    router.post(
+      ruteAset.meterPembacaan(meter.Id),
+      { ...form.data, DibacaPada: dariMasukanWaktu(form.data.DibacaPada) },
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          setBuka(false);
+          form.reset();
+          muat();
+          onUbah();
+        },
       },
-    });
+    );
   };
 
   return (

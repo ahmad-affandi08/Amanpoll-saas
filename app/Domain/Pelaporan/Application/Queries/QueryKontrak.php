@@ -9,7 +9,6 @@ use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
-use Carbon\CarbonImmutable;
 
 /** KPI kontrak (21.01: contract). */
 final class QueryKontrak implements PenyediaKpi
@@ -22,15 +21,15 @@ final class QueryKontrak implements PenyediaKpi
     public function hitung(string $kunci, FilterMetrik $filter): HasilKpi
     {
         return match ($kunci) {
-            'kontrak.akan_berakhir' => $this->akanBerakhir(),
+            'kontrak.akan_berakhir' => $this->akanBerakhir($filter),
             'kontrak.nilai_aktif' => $this->nilaiAktif($filter),
             default => throw new DataTidakDitemukan("KPI {$kunci} bukan milik QueryKontrak."),
         };
     }
 
-    private function akanBerakhir(): HasilKpi
+    private function akanBerakhir(FilterMetrik $filter): HasilKpi
     {
-        $hariIni = CarbonImmutable::now()->toDateString();
+        $hariIni = $filter->hariIni()->toDateString();
 
         $sudahBerakhir = (int) Kontrak::query()
             ->where('Status', 'Aktif')
@@ -40,7 +39,7 @@ final class QueryKontrak implements PenyediaKpi
         $segera = (int) Kontrak::query()
             ->where('Status', 'Aktif')
             ->where('BerakhirPada', '>=', $hariIni)
-            ->whereRaw('BerakhirPada <= DATE_ADD(CURRENT_DATE, INTERVAL PeringatanHariSebelum DAY)')
+            ->whereRaw('BerakhirPada <= DATE_ADD(?, INTERVAL PeringatanHariSebelum DAY)', [$hariIni])
             ->count();
 
         return new HasilKpi((float) ($sudahBerakhir + $segera), [
@@ -53,8 +52,8 @@ final class QueryKontrak implements PenyediaKpi
     {
         $perJenis = Kontrak::query()
             ->where('Status', 'Aktif')
-            ->where('MulaiPada', '<=', $filter->sampai->toDateString())
-            ->where('BerakhirPada', '>=', $filter->dari->toDateString())
+            ->where('MulaiPada', '<=', $filter->tanggalSampai())
+            ->where('BerakhirPada', '>=', $filter->tanggalDari())
             ->selectRaw('Jenis, SUM(Nilai) as Nilai')
             ->groupBy('Jenis')
             ->pluck('Nilai', 'Jenis')

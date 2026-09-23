@@ -115,8 +115,8 @@ final class KeluhanTest extends TestCase
         $keluhan = Keluhan::query()->sole();
         $this->assertSame('Normal', $keluhan->Prioritas);
         $this->assertSame('Baru', $keluhan->Status);
-        $this->assertSame('2026-09-21 09:30:00', $keluhan->BatasResponsPada?->format('Y-m-d H:i:s'));
-        $this->assertSame('2026-09-22 08:30:00', $keluhan->BatasPenyelesaianPada?->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-21 09:30:00', $keluhan->BatasResponsPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-09-22 08:30:00', $keluhan->BatasPenyelesaianPada?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
         $this->assertDatabaseHas('RiwayatStatusKeluhan', [
             'KeluhanId' => $keluhan->Id,
             'StatusSebelum' => null,

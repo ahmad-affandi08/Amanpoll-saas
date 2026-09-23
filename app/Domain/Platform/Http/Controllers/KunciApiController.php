@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Http\Controllers;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Platform\Application\Actions\BuatKunciApi;
 use App\Domain\Platform\Application\Actions\CabutKunciApi;
 use App\Domain\Platform\Http\Requests\BuatKunciApiRequest;
@@ -14,7 +15,6 @@ use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
-use DateTimeImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,6 +23,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class KunciApiController extends Controller
 {
+    public function __construct(
+        private readonly KalenderOrganisasi $kalender,
+    ) {}
+
     /**
      * Penyaring daftar, dipakai bersama halaman dan ekspornya.
      *
@@ -99,7 +103,9 @@ final class KunciApiController extends Controller
             $request->user('web'),
             $data['Nama'],
             $data['Cakupan'] ?? null,
-            isset($data['KadaluarsaPada']) ? new DateTimeImmutable($data['KadaluarsaPada']) : null,
+            // Tanggal pilihan pengguna adalah tanggal kalender rumah sakit: kunci
+            // berhenti berlaku saat tanggal itu dimulai di zona organisasinya.
+            isset($data['KadaluarsaPada']) ? $this->kalender->awalHari((string) $data['KadaluarsaPada']) : null,
             $data['AlamatIpDiizinkan'] ?? null,
         );
 

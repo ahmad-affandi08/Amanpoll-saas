@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Ekspor;
 
+use Carbon\CarbonImmutable;
 use Closure;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 
@@ -53,21 +55,42 @@ final class KolomEkspor
         }, $atribut);
     }
 
-    /** Kolom tanggal, diseragamkan supaya dapat diurutkan di Excel. */
+    /**
+     * Kolom tanggal, diseragamkan supaya dapat diurutkan di Excel.
+     *
+     * Waktu berjam disimpan UTC; pembaca berkas membacanya sebagai jam dinding
+     * rumah sakitnya, jadi dicetak di zona organisasi. Kolom `date` tidak
+     * digeser: nilainya tanggal kalender, bukan momen, dan menggesernya ke zona
+     * bertanda negatif akan memundurkannya satu hari.
+     */
     public static function tanggal(string $judul, string $atribut, string $format = 'Y-m-d'): self
     {
-        return new self($judul, static function (Model $baris) use ($atribut, $format): string {
+        return new self($judul, static function (Model $baris, string $zona) use ($atribut, $format): string {
             $nilai = $baris->getAttribute($atribut);
+            if (! $nilai instanceof DateTimeInterface) {
+                return '';
+            }
 
-            return $nilai instanceof \DateTimeInterface ? $nilai->format($format) : '';
+            return self::berjam($baris, $atribut)
+                ? CarbonImmutable::instance($nilai)->setTimezone($zona)->format($format)
+                : $nilai->format($format);
         }, $atribut);
     }
 
-    public function nilai(Model $baris): string|float|int|null
+    /** @param  string  $zona  Zona organisasi pemilik berkas, untuk kolom waktu berjam. */
+    public function nilai(Model $baris, string $zona = 'UTC'): string|float|int|null
     {
         $this->tolakAtributTersembunyi($baris);
 
-        return ($this->ambil)($baris);
+        return ($this->ambil)($baris, $zona);
+    }
+
+    /** Atribut tanpa cast `date`/`immutable_date` diperlakukan sebagai momen. */
+    private static function berjam(Model $baris, string $atribut): bool
+    {
+        $cast = strtolower(explode(':', (string) ($baris->getCasts()[$atribut] ?? 'datetime'), 2)[0]);
+
+        return ! in_array($cast, ['date', 'immutable_date'], true);
     }
 
     /**

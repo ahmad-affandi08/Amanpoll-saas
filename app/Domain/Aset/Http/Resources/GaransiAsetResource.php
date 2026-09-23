@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Http\Resources;
 
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Aset\Domain\Enums\StatusGaransiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ final class GaransiAsetResource extends JsonResource
     {
         /** @var GaransiAset $garansi */
         $garansi = $this->resource;
-        $sisaHari = (int) now()->startOfDay()->diffInDays($garansi->BerakhirPada, false);
+        $sisaHari = (int) app(KalenderOrganisasi::class)->hariIni($garansi->OrganisasiId)->diffInDays($garansi->BerakhirPada, false);
 
         return [
             'Id' => $garansi->Id,

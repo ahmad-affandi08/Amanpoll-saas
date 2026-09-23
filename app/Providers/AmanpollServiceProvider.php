@@ -8,6 +8,7 @@ use App\Core\Audit\KorelasiId;
 use App\Core\Audit\LayananAudit;
 use App\Core\Entitas\RegistriEntitas;
 use App\Core\Kesehatan\PeriksaKesehatanSistem;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
@@ -99,7 +100,10 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Infrastructure\Ekspor\PenulisEksporCsv;
 use App\Shared\Infrastructure\Ekspor\PenulisEksporPdf;
 use App\Shared\Infrastructure\Ekspor\PenulisEksporXlsx;
+use App\Shared\Infrastructure\Persistence\KoneksiMariaDbUtc;
+use App\Shared\Infrastructure\Persistence\KoneksiMySqlUtc;
 use App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Queue\Events\JobFailed;
@@ -113,7 +117,15 @@ final class AmanpollServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->scoped(KonteksOrganisasi::class, fn () => new KonteksOrganisasi);
+        // Scoped, bukan singleton: zona tiap organisasi diingat selama satu permintaan
+        // atau satu pekerjaan antrean saja, sehingga perubahan zona langsung berlaku.
+        $this->app->scoped(KalenderOrganisasi::class);
         $this->app->scoped(KorelasiId::class, fn () => new KorelasiId);
+        // Objek waktu yang terikat ke kueri dikirim sebagai UTC, sama seperti
+        // kolom waktu yang disimpan model. Didaftarkan di register() karena
+        // resolver harus sudah terpasang sebelum koneksi pertama dibuat.
+        Connection::resolverFor('mysql', fn ($pdo, string $database, string $prefix, array $config) => new KoneksiMySqlUtc($pdo, $database, $prefix, $config));
+        Connection::resolverFor('mariadb', fn ($pdo, string $database, string $prefix, array $config) => new KoneksiMariaDbUtc($pdo, $database, $prefix, $config));
         $this->app->singleton(RegistriEntitas::class);
         $this->app->bind(
             TransaksiDatabase::class,
@@ -247,10 +259,6 @@ final class AmanpollServiceProvider extends ServiceProvider
     {
         // Lazy loading yang lolos ke produksi adalah N+1 yang tidak pernah terlihat di sini (FASE 25.01).
         Model::preventLazyLoading(! $this->app->isProduction());
-
-        $zonaWaktu = (string) config('amanpoll.zona_waktu_default', 'Asia/Jakarta');
-        config(['app.timezone' => $zonaWaktu]);
-        date_default_timezone_set($zonaWaktu);
 
         // Binding repository spesifik domain ditambahkan ketika use-case mulai diimplementasikan.
 

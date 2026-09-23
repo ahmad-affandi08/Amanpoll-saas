@@ -47,7 +47,7 @@ final class QueryKeandalan implements PenyediaKpi
             $menit = $this->menitEfektif($satu, $filter);
             $jenis = (string) $satu->Jenis;
             $perJenis[$jenis] = ($perJenis[$jenis] ?? 0) + $menit;
-            $bulan = $satu->MulaiPada->format('Y-m');
+            $bulan = $satu->MulaiPada->setTimezone($filter->zona)->format('Y-m');
             $perBulan[$bulan] = ($perBulan[$bulan] ?? 0) + $menit;
         }
 

@@ -1702,7 +1702,7 @@ Prioritas:
 - [x] Stock rule.
 - [x] State transition.
 - [x] Penomoran.
-- [ ] Timezone.
+- [x] Timezone.
 - [x] Idempotency.
 - [x] Approval rule.
 
@@ -1725,21 +1725,77 @@ Cara itu menemukan celah di test yang sudah lama hijau:
 
 Semuanya kini dijaga, masing-masing dengan sabotase yang menggagalkannya.
 
-Timezone sengaja belum dicentang. Konversi tampilan terjaga (`LayananZonaWaktu`,
-kartu riwayat yang dibaca dari dua zona berbeda melewati pergantian tanggal),
-tetapi penyimpanannya tidak. `AmanpollServiceProvider` menimpa `app.timezone`
-yang di `config/app.php` bernilai `UTC` menjadi `Asia/Jakarta`, dan itu sudah
-berlaku sejak commit pertama. Ini bertentangan dengan ADR 0001 dan
-`ARSITEKTUR.md` ("waktu disimpan UTC"). Dampak nyatanya: waktu kerja dari
-aplikasi offline yang dikirim berzona (`...Z`) tersimpan bergeser tujuh jam.
+Timezone semula belum dicentang karena penyimpanannya bertentangan dengan ADR
+0001: `AmanpollServiceProvider` menimpa `app.timezone` menjadi `Asia/Jakarta`
+sejak commit pertama, sehingga waktu kerja dari aplikasi offline yang dikirim
+berzona (`...Z`) tersimpan bergeser tujuh jam. Keputusannya: pindah ke UTC
+sekarang, sebelum ada data produksi. Alternatifnya, tetap WIB dan menambal jalur
+offline, ditolak karena rumah sakit WITA dan WIT tetap salah di ekspor dan di
+batas "hari ini", dan setiap pintu masuk baru harus ingat mengonversi sendiri.
 
-Belum diperbaiki karena ini keputusan, bukan tambalan. Seluruh suite sudah
-dijalankan dengan zona aplikasi disimulasikan UTC: 12 dari 1652 test merah.
-Sebelas di antaranya hanya menyatakan jam tersimpan dalam WIB (momennya sama,
-tergeser tujuh jam); satu, eskalasi SLA, berubah perilaku. Yang tidak dijaga
-test apa pun adalah jam yang dicetak mentah di ekspor dan batas "hari ini"
-pada jatuh tempo dan KPI. Belum ada data produksi, jadi inilah saat termurah
-untuk memutuskannya.
+UTC kini ditegakkan di tiga lapis, bukan pada disiplin pemanggil. Penimpaan
+zona dicabut (`config/app.php` mengunci `'UTC'`; `APP_TIMEZONE` dibuang dari
+contoh `.env` karena tidak pernah dibaca). Sesi basis data disetel `+00:00`,
+karena ratusan kolom `DEFAULT CURRENT_TIMESTAMP` dihitung MySQL dengan zona
+sesinya sendiri. Objek waktu berzona dinormalkan ke UTC di dua pintu: saat
+disetel ke atribut model (`MenyimpanWaktuDalamUtc`, dipakai `ModelDasar`,
+`Pengguna`, `Partner`, `AdminPlatform`) dan saat diikat ke kueri
+(`MengikatWaktuDalamUtc` pada koneksi MySQL/MariaDB). Keduanya perlu: Eloquent
+memformat jam dinding objek waktu apa adanya, dan `Connection::prepareBindings()`
+melakukan hal yang sama untuk `whereBetween` dan `update()` lewat query builder.
+Tanggal tanpa jam untuk kolom berjam (dari pemilih tanggal) dibaca sebagai awal
+hari di zona organisasi, bukan tengah malam UTC yang di Jakarta sudah 07:00.
+
+Keputusan kalender dipindahkan ke `KalenderOrganisasi`: jatuh tempo kalibrasi,
+kontrak, kepatuhan, dan preventif; pengingat dan pencegah duplikatnya; periode
+nomor dokumen; tanggal langganan, uji coba, dan tagihan; penyaring tanggal jejak
+audit; tanggal kedaluwarsa kunci API. `hariIni()` sengaja mengembalikan tengah
+malam UTC dari tanggal lokal, bentuk yang sama dengan kolom `date`, supaya
+perbandingan dan selisih hari di sekitarnya tidak perlu ditulis ulang.
+`FilterMetrik` kini memegang zonanya: `dari`/`sampai` adalah momen UTC batas
+hari lokal untuk kolom berjam, `tanggalDari()`/`tanggalSampai()` untuk kolom
+`date`, dan tren harian dikelompokkan dengan `CONVERT_TZ(kolom, '+00:00',
+offsetSql())`. Tabel zona bernama MySQL tidak tersedia di shared hosting, jadi
+dipakai offset; Indonesia tidak mengenal waktu musim panas, sehingga satu offset
+berlaku untuk seluruh rentang. Pemasaran dan penagihan adalah milik vendor, jadi
+memakai zona bawaan, bukan zona tenant. Kolom berjam di ekspor dicetak di jam
+dinding organisasi; kolom `date` tidak digeser.
+
+Di frontend, enam formulir `datetime-local` mengirim jam dinding tanpa zona dan
+kini mengonversinya lewat `@/lib/waktu`. Ditemukan juga bug yang tidak
+bergantung pada penyimpanan: lima belas nilai awal "hari ini" dan preset
+rentang dasbor memakai `new Date().toISOString().slice(0, 10)`, yaitu tanggal
+UTC, sehingga sebelum pukul 07:00 WIB formulir terisi tanggal kemarin.
+
+Jebakan yang ditemukan di jalan:
+
+- `CURRENT_DATE` mengikuti jam server basis data, yang tidak ikut dibekukan
+  test. Sabotase yang mengembalikannya sempat lolos karena jam asli server
+  kebetulan menjangkau tanggal uji. Kini hari ini diikat sebagai parameter, dan
+  test-nya memakai tahun 2099 supaya regresi itu terlihat.
+- Cast `date:Y-m-d` bukan "kolom tanggal" bagi Eloquent (`custom_datetime`),
+  jadi tidak dapat dipakai untuk menguji bahwa tanggal kalender tidak digeser.
+- Kegagalan eskalasi SLA pada simulasi awal ternyata bug penyimpanan itu
+  sendiri: batas berzona WIB tersimpan sebagai jam UTC. Kini lulus tanpa diubah.
+- Satu test kepatuhan memakai `CarbonImmutable::today()->addDay()` sebagai
+  "besok". Ia gagal pukul 19:38 UTC justru karena kodenya sudah benar: pada jam
+  itu besok UTC adalah hari ini di Jakarta.
+- `LayananEksporLaporan` adalah singleton; menyuntikkan `KalenderOrganisasi`
+  (scoped) ke sana akan membekukan konteksnya di worker antrean. Zonanya dibaca
+  dari `FilterMetrik`.
+
+Setiap perbaikan diuji pada jam batas (umumnya 18:30 UTC, sudah 01:30 WIB hari
+berikutnya), dan 29 sabotase yang mengembalikan perilaku lama seluruhnya
+tertangkap. `TanggalKalenderTidakDariJamUtcTest` menolak pola yang menghasilkan
+tanggal UTC di `app/` dan `resources/js`; dijalankan terhadap kode sebelum
+perubahan, ia menandai 65 titik PHP dan 22 titik frontend. Sebelas test yang
+menyatakan jam tersimpan dalam WIB kini membaca momennya di zona WIB.
+
+Belum ada data produksi, jadi tidak ada migrasi data. Lingkungan yang sudah
+berisi data dari sebelum perubahan ini (demo, staging) sebaiknya disemai ulang:
+kolom yang ditulis aplikasi tersimpan dalam WIB, sedangkan kolom yang diisi
+`DEFAULT CURRENT_TIMESTAMP` mengikuti zona server saat itu, sehingga satu
+pergeseran seragam tidak akan benar untuk keduanya.
 
 ## 26.02 Feature Test
 
@@ -1823,8 +1879,8 @@ akan merusak test agen lain yang sedang berjalan di berkas `app/` yang sama.
 ### Gate 26
 
 Tidak ada critical path release yang hanya diuji manual. Terpenuhi untuk
-kedelapan alur di atas; yang tersisa terbuka adalah keputusan zona waktu
-penyimpanan di 26.01.
+kedelapan alur di atas, dan zona waktu penyimpanan di 26.01 sudah diputuskan
+dan diterapkan.
 
 ---
 

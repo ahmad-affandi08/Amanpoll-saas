@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaan;
@@ -19,6 +20,7 @@ final class KelolaRencanaPemeliharaan
         private readonly KonteksOrganisasi $konteksOrganisasi,
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananAudit $layananAudit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -125,7 +127,7 @@ final class KelolaRencanaPemeliharaan
                 ->where('OrganisasiId', $rencana->OrganisasiId)
                 ->findOrFail($asetId);
 
-            $mulai = $tanggalMulai ? CarbonImmutable::parse($tanggalMulai) : CarbonImmutable::today();
+            $mulai = $tanggalMulai ? CarbonImmutable::parse($tanggalMulai) : $this->kalender->hariIni($rencana->OrganisasiId);
 
             if ($tanggalBerikutnya) {
                 $berikutnya = CarbonImmutable::parse($tanggalBerikutnya);

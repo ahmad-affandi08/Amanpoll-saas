@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
@@ -18,6 +19,7 @@ final class KelolaRencanaKalibrasi
         private readonly KonteksOrganisasi $konteksOrganisasi,
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananAudit $layananAudit,
+        private readonly KalenderOrganisasi $kalender,
     ) {}
 
     /**
@@ -37,7 +39,12 @@ final class KelolaRencanaKalibrasi
                 throw new AturanBisnisDilanggar('Interval kalibrasi harus lebih dari 0 hari.');
             }
 
-            $tanggalMulai = isset($data['TanggalMulai']) ? Carbon::parse($data['TanggalMulai']) : now();
+            // Bawaannya tanggal hari ini di rumah sakit itu, bukan saat ini dalam UTC:
+            // TanggalMulai kolom tanggal, dan tanggal UTC tertinggal sehari selama
+            // jam-jam pertama tiap hari.
+            $tanggalMulai = isset($data['TanggalMulai'])
+                ? Carbon::parse($data['TanggalMulai'])
+                : Carbon::instance($this->kalender->hariIni($organisasiId));
             $tanggalBerikutnya = isset($data['TanggalBerikutnya'])
                 ? Carbon::parse($data['TanggalBerikutnya'])
                 : (clone $tanggalMulai)->addDays($intervalHari);

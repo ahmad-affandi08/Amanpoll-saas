@@ -28,6 +28,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 interface PenyediaRingkas {
   Id: string;
@@ -67,7 +68,7 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
     Nama: '',
     Jenis: 'Pemeliharaan',
     PenyediaId: TANPA_PILIHAN,
-    MulaiPada: new Date().toISOString().slice(0, 10),
+    MulaiPada: tanggalHariIni(),
     BerakhirPada: '',
     Nilai: '',
     MataUang: 'IDR',

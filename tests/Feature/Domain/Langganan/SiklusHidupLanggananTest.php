@@ -216,4 +216,25 @@ final class SiklusHidupLanggananTest extends KasusLangganan
     {
         return app(KelolaLangganan::class);
     }
+
+    /**
+     * Tanggal langganan dibaca di kalender tenant.
+     *
+     * Pukul 18:30 UTC tanggal 17 sudah 01:30 WIB tanggal 18: tenggang yang
+     * berakhir tanggal 17 sudah lewat, dan langganan yang dimulai saat itu
+     * dimulai tanggal 18, bukan tanggal 17 menurut UTC.
+     */
+    public function test_hari_ini_langganan_adalah_tanggal_di_zona_tenant(): void
+    {
+        config(['amanpoll.langganan.hari_tenggang' => 7]);
+        $paket = $this->buatPaketLengkap();
+        $langganan = $this->buatLangganan($paket, berakhirPada: '2026-06-10');
+
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-17 18:30:00', 'UTC'));
+
+        $this->assertSame(StatusLangganan::Kedaluwarsa, app(LayananLangganan::class)->statusEfektif($langganan));
+
+        $baru = $this->aksi()->mulai((string) $this->organisasi->Id, ['PaketLanggananId' => $paket->Id]);
+        $this->assertSame('2026-06-18', $baru->MulaiPada?->toDateString());
+    }
 }

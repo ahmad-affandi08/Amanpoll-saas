@@ -9,6 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatPenanggungJawabAset
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAkses;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuKerja;
+use App\Shared\Infrastructure\Persistence\MenyimpanWaktuDalamUtc;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +20,7 @@ use Illuminate\Notifications\Notifiable;
 
 final class Pengguna extends Authenticatable
 {
-    use HasUlids, Notifiable, SoftDeletes;
+    use HasUlids, MenyimpanWaktuDalamUtc, Notifiable, SoftDeletes;
 
     protected $table = 'Pengguna';
 

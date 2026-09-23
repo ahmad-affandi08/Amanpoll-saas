@@ -18,12 +18,13 @@ import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
+import { tanggalHariIni } from '@/lib/waktu';
 
 export function DialogCatatTagihan({ pesanan, wajib }: { pesanan: PesananPembelian; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
     NomorTagihan: '',
-    TanggalTagihan: new Date().toISOString().slice(0, 10),
+    TanggalTagihan: tanggalHariIni(),
     JatuhTempo: '',
     Subtotal: '0',
     Pajak: '0',
