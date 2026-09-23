@@ -4,4 +4,5 @@ export const ruteRencanaPengadaan = {
   detail2: (id: string) => `/perencanaan-pengadaan/rencana-pengadaan/${id}/detail`,
   detailDetail: (id1: string, id2: string) => `/perencanaan-pengadaan/rencana-pengadaan/${id1}/detail/${id2}`,
   finalisasi: (id: string) => `/perencanaan-pengadaan/rencana-pengadaan/${id}/finalisasi`,
+  ekspor: '/perencanaan-pengadaan/rencana-pengadaan/ekspor',
 };

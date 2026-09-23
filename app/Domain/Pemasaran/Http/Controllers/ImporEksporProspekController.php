@@ -10,6 +10,7 @@ use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
 use App\Domain\Pemasaran\Http\Requests\ImporProspekRequest;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\NetralkanRumus;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -21,9 +22,6 @@ final class ImporEksporProspekController extends Controller
         'Nama', 'Email', 'Telepon', 'WhatsApp', 'Jabatan',
         'Perusahaan', 'Industri', 'Kota', 'Negara',
     ];
-
-    /** Karakter yang membuat Excel memperlakukan sel sebagai rumus. */
-    private const AWALAN_RUMUS = "=+-@\t\r";
 
     public function __construct(private readonly LayananAudit $audit) {}
 
@@ -44,7 +42,7 @@ final class ImporEksporProspekController extends Controller
         }
 
         try {
-            $kepala = fgetcsv($pegangan, escape: '\\');
+            $kepala = fgetcsv($pegangan, escape: '');
 
             if ($kepala === false) {
                 return back()->with('gagal', 'Berkas CSV kosong.');
@@ -52,7 +50,7 @@ final class ImporEksporProspekController extends Controller
 
             $petaKolom = $this->petaKolom($kepala);
 
-            while (($baris = fgetcsv($pegangan, escape: '\\')) !== false) {
+            while (($baris = fgetcsv($pegangan, escape: '')) !== false) {
                 $data = $this->baris($baris, $petaKolom);
 
                 // Nama adalah satu-satunya kolom wajib.
@@ -91,7 +89,7 @@ final class ImporEksporProspekController extends Controller
             }
 
             fwrite($keluaran, "\xEF\xBB\xBF");
-            fputcsv($keluaran, [...self::KOLOM, 'Sumber', 'Tahap', 'Skor', 'DibuatPada'], escape: '\\');
+            fputcsv($keluaran, [...self::KOLOM, 'Sumber', 'Tahap', 'Skor', 'DibuatPada'], escape: '');
 
             // Dialirkan per potongan: daftar prospek tumbuh tanpa batas.
             Prospek::query()
@@ -99,7 +97,7 @@ final class ImporEksporProspekController extends Controller
                 ->orderBy('DibuatPada')
                 ->chunk(500, function ($kumpulan) use ($keluaran): void {
                     foreach ($kumpulan as $prospek) {
-                        fputcsv($keluaran, $this->netralkan([
+                        fputcsv($keluaran, NetralkanRumus::barisCsv([
                             $prospek->Nama,
                             $prospek->Email,
                             $prospek->Telepon,
@@ -113,33 +111,12 @@ final class ImporEksporProspekController extends Controller
                             $prospek->tahap?->Nama,
                             $prospek->Skor,
                             $prospek->DibuatPada->toIso8601String(),
-                        ]), escape: '\\');
+                        ]), escape: '');
                     }
                 });
 
             fclose($keluaran);
         }, 'prospek-'.now()->format('Ymd-His').'.csv', ['Content-Type' => 'text/csv']);
-    }
-
-    /**
-     * Nama dan perusahaan prospek diketik orang luar lewat formulir publik,
-     * jadi hasil ekspornya dinetralkan seperti ekspor laporan (24).
-     *
-     * @param  list<mixed>  $baris
-     * @return list<mixed>
-     */
-    private function netralkan(array $baris): array
-    {
-        return array_map(
-            function (mixed $nilai): mixed {
-                if (! is_string($nilai) || $nilai === '') {
-                    return $nilai;
-                }
-
-                return str_contains(self::AWALAN_RUMUS, $nilai[0]) ? "'".$nilai : $nilai;
-            },
-            $baris,
-        );
     }
 
     /**

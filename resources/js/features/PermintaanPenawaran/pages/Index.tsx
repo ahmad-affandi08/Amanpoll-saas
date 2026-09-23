@@ -199,7 +199,7 @@ export default function PermintaanPenawaranIndex({
           deskripsi="Undang penyedia, catat penawaran masuk, dan pilih hasil evaluasi."
           aksi={
             <>
-              <TombolEkspor url="/perencanaan-pengadaan/permintaan-penawaran/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={rutePermintaanPenawaran.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatRfq
                 permintaanDisetujui={permintaanDisetujui}
                 penyedia={penyedia}

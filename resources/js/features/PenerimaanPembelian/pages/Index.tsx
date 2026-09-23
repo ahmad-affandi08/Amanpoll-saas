@@ -38,7 +38,7 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
         <KepalaHalaman
           judul="Penerimaan Pembelian"
           deskripsi="Riwayat penerimaan barang; stok dan registrasi aset dibuat otomatis saat dokumen dicatat."
-          aksi={<TombolEkspor url="/perencanaan-pengadaan/penerimaan-pembelian/ekspor" filter={filter as Record<string, string>} />}
+          aksi={<TombolEkspor url={rutePenerimaanPembelian.ekspor} filter={filter as Record<string, string>} />}
         />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_auto]">

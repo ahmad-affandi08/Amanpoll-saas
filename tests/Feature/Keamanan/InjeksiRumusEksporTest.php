@@ -52,6 +52,56 @@ final class InjeksiRumusEksporTest extends TestCase
     }
 
     /**
+     * Penetralan hanya memeriksa huruf pertama tiap NILAI, jadi ia bersandar
+     * pada satu nilai = satu sel. Escape bawaan PHP (`\\`) mematahkan itu:
+     * `fputcsv` tidak menggandakan kutip yang didahului backslash, sehingga
+     * selnya putus dan potongan sesudahnya dibaca Excel sebagai sel baru --
+     * sel yang tidak pernah lewat penetralan.
+     *
+     * Diperiksa dengan membaca ulang barisnya secara RFC 4180 (tanpa escape
+     * backslash), yaitu cara Excel dan LibreOffice membacanya. Assertion pada
+     * teks berkas saja tidak cukup: berkas yang bocor pun tetap memuat tanda
+     * kutip petik penetralnya di suatu tempat.
+     */
+    public function test_nilai_berisi_kutip_dan_backslash_tidak_memutus_selnya(): void
+    {
+        $berbahaya = 'Bor Tulang \\",=cmd|\' /c calc\'!A0';
+
+        $isi = $this->tulisCsv(['Nama', 'Kode'], [[$berbahaya, 'RSUD-001']]);
+
+        $sel = $this->selRfc4180($isi);
+
+        $this->assertCount(2, $sel, 'Satu nilai harus tetap satu sel: '.implode(' | ', $sel));
+        $this->assertSame($berbahaya, $sel[0]);
+        $this->assertSame('RSUD-001', $sel[1]);
+    }
+
+    /** Nilai yang memutus sel DAN berawalan rumus tetap tidak boleh jadi rumus hidup. */
+    public function test_sel_pecahan_tidak_pernah_menjadi_rumus_hidup(): void
+    {
+        $isi = $this->tulisCsv(['Nama'], [['Aset \\",=1+1']]);
+
+        foreach ($this->selRfc4180($isi) as $satu) {
+            $this->assertStringStartsNotWith('=', $satu, 'Tidak boleh ada sel yang dibaca Excel sebagai rumus.');
+            $this->assertStringStartsNotWith('+', $satu);
+            $this->assertStringStartsNotWith('@', $satu);
+        }
+    }
+
+    /**
+     * Baris data pertama, dibaca seperti Excel membacanya.
+     *
+     * @return list<string>
+     */
+    private function selRfc4180(string $isi): array
+    {
+        $baris = explode("\n", trim(str_replace("\xEF\xBB\xBF", '', $isi)));
+        $terakhir = (string) end($baris);
+
+        return array_map(strval(...), str_getcsv(rtrim($terakhir, "\r"), ',', '"', ''));
+    }
+
+    /**
      * XLSX punya tipe sel, sehingga `+1+1` dan kawannya tersimpan sebagai teks
      * dengan sendirinya. Yang tidak aman dengan sendirinya adalah awalan `=`:
      * OpenSpout mendeteksinya dan menulis sel rumus `<f>` yang sungguhan.

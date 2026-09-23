@@ -12,6 +12,7 @@ use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Str;
 
 /**
  * Kartu Riwayat Alat: satu lembar berkop per aset untuk berkas akreditasi.
@@ -21,9 +22,10 @@ use Dompdf\Options;
  * di atas satu dokumen yang dapat ditandatangani dan diarsipkan. Karena itu
  * susunannya berbagian dan diakhiri ruang tanda tangan, bukan daftar baris.
  *
- * HTML-nya dapat dibaca terpisah dari PDF-nya: isi PDF hasil Dompdf tidak dapat
- * dicari sebagai teks (fontnya disubset), sehingga hanya lewat html() isi kartu
- * dapat benar-benar diperiksa test.
+ * HTML-nya dapat dibaca terpisah dari PDF-nya supaya isi kartu dapat diperiksa
+ * baris demi baris tanpa membongkar berkasnya. Itu kemudahan, bukan keharusan:
+ * isi PDF hasil Dompdf tetap dapat dicari sebagai teks setelah aliran isinya
+ * dilepas mampatnya dan byte NUL penyela UTF-16BE-nya dibuang.
  */
 final class PenyusunKartuRiwayatAset
 {
@@ -319,10 +321,25 @@ final class PenyusunKartuRiwayatAset
         return htmlspecialchars($nilai, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
-    /** Nama berkas unduhan, dipakai controller pada header Content-Disposition. */
+    /**
+     * Nama berkas unduhan, dipakai controller pada header Content-Disposition.
+     *
+     * `KodeAset` diketik pengguna dan hanya dibatasi panjangnya, jadi ia dapat
+     * memuat tanda kutip, garis miring, maupun persen. Ketiganya berbahaya di
+     * tempat nama berkas dipakai: kutip memalsukan parameter `filename` pada
+     * header, dan garis miring membuat `HeaderUtils::makeDisposition()`
+     * melempar sehingga unduhannya gagal sama sekali. `Str::slug` menyisakan
+     * huruf, angka, dan tanda hubung -- cukup untuk tetap terbaca tanpa
+     * menyerahkan bentuk nama berkasnya kepada penyusun data.
+     *
+     * Pemisahnya diubah menjadi tanda hubung lebih dulu karena `Str::slug`
+     * MEMBUANG tanda baca alih-alih menggantinya: tanpa langkah ini
+     * `AST/2026/001` -- bentuk penomoran yang lazim -- menjadi `ast2026001`
+     * yang tidak lagi terbaca sebagai nomor aset oleh siapa pun.
+     */
     public function namaBerkas(Aset $aset): string
     {
-        $kode = strtolower((string) $aset->KodeAset);
+        $kode = Str::slug((string) preg_replace('/[^\p{L}\p{N}]+/u', '-', (string) $aset->KodeAset));
 
         return 'kartu-riwayat-'.($kode === '' ? 'aset' : $kode).'.pdf';
     }

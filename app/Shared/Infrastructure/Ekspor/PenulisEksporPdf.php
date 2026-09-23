@@ -29,20 +29,23 @@ final class PenulisEksporPdf implements PenulisEkspor
 
     public function tulis(string $pathLokal, array $kepala, iterable $baris, array $meta): void
     {
-        // Barisnya dikumpulkan sambil dihitung, bukan dihitung lebih dulu:
-        // sumbernya dapat berupa generator yang hanya bisa dilalui sekali.
+        // Pembacaan berhenti pada BATAS_BARIS + 1: baris kelebihan yang pertama
+        // sudah cukup membuktikan daftarnya terpotong, dan sisanya tidak pernah
+        // diminta. $baris lazimnya generator yang menarik potongan dari basis
+        // data; menghabiskannya hanya demi angka total membuat ekspor 50.000
+        // aset menghidrasi seluruh model beserta relasinya lalu membuangnya.
         $barisCetak = [];
-        $totalBaris = 0;
+        $dipotong = false;
 
         foreach ($baris as $satu) {
-            $totalBaris++;
+            if (count($barisCetak) === self::BATAS_BARIS) {
+                $dipotong = true;
 
-            if ($totalBaris <= self::BATAS_BARIS) {
-                $barisCetak[] = $satu;
+                break;
             }
-        }
 
-        $dipotong = $totalBaris > self::BATAS_BARIS;
+            $barisCetak[] = $satu;
+        }
 
         $opsi = new Options;
         // Tetap mati. Menghidupkannya membuat Dompdf mengambil sendiri URL yang
@@ -55,7 +58,7 @@ final class PenulisEksporPdf implements PenulisEkspor
         $opsi->set('defaultFont', 'DejaVu Sans');
 
         $dompdf = new Dompdf($opsi);
-        $dompdf->loadHtml($this->html($kepala, $barisCetak, $meta, $dipotong, $totalBaris), 'UTF-8');
+        $dompdf->loadHtml($this->html($kepala, $barisCetak, $meta, $dipotong), 'UTF-8');
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
 
@@ -70,7 +73,7 @@ final class PenulisEksporPdf implements PenulisEkspor
      * @param  list<list<string|float>>  $baris
      * @param  array<string, string>  $meta
      */
-    private function html(array $kepala, array $baris, array $meta, bool $dipotong, int $totalBaris): string
+    private function html(array $kepala, array $baris, array $meta, bool $dipotong): string
     {
         $judul = $meta['Judul'] ?? 'Laporan Amanpoll';
         // Judul dapat berasal dari pemanggil, jadi ia juga dilolosi sebelum
@@ -102,9 +105,11 @@ final class PenulisEksporPdf implements PenulisEkspor
             $isiHtml .= '</tr>';
         }
 
+        // Tanpa angka total: totalnya memang tidak lagi dihitung, dan menebaknya
+        // hanya akan mencetak angka yang tidak pernah diukur.
         $catatan = $dipotong
-            ? '<p class="catatan">Dokumen ini memuat '.count($baris).' dari '.$totalBaris
-                .' baris. Unduh format CSV atau XLSX untuk data lengkap.</p>'
+            ? '<p class="catatan">Hanya '.number_format(self::BATAS_BARIS, 0, ',', '.')
+                .' baris pertama yang dicetak. Unduh format CSV atau XLSX untuk daftar selengkapnya.</p>'
             : '';
 
         return <<<HTML

@@ -284,7 +284,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
           deskripsi="Kontrak penyedia, aset yang tercakup, layanan, dan pengingat masa berlaku."
           aksi={
             <>
-              <TombolEkspor url="/kontrak/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteKontrak.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatKontrak penyedia={penyedia} tingkatLayanan={tingkatLayanan} />
             </>
           }

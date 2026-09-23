@@ -69,7 +69,7 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
           aksi={
             <>
               <div className="flex flex-wrap gap-2">
-                <TombolEkspor url="/pelaporan/dasbor/ekspor" label="Ekspor daftar" />
+                <TombolEkspor url={rutePelaporan.dasborKustomEkspor} label="Ekspor daftar" />
                 <Button variant="outline" size="sm" asChild>
                   <Link href={rutePelaporan.dasbor}>
                     <LayoutDashboard className="size-4" />

@@ -160,7 +160,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter, wajib }: P
         deskripsi="Penerimaan, pengeluaran, transfer, penyesuaian, dan retur -- draf, posting, sampai audit."
         aksi={
           <>
-            <TombolEkspor url="/mutasi-stok/ekspor" filter={filter as Record<string, string>} />
+            <TombolEkspor url={ruteMutasiStok.ekspor} filter={filter as Record<string, string>} />
             <DialogBuatMutasi gudang={gudang} wajib={wajib.mutasi} />
           </>
         }

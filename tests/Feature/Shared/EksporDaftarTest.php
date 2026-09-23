@@ -16,6 +16,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -41,8 +42,27 @@ class EksporDaftarTest extends TestCase
     {
         parent::setUp();
 
+        /*
+         * Waktu dibekukan karena kop mencantumkan jam cetaknya. Tanpa ini
+         * assertion membaca jam KEDUA KALINYA, sesudah responsnya selesai:
+         * kop yang dicetak pada 10:59:59 diperiksa terhadap 11:00:00 dan
+         * testnya merah tanpa ada yang rusak. Kegagalan sporadis semacam itu
+         * tampak seperti regresi yang tidak ada.
+         */
+        // Disebut dalam UTC, bukan string polos: string polos diurai memakai
+        // app.timezone (Asia/Jakarta), sehingga hitungan zona waktu di bawah
+        // bergeser tujuh jam tanpa terlihat di test-nya.
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-15 03:20:00', 'UTC'));
+
         $this->organisasi = Organisasi::create(['Kode' => 'ORG-EKS', 'Nama' => 'Organisasi Ekspor']);
         $this->pengguna = $this->buatPengguna($this->organisasi);
+    }
+
+    protected function tearDown(): void
+    {
+        CarbonImmutable::setTestNow();
+
+        parent::tearDown();
     }
 
     private function konteks(): KonteksOrganisasi
@@ -239,7 +259,10 @@ class EksporDaftarTest extends TestCase
         $this->assertStringContainsString('Daftar Aset', $teks);
         $this->assertStringContainsString('Asia/Jakarta', $teks);
         $this->assertStringContainsString(
-            now('Asia/Jakarta')->format('d-m-Y'),
+            // Nilai harfiah, bukan now(): waktu sudah dibekukan di setUp, dan
+            // assertion yang menghitung ulang jamnya sendiri akan tetap lulus
+            // sekalipun kop mencetak jam server alih-alih jam organisasinya.
+            '15-06-2026',
             $teks,
             'Tanggal cetak harus tercantum dalam zona waktu organisasinya.',
         );
@@ -292,7 +315,12 @@ class EksporDaftarTest extends TestCase
         $isi = $this->unduh();
 
         $this->assertStringContainsString('Asia/Jayapura', $isi);
-        $this->assertStringContainsString(now('Asia/Jayapura')->format('d-m-Y H:i'), $isi);
+        // 03:20 UTC adalah 12:20 di Jayapura (UTC+9) dan 10:20 di Jakarta
+        // (UTC+7). Nilai harfiah inilah yang membuktikan kop memakai zona waktu
+        // organisasinya: dihitung ulang dengan now(), assertion ini akan lulus
+        // pada zona mana pun.
+        $this->assertStringContainsString('15-06-2026 12:20', $isi);
+        $this->assertStringNotContainsString('15-06-2026 10:20', $isi);
     }
 
     /**

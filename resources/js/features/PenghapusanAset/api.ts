@@ -6,4 +6,5 @@ export const rutePenghapusanAset = {
   detail2: (id: string) => `/penghapusan-aset/${id}/detail`,
   eksekusi: (id: string) => `/penghapusan-aset/${id}/eksekusi`,
   submit: (id: string) => `/penghapusan-aset/${id}/submit`,
+  ekspor: '/penghapusan-aset/ekspor',
 };

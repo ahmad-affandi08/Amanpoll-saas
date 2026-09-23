@@ -5,4 +5,5 @@ export const rutePermintaanPenawaran = {
   penawaran: (id: string) => `/perencanaan-pengadaan/permintaan-penawaran/${id}/penawaran`,
   pilihPenawaran: (id: string, penawaranId: string) =>
     `/perencanaan-pengadaan/permintaan-penawaran/${id}/penawaran/${penawaranId}/pilih`,
+  ekspor: '/perencanaan-pengadaan/permintaan-penawaran/ekspor',
 };

@@ -99,7 +99,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
           deskripsi="Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi."
           aksi={
             <>
-              <TombolEkspor url="/serah-terima-aset/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteSerahTerimaAset.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatSerahTerima wajib={wajib.serahTerima} />
             </>
           }

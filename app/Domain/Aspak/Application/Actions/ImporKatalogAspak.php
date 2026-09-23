@@ -31,7 +31,7 @@ final class ImporKatalogAspak
      */
     public function jalankan($pegangan): array
     {
-        $kepala = fgetcsv($pegangan, escape: '\\');
+        $kepala = fgetcsv($pegangan, escape: '');
 
         if ($kepala === false) {
             return ['ditambah' => 0, 'diperbarui' => 0, 'dilewati' => 0];
@@ -43,7 +43,7 @@ final class ImporKatalogAspak
 
         $organisasiId = $this->konteks->wajibId();
 
-        while (($baris = fgetcsv($pegangan, escape: '\\')) !== false) {
+        while (($baris = fgetcsv($pegangan, escape: '')) !== false) {
             if (++$dibaca > self::MAKS_BARIS) {
                 break;
             }

@@ -33,10 +33,12 @@ use Tests\TestCase;
 /**
  * Kartu Riwayat Alat: dokumen satu aset untuk berkas akreditasi.
  *
- * Isi PDF-nya tidak dapat dicari sebagai teks karena Dompdf menyubset fontnya,
- * jadi yang diperiksa lewat HTTP adalah berkasnya sungguh PDF dan milik aset
- * yang diminta, sedangkan isi kartunya diperiksa pada HTML yang dirender
- * penyusunnya -- sumber yang sama persis dengan yang dicetak ke PDF.
+ * Rincian isi kartu diperiksa pada HTML yang dirender penyusunnya -- sumber
+ * yang sama persis dengan yang dicetak ke PDF, dan jauh lebih murah untuk
+ * diperiksa baris demi baris. Namun HTML saja tidak menjaga jalur cetaknya:
+ * satu test tambahan mengunduh kartunya lewat rute HTTP-nya lalu membaca teks
+ * di dalam PDF yang sungguh dirender, supaya putusnya sambungan antara html()
+ * dan pdf() tidak lolos tanpa ada test yang merah.
  */
 class KartuRiwayatAsetTest extends TestCase
 {
@@ -259,8 +261,117 @@ class KartuRiwayatAsetTest extends TestCase
 
         $respons->assertOk();
         $respons->assertHeader('Content-Type', 'application/pdf');
-        $respons->assertHeader('Content-Disposition', 'attachment; filename="kartu-riwayat-ast-0001.pdf"');
+        // Tanpa tanda kutip: HeaderUtils hanya mengutip nama berkas yang memang
+        // memerlukannya, dan nama ini sudah berupa token yang sah.
+        $respons->assertHeader('Content-Disposition', 'attachment; filename=kartu-riwayat-ast-0001.pdf');
         $this->assertStringStartsWith('%PDF', $respons->getContent());
+    }
+
+    /**
+     * `KodeAset` diketik pengguna dan ikut ke nama berkas unduhan.
+     *
+     * Header yang dirakit dengan menyambung string membuat tanda kutip di dalam
+     * kode aset menutup parameter `filename` lebih awal lalu membuka parameter
+     * kedua -- sehingga yang mengunduh menyimpan berkas dengan nama pilihan
+     * penyusun data, bukan nama yang dimaksud aplikasi.
+     */
+    public function test_kutip_di_kode_aset_tidak_memalsukan_nama_berkas(): void
+    {
+        $aset = $this->buatAset($this->organisasi, [
+            'KodeAset' => 'A"; filename="laporan-keuangan',
+        ]);
+
+        $respons = $this->actingAs($this->pengguna)->get($this->urlKartu($aset));
+
+        $respons->assertOk();
+        $disposisi = (string) $respons->headers->get('Content-Disposition');
+
+        // Yang dijaga adalah jumlah parameternya, bukan hilangnya kata itu:
+        // "laporan-keuangan" memang diketik penggunanya sendiri dan boleh saja
+        // tersisa di dalam satu nama berkas. Yang tidak boleh adalah ia menjadi
+        // parameter filename KEDUA yang dipilih peramban.
+        $this->assertSame(1, substr_count($disposisi, 'filename='), 'Header: '.$disposisi);
+        $this->assertStringContainsString('filename=kartu-riwayat-', $disposisi);
+        $this->assertStringNotContainsString('"', $disposisi);
+    }
+
+    /**
+     * Garis miring di kode aset tidak boleh menggagalkan unduhannya.
+     *
+     * `HeaderUtils::makeDisposition()` melempar untuk nama berkas yang memuat
+     * garis miring, jadi kode seperti `AST/2026/001` -- bentuk yang lazim pada
+     * penomoran aset -- akan membuat cetak kartunya galat 500, bukan sekadar
+     * bernama jelek.
+     */
+    public function test_garis_miring_di_kode_aset_tetap_dapat_diunduh(): void
+    {
+        $aset = $this->buatAset($this->organisasi, ['KodeAset' => 'AST/2026/001']);
+
+        $respons = $this->actingAs($this->pengguna)->get($this->urlKartu($aset));
+
+        $respons->assertOk();
+        $this->assertStringStartsWith('%PDF', $respons->getContent());
+        $this->assertSame(
+            'attachment; filename=kartu-riwayat-ast-2026-001.pdf',
+            $respons->headers->get('Content-Disposition'),
+        );
+    }
+
+    /**
+     * Penjaga sambungan antara penyusun HTML dan berkas yang benar-benar
+     * terkirim.
+     *
+     * Pemeriksaan isi lain memotong HTTP dan memanggil html() langsung, jadi
+     * argumen loadHtml() di pdf() boleh dikosongkan tanpa satu test pun berubah
+     * merah: yang terunduh tetap PDF yang sah dan tetap berawalan '%PDF', hanya
+     * saja tidak ada isinya. Yang diperiksa di sini adalah teks di dalam PDF
+     * yang sungguh dirender, diambil lewat rutenya sendiri.
+     */
+    public function test_isi_kartu_terbaca_di_dalam_pdf_yang_terunduh(): void
+    {
+        $aset = $this->buatAset($this->organisasi, [
+            'KodeAset' => 'AST-0003',
+            'Nama' => 'Ventilator Dewasa',
+        ]);
+        $this->buatPerintahKerja($aset, 'PK-0301', 'Ganti selang oksigen', 'Rina Teknisi');
+
+        $respons = $this->actingAs($this->pengguna)->get($this->urlKartu($aset));
+        $respons->assertOk();
+
+        $teks = $this->teksPdf((string) $respons->getContent());
+
+        $this->assertStringContainsString('RSUD Amanpoll', $teks);
+        $this->assertStringContainsString('AST-0003', $teks);
+        $this->assertStringContainsString('Ventilator Dewasa', $teks);
+        $this->assertStringContainsString('PK-0301', $teks);
+        $this->assertStringContainsString('Ganti selang oksigen', $teks);
+    }
+
+    /**
+     * Teks yang sungguh tercetak di PDF-nya, bukan HTML sebelum dirender.
+     *
+     * Dompdf memampatkan aliran isinya dan menulis teks sebagai UTF-16BE, jadi
+     * berkasnya dibuka dulu: aliran dilepas mampatnya, lalu byte NUL penyela
+     * antarhurufnya dibuang. Pola yang sama dipakai Tests\Feature\Shared\EksporDaftarTest.
+     */
+    private function teksPdf(string $isi): string
+    {
+        $this->assertStringStartsWith('%PDF', $isi);
+
+        preg_match_all('/stream\r?\n(.*?)endstream/s', $isi, $cocok);
+
+        $teks = '';
+        foreach ($cocok[1] as $aliran) {
+            $lepas = @gzuncompress($aliran);
+
+            if ($lepas !== false) {
+                $teks .= $lepas;
+            }
+        }
+
+        $this->assertNotSame('', $teks, 'Tidak ada aliran PDF yang dapat dibaca.');
+
+        return str_replace("\x00", '', $teks);
     }
 
     public function test_kartu_memuat_kop_identitas_dan_ruang_tanda_tangan(): void

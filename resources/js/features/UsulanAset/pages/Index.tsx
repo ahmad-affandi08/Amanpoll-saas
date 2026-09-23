@@ -257,7 +257,7 @@ export default function UsulanAsetIndex({
           deskripsi="Susun kebutuhan, lakukan penilaian, lalu ajukan persetujuan."
           aksi={
             <>
-              <TombolEkspor url="/perencanaan-pengadaan/usulan-aset/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteUsulanAset.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatUsulan
                 unitOrganisasi={unitOrganisasi}
                 kategoriAset={kategoriAset}

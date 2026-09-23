@@ -104,7 +104,7 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
           deskripsi="Otomatisasi siklus pemeliharaan berkala, pencegahan downtime, dan kepatuhan servis aset."
           aksi={
             <>
-              <TombolEkspor url="/preventif-inspeksi/rencana-pemeliharaan/ekspor" />
+              <TombolEkspor url={ruteRencanaPemeliharaan.ekspor} />
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"

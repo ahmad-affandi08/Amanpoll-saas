@@ -43,7 +43,7 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
         <KepalaHalaman
           judul="Log Audit"
           deskripsi="Riwayat perubahan data lintas modul, tersaring per organisasi."
-          aksi={<TombolEkspor url="/integrasi-audit/audit/ekspor" filter={form as Record<string, string>} />}
+          aksi={<TombolEkspor url={ruteAudit.ekspor} filter={form as Record<string, string>} />}
         />
 
         <form

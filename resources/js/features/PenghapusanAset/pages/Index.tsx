@@ -116,7 +116,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
           deskripsi="Pengajuan pelepasan aset -- draft, persetujuan, sampai eksekusi."
           aksi={
             <>
-              <TombolEkspor url="/penghapusan-aset/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={rutePenghapusanAset.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatPengajuan wajib={wajib.pengajuan} />
             </>
           }

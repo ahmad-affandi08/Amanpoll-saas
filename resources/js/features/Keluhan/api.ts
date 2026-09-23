@@ -3,4 +3,5 @@ export const ruteKeluhan = {
   detail: (id: string) => `/pemeliharaan/keluhan/${id}`,
   prioritas: (id: string) => `/pemeliharaan/keluhan/${id}/prioritas`,
   status: (id: string) => `/pemeliharaan/keluhan/${id}/status`,
+  ekspor: '/pemeliharaan/keluhan/ekspor',
 };

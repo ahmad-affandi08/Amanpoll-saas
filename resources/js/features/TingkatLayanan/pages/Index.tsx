@@ -380,7 +380,7 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna, w
         deskripsi="Konfigurasi kalender, target respons dan penyelesaian, serta tahapan eskalasi."
         aksi={
           <>
-            <TombolEkspor url="/pemeliharaan/tingkat-layanan/ekspor" />
+            <TombolEkspor url={ruteTingkatLayanan.ekspor} />
             <DialogTingkatLayanan
               item={null}
               peran={peran}

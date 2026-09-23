@@ -171,7 +171,7 @@ export default function MutasiAsetIndex({
           deskripsi="Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi."
           aksi={
             <>
-              <TombolEkspor url="/mutasi-aset/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteMutasiAset.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatMutasi
                 lokasi={lokasi}
                 unitOrganisasi={unitOrganisasi}

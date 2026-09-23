@@ -8,6 +8,7 @@ use App\Domain\Aset\Application\Services\PenyusunKartuRiwayatAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 /**
  * Cetak Kartu Riwayat Alat satu aset.
@@ -29,9 +30,17 @@ final class KartuRiwayatAsetController extends Controller
         // seluruh kueri riwayatnya sehingga kartunya terkirim kosong.
         $isi = $penyusun->pdf($aset);
 
+        // Header dirakit HeaderUtils, bukan dengan menyambung string: nama
+        // berkasnya berasal dari KodeAset yang diketik pengguna, dan tanda kutip
+        // di dalamnya akan menutup parameter filename lebih awal lalu membuka
+        // parameter kedua pilihan penyusun data. Seluruh ekspor lain lolos dari
+        // ini karena streamDownload memanggil makeDisposition untuk mereka.
         return response($isi, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="'.$penyusun->namaBerkas($aset).'"',
+            'Content-Disposition' => HeaderUtils::makeDisposition(
+                HeaderUtils::DISPOSITION_ATTACHMENT,
+                $penyusun->namaBerkas($aset),
+            ),
         ]);
     }
 }

@@ -3,4 +3,5 @@ export const ruteSerahTerimaAset = {
   detail: (id: string) => `/serah-terima-aset/${id}`,
   detail2: (id: string) => `/serah-terima-aset/${id}/detail`,
   terima: (id: string) => `/serah-terima-aset/${id}/terima`,
+  ekspor: '/serah-terima-aset/ekspor',
 };

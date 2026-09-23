@@ -274,7 +274,7 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
           deskripsi="Daftar induk aset organisasi -- identitas, lokasi, dan status."
           aksi={
             <>
-              <TombolEkspor url="/aset/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteAset.ekspor} filter={filter as Record<string, string>} />
               <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} wajib={wajib.aset} />
             </>
           }

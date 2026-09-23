@@ -193,7 +193,7 @@ export default function RencanaPengadaanIndex({
           deskripsi="Konsolidasikan usulan disetujui ke rencana dan pos anggaran."
           aksi={
             <>
-              <TombolEkspor url="/perencanaan-pengadaan/rencana-pengadaan/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteRencanaPengadaan.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatRencana
                 posAnggaran={posAnggaran}
                 usulanDisetujui={usulanDisetujui}

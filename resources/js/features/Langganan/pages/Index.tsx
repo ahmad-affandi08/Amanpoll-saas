@@ -64,7 +64,7 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
         <KepalaHalaman
           judul="Langganan"
           deskripsi="Paket yang sedang berjalan, pemakaian terhadap batasnya, dan riwayat tagihan organisasi Anda."
-          aksi={<TombolEkspor url="/langganan/ekspor" label="Ekspor Tagihan" />}
+          aksi={<TombolEkspor url={ruteLangganan.ekspor} label="Ekspor Tagihan" />}
         />
 
         {!entitlement.AksesPenuh && (

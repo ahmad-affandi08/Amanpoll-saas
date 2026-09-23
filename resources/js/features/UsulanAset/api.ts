@@ -4,4 +4,5 @@ export const ruteUsulanAset = {
   ajukanPersetujuan: (id: string) => `/perencanaan-pengadaan/usulan-aset/${id}/ajukan-persetujuan`,
   penilaian: (id: string) => `/perencanaan-pengadaan/usulan-aset/${id}/penilaian`,
   submit: (id: string) => `/perencanaan-pengadaan/usulan-aset/${id}/submit`,
+  ekspor: '/perencanaan-pengadaan/usulan-aset/ekspor',
 };

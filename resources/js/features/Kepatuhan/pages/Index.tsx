@@ -78,7 +78,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           aksi={
             <>
               <div className="flex flex-wrap gap-2">
-                <TombolEkspor url="/kepatuhan/ekspor" filter={filter as Record<string, string>} />
+                <TombolEkspor url={ruteKepatuhan.ekspor} filter={filter as Record<string, string>} />
                 <DialogTugaskan standar={standar} aset={aset} wajib={wajib.tugaskan} />
                 <DialogBuatStandar wajib={wajib.standar} />
               </div>

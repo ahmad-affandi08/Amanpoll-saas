@@ -142,7 +142,7 @@ export default function KalibrasiPelaksanaanIndex({
           }
           aksi={
             <>
-              <TombolEkspor url="/kalibrasi/pelaksanaan/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteKalibrasi.pelaksanaanEkspor} filter={filter as Record<string, string>} />
               <Button onClick={() => setBukaDialog(true)} size="sm">
                 <Plus className="mr-1.5 size-4" />
                 Jadwalkan Kalibrasi

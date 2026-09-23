@@ -21,6 +21,7 @@ use App\Domain\Aspak\Infrastructure\Persistence\Models\PemetaanAspak;
 use App\Domain\Platform\Infrastructure\Persistence\Models\KonfigurasiOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\NetralkanRumus;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
@@ -39,9 +40,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 final class AspakController extends Controller
 {
-    /** Karakter yang membuat Excel memperlakukan sel sebagai rumus. */
-    private const AWALAN_RUMUS = "=+-@\t\r";
-
     public const KUNCI_PROFIL = 'Aspak.ProfilKolom';
 
     /** Cukup untuk dipindai mata; sisanya disaring dengan mengetik lebih spesifik. */
@@ -235,7 +233,7 @@ final class AspakController extends Controller
 
             try {
                 fwrite($keluaran, "\xEF\xBB\xBF");
-                fputcsv($keluaran, $profil->judul(), escape: '\\');
+                fputcsv($keluaran, $profil->judul(), escape: '');
 
                 Aset::query()
                     ->with(['lokasi', 'modelAset.merek', 'alkesAspak', 'pelaksanaanKalibrasi'])
@@ -249,8 +247,8 @@ final class AspakController extends Controller
                             $nilai = $penyusun->untuk($aset);
                             fputcsv(
                                 $keluaran,
-                                $this->netralkan(array_map(fn (string $r): string => $nilai[$r] ?? '', $ruas)),
-                                escape: '\\',
+                                NetralkanRumus::barisCsv(array_map(fn (string $r): string => $nilai[$r] ?? '', $ruas)),
+                                escape: '',
                             );
                         }
                     });
@@ -266,22 +264,5 @@ final class AspakController extends Controller
         $nilai = KonfigurasiOrganisasi::query()->where('Kunci', self::KUNCI_PROFIL)->value('Nilai');
 
         return ProfilKolomAspak::dariKonfigurasi(is_string($nilai) ? $nilai : null);
-    }
-
-    /**
-     * Nama aset dan merek diketik orang, jadi hasil ekspornya dinetralkan
-     * seperti ekspor laporan.
-     *
-     * @param  list<string>  $baris
-     * @return list<string>
-     */
-    private function netralkan(array $baris): array
-    {
-        return array_map(
-            static fn (string $nilai): string => $nilai !== '' && str_contains(self::AWALAN_RUMUS, $nilai[0])
-                ? "'".$nilai
-                : $nilai,
-            $baris,
-        );
     }
 }

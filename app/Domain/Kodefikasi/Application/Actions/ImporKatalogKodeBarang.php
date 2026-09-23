@@ -32,7 +32,7 @@ final class ImporKatalogKodeBarang
      */
     public function jalankan($pegangan, StandarKodefikasi $standar): array
     {
-        $kepala = fgetcsv($pegangan, escape: '\\');
+        $kepala = fgetcsv($pegangan, escape: '');
         $hasil = ['ditambah' => 0, 'diperbarui' => 0, 'dilewati' => 0, 'polaSalah' => 0];
 
         if ($kepala === false) {
@@ -43,7 +43,7 @@ final class ImporKatalogKodeBarang
         $organisasiId = $this->konteks->wajibId();
         $dibaca = 0;
 
-        while (($baris = fgetcsv($pegangan, escape: '\\')) !== false) {
+        while (($baris = fgetcsv($pegangan, escape: '')) !== false) {
             if (++$dibaca > self::MAKS_BARIS) {
                 break;
             }

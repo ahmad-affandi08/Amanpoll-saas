@@ -112,7 +112,7 @@ export default function InspeksiIndex({
           deskripsi="Pemeriksaan fisik, pemantauan kondisi aset, dan pencatatan temuan operasional."
           aksi={
             <>
-              <TombolEkspor url="/preventif-inspeksi/inspeksi/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteInspeksi.ekspor} filter={filter as Record<string, string>} />
               <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
                 <DialogTrigger asChild>
                   <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">

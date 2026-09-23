@@ -7,4 +7,5 @@ export const rutePesananPembelian = {
   kirim: (id: string) => `/perencanaan-pengadaan/pesanan-pembelian/${id}/kirim`,
   penerimaan: (id: string) => `/perencanaan-pengadaan/pesanan-pembelian/${id}/penerimaan`,
   tagihan: (id: string) => `/perencanaan-pengadaan/pesanan-pembelian/${id}/tagihan`,
+  ekspor: '/perencanaan-pengadaan/pesanan-pembelian/ekspor',
 };

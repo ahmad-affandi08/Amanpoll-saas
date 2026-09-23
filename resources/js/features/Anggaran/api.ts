@@ -5,4 +5,5 @@ export const ruteAnggaran = {
   pos: (id: string) => `/perencanaan-pengadaan/anggaran/${id}/pos`,
   posDetail: (id: string) => `/perencanaan-pengadaan/pos-anggaran/${id}`,
   posTransaksi: (id: string) => `/perencanaan-pengadaan/pos-anggaran/${id}/transaksi`,
+  ekspor: '/perencanaan-pengadaan/anggaran/ekspor',
 };

@@ -127,6 +127,59 @@ class DaftarTersaringTest extends TestCase
         $this->assertSame($kategori->Id, $daftar->filterBerlaku()['KategoriSukuCadangId']);
     }
 
+    /**
+     * Faset bernilai "0" benar-benar menyaring.
+     *
+     * `array_filter` tanpa callback membuang seluruh nilai falsy, dan '0'
+     * termasuk di dalamnya. Akibatnya pilihan seperti "Nonaktif" (Aktif=0)
+     * menyalakan chip penyaring di layar tetapi tidak memasang `whereIn` apa
+     * pun: tabelnya menampilkan seluruh baris, dan berkas ekspornya -- yang
+     * memakai kueri yang sama -- ikut salah tanpa gejala apa pun.
+     */
+    public function test_faset_bernilai_nol_tetap_menyaring(): void
+    {
+        $this->buatSukuCadang('Tanpa Stok Minimum', 'SC-NOL');
+        $adaMinimum = $this->buatSukuCadang('Punya Stok Minimum', 'SC-LIMA');
+        $adaMinimum->update(['StokMinimum' => 5]);
+
+        $halaman = $this->daftarStokMinimum(['StokMinimum' => '0'])->halaman();
+
+        $this->assertSame(1, $halaman->total());
+        $this->assertSame('Tanpa Stok Minimum', $halaman->getCollection()->first()?->Nama);
+    }
+
+    /** Nilai "0" yang digabung dengan nilai lain juga tidak boleh hilang dari daftarnya. */
+    public function test_faset_nol_tidak_hilang_saat_digabung_dengan_nilai_lain(): void
+    {
+        $this->buatSukuCadang('Tanpa Stok Minimum', 'SC-NOL');
+        $lima = $this->buatSukuCadang('Stok Minimum Lima', 'SC-LIMA');
+        $lima->update(['StokMinimum' => 5]);
+        $sembilan = $this->buatSukuCadang('Stok Minimum Sembilan', 'SC-SEMBILAN');
+        $sembilan->update(['StokMinimum' => 9]);
+
+        $halaman = $this->daftarStokMinimum(['StokMinimum' => '5,0'])->halaman();
+
+        $this->assertSame(2, $halaman->total());
+        $this->assertEqualsCanonicalizing(
+            ['Stok Minimum Lima', 'Tanpa Stok Minimum'],
+            $halaman->getCollection()->pluck('Nama')->all(),
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $kueri
+     * @return DaftarTersaring<SukuCadang>
+     */
+    private function daftarStokMinimum(array $kueri): DaftarTersaring
+    {
+        return DaftarTersaring::untuk(
+            Request::create('/suku-cadang', 'GET', $kueri),
+            SukuCadang::query(),
+        )
+            ->urut(['Nama'], bawaan: 'Nama')
+            ->faset(['StokMinimum']);
+    }
+
     public function test_joker_like_dari_pengguna_dinetralkan(): void
     {
         $this->buatSukuCadang('Baut', 'SC-001');

@@ -187,7 +187,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
           deskripsi="Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi."
           aksi={
             <>
-              <TombolEkspor url="/perencanaan-pengadaan/anggaran/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteAnggaran.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatAnggaran unitOrganisasi={unitOrganisasi} wajib={wajib.anggaran} />
             </>
           }

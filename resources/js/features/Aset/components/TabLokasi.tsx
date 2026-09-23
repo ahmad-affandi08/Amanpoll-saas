@@ -42,7 +42,7 @@ export function TabLokasi({ aset, lokasi }: { aset: Aset; lokasi: Lokasi[] }) {
           Lokasi saat ini:{' '}
           <span className="font-semibold text-foreground">{aset.NamaLokasi ?? 'Belum ditentukan'}</span>
         </span>
-        <TombolEkspor url={`${ruteAset.riwayatLokasi(aset.Id)}/ekspor`} label="Ekspor Riwayat" />
+        <TombolEkspor url={ruteAset.riwayatLokasiEkspor(aset.Id)} label="Ekspor Riwayat" />
       </div>
       <form onSubmit={submit} className="flex flex-wrap items-end gap-2 border-b border-border pb-4">
         <div className="space-y-1">

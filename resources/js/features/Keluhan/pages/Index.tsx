@@ -232,7 +232,7 @@ export default function KeluhanIndex({
         }
         aksi={
           <>
-              <TombolEkspor url="/pemeliharaan/keluhan/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteKeluhan.ekspor} filter={filter as Record<string, string>} />
             <DialogBuatKeluhan
               kategori={kategori}
               aset={aset}

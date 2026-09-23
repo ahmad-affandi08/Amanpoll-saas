@@ -16,6 +16,7 @@ use App\Domain\Kodefikasi\Http\Requests\TetapkanKodeBarangRequest;
 use App\Domain\Kodefikasi\Infrastructure\Persistence\Models\KodeBarang;
 use App\Domain\Kodefikasi\Infrastructure\Persistence\Models\KodeBarangAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\NetralkanRumus;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
@@ -34,9 +35,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 final class KodefikasiController extends Controller
 {
-    /** Karakter yang membuat Excel memperlakukan sel sebagai rumus. */
-    private const AWALAN_RUMUS = "=+-@\t\r";
-
     private const MAKS_HASIL_CARI = 50;
 
     public function __construct(
@@ -243,7 +241,7 @@ final class KodefikasiController extends Controller
                 fputcsv($keluaran, [
                     'Kode Barang', 'Uraian', 'NUP', 'Kode Registrasi',
                     'Kode Aset', 'Nama Aset', 'Nomor Seri', 'Tahun Perolehan', 'Nilai Perolehan', 'Kondisi',
-                ], escape: '\\');
+                ], escape: '');
 
                 KodeBarangAset::query()
                     ->with(['kodeBarang', 'aset'])
@@ -253,7 +251,7 @@ final class KodefikasiController extends Controller
                             $aset = BacaRelasi::model($satu, 'aset');
                             $kode = BacaRelasi::model($satu, 'kodeBarang');
 
-                            fputcsv($keluaran, $this->netralkan([
+                            fputcsv($keluaran, NetralkanRumus::barisCsv([
                                 BacaRelasi::teks($kode, 'Kode'),
                                 BacaRelasi::teks($kode, 'Uraian'),
                                 sprintf('%06d', $satu->Nup),
@@ -264,7 +262,7 @@ final class KodefikasiController extends Controller
                                 $satu->aset?->TanggalPerolehan?->format('Y') ?? '',
                                 BacaRelasi::teks($aset, 'HargaPerolehan'),
                                 BacaRelasi::teks($aset, 'Kondisi'),
-                            ]), escape: '\\');
+                            ]), escape: '');
                         }
                     });
             } finally {
@@ -280,19 +278,5 @@ final class KodefikasiController extends Controller
     {
         return StandarKodefikasi::tryFrom((string) $request->query('standar', ''))
             ?? StandarKodefikasi::SimakBmn;
-    }
-
-    /**
-     * @param  list<string>  $baris
-     * @return list<string>
-     */
-    private function netralkan(array $baris): array
-    {
-        return array_map(
-            static fn (string $nilai): string => $nilai !== '' && str_contains(self::AWALAN_RUMUS, $nilai[0])
-                ? "'".$nilai
-                : $nilai,
-            $baris,
-        );
     }
 }

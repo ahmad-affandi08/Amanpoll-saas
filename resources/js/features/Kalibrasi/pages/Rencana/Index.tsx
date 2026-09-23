@@ -91,7 +91,7 @@ export default function KalibrasiRencanaIndex({
           }
           aksi={
             <>
-              <TombolEkspor url="/kalibrasi/rencana/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={ruteKalibrasi.rencanaEkspor} filter={filter as Record<string, string>} />
               <DialogFormRencana
                 rencana={null}
                 aset={aset}

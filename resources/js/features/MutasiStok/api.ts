@@ -5,4 +5,5 @@ export const ruteMutasiStok = {
   detail2: (id: string) => `/mutasi-stok/${id}/detail`,
   posting: (id: string) => `/mutasi-stok/${id}/posting`,
   barisDetail: (detailId: string) => `/detail-mutasi-stok/${detailId}`,
+  ekspor: '/mutasi-stok/ekspor',
 };

@@ -162,7 +162,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
         <KepalaHalaman
           judul="Pesanan Pembelian"
           deskripsi="PO dibuat dari penawaran terpilih; komitmen anggaran dicatat saat PO dikirim."
-          aksi={<TombolEkspor url="/perencanaan-pengadaan/pesanan-pembelian/ekspor" filter={filter as Record<string, string>} />}
+          aksi={<TombolEkspor url={rutePesananPembelian.ekspor} filter={filter as Record<string, string>} />}
         />
 
         {penawaranTerpilih.length > 0 && (

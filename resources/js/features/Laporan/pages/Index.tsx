@@ -95,7 +95,7 @@ export default function LaporanIndex({
             <>
               <div className="flex flex-wrap gap-2">
                 {/* Daftar laporannya sendiri; tombol "Ekspor" di sebelah mengunduh isi laporan yang dibuka. */}
-                <TombolEkspor url="/pelaporan/laporan/ekspor" label="Ekspor daftar" />
+                <TombolEkspor url={rutePelaporan.laporanEkspor} label="Ekspor daftar" />
                 <Button size="sm" onClick={() => setDialogBaru(true)}>
                   <Plus className="size-4" />
                   Laporan baru

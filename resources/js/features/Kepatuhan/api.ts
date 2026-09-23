@@ -8,4 +8,5 @@ export const ruteKepatuhan = {
   tugaskan: '/kepatuhan/tugaskan',
   pemeriksaan: (kewajibanId: string) => `/kepatuhan/kewajiban/${kewajibanId}/pemeriksaan`,
   kewajibanDetail: (kewajibanId: string) => `/kepatuhan/kewajiban/${kewajibanId}`,
+  ekspor: '/kepatuhan/ekspor',
 };

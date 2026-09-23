@@ -252,7 +252,7 @@ export default function PermintaanPembelianIndex({
           deskripsi="Draft kebutuhan, validasi sisa anggaran, dan pengajuan persetujuan."
           aksi={
             <>
-              <TombolEkspor url="/perencanaan-pengadaan/permintaan-pembelian/ekspor" filter={filter as Record<string, string>} />
+              <TombolEkspor url={rutePermintaanPembelian.ekspor} filter={filter as Record<string, string>} />
               <DialogBuatPermintaan
                 unitOrganisasi={unitOrganisasi}
                 rencana={rencana}

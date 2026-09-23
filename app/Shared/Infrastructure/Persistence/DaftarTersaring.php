@@ -208,7 +208,17 @@ final class DaftarTersaring
         }
 
         foreach ($this->kolomFaset as $kunci => $kolom) {
-            $nilai = array_filter(explode(',', (string) $this->permintaan->query($kunci, '')));
+            /*
+             * Pembanding disebut eksplisit. `array_filter` tanpa callback membuang
+             * seluruh nilai falsy, dan '0' termasuk di dalamnya -- sehingga faset
+             * boolean seperti "Nonaktif" (Aktif=0) diam-diam tidak menyaring apa
+             * pun: layarnya menyala seolah tersaring, tabelnya menampilkan
+             * seluruh baris, dan berkas ekspornya ikut salah tanpa gejala.
+             */
+            $nilai = array_filter(
+                explode(',', (string) $this->permintaan->query($kunci, '')),
+                static fn (string $satu): bool => $satu !== '',
+            );
 
             if ($nilai !== []) {
                 $kueri->whereIn($kolom, $nilai);

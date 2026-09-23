@@ -177,7 +177,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
         deskripsi="Menahan stok tersedia untuk kebutuhan mendatang tanpa mengurangi stok fisik."
         aksi={
           <>
-            <TombolEkspor url="/reservasi-suku-cadang/ekspor" filter={filter as Record<string, string>} />
+            <TombolEkspor url={ruteReservasiSukuCadang.ekspor} filter={filter as Record<string, string>} />
             <DialogBuatReservasi gudang={gudang} sukuCadang={sukuCadang} wajib={wajib.reservasi} />
           </>
         }
