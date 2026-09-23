@@ -52,6 +52,9 @@ export interface Aset {
   KategoriAsetId: string;
   NamaKategoriAset: string | null;
   ModelAsetId: string | null;
+  AlkesAspakId: string | null;
+  KodeAlkesAspak?: string | null;
+  NamaAlkesAspak?: string | null;
   NamaModelAset: string | null;
   PenyediaId: string | null;
   NamaPenyedia: string | null;

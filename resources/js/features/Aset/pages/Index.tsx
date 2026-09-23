@@ -30,7 +30,8 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
-import { opsiDari } from '@/lib/pilihan';
+import { PemilihNomenklatur } from '@/features/Aset/components/PemilihNomenklatur';
+import { opsiDari, TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -125,6 +126,7 @@ function DialogTambahAset({
     Nama: '',
     NomorSeri: '',
     HargaPerolehan: '',
+    AlkesAspakId: TANPA_PILIHAN,
     Status: 'Aktif',
     Kondisi: 'Baik',
     TingkatKritis: 'Normal',
@@ -132,7 +134,11 @@ function DialogTambahAset({
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const payload = { ...form.data, LokasiId: form.data.LokasiId === SEMUA ? null : form.data.LokasiId };
+    const payload = {
+      ...form.data,
+      LokasiId: form.data.LokasiId === SEMUA ? null : form.data.LokasiId,
+      AlkesAspakId: form.data.AlkesAspakId === TANPA_PILIHAN ? null : form.data.AlkesAspakId,
+    };
     router.post(ruteAset.index, payload, { onSuccess: () => setBuka(false) });
   };
 
@@ -181,6 +187,16 @@ function DialogTambahAset({
                   opsi={[{ nilai: SEMUA, label: 'Belum ditentukan' }, ...opsiDari(lokasi, (l) => l.Nama)]}
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label nama="AlkesAspakId">Nomenklatur Alkes (ASPAK)</Label>
+              <PemilihNomenklatur
+                nilai={form.data.AlkesAspakId}
+                onPilih={(v) => form.setData('AlkesAspakId', v)}
+              />
+              {form.errors.AlkesAspakId && (
+                <p className="text-sm text-destructive">{form.errors.AlkesAspakId}</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

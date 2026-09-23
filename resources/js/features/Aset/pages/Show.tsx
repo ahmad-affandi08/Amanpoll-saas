@@ -57,6 +57,14 @@ export default function AsetShow({
             {aset.KodeQr && ` · QR: ${aset.KodeQr}`}
           </span>
         }
+        meta={
+          aset.NamaAlkesAspak ? (
+            <Badge variant="outline" title="Nomenklatur standar Kemenkes">
+              <span className="font-mono">{aset.KodeAlkesAspak}</span>
+              <span className="ms-1.5">{aset.NamaAlkesAspak}</span>
+            </Badge>
+          ) : undefined
+        }
       />
 
       <KartuQr aset={aset} qr={qr} />

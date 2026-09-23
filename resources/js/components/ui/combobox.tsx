@@ -24,6 +24,13 @@ interface Props {
   disabled?: boolean;
   id?: string;
   className?: string;
+  /**
+   * Dipasang bila daftarnya dicari di server. Penyaringan internal dimatikan
+   * karena `opsi` sudah merupakan hasil saringan; tanpa itu hasil server
+   * disaring dua kali dan baris yang cocok lewat kolom lain ikut hilang.
+   */
+  onCari?: (kueri: string) => void;
+  memuat?: boolean;
 }
 
 /**
@@ -45,6 +52,8 @@ export function Combobox({
   disabled = false,
   id,
   className,
+  onCari,
+  memuat = false,
 }: Props) {
   const [terbuka, setTerbuka] = useState(false);
   const [kueri, setKueri] = useState('');
@@ -53,13 +62,15 @@ export function Combobox({
   const terpilih = opsi.find((o) => o.nilai === nilai) ?? null;
 
   const tersaring = useMemo(() => {
+    if (onCari) return opsi;
+
     const q = kueri.trim().toLowerCase();
     if (q === '') return opsi;
 
     return opsi.filter(
       (o) => o.label.toLowerCase().includes(q) || (o.keterangan ?? '').toLowerCase().includes(q),
     );
-  }, [opsi, kueri]);
+  }, [opsi, kueri, onCari]);
 
   const pilih = (opsiNilai: string) => {
     onPilih(opsiNilai);
@@ -72,7 +83,11 @@ export function Combobox({
       open={terbuka}
       onOpenChange={(buka) => {
         setTerbuka(buka);
-        if (!buka) setKueri('');
+        if (!buka) {
+          setKueri('');
+        } else {
+          onCari?.('');
+        }
       }}
     >
       <PopoverTrigger asChild>
@@ -111,7 +126,10 @@ export function Combobox({
             <Input
               ref={kolomCari}
               value={kueri}
-              onChange={(e) => setKueri(e.target.value)}
+              onChange={(e) => {
+                setKueri(e.target.value);
+                onCari?.(e.target.value);
+              }}
               placeholder={placeholderCari}
               className="ps-8"
               aria-label={placeholderCari}
@@ -120,7 +138,9 @@ export function Combobox({
         </div>
 
         <ul role="listbox" className="max-h-64 overflow-y-auto p-1">
-          {tersaring.length === 0 ? (
+          {memuat ? (
+            <li className="px-3 py-6 text-center text-sm text-muted-foreground">Mencari…</li>
+          ) : tersaring.length === 0 ? (
             <li className="px-3 py-6 text-center text-sm text-muted-foreground">{pesanKosong}</li>
           ) : (
             tersaring.map((o) => {

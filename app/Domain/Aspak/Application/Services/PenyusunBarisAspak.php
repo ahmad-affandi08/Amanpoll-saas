@@ -93,10 +93,29 @@ final class PenyusunBarisAspak
         return $this->alkesUntuk($aset) !== [];
     }
 
-    /** @return array<string, string> */
+    /**
+     * Nomenklatur yang berlaku bagi satu aset.
+     *
+     * Urutannya dari yang paling khusus: nomenklatur yang dipilih di aset itu
+     * sendiri, lalu pemetaan modelnya, lalu pemetaan kategorinya. Aset yang
+     * menyimpang dari modelnya karena itu tidak perlu memaksa seluruh model
+     * dipetakan ulang.
+     *
+     * @return array<string, string>
+     */
     private function alkesUntuk(Aset $aset): array
     {
-        // Model lebih spesifik daripada kategori, jadi ia yang menang.
+        if ($aset->AlkesAspakId !== null) {
+            $sendiri = $this->relasi($aset, 'alkesAspak');
+
+            if ($sendiri !== null) {
+                return [
+                    'Kode' => $this->atribut($sendiri, 'Kode'),
+                    'Nama' => $this->atribut($sendiri, 'Nama'),
+                ];
+            }
+        }
+
         if ($aset->ModelAsetId !== null && isset($this->perModel[$aset->ModelAsetId])) {
             return $this->perModel[$aset->ModelAsetId];
         }

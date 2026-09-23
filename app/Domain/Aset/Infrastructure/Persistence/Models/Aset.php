@@ -8,6 +8,7 @@ use App\Core\Izin\BerlingkupUnit;
 use App\Core\Izin\DibatasiLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
+use App\Domain\Aspak\Infrastructure\Persistence\Models\AlkesAspak;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
@@ -43,6 +44,7 @@ final class Aset extends ModelDasar implements BerlingkupUnit
         'LokasiId',
         'KategoriAsetId',
         'ModelAsetId',
+        'AlkesAspakId',
         'PenyediaId',
         'KodeAset',
         'Nama',
@@ -133,6 +135,16 @@ final class Aset extends ModelDasar implements BerlingkupUnit
     public function modelAset(): BelongsTo
     {
         return $this->belongsTo(ModelAset::class, 'ModelAsetId', 'Id');
+    }
+
+    /**
+     * Nomenklatur standar Kemenkes untuk aset ini.
+     *
+     * @return BelongsTo<AlkesAspak, $this>
+     */
+    public function alkesAspak(): BelongsTo
+    {
+        return $this->belongsTo(AlkesAspak::class, 'AlkesAspakId', 'Id');
     }
 
     /**

@@ -75,7 +75,7 @@ final class AsetController extends Controller
     {
         $this->authorize('view', $aset);
 
-        $aset->load(['kategoriAset', 'modelAset.merek', 'lokasi', 'unitOrganisasi', 'penyedia', 'dibuatOleh']);
+        $aset->load(['kategoriAset', 'modelAset.merek', 'alkesAspak', 'lokasi', 'unitOrganisasi', 'penyedia', 'dibuatOleh']);
 
         return Inertia::render('Aset/Show', [
             'aset' => new AsetResource($aset),

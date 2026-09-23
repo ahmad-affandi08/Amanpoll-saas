@@ -13,6 +13,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { PemilihNomenklatur } from '@/features/Aset/components/PemilihNomenklatur';
 
 export function TabInfo({
   aset,
@@ -33,6 +34,7 @@ export function TabInfo({
     KategoriAsetId: aset.KategoriAsetId,
     ModelAsetId: aset.ModelAsetId ?? TANPA_PILIHAN,
     PenyediaId: aset.PenyediaId ?? TANPA_PILIHAN,
+    AlkesAspakId: aset.AlkesAspakId ?? TANPA_PILIHAN,
     UnitOrganisasiId: aset.UnitOrganisasiId ?? TANPA_PILIHAN,
     KodeAset: aset.KodeAset,
     Nama: aset.Nama,
@@ -64,6 +66,7 @@ export function TabInfo({
       ModelAsetId: form.data.ModelAsetId === TANPA_PILIHAN ? null : form.data.ModelAsetId,
       PenyediaId: form.data.PenyediaId === TANPA_PILIHAN ? null : form.data.PenyediaId,
       UnitOrganisasiId: form.data.UnitOrganisasiId === TANPA_PILIHAN ? null : form.data.UnitOrganisasiId,
+      AlkesAspakId: form.data.AlkesAspakId === TANPA_PILIHAN ? null : form.data.AlkesAspakId,
     };
     router.put(ruteAset.detail(aset.Id), payload, { preserveScroll: true });
   };
@@ -110,6 +113,25 @@ export function TabInfo({
               opsi={[opsiKosong('Tanpa penyedia'), ...opsiDari(penyedia, (p) => p.Nama)]}
             />
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label nama="AlkesAspakId">Nomenklatur Alkes (ASPAK)</Label>
+          <PemilihNomenklatur
+            nilai={form.data.AlkesAspakId}
+            onPilih={(v) => form.setData('AlkesAspakId', v)}
+            terpasang={
+              aset.AlkesAspakId
+                ? { Id: aset.AlkesAspakId, Kode: aset.KodeAlkesAspak ?? null, Nama: aset.NamaAlkesAspak ?? null }
+                : null
+            }
+          />
+          <p className="text-sm text-muted-foreground">
+            Nama alat menurut standar Kemenkes. Dipakai saat data aset diekspor ke ASPAK, dan menang
+            atas pemetaan model maupun kategori.
+          </p>
+          {form.errors.AlkesAspakId && (
+            <p className="text-sm text-destructive">{form.errors.AlkesAspakId}</p>
+          )}
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">

@@ -37,6 +37,10 @@ final class SimpanAsetRequest extends FormRequest
                 Rule::exists('KategoriAset', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'ModelAsetId' => ['nullable', 'string',
                 Rule::exists('ModelAset', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
+            // Nomenklatur standar Kemenkes untuk aset ini; opsional karena
+            // katalognya baru terisi setelah impor ASPAK dijalankan.
+            'AlkesAspakId' => ['nullable', 'string',
+                Rule::exists('AlkesAspak', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'PenyediaId' => ['nullable', 'string',
                 Rule::exists('Penyedia', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'UnitOrganisasiId' => ['nullable', 'string',

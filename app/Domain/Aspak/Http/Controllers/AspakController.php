@@ -44,6 +44,9 @@ final class AspakController extends Controller
 
     public const KUNCI_PROFIL = 'Aspak.ProfilKolom';
 
+    /** Cukup untuk dipindai mata; sisanya disaring dengan mengetik lebih spesifik. */
+    private const MAKS_HASIL_CARI = 50;
+
     public function __construct(private readonly LayananAudit $audit) {}
 
     public function index(Request $request): Response
@@ -81,7 +84,10 @@ final class AspakController extends Controller
 
         $terpetakan = Aset::query()
             ->where(function ($kueri) use ($kategoriTerpetakan, $modelTerpetakan): void {
-                $kueri->whereIn('ModelAsetId', $modelTerpetakan)
+                // Nomenklatur yang dipilih langsung di aset ikut dihitung; ia
+                // menang atas pemetaan model maupun kategori.
+                $kueri->whereNotNull('AlkesAspakId')
+                    ->orWhereIn('ModelAsetId', $modelTerpetakan)
                     ->orWhereIn('KategoriAsetId', $kategoriTerpetakan);
             })
             ->count();
@@ -95,6 +101,44 @@ final class AspakController extends Controller
                 ->where(fn ($kueri) => $kueri->whereNull('KodeRuangAspak')->orWhere('KodeRuangAspak', ''))
                 ->count(),
         ];
+    }
+
+    /**
+     * Pencarian katalog untuk pemilih nomenklatur di formulir aset.
+     *
+     * Dijawab per permintaan, bukan dikirim penuh bersama halaman: katalog
+     * ASPAK berisi ribuan alkes dan menyertakannya di setiap muat halaman aset
+     * membuat halamannya berat tanpa alasan.
+     *
+     * Diizinkan bagi siapa pun yang boleh melihat aset, bukan hanya pengelola
+     * ASPAK -- yang mendaftarkan aset justru petugas ruangan.
+     *
+     * @return array<int, array{Id: string, Kode: string, Nama: string, Kelompok: string|null}>
+     */
+    public function cariKatalog(Request $request): array
+    {
+        $this->authorize('viewAny', Aset::class);
+
+        $kueri = trim((string) $request->query('q', ''));
+
+        return AlkesAspak::query()
+            ->where('Aktif', true)
+            ->when($kueri !== '', function ($q) use ($kueri): void {
+                $q->where(function ($cari) use ($kueri): void {
+                    $cari->where('Kode', 'like', '%'.$kueri.'%')
+                        ->orWhere('Nama', 'like', '%'.$kueri.'%');
+                });
+            })
+            ->orderBy('Nama')
+            ->limit(self::MAKS_HASIL_CARI)
+            ->get(['Id', 'Kode', 'Nama', 'Kelompok'])
+            ->map(fn (AlkesAspak $satu): array => [
+                'Id' => (string) $satu->Id,
+                'Kode' => (string) $satu->Kode,
+                'Nama' => (string) $satu->Nama,
+                'Kelompok' => $satu->Kelompok,
+            ])
+            ->all();
     }
 
     public function impor(ImporKatalogAspakRequest $request, ImporKatalogAspak $aksi): RedirectResponse
@@ -194,7 +238,7 @@ final class AspakController extends Controller
                 fputcsv($keluaran, $profil->judul(), escape: '\\');
 
                 Aset::query()
-                    ->with(['lokasi', 'modelAset.merek', 'pelaksanaanKalibrasi'])
+                    ->with(['lokasi', 'modelAset.merek', 'alkesAspak', 'pelaksanaanKalibrasi'])
                     ->orderBy('KodeAset')
                     ->chunk(300, function ($kumpulan) use ($keluaran, $penyusun, $ruas): void {
                         foreach ($kumpulan as $aset) {
