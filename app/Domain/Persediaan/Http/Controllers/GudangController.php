@@ -21,26 +21,59 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class GudangController extends Controller
 {
-    public function index(Request $request): Response
+    /**
+     * Penyaring daftar gudang, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<Gudang>
+     */
+    private function daftar(Request $request): DaftarTersaring
     {
-        $this->authorize('viewAny', Gudang::class);
-
-        $daftar = DaftarTersaring::untuk(
+        return DaftarTersaring::untuk(
             $request,
             Gudang::query()->with(['lokasi', 'penanggungJawab', 'lokasiGudang'])->withCount('lokasiGudang'),
         )
             ->cari(['Kode', 'Nama'])
             ->urut(['Nama', 'Kode', 'Status'], bawaan: 'Nama')
             ->faset(['Status', 'LokasiId']);
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Gudang::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::dari('Lokasi', fn (Gudang $g): string => BacaRelasi::teks(BacaRelasi::model($g, 'lokasi'), 'Nama')),
+                KolomEkspor::dari('Penanggung Jawab', fn (Gudang $g): string => BacaRelasi::teks(BacaRelasi::model($g, 'penanggungJawab'), 'Nama')),
+                KolomEkspor::atribut('Jumlah Lokasi Gudang', 'lokasi_gudang_count'),
+                KolomEkspor::atribut('Status', 'Status'),
+            ],
+            'daftar-gudang',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
+    public function index(Request $request): Response
+    {
+        $this->authorize('viewAny', Gudang::class);
+
+        $daftar = $this->daftar($request);
 
         $halaman = $daftar->halaman();
 

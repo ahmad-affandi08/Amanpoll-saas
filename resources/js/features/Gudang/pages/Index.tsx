@@ -328,6 +328,7 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
           columns={columns}
           data={gudang.data}
           server={{ meta: gudang.meta, filter }}
+          ekspor="/gudang/ekspor"
           facetedFilters={[
             {
               columnId: 'Status',

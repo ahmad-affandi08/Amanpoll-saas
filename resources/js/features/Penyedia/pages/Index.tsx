@@ -139,6 +139,7 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter, waji
         columns={columns}
         data={penyedia.data}
         server={{ meta: penyedia.meta, filter }}
+        ekspor="/penyedia/ekspor"
         pencarianPlaceholder="Cari nama, kode, atau email penyedia..."
         facetedFilters={[
           {

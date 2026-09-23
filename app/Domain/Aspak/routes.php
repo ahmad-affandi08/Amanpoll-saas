@@ -15,7 +15,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('aspak.')
     ->group(function (): void {
         Route::get('/', [AspakController::class, 'index'])->name('index');
-        Route::get('/ekspor', [AspakController::class, 'ekspor'])->name('ekspor');
+        Route::get('/ekspor', [AspakController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::get('/katalog/cari', [AspakController::class, 'cariKatalog'])->name('katalog.cari');
         Route::post('/katalog/impor', [AspakController::class, 'impor'])->name('katalog.impor');
         Route::post('/pemetaan', [AspakController::class, 'simpanPemetaan'])->name('pemetaan.store');

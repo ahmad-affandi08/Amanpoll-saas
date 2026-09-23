@@ -302,6 +302,7 @@ export default function SukuCadangIndex({
           columns={columns}
           data={sukuCadang.data}
           server={{ meta: sukuCadang.meta, filter }}
+          ekspor="/suku-cadang/ekspor"
           facetedFilters={[
             {
               columnId: 'KategoriSukuCadangId',

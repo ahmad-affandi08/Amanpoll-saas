@@ -164,6 +164,7 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
           columns={columns}
           data={stok.data}
           server={{ meta: stok.meta, filter }}
+          ekspor="/stok-suku-cadang/ekspor"
           pencarianPlaceholder="Cari suku cadang atau gudang..."
           pesanKosong="Tidak ada saldo stok yang cocok."
         />

@@ -16,6 +16,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->group(function (): void {
         Route::get('/', [PenyediaController::class, 'index'])->name('index');
         Route::post('/', [PenyediaController::class, 'store'])->name('store');
+        Route::get('/ekspor', [PenyediaController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::put('/{penyedia}', [PenyediaController::class, 'update'])->name('update');
         Route::delete('/{penyedia}', [PenyediaController::class, 'destroy'])->name('destroy');
 

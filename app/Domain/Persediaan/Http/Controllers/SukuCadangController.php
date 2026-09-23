@@ -27,28 +27,85 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class SukuCadangController extends Controller
 {
     /** Riwayat pemakaian dapat panjang; dipotong dan jumlah seluruhnya tetap disebut. */
     private const MAKS_RIWAYAT = 50;
 
-    public function index(Request $request): Response
+    /**
+     * Penyaring daftar suku cadang, dipakai bersama halaman dan ekspornya.
+     *
+     * Kueri dasarnya dioper karena keduanya memilih kolom yang berbeda: halaman
+     * menjumlahkan stok hanya untuk baris yang tampil, sedangkan ekspor perlu
+     * stok setiap baris.
+     *
+     * @param  Builder<SukuCadang>  $kueri
+     * @return DaftarTersaring<SukuCadang>
+     */
+    private function daftar(Request $request, Builder $kueri): DaftarTersaring
     {
-        $this->authorize('viewAny', SukuCadang::class);
-
-        $daftar = DaftarTersaring::untuk($request, SukuCadang::query()->with('kategoriSukuCadang'))
+        return DaftarTersaring::untuk($request, $kueri)
             ->cari(['Kode', 'Nama'])
             // Hanya kolom nyata; Kategori dan Stok Tersedia turunan, jadi tidak dapat diurutkan server.
             ->urut(['Nama', 'Status'], bawaan: 'Nama')
             ->faset(['KategoriSukuCadangId']);
+    }
+
+    /** Daftar suku cadang beserta stok bersihnya, seperti yang tampil di layar. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', SukuCadang::class);
+
+        // Stok dihitung lewat subkueri, bukan per halaman: ekspor tidak punya
+        // halaman, dan laporan persediaan tanpa angka stok tidak ada gunanya.
+        $kueri = SukuCadang::query()
+            ->with('kategoriSukuCadang')
+            ->select('SukuCadang.*')
+            ->selectSub(
+                DB::table('StokSukuCadang')
+                    ->selectRaw('COALESCE(SUM(JumlahTersedia) - SUM(JumlahDitahan), 0)')
+                    ->whereColumn('StokSukuCadang.SukuCadangId', 'SukuCadang.Id'),
+                'JumlahTersediaBersih',
+            );
+
+        return $ekspor->unduh(
+            $this->daftar($request, $kueri)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::dari('Kategori', fn (SukuCadang $s): string => BacaRelasi::teks(BacaRelasi::model($s, 'kategoriSukuCadang'), 'Nama')),
+                KolomEkspor::atribut('Nomor Bagian', 'NomorBagian'),
+                KolomEkspor::atribut('Satuan', 'SatuanDasar'),
+                KolomEkspor::atribut('Stok Tersedia', 'JumlahTersediaBersih'),
+                KolomEkspor::atribut('Stok Minimum', 'StokMinimum'),
+                KolomEkspor::atribut('Stok Maksimum', 'StokMaksimum'),
+                KolomEkspor::atribut('Titik Pesan Ulang', 'TitikPesanUlang'),
+                KolomEkspor::atribut('Harga Rata-rata', 'HargaRataRata'),
+                KolomEkspor::atribut('Status', 'Status'),
+            ],
+            'daftar-suku-cadang',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
+    public function index(Request $request): Response
+    {
+        $this->authorize('viewAny', SukuCadang::class);
+
+        $daftar = $this->daftar($request, SukuCadang::query()->with('kategoriSukuCadang'));
 
         $halaman = $daftar->halaman();
 

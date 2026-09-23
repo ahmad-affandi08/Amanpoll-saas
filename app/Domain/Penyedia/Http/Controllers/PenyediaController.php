@@ -15,6 +15,8 @@ use App\Domain\Penyedia\Http\Resources\PenyediaResource;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\KategoriPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,14 +24,18 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PenyediaController extends Controller
 {
-    public function index(Request $request): Response
+    /**
+     * Penyaring daftar penyedia, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<Penyedia>
+     */
+    private function daftar(Request $request): DaftarTersaring
     {
-        $this->authorize('viewAny', Penyedia::class);
-
-        $daftar = DaftarTersaring::untuk($request, Penyedia::query()->with('kategoriPenyedia'))
+        return DaftarTersaring::untuk($request, Penyedia::query()->with('kategoriPenyedia'))
             ->cari(['Kode', 'Nama', 'NamaLegal', 'Email'])
             ->urut(['Nama', 'Kode', 'Status', 'Kota'], bawaan: 'Nama')
             ->faset(['Status'])
@@ -40,6 +46,36 @@ final class PenyediaController extends Controller
                     fn (Builder $kategori) => $kategori->whereIn('KategoriPenyedia.Id', explode(',', $nilai)),
                 );
             });
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Penyedia::class);
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Nama Legal', 'NamaLegal'),
+                KolomEkspor::dari('Kategori', fn (Penyedia $p): string => $p->kategoriPenyedia->pluck('Nama')->implode(', ')),
+                KolomEkspor::atribut('NPWP', 'NomorIdentitasPajak'),
+                KolomEkspor::atribut('Email', 'Email'),
+                KolomEkspor::atribut('Telepon', 'Telepon'),
+                KolomEkspor::atribut('Kota', 'Kota'),
+                KolomEkspor::atribut('Provinsi', 'Provinsi'),
+                KolomEkspor::atribut('Status', 'Status'),
+            ],
+            'daftar-penyedia',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
+    public function index(Request $request): Response
+    {
+        $this->authorize('viewAny', Penyedia::class);
+
+        $daftar = $this->daftar($request);
 
         return Inertia::render('Penyedia/Index', [
             'penyedia' => PenyediaResource::collection($daftar->halaman()),

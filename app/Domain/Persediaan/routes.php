@@ -15,6 +15,8 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::prefix('gudang')->name('gudang.')->group(function (): void {
         Route::get('/', [GudangController::class, 'index'])->name('index');
         Route::post('/', [GudangController::class, 'store'])->name('store');
+        // Sebelum '/{gudang}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/ekspor', [GudangController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::get('/{gudang}', [GudangController::class, 'show'])->name('show');
         Route::put('/{gudang}', [GudangController::class, 'update'])->name('update');
         Route::delete('/{gudang}', [GudangController::class, 'destroy'])->name('destroy');
@@ -33,6 +35,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::prefix('suku-cadang')->name('suku-cadang.')->group(function (): void {
         Route::get('/', [SukuCadangController::class, 'index'])->name('index');
         Route::post('/', [SukuCadangController::class, 'store'])->name('store');
+        Route::get('/ekspor', [SukuCadangController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::get('/{sukuCadang}', [SukuCadangController::class, 'show'])->name('show');
         Route::put('/{sukuCadang}', [SukuCadangController::class, 'update'])->name('update');
         Route::delete('/{sukuCadang}', [SukuCadangController::class, 'destroy'])->name('destroy');
@@ -48,6 +51,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::get('/aset/{aset}/suku-cadang-kompatibel', [KompatibilitasSukuCadangController::class, 'untukAset'])->name('aset.suku-cadang-kompatibel');
 
     Route::get('/stok-suku-cadang', [StokSukuCadangController::class, 'index'])->name('stok-suku-cadang.index');
+    Route::get('/stok-suku-cadang/ekspor', [StokSukuCadangController::class, 'ekspor'])->middleware('throttle:ekspor')->name('stok-suku-cadang.ekspor');
 
     Route::prefix('mutasi-stok')->name('mutasi-stok.')->group(function (): void {
         Route::get('/', [MutasiStokController::class, 'index'])->name('index');
