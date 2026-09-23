@@ -17,6 +17,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 use ZipArchive;
@@ -116,8 +117,9 @@ class EksporDaftarTest extends TestCase
     public static function formatBerkas(): array
     {
         return [
-            // fputcsv mengutip kepala kolom yang mengandung spasi.
-            'csv' => ['csv', '"Kode Aset"'],
+            // CSV tidak punya penanda biner; yang membuka berkasnya sekarang
+            // adalah baris pertama kop, dan fputcsv mengutip nilai berspasi.
+            'csv' => ['csv', 'Organisasi,"Organisasi Ekspor"'],
             'xlsx' => ['xlsx', 'PK'],
             'pdf' => ['pdf', '%PDF'],
         ];
@@ -200,5 +202,214 @@ class EksporDaftarTest extends TestCase
         $tanpaIzin = $this->buatPengguna($this->organisasi, denganIzin: false);
 
         $this->actingAs($tanpaIzin)->get('/aset/ekspor')->assertForbidden();
+    }
+
+    /**
+     * Kop berkas ekspor (kepala dokumen).
+     *
+     * Berkas ekspor beredar di luar aplikasi dan tidak dapat ditarik kembali.
+     * Tanpa kop, yang memegangnya tidak tahu ini milik rumah sakit mana, daftar
+     * apa, sejak kapan angkanya berlaku, dan dengan penyaring apa -- berkasnya
+     * terlihat sah dan tetap menyesatkan.
+     */
+    /** @return array<string, array{0: string}> */
+    public static function namaFormat(): array
+    {
+        return ['csv' => ['csv'], 'xlsx' => ['xlsx'], 'pdf' => ['pdf']];
+    }
+
+    #[DataProvider('namaFormat')]
+    public function test_kop_menyebut_nama_organisasi_di_setiap_format(string $format): void
+    {
+        $this->buatAset($this->organisasi);
+
+        $teks = $this->teksBerkas($format, $this->unduh('?format='.$format));
+
+        $this->assertStringContainsString('Organisasi Ekspor', $teks);
+    }
+
+    #[DataProvider('namaFormat')]
+    public function test_kop_menyebut_judul_dan_waktu_cetak_di_setiap_format(string $format): void
+    {
+        $this->buatAset($this->organisasi);
+
+        $teks = $this->teksBerkas($format, $this->unduh('?format='.$format));
+
+        // Judulnya diturunkan dari nama dasar berkas: `daftar-aset`.
+        $this->assertStringContainsString('Daftar Aset', $teks);
+        $this->assertStringContainsString('Asia/Jakarta', $teks);
+        $this->assertStringContainsString(
+            now('Asia/Jakarta')->format('d-m-Y'),
+            $teks,
+            'Tanggal cetak harus tercantum dalam zona waktu organisasinya.',
+        );
+    }
+
+    #[DataProvider('namaFormat')]
+    public function test_kop_tidak_pernah_menyebut_organisasi_lain(string $format): void
+    {
+        $lain = Organisasi::create(['Kode' => 'ORG-LAIN', 'Nama' => 'Rumah Sakit Tetangga']);
+        $this->buatAset($lain);
+        $this->buatAset($this->organisasi);
+
+        $teks = $this->teksBerkas($format, $this->unduh('?format='.$format));
+
+        $this->assertStringContainsString('Organisasi Ekspor', $teks);
+        $this->assertStringNotContainsString('Rumah Sakit Tetangga', $teks);
+    }
+
+    #[DataProvider('namaFormat')]
+    public function test_kop_mencetak_penyaring_yang_sedang_berlaku(string $format): void
+    {
+        $this->buatAset($this->organisasi, ['Nama' => 'Defibrilator']);
+
+        $teks = $this->teksBerkas($format, $this->unduh('?format='.$format.'&cari=Defibrilator'));
+
+        $this->assertStringContainsString('Penyaring', $teks);
+        $this->assertStringContainsString('Cari: Defibrilator', $teks);
+        $this->assertStringNotContainsString(
+            'Format: '.$format,
+            $teks,
+            'Parameter yang hanya mengatur bentuk berkas bukan penyaring isinya.',
+        );
+    }
+
+    public function test_kop_menyebut_nama_legal_bila_berbeda_dari_nama_sehari_hari(): void
+    {
+        $this->organisasi->update(['NamaLegal' => 'RSUD Kabupaten Sragen']);
+        $this->buatAset($this->organisasi);
+
+        $isi = $this->unduh();
+
+        $this->assertStringContainsString('Organisasi Ekspor (RSUD Kabupaten Sragen)', $isi);
+    }
+
+    public function test_waktu_cetak_mengikuti_zona_waktu_organisasinya(): void
+    {
+        $this->organisasi->update(['ZonaWaktu' => 'Asia/Jayapura']);
+        $this->buatAset($this->organisasi);
+
+        $isi = $this->unduh();
+
+        $this->assertStringContainsString('Asia/Jayapura', $isi);
+        $this->assertStringContainsString(now('Asia/Jayapura')->format('d-m-Y H:i'), $isi);
+    }
+
+    /**
+     * Nama organisasi berasal dari data tenant, jadi ia melewati penetralan
+     * rumus yang sama dengan isi tabelnya. Kop yang tidak dinetralkan memindahkan
+     * injeksi rumus ke baris pertama berkas, tempat yang paling pasti dibaca.
+     */
+    public function test_nama_organisasi_berawalan_rumus_dinetralkan_di_kop_csv(): void
+    {
+        $this->organisasi->update(['Nama' => '=cmd|\' /c calc\'!A0']);
+        $this->buatAset($this->organisasi);
+
+        $isi = $this->unduh();
+
+        $this->assertStringContainsString("'=cmd|' /c calc'!A0", $isi);
+    }
+
+    public function test_nama_organisasi_berawalan_rumus_tidak_menjadi_sel_rumus_xlsx(): void
+    {
+        $this->organisasi->update(['Nama' => '=cmd|\' /c calc\'!A0']);
+        $this->buatAset($this->organisasi);
+
+        $xml = $this->teksBerkas('xlsx', $this->unduh('?format=xlsx'));
+
+        $this->assertStringNotContainsString('<f>', $xml, 'Nama organisasi tidak boleh menjadi sel rumus.');
+        // Ketiadaan <f> saja juga benar bila kopnya memang tidak ditulis;
+        // nilai yang sudah dinetralkan harus benar-benar ada di lembarnya.
+        $this->assertStringContainsString('&#039;=cmd', $xml);
+    }
+
+    /** PNG 1x1 yang sah; yang diuji logonya ikut tercetak, bukan rupanya. */
+    private const PNG_SATU_PIKSEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+    public function test_kop_pdf_menyisipkan_logo_yang_tersimpan_di_disk_aplikasi(): void
+    {
+        Storage::fake('public', ['url' => (string) config('filesystems.disks.public.url')]);
+        Storage::disk('public')->put('organisasi/logo.png', (string) base64_decode(self::PNG_SATU_PIKSEL, true));
+        $this->organisasi->update(['LogoUrl' => Storage::disk('public')->url('organisasi/logo.png')]);
+        $this->buatAset($this->organisasi);
+
+        $isi = $this->unduh('?format=pdf');
+
+        $this->assertStringContainsString('/Subtype /Image', $isi, 'Logo lokal seharusnya ikut tercetak di PDF.');
+        $this->assertStringContainsString('Organisasi Ekspor', $this->teksPdf($isi));
+    }
+
+    /**
+     * LogoUrl diisi tenant. Dompdf berjalan dengan isRemoteEnabled mati, jadi
+     * URL jarak jauh tidak pernah diambil server -- dan ekspornya tetap jadi,
+     * hanya tanpa logo.
+     */
+    public function test_logo_jarak_jauh_dilewati_tanpa_menggagalkan_ekspor_pdf(): void
+    {
+        $this->organisasi->update(['LogoUrl' => 'https://penyerang.test/logo.png']);
+        $this->buatAset($this->organisasi);
+
+        $isi = $this->unduh('?format=pdf');
+
+        $this->assertStringNotContainsString('/Subtype /Image', $isi, 'Gambar jarak jauh tidak boleh masuk ke PDF.');
+        $this->assertStringContainsString('Organisasi Ekspor', $this->teksPdf($isi));
+    }
+
+    /** Isi terbaca dari berkas apa pun formatnya, supaya kopnya diperiksa di berkas yang sungguhan. */
+    private function teksBerkas(string $format, string $isi): string
+    {
+        return match ($format) {
+            'xlsx' => $this->lembarXlsx($isi),
+            'pdf' => $this->teksPdf($isi),
+            default => $isi,
+        };
+    }
+
+    private function lembarXlsx(string $isi): string
+    {
+        $path = tempnam(sys_get_temp_dir(), 'uji').'.xlsx';
+        file_put_contents($path, $isi);
+
+        try {
+            $zip = new ZipArchive;
+            $this->assertTrue($zip->open($path) === true, 'Berkas XLSX tidak dapat dibuka.');
+            $xml = (string) $zip->getFromName('xl/worksheets/sheet1.xml');
+            $zip->close();
+
+            $this->assertNotSame('', $xml, 'sheet1.xml tidak ditemukan di dalam XLSX.');
+
+            return $xml;
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    /**
+     * Teks yang sungguh tercetak di PDF-nya, bukan HTML sebelum dirender.
+     *
+     * Dompdf memampatkan aliran isinya dan menulis teks sebagai UTF-16BE, jadi
+     * berkasnya dibuka dulu: aliran dilepas mampatnya, lalu byte NUL penyela
+     * antarhurufnya dibuang. Tanpa langkah ini isi PDF tidak dapat dicari sama
+     * sekali, dan penjaganya akan berhenti pada '%PDF' -- yang hanya
+     * membuktikan berkasnya PDF, bukan bahwa kopnya ada di dalamnya.
+     */
+    private function teksPdf(string $isi): string
+    {
+        $this->assertStringStartsWith('%PDF', $isi);
+
+        preg_match_all('/stream\r?\n(.*?)endstream/s', $isi, $cocok);
+
+        $teks = '';
+        foreach ($cocok[1] as $aliran) {
+            $lepas = @gzuncompress($aliran);
+
+            if ($lepas !== false) {
+                $teks .= $lepas;
+            }
+        }
+
+        $this->assertNotSame('', $teks, 'Tidak ada aliran PDF yang dapat dibaca.');
+
+        return str_replace("\x00", '', $teks);
     }
 }
