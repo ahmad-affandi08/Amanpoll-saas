@@ -8,10 +8,14 @@ use App\Domain\Aset\Application\Services\PenghitungKelayakanAset;
 use App\Domain\Aset\Domain\ValueObjects\ParameterKelayakan;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Kelayakan ekonomi aset: AIC dan MMEL (PRD 34).
@@ -39,16 +43,74 @@ final class KelayakanAsetController extends Controller
     }
 
     /** Daftar aset beserta putusan kelayakannya, untuk menyusun usulan penggantian. */
+    /**
+     * Penyaring daftar kelayakan, dipakai bersama halaman dan ekspornya.
+     *
+     * @return DaftarTersaring<Aset>
+     */
+    private function daftar(Request $request): DaftarTersaring
+    {
+        return DaftarTersaring::untuk($request, Aset::query()->with(['kategoriAset', 'lokasi']))
+            ->cari(['KodeAset', 'Nama', 'NomorSeri'])
+            ->urut(['Nama', 'KodeAset', 'HargaPerolehan', 'TanggalPerolehan'], bawaan: 'Nama')
+            ->faset(['Status', 'Kondisi']);
+    }
+
+    /**
+     * Analisis kelayakan per aset, untuk melampiri usulan penggantian.
+     *
+     * Angkanya dihitung per aset, dan setiap kolom membutuhkan hasil hitungan
+     * yang sama. Hasil aset terakhir disimpan satu slot saja -- cukup karena
+     * kolom dinilai berurutan per baris, dan tidak menumpuk seperti peta yang
+     * tumbuh mengikuti jumlah barisnya.
+     */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Aset::class);
+
+        $parameter = ParameterKelayakan::dariKonfigurasi();
+        $idTerakhir = null;
+        $angkaTerakhir = [];
+
+        $angka = function (Aset $aset) use ($parameter, &$idTerakhir, &$angkaTerakhir): array {
+            if ($idTerakhir !== $aset->Id) {
+                $idTerakhir = $aset->Id;
+                $angkaTerakhir = $this->penghitung->untuk($aset, $parameter);
+            }
+
+            return $angkaTerakhir;
+        };
+
+        return $ekspor->unduh(
+            $this->daftar($request)->kueriTersaring(),
+            [
+                KolomEkspor::atribut('Kode Aset', 'KodeAset'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::dari('Kategori', fn (Aset $a): string => BacaRelasi::teks(BacaRelasi::model($a, 'kategoriAset'), 'Nama')),
+                KolomEkspor::dari('Lokasi', fn (Aset $a): string => BacaRelasi::teks(BacaRelasi::model($a, 'lokasi'), 'Nama')),
+                KolomEkspor::atribut('Kondisi', 'Kondisi'),
+                KolomEkspor::atribut('Harga Perolehan', 'HargaPerolehan'),
+                KolomEkspor::dari('Usia Pakai (tahun)', fn (Aset $a): float => (float) $angka($a)['UsiaPakaiTahun']),
+                KolomEkspor::dari('Sisa Usia Manfaat (tahun)', fn (Aset $a): float => (float) $angka($a)['SisaUsiaManfaatTahun']),
+                KolomEkspor::dari('Harga Perkiraan Pengganti', fn (Aset $a): float => (float) $angka($a)['HargaPerkiraanPengganti']),
+                KolomEkspor::dari('AIC', fn (Aset $a): float => (float) $angka($a)['Aic']),
+                KolomEkspor::dari('MMEL', fn (Aset $a): float => (float) $angka($a)['Mmel']),
+                KolomEkspor::dari('Biaya Perbaikan Kumulatif', fn (Aset $a): float => (float) $angka($a)['BiayaPerbaikanKumulatif']),
+                KolomEkspor::dari('Layak Diperbaiki', fn (Aset $a): string => $angka($a)['LayakDiperbaiki'] ? 'Ya' : 'Tidak'),
+                KolomEkspor::dari('Alasan', fn (Aset $a): string => (string) $angka($a)['Alasan']),
+            ],
+            'kelayakan-aset',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', Aset::class);
 
         $parameter = ParameterKelayakan::dariKonfigurasi();
 
-        $daftar = DaftarTersaring::untuk($request, Aset::query()->with(['kategoriAset', 'lokasi']))
-            ->cari(['KodeAset', 'Nama', 'NomorSeri'])
-            ->urut(['Nama', 'KodeAset', 'HargaPerolehan', 'TanggalPerolehan'], bawaan: 'Nama')
-            ->faset(['Status', 'Kondisi']);
+        $daftar = $this->daftar($request);
 
         return Inertia::render('Aset/Kelayakan', [
             'aset' => $daftar->halamanTerpeta(function (Aset $satu) use ($parameter): array {

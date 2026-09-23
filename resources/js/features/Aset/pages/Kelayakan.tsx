@@ -133,6 +133,7 @@ export default function AsetKelayakan({ aset, filter, parameter }: Props) {
         columns={columns}
         data={aset.data}
         server={{ meta: aset.meta, filter }}
+        ekspor="/aset/kelayakan/ekspor"
         pencarianPlaceholder="Cari kode, nama, atau nomor seri..."
         pesanKosong={adaPenyaringAktif(filter) ? 'Tidak ada aset yang cocok.' : 'Belum ada aset.'}
       />

@@ -47,6 +47,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
             // Sebelum '/{aset}' supaya 'label' tidak tertelan sebagai id aset.
             Route::get('/label', LabelAsetController::class)->name('label');
             Route::get('/kelayakan', [KelayakanAsetController::class, 'index'])->name('kelayakan.index');
+            Route::get('/kelayakan/ekspor', [KelayakanAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('kelayakan.ekspor');
             Route::get('/{aset}', [AsetController::class, 'show'])->name('show');
             Route::put('/{aset}', [AsetController::class, 'update'])->name('update');
             Route::delete('/{aset}', [AsetController::class, 'destroy'])->name('destroy');

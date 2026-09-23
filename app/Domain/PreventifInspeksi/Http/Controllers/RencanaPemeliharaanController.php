@@ -13,11 +13,15 @@ use App\Domain\PreventifInspeksi\Http\Requests\SimpanRencanaPemeliharaanRequest;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaan;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\TemplatDaftarPeriksa;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class RencanaPemeliharaanController extends Controller
 {
@@ -25,6 +29,35 @@ final class RencanaPemeliharaanController extends Controller
         private readonly KelolaRencanaPemeliharaan $kelolaRencana,
         private readonly JadwalkanPemeliharaanPreventif $penjadwalPreventif,
     ) {}
+
+    /** Jadwal preventif beserta aset yang tercakup di tiap rencana. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', RencanaPemeliharaan::class);
+
+        return $ekspor->unduh(
+            RencanaPemeliharaan::query()
+                ->with(['templatDaftarPeriksa'])
+                ->withCount('aset')
+                ->orderBy('Nama')
+                ->orderBy('Id'),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::atribut('Prioritas', 'Prioritas'),
+                KolomEkspor::atribut('Strategi Jadwal', 'StrategiJadwal'),
+                KolomEkspor::atribut('Interval', 'IntervalNilai'),
+                KolomEkspor::atribut('Satuan Interval', 'IntervalSatuan'),
+                KolomEkspor::atribut('Toleransi (hari)', 'ToleransiHari'),
+                KolomEkspor::dari('Daftar Periksa', fn (RencanaPemeliharaan $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'templatDaftarPeriksa'), 'Nama')),
+                KolomEkspor::atribut('Jumlah Aset', 'aset_count'),
+                KolomEkspor::dari('Aktif', fn (RencanaPemeliharaan $r): string => $r->Aktif ? 'Ya' : 'Tidak'),
+            ],
+            'jadwal-preventif',
+            EksporDaftar::formatDari($request),
+        );
+    }
 
     public function index(Request $request): Response
     {

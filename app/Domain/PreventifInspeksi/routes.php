@@ -36,6 +36,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
         // Rencana Pemeliharaan (Preventif)
         Route::get('/rencana-pemeliharaan', [RencanaPemeliharaanController::class, 'index'])->name('rencana-pemeliharaan.index');
+        Route::get('/rencana-pemeliharaan/ekspor', [RencanaPemeliharaanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('rencana-pemeliharaan.ekspor');
         Route::post('/rencana-pemeliharaan', [RencanaPemeliharaanController::class, 'store'])->name('rencana-pemeliharaan.store');
         Route::get('/rencana-pemeliharaan/{rencanaPemeliharaan}', [RencanaPemeliharaanController::class, 'show'])->name('rencana-pemeliharaan.show');
         Route::put('/rencana-pemeliharaan/{rencanaPemeliharaan}', [RencanaPemeliharaanController::class, 'update'])->name('rencana-pemeliharaan.update');
@@ -50,6 +51,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
         // Inspeksi
         Route::get('/inspeksi', [InspeksiController::class, 'index'])->name('inspeksi.index');
+        Route::get('/inspeksi/ekspor', [InspeksiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('inspeksi.ekspor');
         Route::post('/inspeksi', [InspeksiController::class, 'store'])->name('inspeksi.store');
         Route::get('/inspeksi/{inspeksi}', [InspeksiController::class, 'show'])->name('inspeksi.show');
         Route::post('/inspeksi/{inspeksi}/laksanakan', [InspeksiController::class, 'laksanakan'])->name('inspeksi.laksanakan');

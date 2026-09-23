@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -103,6 +104,7 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
           deskripsi="Otomatisasi siklus pemeliharaan berkala, pencegahan downtime, dan kepatuhan servis aset."
           aksi={
             <>
+              <TombolEkspor url="/preventif-inspeksi/rencana-pemeliharaan/ekspor" />
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
