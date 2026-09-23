@@ -17,6 +17,7 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Carbon\CarbonImmutable;
 use Database\Seeders\FiturPaketSeeder;
+use Database\Seeders\IzinSeeder;
 use Illuminate\Support\Str;
 
 /** Dasar test trial: organisasi, paket, dan prospek yang siap dipakai. */
@@ -32,6 +33,9 @@ abstract class KasusTrial extends KasusProspek
 
         CarbonImmutable::setTestNow('2026-06-15 09:00:00');
         $this->seed(FiturPaketSeeder::class);
+        // Tanpa ini tabel Izin kosong, sehingga assertion sebanyak-banyaknya
+        // "pemilik memegang seluruh izin" hanya membandingkan 0 dengan 0.
+        $this->seed(IzinSeeder::class);
 
         $this->organisasi = Organisasi::create([
             'Kode' => 'ORG-TRIAL-'.uniqid(),

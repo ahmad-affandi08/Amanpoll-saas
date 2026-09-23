@@ -30,7 +30,6 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
-use Database\Seeders\IzinSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -81,8 +80,6 @@ final class DaftarTrialTest extends KasusTrial
      */
     public function test_pendaftaran_memasang_peran_bawaan(): void
     {
-        $this->seed(IzinSeeder::class);
-
         $trial = $this->daftar();
 
         app(KonteksOrganisasi::class)->tetapkan($trial->OrganisasiId);
