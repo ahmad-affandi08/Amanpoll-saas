@@ -18,27 +18,64 @@ use App\Domain\SiklusAset\Http\Resources\PengajuanPenghapusanAsetResource;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailPenghapusanAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusanAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PengajuanPenghapusanAsetController extends Controller
 {
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<PengajuanPenghapusanAset>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return PengajuanPenghapusanAset::query()
+            ->with('diajukanOleh')
+            ->withCount('detailPenghapusanAset')
+            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
+            ->latest('DiajukanPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', PengajuanPenghapusanAset::class);
+
+        $filter = $request->validate(['status' => ['nullable', 'string']]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::atribut('Metode Penghapusan', 'MetodePenghapusan'),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::atribut('Jumlah Aset', 'detail_penghapusan_aset_count'),
+                KolomEkspor::dari('Diajukan Oleh', fn (PengajuanPenghapusanAset $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'diajukanOleh'), 'Nama')),
+                KolomEkspor::tanggal('Diajukan', 'DiajukanPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Selesai', 'DiselesaikanPada', 'Y-m-d H:i'),
+                KolomEkspor::atribut('Alasan', 'Alasan'),
+            ],
+            'daftar-penghapusan-aset',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', PengajuanPenghapusanAset::class);
 
         $filter = $request->validate(['status' => ['nullable', 'string']]);
 
-        $pengajuan = PengajuanPenghapusanAset::query()
-            ->with('diajukanOleh')
-            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
-            ->latest('DiajukanPada')
-            ->paginate(25)
-            ->withQueryString();
+        $pengajuan = $this->kueriTersaring($filter)->paginate(25)->withQueryString();
 
         return Inertia::render('PenghapusanAset/Index', [
             'wajib' => ['pengajuan' => AturanWajib::untuk(SimpanPengajuanPenghapusanAsetRequest::class)],

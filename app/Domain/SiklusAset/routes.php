@@ -11,6 +11,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::prefix('mutasi-aset')->name('mutasiAset.')->group(function (): void {
         Route::get('/', [PermintaanMutasiAsetController::class, 'index'])->name('index');
         Route::post('/', [PermintaanMutasiAsetController::class, 'store'])->name('store');
+        Route::get('/ekspor', [PermintaanMutasiAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::get('/{permintaanMutasiAset}', [PermintaanMutasiAsetController::class, 'show'])->name('show');
         Route::post('/{permintaanMutasiAset}/detail', [PermintaanMutasiAsetController::class, 'storeDetail'])->name('detail.store');
         Route::delete('/detail/{detailMutasiAset}', [PermintaanMutasiAsetController::class, 'destroyDetail'])->name('detail.destroy');
@@ -24,6 +25,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::prefix('serah-terima-aset')->name('serahTerimaAset.')->group(function (): void {
         Route::get('/', [SerahTerimaAsetController::class, 'index'])->name('index');
         Route::post('/', [SerahTerimaAsetController::class, 'store'])->name('store');
+        Route::get('/ekspor', [SerahTerimaAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::get('/{serahTerimaAset}', [SerahTerimaAsetController::class, 'show'])->name('show');
         Route::post('/{serahTerimaAset}/detail', [SerahTerimaAsetController::class, 'storeDetail'])->name('detail.store');
         Route::post('/{serahTerimaAset}/terima', [SerahTerimaAsetController::class, 'terima'])->name('terima');
@@ -32,6 +34,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::prefix('penghapusan-aset')->name('penghapusanAset.')->group(function (): void {
         Route::get('/', [PengajuanPenghapusanAsetController::class, 'index'])->name('index');
         Route::post('/', [PengajuanPenghapusanAsetController::class, 'store'])->name('store');
+        Route::get('/ekspor', [PengajuanPenghapusanAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::get('/{pengajuanPenghapusanAset}', [PengajuanPenghapusanAsetController::class, 'show'])->name('show');
         Route::post('/{pengajuanPenghapusanAset}/detail', [PengajuanPenghapusanAsetController::class, 'storeDetail'])->name('detail.store');
         Route::delete('/detail/{detailPenghapusanAset}', [PengajuanPenghapusanAsetController::class, 'destroyDetail'])->name('detail.destroy');

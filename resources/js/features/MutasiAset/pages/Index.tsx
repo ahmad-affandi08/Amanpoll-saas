@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -170,6 +171,7 @@ export default function MutasiAsetIndex({
           deskripsi="Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi."
           aksi={
             <>
+              <TombolEkspor url="/mutasi-aset/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatMutasi
                 lokasi={lokasi}
                 unitOrganisasi={unitOrganisasi}

@@ -27,16 +27,64 @@ use App\Domain\SiklusAset\Http\Resources\PermintaanMutasiAsetResource;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\DetailMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PermintaanMutasiAsetController extends Controller
 {
+    /**
+     * Penyaring daftar permintaan mutasi, dipakai bersama halaman dan ekspornya.
+     *
+     * @param  array<string, mixed>  $filter
+     * @return Builder<PermintaanMutasiAset>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return PermintaanMutasiAset::query()
+            ->with(['unitAsal', 'unitTujuan', 'lokasiAsal', 'lokasiTujuan', 'dimintaOleh'])
+            ->withCount('detailMutasiAset')
+            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
+            ->latest('DimintaPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', PermintaanMutasiAset::class);
+
+        $filter = $request->validate(['status' => ['nullable', 'string']]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::dari('Jenis Mutasi', fn (PermintaanMutasiAset $p): string => JenisPermintaanMutasiAset::tryFrom((string) $p->JenisMutasi)?->label() ?? (string) $p->JenisMutasi),
+                KolomEkspor::dari('Unit Asal', fn (PermintaanMutasiAset $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'unitAsal'), 'Nama')),
+                KolomEkspor::dari('Unit Tujuan', fn (PermintaanMutasiAset $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'unitTujuan'), 'Nama')),
+                KolomEkspor::dari('Lokasi Asal', fn (PermintaanMutasiAset $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'lokasiAsal'), 'Nama')),
+                KolomEkspor::dari('Lokasi Tujuan', fn (PermintaanMutasiAset $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'lokasiTujuan'), 'Nama')),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::atribut('Jumlah Aset', 'detail_mutasi_aset_count'),
+                KolomEkspor::dari('Diminta Oleh', fn (PermintaanMutasiAset $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'dimintaOleh'), 'Nama')),
+                KolomEkspor::tanggal('Diminta', 'DimintaPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Disetujui', 'DisetujuiPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Selesai', 'SelesaiPada', 'Y-m-d H:i'),
+                KolomEkspor::atribut('Alasan', 'Alasan'),
+            ],
+            'daftar-mutasi-aset',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', PermintaanMutasiAset::class);
@@ -45,12 +93,7 @@ final class PermintaanMutasiAsetController extends Controller
             'status' => ['nullable', 'string'],
         ]);
 
-        $permintaan = PermintaanMutasiAset::query()
-            ->with(['unitAsal', 'unitTujuan', 'lokasiAsal', 'lokasiTujuan', 'dimintaOleh'])
-            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
-            ->latest('DimintaPada')
-            ->paginate(25)
-            ->withQueryString();
+        $permintaan = $this->kueriTersaring($filter)->paginate(25)->withQueryString();
 
         return Inertia::render('MutasiAset/Index', [
             'wajib' => ['mutasi' => AturanWajib::untuk(SimpanPermintaanMutasiAsetRequest::class)],

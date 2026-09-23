@@ -17,27 +17,65 @@ use App\Domain\SiklusAset\Http\Requests\TerimaSerahTerimaAsetRequest;
 use App\Domain\SiklusAset\Http\Resources\SerahTerimaAsetResource;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class SerahTerimaAsetController extends Controller
 {
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<SerahTerimaAset>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return SerahTerimaAset::query()
+            ->with(['pihakMenyerahkan', 'pihakMenerima'])
+            ->withCount('detailSerahTerimaAset')
+            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
+            ->latest('DibuatPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', SerahTerimaAset::class);
+
+        $filter = $request->validate(['status' => ['nullable', 'string']]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::dari('Pihak Menyerahkan', fn (SerahTerimaAset $s): string => BacaRelasi::teks(BacaRelasi::model($s, 'pihakMenyerahkan'), 'Nama')),
+                KolomEkspor::dari('Pihak Menerima', fn (SerahTerimaAset $s): string => BacaRelasi::teks(BacaRelasi::model($s, 'pihakMenerima'), 'Nama')),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::atribut('Jumlah Aset', 'detail_serah_terima_aset_count'),
+                KolomEkspor::tanggal('Diserahkan', 'DiserahkanPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Diterima', 'DiterimaPada', 'Y-m-d H:i'),
+                KolomEkspor::atribut('Catatan', 'Catatan'),
+            ],
+            'daftar-serah-terima-aset',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', SerahTerimaAset::class);
 
         $filter = $request->validate(['status' => ['nullable', 'string']]);
 
-        $serahTerima = SerahTerimaAset::query()
-            ->with(['pihakMenyerahkan', 'pihakMenerima'])
-            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
-            ->latest('DibuatPada')
-            ->paginate(25)
-            ->withQueryString();
+        $serahTerima = $this->kueriTersaring($filter)->paginate(25)->withQueryString();
 
         return Inertia::render('SerahTerimaAset/Index', [
             'wajib' => ['serahTerima' => AturanWajib::untuk(SimpanSerahTerimaAsetRequest::class)],

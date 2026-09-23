@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -98,6 +99,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
           deskripsi="Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi."
           aksi={
             <>
+              <TombolEkspor url="/serah-terima-aset/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatSerahTerima wajib={wajib.serahTerima} />
             </>
           }

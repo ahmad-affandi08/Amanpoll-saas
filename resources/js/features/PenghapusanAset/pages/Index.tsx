@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -115,6 +116,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
           deskripsi="Pengajuan pelepasan aset -- draft, persetujuan, sampai eksekusi."
           aksi={
             <>
+              <TombolEkspor url="/penghapusan-aset/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatPengajuan wajib={wajib.pengajuan} />
             </>
           }
