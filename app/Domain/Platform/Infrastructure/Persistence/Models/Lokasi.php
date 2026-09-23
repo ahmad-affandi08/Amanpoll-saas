@@ -28,6 +28,7 @@ final class Lokasi extends ModelDasar
         'KategoriLokasiId',
         'IndukId',
         'Kode',
+        'KodeRuangAspak',
         'Nama',
         'Alamat',
         'Lantai',

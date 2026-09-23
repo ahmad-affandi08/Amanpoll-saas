@@ -28,8 +28,9 @@ class MigrasiSchemaDomainTest extends TestCase
     {
         $this->seed(IzinSeeder::class);
 
-        $this->assertSame(21, DB::table('Izin')->count());
+        $this->assertSame(22, DB::table('Izin')->count());
         $this->assertDatabaseHas('Izin', ['Kode' => 'Anggaran.Sesuaikan', 'Modul' => 'Pengadaan']);
+        $this->assertDatabaseHas('Izin', ['Kode' => 'Aspak.Kelola', 'Modul' => 'Aspak']);
         $this->assertDatabaseHas('Izin', ['Kode' => 'Kepatuhan.Kelola', 'Modul' => 'Kepatuhan']);
     }
 

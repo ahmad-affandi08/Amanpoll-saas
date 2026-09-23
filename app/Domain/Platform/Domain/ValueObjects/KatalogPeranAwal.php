@@ -48,7 +48,7 @@ final class KatalogPeranAwal
                 'Keterangan' => 'Pemilik data aset: mendaftar, memutasi, menghapus, serta memegang kontrak dan kepatuhannya.',
                 'Izin' => [
                     'Aset.Lihat', 'Aset.Buat', 'Aset.Ubah', 'Aset.Hapus',
-                    'Kontrak.Kelola', 'Kepatuhan.Kelola', 'Laporan.Lihat', 'Audit.Lihat',
+                    'Kontrak.Kelola', 'Kepatuhan.Kelola', 'Aspak.Kelola', 'Laporan.Lihat', 'Audit.Lihat',
                 ],
             ],
             [

@@ -12,6 +12,9 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Merek;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
+use App\Domain\Aspak\Http\Policies\AspakPolicy;
+use App\Domain\Aspak\Infrastructure\Persistence\Models\AlkesAspak;
+use App\Domain\Aspak\Infrastructure\Persistence\Models\PemetaanAspak;
 use App\Domain\IntegrasiAudit\Http\Policies\CatatanAuditPolicy;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PanggilanBalikWeb;
@@ -195,6 +198,8 @@ final class PolicyServiceProvider extends ServiceProvider
         Gate::policy(PermintaanPembelian::class, PengadaanPolicy::class);
         Gate::policy(IntegrasiEksternal::class, IntegrasiPolicy::class);
         Gate::policy(PanggilanBalikWeb::class, IntegrasiPolicy::class);
+        Gate::policy(AlkesAspak::class, AspakPolicy::class);
+        Gate::policy(PemetaanAspak::class, AspakPolicy::class);
         Gate::policy(StandarKepatuhan::class, KepatuhanPolicy::class);
         Gate::policy(KepatuhanAset::class, KepatuhanPolicy::class);
         Gate::policy(SertifikasiAset::class, KepatuhanPolicy::class);

@@ -201,6 +201,7 @@ const navRantaiPasok: GrupNav = {
       subItems: [
         { label: 'Kepatuhan Aset', href: '/kepatuhan', kodeIzin: 'Kepatuhan.Kelola' },
         { label: 'Sertifikasi Aset', href: '/kepatuhan/sertifikasi', kodeIzin: 'Kepatuhan.Kelola' },
+        { label: 'ASPAK', href: '/aspak', kodeIzin: 'Aspak.Kelola' },
       ],
     },
   ],

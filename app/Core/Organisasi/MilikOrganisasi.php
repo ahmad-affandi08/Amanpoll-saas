@@ -16,11 +16,16 @@ trait MilikOrganisasi
         static::creating(function (Model $model): void {
             $konteks = app(KonteksOrganisasi::class);
 
-            if (empty($model->OrganisasiId)) {
+            // Dibaca lewat getAttribute/setAttribute, bukan properti ajaib:
+            // parameternya bertipe Model, sehingga PHPStan tidak dapat tahu
+            // kolom OrganisasiId ada pada model yang memakai trait ini.
+            $milik = $model->getAttribute('OrganisasiId');
+
+            if (blank($milik)) {
                 if ($konteks->ada()) {
-                    $model->OrganisasiId = $konteks->wajibId();
+                    $model->setAttribute('OrganisasiId', $konteks->wajibId());
                 }
-            } elseif ($konteks->ada() && (string) $model->OrganisasiId !== $konteks->wajibId()) {
+            } elseif ($konteks->ada() && (string) $milik !== $konteks->wajibId()) {
                 // Tenant yang sedang berjalan tidak boleh menulis ke tenant lain.
                 throw new AturanBisnisDilanggar(
                     'OrganisasiId tidak boleh menunjuk organisasi lain dari yang sedang aktif.',

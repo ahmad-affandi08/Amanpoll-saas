@@ -21,6 +21,7 @@ final class LokasiResource extends JsonResource
             'UnitOrganisasiId' => $lokasi->UnitOrganisasiId,
             'KategoriLokasiId' => $lokasi->KategoriLokasiId,
             'Kode' => $lokasi->Kode,
+            'KodeRuangAspak' => $lokasi->KodeRuangAspak,
             'Nama' => $lokasi->Nama,
             'Alamat' => $lokasi->Alamat,
             'Lantai' => $lokasi->Lantai,

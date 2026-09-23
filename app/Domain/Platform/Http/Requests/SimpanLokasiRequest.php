@@ -29,6 +29,8 @@ final class SimpanLokasiRequest extends FormRequest
         return [
             'Kode' => ['nullable', 'string', 'max:60',
                 Rule::unique('Lokasi', 'Kode')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($lokasiId, 'Id')],
+            // Kode ruang menurut ASPAK; kosong berarti lokasi ini tidak dilaporkan ke sana.
+            'KodeRuangAspak' => ['nullable', 'string', 'max:60'],
             'Nama' => ['required', 'string', 'max:180'],
             'UnitOrganisasiId' => ['nullable', 'string',
                 Rule::exists('UnitOrganisasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],

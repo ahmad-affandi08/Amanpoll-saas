@@ -12,6 +12,8 @@ export interface Lokasi {
   UnitOrganisasiId: string | null;
   KategoriLokasiId: string | null;
   Kode: string;
+  /** Kode ruang menurut ASPAK; null berarti lokasi ini tidak dilaporkan ke sana. */
+  KodeRuangAspak: string | null;
   Nama: string;
   Alamat: string | null;
   Lantai: string | null;

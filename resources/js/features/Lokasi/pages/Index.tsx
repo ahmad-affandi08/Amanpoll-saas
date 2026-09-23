@@ -130,6 +130,7 @@ function DialogFormLokasi({
     lokasi
       ? {
           Kode: lokasi.Kode,
+          KodeRuangAspak: lokasi.KodeRuangAspak ?? '',
           Nama: lokasi.Nama,
           Alamat: lokasi.Alamat ?? '',
           Lantai: lokasi.Lantai ?? '',
@@ -139,6 +140,7 @@ function DialogFormLokasi({
         }
       : {
           Kode: '',
+          KodeRuangAspak: '',
           Nama: '',
           Alamat: '',
           Lantai: '',
@@ -192,6 +194,17 @@ function DialogFormLokasi({
                 <Input value={form.data.Nama} onChange={(e) => form.setData('Nama', e.target.value)} />
                 {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label nama="KodeRuangAspak">Kode Ruang ASPAK</Label>
+              <Input
+                value={form.data.KodeRuangAspak}
+                onChange={(e) => form.setData('KodeRuangAspak', e.target.value)}
+                placeholder="Kosongkan bila ruang ini tidak dilaporkan ke ASPAK"
+              />
+              {form.errors.KodeRuangAspak && (
+                <p className="text-sm text-destructive">{form.errors.KodeRuangAspak}</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

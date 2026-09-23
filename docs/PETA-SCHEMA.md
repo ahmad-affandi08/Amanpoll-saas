@@ -1,6 +1,6 @@
 # Peta Schema Amanpoll
 
-Total tabel: **215**, ditambah 4 view.
+Total tabel: **217**, ditambah 4 view.
 
 Pengelompokan diturunkan dari domain pemilik modelnya (`protected $table` di tiap model),
 bukan disusun manual. Tabel yang tidak dimiliki domain mana pun ada di bagian Infrastruktur.
@@ -152,6 +152,11 @@ bukan disusun manual. Tabel yang tidak dimiliki domain mana pun ada di bagian In
 - `SertifikasiAset`
 - `SinkronisasiEksternal`
 - `StandarKepatuhan`
+
+## Aspak
+
+- `AlkesAspak`
+- `PemetaanAspak`
 
 ## Persetujuan
 
