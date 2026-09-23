@@ -8,6 +8,10 @@ paths:
 ## Gerbang verifikasi sebelum menyelesaikan perubahan
 Jalankan seluruhnya sebelum menyatakan pekerjaan selesai: `vendor/bin/pint --dirty --format agent`, `vendor/bin/phpstan analyse --memory-limit=2G`, `npx tsc --noEmit`, `npm run build`, `php artisan test --compact`.
 
+**Exit code yang menentukan lulus atau tidak, bukan field `result` pada keluaran `--format agent`.** Field itu dihitung dari `wasSuccessful()` PHPUnit, yang hanya melihat error dan failure; test *risky* dan *incomplete* tidak masuk hitungannya. Karena `phpunit.xml` kini memakai `failOnRisky` dan kawan-kawannya, sebuah test tanpa assertion membuat exit code 1 tetapi tetap tercetak `"result":"passed"`. Angkanya jujur — `"risky":2` ikut tampil di JSON yang sama — hanya labelnya yang menyesatkan. Repo ini tidak punya CI, jadi tidak ada yang memeriksakannya untukmu.
+
+Setelan ketat itu membuat "hijau" berarti lebih banyak: test tanpa assertion, test yang mencetak keluaran, `markTestIncomplete`, warning dan notice dari `app/`, serta suite yang mendadak kosong semuanya menggagalkan build. `markTestSkipped` tetap boleh — tiga test memang melewati dirinya saat `pcntl` atau biner `mysqldump` tidak ada.
+
 Jumlah galat PHPStan harus tetap **165**. Naik berarti perubahanmu menambah galat baru — perbaiki akses atau tipenya, jangan ditutup. Dilarang: `@phpstan-ignore`, `@var` inline untuk menimpa inferensi, entri baseline baru, dan cast yang hanya untuk membungkam.
 
 MariaDB di lingkungan dev kerap mati. Bila test gagal dengan "Connection refused", hidupkan ulang lalu ulangi — itu lingkungan, bukan perubahanmu:
