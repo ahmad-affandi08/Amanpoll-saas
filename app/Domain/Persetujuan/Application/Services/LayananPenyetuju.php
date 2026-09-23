@@ -65,7 +65,13 @@ final class LayananPenyetuju
             throw new AturanBisnisDilanggar('Tahap persetujuan berbasis unit tidak dapat dievaluasi -- entitas tidak memiliki UnitOrganisasi.');
         }
 
-        $query = DB::table('PenggunaPeran')->where('UnitOrganisasiId', $unitId);
+        // Masa berlaku penugasan disaring sama seperti penggunaDenganPeran dan
+        // PemeriksaIzin. Tanpanya orang yang sudah dipindah tugas dari unit ini
+        // tetap dapat menyetujui atas nama unit tersebut.
+        $query = DB::table('PenggunaPeran')
+            ->where('UnitOrganisasiId', $unitId)
+            ->where(fn ($q) => $q->whereNull('BerlakuMulai')->orWhere('BerlakuMulai', '<=', now()))
+            ->where(fn ($q) => $q->whereNull('BerlakuSampai')->orWhere('BerlakuSampai', '>=', now()));
         if ($tahap->PeranId !== null) {
             $query->where('PeranId', $tahap->PeranId);
         }

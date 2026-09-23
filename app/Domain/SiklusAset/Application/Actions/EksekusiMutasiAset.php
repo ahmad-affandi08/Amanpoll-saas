@@ -59,17 +59,24 @@ final class EksekusiMutasiAset
 
                 $lokasiAsalId = $aset->LokasiId;
 
+                // Mutasi boleh hanya menyebut unit tujuan (BuatPermintaanMutasiAset
+                // menerimanya). Tanpa pengaman ini lokasi aset ditimpa null: alatnya
+                // hilang dari peta lokasi, dan riwayatnya mencatat pindah ke "tidak
+                // di mana pun". Lokasinya tetap, dan riwayat tetap ditulis supaya
+                // peristiwa mutasinya tidak lenyap dari jejak alat.
+                $lokasiTujuanId = $permintaan->LokasiTujuanId ?? $lokasiAsalId;
+
                 RiwayatLokasiAset::create([
                     'AsetId' => $aset->Id,
                     'LokasiAsalId' => $lokasiAsalId,
-                    'LokasiTujuanId' => $permintaan->LokasiTujuanId,
+                    'LokasiTujuanId' => $lokasiTujuanId,
                     'JenisPerpindahan' => JenisRiwayatLokasiAset::Mutasi->value,
                     'Alasan' => $permintaan->Alasan,
                     'DipindahkanOleh' => $dieksekusiOleh,
                     'DipindahkanPada' => now(),
                 ]);
 
-                $aset->LokasiId = $permintaan->LokasiTujuanId;
+                $aset->LokasiId = $lokasiTujuanId;
                 if ($permintaan->UnitTujuanId !== null) {
                     $aset->UnitOrganisasiId = $permintaan->UnitTujuanId;
                 }
