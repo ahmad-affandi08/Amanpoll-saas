@@ -27,6 +27,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
         Route::get('/peran', [PeranController::class, 'index'])->name('peran.index');
         Route::post('/peran', [PeranController::class, 'store'])->name('peran.store');
+        Route::post('/peran/bawaan', [PeranController::class, 'pasangBawaan'])->name('peran.bawaan');
         Route::put('/peran/{peran}', [PeranController::class, 'update'])->name('peran.update');
         Route::delete('/peran/{peran}', [PeranController::class, 'destroy'])->name('peran.destroy');
         Route::put('/peran/{peran}/izin', [PeranController::class, 'sinkronkanIzin'])->name('peran.izin');

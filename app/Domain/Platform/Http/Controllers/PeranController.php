@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Http\Controllers;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Application\Actions\BuatPeran;
 use App\Domain\Platform\Application\Actions\HapusPeran;
+use App\Domain\Platform\Application\Actions\PasangPeranAwal;
 use App\Domain\Platform\Application\Actions\SinkronkanIzinPeran;
 use App\Domain\Platform\Application\Actions\UbahPeran;
 use App\Domain\Platform\Application\DTO\PeranData;
+use App\Domain\Platform\Domain\ValueObjects\KatalogPeranAwal;
 use App\Domain\Platform\Http\Requests\SimpanPeranRequest;
 use App\Domain\Platform\Http\Resources\PeranResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
@@ -37,7 +40,25 @@ final class PeranController extends Controller
             'wajib' => ['peran' => AturanWajib::untuk(SimpanPeranRequest::class)],
             'peran' => PeranResource::collection($daftar->halaman()),
             'filter' => $daftar->filterBerlaku(),
+            'bawaanBelumTerpasang' => $this->bawaanBelumTerpasang(),
         ]);
+    }
+
+    /**
+     * Berapa peran bawaan yang belum dimiliki organisasi ini.
+     *
+     * Dihitung terhadap seluruh peran organisasi, bukan halaman yang sedang
+     * tampil, supaya tombolnya tidak muncul lagi hanya karena hasil pencarian
+     * kebetulan tidak memuat peran bawaannya.
+     */
+    private function bawaanBelumTerpasang(): int
+    {
+        $terpasang = Peran::query()->pluck('Kode')->all();
+
+        return count(array_filter(
+            KatalogPeranAwal::semua(),
+            fn (array $contoh): bool => ! in_array($contoh['Kode'], $terpasang, true),
+        ));
     }
 
     public function store(SimpanPeranRequest $request, BuatPeran $aksi): RedirectResponse
@@ -65,6 +86,24 @@ final class PeranController extends Controller
         $aksi->jalankan($peran);
 
         return back()->with('sukses', 'Peran berhasil dihapus.');
+    }
+
+    /**
+     * Memasang peran bawaan bagi organisasi yang belum menyusun perannya.
+     *
+     * Organisasi yang berdiri sebelum katalog ini ada hanya punya peran
+     * Pemilik, jadi tombolnya harus tersedia di halaman, bukan hanya berjalan
+     * sekali saat pendaftaran trial.
+     */
+    public function pasangBawaan(PasangPeranAwal $aksi): RedirectResponse
+    {
+        $this->authorize('create', Peran::class);
+
+        $baru = $aksi->jalankan(app(KonteksOrganisasi::class)->wajibId());
+
+        return back()->with('sukses', $baru === []
+            ? 'Seluruh peran bawaan sudah terpasang.'
+            : count($baru).' peran bawaan berhasil dipasang.');
     }
 
     public function sinkronkanIzin(Request $request, Peran $peran, SinkronkanIzinPeran $aksi): RedirectResponse

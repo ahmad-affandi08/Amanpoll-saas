@@ -34,6 +34,43 @@ interface Props {
   filter: FilterDaftar;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
+  /** Jumlah peran bawaan yang belum dimiliki organisasi ini. */
+  bawaanBelumTerpasang: number;
+}
+
+/**
+ * Memasang peran siap pakai bagi organisasi yang baru punya peran Pemilik.
+ *
+ * Tombolnya menghilang begitu seluruh katalog terpasang, jadi tidak menjadi
+ * tombol mati yang selamanya menempel di kepala halaman.
+ */
+function TombolPeranBawaan({ jumlah }: { jumlah: number }) {
+  const konfirmasi = useKonfirmasi();
+  const [memasang, setMemasang] = useState(false);
+
+  const pasang = async () => {
+    if (
+      !(await konfirmasi({
+        judul: `Pasang ${jumlah} peran bawaan?`,
+        deskripsi:
+          'Peran seperti Teknisi, Operator Gudang, dan Auditor dibuat lengkap dengan izinnya sebagai titik mulai. Peran yang sudah ada tidak diubah, dan semuanya tetap bisa Anda sunting atau hapus.',
+      }))
+    )
+      return;
+
+    setMemasang(true);
+    router.post(
+      rutePeranIzin.bawaan,
+      {},
+      { preserveScroll: true, onFinish: () => setMemasang(false) },
+    );
+  };
+
+  return (
+    <Button variant="outline" onClick={pasang} disabled={memasang}>
+      Pasang Peran Bawaan
+    </Button>
+  );
 }
 
 function DialogFormPeran({ peran, wajib }: { peran: Peran | null; wajib: AturanWajib }) {
@@ -166,7 +203,7 @@ function DialogKelolaIzin({ peran }: { peran: Peran }) {
   );
 }
 
-export default function PeranIzinIndex({ peran, filter, wajib }: Props) {
+export default function PeranIzinIndex({ peran, filter, wajib, bawaanBelumTerpasang }: Props) {
   const konfirmasi = useKonfirmasi();
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
@@ -247,7 +284,14 @@ export default function PeranIzinIndex({ peran, filter, wajib }: Props) {
       <KepalaHalaman
         judul="Peran & Izin"
         deskripsi="Kelola peran dan hak akses per organisasi."
-        aksi={<>{bolehKelola && <DialogFormPeran peran={null} wajib={wajib.peran} />}</>}
+        aksi={
+          <>
+            {bolehKelola && bawaanBelumTerpasang > 0 && (
+              <TombolPeranBawaan jumlah={bawaanBelumTerpasang} />
+            )}
+            {bolehKelola && <DialogFormPeran peran={null} wajib={wajib.peran} />}
+          </>
+        }
         className="mb-6"
       />
 

@@ -14,6 +14,7 @@ use App\Domain\Pemasaran\Domain\Enums\SumberKonsen;
 use App\Domain\Pemasaran\Domain\Enums\SumberProspek;
 use App\Domain\Pemasaran\Domain\ValueObjects\KonfigurasiTrial;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
+use App\Domain\Platform\Application\Actions\PasangPeranAwal;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -38,6 +39,7 @@ final class DaftarkanTrial
         private readonly CatatProspek $catatProspek,
         private readonly MulaiTrial $mulaiTrial,
         private readonly LayananKonsen $konsen,
+        private readonly PasangPeranAwal $pasangPeranAwal,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -70,6 +72,10 @@ final class DaftarkanTrial
     {
         $organisasi = $this->buatOrganisasi($data);
         $this->buatPemilik($organisasi, $data);
+
+        // Pemilik memegang seluruh izin; peran bawaan menyediakan jabatan yang
+        // lebih sempit supaya orang kedua tidak perlu diberi akses penuh.
+        $this->pasangPeranAwal->jalankan($organisasi->Id);
 
         $langganan = $this->kelolaLangganan->mulai($organisasi->Id, [
             'PaketLanggananId' => $setelan->paketId,

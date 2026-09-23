@@ -23,11 +23,14 @@ use App\Domain\Pemasaran\Domain\KatalogPeristiwaPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Prospek;
 use App\Domain\Pemasaran\Infrastructure\Persistence\Models\Trial;
+use App\Domain\Platform\Domain\ValueObjects\KatalogPeranAwal;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use Database\Seeders\IzinSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -70,6 +73,29 @@ final class DaftarTrialTest extends KasusTrial
 
         $this->assertSame('PEMILIK', $peran?->Kode);
         $this->assertSame(Izin::query()->count(), $peran?->peranIzin->count());
+    }
+
+    /**
+     * Pemilik memegang seluruh izin, jadi tanpa peran bawaan orang kedua di
+     * organisasi itu hanya bisa diberi akses penuh atau tidak sama sekali.
+     */
+    public function test_pendaftaran_memasang_peran_bawaan(): void
+    {
+        $this->seed(IzinSeeder::class);
+
+        $trial = $this->daftar();
+
+        app(KonteksOrganisasi::class)->tetapkan($trial->OrganisasiId);
+
+        $teknisi = Peran::query()->where('Kode', 'TEKNISI')->first();
+
+        $this->assertNotNull($teknisi);
+        $this->assertFalse($teknisi->BawaanSistem);
+        $this->assertSame(
+            count(KatalogPeranAwal::semua()) + 1,
+            Peran::query()->count(),
+            'Peran bawaan ditambah peran Pemilik.',
+        );
     }
 
     public function test_pendaftaran_membuat_prospek_bersumber_trial(): void
