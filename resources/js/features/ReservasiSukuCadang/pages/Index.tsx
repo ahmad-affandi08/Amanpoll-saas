@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -176,6 +177,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
         deskripsi="Menahan stok tersedia untuk kebutuhan mendatang tanpa mengurangi stok fisik."
         aksi={
           <>
+            <TombolEkspor url="/reservasi-suku-cadang/ekspor" filter={filter as Record<string, string>} />
             <DialogBuatReservasi gudang={gudang} sukuCadang={sukuCadang} wajib={wajib.reservasi} />
           </>
         }

@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -159,6 +160,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter, wajib }: P
         deskripsi="Penerimaan, pengeluaran, transfer, penyesuaian, dan retur -- draf, posting, sampai audit."
         aksi={
           <>
+            <TombolEkspor url="/mutasi-stok/ekspor" filter={filter as Record<string, string>} />
             <DialogBuatMutasi gudang={gudang} wajib={wajib.mutasi} />
           </>
         }

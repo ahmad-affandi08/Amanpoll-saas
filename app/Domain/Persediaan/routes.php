@@ -56,6 +56,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
 
     Route::prefix('mutasi-stok')->name('mutasi-stok.')->group(function (): void {
         Route::get('/', [MutasiStokController::class, 'index'])->name('index');
+        Route::get('/ekspor', [MutasiStokController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::post('/', [MutasiStokController::class, 'store'])->name('store');
         Route::get('/{mutasiStok}', [MutasiStokController::class, 'show'])->name('show');
         Route::post('/{mutasiStok}/detail', [MutasiStokController::class, 'storeDetail'])->name('detail.store');
@@ -66,6 +67,7 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
 
     Route::prefix('reservasi-suku-cadang')->name('reservasi-suku-cadang.')->group(function (): void {
         Route::get('/', [ReservasiSukuCadangController::class, 'index'])->name('index');
+        Route::get('/ekspor', [ReservasiSukuCadangController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::post('/', [ReservasiSukuCadangController::class, 'store'])->name('store');
         Route::post('/{reservasiSukuCadang}/lepaskan', [ReservasiSukuCadangController::class, 'lepaskan'])->name('lepaskan');
         Route::post('/{reservasiSukuCadang}/konsumsi', [ReservasiSukuCadangController::class, 'konsumsi'])->name('konsumsi');

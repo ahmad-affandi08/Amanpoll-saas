@@ -11,6 +11,7 @@ import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPag
 import type { Paginasi } from '@/types/global';
 import type { CatatanAudit, FilterCatatanAudit } from '@/features/Audit/types';
 import { ruteAudit } from '@/features/Audit/api';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Combobox } from '@/components/ui/combobox';
 
@@ -42,6 +43,7 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
         <KepalaHalaman
           judul="Log Audit"
           deskripsi="Riwayat perubahan data lintas modul, tersaring per organisasi."
+          aksi={<TombolEkspor url="/integrasi-audit/audit/ekspor" filter={form as Record<string, string>} />}
         />
 
         <form

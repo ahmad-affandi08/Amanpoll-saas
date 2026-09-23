@@ -14,26 +14,60 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class ReservasiSukuCadangController extends Controller
 {
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<ReservasiSukuCadang>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return ReservasiSukuCadang::query()
+            ->with(['gudang', 'sukuCadang', 'dibuatOleh'])
+            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
+            ->latest('DibuatPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', ReservasiSukuCadang::class);
+
+        $filter = $request->validate(['status' => ['nullable', 'string']]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::dari('Suku Cadang', fn (ReservasiSukuCadang $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'sukuCadang'), 'Nama')),
+                KolomEkspor::dari('Gudang', fn (ReservasiSukuCadang $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'gudang'), 'Nama')),
+                KolomEkspor::atribut('Jumlah', 'Jumlah'),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::dari('Dibuat Oleh', fn (ReservasiSukuCadang $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'dibuatOleh'), 'Nama')),
+                KolomEkspor::tanggal('Dibuat', 'DibuatPada', 'Y-m-d H:i'),
+            ],
+            'daftar-reservasi-suku-cadang',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', ReservasiSukuCadang::class);
 
         $filter = $request->validate(['status' => ['nullable', 'string']]);
 
-        $reservasi = ReservasiSukuCadang::query()
-            ->with(['gudang', 'sukuCadang', 'dibuatOleh'])
-            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
-            ->latest('DibuatPada')
-            ->paginate(25)
-            ->withQueryString();
+        $reservasi = $this->kueriTersaring($filter)->paginate(25)->withQueryString();
 
         return Inertia::render('ReservasiSukuCadang/Index', [
             'wajib' => ['reservasi' => AturanWajib::untuk(SimpanReservasiSukuCadangRequest::class)],

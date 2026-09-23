@@ -18,27 +18,62 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\SukuCadang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class MutasiStokController extends Controller
 {
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<MutasiStok>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return MutasiStok::query()
+            ->with(['gudangAsal', 'gudangTujuan', 'dibuatOleh'])
+            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
+            ->when($filter['jenis'] ?? null, fn ($q, $v) => $q->where('Jenis', $v))
+            ->latest('DibuatPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', MutasiStok::class);
+
+        $filter = $request->validate(['status' => ['nullable', 'string'], 'jenis' => ['nullable', 'string']]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::dari('Gudang Asal', fn (MutasiStok $m): string => BacaRelasi::teks(BacaRelasi::model($m, 'gudangAsal'), 'Nama')),
+                KolomEkspor::dari('Gudang Tujuan', fn (MutasiStok $m): string => BacaRelasi::teks(BacaRelasi::model($m, 'gudangTujuan'), 'Nama')),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::dari('Dibuat Oleh', fn (MutasiStok $m): string => BacaRelasi::teks(BacaRelasi::model($m, 'dibuatOleh'), 'Nama')),
+                KolomEkspor::tanggal('Dibuat', 'DibuatPada', 'Y-m-d H:i'),
+            ],
+            'daftar-mutasi-stok',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', MutasiStok::class);
 
         $filter = $request->validate(['status' => ['nullable', 'string'], 'jenis' => ['nullable', 'string']]);
 
-        $mutasiStok = MutasiStok::query()
-            ->with(['gudangAsal', 'gudangTujuan', 'dibuatOleh'])
-            ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
-            ->when($filter['jenis'] ?? null, fn ($q, $v) => $q->where('Jenis', $v))
-            ->latest('DibuatPada')
-            ->paginate(25)
-            ->withQueryString();
+        $mutasiStok = $this->kueriTersaring($filter)->paginate(25)->withQueryString();
 
         return Inertia::render('MutasiStok/Index', [
             'wajib' => ['mutasi' => AturanWajib::untuk(SimpanMutasiStokRequest::class)],

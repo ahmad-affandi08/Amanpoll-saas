@@ -11,4 +11,5 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('integrasiAudit.')
     ->group(function (): void {
         Route::get('/audit', [CatatanAuditController::class, 'index'])->name('audit.index');
+        Route::get('/audit/ekspor', [CatatanAuditController::class, 'ekspor'])->middleware('throttle:ekspor')->name('audit.ekspor');
     });
