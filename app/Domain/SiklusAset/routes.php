@@ -14,6 +14,8 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
         Route::get('/{permintaanMutasiAset}', [PermintaanMutasiAsetController::class, 'show'])->name('show');
         Route::post('/{permintaanMutasiAset}/detail', [PermintaanMutasiAsetController::class, 'storeDetail'])->name('detail.store');
         Route::delete('/detail/{detailMutasiAset}', [PermintaanMutasiAsetController::class, 'destroyDetail'])->name('detail.destroy');
+        Route::post('/detail/{detailMutasiAset}/putuskan', [PermintaanMutasiAsetController::class, 'putuskanDetail'])->name('detail.putuskan');
+        Route::post('/{permintaanMutasiAset}/pindai', [PermintaanMutasiAsetController::class, 'pindai'])->name('pindai');
         Route::post('/{permintaanMutasiAset}/submit', [PermintaanMutasiAsetController::class, 'submit'])->name('submit');
         Route::post('/{permintaanMutasiAset}/batalkan', [PermintaanMutasiAsetController::class, 'batalkan'])->name('batalkan');
         Route::post('/{permintaanMutasiAset}/eksekusi', [PermintaanMutasiAsetController::class, 'eksekusi'])->name('eksekusi');

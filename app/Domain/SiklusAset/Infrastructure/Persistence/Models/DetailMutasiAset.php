@@ -7,6 +7,7 @@ namespace App\Domain\SiklusAset\Infrastructure\Persistence\Models;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -24,12 +25,19 @@ final class DetailMutasiAset extends ModelDasar
         'AsetId',
         'Status',
         'Catatan',
+        'DiputuskanOleh',
+        'DiputuskanPada',
+        'AlasanPenolakan',
+        'DipindaiOleh',
+        'DipindaiPada',
     ];
 
     protected function casts(): array
     {
         return [
             'DibuatPada' => 'immutable_datetime',
+            'DiputuskanPada' => 'immutable_datetime',
+            'DipindaiPada' => 'immutable_datetime',
         ];
     }
 
@@ -55,5 +63,21 @@ final class DetailMutasiAset extends ModelDasar
     public function aset(): BelongsTo
     {
         return $this->belongsTo(Aset::class, 'AsetId', 'Id');
+    }
+
+    /**
+     * @return BelongsTo<Pengguna, $this>
+     */
+    public function diputuskanOleh(): BelongsTo
+    {
+        return $this->belongsTo(Pengguna::class, 'DiputuskanOleh', 'Id');
+    }
+
+    /**
+     * @return BelongsTo<Pengguna, $this>
+     */
+    public function dipindaiOleh(): BelongsTo
+    {
+        return $this->belongsTo(Pengguna::class, 'DipindaiOleh', 'Id');
     }
 }

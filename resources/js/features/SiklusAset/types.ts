@@ -1,7 +1,18 @@
 export type StatusPermintaanMutasiAset =
   'Draft' | 'Menunggu' | 'Disetujui' | 'Ditolak' | 'Dibatalkan' | 'Selesai';
-export type JenisMutasiAset = 'AntarLokasi' | 'AntarUnit' | 'Peminjaman' | 'Pengembalian';
-export type StatusDetailMutasiAset = 'Menunggu' | 'Selesai' | 'Dibatalkan';
+export type JenisMutasiAset =
+  | 'AntarLokasi'
+  | 'AntarUnit'
+  | 'Peminjaman'
+  | 'Pengembalian'
+  | 'Reposisi'
+  | 'Akuisisi';
+
+export interface PilihanJenisMutasiAset {
+  nilai: JenisMutasiAset;
+  label: string;
+}
+export type StatusDetailMutasiAset = 'Menunggu' | 'Disetujui' | 'Ditolak' | 'Selesai' | 'Dibatalkan';
 
 export interface DetailMutasiAset {
   Id: string;
@@ -10,6 +21,13 @@ export interface DetailMutasiAset {
   KodeAset: string | null;
   Status: StatusDetailMutasiAset;
   Catatan: string | null;
+  AlasanPenolakan: string | null;
+  DiputuskanOleh: string | null;
+  NamaDiputuskanOleh: string | null;
+  DiputuskanPada: string | null;
+  DipindaiOleh: string | null;
+  NamaDipindaiOleh: string | null;
+  DipindaiPada: string | null;
   DibuatPada: string;
 }
 

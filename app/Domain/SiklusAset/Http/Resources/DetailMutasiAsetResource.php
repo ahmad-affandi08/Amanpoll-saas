@@ -24,6 +24,13 @@ final class DetailMutasiAsetResource extends JsonResource
             'KodeAset' => $this->whenLoaded('aset', fn () => $detail->aset?->KodeAset),
             'Status' => $detail->Status,
             'Catatan' => $detail->Catatan,
+            'AlasanPenolakan' => $detail->AlasanPenolakan,
+            'DiputuskanOleh' => $detail->DiputuskanOleh,
+            'NamaDiputuskanOleh' => $this->whenLoaded('diputuskanOleh', fn () => $detail->diputuskanOleh?->Nama),
+            'DiputuskanPada' => $detail->DiputuskanPada,
+            'DipindaiOleh' => $detail->DipindaiOleh,
+            'NamaDipindaiOleh' => $this->whenLoaded('dipindaiOleh', fn () => $detail->dipindaiOleh?->Nama),
+            'DipindaiPada' => $detail->DipindaiPada,
             'DibuatPada' => $detail->DibuatPada,
         ];
     }

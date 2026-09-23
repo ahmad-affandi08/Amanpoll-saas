@@ -32,7 +32,13 @@ final class EksekusiMutasiAset
             throw new AturanBisnisDilanggar('Mutasi hanya bisa dieksekusi setelah disetujui.');
         }
 
-        $detailMenunggu = $permintaan->detailMutasiAset()->where('Status', StatusDetailMutasiAset::Menunggu->value)->with('aset')->get();
+        // Baris yang ditolak pemegang aset dilewati, bukan menggagalkan seluruh
+        // permintaan; Menunggu tetap ikut supaya permintaan yang tidak melewati
+        // keputusan per aset berjalan seperti sebelumnya.
+        $detailMenunggu = $permintaan->detailMutasiAset()
+            ->whereIn('Status', StatusDetailMutasiAset::nilaiDapatDieksekusi())
+            ->with('aset')
+            ->get();
 
         if ($detailMenunggu->isEmpty()) {
             throw new AturanBisnisDilanggar('Tidak ada aset yang perlu dieksekusi.');

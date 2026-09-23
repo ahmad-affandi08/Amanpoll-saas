@@ -6,4 +6,6 @@ export const ruteMutasiAset = {
   detail2: (id: string) => `/mutasi-aset/${id}/detail`,
   eksekusi: (id: string) => `/mutasi-aset/${id}/eksekusi`,
   submit: (id: string) => `/mutasi-aset/${id}/submit`,
+  pindai: (id: string) => `/mutasi-aset/${id}/pindai`,
+  putuskanDetail: (id: string) => `/mutasi-aset/detail/${id}/putuskan`,
 };

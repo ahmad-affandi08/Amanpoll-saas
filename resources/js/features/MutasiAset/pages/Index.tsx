@@ -17,7 +17,7 @@ import {
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import type { Paginasi } from '@/types/global';
-import type { PermintaanMutasiAset } from '@/features/SiklusAset/types';
+import type { PermintaanMutasiAset, PilihanJenisMutasiAset } from '@/features/SiklusAset/types';
 import { VARIAN_BADGE_STATUS_MUTASI } from '@/features/SiklusAset/status';
 import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
@@ -32,21 +32,24 @@ interface Props {
   filter: { status?: string };
   lokasi: Lokasi[];
   unitOrganisasi: UnitOrganisasi[];
+  /** Pilihan jenis mutasi, dibaca dari enum di server. */
+  daftarJenis: PilihanJenisMutasiAset[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
 
 const SEMUA = '__semua__';
 const DAFTAR_STATUS = ['Draft', 'Menunggu', 'Disetujui', 'Ditolak', 'Dibatalkan', 'Selesai'];
-const DAFTAR_JENIS = ['AntarLokasi', 'AntarUnit', 'Peminjaman', 'Pengembalian'];
 
 function DialogBuatMutasi({
   lokasi,
   unitOrganisasi,
+  daftarJenis,
   wajib,
 }: {
   lokasi: Lokasi[];
   unitOrganisasi: UnitOrganisasi[];
+  daftarJenis: PilihanJenisMutasiAset[];
   wajib: AturanWajib;
 }) {
   const [buka, setBuka] = useState(false);
@@ -85,9 +88,9 @@ function DialogBuatMutasi({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {DAFTAR_JENIS.map((j) => (
-                    <SelectItem key={j} value={j}>
-                      {j}
+                  {daftarJenis.map((j) => (
+                    <SelectItem key={j.nilai} value={j.nilai}>
+                      {j.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -113,6 +116,18 @@ function DialogBuatMutasi({
               Minimal salah satu tujuan (lokasi/unit) harus diisi. Daftar aset dilengkapi setelah draft
               dibuat.
             </p>
+            {form.data.JenisMutasi === 'Reposisi' && (
+              <p className="text-sm text-muted-foreground">
+                Reposisi memindahkan aset antar ruangan di dalam unit yang sama, jadi lokasi tujuan
+                wajib dan unit tujuan dibiarkan tidak diubah.
+              </p>
+            )}
+            {form.data.JenisMutasi === 'Akuisisi' && (
+              <p className="text-sm text-muted-foreground">
+                Akuisisi mencatat aset yang masuk menjadi tanggung jawab sebuah unit, jadi unit tujuan
+                wajib diisi.
+              </p>
+            )}
             {form.errors.LokasiTujuanId && (
               <p className="text-sm text-destructive">{form.errors.LokasiTujuanId}</p>
             )}
@@ -128,7 +143,14 @@ function DialogBuatMutasi({
   );
 }
 
-export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrganisasi, wajib }: Props) {
+export default function MutasiAsetIndex({
+  permintaan,
+  filter,
+  lokasi,
+  unitOrganisasi,
+  daftarJenis,
+  wajib,
+}: Props) {
   const [status, setStatus] = useState(filter.status ?? SEMUA);
 
   const terapkanFilter = (v: string) => {
@@ -148,7 +170,12 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
           deskripsi="Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi."
           aksi={
             <>
-              <DialogBuatMutasi lokasi={lokasi} unitOrganisasi={unitOrganisasi} wajib={wajib.mutasi} />
+              <DialogBuatMutasi
+                lokasi={lokasi}
+                unitOrganisasi={unitOrganisasi}
+                daftarJenis={daftarJenis}
+                wajib={wajib.mutasi}
+              />
             </>
           }
         />
@@ -199,7 +226,9 @@ export default function MutasiAsetIndex({ permintaan, filter, lokasi, unitOrgani
                     onClick={() => router.visit(ruteMutasiAset.detail(p.Id))}
                   >
                     <TableCell className="font-mono text-xs">{p.Nomor}</TableCell>
-                    <TableCell>{p.JenisMutasi}</TableCell>
+                    <TableCell>
+                      {daftarJenis.find((j) => j.nilai === p.JenisMutasi)?.label ?? p.JenisMutasi}
+                    </TableCell>
                     <TableCell>{p.NamaLokasiTujuan ?? p.NamaUnitTujuan ?? '—'}</TableCell>
                     <TableCell>{p.NamaDimintaOleh ?? '—'}</TableCell>
                     <TableCell>
