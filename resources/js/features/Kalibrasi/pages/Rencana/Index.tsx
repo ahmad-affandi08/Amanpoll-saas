@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -89,13 +90,16 @@ export default function KalibrasiRencanaIndex({
             </>
           }
           aksi={
-            <DialogFormRencana
-              rencana={null}
-              aset={aset}
-              jenisKalibrasi={jenisKalibrasi}
-              penyedia={penyedia}
-              wajib={wajib.rencana}
-            />
+            <>
+              <TombolEkspor url="/kalibrasi/rencana/ekspor" filter={filter as Record<string, string>} />
+              <DialogFormRencana
+                rencana={null}
+                aset={aset}
+                jenisKalibrasi={jenisKalibrasi}
+                penyedia={penyedia}
+                wajib={wajib.rencana}
+              />
+            </>
           }
         />
 

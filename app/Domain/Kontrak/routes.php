@@ -10,6 +10,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('kontrak.')
     ->group(function (): void {
         Route::get('/', [KontrakController::class, 'index'])->name('index');
+        Route::get('/ekspor', [KontrakController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
         Route::post('/', [KontrakController::class, 'store'])->name('store');
         Route::get('/{kontrak}', [KontrakController::class, 'show'])->name('show');
         Route::put('/{kontrak}', [KontrakController::class, 'update'])->name('update');

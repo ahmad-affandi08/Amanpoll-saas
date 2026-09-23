@@ -13,13 +13,18 @@ use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class RencanaKalibrasiController extends Controller
 {
@@ -27,6 +32,51 @@ final class RencanaKalibrasiController extends Controller
         private readonly KelolaRencanaKalibrasi $kelolaRencana,
         private readonly LayananPeringatanKalibrasi $layananPeringatan,
     ) {}
+
+    /**
+     * Penyaring daftar rencana kalibrasi, dipakai bersama halaman dan ekspornya.
+     *
+     * Batas BatasDaftar::MAKS sengaja tidak ikut: halaman memotong diam-diam
+     * demi kecepatan, sedangkan ekspor ada justru supaya yang terpotong itu
+     * tetap dapat dibaca.
+     *
+     * @return Builder<RencanaKalibrasi>
+     */
+    private function kueriTersaring(Request $request): Builder
+    {
+        return RencanaKalibrasi::query()
+            ->with(['aset', 'jenisKalibrasi', 'penyedia'])
+            ->withCount('pelaksanaanKalibrasi')
+            ->when($request->filled('asetId'), fn ($q) => $q->where('AsetId', $request->input('asetId')))
+            ->when($request->filled('jenisKalibrasiId'), fn ($q) => $q->where('JenisKalibrasiId', $request->input('jenisKalibrasiId')))
+            ->when($request->has('aktif'), fn ($q) => $q->where('Aktif', $request->boolean('aktif')))
+            ->orderBy('TanggalBerikutnya')
+            ->orderBy('Id');
+    }
+
+    /** Jadwal kalibrasi seperti yang tampil di layar, tanpa pemotongan daftarnya. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', RencanaKalibrasi::class);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($request),
+            [
+                KolomEkspor::dari('Kode Aset', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'aset'), 'KodeAset')),
+                KolomEkspor::dari('Aset', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'aset'), 'Nama')),
+                KolomEkspor::dari('Jenis Kalibrasi', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'jenisKalibrasi'), 'Nama')),
+                KolomEkspor::dari('Penyedia', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'penyedia'), 'Nama')),
+                KolomEkspor::atribut('Interval (hari)', 'IntervalHari'),
+                KolomEkspor::tanggal('Mulai', 'TanggalMulai'),
+                KolomEkspor::tanggal('Jatuh Tempo Berikutnya', 'TanggalBerikutnya'),
+                KolomEkspor::atribut('Peringatan (hari sebelum)', 'PeringatanHariSebelum'),
+                KolomEkspor::dari('Aktif', fn (RencanaKalibrasi $r): string => $r->Aktif ? 'Ya' : 'Tidak'),
+                KolomEkspor::atribut('Jumlah Pelaksanaan', 'pelaksanaan_kalibrasi_count'),
+            ],
+            'jadwal-kalibrasi',
+            EksporDaftar::formatDari($request),
+        );
+    }
 
     public function index(Request $request): Response
     {

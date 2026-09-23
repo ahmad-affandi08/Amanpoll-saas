@@ -26,6 +26,7 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.kalibrasi'])
 
         // Rencana Kalibrasi (14.02 & 14.05)
         Route::get('/rencana', [RencanaKalibrasiController::class, 'index'])->name('rencana.index');
+        Route::get('/rencana/ekspor', [RencanaKalibrasiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('rencana.ekspor');
         Route::post('/rencana', [RencanaKalibrasiController::class, 'store'])->name('rencana.store');
         Route::get('/rencana/{rencanaKalibrasi}', [RencanaKalibrasiController::class, 'show'])->name('rencana.show');
         Route::put('/rencana/{rencanaKalibrasi}', [RencanaKalibrasiController::class, 'update'])->name('rencana.update');
@@ -34,6 +35,7 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.kalibrasi'])
 
         // Pelaksanaan Kalibrasi (14.03 & 14.04)
         Route::get('/pelaksanaan', [PelaksanaanKalibrasiController::class, 'index'])->name('pelaksanaan.index');
+        Route::get('/pelaksanaan/ekspor', [PelaksanaanKalibrasiController::class, 'ekspor'])->middleware('throttle:ekspor')->name('pelaksanaan.ekspor');
         Route::post('/pelaksanaan', [PelaksanaanKalibrasiController::class, 'store'])->name('pelaksanaan.store');
         Route::get('/pelaksanaan/{pelaksanaanKalibrasi}', [PelaksanaanKalibrasiController::class, 'show'])->name('pelaksanaan.show');
         Route::put('/pelaksanaan/{pelaksanaanKalibrasi}/hasil-titik-ukur', [PelaksanaanKalibrasiController::class, 'simpanHasilTitikUkur'])->name('pelaksanaan.hasil-titik-ukur');

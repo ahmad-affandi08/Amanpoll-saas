@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -141,6 +142,7 @@ export default function KalibrasiPelaksanaanIndex({
           }
           aksi={
             <>
+              <TombolEkspor url="/kalibrasi/pelaksanaan/ekspor" filter={filter as Record<string, string>} />
               <Button onClick={() => setBukaDialog(true)} size="sm">
                 <Plus className="mr-1.5 size-4" />
                 Jadwalkan Kalibrasi

@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { FileSignature, Plus, Search } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -283,6 +284,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
           deskripsi="Kontrak penyedia, aset yang tercakup, layanan, dan pengingat masa berlaku."
           aksi={
             <>
+              <TombolEkspor url="/kontrak/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatKontrak penyedia={penyedia} tingkatLayanan={tingkatLayanan} />
             </>
           }

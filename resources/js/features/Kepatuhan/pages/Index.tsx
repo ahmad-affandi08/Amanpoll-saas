@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { ClipboardCheck, Search, Trash2 } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -77,6 +78,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           aksi={
             <>
               <div className="flex flex-wrap gap-2">
+                <TombolEkspor url="/kepatuhan/ekspor" filter={filter as Record<string, string>} />
                 <DialogTugaskan standar={standar} aset={aset} wajib={wajib.tugaskan} />
                 <DialogBuatStandar wajib={wajib.standar} />
               </div>

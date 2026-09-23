@@ -24,15 +24,71 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
 use App\Domain\Penyedia\Domain\Enums\StatusPenyedia;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class KontrakController extends Controller
 {
+    /**
+     * Penyaring daftar kontrak, dipakai bersama halaman dan ekspornya.
+     *
+     * @param  array<string, mixed>  $filter
+     * @return Builder<Kontrak>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return Kontrak::query()
+            ->with(['penyedia', 'tingkatLayanan'])
+            ->withCount(['kontrakAset', 'layanan'])
+            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where(fn ($sub) => $sub
+                ->where('Nomor', 'like', "%{$cari}%")
+                ->orWhere('Nama', 'like', "%{$cari}%")))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->when($filter['penyedia'] ?? null, fn ($query, $penyedia) => $query->where('PenyediaId', $penyedia))
+            ->orderBy('BerakhirPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Kontrak::class);
+
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:120'],
+            'status' => ['nullable', 'string', Rule::enum(StatusKontrak::class)],
+            'penyedia' => ['nullable', 'string'],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::dari('Penyedia', fn (Kontrak $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'penyedia'), 'Nama')),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::tanggal('Mulai', 'MulaiPada'),
+                KolomEkspor::tanggal('Berakhir', 'BerakhirPada'),
+                KolomEkspor::atribut('Nilai', 'Nilai'),
+                KolomEkspor::atribut('Mata Uang', 'MataUang'),
+                KolomEkspor::dari('Tingkat Layanan', fn (Kontrak $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'tingkatLayanan'), 'Nama')),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::atribut('Jumlah Aset', 'kontrak_aset_count'),
+                KolomEkspor::atribut('Jumlah Layanan', 'layanan_count'),
+            ],
+            'daftar-kontrak',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request, LayananPeringatanKontrak $peringatan): Response
     {
         $this->authorize('viewAny', Kontrak::class);
@@ -42,17 +98,7 @@ final class KontrakController extends Controller
             'penyedia' => ['nullable', 'string'],
         ]);
 
-        $kontrak = Kontrak::query()
-            ->with(['penyedia', 'tingkatLayanan'])
-            ->withCount(['kontrakAset', 'layanan'])
-            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where(fn ($sub) => $sub
-                ->where('Nomor', 'like', "%{$cari}%")
-                ->orWhere('Nama', 'like', "%{$cari}%")))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->when($filter['penyedia'] ?? null, fn ($query, $penyedia) => $query->where('PenyediaId', $penyedia))
-            ->orderBy('BerakhirPada')
-            ->paginate(20)
-            ->withQueryString();
+        $kontrak = $this->kueriTersaring($filter)->paginate(20)->withQueryString();
 
         return Inertia::render('Kontrak/Index', [
             'wajib' => ['kontrak' => AturanWajib::untuk(SimpanKontrakRequest::class)],

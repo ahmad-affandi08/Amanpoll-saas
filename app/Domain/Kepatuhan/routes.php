@@ -10,6 +10,7 @@ Route::middleware(['web', 'auth', 'organisasi', 'fitur:modul.kepatuhan'])
     ->name('kepatuhan.')
     ->group(function (): void {
         Route::get('/', [KepatuhanController::class, 'index'])->name('index');
+        Route::get('/ekspor', [KepatuhanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
 
         Route::post('/standar', [KepatuhanController::class, 'storeStandar'])->name('standar.store');
         Route::get('/standar/{standarKepatuhan}', [KepatuhanController::class, 'showStandar'])->name('standar.show');

@@ -26,15 +26,71 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\PersyaratanKepatuhan;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\StandarKepatuhan;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class KepatuhanController extends Controller
 {
+    /**
+     * Penyaring daftar kewajiban kepatuhan, dipakai bersama halaman dan ekspornya.
+     *
+     * @param  array<string, mixed>  $filter
+     * @return Builder<KepatuhanAset>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return KepatuhanAset::query()
+            ->with(['aset', 'persyaratanKepatuhan.standarKepatuhan', 'diperiksaOleh'])
+            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query
+                ->whereHas('aset', fn ($sub) => $sub
+                    ->where('KodeAset', 'like', "%{$cari}%")
+                    ->orWhere('Nama', 'like', "%{$cari}%")))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->orderByRaw('BerlakuSampai is null, BerlakuSampai asc')
+            ->orderBy('Id');
+    }
+
+    /** Daftar kewajiban kepatuhan per aset, untuk berkas akreditasi. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', StandarKepatuhan::class);
+
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:120'],
+            'status' => ['nullable', 'string', Rule::enum(StatusKepatuhanAset::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::dari('Kode Aset', fn (KepatuhanAset $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'aset'), 'KodeAset')),
+                KolomEkspor::dari('Aset', fn (KepatuhanAset $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'aset'), 'Nama')),
+                KolomEkspor::dari('Persyaratan', fn (KepatuhanAset $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'persyaratanKepatuhan'), 'Nama')),
+                KolomEkspor::dari('Standar', function (KepatuhanAset $k): string {
+                    $persyaratan = BacaRelasi::model($k, 'persyaratanKepatuhan');
+
+                    return $persyaratan === null ? '' : BacaRelasi::teks(BacaRelasi::model($persyaratan, 'standarKepatuhan'), 'Nama');
+                }),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::tanggal('Tanggal Pemeriksaan', 'TanggalPemeriksaan'),
+                KolomEkspor::tanggal('Berlaku Sampai', 'BerlakuSampai'),
+                KolomEkspor::dari('Diperiksa Oleh', fn (KepatuhanAset $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'diperiksaOleh'), 'Nama')),
+                KolomEkspor::atribut('Catatan', 'Catatan'),
+            ],
+            'kepatuhan-aset',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request, LayananKepatuhan $layanan): Response
     {
         $this->authorize('viewAny', StandarKepatuhan::class);
@@ -43,16 +99,7 @@ final class KepatuhanController extends Controller
             'status' => ['nullable', 'string', Rule::enum(StatusKepatuhanAset::class)],
         ]);
 
-        $kewajiban = KepatuhanAset::query()
-            ->with(['aset', 'persyaratanKepatuhan.standarKepatuhan', 'diperiksaOleh'])
-            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query
-                ->whereHas('aset', fn ($sub) => $sub
-                    ->where('KodeAset', 'like', "%{$cari}%")
-                    ->orWhere('Nama', 'like', "%{$cari}%")))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->orderByRaw('BerlakuSampai is null, BerlakuSampai asc')
-            ->paginate(20)
-            ->withQueryString();
+        $kewajiban = $this->kueriTersaring($filter)->paginate(20)->withQueryString();
 
         return Inertia::render('Kepatuhan/Index', [
             'wajib' => ['standar' => AturanWajib::untuk(SimpanStandarKepatuhanRequest::class), 'tugaskan' => AturanWajib::untuk(TugaskanStandarRequest::class), 'pemeriksaan' => AturanWajib::untuk(SimpanKepatuhanAsetRequest::class)],
