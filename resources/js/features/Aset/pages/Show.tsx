@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
+import { Printer } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import type { Aset, KategoriAset, ModelAset } from '@/features/Aset/types';
@@ -8,6 +10,7 @@ import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
+import { ruteAset } from '@/features/Aset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TabInfo } from '@/features/Aset/components/TabInfo';
 import { TabLokasi } from '@/features/Aset/components/TabLokasi';
@@ -53,6 +56,15 @@ export default function AsetShow({
         judul={aset.Nama}
         labelBreadcrumb={aset.KodeAset}
         lencana={<Badge variant={VARIAN_BADGE_STATUS_ASET[aset.Status]}>{aset.Status}</Badge>}
+        aksi={
+          <Button variant="outline" size="sm" asChild>
+            {/* Unduhan biasa, bukan kunjungan Inertia: responsnya berkas PDF, bukan halaman. */}
+            <a href={ruteAset.kartuRiwayat(aset.Id)}>
+              <Printer className="size-4" />
+              Cetak Kartu Riwayat
+            </a>
+          </Button>
+        }
         deskripsi={
           <span className="font-mono">
             {aset.KodeAset}

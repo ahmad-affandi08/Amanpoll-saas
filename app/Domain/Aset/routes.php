@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Aset\Http\Controllers\AsetController;
 use App\Domain\Aset\Http\Controllers\AsetPindaiController;
 use App\Domain\Aset\Http\Controllers\GaransiAsetController;
+use App\Domain\Aset\Http\Controllers\KartuRiwayatAsetController;
 use App\Domain\Aset\Http\Controllers\KategoriAsetController;
 use App\Domain\Aset\Http\Controllers\KelayakanAsetController;
 use App\Domain\Aset\Http\Controllers\LabelAsetController;
@@ -56,6 +57,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::delete('/{aset}', [AsetController::class, 'destroy'])->name('destroy');
 
             Route::get('/{aset}/kelayakan', [KelayakanAsetController::class, 'satu'])->name('kelayakan.satu');
+            Route::get('/{aset}/kartu-riwayat', [KartuRiwayatAsetController::class, 'cetak'])->middleware('throttle:ekspor')->name('kartu-riwayat');
             Route::get('/{aset}/riwayat-pemeliharaan', [RiwayatAsetController::class, 'pemeliharaan'])->name('riwayat-pemeliharaan.index');
             Route::get('/{aset}/riwayat-kalibrasi', [RiwayatAsetController::class, 'kalibrasi'])->name('riwayat-kalibrasi.index');
 
