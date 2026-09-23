@@ -29,14 +29,19 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PerintahKerjaController extends Controller
 {
@@ -51,17 +56,7 @@ final class PerintahKerjaController extends Controller
         ]);
         $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola');
 
-        $daftar = PerintahKerja::query()
-            ->with(['keluhan', 'lokasi', 'aset', 'penugasan.pengguna'])
-            ->withSum('waktuKerja as TotalWaktuKerjaMenit', 'DurasiMenit')
-            ->withSum('waktuHenti as TotalDowntimeMenit', 'DurasiMenit')
-            ->withSum('biaya as TotalBiaya', 'Jumlah')
-            ->when(! $dapatMengelola, fn ($query) => $query->whereHas('penugasan', fn ($penugasan) => $penugasan->where('PenggunaId', $request->user('web')->Id)->whereIn('Status', ['Ditugaskan', 'Diterima'])))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
-            ->latest('DibuatPada')
-            ->paginate(25)
-            ->withQueryString();
+        $daftar = $this->kueriTersaring($request, $filter)->paginate(25)->withQueryString();
 
         return Inertia::render('PerintahKerja/Index', [
             'wajib' => ['perintahKerja' => AturanWajib::untuk(SimpanPerintahKerjaRequest::class), 'status' => AturanWajib::untuk(UbahStatusPerintahKerjaRequest::class)],
@@ -72,6 +67,71 @@ final class PerintahKerjaController extends Controller
             'filter' => $filter,
             'dapatMengelola' => $dapatMengelola,
         ]);
+    }
+
+    /**
+     * Penyaring daftar perintah kerja, dipakai bersama halaman dan ekspornya.
+     *
+     * Pembatasan "hanya yang ditugaskan kepada saya" bagi yang tidak memegang
+     * PerintahKerja.Kelola ikut di sini: ekspor yang melewatinya akan
+     * menyerahkan seluruh pekerjaan organisasi kepada satu teknisi.
+     *
+     * @param  array<string, mixed>  $filter
+     * @return Builder<PerintahKerja>
+     */
+    private function kueriTersaring(Request $request, array $filter): Builder
+    {
+        $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola');
+
+        return PerintahKerja::query()
+            ->with(['keluhan', 'lokasi', 'aset', 'penugasan.pengguna'])
+            ->withSum('waktuKerja as TotalWaktuKerjaMenit', 'DurasiMenit')
+            ->withSum('waktuHenti as TotalDowntimeMenit', 'DurasiMenit')
+            ->withSum('biaya as TotalBiaya', 'Jumlah')
+            ->when(! $dapatMengelola, fn ($query) => $query->whereHas('penugasan', fn ($penugasan) => $penugasan->where('PenggunaId', $request->user('web')->Id)->whereIn('Status', ['Ditugaskan', 'Diterima'])))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
+            ->latest('DibuatPada')
+            ->orderBy('Id');
+    }
+
+    /** Daftar perintah kerja seperti yang tampil di layar, lengkap dengan penyaringnya. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', PerintahKerja::class);
+
+        $filter = $request->validate([
+            'status' => ['nullable', Rule::enum(StatusPerintahKerja::class)],
+            'prioritas' => ['nullable', Rule::enum(PrioritasKeluhan::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($request, $filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::atribut('Judul', 'Judul'),
+                KolomEkspor::atribut('Jenis', 'Jenis'),
+                KolomEkspor::atribut('Prioritas', 'Prioritas'),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::dari('Nomor Keluhan', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'keluhan'), 'Nomor')),
+                KolomEkspor::dari('Aset', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'aset'), 'Nama')),
+                KolomEkspor::dari('Kode Aset', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'aset'), 'KodeAset')),
+                KolomEkspor::dari('Lokasi', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'lokasi'), 'Nama')),
+                KolomEkspor::dari('Teknisi', fn (PerintahKerja $p): string => $p->penugasan
+                    ->map(fn (PenugasanPerintahKerja $satu): string => BacaRelasi::teks(BacaRelasi::model($satu, 'pengguna'), 'Nama'))
+                    ->filter()
+                    ->implode(', ')),
+                KolomEkspor::tanggal('Dijadwalkan Mulai', 'DijadwalkanMulaiPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Dimulai', 'DimulaiPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Diselesaikan', 'DiselesaikanPada', 'Y-m-d H:i'),
+                KolomEkspor::atribut('Persentase Selesai', 'PersentaseSelesai'),
+                KolomEkspor::atribut('Total Waktu Kerja (menit)', 'TotalWaktuKerjaMenit'),
+                KolomEkspor::atribut('Total Downtime (menit)', 'TotalDowntimeMenit'),
+                KolomEkspor::atribut('Total Biaya', 'TotalBiaya'),
+            ],
+            'daftar-perintah-kerja',
+            EksporDaftar::formatDari($request),
+        );
     }
 
     public function store(SimpanPerintahKerjaRequest $request, BuatPerintahKerja $aksi): RedirectResponse

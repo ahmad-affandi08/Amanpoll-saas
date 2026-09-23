@@ -1,4 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -98,6 +99,10 @@ export default function PerintahKerjaIndex({
         }
         aksi={
           <>
+            <TombolEkspor
+              url="/pemeliharaan/perintah-kerja/ekspor"
+              filter={filter as Record<string, string>}
+            />
             {dapatMengelola && (
               <DialogBuatPerintahKerja
                 keluhan={keluhan}

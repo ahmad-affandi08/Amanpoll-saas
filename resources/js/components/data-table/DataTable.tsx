@@ -17,6 +17,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DataTableToolbar, FilterFasetKolom } from '@/components/data-table/DataTableToolbar';
 import { DataTablePagination } from '@/components/data-table/DataTablePagination';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { DataTableCard } from '@/components/data-table/DataTableCard';
 import { DaftarServer, useDaftarServer } from '@/components/data-table/daftar-server';
@@ -40,6 +41,11 @@ interface DataTableProps<TData, TValue> {
    * prop ini supaya barisnya tidak terpotong diam-diam.
    */
   server?: DaftarServer;
+  /**
+   * Rute ekspor daftar ini. Diisi berarti tombol unduh muncul, membawa
+   * penyaring yang sedang berlaku.
+   */
+  ekspor?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -48,18 +54,30 @@ export function DataTable<TData, TValue>({
   pencarianPlaceholder,
   facetedFilters,
   aksi,
+  ekspor,
   pesanKosong = 'Tidak ada data.',
   ilustrasiKosong,
   kartuDiPonsel = false,
   server,
 }: DataTableProps<TData, TValue>) {
+  // Tombolnya disusun di sini, bukan di dalam kedua varian tabel, supaya mode
+  // klien dan mode server tidak pernah berselisih soal ada-tidaknya ekspor.
+  const aksiLengkap = ekspor ? (
+    <>
+      <TombolEkspor url={ekspor} filter={server?.filter} />
+      {aksi}
+    </>
+  ) : (
+    aksi
+  );
+
   return server ? (
     <TabelServer
       columns={columns}
       data={data}
       pencarianPlaceholder={pencarianPlaceholder}
       facetedFilters={facetedFilters}
-      aksi={aksi}
+      aksi={aksiLengkap}
       pesanKosong={pesanKosong}
       ilustrasiKosong={ilustrasiKosong}
       kartuDiPonsel={kartuDiPonsel}
@@ -71,7 +89,7 @@ export function DataTable<TData, TValue>({
       data={data}
       pencarianPlaceholder={pencarianPlaceholder}
       facetedFilters={facetedFilters}
-      aksi={aksi}
+      aksi={aksiLengkap}
       pesanKosong={pesanKosong}
       ilustrasiKosong={ilustrasiKosong}
       kartuDiPonsel={kartuDiPonsel}

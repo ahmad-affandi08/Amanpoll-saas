@@ -22,12 +22,17 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class KeluhanController extends Controller
 {
@@ -42,14 +47,7 @@ final class KeluhanController extends Controller
         ]);
         $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'Keluhan.Kelola');
 
-        $keluhan = Keluhan::query()
-            ->with(['kategoriKeluhan', 'tingkatLayanan', 'aset', 'lokasi', 'pelapor'])
-            ->when(! $dapatMengelola, fn ($query) => $query->where('PelaporId', $request->user('web')->Id))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
-            ->latest('DilaporkanPada')
-            ->paginate(25)
-            ->withQueryString();
+        $keluhan = $this->kueriTersaring($request, $filter)->paginate(25)->withQueryString();
 
         return Inertia::render('Keluhan/Index', [
             'wajib' => ['keluhan' => AturanWajib::untuk(SimpanKeluhanRequest::class)],
@@ -60,6 +58,63 @@ final class KeluhanController extends Controller
             'filter' => $filter,
             'dapatMengelola' => $dapatMengelola,
         ]);
+    }
+
+    /**
+     * Penyaring daftar keluhan, dipakai bersama halaman dan ekspornya.
+     *
+     * Pembatasan "hanya keluhan sendiri" bagi yang tidak memegang
+     * Keluhan.Kelola ikut di sini, bukan hanya di halaman: ekspor yang
+     * melewatinya akan menyerahkan seluruh keluhan organisasi kepada pelapor
+     * biasa.
+     *
+     * @param  array<string, mixed>  $filter
+     * @return Builder<Keluhan>
+     */
+    private function kueriTersaring(Request $request, array $filter): Builder
+    {
+        $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'Keluhan.Kelola');
+
+        return Keluhan::query()
+            ->with(['kategoriKeluhan', 'tingkatLayanan', 'aset', 'lokasi', 'pelapor'])
+            ->when(! $dapatMengelola, fn ($query) => $query->where('PelaporId', $request->user('web')->Id))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
+            ->latest('DilaporkanPada')
+            ->orderBy('Id');
+    }
+
+    /** Daftar keluhan seperti yang tampil di layar, lengkap dengan penyaringnya. */
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Keluhan::class);
+
+        $filter = $request->validate([
+            'status' => ['nullable', Rule::enum(StatusKeluhan::class)],
+            'prioritas' => ['nullable', Rule::enum(PrioritasKeluhan::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($request, $filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::atribut('Judul', 'Judul'),
+                KolomEkspor::dari('Kategori', fn (Keluhan $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'kategoriKeluhan'), 'Nama')),
+                KolomEkspor::atribut('Prioritas', 'Prioritas'),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::dari('Aset', fn (Keluhan $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'aset'), 'Nama')),
+                KolomEkspor::dari('Kode Aset', fn (Keluhan $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'aset'), 'KodeAset')),
+                KolomEkspor::dari('Lokasi', fn (Keluhan $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'lokasi'), 'Nama')),
+                KolomEkspor::dari('Pelapor', fn (Keluhan $k): string => BacaRelasi::teks(BacaRelasi::model($k, 'pelapor'), 'Nama')),
+                KolomEkspor::tanggal('Dilaporkan', 'DilaporkanPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Direspons', 'DiresponsPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Diresolusikan', 'DiresolusikanPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Batas Respons', 'BatasResponsPada', 'Y-m-d H:i'),
+                KolomEkspor::tanggal('Batas Penyelesaian', 'BatasPenyelesaianPada', 'Y-m-d H:i'),
+            ],
+            'daftar-keluhan',
+            EksporDaftar::formatDari($request),
+        );
     }
 
     public function store(

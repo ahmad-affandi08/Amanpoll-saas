@@ -246,6 +246,72 @@ final class KeluhanTest extends TestCase
      * @param  array<string, mixed>  $atributKategori
      * @return array{Organisasi, Pengguna, Lokasi, KategoriKeluhan}
      */
+    /**
+     * Pelapor biasa hanya melihat keluhannya sendiri di layar. Ekspor yang
+     * melewati pembatasan itu menyerahkan seluruh keluhan organisasi kepadanya
+     * dalam satu berkas, dan tidak ada di berkas itu yang memberi tahu.
+     */
+    public function test_ekspor_keluhan_pelapor_biasa_hanya_memuat_keluhannya_sendiri(): void
+    {
+        [$organisasi, $pelapor, $lokasi, $kategori] = $this->siapkanDataKeluhan();
+        $pelaporLain = $this->buatPengguna($organisasi);
+
+        $milikSendiri = $this->laporkanKeluhan($pelapor, $lokasi, $kategori, $organisasi, 'Keluhan milik sendiri');
+        $milikOrangLain = $this->laporkanKeluhan($pelaporLain, $lokasi, $kategori, $organisasi, 'Keluhan milik orang lain');
+
+        $isi = $this->actingAs($pelapor)->get('/pemeliharaan/keluhan/ekspor')
+            ->assertOk()
+            ->streamedContent();
+
+        $this->assertStringContainsString($milikSendiri->Nomor, $isi);
+        $this->assertStringNotContainsString($milikOrangLain->Nomor, $isi);
+    }
+
+    /**
+     * Pembanding bagi test di atas: dengan Keluhan.Kelola, keluhan pelapor lain
+     * memang ikut terbawa. Tanpa pembanding ini, hilangnya satu nomor tadi bisa
+     * saja berarti ekspornya tidak pernah memuat apa pun.
+     */
+    public function test_ekspor_keluhan_pemegang_kelola_memuat_keluhan_seluruh_pelapor(): void
+    {
+        [$organisasi, $pelapor, $lokasi, $kategori] = $this->siapkanDataKeluhan();
+        $manajer = $this->buatPengguna($organisasi, ['Keluhan.Kelola']);
+
+        $milikPelapor = $this->laporkanKeluhan($pelapor, $lokasi, $kategori, $organisasi, 'Keluhan dari pelapor');
+        $milikManajer = $this->laporkanKeluhan($manajer, $lokasi, $kategori, $organisasi, 'Keluhan dari manajer');
+
+        $isi = $this->actingAs($manajer)->get('/pemeliharaan/keluhan/ekspor')
+            ->assertOk()
+            ->streamedContent();
+
+        $this->assertStringContainsString($milikPelapor->Nomor, $isi);
+        $this->assertStringContainsString($milikManajer->Nomor, $isi);
+    }
+
+    /**
+     * Keluhan diambil lewat judulnya, bukan `latest('DibuatPada')`: dua keluhan
+     * yang lahir pada detik yang sama tidak punya urutan yang pasti, dan
+     * pengambilan terakhir dapat mengembalikan baris yang sama dua kali.
+     */
+    private function laporkanKeluhan(
+        Pengguna $pelapor,
+        Lokasi $lokasi,
+        KategoriKeluhan $kategori,
+        Organisasi $organisasi,
+        string $judul,
+    ): Keluhan {
+        $this->actingAs($pelapor)->post('/pemeliharaan/keluhan', [
+            'KategoriKeluhanId' => $kategori->Id,
+            'LokasiId' => $lokasi->Id,
+            'Judul' => $judul,
+            'Deskripsi' => 'Deskripsi keluhan untuk pengujian.',
+        ])->assertSessionDoesntHaveErrors();
+
+        $this->tetapkanKonteks($organisasi);
+
+        return Keluhan::query()->where('Judul', $judul)->firstOrFail();
+    }
+
     private function siapkanDataKeluhan(array $atributKategori = []): array
     {
         $organisasi = Organisasi::create(['Kode' => 'ORG-'.uniqid(), 'Nama' => 'Organisasi Uji']);

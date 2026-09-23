@@ -28,12 +28,15 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::delete('/kategori-keluhan/{kategoriKeluhan}', [KategoriKeluhanController::class, 'destroy'])->name('kategori-keluhan.destroy');
 
         Route::get('/keluhan', [KeluhanController::class, 'index'])->name('keluhan.index');
+        // Sebelum '/keluhan/{keluhan}' supaya 'ekspor' tidak tertelan sebagai id.
+        Route::get('/keluhan/ekspor', [KeluhanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('keluhan.ekspor');
         Route::post('/keluhan', [KeluhanController::class, 'store'])->name('keluhan.store');
         Route::get('/keluhan/{keluhan}', [KeluhanController::class, 'show'])->name('keluhan.show');
         Route::put('/keluhan/{keluhan}/status', [KeluhanController::class, 'ubahStatus'])->name('keluhan.status');
         Route::put('/keluhan/{keluhan}/prioritas', [KeluhanController::class, 'ubahPrioritas'])->name('keluhan.prioritas');
 
         Route::get('/perintah-kerja', [PerintahKerjaController::class, 'index'])->name('perintah-kerja.index');
+        Route::get('/perintah-kerja/ekspor', [PerintahKerjaController::class, 'ekspor'])->middleware('throttle:ekspor')->name('perintah-kerja.ekspor');
         Route::post('/perintah-kerja', [PerintahKerjaController::class, 'store'])->name('perintah-kerja.store');
         Route::get('/perintah-kerja/{perintahKerja}', [PerintahKerjaController::class, 'show'])->name('perintah-kerja.show');
         Route::put('/perintah-kerja/{perintahKerja}/status', [PerintahKerjaController::class, 'ubahStatus'])->name('perintah-kerja.status');

@@ -1,6 +1,7 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ListFilter } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -273,6 +274,7 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
           deskripsi="Daftar induk aset organisasi -- identitas, lokasi, dan status."
           aksi={
             <>
+              <TombolEkspor url="/aset/ekspor" filter={filter as Record<string, string>} />
               <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} wajib={wajib.aset} />
             </>
           }
