@@ -16,13 +16,21 @@ final class MassAssignmentOrganisasiTest extends KasusKeamanan
         $organisasiB = $this->buatOrganisasi('ORG-MA-B');
 
         $this->dalamOrganisasi($organisasiA, function () use ($organisasiB): void {
-            $this->expectException(AturanBisnisDilanggar::class);
+            // Ditangkap, bukan expectException: lemparannya akan melompat keluar
+            // dari method dan pemeriksaan "barisnya benar-benar tidak tertulis"
+            // di bawah tidak pernah dieksekusi. Ditolak di muka tidak sama
+            // dengan tidak tertulis -- yang kedua itulah yang dijaga di sini.
+            try {
+                Lokasi::create([
+                    'OrganisasiId' => $organisasiB->Id,
+                    'Kode' => 'LOK-SELUNDUPAN',
+                    'Nama' => 'Lokasi Selundupan',
+                ]);
 
-            Lokasi::create([
-                'OrganisasiId' => $organisasiB->Id,
-                'Kode' => 'LOK-SELUNDUPAN',
-                'Nama' => 'Lokasi Selundupan',
-            ]);
+                $this->fail('Penulisan ke organisasi lain seharusnya ditolak.');
+            } catch (AturanBisnisDilanggar) {
+                // diharapkan
+            }
         });
 
         $adaDiB = $this->dalamOrganisasi(

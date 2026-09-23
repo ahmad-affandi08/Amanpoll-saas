@@ -201,8 +201,15 @@ final class KampanyeDanEventTest extends KasusPemasaran
     {
         $event = app(PerekamEventPemasaran::class)->catat(KatalogPeristiwaPemasaran::CTA_DIKLIK);
 
-        $this->expectException(AturanBisnisDilanggar::class);
-        $event->delete();
+        // Ditangkap, bukan expectException, supaya pemeriksaan barisnya masih
+        // ada tetap dieksekusi: ditolak di muka tidak menjamin tidak terhapus.
+        try {
+            $event->delete();
+
+            $this->fail('Peristiwa pemasaran seharusnya tidak dapat dihapus.');
+        } catch (AturanBisnisDilanggar) {
+            // diharapkan
+        }
 
         $this->assertSame(1, EventPemasaran::query()->count());
     }
