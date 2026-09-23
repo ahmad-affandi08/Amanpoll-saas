@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ClipboardPlus, Plus, Search } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -256,6 +257,7 @@ export default function UsulanAsetIndex({
           deskripsi="Susun kebutuhan, lakukan penilaian, lalu ajukan persetujuan."
           aksi={
             <>
+              <TombolEkspor url="/perencanaan-pengadaan/usulan-aset/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatUsulan
                 unitOrganisasi={unitOrganisasi}
                 kategoriAset={kategoriAset}

@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ListChecks, Plus, Search } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -192,6 +193,7 @@ export default function RencanaPengadaanIndex({
           deskripsi="Konsolidasikan usulan disetujui ke rencana dan pos anggaran."
           aksi={
             <>
+              <TombolEkspor url="/perencanaan-pengadaan/rencana-pengadaan/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatRencana
                 posAnggaran={posAnggaran}
                 usulanDisetujui={usulanDisetujui}

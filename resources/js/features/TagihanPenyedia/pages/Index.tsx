@@ -12,6 +12,7 @@ import type { Paginasi } from '@/types/global';
 import type { StatusTagihanPenyedia, TagihanPenyedia } from '@/features/TagihanPenyedia/types';
 import { formatUang } from '@/lib/uang';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
@@ -43,6 +44,7 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
         <KepalaHalaman
           judul="Tagihan Penyedia"
           deskripsi="Tagihan hasil matching PO dan penerimaan, beserta sisa yang belum dibayar."
+          aksi={<TombolEkspor url="/perencanaan-pengadaan/tagihan-penyedia/ekspor" filter={filter as Record<string, string>} />}
         />
 
         <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_12rem_auto]">

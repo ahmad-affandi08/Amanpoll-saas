@@ -18,16 +18,71 @@ use App\Domain\Persetujuan\Infrastructure\Persistence\Models\KeputusanPersetujua
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class UsulanAsetController extends Controller
 {
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<UsulanAset>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return UsulanAset::query()
+            ->with(['unitOrganisasi', 'kategoriAset', 'modelAset', 'diajukanOleh'])
+            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where(fn ($sub) => $sub
+                ->where('Nomor', 'like', "%{$cari}%")
+                ->orWhere('NamaKebutuhan', 'like', "%{$cari}%")))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
+            ->orderByDesc('DibuatPada')
+            ->orderByDesc('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', UsulanAset::class);
+
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'string', Rule::enum(StatusUsulanAset::class)],
+            'prioritas' => ['nullable', 'string', Rule::enum(PrioritasUsulanAset::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::atribut('Nama Kebutuhan', 'NamaKebutuhan'),
+                KolomEkspor::dari('Unit', fn (UsulanAset $u): string => BacaRelasi::teks(BacaRelasi::model($u, 'unitOrganisasi'), 'Nama')),
+                KolomEkspor::dari('Kategori Aset', fn (UsulanAset $u): string => BacaRelasi::teks(BacaRelasi::model($u, 'kategoriAset'), 'Nama')),
+                KolomEkspor::dari('Model', fn (UsulanAset $u): string => BacaRelasi::teks(BacaRelasi::model($u, 'modelAset'), 'Nama')),
+                KolomEkspor::atribut('Jumlah', 'Jumlah'),
+                KolomEkspor::atribut('Estimasi Harga Satuan', 'EstimasiHargaSatuan'),
+                KolomEkspor::atribut('Jenis Kebutuhan', 'JenisKebutuhan'),
+                KolomEkspor::atribut('Tahun Kebutuhan', 'TahunKebutuhan'),
+                KolomEkspor::atribut('Prioritas', 'Prioritas'),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::dari('Diajukan Oleh', fn (UsulanAset $u): string => BacaRelasi::teks(BacaRelasi::model($u, 'diajukanOleh'), 'Nama')),
+                KolomEkspor::tanggal('Diajukan', 'DiajukanPada'),
+                KolomEkspor::atribut('Alasan', 'Alasan'),
+            ],
+            'daftar-usulan-aset',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', UsulanAset::class);
@@ -37,15 +92,7 @@ final class UsulanAsetController extends Controller
             'prioritas' => ['nullable', 'string', Rule::enum(PrioritasUsulanAset::class)],
         ]);
 
-        $usulan = UsulanAset::query()
-            ->with(['unitOrganisasi', 'kategoriAset', 'modelAset', 'diajukanOleh'])
-            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where(fn ($sub) => $sub
-                ->where('Nomor', 'like', "%{$cari}%")
-                ->orWhere('NamaKebutuhan', 'like', "%{$cari}%")))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
-            ->orderByDesc('DibuatPada')
-            ->orderByDesc('Id')
+        $usulan = $this->kueriTersaring($filter)
             ->paginate(20)
             ->withQueryString();
 

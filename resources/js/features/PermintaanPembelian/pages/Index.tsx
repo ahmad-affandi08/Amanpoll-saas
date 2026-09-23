@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Plus, Search, ShoppingCart } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -251,6 +252,7 @@ export default function PermintaanPembelianIndex({
           deskripsi="Draft kebutuhan, validasi sisa anggaran, dan pengajuan persetujuan."
           aksi={
             <>
+              <TombolEkspor url="/perencanaan-pengadaan/permintaan-pembelian/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatPermintaan
                 unitOrganisasi={unitOrganisasi}
                 rencana={rencana}

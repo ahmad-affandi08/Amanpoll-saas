@@ -17,6 +17,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->name('perencanaanPengadaan.')
     ->group(function (): void {
         Route::get('/anggaran', [AnggaranController::class, 'index'])->name('anggaran.index');
+        Route::get('/anggaran/ekspor', [AnggaranController::class, 'ekspor'])->middleware('throttle:ekspor')->name('anggaran.ekspor');
         Route::post('/anggaran', [AnggaranController::class, 'store'])->name('anggaran.store');
         Route::get('/anggaran/{anggaran}', [AnggaranController::class, 'show'])->name('anggaran.show');
         Route::put('/anggaran/{anggaran}', [AnggaranController::class, 'update'])->name('anggaran.update');
@@ -28,6 +29,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/pos-anggaran/{posAnggaran}/transaksi', [AnggaranController::class, 'storeTransaksi'])->name('pos.transaksi.store');
 
         Route::get('/usulan-aset', [UsulanAsetController::class, 'index'])->name('usulan.index');
+        Route::get('/usulan-aset/ekspor', [UsulanAsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('usulan.ekspor');
         Route::post('/usulan-aset', [UsulanAsetController::class, 'store'])->name('usulan.store');
         Route::get('/usulan-aset/{usulanAset}', [UsulanAsetController::class, 'show'])->name('usulan.show');
         Route::put('/usulan-aset/{usulanAset}', [UsulanAsetController::class, 'update'])->name('usulan.update');
@@ -37,6 +39,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/usulan-aset/{usulanAset}/ajukan-persetujuan', [UsulanAsetController::class, 'ajukanPersetujuan'])->name('usulan.ajukan-persetujuan');
 
         Route::get('/rencana-pengadaan', [RencanaPengadaanController::class, 'index'])->name('rencana.index');
+        Route::get('/rencana-pengadaan/ekspor', [RencanaPengadaanController::class, 'ekspor'])->middleware('throttle:ekspor')->name('rencana.ekspor');
         Route::post('/rencana-pengadaan', [RencanaPengadaanController::class, 'store'])->name('rencana.store');
         Route::get('/rencana-pengadaan/{rencanaPengadaan}', [RencanaPengadaanController::class, 'show'])->name('rencana.show');
         Route::put('/rencana-pengadaan/{rencanaPengadaan}', [RencanaPengadaanController::class, 'update'])->name('rencana.update');
@@ -46,6 +49,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/rencana-pengadaan/{rencanaPengadaan}/finalisasi', [RencanaPengadaanController::class, 'finalisasi'])->name('rencana.finalisasi');
 
         Route::get('/permintaan-pembelian', [PermintaanPembelianController::class, 'index'])->name('permintaan.index');
+        Route::get('/permintaan-pembelian/ekspor', [PermintaanPembelianController::class, 'ekspor'])->middleware('throttle:ekspor')->name('permintaan.ekspor');
         Route::post('/permintaan-pembelian', [PermintaanPembelianController::class, 'store'])->name('permintaan.store');
         Route::get('/permintaan-pembelian/{permintaanPembelian}', [PermintaanPembelianController::class, 'show'])->name('permintaan.show');
         Route::post('/permintaan-pembelian/{permintaanPembelian}/detail', [PermintaanPembelianController::class, 'storeDetail'])->name('permintaan.detail.store');
@@ -53,6 +57,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/permintaan-pembelian/{permintaanPembelian}/submit', [PermintaanPembelianController::class, 'submit'])->name('permintaan.submit');
 
         Route::get('/permintaan-penawaran', [PermintaanPenawaranController::class, 'index'])->name('rfq.index');
+        Route::get('/permintaan-penawaran/ekspor', [PermintaanPenawaranController::class, 'ekspor'])->middleware('throttle:ekspor')->name('rfq.ekspor');
         Route::post('/permintaan-penawaran', [PermintaanPenawaranController::class, 'store'])->name('rfq.store');
         Route::get('/permintaan-penawaran/{permintaanPenawaran}', [PermintaanPenawaranController::class, 'show'])->name('rfq.show');
         Route::post('/permintaan-penawaran/{permintaanPenawaran}/buka', [PermintaanPenawaranController::class, 'buka'])->name('rfq.buka');
@@ -60,6 +65,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/permintaan-penawaran/{permintaanPenawaran}/penawaran/{penawaranPenyedia}/pilih', [PermintaanPenawaranController::class, 'pilih'])->name('rfq.penawaran.pilih');
 
         Route::get('/pesanan-pembelian', [PesananPembelianController::class, 'index'])->name('po.index');
+        Route::get('/pesanan-pembelian/ekspor', [PesananPembelianController::class, 'ekspor'])->middleware('throttle:ekspor')->name('po.ekspor');
         Route::post('/penawaran/{penawaranPenyedia}/pesanan-pembelian', [PesananPembelianController::class, 'store'])->name('po.store');
         Route::get('/pesanan-pembelian/{pesananPembelian}', [PesananPembelianController::class, 'show'])->name('po.show');
         Route::post('/pesanan-pembelian/{pesananPembelian}/ajukan', [PesananPembelianController::class, 'ajukan'])->name('po.ajukan');
@@ -68,7 +74,9 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/pesanan-pembelian/{pesananPembelian}/tagihan', [TagihanPenyediaController::class, 'store'])->name('tagihan.store');
 
         Route::get('/penerimaan-pembelian', [PenerimaanPembelianController::class, 'index'])->name('penerimaan.index');
+        Route::get('/penerimaan-pembelian/ekspor', [PenerimaanPembelianController::class, 'ekspor'])->middleware('throttle:ekspor')->name('penerimaan.ekspor');
         Route::get('/tagihan-penyedia', [TagihanPenyediaController::class, 'index'])->name('tagihan.index');
+        Route::get('/tagihan-penyedia/ekspor', [TagihanPenyediaController::class, 'ekspor'])->middleware('throttle:ekspor')->name('tagihan.ekspor');
         Route::get('/tagihan-penyedia/{tagihanPenyedia}', [TagihanPenyediaController::class, 'show'])->name('tagihan.show');
         Route::post('/tagihan-penyedia/{tagihanPenyedia}/pembayaran', [TagihanPenyediaController::class, 'bayar'])->name('tagihan.bayar');
     });

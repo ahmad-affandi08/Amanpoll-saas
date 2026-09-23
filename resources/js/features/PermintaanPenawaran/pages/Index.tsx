@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { FileText, Plus, Search } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -198,6 +199,7 @@ export default function PermintaanPenawaranIndex({
           deskripsi="Undang penyedia, catat penawaran masuk, dan pilih hasil evaluasi."
           aksi={
             <>
+              <TombolEkspor url="/perencanaan-pengadaan/permintaan-penawaran/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatRfq
                 permintaanDisetujui={permintaanDisetujui}
                 penyedia={penyedia}

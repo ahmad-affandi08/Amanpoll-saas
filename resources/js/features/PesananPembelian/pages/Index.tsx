@@ -24,6 +24,7 @@ import type { PenawaranPenyedia } from '@/features/PermintaanPenawaran/types';
 import type { PesananPembelian, StatusPesananPembelian } from '@/features/PesananPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -161,6 +162,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
         <KepalaHalaman
           judul="Pesanan Pembelian"
           deskripsi="PO dibuat dari penawaran terpilih; komitmen anggaran dicatat saat PO dikirim."
+          aksi={<TombolEkspor url="/perencanaan-pengadaan/pesanan-pembelian/ekspor" filter={filter as Record<string, string>} />}
         />
 
         {penawaranTerpilih.length > 0 && (

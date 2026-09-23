@@ -19,26 +19,28 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PosAnggara
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TransaksiAnggaran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class AnggaranController extends Controller
 {
-    public function index(Request $request): Response
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<Anggaran>
+     */
+    private function kueriTersaring(array $filter): Builder
     {
-        $this->authorize('viewAny', Anggaran::class);
-        $filter = $request->validate([
-            'cari' => ['nullable', 'string', 'max:100'],
-            'tahun' => ['nullable', 'integer', 'between:2000,2100'],
-            'status' => ['nullable', 'string', Rule::enum(StatusAnggaran::class)],
-        ]);
-
-        $anggaran = Anggaran::query()
+        return Anggaran::query()
             ->with('unitOrganisasi')
             ->withCount('posAnggaran')
             ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where(fn ($sub) => $sub
@@ -48,6 +50,46 @@ final class AnggaranController extends Controller
             ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
             ->orderByDesc('Tahun')
             ->orderBy('Kode')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', Anggaran::class);
+
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:100'],
+            'tahun' => ['nullable', 'integer', 'between:2000,2100'],
+            'status' => ['nullable', 'string', Rule::enum(StatusAnggaran::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Kode', 'Kode'),
+                KolomEkspor::atribut('Nama', 'Nama'),
+                KolomEkspor::atribut('Tahun', 'Tahun'),
+                KolomEkspor::dari('Unit', fn (Anggaran $a): string => BacaRelasi::teks(BacaRelasi::model($a, 'unitOrganisasi'), 'Nama')),
+                KolomEkspor::atribut('Jumlah', 'Jumlah'),
+                KolomEkspor::atribut('Mata Uang', 'MataUang'),
+                KolomEkspor::atribut('Jumlah Pos', 'pos_anggaran_count'),
+                KolomEkspor::atribut('Status', 'Status'),
+            ],
+            'daftar-anggaran',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
+    public function index(Request $request): Response
+    {
+        $this->authorize('viewAny', Anggaran::class);
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:100'],
+            'tahun' => ['nullable', 'integer', 'between:2000,2100'],
+            'status' => ['nullable', 'string', Rule::enum(StatusAnggaran::class)],
+        ]);
+
+        $anggaran = $this->kueriTersaring($filter)
             ->paginate(20)
             ->withQueryString();
 

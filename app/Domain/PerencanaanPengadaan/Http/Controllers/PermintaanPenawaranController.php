@@ -17,15 +17,61 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenawaranP
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPembelian;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PermintaanPenawaran;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PermintaanPenawaranController extends Controller
 {
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<PermintaanPenawaran>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return PermintaanPenawaran::query()
+            ->with('permintaanPembelian')
+            ->withCount(['penyediaDiundang', 'penawaran'])
+            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where('Nomor', 'like', "%{$cari}%"))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->latest('DibuatPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', PermintaanPenawaran::class);
+
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'string', Rule::enum(StatusPermintaanPenawaran::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::dari('Nomor Permintaan Pembelian', fn (PermintaanPenawaran $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'permintaanPembelian'), 'Nomor')),
+                KolomEkspor::tanggal('Dibuka', 'TanggalDibuka'),
+                KolomEkspor::tanggal('Batas Penawaran', 'BatasPenawaran'),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::atribut('Penyedia Diundang', 'penyedia_diundang_count'),
+                KolomEkspor::atribut('Penawaran Masuk', 'penawaran_count'),
+                KolomEkspor::atribut('Catatan', 'Catatan'),
+            ],
+            'daftar-permintaan-penawaran',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', PermintaanPenawaran::class);
@@ -34,12 +80,7 @@ final class PermintaanPenawaranController extends Controller
             'status' => ['nullable', 'string', Rule::enum(StatusPermintaanPenawaran::class)],
         ]);
 
-        $rfq = PermintaanPenawaran::query()
-            ->with('permintaanPembelian')
-            ->withCount(['penyediaDiundang', 'penawaran'])
-            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where('Nomor', 'like', "%{$cari}%"))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->latest('DibuatPada')
+        $rfq = $this->kueriTersaring($filter)
             ->paginate(20)
             ->withQueryString();
 

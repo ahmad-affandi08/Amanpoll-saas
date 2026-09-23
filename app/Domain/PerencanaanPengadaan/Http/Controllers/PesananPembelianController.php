@@ -17,16 +17,65 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PesananPem
 use App\Domain\Persediaan\Domain\Enums\StatusGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Ekspor\EksporDaftar;
+use App\Shared\Infrastructure\Ekspor\KolomEkspor;
+use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PesananPembelianController extends Controller
 {
+    /**
+     * @param  array<string, mixed>  $filter
+     * @return Builder<PesananPembelian>
+     */
+    private function kueriTersaring(array $filter): Builder
+    {
+        return PesananPembelian::query()
+            ->with('penyedia')
+            ->withCount('penerimaan')
+            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where('Nomor', 'like', "%{$cari}%"))
+            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
+            ->latest('DibuatPada')
+            ->orderBy('Id');
+    }
+
+    public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
+    {
+        $this->authorize('viewAny', PesananPembelian::class);
+
+        $filter = $request->validate([
+            'cari' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'string', Rule::enum(StatusPesananPembelian::class)],
+        ]);
+
+        return $ekspor->unduh(
+            $this->kueriTersaring($filter),
+            [
+                KolomEkspor::atribut('Nomor', 'Nomor'),
+                KolomEkspor::dari('Penyedia', fn (PesananPembelian $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'penyedia'), 'Nama')),
+                KolomEkspor::tanggal('Tanggal Pesanan', 'TanggalPesanan'),
+                KolomEkspor::tanggal('Rencana Kirim', 'TanggalKirimRencana'),
+                KolomEkspor::atribut('Subtotal', 'Subtotal'),
+                KolomEkspor::atribut('Pajak', 'Pajak'),
+                KolomEkspor::atribut('Diskon', 'Diskon'),
+                KolomEkspor::atribut('Total', 'Total'),
+                KolomEkspor::atribut('Mata Uang', 'MataUang'),
+                KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::atribut('Jumlah Penerimaan', 'penerimaan_count'),
+            ],
+            'daftar-pesanan-pembelian',
+            EksporDaftar::formatDari($request),
+        );
+    }
+
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', PesananPembelian::class);
@@ -35,12 +84,7 @@ final class PesananPembelianController extends Controller
             'status' => ['nullable', 'string', Rule::enum(StatusPesananPembelian::class)],
         ]);
 
-        $pesanan = PesananPembelian::query()
-            ->with('penyedia')
-            ->withCount('penerimaan')
-            ->when($filter['cari'] ?? null, fn ($query, $cari) => $query->where('Nomor', 'like', "%{$cari}%"))
-            ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
-            ->latest('DibuatPada')
+        $pesanan = $this->kueriTersaring($filter)
             ->paginate(20)
             ->withQueryString();
 

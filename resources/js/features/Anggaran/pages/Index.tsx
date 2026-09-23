@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Plus, Search, WalletCards } from 'lucide-react';
+import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
@@ -186,6 +187,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
           deskripsi="Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi."
           aksi={
             <>
+              <TombolEkspor url="/perencanaan-pengadaan/anggaran/ekspor" filter={filter as Record<string, string>} />
               <DialogBuatAnggaran unitOrganisasi={unitOrganisasi} wajib={wajib.anggaran} />
             </>
           }
