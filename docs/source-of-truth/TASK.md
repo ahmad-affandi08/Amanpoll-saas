@@ -925,6 +925,14 @@ Menjalankan scheduler dua kali tidak boleh menggandakan preventive work order ya
 - [x] Prevent duplicate notifications.
 - [x] Dashboard.
 
+Pesan pengingat terlambat sempat berbunyi "telah terlambat -5 hari":
+`diffInDays()` Carbon 3 bertanda, dan selisihnya dihitung dari hari ini ke
+tanggal jatuh tempo yang sudah lewat. Kini dihitung dari tanggal yang lebih
+awal ke yang lebih akhir dan dijadikan bilangan bulat; test memeriksa isi
+pesannya utuh untuk kedua cabang. Kontrak dan kepatuhan diperiksa dan tidak
+terkena: selisihnya sudah bilangan bulat searah, dan angkanya hanya dicetak
+selagi masih positif.
+
 ### Gate 14
 
 Riwayat kalibrasi lengkap, sertifikat authorized, next due konsisten (Terpenuhi).

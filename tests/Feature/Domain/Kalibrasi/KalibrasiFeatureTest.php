@@ -23,6 +23,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 final class KalibrasiFeatureTest extends TestCase
@@ -294,13 +295,13 @@ final class KalibrasiFeatureTest extends TestCase
             'Aktif' => true,
         ]);
 
-        // Rencana 2: Jatuh tempo kemarin (2026-09-19) -> Terlambat
+        // Rencana 2: Jatuh tempo lima hari lalu (2026-09-15) -> Terlambat
         RencanaKalibrasi::create([
             'OrganisasiId' => $organisasi->Id,
             'AsetId' => $aset2->Id,
             'IntervalHari' => 365,
-            'TanggalMulai' => '2025-09-19',
-            'TanggalBerikutnya' => '2026-09-19',
+            'TanggalMulai' => '2025-09-15',
+            'TanggalBerikutnya' => '2026-09-15',
             'PeringatanHariSebelum' => 30,
             'Aktif' => true,
         ]);
@@ -331,6 +332,16 @@ final class KalibrasiFeatureTest extends TestCase
         $this->assertSame(1, $hasilPertama['segeraJatuhTempo']);
         $this->assertSame(1, $hasilPertama['terlambat']);
         $this->assertSame(0, $hasilPertama['dilewati']);
+
+        // Isi pesan menyebut jumlah hari sebagai bilangan bulat positif, bukan "-5" atau "10.0".
+        $this->assertSame(
+            ['Kalibrasi untuk aset Aset Sudah Terlambat (AST-REM-02) telah terlambat 5 hari (jatuh tempo: 15/09/2026).'],
+            $this->isiNotifikasi($organisasi, 'Kalibrasi.Terlambat'),
+        );
+        $this->assertSame(
+            ['Kalibrasi untuk aset Aset Jatuh Tempo Segera (AST-REM-01) akan jatuh tempo dalam 10 hari (30/09/2026).'],
+            $this->isiNotifikasi($organisasi, 'Kalibrasi.SegeraJatuhTempo'),
+        );
 
         // 3. UJI ANTI DUPLIKASI (14.05): Menjalankan pengingat kedua kali pada hari yang sama
         $hasilKedua = $layananPeringatan->kirimPeringatan($organisasi->Id);
@@ -398,6 +409,24 @@ final class KalibrasiFeatureTest extends TestCase
     private function tetapkanKonteks(Organisasi $organisasi): void
     {
         app(KonteksOrganisasi::class)->tetapkan($organisasi->Id);
+    }
+
+    /**
+     * Isi notifikasi yang berbeda untuk satu jenis peristiwa; satu pesan bisa
+     * tertulis di beberapa kanal, jadi duplikatnya dirapatkan.
+     *
+     * @return list<string>
+     */
+    private function isiNotifikasi(Organisasi $organisasi, string $jenisPeristiwa): array
+    {
+        return DB::table('Notifikasi')
+            ->where('OrganisasiId', $organisasi->Id)
+            ->where('JenisPeristiwa', $jenisPeristiwa)
+            ->distinct()
+            ->pluck('Isi')
+            ->map(fn (mixed $isi): string => (string) $isi)
+            ->values()
+            ->all();
     }
 
     private function buatAset(Organisasi $organisasi, array $atribut = []): Aset

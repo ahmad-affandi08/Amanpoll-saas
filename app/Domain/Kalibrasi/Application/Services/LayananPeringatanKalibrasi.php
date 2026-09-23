@@ -72,6 +72,10 @@ final class LayananPeringatanKalibrasi
      * Memeriksa dan mengirim notifikasi kalibrasi due-soon & overdue
      * dengan proteksi anti-duplikasi pada hari yang sama (14.05).
      *
+     * `diffInDays()` Carbon 3 mengembalikan float bertanda (negatif bila
+     * argumennya lebih awal), jadi selisih untuk isi pesan selalu dihitung
+     * dari tanggal yang lebih awal ke yang lebih akhir lalu dijadikan int.
+     *
      * @return array{segeraJatuhTempo: int, terlambat: int, dilewati: int}
      */
     public function kirimPeringatan(string $organisasiId): array
@@ -105,13 +109,13 @@ final class LayananPeringatanKalibrasi
             if ($tglBerikutnya->lt($hariIni)) {
                 // Kalibrasi sudah lewat jatuh tempo
                 $jenisPeristiwa = 'Kalibrasi.Terlambat';
-                $hariTerlambat = $hariIni->diffInDays($tglBerikutnya);
+                $hariTerlambat = (int) $tglBerikutnya->diffInDays($hariIni);
                 $judul = 'Kalibrasi Aset Terlambat';
                 $isi = "Kalibrasi untuk aset {$rencana->aset?->Nama} ({$rencana->aset?->KodeAset}) telah terlambat {$hariTerlambat} hari (jatuh tempo: {$tglBerikutnya->format('d/m/Y')}).";
             } elseif ($tglBerikutnya->lte($batasPeringatan)) {
                 // Kalibrasi segera jatuh tempo
                 $jenisPeristiwa = 'Kalibrasi.SegeraJatuhTempo';
-                $sisaHari = $hariIni->diffInDays($tglBerikutnya);
+                $sisaHari = (int) $hariIni->diffInDays($tglBerikutnya);
                 $judul = 'Pengingat Kalibrasi Aset';
                 $isi = "Kalibrasi untuk aset {$rencana->aset?->Nama} ({$rencana->aset?->KodeAset}) akan jatuh tempo dalam {$sisaHari} hari ({$tglBerikutnya->format('d/m/Y')}).";
             }
