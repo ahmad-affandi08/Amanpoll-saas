@@ -21,6 +21,7 @@ import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { DataTableCard } from '@/components/data-table/DataTableCard';
 import { DaftarServer, useDaftarServer } from '@/components/data-table/daftar-server';
+import { useKolomStabil } from '@/components/data-table/kolom-stabil';
 import { BATAS_DAFTAR } from '@/lib/batas';
 
 interface DataTableProps<TData, TValue> {
@@ -107,6 +108,7 @@ function TabelKlien<TData, TValue>({
   ilustrasiKosong,
   kartuDiPonsel,
 }: Omit<DataTableProps<TData, TValue>, 'server'>) {
+  const kolomStabil = useKolomStabil(columns);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -114,7 +116,7 @@ function TabelKlien<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: kolomStabil,
     state: { sorting, columnFilters, columnVisibility, globalFilter },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -162,6 +164,7 @@ function TabelServer<TData, TValue>({
   kartuDiPonsel,
   server,
 }: DataTableProps<TData, TValue> & { server: DaftarServer }) {
+  const kolomStabil = useKolomStabil(columns);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const daftar = useDaftarServer(server);
 
@@ -174,8 +177,8 @@ function TabelServer<TData, TValue>({
   const kunciBayangan = idBayangan.join(',');
 
   const kolomLengkap = useMemo(
-    () => [...columns, ...(kunciBayangan === '' ? [] : kunciBayangan.split(',')).map((id) => ({ id }))],
-    [columns, kunciBayangan],
+    () => [...kolomStabil, ...(kunciBayangan === '' ? [] : kunciBayangan.split(',')).map((id) => ({ id }))],
+    [kolomStabil, kunciBayangan],
   );
 
   const sorting: SortingState = server.filter.urut
