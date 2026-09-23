@@ -248,14 +248,14 @@ export function DateRangePicker({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-7 rounded-md text-permukaan-600 hover:text-permukaan-900 hover:bg-permukaan-100 cursor-pointer"
+            className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
             onClick={onPrev}
             title="Bulan sebelumnya"
           >
             <ChevronLeft className="size-4" />
           </Button>
 
-          <span className="text-sm font-bold text-permukaan-900 tracking-tight capitalize select-none">
+          <span className="text-sm font-bold text-grafit-950 tracking-tight capitalize select-none">
             {format(monthDate, 'MMMM yyyy', { locale: id })}
           </span>
 
@@ -263,7 +263,7 @@ export function DateRangePicker({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-7 rounded-md text-permukaan-600 hover:text-permukaan-900 hover:bg-permukaan-100 cursor-pointer"
+            className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
             onClick={onNext}
             title="Bulan berikutnya"
           >
@@ -276,7 +276,7 @@ export function DateRangePicker({
           {weekDays.map((hari) => (
             <div
               key={hari}
-              className="h-6 flex items-center justify-center text-[11px] font-semibold text-permukaan-400 uppercase tracking-wider"
+              className="h-6 flex items-center justify-center text-[11px] font-semibold text-grafit-500 uppercase tracking-wider"
             >
               {hari}
             </div>
@@ -321,7 +321,7 @@ export function DateRangePicker({
                   className={cn(
                     'relative z-10 size-8 flex items-center justify-center text-xs transition-all cursor-pointer select-none rounded-full',
                     // Warna teks bulan aktif vs luar bulan
-                    isCurrentMonth ? 'text-permukaan-800' : 'text-permukaan-300 hover:text-permukaan-500',
+                    isCurrentMonth ? 'text-grafit-950' : 'text-grafit-500/60 hover:text-grafit-500',
                     // Hari ini
                     isDayToday &&
                       !isStart &&
@@ -384,11 +384,11 @@ export function DateRangePicker({
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-auto max-w-[calc(100vw-1rem)] md:max-w-[730px] p-0 shadow-2xl border border-permukaan-200 bg-card rounded-2xl overflow-hidden"
+        className="w-auto max-w-[calc(100vw-1rem)] md:max-w-[730px] p-0 shadow-2xl border border-garis-200 bg-card rounded-2xl overflow-hidden"
         align={align}
       >
         {/* Presets Mobile: Scrollable pills */}
-        <div className="flex md:hidden overflow-x-auto gap-1.5 p-2.5 border-b border-permukaan-200 bg-permukaan-50 scrollbar-none">
+        <div className="flex md:hidden overflow-x-auto gap-1.5 p-2.5 border-b border-garis-200 bg-permukaan-50 scrollbar-none">
           {presets.map((p) => {
             const r = p.getRange();
             const isActive =
@@ -403,7 +403,7 @@ export function DateRangePicker({
                   'h-7 px-2.5 text-xs whitespace-nowrap rounded-lg shrink-0 cursor-pointer',
                   isActive
                     ? 'bg-teknisi-700 text-white hover:bg-teknisi-800'
-                    : 'text-permukaan-700 hover:bg-permukaan-100',
+                    : 'text-grafit-700 hover:bg-permukaan-100',
                 )}
                 onClick={() => handleApplyPreset(p.getRange)}
               >
@@ -415,8 +415,8 @@ export function DateRangePicker({
 
         <div className="flex flex-col md:flex-row">
           {/* Presets Desktop: Sidebar Kiri */}
-          <div className="hidden md:flex border-r border-permukaan-200 p-3 flex-col gap-1 w-40 shrink-0 bg-permukaan-50/70">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-permukaan-400 px-2 py-1 mb-1 select-none">
+          <div className="hidden md:flex border-r border-garis-200 p-3 flex-col gap-1 w-40 shrink-0 bg-permukaan-50/70">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-grafit-500 px-2 py-1 mb-1 select-none">
               Pilihan Cepat
             </span>
             {presets.map((p) => {
@@ -433,7 +433,7 @@ export function DateRangePicker({
                     'justify-start h-8 px-2.5 text-xs font-medium rounded-lg cursor-pointer transition-all',
                     isActive
                       ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 shadow-xs'
-                      : 'text-permukaan-700 hover:bg-permukaan-100 hover:text-permukaan-900',
+                      : 'text-grafit-700 hover:bg-permukaan-100 hover:text-grafit-950',
                   )}
                   onClick={() => handleApplyPreset(p.getRange)}
                 >
@@ -459,7 +459,7 @@ export function DateRangePicker({
                 },
               )}
 
-              <div className="w-px bg-permukaan-200 self-stretch my-2" />
+              <div className="w-px bg-garis-200 self-stretch my-2" />
 
               {renderMonthCalendar(
                 rightMonth,
@@ -486,12 +486,12 @@ export function DateRangePicker({
         </div>
 
         {/* Footer Aksi */}
-        <div className="border-t border-permukaan-200 bg-permukaan-50 px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs text-permukaan-600 font-medium flex items-center gap-2 self-start sm:self-auto truncate max-w-full">
+        <div className="border-t border-garis-200 bg-permukaan-50 px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-xs text-grafit-700 font-medium flex items-center gap-2 self-start sm:self-auto truncate max-w-full">
             {tempDari && tempSampai ? (
               <div className="flex items-center gap-2 flex-wrap">
                 <CalendarIcon className="size-4 text-teknisi-700 shrink-0" />
-                <span className="font-semibold text-permukaan-900">
+                <span className="font-semibold text-grafit-950">
                   {format(tempDari, 'd MMM yyyy', { locale: id })} –{' '}
                   {format(tempSampai, 'd MMM yyyy', { locale: id })}
                 </span>
@@ -502,14 +502,14 @@ export function DateRangePicker({
             ) : tempDari ? (
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-safety-500 animate-pulse shrink-0" />
-                <span className="text-permukaan-700">
+                <span className="text-grafit-700">
                   Mulai: <strong>{format(tempDari, 'd MMM yyyy', { locale: id })}</strong> — Silakan pilih
                   tanggal akhir
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 text-permukaan-400">
-                <span className="size-2 rounded-full bg-permukaan-300 shrink-0" />
+              <div className="flex items-center gap-1.5 text-grafit-500">
+                <span className="size-2 rounded-full bg-garis-300 shrink-0" />
                 <span>Pilih tanggal awal dan akhir pada kalender</span>
               </div>
             )}
@@ -520,7 +520,7 @@ export function DateRangePicker({
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 px-3.5 text-xs rounded-lg cursor-pointer border-permukaan-200 hover:bg-permukaan-100 text-permukaan-700"
+              className="h-8 px-3.5 text-xs rounded-lg cursor-pointer border-garis-200 hover:bg-permukaan-100 text-grafit-700"
               onClick={() => {
                 setTempDari(null);
                 setTempSampai(null);
@@ -537,7 +537,7 @@ export function DateRangePicker({
                 'h-8 px-4 text-xs font-semibold rounded-lg cursor-pointer shadow-xs transition-all',
                 tempDari
                   ? 'bg-teknisi-700 hover:bg-teknisi-800 text-white'
-                  : 'bg-permukaan-200 text-permukaan-400 cursor-not-allowed pointer-events-none',
+                  : 'bg-garis-200 text-grafit-500 cursor-not-allowed pointer-events-none',
               )}
               disabled={!tempDari}
               onClick={handleApply}

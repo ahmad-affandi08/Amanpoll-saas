@@ -583,4 +583,26 @@ class PersediaanTest extends TestCase
 
         $this->actingAs($tanpaIzin)->get("/gudang/{$gudang->Id}")->assertForbidden();
     }
+
+    /**
+     * Daftar gudang terbuka selagi berisi gudang dan lokasinya.
+     *
+     * Koleksi resource sempat dibungkus lebih dulu, lalu lokasi per gudang
+     * dihitung dari paginator yang isinya sudah menjadi objek resource; halaman
+     * jatuh 500 begitu ada satu gudang. Test lama hanya membuka daftar kosong.
+     */
+    public function test_daftar_gudang_menampilkan_lokasi_per_gudang(): void
+    {
+        $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
+        $pengguna = $this->buatPengguna($organisasi, ['Stok.Kelola']);
+        $gudang = $this->buatGudang($organisasi);
+        LokasiGudang::create(['GudangId' => $gudang->Id, 'Kode' => 'RAK-A', 'Nama' => 'Rak A']);
+
+        $this->actingAs($pengguna)->get('/gudang')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Gudang/Index')
+                ->has('gudang.data', 1)
+                ->where("lokasiGudangPerGudang.{$gudang->Id}.0.Kode", 'RAK-A'));
+    }
 }

@@ -213,23 +213,23 @@ export default function InspeksiIndex({
 
         {/* Ringkasan Hasil Inspeksi */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-permukaan-500 font-medium">Total Jadwal</span>
-            <div className="text-2xl font-bold text-permukaan-900 mt-1">{inspeksi.data.length}</div>
+          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
+            <span className="text-xs text-grafit-500 font-medium">Total Jadwal</span>
+            <div className="text-2xl font-bold text-grafit-950 mt-1">{inspeksi.data.length}</div>
           </div>
-          <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
+          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
               <CheckCircle2 className="h-3.5 w-3.5" /> Lolos Normal
             </span>
             <div className="text-2xl font-bold text-emerald-700 mt-1">{lolosCount}</div>
           </div>
-          <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
+          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-amber-600 font-medium flex items-center gap-1">
               <AlertTriangle className="h-3.5 w-3.5" /> Perlu Perhatian
             </span>
             <div className="text-2xl font-bold text-amber-700 mt-1">{perhatianCount}</div>
           </div>
-          <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
+          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
             <span className="text-xs text-rose-600 font-medium flex items-center gap-1">
               <XCircle className="h-3.5 w-3.5" /> Gagal / Temuan
             </span>
@@ -240,7 +240,7 @@ export default function InspeksiIndex({
         {/* Filter & Search Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-permukaan-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-grafit-500" />
             <Input
               type="text"
               placeholder="Cari nomor, aset, atau templat..."
@@ -290,10 +290,10 @@ export default function InspeksiIndex({
             deskripsi="Riwayat dan jadwal inspeksi kondisi aset operasional akan dicatat di sini."
           />
         ) : (
-          <div className="bg-card border border-permukaan-200 rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-card border border-garis-200 rounded-xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-permukaan-50 border-b border-permukaan-200 text-xs font-semibold text-permukaan-600 uppercase">
+                <thead className="bg-permukaan-50 border-b border-garis-200 text-xs font-semibold text-grafit-700 uppercase">
                   <tr>
                     <th className="px-5 py-3">Nomor</th>
                     <th className="px-5 py-3">Aset</th>
@@ -311,21 +311,21 @@ export default function InspeksiIndex({
 
                     return (
                       <tr key={item.Id} className="hover:bg-permukaan-50/50 transition-colors">
-                        <td className="px-5 py-4 font-mono font-bold text-xs text-permukaan-900">
+                        <td className="px-5 py-4 font-mono font-bold text-xs text-grafit-950">
                           {item.Nomor}
                         </td>
-                        <td className="px-5 py-4 text-xs font-medium text-permukaan-900">
-                          <div className="font-semibold text-permukaan-800">{item.aset?.Nama}</div>
-                          <span className="text-permukaan-500 font-mono">
+                        <td className="px-5 py-4 text-xs font-medium text-grafit-950">
+                          <div className="font-semibold text-grafit-950">{item.aset?.Nama}</div>
+                          <span className="text-grafit-500 font-mono">
                             {item.aset?.KodeAset} • {item.aset?.lokasi?.Nama ?? '-'}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-xs text-permukaan-700">
+                        <td className="px-5 py-4 text-xs text-grafit-700">
                           {item.templatInspeksi?.Nama ?? '-'}
                         </td>
-                        <td className="px-5 py-4 text-xs text-permukaan-600">
+                        <td className="px-5 py-4 text-xs text-grafit-700">
                           <div className="flex items-center gap-1.5">
-                            <Calendar className="h-3.5 w-3.5 text-permukaan-400" />
+                            <Calendar className="h-3.5 w-3.5 text-grafit-500" />
                             <span>{item.DijadwalkanPada ? tanggalLokal(item.DijadwalkanPada) : '-'}</span>
                           </div>
                         </td>
@@ -340,7 +340,7 @@ export default function InspeksiIndex({
                               {hasilBadge.label}
                             </Badge>
                           ) : (
-                            <span className="text-xs text-permukaan-400">Belum Dievaluasi</span>
+                            <span className="text-xs text-grafit-500">Belum Dievaluasi</span>
                           )}
                         </td>
                         <td className="px-5 py-4 text-right">

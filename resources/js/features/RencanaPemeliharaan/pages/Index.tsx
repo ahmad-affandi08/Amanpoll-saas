@@ -272,18 +272,18 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
 
         {/* Ringkasan Metrik */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-permukaan-500 font-medium">Total Rencana Aktif</span>
-            <div className="text-2xl font-bold text-permukaan-900 mt-1">
+          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
+            <span className="text-xs text-grafit-500 font-medium">Total Rencana Aktif</span>
+            <div className="text-2xl font-bold text-grafit-950 mt-1">
               {rencana.filter((r) => r.Aktif).length} / {rencana.length}
             </div>
           </div>
-          <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-permukaan-500 font-medium">Total Aset Terjadwal</span>
+          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
+            <span className="text-xs text-grafit-500 font-medium">Total Aset Terjadwal</span>
             <div className="text-2xl font-bold text-teknisi-700 mt-1">{totalAsetTerdaftar} Unit</div>
           </div>
-          <div className="bg-card border border-permukaan-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-permukaan-500 font-medium">Siklus Penjadwalan</span>
+          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
+            <span className="text-xs text-grafit-500 font-medium">Siklus Penjadwalan</span>
             <div className="text-sm font-semibold text-emerald-700 mt-2 flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
               Otomatis (Harian Pukul 01:00)
@@ -294,7 +294,7 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
         {/* Filter Pencarian */}
         <div className="flex items-center gap-2 max-w-sm">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-permukaan-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-grafit-500" />
             <Input
               type="text"
               placeholder="Cari kode atau nama rencana..."
@@ -317,11 +317,11 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
             {daftarTersaring.map((r) => (
               <div
                 key={r.Id}
-                className="bg-card border border-permukaan-200 rounded-xl p-5 hover:border-teknisi-300 hover:shadow-sm transition-all flex flex-col justify-between"
+                className="bg-card border border-garis-200 rounded-xl p-5 hover:border-teknisi-300 hover:shadow-sm transition-all flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700">
+                    <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700">
                       {r.Kode}
                     </span>
                     <Badge
@@ -333,28 +333,28 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-permukaan-900 text-base">{r.Nama}</h3>
-                    <p className="text-xs text-permukaan-500 mt-0.5">Prioritas: {r.Prioritas}</p>
+                    <h3 className="font-semibold text-grafit-950 text-base">{r.Nama}</h3>
+                    <p className="text-xs text-grafit-500 mt-0.5">Prioritas: {r.Prioritas}</p>
                   </div>
 
-                  <div className="space-y-1.5 pt-2 border-t border-permukaan-100 text-xs text-permukaan-600">
+                  <div className="space-y-1.5 pt-2 border-t border-permukaan-100 text-xs text-grafit-700">
                     <div className="flex items-center justify-between">
-                      <span className="text-permukaan-500">Interval:</span>
-                      <span className="font-semibold text-permukaan-800">
+                      <span className="text-grafit-500">Interval:</span>
+                      <span className="font-semibold text-grafit-950">
                         Setiap {r.IntervalNilai} {r.IntervalSatuan}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-permukaan-500">Aset Didaftarkan:</span>
+                      <span className="text-grafit-500">Aset Didaftarkan:</span>
                       <span className="font-semibold text-teknisi-700">
                         {r.aset_count ?? r.aset?.length ?? 0} Aset
                       </span>
                     </div>
                     {r.templatDaftarPeriksa && (
                       <div className="flex items-center justify-between pt-1">
-                        <span className="text-permukaan-500">Checklist:</span>
+                        <span className="text-grafit-500">Checklist:</span>
                         <span
-                          className="text-permukaan-700 truncate max-w-[160px]"
+                          className="text-grafit-700 truncate max-w-[160px]"
                           title={r.templatDaftarPeriksa.Nama}
                         >
                           {r.templatDaftarPeriksa.Kode}

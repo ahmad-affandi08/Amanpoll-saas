@@ -149,10 +149,10 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
 
       <div className="space-y-6">
         {/* Breadcrumb & Navigation */}
-        <div className="flex items-center gap-2 text-sm text-permukaan-500">
+        <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
             href={ruteDaftarPeriksa.index}
-            className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
+            className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Daftar Templat</span>
@@ -160,11 +160,11 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
         </div>
 
         {/* Header Kartu Templat */}
-        <div className="bg-card border border-permukaan-200 rounded-xl p-6 shadow-sm">
+        <div className="bg-card border border-garis-200 rounded-xl p-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
-                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700 border border-permukaan-300">
+                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700 border border-garis-300">
                   {templat.Kode}
                 </span>
                 <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200">
@@ -178,8 +178,8 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                 </Badge>
               </div>
 
-              <h1 className="text-xl font-bold text-permukaan-900 mt-2">{templat.Nama}</h1>
-              <p className="text-sm text-permukaan-500 mt-1">
+              <h1 className="text-xl font-bold text-grafit-950 mt-2">{templat.Nama}</h1>
+              <p className="text-sm text-grafit-500 mt-1">
                 Kategori Aset: {templat.kategoriAset?.Nama ?? 'Semua Kategori'} • Jenis: {templat.Jenis}
               </p>
             </div>
@@ -203,17 +203,17 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
         {/* Daftar Butir Pertanyaan */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-permukaan-900">
+            <h2 className="text-lg font-semibold text-grafit-950">
               Daftar Butir Pemeriksaan ({templat.butir?.length ?? 0})
             </h2>
-            <span className="text-xs text-permukaan-500">
+            <span className="text-xs text-grafit-500">
               Pertanyaan akan ditampilkan secara berurutan pada lembar periksa teknisi.
             </span>
           </div>
 
           {!templat.butir || templat.butir.length === 0 ? (
-            <div className="bg-card border border-dashed border-permukaan-300 rounded-xl p-8 text-center">
-              <p className="text-permukaan-500 text-sm">Belum ada butir pertanyaan pada templat ini.</p>
+            <div className="bg-card border border-dashed border-garis-300 rounded-xl p-8 text-center">
+              <p className="text-grafit-500 text-sm">Belum ada butir pertanyaan pada templat ini.</p>
               <Button
                 className="mt-3 cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white text-xs gap-1.5"
                 onClick={bukaTambahButir}
@@ -227,19 +227,19 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
               {templat.butir.map((b, idx) => (
                 <div
                   key={b.Id}
-                  className="bg-card border border-permukaan-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-permukaan-300 transition-colors"
+                  className="bg-card border border-garis-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-garis-300 transition-colors"
                 >
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-permukaan-100 text-permukaan-700 text-xs font-bold flex items-center justify-center mt-0.5">
+                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-permukaan-100 text-grafit-700 text-xs font-bold flex items-center justify-center mt-0.5">
                       {idx + 1}
                     </span>
 
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         {b.Kode && (
-                          <span className="font-mono text-xs font-medium text-permukaan-500">[{b.Kode}]</span>
+                          <span className="font-mono text-xs font-medium text-grafit-500">[{b.Kode}]</span>
                         )}
-                        <span className="font-medium text-permukaan-900 text-sm">{b.Pertanyaan}</span>
+                        <span className="font-medium text-grafit-950 text-sm">{b.Pertanyaan}</span>
                         {b.Wajib && (
                           <Badge
                             variant="destructive"
@@ -258,15 +258,15 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-permukaan-500 flex-wrap">
+                      <div className="flex items-center gap-3 text-xs text-grafit-500 flex-wrap">
                         <span className="inline-flex items-center gap-1">
                           {b.TipeJawaban === 'Angka' && <Hash className="h-3.5 w-3.5 text-blue-500" />}
                           {b.TipeJawaban === 'YaTidak' && (
                             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
                           )}
                           {b.TipeJawaban === 'Pilihan' && <List className="h-3.5 w-3.5 text-amber-500" />}
-                          {b.TipeJawaban === 'Teks' && <Type className="h-3.5 w-3.5 text-permukaan-500" />}
-                          Tipe: <strong className="text-permukaan-700">{b.TipeJawaban}</strong>
+                          {b.TipeJawaban === 'Teks' && <Type className="h-3.5 w-3.5 text-grafit-500" />}
+                          Tipe: <strong className="text-grafit-700">{b.TipeJawaban}</strong>
                         </span>
 
                         {b.TipeJawaban === 'Angka' && (
@@ -377,7 +377,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                 </div>
 
                 {formButir.data.TipeJawaban === 'Angka' && (
-                  <div className="grid grid-cols-3 gap-3 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
+                  <div className="grid grid-cols-3 gap-3 p-3 bg-permukaan-50 rounded-lg border border-garis-200">
                     <div className="space-y-1">
                       <Label nama="NilaiMinimum" htmlFor="NilaiMinimum">
                         Nilai Minimum
@@ -419,7 +419,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                 )}
 
                 {formButir.data.TipeJawaban === 'Pilihan' && (
-                  <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
+                  <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-garis-200">
                     <Label nama="PilihanTeks" htmlFor="PilihanTeks">
                       Daftar Pilihan (Pisahkan dengan koma)
                     </Label>
@@ -433,7 +433,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                 )}
 
                 {formButir.data.TipeJawaban === 'YaTidak' && (
-                  <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-permukaan-200">
+                  <div className="space-y-1.5 p-3 bg-permukaan-50 rounded-lg border border-garis-200">
                     <Label nama="PemicuNilai" htmlFor="PemicuNilai">
                       Nilai yang Memicu Temuan / Ketidaksesuaian
                     </Label>
@@ -456,7 +456,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                   <label className="flex items-center gap-2 cursor-pointer text-sm">
                     <input
                       type="checkbox"
-                      className="rounded border-permukaan-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
+                      className="rounded border-garis-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
                       checked={formButir.data.Wajib}
                       onChange={(e) => formButir.setData('Wajib', e.target.checked)}
                     />
@@ -466,7 +466,7 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                   <label className="flex items-center gap-2 cursor-pointer text-sm">
                     <input
                       type="checkbox"
-                      className="rounded border-permukaan-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
+                      className="rounded border-garis-300 text-teknisi-600 focus:ring-teknisi-500 cursor-pointer"
                       checked={formButir.data.BuktiFotoWajib}
                       onChange={(e) => formButir.setData('BuktiFotoWajib', e.target.checked)}
                     />

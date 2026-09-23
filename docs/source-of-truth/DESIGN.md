@@ -188,14 +188,22 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 | `Teknisi-700` | `#205B78` | Secondary strong |
 | `Teknisi-600` | `#27718F` | Brand action |
 | `Teknisi-500` | `#3487A6` | Accent terbatas |
+| `Teknisi-300` | `#8CBFD2` | Garis sorotan |
+| `Teknisi-200` | `#B9D7E3` | Rentang terpilih, garis tepi aktif |
+| `Teknisi-100` | `#DCEBF1` | Latar terpilih |
+| `Teknisi-50` | `#EEF5F8` | Latar hover dan fokus (token `accent`) |
 | `Safety-600` | `#D97706` | Warning utama |
 | `Safety-500` | `#F59E0B` | Due soon / attention |
+| `Sukses-700` | `#116A4A` | Teks sukses di atas tint |
 | `Sukses-600` | `#16835B` | Selesai / aktif / aman |
+| `Sukses-200` | `#B7E2CF` | Garis tepi sukses |
+| `Sukses-50` | `#ECF7F2` | Latar sukses lembut |
+| `Bahaya-700` | `#A3342F` | Hover destructive, teks bahaya di atas tint |
 | `Bahaya-600` | `#C2413B` | Gagal / overdue / destructive |
 | `Info-600` | `#376FA6` | Informasi |
 | `Grafit-950` | `#172027` | Teks utama |
 | `Grafit-700` | `#44515A` | Teks sekunder |
-| `Grafit-500` | `#6E7A82` | Metadata |
+| `Grafit-500` | `#5F6B73` | Metadata (≥ 4,5:1 di atas putih dan latar halaman) |
 | `Garis-300` | `#D7DEE3` | Border |
 | `Garis-200` | `#E7ECEF` | Divider |
 | `Permukaan-100` | `#F4F7F8` | Page background |
@@ -238,6 +246,13 @@ Green hanya untuk:
 
 Status tidak boleh dibedakan hanya dengan warna. Selalu sertakan teks/ikon bila dibutuhkan.
 
+Hover, fokus, dan opsi tersorot memakai tint terang (`accent` = Teknisi-50) dengan
+teks Teknisi-900, bukan Teknisi-500: teks gelap dan metadata abu-abu tidak
+terbaca di atas biru pekat. Setiap teks memenuhi WCAG AA (4,5:1; 3:1 untuk teks
+≥ 24px atau ≥ 18,66px tebal) dalam keadaan diam, hover, dan fokus. Kelas warna
+hanya boleh menunjuk token yang ada di `app.css`; shade tanpa token tidak
+menghasilkan CSS sama sekali (`WarnaPaletTerdefinisiTest`).
+
 ---
 
 # 5. CSS Token Tailwind 4
@@ -256,17 +271,25 @@ Contoh baseline:
   --color-teknisi-700: #205B78;
   --color-teknisi-600: #27718F;
   --color-teknisi-500: #3487A6;
+  --color-teknisi-300: #8CBFD2;
+  --color-teknisi-200: #B9D7E3;
+  --color-teknisi-100: #DCEBF1;
+  --color-teknisi-50: #EEF5F8;
 
   --color-safety-600: #D97706;
   --color-safety-500: #F59E0B;
 
+  --color-sukses-700: #116A4A;
   --color-sukses-600: #16835B;
+  --color-sukses-200: #B7E2CF;
+  --color-sukses-50: #ECF7F2;
+  --color-bahaya-700: #A3342F;
   --color-bahaya-600: #C2413B;
   --color-info-600: #376FA6;
 
   --color-grafit-950: #172027;
   --color-grafit-700: #44515A;
-  --color-grafit-500: #6E7A82;
+  --color-grafit-500: #5F6B73;
 
   --color-garis-300: #D7DEE3;
   --color-garis-200: #E7ECEF;

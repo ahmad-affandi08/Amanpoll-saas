@@ -28,17 +28,27 @@
     --color-teknisi-700: #205b78;
     --color-teknisi-600: #27718f;
     --color-teknisi-500: #3487a6;
+    /* Tint untuk latar hover, terpilih, dan sorotan lembut; teks di atasnya Teknisi-900. */
+    --color-teknisi-300: #8cbfd2;
+    --color-teknisi-200: #b9d7e3;
+    --color-teknisi-100: #dcebf1;
+    --color-teknisi-50: #eef5f8;
 
     --color-safety-600: #d97706;
     --color-safety-500: #f59e0b;
 
+    --color-sukses-700: #116a4a;
     --color-sukses-600: #16835b;
+    --color-sukses-200: #b7e2cf;
+    --color-sukses-50: #ecf7f2;
+    --color-bahaya-700: #a3342f;
     --color-bahaya-600: #c2413b;
     --color-info-600: #376fa6;
 
     --color-grafit-950: #172027;
     --color-grafit-700: #44515a;
-    --color-grafit-500: #6e7a82;
+    /* #6e7a82 semula hanya 4,4:1 di atas putih dan 4,1:1 di atas latar halaman (WCAG AA 4,5:1). */
+    --color-grafit-500: #5f6b73;
 
     --color-garis-300: #d7dee3;
     --color-garis-200: #e7ecef;
@@ -66,8 +76,14 @@
     --secondary-foreground: var(--color-teknisi-900);
     --muted: var(--color-permukaan-100);
     --muted-foreground: var(--color-grafit-500);
-    --accent: var(--color-teknisi-500);
-    --accent-foreground: #ffffff;
+    /*
+     * Komponen shadcn memakai `accent` sebagai latar hover, fokus, dan opsi
+     * tersorot -- bukan warna aksen merek. Teknisi-500 di sini membuat teks
+     * gelap dan abu-abu berdiri di atas biru pekat saat di-hover. Aksen merek
+     * tetap `teknisi-500` lewat kelasnya langsung.
+     */
+    --accent: var(--color-teknisi-50);
+    --accent-foreground: var(--color-teknisi-900);
     --destructive: var(--color-bahaya-600);
     --destructive-foreground: #ffffff;
     --warning: var(--color-safety-600);

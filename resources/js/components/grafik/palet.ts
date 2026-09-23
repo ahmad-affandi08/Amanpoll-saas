@@ -25,7 +25,7 @@ export const WARNA_STATUS = {
 export const WARNA_REDUP = '#B6BFC6';
 
 export const WARNA_GRID = '#E7ECEF';
-export const WARNA_SUMBU = '#6E7A82';
+export const WARNA_SUMBU = '#5F6B73';
 export const WARNA_PERMUKAAN = '#FFFFFF';
 
 /** Label kondisi/status yang memang bermakna baik–buruk memakai token status. */

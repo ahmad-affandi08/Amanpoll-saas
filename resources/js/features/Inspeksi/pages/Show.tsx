@@ -66,10 +66,10 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* Navigasi Balik */}
-        <div className="flex items-center gap-2 text-sm text-permukaan-500">
+        <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
             href={ruteInspeksi.index}
-            className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
+            className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Daftar Inspeksi</span>
@@ -77,11 +77,11 @@ export default function InspeksiShow({ inspeksi }: Props) {
         </div>
 
         {/* Header Kartu Inspeksi */}
-        <div className="bg-card border border-permukaan-200 rounded-xl p-6 shadow-sm">
+        <div className="bg-card border border-garis-200 rounded-xl p-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm font-bold text-permukaan-900">{inspeksi.Nomor}</span>
+                <span className="font-mono text-sm font-bold text-grafit-950">{inspeksi.Nomor}</span>
                 <Badge variant="outline" className={statusBadge.kelas}>
                   {statusBadge.label}
                 </Badge>
@@ -92,13 +92,13 @@ export default function InspeksiShow({ inspeksi }: Props) {
                 )}
               </div>
 
-              <h1 className="text-xl font-bold text-permukaan-900">
+              <h1 className="text-xl font-bold text-grafit-950">
                 {inspeksi.templatInspeksi?.Nama ?? 'Inspeksi Aset'}
               </h1>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-permukaan-600 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-grafit-700 pt-2">
                 <div className="flex items-center gap-1.5">
-                  <Building className="h-3.5 w-3.5 text-permukaan-400" />
+                  <Building className="h-3.5 w-3.5 text-grafit-500" />
                   <span>
                     Aset:{' '}
                     <strong>
@@ -107,7 +107,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5 text-permukaan-400" />
+                  <Calendar className="h-3.5 w-3.5 text-grafit-500" />
                   <span>
                     Jadwal:{' '}
                     <strong>{inspeksi.DijadwalkanPada ? tanggalLokal(inspeksi.DijadwalkanPada) : '-'}</strong>
@@ -176,50 +176,50 @@ export default function InspeksiShow({ inspeksi }: Props) {
         )}
 
         {/* Rincian Hasil & Temuan */}
-        <div className="bg-card border border-permukaan-200 rounded-xl p-6 space-y-4">
-          <h2 className="text-base font-semibold text-permukaan-900">Hasil & Catatan Temuan Lapangan</h2>
+        <div className="bg-card border border-garis-200 rounded-xl p-6 space-y-4">
+          <h2 className="text-base font-semibold text-grafit-950">Hasil & Catatan Temuan Lapangan</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 bg-permukaan-50 rounded-lg space-y-1">
-              <span className="text-xs text-permukaan-500 font-medium">Kesimpulan Kondisi</span>
+              <span className="text-xs text-grafit-500 font-medium">Kesimpulan Kondisi</span>
               <div className="pt-1">
                 {hasilBadge ? (
                   <Badge variant="outline" className={hasilBadge.kelas}>
                     {hasilBadge.label}
                   </Badge>
                 ) : (
-                  <span className="text-sm text-permukaan-400 font-medium">Belum dilakukan inspeksi</span>
+                  <span className="text-sm text-grafit-500 font-medium">Belum dilakukan inspeksi</span>
                 )}
               </div>
             </div>
 
             <div className="p-4 bg-permukaan-50 rounded-lg space-y-1">
-              <span className="text-xs text-permukaan-500 font-medium">Waktu & Pelaksana</span>
-              <div className="text-xs font-semibold text-permukaan-800 pt-1">
+              <span className="text-xs text-grafit-500 font-medium">Waktu & Pelaksana</span>
+              <div className="text-xs font-semibold text-grafit-950 pt-1">
                 {inspeksi.DilaksanakanPada ? (
                   <span>
                     Dilaksanakan pada {tanggalLokal(inspeksi.DilaksanakanPada)} oleh{' '}
                     {inspeksi.dilaksanakanOleh?.Nama ?? 'Petugas'}
                   </span>
                 ) : (
-                  <span className="text-permukaan-400 font-normal">Belum dilaksanakan</span>
+                  <span className="text-grafit-500 font-normal">Belum dilaksanakan</span>
                 )}
               </div>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs text-permukaan-500 font-medium">Deskripsi Temuan Lapangan</Label>
-            <div className="p-3 bg-white border border-permukaan-200 rounded-lg text-sm text-permukaan-800 min-h-[60px] whitespace-pre-wrap">
-              {inspeksi.Temuan || <span className="text-permukaan-400 italic">Tidak ada temuan khusus.</span>}
+            <Label className="text-xs text-grafit-500 font-medium">Deskripsi Temuan Lapangan</Label>
+            <div className="p-3 bg-white border border-garis-200 rounded-lg text-sm text-grafit-950 min-h-[60px] whitespace-pre-wrap">
+              {inspeksi.Temuan || <span className="text-grafit-500 italic">Tidak ada temuan khusus.</span>}
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs text-permukaan-500 font-medium">Rekomendasi Tindak Lanjut</Label>
-            <div className="p-3 bg-white border border-permukaan-200 rounded-lg text-sm text-permukaan-800 min-h-[60px] whitespace-pre-wrap">
+            <Label className="text-xs text-grafit-500 font-medium">Rekomendasi Tindak Lanjut</Label>
+            <div className="p-3 bg-white border border-garis-200 rounded-lg text-sm text-grafit-950 min-h-[60px] whitespace-pre-wrap">
               {inspeksi.TindakLanjut || (
-                <span className="text-permukaan-400 italic">Belum ada rekomendasi tindak lanjut.</span>
+                <span className="text-grafit-500 italic">Belum ada rekomendasi tindak lanjut.</span>
               )}
             </div>
           </div>

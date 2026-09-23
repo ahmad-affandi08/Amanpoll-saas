@@ -77,12 +77,18 @@ final class GudangController extends Controller
 
         $halaman = $daftar->halaman();
 
+        // Dihitung sebelum GudangResource::collection(): pembungkus koleksi resource
+        // mengganti isi paginator dengan objek resource, sehingga closure bertipe
+        // Gudang sesudahnya menolak barisnya dan halaman ini jatuh 500 begitu ada
+        // satu gudang saja. Hanya untuk baris yang tampil; dialog lokasi tidak
+        // pernah dibuka dari baris lain.
+        $lokasiGudangPerGudang = $halaman->getCollection()->mapWithKeys(
+            fn (Gudang $satu) => [$satu->Id => LokasiGudangResource::collection($satu->lokasiGudang)],
+        );
+
         return Inertia::render('Gudang/Index', [
             'gudang' => GudangResource::collection($halaman),
-            // Hanya untuk baris yang tampil; dialog lokasi tidak pernah dibuka dari baris lain.
-            'lokasiGudangPerGudang' => $halaman->getCollection()->mapWithKeys(
-                fn (Gudang $satu) => [$satu->Id => LokasiGudangResource::collection($satu->lokasiGudang)],
-            ),
+            'lokasiGudangPerGudang' => $lokasiGudangPerGudang,
             'filter' => $daftar->filterBerlaku(),
             'lokasi' => Lokasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'wajib' => [

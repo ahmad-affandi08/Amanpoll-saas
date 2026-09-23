@@ -75,10 +75,10 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
 
       <div className="space-y-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-permukaan-500">
+        <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
             href={ruteRencanaPemeliharaan.index}
-            className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
+            className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Kembali ke Daftar Rencana</span>
@@ -86,11 +86,11 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
         </div>
 
         {/* Info Rencana */}
-        <div className="bg-card border border-permukaan-200 rounded-xl p-6 shadow-sm">
+        <div className="bg-card border border-garis-200 rounded-xl p-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2.5">
-                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700 border border-permukaan-300">
+                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700 border border-garis-300">
                   {rencana.Kode}
                 </span>
                 <Badge
@@ -102,11 +102,11 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                 <Badge variant="outline">Prioritas: {rencana.Prioritas}</Badge>
               </div>
 
-              <h1 className="text-xl font-bold text-permukaan-900">{rencana.Nama}</h1>
+              <h1 className="text-xl font-bold text-grafit-950">{rencana.Nama}</h1>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-permukaan-600">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-grafit-700">
                 <div className="flex items-center gap-1.5">
-                  <Clock className="h-4 w-4 text-permukaan-400" />
+                  <Clock className="h-4 w-4 text-grafit-500" />
                   <span>
                     Interval:{' '}
                     <strong>
@@ -115,14 +115,14 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="h-4 w-4 text-permukaan-400" />
+                  <Calendar className="h-4 w-4 text-grafit-500" />
                   <span>
                     Horizon WO: <strong>{rencana.BuatPerintahKerjaHariSebelum} Hari Sebelum</strong>
                   </span>
                 </div>
                 {rencana.templatDaftarPeriksa && (
                   <div className="flex items-center gap-1.5">
-                    <Wrench className="h-4 w-4 text-permukaan-400" />
+                    <Wrench className="h-4 w-4 text-grafit-500" />
                     <span>
                       Checklist: <strong>{rencana.templatDaftarPeriksa.Kode}</strong>
                     </span>
@@ -182,7 +182,7 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                           onChange={(val) => formAset.setData('TanggalBerikutnya', val)}
                           placeholder="Otomatis dihitung jika kosong"
                         />
-                        <p className="text-[11px] text-permukaan-500">
+                        <p className="text-[11px] text-grafit-500">
                           Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai}{' '}
                           {rencana.IntervalSatuan}.
                         </p>
@@ -216,23 +216,23 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
         {/* Tabel Aset Terdaftar */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-permukaan-900">
+            <h2 className="text-lg font-semibold text-grafit-950">
               Aset Terdaftar ({rencana.aset?.length ?? 0})
             </h2>
-            <span className="text-xs text-permukaan-500">
+            <span className="text-xs text-grafit-500">
               Setiap aset memiliki tanggal jatuh tempo pemeliharaan preventif tersendiri.
             </span>
           </div>
 
           {!rencana.aset || rencana.aset.length === 0 ? (
-            <div className="bg-card border border-dashed border-permukaan-300 rounded-xl p-8 text-center">
-              <p className="text-permukaan-500 text-sm">Belum ada aset yang didaftarkan pada rencana ini.</p>
+            <div className="bg-card border border-dashed border-garis-300 rounded-xl p-8 text-center">
+              <p className="text-grafit-500 text-sm">Belum ada aset yang didaftarkan pada rencana ini.</p>
             </div>
           ) : (
-            <div className="bg-card border border-permukaan-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-card border border-garis-200 rounded-xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-permukaan-50 border-b border-permukaan-200 text-xs font-semibold text-permukaan-600 uppercase">
+                  <thead className="bg-permukaan-50 border-b border-garis-200 text-xs font-semibold text-grafit-700 uppercase">
                     <tr>
                       <th className="px-5 py-3">Aset</th>
                       <th className="px-5 py-3">Lokasi</th>
@@ -245,29 +245,29 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                   <tbody className="divide-y divide-permukaan-100">
                     {rencana.aset.map((item) => (
                       <tr key={item.Id} className="hover:bg-permukaan-50/50 transition-colors">
-                        <td className="px-5 py-4 font-medium text-permukaan-900">
+                        <td className="px-5 py-4 font-medium text-grafit-950">
                           <div>
-                            <span className="font-mono text-xs font-semibold text-permukaan-500">
+                            <span className="font-mono text-xs font-semibold text-grafit-500">
                               {item.aset?.KodeAset}
                             </span>
-                            <div className="font-semibold text-permukaan-800">{item.aset?.Nama}</div>
+                            <div className="font-semibold text-grafit-950">{item.aset?.Nama}</div>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-permukaan-600 text-xs">
+                        <td className="px-5 py-4 text-grafit-700 text-xs">
                           {item.aset?.lokasi?.Nama ?? '-'}
                         </td>
-                        <td className="px-5 py-4 text-permukaan-600 text-xs">{item.TanggalMulai}</td>
+                        <td className="px-5 py-4 text-grafit-700 text-xs">{item.TanggalMulai}</td>
                         <td className="px-5 py-4">
                           <span className="inline-flex items-center gap-1.5 font-semibold text-xs px-2.5 py-1 rounded-full bg-teknisi-50 text-teknisi-700 border border-teknisi-200">
                             <Calendar className="h-3.5 w-3.5" />
                             {item.TanggalBerikutnya ?? 'Belum dijadwalkan'}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-xs text-permukaan-500">
+                        <td className="px-5 py-4 text-xs text-grafit-500">
                           {item.jadwal && item.jadwal.length > 0 ? (
                             <span>{item.jadwal.length} Jadwal tercatat</span>
                           ) : (
-                            <span className="text-permukaan-400">Menunggu siklus</span>
+                            <span className="text-grafit-500">Menunggu siklus</span>
                           )}
                         </td>
                         <td className="px-5 py-4 text-right">

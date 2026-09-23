@@ -165,12 +165,12 @@ export function DatePicker({
       )}
 
       <PopoverContent
-        className="w-[288px] p-0 shadow-2xl border border-permukaan-200 bg-card rounded-2xl overflow-hidden"
+        className="w-[288px] p-0 shadow-2xl border border-garis-200 bg-card rounded-2xl overflow-hidden"
         align={align}
       >
         {/* Pilihan Cepat / Shortcuts */}
         {showShortcuts && (
-          <div className="flex items-center justify-between gap-1.5 p-2.5 border-b border-permukaan-200 bg-permukaan-50/80">
+          <div className="flex items-center justify-between gap-1.5 p-2.5 border-b border-garis-200 bg-permukaan-50/80">
             <Button
               type="button"
               variant={isTodaySelected ? 'default' : 'ghost'}
@@ -179,7 +179,7 @@ export function DatePicker({
                 'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
                 isTodaySelected
                   ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
-                  : 'text-permukaan-700 hover:bg-permukaan-100 font-medium',
+                  : 'text-grafit-700 hover:bg-permukaan-100 font-medium',
               )}
               onClick={() => handleSelect(new Date())}
             >
@@ -193,7 +193,7 @@ export function DatePicker({
                 'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
                 isTomorrowSelected
                   ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
-                  : 'text-permukaan-700 hover:bg-permukaan-100 font-medium',
+                  : 'text-grafit-700 hover:bg-permukaan-100 font-medium',
               )}
               onClick={() => handleSelect(addDays(new Date(), 1))}
             >
@@ -207,7 +207,7 @@ export function DatePicker({
                 'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
                 isYesterdaySelected
                   ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
-                  : 'text-permukaan-700 hover:bg-permukaan-100 font-medium',
+                  : 'text-grafit-700 hover:bg-permukaan-100 font-medium',
               )}
               onClick={() => handleSelect(subDays(new Date(), 1))}
             >
@@ -223,20 +223,20 @@ export function DatePicker({
               type="button"
               variant="ghost"
               size="icon"
-              className="size-7 rounded-md text-permukaan-600 hover:text-permukaan-900 hover:bg-permukaan-100 cursor-pointer"
+              className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
               onClick={() => setViewDate((d) => subMonths(d, 1))}
               title="Bulan sebelumnya"
             >
               <ChevronLeft className="size-4" />
             </Button>
-            <span className="text-sm font-bold text-permukaan-900 tracking-tight capitalize select-none">
+            <span className="text-sm font-bold text-grafit-950 tracking-tight capitalize select-none">
               {format(viewDate, 'MMMM yyyy', { locale: lokalId })}
             </span>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="size-7 rounded-md text-permukaan-600 hover:text-permukaan-900 hover:bg-permukaan-100 cursor-pointer"
+              className="size-7 rounded-md text-grafit-700 hover:text-grafit-950 hover:bg-permukaan-100 cursor-pointer"
               onClick={() => setViewDate((d) => addMonths(d, 1))}
               title="Bulan berikutnya"
             >
@@ -249,7 +249,7 @@ export function DatePicker({
             {weekDays.map((hari) => (
               <div
                 key={hari}
-                className="h-6 flex items-center justify-center text-[11px] font-semibold text-permukaan-400 uppercase tracking-wider"
+                className="h-6 flex items-center justify-center text-[11px] font-semibold text-grafit-500 uppercase tracking-wider"
               >
                 {hari}
               </div>
@@ -273,7 +273,7 @@ export function DatePicker({
                     className={cn(
                       'size-8 flex items-center justify-center rounded-full text-xs font-medium transition-all cursor-pointer select-none',
                       // Warna teks bulan aktif vs luar bulan
-                      isCurrentMonth ? 'text-permukaan-800' : 'text-permukaan-300 hover:text-permukaan-500',
+                      isCurrentMonth ? 'text-grafit-950' : 'text-grafit-500/60 hover:text-grafit-500',
                       // Hari ini
                       isDayToday && !isSelected && 'border border-teknisi-600 font-bold text-teknisi-700',
                       // Tanggal terpilih
@@ -292,14 +292,14 @@ export function DatePicker({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-permukaan-200 bg-permukaan-50 px-3.5 py-2.5 flex items-center justify-between gap-2">
-          <div className="text-xs text-permukaan-600 font-medium truncate">
+        <div className="border-t border-garis-200 bg-permukaan-50 px-3.5 py-2.5 flex items-center justify-between gap-2">
+          <div className="text-xs text-grafit-700 font-medium truncate">
             {parsedValue ? (
-              <span className="font-semibold text-permukaan-900">
+              <span className="font-semibold text-grafit-950">
                 {format(parsedValue, 'd MMM yyyy', { locale: lokalId })}
               </span>
             ) : (
-              <span className="text-permukaan-400 text-[11px]">Belum dipilih</span>
+              <span className="text-grafit-500 text-[11px]">Belum dipilih</span>
             )}
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -308,7 +308,7 @@ export function DatePicker({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-7 px-2.5 text-xs rounded-lg cursor-pointer border-permukaan-200 hover:bg-permukaan-100 text-permukaan-700"
+                className="h-7 px-2.5 text-xs rounded-lg cursor-pointer border-garis-200 hover:bg-permukaan-100 text-grafit-700"
                 onClick={() => handleClear()}
               >
                 Kosongkan

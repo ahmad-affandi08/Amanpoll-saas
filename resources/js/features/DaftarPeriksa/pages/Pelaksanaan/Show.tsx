@@ -119,11 +119,11 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
 
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* Navigasi Balik */}
-        <div className="flex items-center gap-2 text-sm text-permukaan-500">
+        <div className="flex items-center gap-2 text-sm text-grafit-500">
           {pelaksanaan.PerintahKerjaId ? (
             <Link
               href={`/pemeliharaan/perintah-kerja/${pelaksanaan.PerintahKerjaId}`}
-              className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
+              className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Kembali ke Perintah Kerja ({pelaksanaan.perintahKerja?.Nomor ?? 'PK'})</span>
@@ -131,7 +131,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
           ) : (
             <Link
               href={ruteDaftarPeriksa.index}
-              className="hover:text-permukaan-700 flex items-center gap-1 cursor-pointer"
+              className="hover:text-grafit-700 flex items-center gap-1 cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Kembali ke Templat</span>
@@ -140,11 +140,11 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
         </div>
 
         {/* Header Lembar Periksa */}
-        <div className="bg-card border border-permukaan-200 rounded-xl p-6 shadow-sm">
+        <div className="bg-card border border-garis-200 rounded-xl p-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-permukaan-700">
+                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700">
                   {pelaksanaan.templatDaftarPeriksa?.Kode}
                 </span>
                 <Badge variant="outline" className={badgeInfo.kelas}>
@@ -157,14 +157,14 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                 )}
               </div>
 
-              <h1 className="text-xl font-bold text-permukaan-900">
+              <h1 className="text-xl font-bold text-grafit-950">
                 {pelaksanaan.templatDaftarPeriksa?.Nama}
               </h1>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-permukaan-600 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-grafit-700 pt-2">
                 {pelaksanaan.aset && (
                   <div className="flex items-center gap-1.5">
-                    <Building className="h-3.5 w-3.5 text-permukaan-400" />
+                    <Building className="h-3.5 w-3.5 text-grafit-500" />
                     <span>
                       Aset:{' '}
                       <strong>
@@ -175,7 +175,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                 )}
                 {pelaksanaan.perintahKerja && (
                   <div className="flex items-center gap-1.5">
-                    <Wrench className="h-3.5 w-3.5 text-permukaan-400" />
+                    <Wrench className="h-3.5 w-3.5 text-grafit-500" />
                     <span>
                       Perintah Kerja: <strong>{pelaksanaan.perintahKerja.Nomor}</strong>
                     </span>
@@ -183,7 +183,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                 )}
                 {pelaksanaan.dilaksanakanOleh && (
                   <div className="flex items-center gap-1.5">
-                    <User className="h-3.5 w-3.5 text-permukaan-400" />
+                    <User className="h-3.5 w-3.5 text-grafit-500" />
                     <span>
                       Pelaksana: <strong>{pelaksanaan.dilaksanakanOleh.Nama}</strong>
                     </span>
@@ -205,9 +205,9 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
         {/* Form Interaktif Butir Pertanyaan */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-permukaan-900">Daftar Pemeriksaan Lapangan</h2>
+            <h2 className="text-lg font-semibold text-grafit-950">Daftar Pemeriksaan Lapangan</h2>
             {!terkunci && (
-              <span className="text-xs text-permukaan-500">
+              <span className="text-xs text-grafit-500">
                 Lengkapi seluruh butir wajib sebelum melakukan finalisasi.
               </span>
             )}
@@ -238,21 +238,21 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                 <div
                   key={b.Id}
                   className={`bg-card border rounded-xl p-4 transition-all ${
-                    outOfRange ? 'border-rose-300 bg-rose-50/30' : 'border-permukaan-200'
+                    outOfRange ? 'border-rose-300 bg-rose-50/30' : 'border-garis-200'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-permukaan-100 text-permukaan-700 text-xs font-bold flex items-center justify-center mt-0.5">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-permukaan-100 text-grafit-700 text-xs font-bold flex items-center justify-center mt-0.5">
                       {idx + 1}
                     </span>
 
                     <div className="space-y-3 flex-1">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-medium text-permukaan-900 text-sm">{b.Pertanyaan}</span>
+                          <span className="font-medium text-grafit-950 text-sm">{b.Pertanyaan}</span>
                           {b.Wajib && <span className="text-xs text-rose-500 font-semibold">*Wajib</span>}
                         </div>
-                        {b.Satuan && <span className="text-xs text-permukaan-500">Satuan: {b.Satuan}</span>}
+                        {b.Satuan && <span className="text-xs text-grafit-500">Satuan: {b.Satuan}</span>}
                       </div>
 
                       {/* Input Sesuai Tipe */}
@@ -265,7 +265,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                               className={`px-4 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
                                 current.NilaiBoolean === true
                                   ? 'bg-emerald-600 text-white border-emerald-600'
-                                  : 'bg-white text-permukaan-700 border-permukaan-300 hover:bg-permukaan-50'
+                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-permukaan-50'
                               }`}
                               onClick={() => updateJawaban(b.Id, 'NilaiBoolean', true)}
                             >
@@ -277,7 +277,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                               className={`px-4 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
                                 current.NilaiBoolean === false
                                   ? 'bg-rose-600 text-white border-rose-600'
-                                  : 'bg-white text-permukaan-700 border-permukaan-300 hover:bg-permukaan-50'
+                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-permukaan-50'
                               }`}
                               onClick={() => updateJawaban(b.Id, 'NilaiBoolean', false)}
                             >
@@ -298,7 +298,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                                 onChange={(e) => updateJawaban(b.Id, 'NilaiAngka', e.target.value)}
                                 className={outOfRange ? 'border-rose-400 focus:ring-rose-400' : ''}
                               />
-                              {b.Satuan && <span className="text-xs text-permukaan-500">{b.Satuan}</span>}
+                              {b.Satuan && <span className="text-xs text-grafit-500">{b.Satuan}</span>}
                             </div>
                             {outOfRange && (
                               <p className="text-xs text-rose-600 flex items-center gap-1 font-medium">
@@ -313,7 +313,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                           <div className="max-w-xs">
                             <select
                               disabled={terkunci}
-                              className="w-full text-xs rounded-md border border-permukaan-300 bg-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-teknisi-500 cursor-pointer"
+                              className="w-full text-xs rounded-md border border-garis-300 bg-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-teknisi-500 cursor-pointer"
                               value={current.NilaiTeks}
                               onChange={(e) => updateJawaban(b.Id, 'NilaiTeks', e.target.value)}
                             >
@@ -358,7 +358,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
         </div>
 
         {/* Catatan Keseluruhan */}
-        <div className="bg-card border border-permukaan-200 rounded-xl p-5 space-y-2">
+        <div className="bg-card border border-garis-200 rounded-xl p-5 space-y-2">
           <Label htmlFor="CatatanPelaksanaan">Catatan Keseluruhan Pelaksanaan</Label>
           <Textarea
             id="CatatanPelaksanaan"
@@ -372,7 +372,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
 
         {/* Tombol Aksi */}
         {!terkunci && (
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-permukaan-200">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-garis-200">
             <Button
               type="button"
               variant="outline"
