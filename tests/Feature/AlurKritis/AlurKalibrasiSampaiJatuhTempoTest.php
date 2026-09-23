@@ -104,7 +104,7 @@ final class AlurKalibrasiSampaiJatuhTempoTest extends TestCase
             'AsetId' => $a['aset']->Id,
             'RencanaKalibrasiId' => $b['rencana']->Id,
             'TanggalKalibrasi' => '2026-09-21',
-        ])->assertNotFound();
+        ])->assertSessionHasErrors('RencanaKalibrasiId');
         $this->tetapkanKonteks($a['organisasi']);
         $this->assertSame(0, PelaksanaanKalibrasi::query()->count());
 

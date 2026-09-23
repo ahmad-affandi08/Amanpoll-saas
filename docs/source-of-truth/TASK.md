@@ -1697,46 +1697,134 @@ lulus karena alasan yang salah. Versi MariaDB-nya menangkap penghapusan
 
 Prioritas:
 
-- [ ] Kalkulasi SLA.
-- [ ] Kalkulasi anggaran.
-- [ ] Stock rule.
-- [ ] State transition.
-- [ ] Penomoran.
+- [x] Kalkulasi SLA.
+- [x] Kalkulasi anggaran.
+- [x] Stock rule.
+- [x] State transition.
+- [x] Penomoran.
 - [ ] Timezone.
-- [ ] Idempotency.
-- [ ] Approval rule.
+- [x] Idempotency.
+- [x] Approval rule.
+
+Cakupan sudah besar sebelum fase ini dimulai, jadi yang dikerjakan lebih dulu
+adalah audit, bukan menulis ulang. Pertanyaannya bukan "adakah test-nya",
+melainkan "apakah test itu menjaga". Sebuah butir baru dianggap terjaga bila
+kode yang dijaganya dirusak dengan sengaja dan test-nya merah. Membaca test
+lalu menilainya cukup tidak dihitung.
+
+Cara itu menemukan celah di test yang sudah lama hijau:
+
+- zona waktu lokasi pada kalkulasi SLA: mencabut `setTimezone` lolos;
+- reset nomor dokumen bulanan: mengganti format periode `Y-m` menjadi `Y`
+  lolos kedelapan belas test penomoran;
+- matriks transisi status keluhan: menambah `Baru -> Selesai` lolos seluruh
+  test keluhan;
+- lingkup organisasi dan masa berlaku kunci idempotensi;
+- masa berlaku penugasan peran penyetuju: mencabut filternya meloloskan 51
+  test.
+
+Semuanya kini dijaga, masing-masing dengan sabotase yang menggagalkannya.
+
+Timezone sengaja belum dicentang. Konversi tampilan terjaga (`LayananZonaWaktu`,
+kartu riwayat yang dibaca dari dua zona berbeda melewati pergantian tanggal),
+tetapi penyimpanannya tidak. `AmanpollServiceProvider` menimpa `app.timezone`
+yang di `config/app.php` bernilai `UTC` menjadi `Asia/Jakarta`, dan itu sudah
+berlaku sejak commit pertama. Ini bertentangan dengan ADR 0001 dan
+`ARSITEKTUR.md` ("waktu disimpan UTC"). Dampak nyatanya: waktu kerja dari
+aplikasi offline yang dikirim berzona (`...Z`) tersimpan bergeser tujuh jam.
+
+Belum diperbaiki karena ini keputusan, bukan tambalan. Seluruh suite sudah
+dijalankan dengan zona aplikasi disimulasikan UTC: 12 dari 1652 test merah.
+Sebelas di antaranya hanya menyatakan jam tersimpan dalam WIB (momennya sama,
+tergeser tujuh jam); satu, eskalasi SLA, berubah perilaku. Yang tidak dijaga
+test apa pun adalah jam yang dicetak mentah di ekspor dan batas "hari ini"
+pada jatuh tempo dan KPI. Belum ada data produksi, jadi inilah saat termurah
+untuk memutuskannya.
 
 ## 26.02 Feature Test
 
-- [ ] Auth.
-- [ ] Tenant.
-- [ ] RBAC.
-- [ ] Aset.
-- [ ] Mutasi.
-- [ ] Stock.
-- [ ] Keluhan.
-- [ ] PerintahKerja.
-- [ ] Preventive.
-- [ ] Kalibrasi.
-- [ ] Procurement.
-- [ ] Approval.
-- [ ] Integration.
-- [ ] Subscription.
+- [x] Auth.
+- [x] Tenant.
+- [x] RBAC.
+- [x] Aset.
+- [x] Mutasi.
+- [x] Stock.
+- [x] Keluhan.
+- [x] PerintahKerja.
+- [x] Preventive.
+- [x] Kalibrasi.
+- [x] Procurement.
+- [x] Approval.
+- [x] Integration.
+- [x] Subscription.
+
+Keempat belas butir sudah dijaga test yang ada, dibuktikan dengan cara yang
+sama. Satu celah tenant ditemukan di luar daftar butir: tiga formulir kalibrasi
+memeriksa ID penyedia, perintah kerja, pelaksana, jenis kalibrasi, aset, dan
+kategori hanya sebagai string. ID milik organisasi lain lolos dan tersimpan,
+sehingga kalibrasi rumah sakit A dapat menunjuk penyedia milik rumah sakit B.
+Rujukannya kini dibatasi dengan `Rule::exists(...)->where('OrganisasiId', ...)`,
+konvensi yang sudah dipakai request lain. Rencana milik organisasi lain
+karenanya ditolak di validasi, bukan lagi 404 dari `findOrFail`. Keduanya
+menolak; yang pertama lebih awal dan menyebut kolomnya.
+
+Satu pengamatan dibiarkan sebagai pertanyaan produk, bukan bug: perintah kerja
+preventif dapat ditutup walau daftar periksanya masih Draft.
 
 ## 26.03 End-to-End Critical Paths
 
-- [ ] Setup tenant → user → location → aset.
-- [ ] Keluhan → perintah kerja → sparepart → close.
-- [ ] Preventive → schedule → work order → checklist → close.
-- [ ] Kalibrasi → hasil → sertifikat → next due.
-- [ ] Usulan → procurement → receipt → asset/stock.
-- [ ] Mutasi → approval → handover → history.
-- [ ] Webhook retry.
-- [ ] Offline sync idempotent.
+- [x] Setup tenant → user → location → aset.
+- [x] Keluhan → perintah kerja → sparepart → close.
+- [x] Preventive → schedule → work order → checklist → close.
+- [x] Kalibrasi → hasil → sertifikat → next due.
+- [x] Usulan → procurement → receipt → asset/stock.
+- [x] Mutasi → approval → handover → history.
+- [x] Webhook retry.
+- [x] Offline sync idempotent.
+
+Sebelum fase ini tidak ada test yang menjalankan satu alur penuh; yang ada
+menguji potongannya per domain. Delapan alur di `tests/Feature/AlurKritis/`
+berjalan lewat rute HTTP seperti pengguna sungguhan, memeriksa invarian di
+tengah jalan (stok bertambah tepat sebesar yang diterima, status berpindah
+sesuai urutan, persetujuan benar-benar dibutuhkan sebelum langkah berikutnya),
+dan menyemai organisasi kedua yang dipastikan tidak tersentuh.
+
+Justru sambungan antardomain itulah yang patah. Empat bug ditemukan dan
+diperbaiki, masing-masing dibuktikan dua arah (tanpa perbaikan test-nya merah
+dengan pesan yang tepat, dengan perbaikan hijau):
+
+- Jadwal preventif tidak pernah ditandai selesai. Laporan menghitung
+  keterlambatan dari jadwal "Terjadwal" dan kepatuhan dari jadwal "Selesai",
+  jadi pekerjaan yang tuntas tetap tampil terlambat dan KPI kepatuhan
+  preventif selalu 0%. Status jadwal kini diturunkan dari status perintah
+  kerjanya, termasuk saat dibuka kembali dan dibatalkan.
+- Mutasi antar unit mengosongkan lokasi aset: permintaan yang hanya menyebut
+  unit tujuan menimpa `LokasiId` dengan null.
+- Penyetuju berbasis unit tidak memeriksa masa berlaku penugasan, sehingga
+  orang yang sudah dipindah tugas tetap dapat menyetujui atas nama unit
+  lamanya.
+- Koreksi titik ukur kalibrasi tersimpan kosong bila referensinya diambil dari
+  templat, karena dihitung sebelum referensinya dilengkapi.
+
+Webhook keluar (`outbox:proses`, `panggilan-balik:kirim-ulang`) sebelumnya tidak
+diuji sama sekali; kini keduanya diuji dengan jadwal kirim ulang dan tanpa
+pengiriman ganda. Pada sinkronisasi offline, kembaran baris pada akhirnya dijaga
+indeks unik basis data; hitungan efeknya tidak dapat dibuktikan merah terpisah
+dari indeks itu tanpa mengubah skema, jadi yang dibuktikan dengan sabotase
+adalah jalur kodenya.
+
+Test dikerjakan tiga agen serentak di satu working tree. Masing-masing memakai
+basis data test sendiri (`DB_DATABASE` dari lingkungan menang atas
+`phpunit.xml`, karena `<env>` di sana tanpa `force`), dan sabotase dijalankan di
+bawah kunci baca-tulis: test biasa mengambil kunci bersama, sabotase kunci
+eksklusif, dan berkasnya dipulihkan otomatis. Tanpa itu sabotase satu agen
+akan merusak test agen lain yang sedang berjalan di berkas `app/` yang sama.
 
 ### Gate 26
 
-Tidak ada critical path release yang hanya diuji manual.
+Tidak ada critical path release yang hanya diuji manual. Terpenuhi untuk
+kedelapan alur di atas; yang tersisa terbuka adalah keputusan zona waktu
+penyimpanan di 26.01.
 
 ---
 

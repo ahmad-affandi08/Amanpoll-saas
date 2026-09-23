@@ -145,24 +145,6 @@ parameters:
 			path: app/Domain/Kalibrasi/Http/Requests/SimpanJenisKalibrasiRequest.php
 
 		-
-			message: '#^Method App\\Domain\\Kalibrasi\\Http\\Requests\\SimpanPelaksanaanKalibrasiRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kalibrasi/Http/Requests/SimpanPelaksanaanKalibrasiRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kalibrasi\\Http\\Requests\\SimpanRencanaKalibrasiRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kalibrasi/Http/Requests/SimpanRencanaKalibrasiRequest.php
-
-		-
-			message: '#^Method App\\Domain\\Kalibrasi\\Http\\Requests\\SimpanTitikUkurKalibrasiRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Domain/Kalibrasi/Http/Requests/SimpanTitikUkurKalibrasiRequest.php
-
-		-
 			message: '#^Method App\\Domain\\Kepatuhan\\Http\\Requests\\SimpanSinkronisasiEksternalRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
