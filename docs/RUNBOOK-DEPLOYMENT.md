@@ -84,10 +84,15 @@ dirujuk kode program**: kode izin seperti `Aset.Buat` dipakai pemeriksaan
 otorisasi, dan `FiturPaket` dicari lewat kodenya saat paket langganan disusun.
 Tanpa seeder itu, pemeriksaan izin menolak semua orang.
 
-Keempatnya dipanggil satu per satu dengan sengaja. `php artisan db:seed` polos
-menjalankan `DatabaseSeeder`, dan seeder itu memanggil `DemoAwalSeeder` juga —
-di produksi ia akan menanam organisasi, aset, dan pengguna contoh ke dalam data
-sungguhan.
+Keempatnya dipanggil satu per satu agar jelas apa yang masuk. `php artisan
+db:seed --force` polos juga aman sekarang: `DatabaseSeeder` melewati
+`DemoAwalSeeder` di produksi dan tetap keluar dengan kode 0, sementara
+`DemoAwalSeeder` sendiri menolak berjalan di sana meski dipanggil langsung
+lewat `--class`. Sebelumnya perintah itu menanam organisasi, aset, dan akun
+Super Admin contoh berkata sandi yang dapat ditebak ke dalam data sungguhan;
+yang menahannya hanya paragraf ini, dan paragraf tidak menahan siapa pun.
+Penjaganya kini ada di kode dan ditegakkan
+`tests/Feature/Platform/SeederDataContohTest.php`.
 
 Build aset dijalankan di mesin build, lalu `public/build/` diunggah:
 

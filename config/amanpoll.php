@@ -10,6 +10,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Data contoh
+    |--------------------------------------------------------------------------
+    |
+    | Dipakai DemoAwalSeeder, yang menolak berjalan di produksi. Kata sandinya
+    | tetap dapat ditebak dengan sengaja supaya lingkungan pengembangan mudah
+    | dipakai; yang menjaga produksi adalah penjaga lingkungan di seeder itu,
+    | bukan kerahasiaan nilai ini.
+    |
+    */
+    'demo' => [
+        'kata_sandi' => env('AMANPOLL_DEMO_KATA_SANDI', 'password'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Host
     |--------------------------------------------------------------------------
     |

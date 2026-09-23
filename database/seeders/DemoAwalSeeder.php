@@ -8,11 +8,29 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use RuntimeException;
 
+/**
+ * Organisasi, pengguna, dan master contoh untuk pengembangan.
+ *
+ * Seeder ini menolak berjalan di produksi. Peringatan di runbook sudah ada
+ * sejak lama, tetapi `php artisan db:seed --force` adalah perintah refleks dan
+ * prosa tidak menahan siapa pun yang sedang terburu-buru; yang ditanamnya
+ * bukan sekadar data contoh melainkan akun Super Admin berkata sandi yang
+ * dapat ditebak.
+ */
 final class DemoAwalSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            throw new RuntimeException(
+                'DemoAwalSeeder tidak boleh dijalankan di produksi: isinya organisasi, '
+                .'aset, dan akun Super Admin contoh. Semai kunci wajibnya satu per satu '
+                .'(IzinSeeder, FiturPaketSeeder, FiturPlatformSeeder, TahapPipelineSeeder).',
+            );
+        }
+
         // 1. Organisasi Demo
         $organisasi = DB::table('Organisasi')->where('Kode', 'AMANPOLL')->first();
         $organisasiId = $organisasi?->Id ?? (string) Str::ulid();
@@ -101,7 +119,7 @@ final class DemoAwalSeeder extends Seeder
             );
         }
 
-        // 6. Pengguna Admin (password: password)
+        // 6. Pengguna Admin; kata sandinya dari config('amanpoll.demo.kata_sandi').
         $penggunaId = DB::table('Pengguna')
             ->where('OrganisasiId', $organisasiId)
             ->where('Email', 'admin@amanpoll.test')
@@ -113,7 +131,7 @@ final class DemoAwalSeeder extends Seeder
                 'Id' => $penggunaId,
                 'UnitOrganisasiId' => $unitId,
                 'Nama' => 'Super Admin Amanpoll',
-                'KataSandi' => Hash::make('password'),
+                'KataSandi' => Hash::make((string) config('amanpoll.demo.kata_sandi')),
                 'JenisPengguna' => 'Internal',
                 'Status' => 'Aktif',
                 'DibuatPada' => now(),

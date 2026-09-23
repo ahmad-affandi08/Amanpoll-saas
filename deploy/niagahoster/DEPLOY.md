@@ -59,7 +59,16 @@ Jika Composer melalui SSH memakai versi PHP berbeda dari website, panggil binary
 
 `database/schema/Amanpoll_Schema_Hosting.sql` tetap disimpan sebagai dokumentasi/rujukan skema yang mudah dibaca dan sebagai jalur alternatif bila suatu saat `php artisan migrate` tidak dapat dijalankan (mis. akses SSH terbatas), dengan tetap menjalankan `php artisan migrate --force` sesudahnya untuk melengkapi tabel infrastruktur Laravel yang tidak ada di file SQL tersebut.
 
-Jalankan `php artisan db:seed --class=Database\\Seeders\\IzinSeeder --force` satu kali untuk mengisi Izin dasar platform.
+Jalankan empat seeder wajib satu kali. Isinya kunci yang dirujuk kode program, bukan data contoh — tanpa `IzinSeeder`, pemeriksaan otorisasi menolak semua orang, dan tanpa `FiturPaketSeeder` master fitur di konsol admin kosong sehingga paket langganan tidak dapat disusun.
+
+```bash
+php artisan db:seed --class=Database\\Seeders\\IzinSeeder --force
+php artisan db:seed --class=Database\\Seeders\\FiturPaketSeeder --force
+php artisan db:seed --class=Database\\Seeders\\FiturPlatformSeeder --force
+php artisan db:seed --class=Database\\Seeders\\TahapPipelineSeeder --force
+```
+
+`php artisan db:seed --force` polos juga menyemai keempatnya dan melewati data contohnya di produksi.
 
 ## Cron
 
