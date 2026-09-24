@@ -614,6 +614,18 @@ Halaman detail aset harus menjadi pusat informasi:
 - Aset dapat memiliki parent/child relation.
 - Status aset dan kondisi aset diperlakukan sebagai konsep terpisah bila dibutuhkan.
 
+### Impor Aset
+
+Disetujui pemilik produk pada 24 September 2026.
+
+- Berkas CSV atau XLSX, paling banyak 1.000 baris dan 5 MB. Templat CSV dan XLSX bisa diunduh dari halaman aset; kolomnya sama dengan isian formulir aset, dan rujukan (kategori, lokasi, unit organisasi, unit pengelola, merek, model, penyedia) diisi dengan **kode**, bukan Id.
+- **Hanya menambah aset baru.** Baris yang kode asetnya sudah ada ditolak; pembaruan massal lewat impor bukan cakupan versi ini. Kode aset kosong diisi mesin kode otomatis, sama seperti formulir.
+- Dua langkah: unggah → **pratinjau** hasil validasi seluruh baris (galat per baris dan kolom, jumlah yang akan dibuat) → **konfirmasi**. Server memvalidasi ulang seluruh berkas saat konfirmasi; tidak ada data impor yang disimpan di antara kedua langkah.
+- **Semua atau tidak sama sekali.** Bila satu baris saja salah, tidak ada aset yang dibuat. Pengguna memperbaiki berkas lalu mengunggah ulang. Impor berjalan dalam satu transaksi.
+- Validasi setiap baris sama dengan formulir aset (aturan `SimpanAsetRequest`, termasuk `UnitPengelolaSah`), ditambah: kode aset kembar di dalam berkas ditolak, dan pengguna berlingkup hanya boleh mengimpor ke lokasi atau unit dalam lingkupnya.
+- Setiap aset dibuat lewat Action pembuat aset yang sama dengan formulir, sehingga riwayat lokasi, penanggung jawab, dan kode QR terbentuk seperti biasa. Impor dicatat satu baris audit berisi nama berkas, jumlah, dan Id aset yang dibuat.
+- Izin sama dengan membuat aset. Nilai sel yang diawali karakter rumus dinetralkan saat berkas galat atau templat diekspor.
+
 ---
 
 ## 8.5 Siklus Aset
@@ -1266,7 +1278,7 @@ Satu organisasi bisa punya lebih dari satu bagian yang memelihara aset, masing-m
 
 ### Di mana unit pengelola dicatat
 
-- `Aset.UnitPengelolaId`: diisi di formulir aset dan bisa diubah massal dari daftar aset. Impor aset belum ada di produk; bila dibangun, templatnya wajib memuat kolom unit pengelola (kode unit) dengan validasi yang sama.
+- `Aset.UnitPengelolaId`: diisi di formulir aset, impor aset (kolom kode unit pengelola, 8.4), dan bisa diubah massal dari daftar aset.
 - `KategoriKeluhan.UnitPengelolaId`: kategori (atau induknya) menentukan antrian mana yang menerima keluhan.
 - `Keluhan.UnitPengelolaId`: ditentukan saat keluhan dibuat, dari mana pun keluhan dibuat (dasbor, Mode Lapangan, antrian offline). Urutannya: kategori keluhan (naik ke induk sampai ketemu) → aset → kosong. Koordinator pemegang `Keluhan.Kelola` bisa **mengalihkan** keluhan ke unit pengelola lain dengan alasan; pengalihan tercatat di audit dan riwayat.
 - `PerintahKerja.UnitPengelolaId`: isian eksplisit di formulir → keluhan asal → aset → rencana preventif/kalibrasi asal → kosong. Tiket preventif, kalibrasi, dan tindak lanjut inspeksi ikut terisi. `PerintahKerja.UnitOrganisasiId` yang kosong diisi dari unit organisasi aset.

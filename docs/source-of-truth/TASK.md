@@ -3735,6 +3735,14 @@ Urutan: 40.01 dikerjakan lebih dulu karena seluruh bagian lain memakai kolom, at
 - [x] Halaman panduan `/dokumentasi` untuk menyiapkan beberapa unit pengelola (contoh IPSRS dan IT), dan data demo dengan dua unit pengelola.
 - [x] Test alur ujung-ke-ujung dua bagian: keluhan printer dari ICU masuk antrian IT dan tidak terlihat koordinator IPSRS; teknisi IT ditugaskan; stok gudang IT tidak terlihat IPSRS; laporan per unit pengelola.
 
+## 40.07 Impor aset
+
+Menutup celah 40.02 (kolom unit pengelola di impor). Aturan di PRD 8.4 "Impor Aset".
+
+- [ ] Templat CSV dan XLSX, unggah, pratinjau validasi per baris, dan konfirmasi (semua atau tidak sama sekali, satu transaksi).
+- [ ] Rujukan lewat kode (termasuk unit pengelola), kode aset kosong memakai mesin kode, kode kembar dan kode yang sudah ada ditolak, lingkup pengguna dihormati.
+- [ ] Aset dibuat lewat Action pembuat aset yang sama dengan formulir; audit impor; panduan di `/dokumentasi`.
+
 ### Gate 40
 
 - Dua unit pengelola dalam satu organisasi: antrian keluhan, perintah kerja, pilihan teknisi, gudang, dan stok terpisah (diuji di test).
