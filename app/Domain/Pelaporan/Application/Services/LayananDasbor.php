@@ -23,6 +23,14 @@ final class LayananDasbor
     public function __construct(private readonly PemeriksaIzin $izin) {}
 
     /**
+     * Preset dipilih dari izin, bukan nama peran.
+     *
+     * Dasbor Supervisor hanya untuk yang memegang kendali atas pekerjaan
+     * seluruh organisasi: membagi perintah kerja atau menangani keluhan.
+     * `Pemeliharaan.Kelola` sengaja tidak ikut menentukan, karena teknisi
+     * memegangnya untuk menjalankan checklist dan inspeksi; dulu izin itu
+     * membuat setiap teknisi mendarat di Dasbor Supervisor (PRD 8.20).
+     *
      * @return array{Kunci: string, Nama: string, Komponen: array<int, array<string, mixed>>}
      */
     public function preset(Pengguna $pengguna): array
@@ -32,7 +40,7 @@ final class LayananDasbor
         }
 
         if ($this->izin->boleh($pengguna->Id, 'PerintahKerja.Kelola')
-            || $this->izin->boleh($pengguna->Id, 'Pemeliharaan.Kelola')) {
+            || $this->izin->boleh($pengguna->Id, 'Keluhan.Kelola')) {
             return $this->presetSupervisor();
         }
 

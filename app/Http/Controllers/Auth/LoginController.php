@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Core\Audit\LayananCatatanAkses;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Platform\Application\Services\PenentuModeLapangan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ final class LoginController extends Controller
     public function __construct(
         private readonly KonteksOrganisasi $konteks,
         private readonly LayananCatatanAkses $layananCatatanAkses,
+        private readonly PenentuModeLapangan $penentuModeLapangan,
     ) {}
 
     public function create(): Response
@@ -84,7 +86,21 @@ final class LoginController extends Controller
         DB::table('Pengguna')->where('Id', $request->user('web')->Id)->update(['TerakhirMasukPada' => now()]);
         $this->layananCatatanAkses->catat('Login', (string) $organisasi->Id, (string) $request->user('web')->Id, true);
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended($this->tujuanBawaan($request));
+    }
+
+    /**
+     * Tujuan sesudah login bila tidak ada URL yang sedang dituju.
+     *
+     * Pengguna lapangan murni langsung ke Mode Lapangan (PRD 8.20). URL tujuan
+     * dari `intended()` tetap dihormati; bila isinya halaman dasbor,
+     * `ArahkanPenggunaLapangan` yang membawanya ke Mode Lapangan.
+     */
+    private function tujuanBawaan(Request $request): string
+    {
+        return $this->penentuModeLapangan->lapanganMurni($request->user('web'))
+            ? route('lapangan.beranda')
+            : route('dashboard');
     }
 
     private function kunciBatasPercobaan(Request $request, string $kodeOrganisasi, string $email): string

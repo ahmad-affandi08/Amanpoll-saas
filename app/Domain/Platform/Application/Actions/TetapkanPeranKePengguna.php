@@ -6,6 +6,7 @@ namespace App\Domain\Platform\Application\Actions;
 
 use App\Core\Izin\LingkupAkses;
 use App\Core\Izin\PemeriksaIzin;
+use App\Domain\Platform\Application\Services\PenentuModeLapangan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
@@ -16,6 +17,7 @@ final class TetapkanPeranKePengguna
     public function __construct(
         private readonly PemeriksaIzin $pemeriksaIzin,
         private readonly LingkupAkses $lingkupAkses,
+        private readonly PenentuModeLapangan $penentuModeLapangan,
     ) {}
 
     public function jalankan(
@@ -53,6 +55,8 @@ final class TetapkanPeranKePengguna
         $this->pemeriksaIzin->bersihkanCache((string) $peran->OrganisasiId, (string) $pengguna->Id);
         // Cakupan pengguna ikut berubah, bukan hanya daftar izinnya.
         $this->lingkupAkses->bersihkanCache((string) $peran->OrganisasiId, (string) $pengguna->Id);
+        // Mode Lapangan juga dibaca dari peran yang dipegang (PRD 8.20).
+        $this->penentuModeLapangan->bersihkanCache((string) $peran->OrganisasiId, (string) $pengguna->Id);
 
         return $penggunaPeran;
     }

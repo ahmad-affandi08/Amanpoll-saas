@@ -14,16 +14,20 @@ use App\Domain\Sinkronisasi\Infrastructure\Persistence\Models\AntrianSinkronisas
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
 
 /** Ruang kerja teknisi yang dapat dipakai tanpa koneksi (20.05). */
 final class OfflineTeknisiController extends Controller
 {
-    public function index(): Response
+    /**
+     * Jalur lama ruang kerja teknisi. Mode Lapangan menggantikannya (PRD 8.20),
+     * dan jalurnya tetap dialihkan supaya PWA serta pintasan yang sudah
+     * terpasang di HP tidak berakhir di halaman kosong.
+     */
+    public function index(): RedirectResponse
     {
-        return Inertia::render('Sinkronisasi/Teknisi');
+        return redirect()->route('lapangan.beranda');
     }
 
     /** Mendaftarkan perangkat lalu mengirim paket kerja terbaru beserta status antrean perangkat itu. */

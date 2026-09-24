@@ -22,6 +22,9 @@ use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
  * Peran yang lahir di sini sengaja tidak ditandai BawaanSistem, berbeda dengan
  * peran Pemilik. Ini titik mulai, bukan pagar: tenant harus tetap bisa
  * mengubah izinnya, mengganti namanya, atau menghapusnya.
+ *
+ * Penanda `TampilanLapangan` ikut dipasang dari katalog, sehingga pemegang
+ * Teknisi dan Pelapor yang baru langsung masuk Mode Lapangan (PRD 8.20).
  */
 final class PasangPeranAwal
 {
@@ -63,6 +66,7 @@ final class PasangPeranAwal
                     'Nama' => $contoh['Nama'],
                     'Keterangan' => $contoh['Keterangan'],
                     'BawaanSistem' => false,
+                    'TampilanLapangan' => $contoh['TampilanLapangan'],
                 ]);
 
                 foreach ($contoh['Izin'] as $kodeIzin) {

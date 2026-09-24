@@ -23,6 +23,7 @@ final class BuatPeran
             'Kode' => $data->Kode,
             'Nama' => $data->Nama,
             'Keterangan' => $data->Keterangan,
+            'TampilanLapangan' => $data->TampilanLapangan,
         ]);
 
         return $this->peranRepository->simpan($peran);

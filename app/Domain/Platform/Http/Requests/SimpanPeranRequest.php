@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Platform\Domain\Enums\ModeLapangan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -33,6 +34,8 @@ final class SimpanPeranRequest extends FormRequest
             ],
             'Nama' => ['required', 'string', 'max:120'],
             'Keterangan' => ['nullable', 'string', 'max:2000'],
+            // Kosong berarti peran meja; Teknisi/Pelapor membawa pemegangnya ke Mode Lapangan (PRD 8.20).
+            'TampilanLapangan' => ['nullable', Rule::enum(ModeLapangan::class)],
         ];
     }
 }

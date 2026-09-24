@@ -13,6 +13,7 @@ final readonly class PeranData
         public mixed $Nama = null,
         public mixed $Keterangan = null,
         public mixed $BawaanSistem = null,
+        public mixed $TampilanLapangan = null,
     ) {}
 
     public static function dariArray(array $data): self
@@ -24,6 +25,7 @@ final readonly class PeranData
             Nama: $data['Nama'] ?? null,
             Keterangan: $data['Keterangan'] ?? null,
             BawaanSistem: $data['BawaanSistem'] ?? null,
+            TampilanLapangan: $data['TampilanLapangan'] ?? null,
         );
     }
 

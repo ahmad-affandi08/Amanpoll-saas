@@ -26,7 +26,9 @@ final class BerkasController extends Controller
 
         $data = $request->validated();
 
-        if (isset($data['JenisEntitas'])) {
+        if (isset($data['JenisEntitas'], $data['EntitasId'])) {
+            $this->registriEntitas->pastikanBolehKelolaRekaman($request->user('web'), $data['JenisEntitas'], $data['EntitasId']);
+        } elseif (isset($data['JenisEntitas'])) {
             $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
         }
 

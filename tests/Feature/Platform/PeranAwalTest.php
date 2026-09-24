@@ -6,6 +6,7 @@ namespace Tests\Feature\Platform;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Platform\Application\Actions\PasangPeranAwal;
+use App\Domain\Platform\Domain\Enums\ModeLapangan;
 use App\Domain\Platform\Domain\ValueObjects\KatalogPeranAwal;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
@@ -63,6 +64,31 @@ class PeranAwalTest extends TestCase
         }
     }
 
+    /**
+     * Peran lapangan tidak memegang Kelola atas tiket maupun keluhan (PRD 8.20):
+     * Kelola membuka seluruh tiket dan keluhan organisasi kepada pemegangnya.
+     */
+    public function test_peran_lapangan_katalog_tidak_memegang_kelola_tiket_maupun_keluhan(): void
+    {
+        $katalog = array_column(KatalogPeranAwal::semua(), null, 'Kode');
+
+        $this->assertSame(['Aset.Lihat', 'Pemeliharaan.Kelola'], $katalog['TEKNISI']['Izin']);
+        $this->assertSame(['Aset.Lihat'], $katalog['PELAPOR']['Izin']);
+        $this->assertSame(ModeLapangan::Teknisi, $katalog['TEKNISI']['TampilanLapangan']);
+        $this->assertSame(ModeLapangan::Pelapor, $katalog['PELAPOR']['TampilanLapangan']);
+    }
+
+    /** Daftar cabut untuk tenant lama tidak boleh menyebut izin yang justru masih diberikan katalog. */
+    public function test_izin_yang_dicabut_dari_peran_lapangan_tidak_ada_lagi_di_katalog(): void
+    {
+        $katalog = array_column(KatalogPeranAwal::semua(), null, 'Kode');
+
+        foreach (KatalogPeranAwal::IZIN_DICABUT_DARI_PERAN_LAPANGAN as $kode => $dicabut) {
+            $this->assertNotNull($katalog[$kode]['TampilanLapangan'] ?? null, "{$kode} bukan peran lapangan katalog.");
+            $this->assertSame([], array_intersect($dicabut, $katalog[$kode]['Izin']));
+        }
+    }
+
     public function test_kode_peran_katalog_tidak_kembar(): void
     {
         $kode = array_column(KatalogPeranAwal::semua(), 'Kode');
@@ -86,6 +112,7 @@ class PeranAwalTest extends TestCase
             $this->assertNotNull($peran, "Peran {$contoh['Kode']} tidak terpasang.");
             $this->assertSame($contoh['Nama'], $peran->Nama);
             $this->assertCount(count($contoh['Izin']), $peran->peranIzin);
+            $this->assertSame($contoh['TampilanLapangan'], $peran->TampilanLapangan);
         }
     }
 

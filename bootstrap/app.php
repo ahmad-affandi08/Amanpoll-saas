@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Host\PetaHost;
+use App\Http\Middleware\ArahkanPenggunaLapangan;
 use App\Http\Middleware\AutentikasiKunciApi;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PastikanAkunMasihAktif;
@@ -11,6 +12,7 @@ use App\Http\Middleware\PastikanIdempoten;
 use App\Http\Middleware\PastikanIzinPlatform;
 use App\Http\Middleware\PastikanLanggananMengizinkanTulis;
 use App\Http\Middleware\PastikanMemilikiIzin;
+use App\Http\Middleware\PastikanModeLapangan;
 use App\Http\Middleware\TandaiHostTidakTerindeks;
 use App\Http\Middleware\TetapkanKonteksOrganisasi;
 use App\Http\Middleware\TetapkanKorelasiId;
@@ -49,6 +51,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // terjadi di sini, dan tanpa pengenalnya seluruh konversi akan tercatat
         // sebagai `direct` (MARKETING.md 1.1).
         $middleware->web(append: [TetapkanSesiPengunjung::class]);
+
+        // Pengguna lapangan murni dibawa dari halaman dasbor ke Mode Lapangan (PRD 8.20).
+        // Dipasang pada grup, bukan per rute, supaya tidak ada halaman dasbor yang lolos.
+        $middleware->web(append: [ArahkanPenggunaLapangan::class]);
 
         // Hanya host publik yang boleh diindeks (MARKETING.md 1.2).
         $middleware->web(append: [TandaiHostTidakTerindeks::class]);
@@ -92,6 +98,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'kunci.api' => AutentikasiKunciApi::class,
             'cakupan.kunci' => PastikanCakupanKunciApi::class,
             'idempoten' => PastikanIdempoten::class,
+            'mode.lapangan' => PastikanModeLapangan::class,
         ]);
 
         // Konteks organisasi wajib ditetapkan sebelum route model binding di-resolve,
@@ -112,6 +119,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToPriorityList(
             after: TetapkanKonteksOrganisasi::class,
             append: PastikanAkunMasihAktif::class,
+        );
+
+        // Pengalihan Mode Lapangan berjalan sebelum route model binding: halaman
+        // dasbor yang dialihkan tidak perlu menyentuh datanya sama sekali.
+        $middleware->prependToPriorityList(
+            before: SubstituteBindings::class,
+            prepend: ArahkanPenggunaLapangan::class,
         );
 
         // Penjaga langganan harus berjalan setelah konteks organisasi ada dan

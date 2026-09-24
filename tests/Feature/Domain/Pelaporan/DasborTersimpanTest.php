@@ -217,6 +217,26 @@ final class DasborTersimpanTest extends KasusPelaporan
     }
 
     /**
+     * Teknisi memegang Pemeliharaan.Kelola untuk menjalankan checklist; izin itu
+     * dulu membuatnya mendarat di Dasbor Supervisor (PRD 8.20). Supervisor kini
+     * ditandai kendali atas pekerjaan seluruh organisasi.
+     */
+    public function test_teknisi_dengan_pemeliharaan_kelola_mendapat_dasbor_teknisi_bukan_supervisor(): void
+    {
+        $teknisi = $this->buatPengguna(['Aset.Lihat', 'Pemeliharaan.Kelola']);
+        $pembagiTiket = $this->buatPengguna(['PerintahKerja.Kelola']);
+        $penanganKeluhan = $this->buatPengguna(['Keluhan.Kelola']);
+
+        foreach ([[$teknisi, 'teknisi'], [$pembagiTiket, 'supervisor'], [$penanganKeluhan, 'supervisor']] as [$pengguna, $kunci]) {
+            $this->assertSame(
+                $kunci,
+                $this->actingAs($pengguna)->get(route('pelaporan.dasbor.index'))
+                    ->viewData('page')['props']['preset']['Kunci'],
+            );
+        }
+    }
+
+    /**
      * @param  list<array<string, mixed>>  $komponen
      */
     private function simpanDasbor(

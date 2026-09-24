@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -19,7 +20,7 @@ import {
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { useIzin } from '@/hooks/use-izin';
-import type { Peran, KatalogIzin } from '@/features/PeranIzin/types';
+import type { Peran, KatalogIzin, TampilanLapangan } from '@/features/PeranIzin/types';
 import { rutePeranIzin } from '@/features/PeranIzin/api';
 import { http } from '@/lib/http';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
@@ -59,11 +60,7 @@ function TombolPeranBawaan({ jumlah }: { jumlah: number }) {
       return;
 
     setMemasang(true);
-    router.post(
-      rutePeranIzin.bawaan,
-      {},
-      { preserveScroll: true, onFinish: () => setMemasang(false) },
-    );
+    router.post(rutePeranIzin.bawaan, {}, { preserveScroll: true, onFinish: () => setMemasang(false) });
   };
 
   return (
@@ -73,12 +70,30 @@ function TombolPeranBawaan({ jumlah }: { jumlah: number }) {
   );
 }
 
+/** Nilai pilihan untuk peran meja; Select tidak menerima string kosong sebagai nilai. */
+const TANPA_TAMPILAN_LAPANGAN = 'dasbor';
+
+const PILIHAN_TAMPILAN_LAPANGAN: Record<TampilanLapangan, string> = {
+  Teknisi: 'Mode Lapangan Teknisi',
+  Pelapor: 'Mode Lapangan Pelapor',
+};
+
 function DialogFormPeran({ peran, wajib }: { peran: Peran | null; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
-  const form = useForm(
+  const form = useForm<{
+    Kode: string;
+    Nama: string;
+    Keterangan: string;
+    TampilanLapangan: TampilanLapangan | null;
+  }>(
     peran
-      ? { Kode: peran.Kode, Nama: peran.Nama, Keterangan: peran.Keterangan ?? '' }
-      : { Kode: '', Nama: '', Keterangan: '' },
+      ? {
+          Kode: peran.Kode,
+          Nama: peran.Nama,
+          Keterangan: peran.Keterangan ?? '',
+          TampilanLapangan: peran.TampilanLapangan,
+        }
+      : { Kode: '', Nama: '', Keterangan: '', TampilanLapangan: null },
   );
 
   const submit = (e: FormEvent) => {
@@ -125,6 +140,36 @@ function DialogFormPeran({ peran, wajib }: { peran: Peran | null; wajib: AturanW
                 value={form.data.Keterangan}
                 onChange={(e) => form.setData('Keterangan', e.target.value)}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="TampilanLapangan" nama="TampilanLapangan">
+                Tampilan Lapangan
+              </Label>
+              <Select
+                value={form.data.TampilanLapangan ?? TANPA_TAMPILAN_LAPANGAN}
+                onValueChange={(nilai) =>
+                  form.setData('TampilanLapangan', nilai === 'Teknisi' || nilai === 'Pelapor' ? nilai : null)
+                }
+              >
+                <SelectTrigger id="TampilanLapangan" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TANPA_TAMPILAN_LAPANGAN}>Tidak ada (dasbor web)</SelectItem>
+                  {Object.entries(PILIHAN_TAMPILAN_LAPANGAN).map(([nilai, teks]) => (
+                    <SelectItem key={nilai} value={nilai}>
+                      {teks}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">
+                Pengguna yang seluruh perannya bertanda Tampilan Lapangan langsung masuk Mode Lapangan di HP
+                setelah login.
+              </p>
+              {form.errors.TampilanLapangan && (
+                <p className="text-sm text-destructive">{form.errors.TampilanLapangan}</p>
+              )}
             </div>
             <DialogFooter>
               <Button type="submit" disabled={form.processing}>
@@ -234,7 +279,12 @@ export default function PeranIzinIndex({ peran, filter, wajib, bawaanBelumTerpas
         cell: ({ row }) => (
           <div>
             <div className="font-medium text-foreground">{row.original.Nama}</div>
-            {row.original.BawaanSistem && <Badge variant="secondary">Bawaan Sistem</Badge>}
+            <div className="flex flex-wrap gap-1">
+              {row.original.BawaanSistem && <Badge variant="secondary">Bawaan Sistem</Badge>}
+              {row.original.TampilanLapangan && (
+                <Badge variant="outline">Mode Lapangan {row.original.TampilanLapangan}</Badge>
+              )}
+            </div>
           </div>
         ),
         meta: { label: 'Nama' },
@@ -286,9 +336,7 @@ export default function PeranIzinIndex({ peran, filter, wajib, bawaanBelumTerpas
         deskripsi="Kelola peran dan hak akses per organisasi."
         aksi={
           <>
-            {bolehKelola && bawaanBelumTerpasang > 0 && (
-              <TombolPeranBawaan jumlah={bawaanBelumTerpasang} />
-            )}
+            {bolehKelola && bawaanBelumTerpasang > 0 && <TombolPeranBawaan jumlah={bawaanBelumTerpasang} />}
             {bolehKelola && <DialogFormPeran peran={null} wajib={wajib.peran} />}
           </>
         }

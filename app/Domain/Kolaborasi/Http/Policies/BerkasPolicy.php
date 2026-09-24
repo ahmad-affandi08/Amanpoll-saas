@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Kolaborasi\Http\Policies;
 
 use App\Core\Entitas\RegistriEntitas;
-use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -13,10 +12,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 /** Berkas sendiri tidak punya pemilik tetap. */
 final class BerkasPolicy
 {
-    public function __construct(
-        private readonly RegistriEntitas $registriEntitas,
-        private readonly PemeriksaIzin $pemeriksaIzin,
-    ) {}
+    public function __construct(private readonly RegistriEntitas $registriEntitas) {}
 
     public function create(Pengguna $pengguna): bool
     {
@@ -37,16 +33,21 @@ final class BerkasPolicy
         return $this->view($pengguna, $berkas);
     }
 
+    /**
+     * Berkas terbuka bagi siapa pun yang boleh mengelola salah satu entitas
+     * tempatnya dilampirkan: lewat izin Kelola jenisnya, atau lewat policy atas
+     * baris itu (mis. teknisi yang ditugaskan pada perintah kerjanya).
+     */
     private function bolehMelaluiLampiran(Pengguna $pengguna, Berkas $berkas): bool
     {
-        $jenisTerlampir = LampiranEntitas::query()
+        $lampiran = LampiranEntitas::query()
             ->where('BerkasId', $berkas->Id)
             ->distinct()
-            ->pluck('JenisEntitas');
+            ->get(['JenisEntitas', 'EntitasId']);
 
-        foreach ($jenisTerlampir as $jenis) {
-            if ($this->registriEntitas->dikenal($jenis)
-                && $this->pemeriksaIzin->boleh($pengguna->Id, $this->registriEntitas->izinKelolaUntuk($jenis))) {
+        foreach ($lampiran as $satu) {
+            if ($this->registriEntitas->dikenal($satu->JenisEntitas)
+                && $this->registriEntitas->bolehKelolaRekaman($pengguna, $satu->JenisEntitas, (string) $satu->EntitasId)) {
                 return true;
             }
         }

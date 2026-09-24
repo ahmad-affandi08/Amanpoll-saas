@@ -21,6 +21,7 @@ final class PeranResource extends JsonResource
             'Nama' => $peran->Nama,
             'Keterangan' => $peran->Keterangan,
             'BawaanSistem' => (bool) $peran->BawaanSistem,
+            'TampilanLapangan' => $peran->TampilanLapangan?->value,
             'JumlahIzin' => $this->whenCounted('peranIzin'),
             'JumlahPengguna' => $this->whenCounted('penggunaPeran'),
             'DaftarIzinId' => $this->whenLoaded('peranIzin', fn () => $peran->peranIzin->pluck('IzinId')->values()),

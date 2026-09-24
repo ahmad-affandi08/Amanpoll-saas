@@ -31,7 +31,7 @@ final class KomentarEntitasController extends Controller
         ]);
 
         $this->registriEntitas->cariEntitas($data['jenisEntitas'], $data['entitasId']);
-        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelolaRekaman($request->user('web'), $data['jenisEntitas'], $data['entitasId']);
 
         $komentar = KomentarEntitas::query()
             ->with('dibuatOleh')
@@ -47,7 +47,7 @@ final class KomentarEntitasController extends Controller
     public function store(SimpanKomentarEntitasRequest $request, TambahKomentar $aksi): RedirectResponse
     {
         $data = $request->validated();
-        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelolaRekaman($request->user('web'), $data['JenisEntitas'], $data['EntitasId']);
 
         $aksi->jalankan(
             $data['JenisEntitas'],

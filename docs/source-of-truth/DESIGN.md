@@ -1495,7 +1495,7 @@ Data di papan (PT Graha Nusantara, Budi, Rina, nomor tiket, aset) hanyalah conto
   - Lainnya: abu.
 - **Tab pil**: segmen dengan jumlah (Hari ini 5 · Terlambat 1 · Selesai), bukan tab bergaris.
 - **Isian bergaya formulir tiket**: label kecil di dalam kotak isian putih radius 16px.
-- **Banner info**: kartu gradien (oranye, biru, atau hijau) dengan ikon 3D besar di kanan.
+- **Banner info**: kartu gradien (oranye, biru, atau hijau) dengan ikon 3D besar di kanan. Gradien oranye banner memakai `#A8470A → #C2530A` agar teks putih lolos AA di seluruh bidang.
 - **Ilustrasi momen**: layar sukses dan kosong memakai ikon 3D besar (±104px) di dalam lingkaran lembut.
 
 ## 36.4 Warna dan tipografi
@@ -1513,6 +1513,8 @@ Token dipasang di `resources/css/app.css` dengan awalan `lapangan-` supaya tidak
 | `lapangan-oranye-600` | `#E8650C` | Aksen non-teks: ikon aktif, titik, garis perhentian |
 | `lapangan-oranye-teks` | `#A8470A` | Teks oranye di atas putih/tint (≥ 4,5:1) |
 | `lapangan-oranye-50` | `#FFF1E6` | Tint oranye |
+| `lapangan-oranye-100` | `#FFE2CC` | Cincin/sorotan oranye lembut |
+| `lapangan-ungu-50` | `#F1ECFB` | Tint wadah ikon ungu |
 | `lapangan-hijau-700` / `-50` | `#0E7A4F` / `#E7F6EF` | Status selesai |
 | `lapangan-merah-700` / `-50` | `#B3261E` / `#FDECEA` | Kritis, terlambat, keluar |
 | `lapangan-kuning-700` / `-50` | `#8A5A00` / `#FFF6DC` | Menunggu |
@@ -1520,6 +1522,7 @@ Token dipasang di `resources/css/app.css` dengan awalan `lapangan-` supaya tidak
 | `lapangan-teks-2` | `#4A5866` | Teks sekunder |
 | `lapangan-teks-3` | `#5B6773` | Metadata; 5,3:1 di atas latar (jangan lebih muda) |
 | `lapangan-garis` | `#E3E8EE` | Garis dan bingkai isian |
+| `lapangan-garis-2` | `#EEF1F5` | Pemisah baris di dalam kartu |
 | `lapangan-latar` | `#F2F5F8` | Latar layar |
 
 - Gradien hero: `radial-gradient(120% 90% at 100% 0%, #2A7BB0, transparent 55%), linear-gradient(160deg, #0B2239, #12324F 45%, #1F5F8B)`.

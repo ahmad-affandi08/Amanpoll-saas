@@ -6,6 +6,7 @@ namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
+use App\Domain\Platform\Domain\Enums\ModeLapangan;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -29,12 +30,14 @@ final class Peran extends ModelDasar
         'Nama',
         'Keterangan',
         'BawaanSistem',
+        'TampilanLapangan',
     ];
 
     protected function casts(): array
     {
         return [
             'BawaanSistem' => 'boolean',
+            'TampilanLapangan' => ModeLapangan::class,
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',

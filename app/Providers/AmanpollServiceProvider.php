@@ -272,8 +272,10 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('PermintaanMutasiAset', PermintaanMutasiAset::class, 'Aset.Ubah');
         $registri->daftarkan('SerahTerimaAset', SerahTerimaAset::class, 'Aset.Ubah');
         $registri->daftarkan('PengajuanPenghapusanAset', PengajuanPenghapusanAset::class, 'Aset.Hapus');
-        $registri->daftarkan('Keluhan', Keluhan::class, 'Keluhan.Kelola');
-        $registri->daftarkan('PerintahKerja', PerintahKerja::class, 'PerintahKerja.Kelola');
+        // Pelapor dan teknisi lapangan tidak memegang Kelola; lampiran dan komentar
+        // mereka dibuka lewat policy atas barisnya (PRD 8.20).
+        $registri->daftarkan('Keluhan', Keluhan::class, 'Keluhan.Kelola', 'view');
+        $registri->daftarkan('PerintahKerja', PerintahKerja::class, 'PerintahKerja.Kelola', 'operate');
         $registri->daftarkan('JenisKalibrasi', JenisKalibrasi::class, 'Kalibrasi.Kelola');
         $registri->daftarkan('RencanaKalibrasi', RencanaKalibrasi::class, 'Kalibrasi.Kelola');
         $registri->daftarkan('PelaksanaanKalibrasi', PelaksanaanKalibrasi::class, 'Kalibrasi.Kelola');

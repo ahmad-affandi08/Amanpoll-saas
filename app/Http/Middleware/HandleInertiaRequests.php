@@ -7,6 +7,7 @@ namespace App\Http\Middleware;
 use App\Core\Izin\PemeriksaIzin;
 use App\Core\Izin\PemeriksaIzinPlatform;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
+use App\Domain\Platform\Application\Services\PenentuModeLapangan;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -18,6 +19,7 @@ final class HandleInertiaRequests extends Middleware
         private readonly PemeriksaIzin $pemeriksaIzin,
         private readonly PemeriksaEntitlement $pemeriksaEntitlement,
         private readonly PemeriksaIzinPlatform $pemeriksaIzinPlatform,
+        private readonly PenentuModeLapangan $penentuModeLapangan,
     ) {}
 
     public function share(Request $request): array
@@ -44,6 +46,13 @@ final class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'izin' => fn (): array => $pengguna ? $this->pemeriksaIzin->daftarKodeIzin((string) $pengguna->Id) : [],
+            // Mode Lapangan (PRD 8.20): mode yang dipakai, apakah pengguna lapangan
+            // murni, dan apakah ia boleh beralih antara dasbor dan Mode Lapangan.
+            'lapangan' => fn (): array => [
+                'mode' => $pengguna ? $this->penentuModeLapangan->mode($pengguna)?->value : null,
+                'murni' => $pengguna !== null && $this->penentuModeLapangan->lapanganMurni($pengguna),
+                'bisaBeralih' => $pengguna !== null && $this->penentuModeLapangan->bisaBeralih($pengguna),
+            ],
             // Kewenangan konsol platform dibagikan terpisah.
             'platform' => function () use ($request): array {
                 $admin = $request->user('platform');

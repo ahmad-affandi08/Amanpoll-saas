@@ -12,10 +12,21 @@ export interface PenggunaAuth {
   } | null;
 }
 
+/** Status Mode Lapangan pengguna (PRD 8.20), dibagikan `HandleInertiaRequests`. */
+export interface LapanganBersama {
+  /** Teknisi menang bila pengguna memegang peran Teknisi dan Pelapor sekaligus. */
+  mode: 'Teknisi' | 'Pelapor' | null;
+  /** Seluruh perannya bertanda Tampilan Lapangan; tidak memakai dasbor. */
+  murni: boolean;
+  /** Pengguna campuran: boleh beralih antara dasbor dan Mode Lapangan. */
+  bisaBeralih: boolean;
+}
+
 export interface PageProps {
   namaAplikasi: string;
   auth: { pengguna: PenggunaAuth | null };
   izin: string[];
+  lapangan: LapanganBersama;
   flash: {
     sukses?: string | null;
     gagal?: string | null;

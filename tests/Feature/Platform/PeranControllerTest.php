@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Platform;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Platform\Application\Services\PenentuModeLapangan;
+use App\Domain\Platform\Domain\Enums\ModeLapangan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Izin;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -136,5 +138,64 @@ class PeranControllerTest extends TestCase
 
         $response->assertStatus(404);
         $this->assertDatabaseHas('Peran', ['Id' => $peranB->Id, 'Kode' => 'RAHASIA']);
+    }
+
+    public function test_admin_dapat_menandai_peran_sebagai_tampilan_lapangan(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $admin = $this->buatPenggunaDenganIzin($organisasi, 'Pengguna.Kelola');
+
+        $this->actingAs($admin)->post('/platform/peran', [
+            'Kode' => 'MEKANIK',
+            'Nama' => 'Mekanik',
+            'TampilanLapangan' => 'Teknisi',
+        ])->assertSessionDoesntHaveErrors();
+
+        $this->assertDatabaseHas('Peran', ['Kode' => 'MEKANIK', 'TampilanLapangan' => 'Teknisi']);
+        $this->actingAs($admin)->get('/platform/peran?cari=MEKANIK')
+            ->assertInertia(fn ($halaman) => $halaman->where('peran.data.0.TampilanLapangan', 'Teknisi')->etc());
+    }
+
+    /** Mode pemegang peran dibaca dari cache; mengubah penandanya harus langsung berlaku. */
+    public function test_mengubah_penanda_peran_langsung_mengubah_mode_pemegangnya(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $admin = $this->buatPenggunaDenganIzin($organisasi, 'Pengguna.Kelola');
+        $pemegang = Pengguna::create([
+            'OrganisasiId' => $organisasi->Id,
+            'Nama' => 'Staf Unit',
+            'Email' => 'staf+'.uniqid().'@amanpoll.test',
+            'KataSandi' => 'rahasia',
+            'Status' => 'Aktif',
+        ]);
+        app(KonteksOrganisasi::class)->tetapkan($organisasi->Id);
+        $peran = Peran::create(['Kode' => 'STAF-UNIT', 'Nama' => 'Staf Unit']);
+        PenggunaPeran::create(['PenggunaId' => $pemegang->Id, 'PeranId' => $peran->Id]);
+        app(KonteksOrganisasi::class)->bersihkan();
+        $penentu = app(PenentuModeLapangan::class);
+        $this->assertNull($penentu->mode($pemegang));
+
+        $this->actingAs($admin)->put("/platform/peran/{$peran->Id}", [
+            'Kode' => 'STAF-UNIT',
+            'Nama' => 'Staf Unit',
+            'TampilanLapangan' => 'Pelapor',
+        ])->assertSessionDoesntHaveErrors();
+
+        $this->assertSame(ModeLapangan::Pelapor, $penentu->mode($pemegang));
+        $this->assertTrue($penentu->lapanganMurni($pemegang));
+    }
+
+    public function test_penanda_tampilan_lapangan_yang_tidak_dikenal_ditolak(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $admin = $this->buatPenggunaDenganIzin($organisasi, 'Pengguna.Kelola');
+
+        $this->actingAs($admin)->post('/platform/peran', [
+            'Kode' => 'SUPERVISOR',
+            'Nama' => 'Supervisor',
+            'TampilanLapangan' => 'Supervisor',
+        ])->assertSessionHasErrors(['TampilanLapangan' => 'Tampilan lapangan yang dipilih tidak valid.']);
+
+        $this->assertDatabaseMissing('Peran', ['Kode' => 'SUPERVISOR']);
     }
 }

@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ruteAuth } from '@/features/Auth/api';
 import { ruteDokumentasi } from '@/features/Dokumentasi/api';
+import { ruteLapangan } from '@/features/Lapangan/api';
 import { PencarianGlobal } from '@/features/Pencarian/components/PencarianGlobal';
 import type { HalamanTujuan } from '@/features/Pencarian/types';
 import {
@@ -54,6 +55,7 @@ import {
   ChevronsUpDown,
   LogOut,
   RotateCw,
+  Smartphone,
 } from 'lucide-react';
 import { type GrupNav, type ItemNav, semuaGrup } from '@/layouts/navigasi';
 
@@ -84,9 +86,11 @@ interface AppSidebarProps {
   auth: PageProps['auth'];
   boleh: (kodeIzin: string) => boolean;
   keluar: () => void;
+  /** Hanya ada bagi pengguna campuran (peran lapangan dan peran meja), PRD 8.20. */
+  bukaModeLapangan?: () => void;
 }
 
-function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSidebarProps) {
+function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar, bukaModeLapangan }: AppSidebarProps) {
   const { state, isMobile } = useSidebar();
   const isCollapsed = state === 'collapsed' && !isMobile;
 
@@ -363,6 +367,15 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar }: AppSideba
                       <span>Dokumentasi</span>
                     </Link>
                   </DropdownMenuItem>
+                  {bukaModeLapangan && (
+                    <DropdownMenuItem
+                      onClick={bukaModeLapangan}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Smartphone className="size-4" />
+                      <span>Buka Mode Lapangan</span>
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -396,6 +409,11 @@ function KerangkaDalam({ children }: PropsWithChildren) {
     adaPembaruanAplikasi,
     terapkanPembaruanAplikasi,
   } = useSinkronisasiOffline();
+
+  /** Pengguna campuran berpindah ke Mode Lapangan; pilihannya diingat di perangkat ini (PRD 8.20). */
+  const bukaModeLapangan = page.props.lapangan?.bisaBeralih
+    ? () => router.post(ruteLapangan.tampilan, { Tampilan: 'lapangan' })
+    : undefined;
 
   /** Logout membersihkan data offline milik organisasi ini (FASE 20.02). */
   const keluar = async () => {
@@ -460,6 +478,7 @@ function KerangkaDalam({ children }: PropsWithChildren) {
         auth={auth}
         boleh={boleh}
         keluar={() => void keluar()}
+        bukaModeLapangan={bukaModeLapangan}
       />
       <SidebarInset>
         <header className="flex h-14 items-center justify-between gap-3 border-b border-border bg-card px-4 sm:px-6">

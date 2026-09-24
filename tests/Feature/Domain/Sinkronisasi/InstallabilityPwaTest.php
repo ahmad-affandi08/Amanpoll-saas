@@ -79,13 +79,14 @@ final class InstallabilityPwaTest extends TestCase
         $this->assertStringContainsString('kunciKonteks', $sw);
     }
 
-    public function test_halaman_teknisi_offline_dapat_dibuka_pengguna_terautentikasi(): void
+    /** Mode Lapangan menggantikan ruang kerja teknisi; jalur lamanya tetap hidup lewat pengalihan (PRD 8.20). */
+    public function test_jalur_teknisi_offline_dialihkan_ke_mode_lapangan(): void
     {
         $pengguna = $this->buatPengguna();
 
         $this->actingAs($pengguna)
             ->get('/offline/teknisi')
-            ->assertOk();
+            ->assertRedirect('/lapangan');
     }
 
     public function test_halaman_teknisi_offline_menolak_tamu(): void

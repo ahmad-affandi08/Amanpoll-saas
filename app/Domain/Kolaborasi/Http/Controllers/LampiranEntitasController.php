@@ -28,7 +28,7 @@ final class LampiranEntitasController extends Controller
         ]);
 
         $this->registriEntitas->cariEntitas($data['jenisEntitas'], $data['entitasId']);
-        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['jenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelolaRekaman($request->user('web'), $data['jenisEntitas'], $data['entitasId']);
 
         $lampiran = LampiranEntitas::query()
             ->with('berkas')
@@ -44,7 +44,7 @@ final class LampiranEntitasController extends Controller
     public function store(SimpanLampiranEntitasRequest $request, LampirkanBerkas $aksi): RedirectResponse
     {
         $data = $request->validated();
-        $this->registriEntitas->pastikanBolehKelola($request->user('web'), $data['JenisEntitas']);
+        $this->registriEntitas->pastikanBolehKelolaRekaman($request->user('web'), $data['JenisEntitas'], $data['EntitasId']);
 
         $aksi->jalankan(
             $data['JenisEntitas'],

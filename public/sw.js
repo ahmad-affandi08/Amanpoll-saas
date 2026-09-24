@@ -36,7 +36,7 @@ const KERANGKA = [
 ];
 
 /** Path yang boleh disimpan di cache runtime: murni aset build dan gambar. */
-const POLA_ASET_STATIS = [/^\/build\//, /^\/images\//, /^\/assets\//, /^\/icons\//];
+const POLA_ASET_STATIS = [/^\/build\//, /^\/images\//, /^\/assets\//, /^\/icons\//, /^\/aset\//];
 
 /**
  * Satu-satunya halaman yang kerangkanya boleh disimpan. Ruang kerja teknisi
