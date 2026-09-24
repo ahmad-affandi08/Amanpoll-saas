@@ -15,7 +15,7 @@ const MENU = [
     kodeIzin: 'platform.pemasaran.lihat',
   },
   {
-    label: 'Pembayaran & WhatsApp',
+    label: 'Layanan Luar',
     href: '/admin-platform/penyedia-layanan',
     ikon: KeyRound,
     kodeIzin: 'platform.penyedia-layanan.kelola',

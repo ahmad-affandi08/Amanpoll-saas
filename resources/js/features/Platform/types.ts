@@ -29,7 +29,7 @@ export interface PenyediaLayanan {
 }
 
 export interface KategoriPenyediaLayanan {
-  Kode: 'Pembayaran' | 'WhatsApp';
+  Kode: 'Pembayaran' | 'WhatsApp' | 'Email';
   Label: string;
   BolehBanyakAktif: boolean;
   Penyedia: PenyediaLayanan[];

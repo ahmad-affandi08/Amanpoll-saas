@@ -121,7 +121,7 @@ export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
                 <span className="block text-xs text-muted-foreground">
                   {kategori.BolehBanyakAktif
                     ? 'Penyedia aktif muncul sebagai pilihan cara bayar bagi pelanggan.'
-                    : 'Hanya satu penyedia WhatsApp yang dipakai; mengaktifkan ini menonaktifkan yang lain.'}
+                    : 'Hanya satu penyedia yang dipakai; mengaktifkan ini menonaktifkan yang lain.'}
                 </span>
               </span>
             </label>

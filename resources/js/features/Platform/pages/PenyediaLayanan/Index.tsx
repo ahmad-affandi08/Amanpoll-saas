@@ -15,18 +15,20 @@ const DESKRIPSI_KATEGORI: Record<KategoriPenyediaLayanan['Kode'], string> = {
   Pembayaran:
     'Cara pelanggan membayar tagihan langganan. Boleh lebih dari satu yang aktif; pelanggan memilih saat membayar.',
   WhatsApp: 'Pengirim pesan WhatsApp pemasaran. Hanya satu yang dipakai pada satu waktu.',
+  Email:
+    'Pengirim seluruh email sistem: reset kata sandi, notifikasi, dan email pemasaran. Hanya satu yang dipakai pada satu waktu.',
 };
 
 /** Pengaturan payment gateway dan WhatsApp milik platform (PRD 8.23). */
 export default function PlatformPenyediaLayananIndex({ kategori }: Props) {
   return (
     <KerangkaPlatform>
-      <Head title="Pembayaran & WhatsApp" />
+      <Head title="Pembayaran, WhatsApp & Email" />
 
       <div className="space-y-6">
         <KepalaHalaman
           tanpaBreadcrumb
-          judul="Pembayaran & WhatsApp"
+          judul="Pembayaran, WhatsApp & Email"
           deskripsi="Kredensial disimpan terenkripsi dan tidak pernah ditampilkan ulang. Isi ulang hanya bila ingin menggantinya."
         />
 
