@@ -1057,12 +1057,13 @@ Approval bersifat generik dan dapat digunakan oleh:
 
 ## 8.15 Notifikasi dan Eskalasi
 
-Channel awal:
+Tiga kanal (disetujui pemilik produk 24 September 2026):
 
-- In-app.
-- Email bila konfigurasi tersedia.
+- **In-app**, selalu tersedia.
+- **Email**, lewat penyedia email aktif di konsol platform (PRD 8.23).
+- **WhatsApp**, lewat penyedia WhatsApp aktif di konsol platform (PRD 8.23), ke nomor `Pengguna.Telepon`. Baris kanal ini hanya dibuat bila penyedia WhatsApp aktif, nomor pengguna valid, dan preferensinya tidak dimatikan. Penyedia resmi (Meta) membutuhkan template notifikasi yang disetujui Meta; tanpa itu pengiriman gagal dengan alasan yang tercatat. Notifikasi operasional ke staf bukan pesan pemasaran, jadi tidak tunduk pada konsen pemasaran, tetapi tetap mengikuti preferensi pengguna.
 
-Channel masa depan dapat ditambahkan tanpa mengubah domain utama.
+Kanal lain dapat ditambahkan tanpa mengubah domain utama.
 
 Event notifikasi:
 
@@ -1356,7 +1357,7 @@ Disetujui pemilik produk pada 24 September 2026.
 
 - Penyedia layanan luar milik platform dipilih dan dikonfigurasi di konsol platform (**Layanan Luar**, `/admin-platform/penyedia-layanan`), bukan lewat `.env`. Hanya admin super atau admin berizin `platform.penyedia-layanan.kelola` yang boleh membukanya.
 - **Payment gateway** untuk tagihan langganan: Midtrans, Xendit, Duitku, Tripay, iPaymu, DOKU, Stripe, dan Transfer Bank manual. Boleh lebih dari satu aktif; pelanggan memilih cara bayar saat membayar. Satu penyedia ditandai **utama** sebagai pilihan pertama. Status lunas hanya berasal dari webhook penyedia yang tanda tangannya sah, tidak dari parameter URL halaman kembali.
-- **WhatsApp** untuk pesan pemasaran: **resmi** (WhatsApp Cloud API milik Meta; template harus disetujui Meta) atau **tidak resmi** (Fonnte, Wablas, WAHA; memakai nomor WhatsApp biasa lewat pindai QR, tanpa persetujuan template). Hanya satu penyedia WhatsApp yang aktif. Penyedia tidak resmi ditandai jelas di konsol berikut risikonya: nomor bisa diblokir WhatsApp.
+- **WhatsApp** untuk pesan pemasaran dan notifikasi operasional (PRD 8.15): **resmi** (WhatsApp Cloud API milik Meta; template harus disetujui Meta) atau **tidak resmi** (Fonnte, Wablas, WAHA; memakai nomor WhatsApp biasa lewat pindai QR, tanpa persetujuan template). Hanya satu penyedia WhatsApp yang aktif. Penyedia tidak resmi ditandai jelas di konsol berikut risikonya: nomor bisa diblokir WhatsApp.
 - **Email** untuk seluruh surat sistem (reset kata sandi, notifikasi, email pemasaran): SMTP (Gmail/Google Workspace, email hosting, Zoho, atau relai SMTP penyedia mana pun), Amazon SES, serta lewat HTTP API: Brevo, SendGrid, Mailgun, Postmark, Resend. Jalur HTTP API disediakan karena shared hosting sering memblokir port SMTP keluar. Hanya satu penyedia email yang aktif; alamat dan nama pengirim diatur bersama kredensialnya. Tanpa penyedia aktif, email jatuh ke mailer cadangan dari konfigurasi (bawaan: ditulis ke log). Konsol menyediakan tombol kirim email uji ke alamat admin yang sedang masuk.
 - Tiap penyedia punya **mode uji (sandbox)** bila penyedianya menyediakan, dan tombol **uji kredensial** bila penyedianya punya panggilan murah untuk memeriksanya.
 - **Penyimpanan kredensial.** Kunci API harus bisa dibaca ulang untuk memanggil penyedia, jadi kredensial disimpan **terenkripsi** (AES-256 dengan `APP_KEY`), bukan di-hash. Yang di-hash hanyalah **sidik** kredensial (HMAC SHA-256) untuk menandai perubahan di audit. Nilai rahasia tidak pernah dikirim kembali ke peramban, tidak masuk audit, dan tidak dicatat di log; konsol hanya menampilkan tanda "tersimpan" dan empat karakter terakhir rahasia yang cukup panjang. Mengosongkan isian rahasia saat menyimpan berarti mempertahankan nilai lama. Kehilangan `APP_KEY` berarti kredensial harus diisi ulang.
