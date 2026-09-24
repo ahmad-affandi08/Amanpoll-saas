@@ -3806,6 +3806,33 @@ Jebakan yang ditemukan:
 - Test "login meregenerasi sesi" hampa: setiap permintaan test sudah mendapat Id sesi baru. Kini cookie sesi dibawa eksplisit.
 
 
+
+---
+
+# FASE 42 — Mesin kompresi berkas dan foto aset
+
+Aturan di PRD 11.1 (mesin kompresi) dan 8.4 "Foto Aset". Disetujui pemilik produk pada 24 September 2026. Tanpa dependensi baru: GD (dengan WebP), zlib, dan kanvas peramban sudah tersedia.
+
+Urutan: 42.01 dikerjakan lebih dulu; 42.02 dan 42.03 paralel sesudahnya.
+
+## 42.01 Mesin kompresi (fondasi)
+
+- [ ] Layanan pemampat bersama: gambar (orientasi, buang metadata, batas sisi, WebP, thumbnail), gzip untuk teks dan PDF yang hemat, lewati berkas yang sudah terkompresi; gagal tidak menggagalkan unggahan.
+- [ ] Kolom metode kompresi, ukuran asli, dan ukuran tersimpan pada `Berkas`; unduhan membuka gzip otomatis dan mengirim nama/MIME yang benar; endpoint thumbnail terotorisasi.
+- [ ] Berbagi salinan fisik untuk berkas identik dalam satu organisasi, dengan penghapusan fisik yang aman.
+- [ ] Pengecil gambar di peramban untuk semua unggahan gambar.
+
+## 42.02 Foto aset
+
+- [ ] Galeri foto aset dan foto utama di detail aset, thumbnail di daftar aset, izin tambah/hapus/utama.
+- [ ] Foto di layar Mode Lapangan yang menampilkan aset; teknisi yang ditugaskan menambah foto dari HP, termasuk offline.
+
+## 42.03 Kompresi di semua jalur penyimpanan
+
+- [ ] Semua jalur yang menulis ke disk penyimpanan memakai mesin kompresi (logo organisasi, media dan lead magnet pemasaran, ekspor laporan, cadangan, dan jalur lain yang ditemukan).
+- [ ] Perintah artisan pemadat berkas lama (pratinjau, per organisasi, idempoten, diaudit) dan laporan penghematan.
+- [ ] Panduan di `/dokumentasi` bila ada yang perlu diketahui pengguna.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
@@ -3896,6 +3923,8 @@ Jebakan yang ditemukan:
 40 Unit Pengelola
 ↓
 41 Login tanpa kode organisasi
+↓
+42 Mesin kompresi berkas dan foto aset
 ```
 
 Alasan urutan tersebut: setiap fase memakai fondasi dari fase sebelumnya. Dashboard berada dekat akhir karena dashboard harus membaca data transaksi yang sudah benar, bukan menjadi halaman demo yang lebih dulu dibuat.

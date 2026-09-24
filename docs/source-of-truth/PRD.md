@@ -611,6 +611,15 @@ Halaman detail aset harus menjadi pusat informasi:
 - Lampiran.
 - Audit yang diizinkan.
 
+### Foto Aset
+
+Disetujui pemilik produk pada 24 September 2026.
+
+- Setiap aset boleh punya **galeri foto** (paling banyak 10) dengan satu **foto utama** (`Aset.FotoUtamaBerkasId`). Foto disimpan sebagai lampiran berkategori `FotoAset` lewat Kolaborasi dan melewati mesin kompresi (11.1), termasuk thumbnail.
+- Foto utama tampil sebagai thumbnail di daftar aset, sebagai gambar besar di detail aset, dan di layar Mode Lapangan yang menampilkan aset (aset ditemukan sesudah pindai QR, riwayat aset, daftar aset pelapor, langkah "alat ditemukan"). Aset tanpa foto tetap menampilkan ikon 3D kategorinya.
+- Pemegang `Aset.Ubah` boleh menambah, menghapus, dan memilih foto utama. Teknisi yang sedang ditugaskan pada perintah kerja aktif untuk aset itu boleh **menambah** foto dari HP, termasuk saat offline (foto dikirim begitu sinyal kembali), tetapi tidak menghapus atau mengganti foto utama. Foto pertama otomatis menjadi foto utama.
+- Halaman QR publik tidak menampilkan foto aset.
+
 ### Aturan
 
 - Perubahan lokasi tidak menghapus histori.
@@ -1376,6 +1385,20 @@ Di Mode Lapangan (8.20), hasil pindai tampil sebagai lembar "Aset ditemukan" di 
 - Thumbnail boleh dibuat async.
 - Upload gagal tidak boleh meninggalkan transaksi bisnis setengah selesai.
 - Lampiran dapat digunakan lintas modul melalui relasi generik.
+
+### 11.1 Mesin kompresi berkas
+
+Disetujui pemilik produk pada 24 September 2026. **Setiap berkas yang disimpan sistem** — unggahan pengguna (lampiran, foto, logo, bukti, media pemasaran, lead magnet), berkas hasil sistem (ekspor laporan, cadangan), dan berkas lain di disk penyimpanan — melewati satu mesin kompresi bersama supaya hemat ruang disk, bandwidth, dan kuota hosting.
+
+- **Gambar** (JPEG, PNG, WebP, GIF statis, AVIF): orientasi diluruskan dari EXIF, metadata dibuang (termasuk lokasi GPS), sisi terpanjang dibatasi (bawaan 2560 px), lalu dikodekan ulang ke WebP (kualitas bawaan 80; transparansi dipertahankan). Hasil hanya dipakai bila lebih kecil dari aslinya. **Thumbnail** (bawaan 480 px) dibuat untuk tampilan daftar dan galeri. Format yang tidak bisa dibaca server (mis. HEIC) disimpan apa adanya.
+- **Berkas teks** (CSV, TXT, JSON, XML, log): dipadatkan gzip saat disimpan dan dibuka otomatis saat diunduh; pengguna selalu menerima berkas aslinya.
+- **PDF**: dipadatkan gzip saat disimpan bila menghemat minimal 10%; kalau tidak, disimpan apa adanya. Pemadatan ulang isi PDF (Ghostscript) tidak dipakai karena tidak tersedia di hosting.
+- **Berkas yang sudah terkompresi** (XLSX, DOCX, PPTX, ZIP, video, audio): disimpan apa adanya.
+- **Di peramban**, foto dari kamera HP dan gambar unggahan dikecilkan lebih dulu sebelum dikirim (kanvas bawaan peramban, tanpa pustaka baru), termasuk foto yang disimpan sementara di HP saat offline.
+- Metode kompresi, ukuran asli, dan ukuran tersimpan dicatat pada `Berkas`. Berkas identik (hash sama) dalam satu organisasi boleh berbagi satu salinan fisik; salinan fisik baru dihapus bila tidak ada lagi `Berkas` yang merujuknya.
+- Kegagalan kompresi tidak boleh menggagalkan unggahan: berkas disimpan apa adanya dan kegagalannya dicatat di log.
+- Berkas lama dipadatkan lewat perintah artisan eksplisit (pratinjau, per organisasi, idempoten, diaudit), bukan otomatis saat deploy.
+- Ambang dan kualitas diatur di konfigurasi aplikasi, bukan di kode.
 
 ---
 
