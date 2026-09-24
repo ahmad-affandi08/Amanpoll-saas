@@ -73,13 +73,33 @@ final class PenyediaLayananPlatformTest extends TestCase
         $halaman->assertOk()->assertDontSee(self::RAHASIA);
         $halaman->assertInertia(fn (AssertableInertia $inertia) => $inertia
             ->component('Platform/PenyediaLayanan/Index')
-            ->where('kategori.0.Kode', 'Pembayaran')
-            ->where('kategori.0.Penyedia.0.Kode', 'UjiBayarA')
-            ->where('kategori.0.Penyedia.0.Aktif', true)
-            ->where('kategori.0.Penyedia.0.Isian.0.Nilai', 'M-001')
-            ->where('kategori.0.Penyedia.0.Isian.1.Nilai', null)
-            ->where('kategori.0.Penyedia.0.Isian.1.Tersimpan', true)
-            ->where('kategori.0.Penyedia.0.Isian.1.Akhiran', '9f3a'));
+            ->where('kategori.0.Kode', 'Pembayaran'));
+
+        $penyedia = $this->penyediaDiHalaman($halaman->viewData('page'), 'Pembayaran', 'UjiBayarA');
+        $this->assertTrue($penyedia['Aktif']);
+        $this->assertSame('M-001', $penyedia['Isian'][0]['Nilai']);
+        $this->assertNull($penyedia['Isian'][1]['Nilai']);
+        $this->assertTrue($penyedia['Isian'][1]['Tersimpan']);
+        $this->assertSame('9f3a', $penyedia['Isian'][1]['Akhiran']);
+    }
+
+    /**
+     * Adapter sungguhan ikut terdaftar di katalog, jadi penyedia rekaan dicari lewat kodenya.
+     *
+     * @param  array<string, mixed>  $halaman
+     * @return array<string, mixed>
+     */
+    private function penyediaDiHalaman(array $halaman, string $kategori, string $kode): array
+    {
+        foreach ($halaman['props']['kategori'] as $jenis) {
+            foreach ($jenis['Kode'] === $kategori ? $jenis['Penyedia'] : [] as $penyedia) {
+                if ($penyedia['Kode'] === $kode) {
+                    return $penyedia;
+                }
+            }
+        }
+
+        $this->fail("Penyedia {$kode} tidak tampil di halaman.");
     }
 
     public function test_rahasia_kosong_mempertahankan_nilai_lama(): void

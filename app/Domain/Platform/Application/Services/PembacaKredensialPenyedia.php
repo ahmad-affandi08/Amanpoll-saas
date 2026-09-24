@@ -41,14 +41,14 @@ final class PembacaKredensialPenyedia
     /** @return list<string> */
     public function kodeAktif(KategoriPenyediaLayanan $kategori): array
     {
-        return PenyediaLayananPlatform::query()
+        $kode = PenyediaLayananPlatform::query()
             ->where('Kategori', $kategori->value)
             ->where('Aktif', true)
             ->orderByDesc('Utama')
             ->orderBy('Kode')
             ->pluck('Kode')
-            ->map(fn (mixed $kode): string => (string) $kode)
-            ->values()
             ->all();
+
+        return array_values(array_map(strval(...), $kode));
     }
 }
