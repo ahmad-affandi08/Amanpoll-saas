@@ -231,6 +231,9 @@ final class DemoAwalSeeder extends Seeder
      * Masing-masing mendapat aset, kategori keluhan, gudang, serta teknisi dan
      * koordinator yang perannya berlingkup unitnya sendiri, supaya pemisahan
      * antrian, penugasan, dan stok bisa dicoba langsung dari akun contoh.
+     * Hanya kedua bagian ini yang bertanda Mengelola Aset, dan setiap aset,
+     * kategori keluhan, dan gudang contoh (termasuk gudang utama dari langkah 9)
+     * menunjuk salah satunya: tidak ada data contoh yang jatuh ke antrian tanpa pemilik.
      * Peran Teknisi dan Koordinator diambil dari katalog peran awal, bukan
      * dibuat ulang di sini.
      */
@@ -266,6 +269,8 @@ final class DemoAwalSeeder extends Seeder
                 'Aset' => ['AST-FAS-001', 'Genset 250 kVA Gedung Pusat'],
                 'KategoriKeluhan' => ['KK-FAS', 'Listrik & Utilitas'],
                 'Gudang' => ['GDG-FAS', 'Gudang Teknik & Fasilitas'],
+                // Gudang suku cadang utama (langkah 9) menyimpan suku cadang mesin dan utilitas.
+                'GudangLain' => ['GDG-01'],
                 'Koordinator' => ['koordinator.teknik@amanpoll.test', 'Rudi Hartono'],
                 'Teknisi' => ['teknisi.teknik@amanpoll.test', 'Agus Setiawan'],
             ],
@@ -276,6 +281,7 @@ final class DemoAwalSeeder extends Seeder
                 'Aset' => ['AST-IT-001', 'Printer Jaringan Lantai 1'],
                 'KategoriKeluhan' => ['KK-IT', 'Komputer & Jaringan'],
                 'Gudang' => ['GDG-IT', 'Gudang IT'],
+                'GudangLain' => [],
                 'Koordinator' => ['koordinator.it@amanpoll.test', 'Maya Lestari'],
                 'Teknisi' => ['teknisi.it@amanpoll.test', 'Fajar Nugroho'],
             ],
@@ -316,6 +322,11 @@ final class DemoAwalSeeder extends Seeder
                 'Status' => 'Aktif',
                 'DiperbaruiPada' => now(),
             ]);
+
+            DB::table('Gudang')
+                ->where('OrganisasiId', $organisasiId)
+                ->whereIn('Kode', $satu['GudangLain'])
+                ->update(['UnitPengelolaId' => $unitPengelolaId]);
 
             foreach ([[$satu['Koordinator'], $peranKoordinator], [$satu['Teknisi'], $peranTeknisi]] as [[$email, $nama], $peranId]) {
                 $penggunaId = $this->simpan('Pengguna', ['OrganisasiId' => $organisasiId, 'Email' => $email], [
