@@ -127,7 +127,7 @@ function IsiKepala({ tanggal, tab, onTab, onCari, onSaring, saringAktif, tiket }
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2.5">
         <div className="min-w-0 flex-1">
-          <h1 className="text-[26px] leading-tight font-bold tracking-[-0.02em]">Tiket Saya</h1>
+          <h1 className="text-[26px] leading-tight font-extrabold tracking-[-0.02em]">Tiket Saya</h1>
           <p className="text-[13px] font-medium text-white/75 first-letter:uppercase">{tanggal}</p>
         </div>
         <TombolAppbar label="Cari tiket" ikon={Search} onClick={onCari} />

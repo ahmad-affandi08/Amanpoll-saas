@@ -6,6 +6,12 @@
 @import '@fontsource/ibm-plex-sans/700.css';
 @import '@fontsource/ibm-plex-mono/400.css';
 @import '@fontsource/ibm-plex-mono/500.css';
+/* Mode Lapangan (DESIGN §36.4); dasbor web tetap IBM Plex Sans. */
+@import '@fontsource/plus-jakarta-sans/400.css';
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/plus-jakarta-sans/800.css';
 
 /*
  * Amanpoll tidak punya dark mode (PRD 14 dan kriteria penerimaan 14), tetapi
@@ -22,6 +28,8 @@
     --font-sans:
         'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --font-lapangan:
+        'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
     --color-teknisi-900: #17324d;
     --color-teknisi-800: #1d4663;
@@ -250,6 +258,17 @@
  * pada kotak centang tercentang, `border-transparent` pada tab, dan penanda hari
  * ini di pemilih tanggal semuanya tampil abu-abu Garis-300.
  */
+/*
+ * KerangkaLapangan memasang data-tampilan="lapangan" pada <html> selama terpasang.
+ * Selektor di <html>, bukan kelas pada kerangka, supaya lembar bawah, dialog, dan
+ * toast yang dirender lewat portal di luar kerangka ikut memakai font Mode Lapangan.
+ */
+@layer base {
+    html[data-tampilan='lapangan'] body {
+        font-family: var(--font-lapangan);
+    }
+}
+
 @layer base {
     * {
         border-color: var(--border);

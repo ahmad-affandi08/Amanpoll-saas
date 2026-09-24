@@ -134,7 +134,7 @@ function IsiRiwayat({
           },
         ].map((satu, i) => (
           <div key={satu.label} className={cn('px-2', i > 0 && 'border-l-[1.5px] border-lapangan-garis-2')}>
-            <strong className="block text-[22px] leading-tight font-bold tracking-[-0.02em] tabular-nums">
+            <strong className="block text-[22px] leading-tight font-extrabold tracking-[-0.02em] tabular-nums">
               {satu.nilai}
             </strong>
             <small className="mt-0.5 block text-xs leading-tight font-semibold text-lapangan-teks-3">

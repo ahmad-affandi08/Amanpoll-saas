@@ -294,7 +294,9 @@ function KepalaHero(props: PropsHero) {
             {avatar && <Avatar nama={auth.pengguna?.Nama} url={auth.pengguna?.AvatarUrl} />}
             <div className="min-w-0 flex-1">
               {sapaan && <p className="text-[13px] font-medium text-white/75">{sapaan}</p>}
-              <h1 className="truncate text-[19px] leading-tight font-bold tracking-[-0.01em]">{judul}</h1>
+              <h1 className="truncate text-[19px] leading-tight font-extrabold tracking-[-0.01em]">
+                {judul}
+              </h1>
               {subjudul && <p className="mt-px text-[13px] font-medium text-white/75">{subjudul}</p>}
             </div>
             {lonceng && (
@@ -498,6 +500,14 @@ function KerangkaDalam(props: PropsKerangkaLapangan) {
 
 /** Pembungkus luar hanya memasang penyedia sinkronisasi offline; kerangkanya sendiri ada di dalam. */
 export default function KerangkaLapangan(props: PropsKerangkaLapangan) {
+  // Font Mode Lapangan dipasang di <html> agar konten portal (lembar bawah, toast) ikut memakainya.
+  useEffect(() => {
+    document.documentElement.dataset.tampilan = 'lapangan';
+    return () => {
+      delete document.documentElement.dataset.tampilan;
+    };
+  }, []);
+
   return (
     <PenyediaSinkronisasiOffline>
       <KerangkaDalam {...props} />

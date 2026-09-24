@@ -155,7 +155,7 @@ function IsiAkun() {
               key={satu.Label}
               className={cn('text-center', i > 0 && 'border-l-[1.5px] border-lapangan-garis-2')}
             >
-              <strong className="block text-[22px] leading-tight font-bold tracking-[-0.02em] tabular-nums">
+              <strong className="block text-[22px] leading-tight font-extrabold tracking-[-0.02em] tabular-nums">
                 {satu.Nilai}
               </strong>
               <span className="text-[12.5px] font-semibold text-lapangan-teks-3">{satu.Label}</span>

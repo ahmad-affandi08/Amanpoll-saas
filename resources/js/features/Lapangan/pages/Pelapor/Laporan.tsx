@@ -45,7 +45,7 @@ export default function LaporanPelapor() {
       navBawah
       kembali={false}
       panjang
-      judul={<span className="pl-1 text-[22px] font-bold">Laporan Saya</span>}
+      judul={<span className="pl-1 text-[22px] font-extrabold">Laporan Saya</span>}
       subjudul={<span className="pl-1">{props.lokasi?.Label ?? 'Semua laporanmu'}</span>}
       aksiKanan={
         <TombolAppbar

@@ -138,10 +138,10 @@ font-family:
   sans-serif;
 ```
 
-Tidak menggunakan:
+Dasbor web tidak menggunakan:
 
 - Inter.
-- Plus Jakarta Sans.
+- Plus Jakarta Sans (khusus Mode Lapangan, §36.4).
 - Roboto.
 - Poppins.
 
@@ -1526,7 +1526,7 @@ Token dipasang di `resources/css/app.css` dengan awalan `lapangan-` supaya tidak
 | `lapangan-latar` | `#F2F5F8` | Latar layar |
 
 - Gradien hero: `radial-gradient(120% 90% at 100% 0%, #2A7BB0, transparent 55%), linear-gradient(160deg, #0B2239, #12324F 45%, #1F5F8B)`.
-- Font Mode Lapangan: **Plus Jakarta Sans** (400–800). Paket `@fontsource/plus-jakarta-sans` adalah dependensi npm baru dan **wajib disetujui pemilik produk sebelum dipasang**. Sampai disetujui, pakai IBM Plex Sans dengan tata letak yang sama. Dasbor web tetap IBM Plex Sans.
+- Font Mode Lapangan: **Plus Jakarta Sans** (400–800), paket `@fontsource/plus-jakarta-sans`, disetujui pemilik produk pada 24 September 2026. Font dipasang lewat atribut `data-tampilan="lapangan"` pada `<html>` selama `KerangkaLapangan` terpasang, sehingga konten portal (lembar bawah, dialog, toast) ikut memakainya. Dasbor web tetap IBM Plex Sans.
 - Angka dan jam penting besar dan tebal (22–24px, 800) dengan `tabular-nums`. Teks isi 15px. Minimum 12px.
 
 ## 36.5 Ikon

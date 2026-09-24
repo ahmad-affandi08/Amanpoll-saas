@@ -66,7 +66,7 @@ function TitikJam({ titik, kanan = false }: { titik: TitikRute; kanan?: boolean 
     <div className={cn(kanan && 'text-right')}>
       <strong
         className={cn(
-          'block text-[22px] leading-[1.1] font-bold tracking-[-0.02em] tabular-nums',
+          'block text-[22px] leading-[1.1] font-extrabold tracking-[-0.02em] tabular-nums',
           titik.merah ? 'text-lapangan-merah-700' : 'text-lapangan-teks',
         )}
       >

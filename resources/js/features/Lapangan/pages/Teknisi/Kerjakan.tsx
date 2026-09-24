@@ -619,7 +619,7 @@ function IsianButir({
             onChange={(event) =>
               onUbah({ NilaiAngka: event.target.value === '' ? null : Number(event.target.value) })
             }
-            className="w-full min-w-0 [appearance:textfield] bg-transparent text-[32px] leading-none font-bold tracking-[-0.02em] tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-full min-w-0 [appearance:textfield] bg-transparent text-[32px] leading-none font-extrabold tracking-[-0.02em] tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             placeholder="0"
             autoFocus
           />

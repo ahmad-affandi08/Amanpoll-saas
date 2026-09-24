@@ -30,7 +30,7 @@ export default function AsetPelapor() {
       kembali={false}
       panjang={props.bolehLihat}
       judul={
-        <span className="pl-1 text-[22px] font-bold">
+        <span className="pl-1 text-[22px] font-extrabold">
           {lokasi ? `Aset ${lokasi.Nama}` : 'Aset di dekatmu'}
         </span>
       }

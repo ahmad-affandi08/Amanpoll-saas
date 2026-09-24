@@ -3534,8 +3534,8 @@ Batasan yang tidak boleh dilanggar:
   pemiliknya (Pemeliharaan, Aset, Persediaan, Sinkronisasi).
 - Infrastruktur offline FASE 20 (antrian, paket, konflik, hook `use-sinkronisasi-offline`) dipakai ulang, tidak ditulis ulang.
 - Penentuan pengguna lapangan memakai penanda pada `Peran`, bukan kode peran harfiah.
-- Dependensi baru butuh persetujuan pemilik produk: font `@fontsource/plus-jakarta-sans` (sampai disetujui pakai IBM Plex
-  Sans), dan pustaka pemindai QR apa pun (bawaannya BarcodeDetector peramban + isian kode). Ikon 3D Fluent Emoji (MIT)
+- Dependensi baru butuh persetujuan pemilik produk. Font `@fontsource/plus-jakarta-sans` sudah disetujui (24 September 2026)
+  dan hanya dipakai Mode Lapangan. Pustaka pemindai QR apa pun tetap butuh persetujuan (bawaannya BarcodeDetector peramban + isian kode). Ikon 3D Fluent Emoji (MIT)
   adalah berkas statis di `public/aset/3d/`, bukan paket; salin hanya yang dipakai, bersama lisensinya.
 - Rute di bawah `/lapangan`, didaftarkan di `app/Domain/Sinkronisasi/routes.php`, domain yang sudah memiliki ruang kerja
   teknisi offline. Membuat domain baru di `app/Domain` butuh persetujuan.

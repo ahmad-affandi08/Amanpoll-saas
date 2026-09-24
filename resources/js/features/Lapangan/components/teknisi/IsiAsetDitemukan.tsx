@@ -110,7 +110,7 @@ export function IsiAsetDitemukan({
               {chip}
             </ChipStatus>
           )}
-          <p className="mt-1.5 text-[22px] leading-tight font-bold tracking-[-0.01em]">{aset.Nama}</p>
+          <p className="mt-1.5 text-[22px] leading-tight font-extrabold tracking-[-0.01em]">{aset.Nama}</p>
           <p className="truncate text-sm text-lapangan-teks-3">
             {[aset.KodeAset, teksLokasi(aset.Lokasi)].filter(Boolean).join(' · ')}
           </p>

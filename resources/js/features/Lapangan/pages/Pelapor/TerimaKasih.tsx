@@ -42,7 +42,7 @@ export default function TerimaKasihPelapor() {
             <Ikon3D nama="sparkles" ukuran={54} segera />
           </span>
         </div>
-        <h1 className="mt-7 text-[25px] font-bold tracking-[-0.01em]">
+        <h1 className="mt-7 text-[25px] font-extrabold tracking-[-0.01em]">
           Terima kasih, {namaDepan(props.auth.pengguna?.Nama) || 'kamu'}!
         </h1>
         <p className="mt-2 text-[15px] text-lapangan-teks-3">
