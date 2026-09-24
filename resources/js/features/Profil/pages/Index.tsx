@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import type { Pengguna } from '@/features/Pengguna/types';
 import { ruteProfil } from '@/features/Profil/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { KelolaTandaTangan } from '@/components/shared/KelolaTandaTangan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
@@ -161,10 +162,21 @@ export default function ProfilIndex({ pengguna, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title="Profil" />
-      <KepalaHalaman judul="Profil" deskripsi="Kelola data diri, kata sandi, dan perangkat Anda." />
+      <KepalaHalaman
+        judul="Profil"
+        deskripsi="Kelola data diri, kata sandi, tanda tangan, dan perangkat Anda."
+      />
       <div className="grid gap-4 md:grid-cols-2">
         <FormProfil pengguna={pengguna} wajib={wajib.profil} />
         <FormKataSandi wajib={wajib.kataSandi} />
+        <Card>
+          <CardHeader>
+            <CardTitle>Tanda Tangan Saya</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <KelolaTandaTangan varian="dasbor" />
+          </CardContent>
+        </Card>
         <div className="md:col-span-2">
           <KartuPerangkat pengguna={pengguna} />
         </div>

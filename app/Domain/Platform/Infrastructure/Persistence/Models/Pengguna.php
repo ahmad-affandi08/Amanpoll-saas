@@ -7,6 +7,7 @@ namespace App\Domain\Platform\Infrastructure\Persistence\Models;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\RiwayatPenanggungJawabAset;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAkses;
+use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuKerja;
 use App\Shared\Infrastructure\Persistence\MenyimpanWaktuDalamUtc;
@@ -45,6 +46,7 @@ final class Pengguna extends Authenticatable
         'KataSandi',
         'EmailTerverifikasiPada',
         'AvatarUrl',
+        'TandaTanganBerkasId',
         'NomorPegawai',
         'Jabatan',
         'JenisPengguna',
@@ -99,6 +101,16 @@ final class Pengguna extends Authenticatable
     public function organisasi(): BelongsTo
     {
         return $this->belongsTo(Organisasi::class, 'OrganisasiId', 'Id');
+    }
+
+    /**
+     * Tanda tangan tersimpan yang berlaku sekarang (PRD 8.22).
+     *
+     * @return BelongsTo<Berkas, $this>
+     */
+    public function tandaTangan(): BelongsTo
+    {
+        return $this->belongsTo(Berkas::class, 'TandaTanganBerkasId', 'Id');
     }
 
     /** @return BelongsTo<UnitOrganisasi, $this> */

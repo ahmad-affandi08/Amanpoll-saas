@@ -5,6 +5,8 @@ export interface PenggunaAuth {
   OrganisasiId: string;
   AvatarUrl?: string | null;
   Jabatan?: string | null;
+  /** Punya tanda tangan tersimpan di profil (PRD 8.22). */
+  PunyaTandaTangan?: boolean;
   organisasi?: {
     Id: string;
     Nama: string;

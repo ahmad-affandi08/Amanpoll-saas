@@ -17,6 +17,7 @@ use App\Domain\Platform\Http\Controllers\PenggunaPeranController;
 use App\Domain\Platform\Http\Controllers\PeranController;
 use App\Domain\Platform\Http\Controllers\ProfilController;
 use App\Domain\Platform\Http\Controllers\RiwayatPenggunaController;
+use App\Domain\Platform\Http\Controllers\TandaTanganProfilController;
 use App\Domain\Platform\Http\Controllers\UnitOrganisasiController;
 use Illuminate\Support\Facades\Route;
 
@@ -101,4 +102,9 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::get('/cari', PencarianGlobalController::class)->name('cari');
     Route::get('/dokumentasi', DokumentasiController::class)->name('dokumentasi.index');
     Route::get('/dokumentasi/{halaman}', DokumentasiController::class)->name('dokumentasi.halaman');
+
+    // Tanda tangan tersimpan (PRD 8.22): dipakai profil dasbor dan Akun Mode Lapangan.
+    Route::get('/profil/tanda-tangan', [TandaTanganProfilController::class, 'lihat'])->name('profil.tanda-tangan.lihat');
+    Route::post('/profil/tanda-tangan', [TandaTanganProfilController::class, 'simpan'])->name('profil.tanda-tangan.simpan');
+    Route::delete('/profil/tanda-tangan', [TandaTanganProfilController::class, 'hapus'])->name('profil.tanda-tangan.hapus');
 });

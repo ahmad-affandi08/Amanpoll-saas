@@ -9,7 +9,8 @@ import type { MutasiOffline, OperasiOffline } from '@/features/Sinkronisasi/type
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { Ikon3D, WadahIkon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
-import { BarisDaftar, Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
+import { BarisDaftar, JudulBagian, Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
+import { KelolaTandaTangan } from '@/components/shared/KelolaTandaTangan';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
 import { useKeluarLapangan } from '@/features/Lapangan/hooks/use-keluar-lapangan';
 import type { PropsHalamanAkun } from '@/features/Lapangan/types';
@@ -211,6 +212,11 @@ function IsiAkun() {
             onClick={beralih ? undefined : bukaDasbor}
           />
         )}
+      </Kartu>
+
+      <JudulBagian judul="Tanda tangan saya" />
+      <Kartu pad>
+        <KelolaTandaTangan varian="lapangan" />
       </Kartu>
 
       <Kartu className="overflow-hidden">

@@ -69,6 +69,8 @@ final class ArahkanPenggunaLapangan
         'kolaborasi/berkas/*/unduh',
         // Thumbnail foto (grid foto tiket, foto aset) dimuat `<img>` tanpa header JSON (PRD 8.4, 11.1).
         'kolaborasi/berkas/*/thumbnail',
+        // Gambar tanda tangan tersimpan dimuat `<img>` di halaman Akun Mode Lapangan (PRD 8.22).
+        'profil/tanda-tangan',
         'cari',
         'notifikasi/ringkasan',
         'logout',

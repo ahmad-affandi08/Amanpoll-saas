@@ -38,6 +38,8 @@ final class HandleInertiaRequests extends Middleware
                     'OrganisasiId' => $pengguna->OrganisasiId,
                     'AvatarUrl' => $pengguna->AvatarUrl,
                     'Jabatan' => $pengguna->Jabatan,
+                    // Layar konfirmasi memakai ini untuk memutuskan perlu menggambar atau cukup satu ketukan (PRD 8.22).
+                    'PunyaTandaTangan' => $pengguna->TandaTanganBerkasId !== null,
                     'organisasi' => $pengguna->organisasi ? [
                         'Id' => $pengguna->organisasi->Id,
                         'Nama' => $pengguna->organisasi->Nama,
