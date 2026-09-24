@@ -99,7 +99,7 @@ export function Combobox({
           aria-expanded={terbuka}
           disabled={disabled}
           className={cn(
-            'w-full justify-between font-normal',
+            'w-full justify-between px-2.5 text-sm font-normal',
             !terpilih && 'text-muted-foreground',
             className,
           )}

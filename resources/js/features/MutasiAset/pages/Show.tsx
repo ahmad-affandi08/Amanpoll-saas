@@ -39,14 +39,16 @@ interface Props {
   wajib: Record<string, AturanWajib>;
 }
 
-const VARIAN_BADGE_DETAIL: Record<StatusDetailMutasiAset, 'sukses' | 'netral' | 'perhatian' | 'info' | 'bahaya'> =
-  {
-    Menunggu: 'perhatian',
-    Disetujui: 'info',
-    Ditolak: 'bahaya',
-    Selesai: 'sukses',
-    Dibatalkan: 'netral',
-  };
+const VARIAN_BADGE_DETAIL: Record<
+  StatusDetailMutasiAset,
+  'sukses' | 'netral' | 'perhatian' | 'info' | 'bahaya'
+> = {
+  Menunggu: 'perhatian',
+  Disetujui: 'info',
+  Ditolak: 'bahaya',
+  Selesai: 'sukses',
+  Dibatalkan: 'netral',
+};
 
 /** Keputusan masih bisa diubah selama aset belum benar-benar berpindah. */
 const STATUS_DETAIL_TERBUKA: StatusDetailMutasiAset[] = ['Menunggu', 'Disetujui', 'Ditolak'];
@@ -92,8 +94,8 @@ function DialogTolakAset({ detail, wajib }: { detail: DetailMutasiAset; wajib: A
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              Aset ini tidak ikut berpindah saat mutasi dieksekusi; permintaannya sendiri tetap berjalan
-              untuk aset yang lain.
+              Aset ini tidak ikut berpindah saat mutasi dieksekusi; permintaannya sendiri tetap berjalan untuk
+              aset yang lain.
             </p>
             <DialogFooter>
               <Button type="submit" variant="destructive" disabled={form.processing}>
@@ -129,12 +131,11 @@ function PanelPindai({ permintaan, wajib }: { permintaan: PermintaanMutasiAset; 
   ).length;
 
   return (
-    <div className="rounded-[9px] border border-border bg-card p-4">
+    <div className="rounded-md border border-border bg-card px-5 py-4">
       <h2 className="mb-1 text-sm font-semibold text-foreground">Verifikasi Pengambilan</h2>
       <p className="mb-3 text-sm text-muted-foreground">
-        Pindai QR/barcode yang menempel di aset saat barangnya diambil. Kode di luar permintaan ini
-        ditolak, sehingga alat sejenis tidak tertukar. {terverifikasi} dari {perluDiambil} aset sudah
-        terverifikasi.
+        Pindai QR/barcode yang menempel di aset saat barangnya diambil. Kode di luar permintaan ini ditolak,
+        sehingga alat sejenis tidak tertukar. {terverifikasi} dari {perluDiambil} aset sudah terverifikasi.
       </p>
       <AturanWajibProvider aturan={wajib}>
         <form onSubmit={submit} className="flex items-end gap-2">
@@ -225,11 +226,7 @@ export default function MutasiAsetShow({ permintaan, aset, daftarJenis, wajib }:
   const bolehMemutuskan = permintaan.Status === 'Menunggu' || permintaan.Status === 'Disetujui';
 
   const setujuiDetail = (detailId: string) =>
-    router.post(
-      ruteMutasiAset.putuskanDetail(detailId),
-      { Disetujui: true },
-      { preserveScroll: true },
-    );
+    router.post(ruteMutasiAset.putuskanDetail(detailId), { Disetujui: true }, { preserveScroll: true });
   const hapusDetail = async (detailId: string) => {
     if (
       !(await konfirmasi({
@@ -271,7 +268,7 @@ export default function MutasiAsetShow({ permintaan, aset, daftarJenis, wajib }:
   return (
     <KerangkaAplikasi>
       <Head title={permintaan.Nomor} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul={labelJenis}
           labelBreadcrumb={permintaan.Nomor}
@@ -303,30 +300,28 @@ export default function MutasiAsetShow({ permintaan, aset, daftarJenis, wajib }:
           }
         />
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-[9px] border border-border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Diminta Oleh</p>
-            <p className="text-sm font-medium text-foreground">{permintaan.NamaDimintaOleh ?? '—'}</p>
+        <dl className="grid gap-4 rounded-md border border-border bg-card px-5 py-4 sm:grid-cols-3">
+          <div>
+            <dt className="text-[13px] text-grafit-700">Diminta Oleh</dt>
+            <dd className="text-sm font-medium text-foreground">{permintaan.NamaDimintaOleh ?? '—'}</dd>
           </div>
-          <div className="rounded-[9px] border border-border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Diminta Pada</p>
-            <p className="text-sm font-medium text-foreground">
+          <div>
+            <dt className="text-[13px] text-grafit-700">Diminta Pada</dt>
+            <dd className="text-sm font-medium text-foreground">
               {new Date(permintaan.DimintaPada).toLocaleString('id-ID')}
-            </p>
+            </dd>
           </div>
-          <div className="rounded-[9px] border border-border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Selesai Pada</p>
-            <p className="text-sm font-medium text-foreground">
+          <div>
+            <dt className="text-[13px] text-grafit-700">Selesai Pada</dt>
+            <dd className="text-sm font-medium text-foreground">
               {permintaan.SelesaiPada ? new Date(permintaan.SelesaiPada).toLocaleString('id-ID') : '—'}
-            </p>
+            </dd>
           </div>
-        </div>
+        </dl>
 
-        {permintaan.Status === 'Disetujui' && (
-          <PanelPindai permintaan={permintaan} wajib={wajib.pindai} />
-        )}
+        {permintaan.Status === 'Disetujui' && <PanelPindai permintaan={permintaan} wajib={wajib.pindai} />}
 
-        <div className="rounded-[9px] border border-border bg-card p-4">
+        <div className="rounded-md border border-border bg-card px-5 py-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Daftar Aset</h2>
             {permintaan.Status === 'Draft' && (
@@ -371,9 +366,7 @@ export default function MutasiAsetShow({ permintaan, aset, daftarJenis, wajib }:
                           Setujui
                         </Button>
                       )}
-                      {d.Status !== 'Ditolak' && (
-                        <DialogTolakAset detail={d} wajib={wajib.keputusan} />
-                      )}
+                      {d.Status !== 'Ditolak' && <DialogTolakAset detail={d} wajib={wajib.keputusan} />}
                     </>
                   )}
                   {permintaan.Status === 'Draft' && (

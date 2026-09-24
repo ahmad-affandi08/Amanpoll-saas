@@ -85,13 +85,13 @@ export default function PemasaranEksperimen({ eksperimen, pilihan, wajib }: Prop
         deskripsi="Pengunjung yang sama selalu melihat varian yang sama, dan pemenang tidak pernah dinyatakan sebelum sampel minimumnya tercapai."
         tanpaBreadcrumb
         aksi={<DialogFormEksperimen eksperimen={null} pilihan={pilihan} wajib={wajib.eksperimen} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {eksperimen.length === 0 ? (
         <p className="text-sm text-muted-foreground">Belum ada eksperimen.</p>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {eksperimen.map((satu) => (
             <KartuEksperimen key={satu.Id} eksperimen={satu} pilihan={pilihan} wajib={wajib.eksperimen} />
           ))}
@@ -119,7 +119,7 @@ function KartuEksperimen({
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <CardTitle className="text-base">{eksperimen.Nama}</CardTitle>
+          <CardTitle>{eksperimen.Nama}</CardTitle>
           <p className="font-mono text-xs text-muted-foreground">
             {eksperimen.Kode} · {eksperimen.Target} · metrik {eksperimen.LabelMetrik}
           </p>
@@ -198,7 +198,7 @@ function KartuEksperimen({
           })}
         </div>
 
-        <div className="rounded-lg border border-dashed p-3 text-sm">
+        <div className="rounded-md border border-dashed p-3 text-sm">
           {eksperimen.Penilaian.BolehDinyatakan ? (
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-foreground">
@@ -390,7 +390,7 @@ function DialogFormEksperimen({
             <fieldset className="grid gap-3">
               <legend className="text-sm font-medium">Varian</legend>
               {form.data.Varian.map((satu, indeks) => (
-                <div key={indeks} className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[4rem_1fr_5rem]">
+                <div key={indeks} className="grid gap-2 rounded-md border p-3 sm:grid-cols-[4rem_1fr_5rem]">
                   <div className="grid gap-1.5">
                     <Label htmlFor={`Kode-${indeks}`}>Kode</Label>
                     <Input

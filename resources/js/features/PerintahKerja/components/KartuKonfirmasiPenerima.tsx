@@ -25,8 +25,8 @@ export function KartuKonfirmasiPenerima({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
-        <CardTitle className="text-base font-semibold">Konfirmasi Penerima</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between gap-2">
+        <CardTitle>Konfirmasi Penerima</CardTitle>
         {berlaku ? (
           <Badge variant="sukses">Diterima</Badge>
         ) : perintahKerja.MenungguKonfirmasiPenerima ? (
@@ -49,7 +49,7 @@ export function KartuKonfirmasiPenerima({
 
         {riwayat.length > 0 && (
           <div className="border-t border-border pt-3">
-            <div className="mb-2 text-xs font-semibold text-muted-foreground">Jawaban sebelumnya</div>
+            <div className="mb-2 text-xs font-medium text-grafit-500">Jawaban sebelumnya</div>
             <ul className="space-y-2">
               {riwayat.map((satu) => (
                 <li key={satu.Id} className="text-xs">

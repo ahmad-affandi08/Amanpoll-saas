@@ -6,7 +6,8 @@ import type { Aset, RiwayatPemeliharaanAset } from '@/features/Aset/types';
 import { ruteAset } from '@/features/Aset/api';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
-import { BarisKosong, KartuAngka, KepalaBagian, durasi, tanggal } from '@/components/shared/riwayat';
+import { BarisKosong, KepalaBagian, durasi, tanggal } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 
 export function TabPemeliharaan({ aset }: { aset: Aset }) {
   const [data, setData] = useState<RiwayatPemeliharaanAset | null>(null);
@@ -31,17 +32,20 @@ export function TabPemeliharaan({ aset }: { aset: Aset }) {
   const { ringkasan, keluhan, perintahKerja, inspeksi, waktuHenti } = data;
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka label="Keluhan" nilai={ringkasan.JumlahKeluhan} />
-        <KartuAngka label="Perintah Kerja" nilai={ringkasan.JumlahPerintahKerja} />
-        <KartuAngka label="Total Waktu Henti" nilai={durasi(ringkasan.TotalMenitHenti)} />
-        <KartuAngka
+    <div className="space-y-6">
+      <DeretStatistik kolom={4}>
+        <KartuStatistik menyatu label="Keluhan" nilai={ringkasan.JumlahKeluhan} />
+        <KartuStatistik menyatu label="Perintah Kerja" nilai={ringkasan.JumlahPerintahKerja} />
+        <KartuStatistik menyatu label="Total Waktu Henti" nilai={durasi(ringkasan.TotalMenitHenti)} />
+        <KartuStatistik
+          menyatu
           label="Terakhir Dikerjakan"
           nilai={tanggal(ringkasan.TerakhirDikerjakanPada)}
-          catatan={ringkasan.JumlahInspeksi > 0 ? `${ringkasan.JumlahInspeksi} inspeksi tercatat` : undefined}
+          keterangan={
+            ringkasan.JumlahInspeksi > 0 ? `${ringkasan.JumlahInspeksi} inspeksi tercatat` : undefined
+          }
         />
-      </div>
+      </DeretStatistik>
 
       <section className="space-y-1">
         <KepalaBagian judul="Keluhan" ditampilkan={keluhan.data.length} total={keluhan.total} />

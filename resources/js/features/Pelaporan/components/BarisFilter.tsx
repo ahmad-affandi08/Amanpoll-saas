@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
-import { CalendarRange, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { FilterMetrik, PilihanDimensi } from '@/features/Pelaporan/types';
 import { Combobox } from '@/components/ui/combobox';
@@ -10,6 +9,7 @@ import { opsiDari, opsiUnitPengelola, TANPA_PILIHAN } from '@/lib/pilihan';
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { tambahHari, tanggalHariIni } from '@/lib/waktu';
+import { cn } from '@/lib/utils';
 
 const PRESET = [
   { label: '7 hari', hari: 7 },
@@ -67,87 +67,103 @@ export function BarisFilter({
 
   const pilihSatu = (nilai: string) => (nilai === 'semua' ? [] : [nilai]);
 
+  const presetAktif = PRESET.find((preset) => {
+    const rentang = tanggalMundur(preset.hari);
+
+    return rentang.Dari === dari && rentang.Sampai === sampai;
+  })?.hari;
+
   return (
-    <div className="flex flex-wrap items-end gap-3 rounded-[9px] border border-border bg-card p-3">
-      <div className="flex items-end gap-1.5">
+    <div className="flex flex-wrap items-center gap-2 border-b border-border pb-5">
+      <div
+        role="group"
+        aria-label="Rentang cepat"
+        className="inline-flex overflow-hidden rounded-sm border border-input"
+      >
         {PRESET.map((preset) => (
-          <Button
+          <button
             key={preset.hari}
             type="button"
-            variant="outline"
-            size="sm"
+            aria-pressed={presetAktif === preset.hari}
             onClick={() => terapkan(tanggalMundur(preset.hari))}
+            className={cn(
+              'min-h-11 border-r border-input px-3 text-[13px] text-grafit-700 last:border-r-0 hover:bg-permukaan-50 hover:text-foreground focus-visible:relative focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:h-8 sm:min-h-0',
+              presetAktif === preset.hari &&
+                'bg-permukaan-100 font-medium text-foreground hover:bg-permukaan-100',
+            )}
           >
             {preset.label}
-          </Button>
+          </button>
         ))}
       </div>
 
-      <div className="space-y-1">
-        <Label className="text-xs">Rentang tanggal</Label>
-        <DateRangePicker
-          dari={dari}
-          sampai={sampai}
-          onChange={(rentang) => terapkan({ Dari: rentang.dari ?? '', Sampai: rentang.sampai ?? '' })}
-          className="w-[19rem]"
-        />
-      </div>
+      <Label htmlFor="filter-rentang" className="sr-only">
+        Rentang tanggal
+      </Label>
+      <DateRangePicker
+        id="filter-rentang"
+        dari={dari}
+        sampai={sampai}
+        onChange={(rentang) => terapkan({ Dari: rentang.dari ?? '', Sampai: rentang.sampai ?? '' })}
+        className="w-[16.5rem]"
+      />
 
-      <div className="space-y-1">
-        <Label className="text-xs">Unit organisasi</Label>
-        <Combobox
-          nilai={filter.UnitOrganisasiId[0] ?? 'semua'}
-          onPilih={(nilai) => terapkan({ UnitOrganisasiId: pilihSatu(nilai) })}
-          opsi={[{ nilai: 'semua', label: 'Semua unit' }, ...opsiDari(pilihanUnit, (unit) => unit.Nama)]}
-          placeholder="Semua unit"
-          className="w-[11rem]"
-        />
-      </div>
+      <Label htmlFor="filter-unit" className="sr-only">
+        Unit organisasi
+      </Label>
+      <Combobox
+        id="filter-unit"
+        nilai={filter.UnitOrganisasiId[0] ?? 'semua'}
+        onPilih={(nilai) => terapkan({ UnitOrganisasiId: pilihSatu(nilai) })}
+        opsi={[{ nilai: 'semua', label: 'Semua unit' }, ...opsiDari(pilihanUnit, (unit) => unit.Nama)]}
+        placeholder="Semua unit"
+        className="w-[9rem]"
+      />
 
-      <div className="space-y-1">
-        <Label className="text-xs">Lokasi</Label>
-        <Combobox
-          nilai={filter.LokasiId[0] ?? 'semua'}
-          onPilih={(nilai) => terapkan({ LokasiId: pilihSatu(nilai) })}
-          opsi={[
-            { nilai: 'semua', label: 'Semua lokasi' },
-            ...opsiDari(pilihanLokasi, (lokasi) => lokasi.Nama),
-          ]}
-          placeholder="Semua lokasi"
-          className="w-[11rem]"
-        />
-      </div>
+      <Label htmlFor="filter-lokasi" className="sr-only">
+        Lokasi
+      </Label>
+      <Combobox
+        id="filter-lokasi"
+        nilai={filter.LokasiId[0] ?? 'semua'}
+        onPilih={(nilai) => terapkan({ LokasiId: pilihSatu(nilai) })}
+        opsi={[
+          { nilai: 'semua', label: 'Semua lokasi' },
+          ...opsiDari(pilihanLokasi, (lokasi) => lokasi.Nama),
+        ]}
+        placeholder="Semua lokasi"
+        className="w-[9rem]"
+      />
 
       {pilihanUnitPengelola.length > 0 && (
-        <div className="space-y-1">
-          <Label className="text-xs">Unit pengelola</Label>
+        <>
+          <Label htmlFor="filter-unit-pengelola" className="sr-only">
+            Unit pengelola
+          </Label>
           <Combobox
+            id="filter-unit-pengelola"
             nilai={filter.UnitPengelolaId?.[0] ?? TANPA_PILIHAN}
             onPilih={(nilai) => terapkan({ UnitPengelolaId: nilai === TANPA_PILIHAN ? [] : [nilai] })}
             opsi={opsiUnitPengelola(pilihanUnitPengelola, 'Semua unit pengelola')}
             placeholder="Semua unit pengelola"
-            className="w-[11rem]"
+            className="w-[12.5rem]"
           />
-        </div>
+        </>
       )}
 
       <Button
         type="button"
         variant="ghost"
         size="sm"
+        title="Filter di baris ini berlaku untuk seluruh angka di bawahnya."
         onClick={() =>
           terapkan({ ...tanggalMundur(30), UnitOrganisasiId: [], LokasiId: [], UnitPengelolaId: [] })
         }
         className="ml-auto"
       >
-        <RotateCcw className="size-4" />
+        <RotateCcw className="size-3.5" />
         Atur ulang
       </Button>
-
-      <p className="w-full text-xs text-muted-foreground">
-        <CalendarRange className="mr-1 inline size-3.5 align-text-bottom" />
-        Filter ini berlaku untuk seluruh angka di bawahnya.
-      </p>
     </div>
   );
 }

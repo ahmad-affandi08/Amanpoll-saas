@@ -154,11 +154,11 @@ export default function PemasaranAturanSkorIndex({
         deskripsi="Bobot tiap sinyal terhadap skor prospek. Angkanya tidak pernah ditulis di kode program."
         tanpaBreadcrumb
         aksi={<DialogAturan aturan={null} pilihan={pilihan} wajib={wajib.aturan} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {jumlahBelumBerlaku.jumlah > 0 ? (
-        <div className="mb-4 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+        <div className="mb-4 rounded-md border border-dashed p-4 text-sm text-muted-foreground">
           {jumlahBelumBerlaku.jumlah} aturan aktif belum berlaku karena belum ada yang menghasilkan sinyalnya:{' '}
           <span className="font-mono">{jumlahBelumBerlaku.peristiwa.join(', ')}</span>. Bobotnya tersimpan dan
           akan terpakai begitu sumbernya ada.

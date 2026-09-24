@@ -340,7 +340,7 @@ export default function PeranIzinIndex({ peran, filter, wajib, bawaanBelumTerpas
             {bolehKelola && <DialogFormPeran peran={null} wajib={wajib.peran} />}
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

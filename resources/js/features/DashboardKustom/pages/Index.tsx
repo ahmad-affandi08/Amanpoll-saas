@@ -92,7 +92,7 @@ export default function DashboardKustomIndex({ dasbor, preset, katalogKpi, batas
         />
 
         {flash.sukses && (
-          <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-700">
+          <p className="rounded-md border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-700">
             {flash.sukses}
           </p>
         )}
@@ -310,7 +310,7 @@ function Penyusun({
               return (
                 <li
                   key={`${satu.KunciKpi}-${indeks}`}
-                  className="grid gap-2 rounded-[5px] border border-border p-2.5 sm:grid-cols-[1fr_8rem_6rem_auto] sm:items-end"
+                  className="grid gap-2 rounded-sm border border-border p-2.5 sm:grid-cols-[1fr_8rem_6rem_auto] sm:items-end"
                 >
                   <div className="min-w-0 space-y-1.5">
                     <p className="truncate text-sm font-medium">{definisi?.Nama ?? satu.KunciKpi}</p>

@@ -30,7 +30,7 @@ function BantuanHarga({ jenis, pilihan }: { jenis: string; pilihan: PilihanHalam
         };
 
   return (
-    <div className="grid gap-2 rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
+    <div className="grid gap-2 rounded-md border border-dashed p-3 text-xs text-muted-foreground">
       <p>
         Blok ini hanya menyebut kode paket. Nama, harga, dan daftar fiturnya dibaca dari domain Langganan saat
         halaman tampil, jadi harga di sini tidak pernah basi.
@@ -43,7 +43,9 @@ function BantuanHarga({ jenis, pilihan }: { jenis: string; pilihan: PilihanHalam
           <span className="font-mono">{pilihan.Paket.map((satu) => satu.Kode).join(', ')}</span>
         )}
       </p>
-      <pre className="overflow-x-auto rounded bg-muted p-2 font-mono">{JSON.stringify(contoh, null, 2)}</pre>
+      <pre className="overflow-x-auto rounded-sm bg-muted p-2 font-mono">
+        {JSON.stringify(contoh, null, 2)}
+      </pre>
     </div>
   );
 }
@@ -91,7 +93,7 @@ export function KartuBlok({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
-        <CardTitle className="text-base">
+        <CardTitle>
           {urutan + 1}. {blok.Jenis}
         </CardTitle>
         <div className="flex gap-1">

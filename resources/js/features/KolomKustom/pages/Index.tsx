@@ -203,19 +203,20 @@ export default function KolomKustomIndex({ jenisEntitasTersedia, wajib }: Props)
             )}
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="mb-4 w-64 space-y-2">
-        <Label>Jenis Entitas</Label>
+      <div className="mb-4 w-full space-y-1.5 sm:w-48">
+        <Label htmlFor="kolom-kustom-jenis-entitas">Jenis Entitas</Label>
         <Combobox
+          id="kolom-kustom-jenis-entitas"
           nilai={jenisEntitas}
           onPilih={setJenisEntitas}
           opsi={jenisEntitasTersedia.map((j) => ({ nilai: j, label: j }))}
         />
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
+      <div className="rounded-md border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

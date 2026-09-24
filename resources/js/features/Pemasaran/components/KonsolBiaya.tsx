@@ -47,10 +47,11 @@ export function KonsolBiaya({
 
   return (
     <div className="space-y-4">
-      <form onSubmit={submit} className="flex flex-wrap items-end gap-3 rounded-lg border p-4">
+      <form onSubmit={submit} className="flex flex-wrap items-end gap-3 rounded-md border p-4">
         <div className="grid gap-1.5">
           <Label htmlFor="Channel">Channel</Label>
           <Combobox
+            id="Channel"
             nilai={form.data.Channel}
             onPilih={(v) => form.setData('Channel', v)}
             opsi={channel.map((satu) => ({ nilai: satu, label: satu }))}

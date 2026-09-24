@@ -55,7 +55,7 @@ export default function KontrakShow({ kontrak, aset, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={`${kontrak.Nomor} — Kontrak`} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={ruteKontrak.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -137,7 +137,7 @@ export default function KontrakShow({ kontrak, aset, wajib }: Props) {
               daftarAset.map((item) => (
                 <div
                   key={item.Id}
-                  className="flex flex-col gap-2 rounded-[9px] border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-md border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-medium">{item.NamaAset}</p>
@@ -175,7 +175,7 @@ export default function KontrakShow({ kontrak, aset, wajib }: Props) {
               />
             ) : (
               daftarLayanan.map((layanan) => (
-                <div key={layanan.Id} className="space-y-2 rounded-[9px] border border-border p-3">
+                <div key={layanan.Id} className="space-y-2 rounded-md border border-border p-3">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0">
                       <p className="font-medium">{layanan.Nama}</p>

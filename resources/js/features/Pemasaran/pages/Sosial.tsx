@@ -26,13 +26,13 @@ export default function PemasaranSosial({ konten, pilihan }: Props) {
         deskripsi="Satu konten utama, banyak distribusi. Tiap distribusi punya caption, media, CTA, dan UTM sendiri."
         tanpaBreadcrumb
         aksi={<DialogFormKonten konten={null} pilihan={pilihan} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {konten.length === 0 ? (
         <p className="text-sm text-muted-foreground">Belum ada konten sosial.</p>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {konten.map((satu) => (
             <KartuKonten key={satu.Id} konten={satu} pilihan={pilihan} />
           ))}
@@ -47,7 +47,7 @@ function KartuKonten({ konten, pilihan }: { konten: KontenSosial; pilihan: Pilih
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <CardTitle className="text-base">{konten.Judul}</CardTitle>
+          <CardTitle>{konten.Judul}</CardTitle>
           <p className="font-mono text-xs text-muted-foreground">
             {konten.Kode}
             {konten.KampanyeKode ? ` · kampanye ${konten.KampanyeKode}` : ' · tanpa kampanye'}
@@ -89,7 +89,7 @@ function BarisDistribusi({
   const akar = rutePemasaran.sosialDistribusiDetail(konten.Id, distribusi.Id);
 
   return (
-    <div className="rounded-lg border p-3">
+    <div className="rounded-md border p-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <Badge variant="outline">{distribusi.Channel}</Badge>

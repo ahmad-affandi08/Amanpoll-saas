@@ -122,18 +122,12 @@ export default function PerintahKerjaIndex({
             )}
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div
-        className={
-          unitPengelolaDipakai
-            ? 'mb-4 grid gap-2 sm:grid-cols-3 lg:max-w-3xl'
-            : 'mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl'
-        }
-      >
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <Select value={filter.status ?? TANPA_PILIHAN} onValueChange={(val) => filterData('status', val)}>
-          <SelectTrigger className="w-full cursor-pointer">
+          <SelectTrigger className="w-full cursor-pointer sm:w-44" aria-label="Saring status">
             <SelectValue placeholder="Semua status" />
           </SelectTrigger>
           <SelectContent>
@@ -152,7 +146,7 @@ export default function PerintahKerjaIndex({
           value={filter.prioritas ?? TANPA_PILIHAN}
           onValueChange={(val) => filterData('prioritas', val)}
         >
-          <SelectTrigger className="w-full cursor-pointer">
+          <SelectTrigger className="w-full cursor-pointer sm:w-44" aria-label="Saring prioritas">
             <SelectValue placeholder="Semua prioritas" />
           </SelectTrigger>
           <SelectContent>
@@ -172,7 +166,7 @@ export default function PerintahKerjaIndex({
             value={filter.unitPengelola ?? TANPA_PILIHAN}
             onValueChange={(val) => filterData('unitPengelola', val)}
           >
-            <SelectTrigger className="w-full cursor-pointer" aria-label="Saring unit pengelola">
+            <SelectTrigger className="w-full cursor-pointer sm:w-48" aria-label="Saring unit pengelola">
               <SelectValue placeholder="Semua unit pengelola" />
             </SelectTrigger>
             <SelectContent>
@@ -195,7 +189,7 @@ export default function PerintahKerjaIndex({
           deskripsi="Perintah kerja perbaikan atau pemeliharaan aset akan tercatat di sini."
         />
       ) : (
-        <div className="rounded-lg border border-border bg-card">
+        <div className="rounded-md border border-border bg-card">
           {/* Di ponsel daftar ini menjadi kartu (DESIGN.md 9.3). */}
           <ul className="divide-y divide-border sm:hidden">
             {perintahKerja.data.map((item) => {
@@ -254,7 +248,7 @@ export default function PerintahKerjaIndex({
 
           <div className="hidden overflow-x-auto sm:block">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-border bg-muted/40 text-xs font-medium text-muted-foreground">
+              <thead className="border-b border-border bg-permukaan-50 text-[12.5px] text-grafit-500 [&_th]:font-medium">
                 <tr>
                   <th className="px-4 py-3">Nomor</th>
                   <th className="px-4 py-3">Judul & Jenis</th>

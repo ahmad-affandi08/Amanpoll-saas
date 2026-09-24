@@ -109,6 +109,7 @@ export default function OrganisasiIndex({ organisasi, wajib }: Props) {
             </Badge>
           </>
         }
+        className="mb-5"
       />
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -201,7 +202,7 @@ export default function OrganisasiIndex({ organisasi, wajib }: Props) {
                   <div className="space-y-2">
                     <Label nama="ZonaWaktu">Zona Waktu</Label>
                     <select
-                      className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                      className="h-10 w-full rounded-sm border border-input bg-card px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring sm:h-8"
                       value={form.data.ZonaWaktu}
                       onChange={(e) => form.setData('ZonaWaktu', e.target.value)}
                     >

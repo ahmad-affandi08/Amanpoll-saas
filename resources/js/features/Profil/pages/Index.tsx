@@ -165,6 +165,7 @@ export default function ProfilIndex({ pengguna, wajib }: Props) {
       <KepalaHalaman
         judul="Profil"
         deskripsi="Kelola data diri, kata sandi, tanda tangan, dan perangkat Anda."
+        className="mb-5"
       />
       <div className="grid gap-4 md:grid-cols-2">
         <FormProfil pengguna={pengguna} wajib={wajib.profil} />

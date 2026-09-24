@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import {
   Plus,
@@ -106,7 +107,7 @@ export default function InspeksiIndex({
     <KerangkaAplikasi>
       <Head title="Inspeksi Aset Berkala" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Header */}
         <KepalaHalaman
           judul="Inspeksi Aset Berkala"
@@ -116,7 +117,7 @@ export default function InspeksiIndex({
               <TombolEkspor url={ruteInspeksi.ekspor} filter={filter as Record<string, string>} />
               <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
                 <DialogTrigger asChild>
-                  <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
+                  <Button className="cursor-pointer">
                     <Plus className="h-4 w-4" />
                     Jadwalkan Inspeksi
                   </Button>
@@ -197,7 +198,7 @@ export default function InspeksiIndex({
                         </Button>
                         <Button
                           type="submit"
-                          className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                          className="cursor-pointer"
                           disabled={form.processing || !form.data.TemplatInspeksiId || !form.data.AsetId}
                         >
                           {form.processing ? 'Menjadwalkan...' : 'Jadwalkan'}
@@ -212,39 +213,25 @@ export default function InspeksiIndex({
         />
 
         {/* Ringkasan Hasil Inspeksi */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-grafit-500 font-medium">Total Jadwal</span>
-            <div className="text-2xl font-bold text-grafit-950 mt-1">{inspeksi.data.length}</div>
-          </div>
-          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-sukses-700 font-medium flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Lolos Normal
-            </span>
-            <div className="text-2xl font-bold text-sukses-700 mt-1">{lolosCount}</div>
-          </div>
-          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-safety-700 font-medium flex items-center gap-1">
-              <AlertTriangle className="h-3.5 w-3.5" /> Perlu Perhatian
-            </span>
-            <div className="text-2xl font-bold text-safety-700 mt-1">{perhatianCount}</div>
-          </div>
-          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-destructive font-medium flex items-center gap-1">
-              <XCircle className="h-3.5 w-3.5" /> Gagal / Temuan
-            </span>
-            <div className="text-2xl font-bold text-bahaya-700 mt-1">{gagalCount}</div>
-          </div>
-        </div>
+        <DeretStatistik kolom={4}>
+          <KartuStatistik menyatu label="Total Jadwal" nilai={inspeksi.data.length} />
+          <KartuStatistik menyatu label="Lolos Normal" nilai={lolosCount} ikon={CheckCircle2} />
+          <KartuStatistik menyatu label="Perlu Perhatian" nilai={perhatianCount} ikon={AlertTriangle} />
+          <KartuStatistik menyatu label="Gagal / Temuan" nilai={gagalCount} ikon={XCircle} />
+        </DeretStatistik>
 
         {/* Filter & Search Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-grafit-500" />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               type="text"
+              aria-label="Cari inspeksi"
               placeholder="Cari nomor, aset, atau templat..."
-              className="pl-9"
+              className="pl-8"
               value={pencarian}
               onChange={(e) => setPencarian(e.target.value)}
               onKeyDown={(e) => {
@@ -255,9 +242,9 @@ export default function InspeksiIndex({
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex w-full items-center gap-2 sm:w-auto">
             <Select value={filter.status || '__all__'} onValueChange={(val) => terapkanFilter('status', val)}>
-              <SelectTrigger className="cursor-pointer w-36 text-xs h-9">
+              <SelectTrigger aria-label="Status inspeksi" className="w-40 cursor-pointer">
                 <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>
@@ -269,7 +256,7 @@ export default function InspeksiIndex({
             </Select>
 
             <Select value={filter.hasil || '__all__'} onValueChange={(val) => terapkanFilter('hasil', val)}>
-              <SelectTrigger className="cursor-pointer w-40 text-xs h-9">
+              <SelectTrigger aria-label="Hasil inspeksi" className="w-40 cursor-pointer">
                 <SelectValue placeholder="Semua Hasil" />
               </SelectTrigger>
               <SelectContent>
@@ -290,10 +277,10 @@ export default function InspeksiIndex({
             deskripsi="Riwayat dan jadwal inspeksi kondisi aset operasional akan dicatat di sini."
           />
         ) : (
-          <div className="bg-card border border-garis-200 rounded-xl overflow-hidden shadow-sm">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-permukaan-50 border-b border-garis-200 text-xs font-semibold text-grafit-700 uppercase">
+                <thead className="bg-permukaan-50 border-b border-garis-200 text-[12.5px] font-medium text-grafit-500">
                   <tr>
                     <th className="px-5 py-3">Nomor</th>
                     <th className="px-5 py-3">Aset</th>
@@ -311,7 +298,7 @@ export default function InspeksiIndex({
 
                     return (
                       <tr key={item.Id} className="hover:bg-accent transition-colors">
-                        <td className="px-5 py-4 font-mono font-bold text-xs text-grafit-950">
+                        <td className="px-5 py-4 font-mono font-medium text-xs text-grafit-950">
                           {item.Nomor}
                         </td>
                         <td className="px-5 py-4 text-xs font-medium text-grafit-950">

@@ -159,7 +159,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
   return (
     <KerangkaAplikasi>
       <Head title="Pesanan Pembelian" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Pesanan Pembelian"
           deskripsi="PO dibuat dari penawaran terpilih; komitmen anggaran dicatat saat PO dikirim."
@@ -175,7 +175,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
               {penawaranTerpilih.map((item) => (
                 <div
                   key={item.Id}
-                  className="flex flex-col gap-3 rounded-[9px] border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 rounded-md border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-medium">{item.NamaPenyedia}</p>
@@ -190,19 +190,22 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
           </Card>
         )}
 
-        <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_14rem_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari nomor PO"
               placeholder="Cari nomor PO"
-              className="pl-9"
+              className="pl-8"
               value={cari}
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -214,7 +217,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -226,10 +229,10 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
             deskripsi="Pilih penawaran pada RFQ untuk menerbitkan PO."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Nomor</th>
                     <th className="px-4 py-3">Penyedia</th>

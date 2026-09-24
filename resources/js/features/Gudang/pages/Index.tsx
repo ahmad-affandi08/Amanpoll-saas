@@ -407,7 +407,7 @@ export default function GudangIndex({
             />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {gudang.meta.total === 0 && !adaPenyaringAktif(filter) ? (

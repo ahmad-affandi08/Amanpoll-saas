@@ -59,7 +59,7 @@ export default function PemasaranPengaturan({ domain, fitur, konfigurasi, piliha
         tanpaBreadcrumb
       />
 
-      <div className="mt-6 grid gap-6">
+      <div className="mt-5 grid gap-5">
         <KartuDomain domain={domain} />
         <KartuFitur fitur={fitur} />
         <KartuKonfigurasi konfigurasi={konfigurasi} pilihan={pilihanKonfigurasi} />
@@ -80,7 +80,7 @@ function KartuDomain({ domain }: { domain: Domain }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Domain</CardTitle>
+        <CardTitle>Domain</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm">
         <p className="text-muted-foreground">
@@ -91,7 +91,7 @@ function KartuDomain({ domain }: { domain: Domain }) {
           {baris.map(([label, nilai]) => (
             <div
               key={label}
-              className="flex items-center justify-between gap-3 rounded-[6px] bg-muted/50 px-3 py-2"
+              className="flex items-center justify-between gap-3 rounded-sm bg-muted/50 px-3 py-2"
             >
               <dt className="text-muted-foreground">{label}</dt>
               <dd className="font-mono text-xs">{nilai ?? 'belum diatur'}</dd>
@@ -112,7 +112,7 @@ function KartuFitur({ fitur }: { fitur: Fitur[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Modul</CardTitle>
+        <CardTitle>Modul</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3">
         <p className="text-sm text-muted-foreground">
@@ -158,7 +158,7 @@ function KartuKonfigurasi({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Setelan</CardTitle>
+        <CardTitle>Setelan</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         {konfigurasi.map((satu) => (

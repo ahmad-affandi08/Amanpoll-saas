@@ -59,7 +59,7 @@ export default function PesananPembelianShow(props: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={pesanan.Nomor} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={rutePesananPembelian.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -113,7 +113,7 @@ export default function PesananPembelianShow(props: Props) {
             {detail.map((item) => (
               <div
                 key={item.Id}
-                className="grid gap-2 rounded-[9px] border border-border p-3 sm:grid-cols-[1fr_auto] sm:items-center"
+                className="grid gap-2 rounded-md border border-border p-3 sm:grid-cols-[1fr_auto] sm:items-center"
               >
                 <div className="min-w-0">
                   <p className="font-medium">{item.Deskripsi}</p>
@@ -127,7 +127,7 @@ export default function PesananPembelianShow(props: Props) {
             ))}
             <div className="flex items-center justify-between border-t border-border pt-3">
               <span className="text-sm text-muted-foreground">Total PO (dihitung server)</span>
-              <strong className="font-mono text-lg">{formatUang(pesanan.Total)}</strong>
+              <strong className="font-mono text-[15px] font-semibold">{formatUang(pesanan.Total)}</strong>
             </div>
           </CardContent>
         </Card>
@@ -144,7 +144,7 @@ export default function PesananPembelianShow(props: Props) {
               />
             ) : (
               penerimaan.map((dokumen) => (
-                <div key={dokumen.Id} className="space-y-2 rounded-[9px] border border-border p-3">
+                <div key={dokumen.Id} className="space-y-2 rounded-md border border-border p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="font-mono text-sm font-medium">{dokumen.Nomor}</span>
                     <span className="text-xs text-muted-foreground">
@@ -180,7 +180,7 @@ export default function PesananPembelianShow(props: Props) {
                 <Link
                   key={item.Id}
                   href={ruteTagihanPenyedia.detail(item.Id)}
-                  className="flex flex-col gap-2 rounded-[9px] border border-border p-3 transition hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-md border border-border p-3 transition hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-mono font-medium">{item.NomorTagihan}</p>

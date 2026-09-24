@@ -39,20 +39,18 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
   return (
     <KerangkaAplikasi>
       <Head title="Log Audit" />
-      <div className="space-y-4">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Log Audit"
           deskripsi="Riwayat perubahan data lintas modul, tersaring per organisasi."
           aksi={<TombolEkspor url={ruteAudit.ekspor} filter={form as Record<string, string>} />}
         />
 
-        <form
-          onSubmit={terapkanFilter}
-          className="grid grid-cols-1 gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4"
-        >
-          <div className="space-y-1.5">
-            <Label>Jenis Entitas</Label>
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-end gap-3">
+          <div className="w-full space-y-1.5 sm:w-48">
+            <Label htmlFor="filter-audit-jenis-entitas">Jenis Entitas</Label>
             <Combobox
+              id="filter-audit-jenis-entitas"
               nilai={form.jenisEntitas ?? SEMUA}
               onPilih={(v) => setForm((f) => ({ ...f, jenisEntitas: v === SEMUA ? undefined : v }))}
               opsi={[
@@ -62,17 +60,19 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
               placeholder="Semua"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label>Aksi</Label>
+          <div className="w-full space-y-1.5 sm:w-44">
+            <Label htmlFor="filter-audit-aksi">Aksi</Label>
             <Input
+              id="filter-audit-aksi"
               value={form.aksi ?? ''}
               onChange={(e) => setForm((f) => ({ ...f, aksi: e.target.value || undefined }))}
               placeholder="mis. dibuat"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label>Rentang Tanggal</Label>
+          <div className="w-full space-y-1.5 sm:w-64">
+            <Label htmlFor="filter-audit-rentang">Rentang Tanggal</Label>
             <DateRangePicker
+              id="filter-audit-rentang"
               dari={form.dariTanggal}
               sampai={form.sampaiTanggal}
               align="end"
@@ -85,15 +85,17 @@ export default function AuditIndex({ catatan, filter, jenisEntitasTersedia }: Pr
               }
             />
           </div>
-          <div className="flex items-end gap-2">
-            <Button type="submit">Terapkan</Button>
-            <Button type="button" variant="outline" onClick={resetFilter}>
+          <div className="flex gap-2">
+            <Button type="submit" variant="secondary">
+              Terapkan
+            </Button>
+            <Button type="button" variant="ghost" onClick={resetFilter}>
               Reset
             </Button>
           </div>
         </form>
 
-        <div className="rounded-lg border border-border bg-card">
+        <div className="rounded-md border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

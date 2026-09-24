@@ -121,7 +121,7 @@ export function DialogFormJenis({ jenis, wajib }: { jenis: JenisKalibrasi | null
               />
             </div>
 
-            <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
+            <div className="flex items-center justify-between p-2.5 rounded-md border border-border">
               <div className="space-y-0.5">
                 <Label nama="Aktif" htmlFor="Aktif">
                   Status Aktif

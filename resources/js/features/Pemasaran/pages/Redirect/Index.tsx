@@ -113,7 +113,7 @@ export default function PemasaranRedirectIndex({ redirect, pilihan, filter, waji
         deskripsi="Berlaku hanya di host publik. Slug yang berubah tanpa redirect kehilangan peringkatnya."
         tanpaBreadcrumb
         aksi={<DialogRedirect redirect={null} pilihan={pilihan} wajib={wajib.redirect} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

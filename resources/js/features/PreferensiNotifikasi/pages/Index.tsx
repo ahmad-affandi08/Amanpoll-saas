@@ -53,6 +53,7 @@ export default function PreferensiNotifikasiIndex() {
       <KepalaHalaman
         judul="Preferensi Notifikasi"
         deskripsi="Atur peristiwa mana yang ingin Anda terima melalui tiap kanal notifikasi."
+        className="mb-5"
       />
 
       {memuat && <p className="text-sm text-muted-foreground">Memuat...</p>}
@@ -81,13 +82,13 @@ export default function PreferensiNotifikasiIndex() {
       )}
 
       {!memuat && (
-        <div className="overflow-hidden rounded-md border border-border">
+        <div className="overflow-hidden rounded-md border border-border bg-card">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50">
+            <thead className="bg-permukaan-50 text-[12.5px] text-grafit-500">
               <tr>
-                <th className="px-4 py-2 text-left font-medium text-foreground">Peristiwa</th>
+                <th className="h-10 px-4 text-left font-medium">Peristiwa</th>
                 {KANAL_NOTIFIKASI.map((kanal) => (
-                  <th key={kanal.value} className="px-4 py-2 text-center font-medium text-foreground">
+                  <th key={kanal.value} className="h-10 px-4 text-center font-medium">
                     {kanal.label}
                   </th>
                 ))}

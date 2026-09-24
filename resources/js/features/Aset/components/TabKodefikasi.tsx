@@ -78,12 +78,11 @@ export function TabKodefikasi({ aset }: { aset: Aset }) {
   return (
     <div className="space-y-6">
       {penetapan.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          Aset ini belum punya kode barang. Tanpa kode, ia tidak dapat dilaporkan ke SIMAK BMN maupun
-          SIMBADA.
+        <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+          Aset ini belum punya kode barang. Tanpa kode, ia tidak dapat dilaporkan ke SIMAK BMN maupun SIMBADA.
         </p>
       ) : (
-        <div className="divide-y rounded-lg border">
+        <div className="divide-y divide-border rounded-md border border-border">
           {penetapan.map((satu) => (
             <div key={satu.Id} className="space-y-1 p-3">
               <div className="flex flex-wrap items-center gap-2">
@@ -111,8 +110,8 @@ export function TabKodefikasi({ aset }: { aset: Aset }) {
       )}
 
       {bolehKelola && (
-        <div className="space-y-3 rounded-lg border p-4">
-          <h3 className="font-medium text-foreground">Tetapkan kode barang</h3>
+        <div className="space-y-3 rounded-md border border-border p-5">
+          <h3 className="text-sm font-semibold text-foreground">Tetapkan kode barang</h3>
           <div className="space-y-2">
             <Label nama="standar">Standar</Label>
             <Combobox
@@ -139,8 +138,8 @@ export function TabKodefikasi({ aset }: { aset: Aset }) {
             />
           </div>
           <p className="text-sm text-muted-foreground">
-            NUP diterbitkan otomatis, berurut per kode barang. Mengganti ke kode lain menerbitkan NUP
-            baru karena nomor lama tidak berlaku di bawah kode yang berbeda.
+            NUP diterbitkan otomatis, berurut per kode barang. Mengganti ke kode lain menerbitkan NUP baru
+            karena nomor lama tidak berlaku di bawah kode yang berbeda.
           </p>
           <Button onClick={tetapkan} disabled={kodeTerpilih === TANPA_PILIHAN}>
             Tetapkan

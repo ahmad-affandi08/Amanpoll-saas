@@ -19,7 +19,7 @@ import {
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { KartuAngka } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { opsiDari, opsiKosong, TANPA_PILIHAN } from '@/lib/pilihan';
@@ -94,10 +94,9 @@ function DialogImporKatalog() {
               onChange={(e) => setBerkas(e.target.files?.[0] ?? null)}
             />
             <p className="text-sm text-muted-foreground">
-              Berisi kolom <span className="font-mono">Kode</span> dan{' '}
-              <span className="font-mono">Nama</span>; <span className="font-mono">Kelompok</span> dan{' '}
-              <span className="font-mono">Satuan</span> opsional. Kode yang sudah ada akan diperbarui,
-              bukan digandakan.
+              Berisi kolom <span className="font-mono">Kode</span> dan <span className="font-mono">Nama</span>
+              ; <span className="font-mono">Kelompok</span> dan <span className="font-mono">Satuan</span>{' '}
+              opsional. Kode yang sudah ada akan diperbarui, bukan digandakan.
             </p>
           </div>
           <DialogFooter>
@@ -172,15 +171,18 @@ function DialogPemetaan({
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              Isi salah satu saja. Model aset lebih spesifik daripada kategori, dan bila keduanya
-              cocok maka pemetaan model yang dipakai.
+              Isi salah satu saja. Model aset lebih spesifik daripada kategori, dan bila keduanya cocok maka
+              pemetaan model yang dipakai.
             </p>
             <div className="space-y-2">
               <Label nama="KategoriAsetId">Kategori Aset</Label>
               <Combobox
                 nilai={form.data.KategoriAsetId}
                 onPilih={(v) => form.setData('KategoriAsetId', v)}
-                opsi={[opsiKosong('Tidak dipetakan lewat kategori'), ...opsiDari(kategoriAset, (k) => k.Nama)]}
+                opsi={[
+                  opsiKosong('Tidak dipetakan lewat kategori'),
+                  ...opsiDari(kategoriAset, (k) => k.Nama),
+                ]}
               />
             </div>
             <div className="space-y-2">
@@ -268,7 +270,7 @@ export default function AspakIndex({
       <KepalaHalaman
         judul="ASPAK"
         deskripsi="Pertukaran data sarana, prasarana, dan alat kesehatan dengan Kemenkes."
-        className="mb-6"
+        className="mb-5"
         aksi={
           <>
             {bolehKelola && <DialogImporKatalog />}
@@ -279,22 +281,22 @@ export default function AspakIndex({
         }
       />
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka label="Alkes di Katalog" nilai={ringkasan.JumlahAlkes} />
-        <KartuAngka label="Pemetaan Aktif" nilai={ringkasan.JumlahPemetaan} />
-        <KartuAngka
+      <DeretStatistik kolom={4} className="mb-5">
+        <KartuStatistik menyatu label="Alkes di Katalog" nilai={ringkasan.JumlahAlkes} />
+        <KartuStatistik menyatu label="Pemetaan Aktif" nilai={ringkasan.JumlahPemetaan} />
+        <KartuStatistik
+          menyatu
           label="Aset Siap Diekspor"
           nilai={ringkasan.AsetTerpetakan}
-          catatan={`${ringkasan.AsetBelumTerpetakan} aset belum terpetakan`}
+          keterangan={`${ringkasan.AsetBelumTerpetakan} aset belum terpetakan`}
         />
-        <KartuAngka
+        <KartuStatistik
+          menyatu
           label="Lokasi Tanpa Kode Ruang"
           nilai={ringkasan.LokasiTanpaKodeRuang}
-          catatan={
-            ringkasan.LokasiTanpaKodeRuang > 0 ? 'kolom ruang akan kosong' : 'seluruh lokasi siap'
-          }
+          keterangan={ringkasan.LokasiTanpaKodeRuang > 0 ? 'kolom ruang akan kosong' : 'seluruh lokasi siap'}
         />
-      </div>
+      </DeretStatistik>
 
       <Tabs defaultValue="katalog">
         <TabsList>
@@ -329,11 +331,11 @@ export default function AspakIndex({
             )}
           </div>
           {pemetaan.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            <p className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
               Belum ada pemetaan. Tanpa pemetaan, tidak ada aset yang dapat diekspor ke ASPAK.
             </p>
           ) : (
-            <div className="divide-y rounded-lg border">
+            <div className="divide-y rounded-md border">
               {pemetaan.map((satu) => (
                 <div key={satu.Id} className="flex items-center justify-between gap-4 p-3">
                   <div className="min-w-0">
@@ -359,13 +361,13 @@ export default function AspakIndex({
         </TabsContent>
 
         <TabsContent value="ekspor">
-          <div className="space-y-4 rounded-lg border p-4">
+          <div className="space-y-4 rounded-md border p-5">
             <div>
-              <h3 className="font-medium text-foreground">Kolom berkas ekspor</h3>
+              <h3 className="text-sm font-semibold text-foreground">Kolom berkas ekspor</h3>
               <p className="text-sm text-muted-foreground">
                 Urutan dan judul kolom mengikuti profil pada pengaturan organisasi (kunci{' '}
-                <span className="font-mono">Aspak.ProfilKolom</span>). Cocokkan dengan templat ASPAK
-                yang sedang berlaku sebelum mengunggah.
+                <span className="font-mono">Aspak.ProfilKolom</span>). Cocokkan dengan templat ASPAK yang
+                sedang berlaku sebelum mengunggah.
               </p>
             </div>
             <ol className="grid gap-1 text-sm sm:grid-cols-2">

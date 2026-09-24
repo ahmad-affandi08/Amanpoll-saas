@@ -169,7 +169,6 @@ export function DialogFormRencana({
                 onPilih={pilihAset}
                 opsi={opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`)}
                 placeholder="Pilih Aset"
-                className="h-9 text-xs"
               />
               {form.errors.AsetId && <p className="text-xs text-destructive">{form.errors.AsetId}</p>}
             </div>
@@ -187,7 +186,6 @@ export function DialogFormRencana({
                   }}
                   opsi={opsiUnitPengelola(opsiUnit)}
                   placeholder="Pilih unit pengelola"
-                  className="h-9 text-xs"
                 />
                 {!rencana && !unitDisentuh && (
                   <p className="text-[11px] text-grafit-500">Terisi dari unit pengelola aset yang dipilih.</p>
@@ -211,7 +209,6 @@ export function DialogFormRencana({
                     ...opsiDari(jenisKalibrasi, (jk) => jk.Nama),
                   ]}
                   placeholder="Pilih Jenis (Opsional)"
-                  className="h-9 text-xs"
                 />
               </div>
 
@@ -227,7 +224,6 @@ export function DialogFormRencana({
                     ...opsiDari(penyedia, (p) => p.Nama),
                   ]}
                   placeholder="Internal / Rekanan"
-                  className="h-9 text-xs"
                 />
               </div>
             </div>
@@ -252,7 +248,6 @@ export function DialogFormRencana({
                     });
                   }}
                   required
-                  className="h-9 text-xs"
                 />
               </div>
 
@@ -271,7 +266,6 @@ export function DialogFormRencana({
                     });
                   }}
                   id="TanggalMulai"
-                  className="h-9 text-xs"
                   required
                 />
               </div>
@@ -284,7 +278,6 @@ export function DialogFormRencana({
                   value={form.data.TanggalBerikutnya}
                   onChange={(nilai) => form.setData('TanggalBerikutnya', nilai)}
                   id="TanggalBerikutnya"
-                  className="h-9 text-xs"
                   required
                 />
               </div>
@@ -301,7 +294,6 @@ export function DialogFormRencana({
                 placeholder="30"
                 value={form.data.PeringatanHariSebelum}
                 onChange={(e) => form.setData('PeringatanHariSebelum', Number(e.target.value))}
-                className="h-9 text-xs"
               />
               <p className="text-[11px] text-grafit-500">
                 Sistem akan memicu status "Segera Jatuh Tempo" dan mengirim notifikasi saat waktu tersisa
@@ -309,7 +301,7 @@ export function DialogFormRencana({
               </p>
             </div>
 
-            <div className="flex items-center justify-between p-2.5 rounded-lg border border-border">
+            <div className="flex items-center justify-between p-2.5 rounded-md border border-border">
               <div className="space-y-0.5">
                 <Label nama="AktifRencana" htmlFor="AktifRencana">
                   Status Aktif

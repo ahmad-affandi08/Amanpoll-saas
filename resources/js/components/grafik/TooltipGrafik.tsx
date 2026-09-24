@@ -44,7 +44,7 @@ export function TooltipGrafik({ active, payload, label, formatNilai, formatLabel
   const judul = typeof label === 'string' ? (formatLabel?.(label) ?? label) : '';
 
   return (
-    <div className="rounded-[5px] border border-border bg-card px-3 py-2 shadow-lg">
+    <div className="rounded-sm border border-border bg-card px-3 py-2 shadow-[0_6px_20px_rgb(23_32_39_/_0.08)]">
       {judul && <p className="mb-1 text-xs font-medium text-muted-foreground">{judul}</p>}
       <ul className="space-y-1">
         {payload.map((baris, indeks) => (

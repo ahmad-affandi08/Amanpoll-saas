@@ -34,7 +34,7 @@ export function RingkasanKampanye({
     <div className="grid gap-4 lg:grid-cols-3">
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle className="text-base">Rencana</CardTitle>
+          <CardTitle>Rencana</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 text-sm sm:grid-cols-2">
           <Butir
@@ -75,7 +75,7 @@ export function RingkasanKampanye({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Tag UTM</CardTitle>
+          <CardTitle>Tag UTM</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           {utm.map(([kunci, isi]) => (

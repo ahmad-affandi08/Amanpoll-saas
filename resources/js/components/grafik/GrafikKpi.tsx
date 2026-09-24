@@ -76,7 +76,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
     <div className="overflow-x-auto">
       <table className="w-full text-sm" aria-labelledby={idJudul}>
         <caption className="sr-only">Nilai {kpi.Nama} per rincian</caption>
-        <thead className="border-b border-border text-left text-xs uppercase text-muted-foreground">
+        <thead className="border-b border-border text-left text-xs text-muted-foreground">
           <tr>
             <th scope="col" className="py-2 pr-3 font-medium">
               Rincian

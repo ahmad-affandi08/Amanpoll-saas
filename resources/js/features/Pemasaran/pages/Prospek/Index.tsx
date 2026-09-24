@@ -22,6 +22,7 @@ import type { Prospek, TahapRingkas } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { cn } from '@/lib/utils';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
@@ -227,23 +228,32 @@ export default function PemasaranProspekIndex({ prospek, tahap, filter, wajib }:
             <DialogProspekBaru wajib={wajib.prospek} />
           </div>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <Button variant={filter.tahap ? 'ghost' : 'secondary'} size="sm" onClick={() => saring(null)}>
-          Semua
-        </Button>
-        {tahap.map((satu) => (
-          <Button
-            key={satu.Kode}
-            variant={filter.tahap === satu.Kode ? 'secondary' : 'ghost'}
-            size="sm"
-            onClick={() => saring(satu.Kode)}
-          >
-            {satu.Nama}
-          </Button>
-        ))}
+      <div
+        role="group"
+        aria-label="Saring tahap"
+        className="mb-4 inline-flex max-w-full overflow-x-auto rounded-sm border border-input"
+      >
+        {[{ Kode: null, Nama: 'Semua' }, ...tahap].map((satu) => {
+          const aktif = (filter.tahap ?? null) === satu.Kode;
+
+          return (
+            <button
+              key={satu.Kode ?? 'semua'}
+              type="button"
+              aria-pressed={aktif}
+              onClick={() => saring(satu.Kode)}
+              className={cn(
+                'h-11 shrink-0 border-r border-input px-3 text-[13px] whitespace-nowrap text-grafit-700 last:border-r-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset sm:h-8',
+                aktif && 'bg-permukaan-100 font-medium text-foreground',
+              )}
+            >
+              {satu.Nama}
+            </button>
+          );
+        })}
       </div>
 
       <DataTable

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { http } from '@/lib/http';
-import { BarisKosong, KartuAngka, KepalaBagian } from '@/components/shared/riwayat';
+import { BarisKosong, KepalaBagian } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { AktivitasPengguna, Pengguna } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
 
@@ -43,17 +44,18 @@ export function TabAktivitas({ pengguna }: { pengguna: Pengguna }) {
   const { ringkasan, akses, perangkat } = data;
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka label="Terakhir Masuk" nilai={waktu(ringkasan.TerakhirMasukPada)} />
-        <KartuAngka label="Catatan Akses" nilai={ringkasan.JumlahAkses} />
-        <KartuAngka
+    <div className="space-y-5">
+      <DeretStatistik kolom={4}>
+        <KartuStatistik menyatu label="Terakhir Masuk" nilai={waktu(ringkasan.TerakhirMasukPada)} />
+        <KartuStatistik menyatu label="Catatan Akses" nilai={ringkasan.JumlahAkses} />
+        <KartuStatistik
+          menyatu
           label="Akses Gagal"
           nilai={ringkasan.JumlahAksesGagal}
-          catatan={ringkasan.JumlahAksesGagal > 0 ? 'periksa bila tidak dikenali' : undefined}
+          keterangan={ringkasan.JumlahAksesGagal > 0 ? 'periksa bila tidak dikenali' : undefined}
         />
-        <KartuAngka label="Perangkat Terdaftar" nilai={ringkasan.JumlahPerangkat} />
-      </div>
+        <KartuStatistik menyatu label="Perangkat Terdaftar" nilai={ringkasan.JumlahPerangkat} />
+      </DeretStatistik>
 
       <section className="space-y-1">
         <KepalaBagian judul="Riwayat Akses" ditampilkan={akses.data.length} total={akses.total} />

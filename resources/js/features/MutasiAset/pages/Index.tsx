@@ -119,14 +119,14 @@ function DialogBuatMutasi({
             </p>
             {form.data.JenisMutasi === 'Reposisi' && (
               <p className="text-sm text-muted-foreground">
-                Reposisi memindahkan aset antar ruangan di dalam unit yang sama, jadi lokasi tujuan
-                wajib dan unit tujuan dibiarkan tidak diubah.
+                Reposisi memindahkan aset antar ruangan di dalam unit yang sama, jadi lokasi tujuan wajib dan
+                unit tujuan dibiarkan tidak diubah.
               </p>
             )}
             {form.data.JenisMutasi === 'Akuisisi' && (
               <p className="text-sm text-muted-foreground">
-                Akuisisi mencatat aset yang masuk menjadi tanggung jawab sebuah unit, jadi unit tujuan
-                wajib diisi.
+                Akuisisi mencatat aset yang masuk menjadi tanggung jawab sebuah unit, jadi unit tujuan wajib
+                diisi.
               </p>
             )}
             {form.errors.LokasiTujuanId && (
@@ -165,7 +165,7 @@ export default function MutasiAsetIndex({
   return (
     <KerangkaAplikasi>
       <Head title="Mutasi Aset" />
-      <div className="space-y-4">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Mutasi Aset"
           deskripsi="Permintaan perpindahan lokasi/unit aset -- draft, persetujuan, sampai eksekusi."
@@ -182,10 +182,12 @@ export default function MutasiAsetIndex({
           }
         />
 
-        <div className="w-56 space-y-1.5">
-          <Label>Status</Label>
+        <div className="flex flex-wrap items-center gap-2">
+          <Label htmlFor="saring-status-mutasi" className="text-[13px] font-normal text-grafit-700">
+            Status
+          </Label>
           <Select value={status} onValueChange={terapkanFilter}>
-            <SelectTrigger>
+            <SelectTrigger id="saring-status-mutasi" className="w-44">
               <SelectValue placeholder="Semua" />
             </SelectTrigger>
             <SelectContent>
@@ -200,7 +202,7 @@ export default function MutasiAsetIndex({
         </div>
 
         {permintaan.data.length === 0 && (
-          <div className="rounded-[9px] border border-border bg-card">
+          <div className="rounded-md border border-border bg-card">
             <KeadaanKosong
               judul="Belum ada permintaan mutasi."
               deskripsi="Permintaan perpindahan aset akan muncul di sini."
@@ -209,7 +211,7 @@ export default function MutasiAsetIndex({
         )}
 
         {permintaan.data.length > 0 && (
-          <div className="rounded-[9px] border border-border bg-card">
+          <div className="rounded-md border border-border bg-card">
             <Table>
               <TableHeader>
                 <TableRow>

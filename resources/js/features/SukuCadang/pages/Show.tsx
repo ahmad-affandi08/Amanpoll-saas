@@ -301,7 +301,7 @@ export default function SukuCadangShow({
   return (
     <KerangkaAplikasi>
       <Head title={sukuCadang.Nama} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul={sukuCadang.Nama}
           labelBreadcrumb={sukuCadang.Kode}
@@ -316,26 +316,26 @@ export default function SukuCadangShow({
           }
         />
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-[9px] border border-border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Stok Minimum</p>
-            <p className="text-sm font-medium text-foreground">
+        <dl className="grid gap-4 rounded-md border border-border bg-card px-5 py-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <dt className="text-[13px] text-grafit-700">Stok Minimum</dt>
+            <dd className="text-sm font-medium text-foreground">
               {sukuCadang.StokMinimum} {sukuCadang.SatuanDasar}
-            </p>
+            </dd>
           </div>
-          <div className="rounded-[9px] border border-border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Titik Pesan Ulang</p>
-            <p className="text-sm font-medium text-foreground">{sukuCadang.TitikPesanUlang ?? '—'}</p>
+          <div>
+            <dt className="text-[13px] text-grafit-700">Titik Pesan Ulang</dt>
+            <dd className="text-sm font-medium text-foreground">{sukuCadang.TitikPesanUlang ?? '—'}</dd>
           </div>
-          <div className="rounded-[9px] border border-border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Harga Rata-rata</p>
-            <p className="text-sm font-medium text-foreground">{formatUang(sukuCadang.HargaRataRata)}</p>
+          <div>
+            <dt className="text-[13px] text-grafit-700">Harga Rata-rata</dt>
+            <dd className="text-sm font-medium text-foreground">{formatUang(sukuCadang.HargaRataRata)}</dd>
           </div>
-          <div className="rounded-[9px] border border-border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Nomor Bagian</p>
-            <p className="text-sm font-medium text-foreground">{sukuCadang.NomorBagian ?? '—'}</p>
+          <div>
+            <dt className="text-[13px] text-grafit-700">Nomor Bagian</dt>
+            <dd className="text-sm font-medium text-foreground">{sukuCadang.NomorBagian ?? '—'}</dd>
           </div>
-        </div>
+        </dl>
 
         <PanelStok
           stok={stok}
@@ -347,7 +347,7 @@ export default function SukuCadangShow({
 
         <PanelPemakaian pemakaian={pemakaian} satuan={sukuCadang.SatuanDasar} />
 
-        <div className="rounded-[9px] border border-border bg-card p-4">
+        <div className="rounded-md border border-border bg-card px-5 py-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Kelompok/Batch</h2>
             <DialogTambahKelompok sukuCadang={sukuCadang} wajib={wajib.kelompok} />
@@ -381,7 +381,7 @@ export default function SukuCadangShow({
           )}
         </div>
 
-        <div className="rounded-[9px] border border-border bg-card p-4">
+        <div className="rounded-md border border-border bg-card px-5 py-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Kompatibilitas dengan Aset</h2>
             <DialogTambahKompatibilitas

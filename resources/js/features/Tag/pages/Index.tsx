@@ -78,7 +78,7 @@ function DialogFormTag({ tag, wajib }: { tag: Tag | null; wajib: AturanWajib }) 
                   type="color"
                   value={form.data.Warna}
                   onChange={(e) => form.setData('Warna', e.target.value)}
-                  className="h-10 w-14 rounded-md border border-input"
+                  className="h-10 w-14 rounded-sm border border-input"
                 />
                 <Input
                   value={form.data.Warna}
@@ -158,7 +158,7 @@ export default function TagIndex({ tag, filter, wajib }: Props) {
             <DialogFormTag tag={null} wajib={wajib.tag} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {tag.meta.total === 0 && !adaPenyaringAktif(filter) ? (

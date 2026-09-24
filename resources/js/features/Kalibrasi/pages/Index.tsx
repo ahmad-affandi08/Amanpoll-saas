@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { tanggal } from '@/components/shared/riwayat';
 import { BellRing, Search, ArrowRight, Calendar } from 'lucide-react';
@@ -50,7 +51,7 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
     <KerangkaAplikasi>
       <Head title="Dasbor Kalibrasi & Kepatuhan" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Header */}
         <KepalaHalaman
           judul="Dasbor Kalibrasi"
@@ -59,7 +60,7 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
             <>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={jalankanPengingat} disabled={sedangMemeriksa}>
-                  <BellRing className="mr-1.5 size-4 text-teknisi-700" />
+                  <BellRing className="size-4" />
                   {sedangMemeriksa ? 'Memeriksa...' : 'Kirim Pengingat'}
                 </Button>
               </div>
@@ -67,111 +68,93 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
           }
         />
 
-        {/* 4 Clean StatCards (DESIGN.md 13.5: Label, Nilai, Metadata kecil) */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Total Rencana
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold tracking-tight text-foreground">{statistik.total}</div>
-              <p className="text-xs text-muted-foreground mt-1">Instrumen terdaftar</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Sertifikat Valid
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold tracking-tight text-sukses-600">{statistik.valid}</div>
-              <p className="text-xs text-muted-foreground mt-1">Jadwal masih berlaku</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Segera Jatuh Tempo
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold tracking-tight text-safety-600">
-                {statistik.segeraJatuhTempo}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">Dalam rentang pengingat</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Terlambat Kalibrasi
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold tracking-tight text-bahaya-600">
-                {statistik.terlambat}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">Perlu tindakan segera</p>
-            </CardContent>
-          </Card>
-        </div>
+        <DeretStatistik kolom={4}>
+          <KartuStatistik
+            menyatu
+            label="Total Rencana"
+            nilai={statistik.total}
+            keterangan="Instrumen terdaftar"
+          />
+          <KartuStatistik
+            menyatu
+            label="Sertifikat Valid"
+            nilai={statistik.valid}
+            keterangan={<span className="text-sukses-700">Jadwal masih berlaku</span>}
+          />
+          <KartuStatistik
+            menyatu
+            label="Segera Jatuh Tempo"
+            nilai={statistik.segeraJatuhTempo}
+            keterangan={
+              <span className={statistik.segeraJatuhTempo > 0 ? 'text-safety-700' : undefined}>
+                Dalam rentang pengingat
+              </span>
+            }
+          />
+          <KartuStatistik
+            menyatu
+            label="Terlambat Kalibrasi"
+            nilai={statistik.terlambat}
+            keterangan={
+              <span className={statistik.terlambat > 0 ? 'text-bahaya-700' : undefined}>
+                Perlu tindakan segera
+              </span>
+            }
+          />
+        </DeretStatistik>
 
         {/* Main Content Grid: Jadwal Kalibrasi (2 col) + Pelaksanaan Terakhir (1 col) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Left: Upcoming Calibration Schedule */}
           <div className="lg:col-span-2 space-y-4">
-            <Card className="border-border">
-              <CardHeader className="p-4 sm:p-5 border-b border-border">
+            <Card>
+              <CardHeader className="border-b border-border pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
-                    <CardTitle className="text-base font-semibold text-foreground">
-                      Jadwal Kalibrasi Aset
-                    </CardTitle>
+                    <CardTitle className="text-[15px]">Jadwal Kalibrasi Aset</CardTitle>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Status jatuh tempo dan kepatuhan instrumen aktif
                     </p>
                   </div>
-                  <div className="w-full sm:w-56">
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Cari aset atau jenis..."
-                        value={pencarian}
-                        onChange={(e) => setPencarian(e.target.value)}
-                        className="pl-8 h-9 text-xs"
-                      />
-                    </div>
+                  <div className="relative w-full sm:w-64">
+                    <Search
+                      aria-hidden="true"
+                      className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+                    />
+                    <Input
+                      aria-label="Cari aset atau jenis"
+                      placeholder="Cari aset atau jenis..."
+                      value={pencarian}
+                      onChange={(e) => setPencarian(e.target.value)}
+                      className="pl-8"
+                    />
                   </div>
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="flex items-center gap-1.5 pt-3 overflow-x-auto">
-                  {[
-                    { key: 'SEMUA', label: 'Semua Status' },
-                    { key: 'Terlambat', label: 'Terlambat' },
-                    { key: 'SegeraJatuhTempo', label: 'Segera Jatuh Tempo' },
-                    { key: 'Valid', label: 'Valid' },
-                  ].map((item) => (
-                    <button
-                      key={item.key}
-                      type="button"
-                      onClick={() => setFilterStatus(item.key)}
-                      aria-pressed={filterStatus === item.key}
-                      className={`inline-flex min-h-11 items-center whitespace-nowrap text-xs px-3 py-1.5 rounded-[7px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:min-h-0 ${
-                        filterStatus === item.key
-                          ? 'bg-teknisi-700 text-white'
-                          : 'bg-permukaan-100 text-grafit-700 hover:bg-garis-200'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+                <div className="mt-3 max-w-full overflow-x-auto">
+                  <div className="inline-flex rounded-sm border border-input">
+                    {[
+                      { key: 'SEMUA', label: 'Semua Status' },
+                      { key: 'Terlambat', label: 'Terlambat' },
+                      { key: 'SegeraJatuhTempo', label: 'Segera Jatuh Tempo' },
+                      { key: 'Valid', label: 'Valid' },
+                    ].map((item) => (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setFilterStatus(item.key)}
+                        aria-pressed={filterStatus === item.key}
+                        className={`inline-flex h-8 min-h-11 items-center whitespace-nowrap border-r border-input px-3 text-[13px] transition-colors last:border-r-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:min-h-0 ${
+                          filterStatus === item.key
+                            ? 'bg-permukaan-100 font-medium text-foreground'
+                            : 'text-grafit-700 hover:bg-permukaan-50'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </CardHeader>
 
@@ -189,8 +172,8 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-xs text-left">
-                      <thead className="bg-permukaan-50 text-muted-foreground border-b border-border">
+                    <table className="w-full text-left text-[13px]">
+                      <thead className="border-b border-border bg-permukaan-50 text-[12.5px] text-grafit-500">
                         <tr>
                           <th className="px-4 py-3 font-medium">Aset / Instrumen</th>
                           <th className="px-3 py-3 font-medium">Jenis Kalibrasi</th>
@@ -266,12 +249,10 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
 
           {/* Right: Recent Executions Log */}
           <div>
-            <Card className="border-border">
-              <CardHeader className="p-4 sm:p-5 border-b border-border flex flex-row items-center justify-between">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-4">
                 <div>
-                  <CardTitle className="text-base font-semibold text-foreground">
-                    Pelaksanaan Terakhir
-                  </CardTitle>
+                  <CardTitle className="text-[15px]">Pelaksanaan Terakhir</CardTitle>
                   <p className="text-xs text-muted-foreground mt-0.5">10 kegiatan kalibrasi terkini</p>
                 </div>
                 <Button asChild variant="ghost" size="sm" className="h-7 text-xs">
@@ -280,7 +261,7 @@ export default function KalibrasiIndex({ statistik, rencanaKalibrasi, pelaksanaa
               </CardHeader>
               <CardContent className="p-0 divide-y divide-border">
                 {pelaksanaanTerbaru.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-muted-foreground">
+                  <div className="p-5 text-center text-xs text-muted-foreground">
                     Belum ada riwayat pelaksanaan kalibrasi.
                   </div>
                 ) : (

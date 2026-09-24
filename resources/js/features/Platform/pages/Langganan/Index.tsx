@@ -67,7 +67,7 @@ export default function PlatformLanggananIndex({ langganan, organisasi, paket, s
     <KerangkaPlatform>
       <Head title="Langganan Tenant" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           tanpaBreadcrumb
           judul="Langganan Tenant"

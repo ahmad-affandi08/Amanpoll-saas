@@ -273,7 +273,7 @@ export default function KategoriAsetIndex({ kategoriAset, pilihanInduk, filter, 
             <DialogFormKategoriAset kategori={null} semuaKategori={pilihanInduk} wajib={wajib.kategoriAset} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

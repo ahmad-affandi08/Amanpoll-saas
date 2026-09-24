@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { rutePartner } from '@/features/PartnerPemasaran/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
@@ -104,13 +105,15 @@ export default function PartnerPemasaranPortal({
   };
 
   return (
-    <div className="min-h-screen bg-permukaan-100 p-6">
+    <div className="min-h-screen bg-background px-4 py-6 sm:px-6">
       <Head title="Portal Partner" />
 
-      <div className="mx-auto max-w-6xl space-y-6">
-        <header className="flex flex-wrap items-start justify-between gap-4 rounded-[10px] border border-border bg-card p-5">
+      <div className="mx-auto max-w-6xl space-y-5">
+        <header className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">{partner.NamaPerusahaan}</h1>
+            <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.01em] text-foreground">
+              {partner.NamaPerusahaan}
+            </h1>
             <p className="text-sm text-muted-foreground">
               {partner.LabelJenis} · Kode {partner.Kode}
               {partner.Program ? ` · ${partner.Program}` : ''}
@@ -122,7 +125,7 @@ export default function PartnerPemasaranPortal({
           </Button>
         </header>
 
-        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <DeretStatistik kolom={4}>
           {[
             { label: 'Lead dikirim', nilai: String(ringkasan.Lead ?? 0) },
             { label: 'Menjadi trial', nilai: String(ringkasan.Trial ?? 0) },
@@ -132,17 +135,12 @@ export default function PartnerPemasaranPortal({
             { label: 'Komisi dibayar', nilai: rupiah(ringkasan.KomisiDibayar ?? 0) },
             { label: 'Lead ditolak', nilai: String(ringkasan.Ditolak ?? 0) },
           ].map((kartu) => (
-            <div key={kartu.label} className="rounded-[10px] border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">{kartu.label}</p>
-              <p className="text-base font-semibold break-words text-foreground tabular-nums sm:text-lg">
-                {kartu.nilai}
-              </p>
-            </div>
+            <KartuStatistik key={kartu.label} menyatu label={kartu.label} nilai={kartu.nilai} />
           ))}
-        </section>
+        </DeretStatistik>
 
-        <section className="rounded-[10px] border border-border bg-card p-5">
-          <h2 className="text-base font-semibold text-foreground">Kirim lead baru</h2>
+        <section className="rounded-md border border-border bg-card p-5">
+          <h2 className="text-[15px] font-semibold text-foreground">Kirim lead baru</h2>
           <AturanWajibProvider aturan={wajib.lead}>
             <form onSubmit={kirimLead} className="mt-4 grid gap-4 md:grid-cols-2">
               <div className="space-y-1.5">
@@ -219,14 +217,14 @@ export default function PartnerPemasaranPortal({
           </AturanWajibProvider>
         </section>
 
-        <section className="rounded-[10px] border border-border bg-card p-5">
-          <h2 className="text-base font-semibold text-foreground">Lead Anda</h2>
+        <section className="rounded-md border border-border bg-card p-5">
+          <h2 className="text-[15px] font-semibold text-foreground">Lead Anda</h2>
           {lead.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">Belum ada lead yang dikirim.</p>
           ) : (
             <div className="mt-3 overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="text-muted-foreground">
+                <thead className="text-[12.5px] text-grafit-500">
                   <tr>
                     <th className="py-2 pr-4 font-medium">Perusahaan</th>
                     <th className="py-2 pr-4 font-medium">Kontak</th>
@@ -259,8 +257,8 @@ export default function PartnerPemasaranPortal({
           )}
         </section>
 
-        <section className="rounded-[10px] border border-border bg-card p-5">
-          <h2 className="text-base font-semibold text-foreground">Komisi</h2>
+        <section className="rounded-md border border-border bg-card p-5">
+          <h2 className="text-[15px] font-semibold text-foreground">Komisi</h2>
           {komisi.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">
               Komisi lahir dari pembayaran pertama lead Anda; belum ada yang membayar.
@@ -268,7 +266,7 @@ export default function PartnerPemasaranPortal({
           ) : (
             <div className="mt-3 overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="text-muted-foreground">
+                <thead className="text-[12.5px] text-grafit-500">
                   <tr>
                     <th className="py-2 pr-4 font-medium">Lead</th>
                     <th className="py-2 pr-4 font-medium">Pembayaran</th>
@@ -293,8 +291,8 @@ export default function PartnerPemasaranPortal({
           )}
         </section>
 
-        <section className="rounded-[10px] border border-border bg-card p-5">
-          <h2 className="text-base font-semibold text-foreground">Payout</h2>
+        <section className="rounded-md border border-border bg-card p-5">
+          <h2 className="text-[15px] font-semibold text-foreground">Payout</h2>
           {payout.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">Belum ada payout yang disusun.</p>
           ) : (
@@ -317,8 +315,8 @@ export default function PartnerPemasaranPortal({
           )}
         </section>
 
-        <section className="rounded-[10px] border border-border bg-card p-5">
-          <h2 className="text-base font-semibold text-foreground">Materi pemasaran</h2>
+        <section className="rounded-md border border-border bg-card p-5">
+          <h2 className="text-[15px] font-semibold text-foreground">Materi pemasaran</h2>
           {materi.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">
               Belum ada materi yang terbit di situs publik.

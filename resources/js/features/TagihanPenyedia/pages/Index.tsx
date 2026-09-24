@@ -40,26 +40,29 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title="Tagihan Penyedia" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Tagihan Penyedia"
           deskripsi="Tagihan hasil matching PO dan penerimaan, beserta sisa yang belum dibayar."
           aksi={<TombolEkspor url={ruteTagihanPenyedia.ekspor} filter={filter as Record<string, string>} />}
         />
 
-        <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_12rem_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari nomor tagihan"
               placeholder="Cari nomor tagihan"
-              className="pl-9"
+              className="pl-8"
               value={cari}
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -71,7 +74,7 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -83,21 +86,21 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
             deskripsi="Catat tagihan dari halaman pesanan pembelian yang sudah menerima barang."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500">
                   <tr>
-                    <th className="px-4 py-3">Nomor</th>
-                    <th className="px-4 py-3">Penyedia / PO</th>
-                    <th className="px-4 py-3 text-right">Total</th>
-                    <th className="px-4 py-3 text-right">Sisa</th>
-                    <th className="px-4 py-3">Status</th>
+                    <th className="h-10 px-4 font-medium">Nomor</th>
+                    <th className="h-10 px-4 font-medium">Penyedia / PO</th>
+                    <th className="h-10 px-4 font-medium text-right">Total</th>
+                    <th className="h-10 px-4 font-medium text-right">Sisa</th>
+                    <th className="h-10 px-4 font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {tagihan.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-accent">
+                    <tr key={item.Id} className="hover:bg-permukaan-50">
                       <td className="px-4 py-3">
                         <Link
                           className="font-mono font-medium hover:text-primary"
@@ -132,7 +135,7 @@ export default function TagihanPenyediaIndex({ tagihan, filter }: Props) {
                   href={ruteTagihanPenyedia.detail(item.Id)}
                   className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
-                  <ReceiptText className="size-5 shrink-0 text-primary" />
+                  <ReceiptText className="size-4 shrink-0 text-grafit-500" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-mono font-medium">{item.NomorTagihan}</p>
                     <p className="truncate text-xs text-muted-foreground">{item.NamaPenyedia}</p>

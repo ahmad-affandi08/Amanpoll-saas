@@ -4,6 +4,7 @@ import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { UsulanAset } from '@/features/UsulanAset/types';
 import { formatUang } from '@/lib/uang';
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
@@ -100,7 +101,7 @@ export default function UsulanAsetShow({
   return (
     <KerangkaAplikasi>
       <Head title={`${usulan.Nomor} — Usulan Aset`} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={ruteUsulanAset.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -151,7 +152,7 @@ export default function UsulanAsetShow({
             </>
           }
         />
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <DeretStatistik kolom={4}>
           {[
             ['Jumlah', Number(usulan.Jumlah).toLocaleString('id-ID')],
             [
@@ -166,16 +167,9 @@ export default function UsulanAsetShow({
             ],
             ['Prioritas', usulan.Prioritas],
           ].map(([label, value]) => (
-            <Card key={label}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {label}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="font-mono text-lg font-semibold">{value}</CardContent>
-            </Card>
+            <KartuStatistik key={label} menyatu label={label} nilai={value} />
           ))}
-        </div>
+        </DeretStatistik>
         <Card>
           <CardHeader>
             <CardTitle>Rincian Kebutuhan</CardTitle>
@@ -199,17 +193,17 @@ export default function UsulanAsetShow({
             </div>
           </CardContent>
         </Card>
-        <section className="overflow-hidden rounded-[9px] border border-border bg-card">
-          <div className="border-b border-border p-4">
-            <h2 className="font-semibold">Penilaian</h2>
+        <section className="overflow-hidden rounded-md border border-border bg-card">
+          <div className="border-b border-border px-5 py-4">
+            <h2 className="text-sm font-semibold text-foreground">Penilaian</h2>
             <p className="text-xs text-muted-foreground">Riwayat kriteria dan skor berbobot.</p>
           </div>
           {(usulan.Penilaian?.length ?? 0) === 0 ? (
-            <p className="p-8 text-center text-sm text-muted-foreground">Belum ada penilaian.</p>
+            <p className="p-5 text-center text-sm text-muted-foreground">Belum ada penilaian.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-[650px] w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Kriteria</th>
                     <th className="px-4 py-3 text-right">Bobot</th>

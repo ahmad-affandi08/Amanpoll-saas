@@ -187,7 +187,7 @@ export default function RencanaPengadaanIndex({
   return (
     <KerangkaAplikasi>
       <Head title="Rencana Pengadaan" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Rencana Pengadaan"
           deskripsi="Konsolidasikan usulan disetujui ke rencana dan pos anggaran."
@@ -202,14 +202,14 @@ export default function RencanaPengadaanIndex({
             </>
           }
         />
-        <form
-          onSubmit={terapkanFilter}
-          className="grid gap-2 rounded-[9px] border border-border bg-card p-3 sm:grid-cols-[1fr_8rem_12rem_auto]"
-        >
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
-              className="pl-9"
+              className="pl-8"
               aria-label="Cari rencana"
               placeholder="Cari nomor atau nama..."
               value={cari}
@@ -218,13 +218,14 @@ export default function RencanaPengadaanIndex({
           </div>
           <Input
             aria-label="Tahun"
+            className="w-full sm:w-28"
             type="number"
             placeholder="Tahun"
             value={tahun}
             onChange={(event) => setTahun(event.target.value)}
           />
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -236,7 +237,7 @@ export default function RencanaPengadaanIndex({
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -247,10 +248,10 @@ export default function RencanaPengadaanIndex({
             deskripsi="Buat rencana dari usulan yang telah disetujui."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Rencana</th>
                     <th className="px-4 py-3">Tahun / Pos</th>

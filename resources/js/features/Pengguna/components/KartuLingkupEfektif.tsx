@@ -39,7 +39,7 @@ export function KartuLingkupEfektif({ lingkup }: { lingkup: LingkupEfektifPenggu
   return (
     <section
       aria-labelledby="judul-lingkup"
-      className="mb-6 rounded-[9px] border border-border bg-card p-4 sm:p-5"
+      className="mb-5 rounded-md border border-border bg-card p-4 sm:p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="judul-lingkup" className="text-sm font-semibold text-foreground">

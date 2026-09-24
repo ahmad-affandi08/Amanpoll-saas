@@ -75,20 +75,20 @@ function ProfilAdmin({ platform }: { platform: PropsPlatform }) {
           size="lg"
           className="cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <Avatar className="h-8 w-8 rounded-lg">
-            <AvatarFallback className="rounded-lg bg-teknisi-700 text-xs font-bold text-white">
+          <Avatar className="size-8 rounded-full">
+            <AvatarFallback className="rounded-full bg-teknisi-100 text-xs font-semibold text-teknisi-800">
               {inisial(platform.Nama)}
             </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="truncate font-semibold text-white">{platform.Nama ?? 'Admin platform'}</span>
-            <span className="truncate text-xs text-sidebar-foreground">{platform.Email ?? ''}</span>
+            <span className="truncate font-medium text-foreground">{platform.Nama ?? 'Admin platform'}</span>
+            <span className="truncate text-xs text-grafit-500">{platform.Email ?? ''}</span>
           </div>
-          <ChevronsUpDown className="ml-auto size-4 text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden" />
+          <ChevronsUpDown className="ml-auto size-4 text-grafit-500 group-data-[collapsible=icon]:hidden" />
         </SidebarMenuButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg border border-border bg-card shadow-lg"
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
         side={diciutkan ? 'right' : 'bottom'}
         align="end"
         sideOffset={diciutkan ? 10 : 4}
@@ -135,14 +135,12 @@ export function KerangkaPlatform({ children }: PropsWithChildren) {
                 size="lg"
                 className="cursor-default hover:bg-transparent active:bg-transparent"
               >
-                <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-teknisi-800 p-1 text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm border border-border bg-card p-1">
                   <LogoLambang className="size-full object-contain" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate text-base font-bold tracking-tight text-white">Amanpoll</span>
-                  <span className="truncate text-[11px] leading-tight font-medium text-sidebar-foreground">
-                    Konsol Platform
-                  </span>
+                  <span className="truncate text-sm font-semibold text-foreground">Amanpoll</span>
+                  <span className="truncate text-xs leading-tight text-grafit-500">Konsol Platform</span>
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -166,14 +164,14 @@ export function KerangkaPlatform({ children }: PropsWithChildren) {
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex h-14 items-center gap-3 border-b border-border bg-card px-4 sm:px-6">
+        <header className="sticky top-0 z-20 flex h-13 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur-sm sm:px-8">
           <SidebarTrigger />
           <span className="flex items-center gap-2 text-sm font-medium text-grafit-700">
             <ShieldCheck aria-hidden="true" className="size-4 text-primary" />
             Konsol Platform
           </span>
         </header>
-        <div className="p-4 sm:p-6">{children}</div>
+        <div className="px-4 py-5 sm:px-8 sm:py-7">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

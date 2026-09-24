@@ -16,7 +16,7 @@ export function PerbandinganModel({ attribution }: { attribution: Attribution })
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Revenue menurut tiap model</CardTitle>
+        <CardTitle>Revenue menurut tiap model</CardTitle>
         <p className="text-xs text-muted-foreground">
           Angka yang dipakai kartu di atas adalah kolom {attribution.Label.toLowerCase()}.
         </p>

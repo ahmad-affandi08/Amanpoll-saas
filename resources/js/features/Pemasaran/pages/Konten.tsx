@@ -46,13 +46,13 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan, waj
         deskripsi="Konten berversi seperti halaman pemasaran: yang tayang adalah versi terkunci, dan yang ditandai noindex tidak pernah masuk peta situs."
         tanpaBreadcrumb
         aksi={<DialogKonten pilihan={pilihan} wajib={wajib.konten} />}
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="grid gap-6">
+      <div className="grid gap-5">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Konten</CardTitle>
+            <CardTitle>Konten</CardTitle>
           </CardHeader>
           <CardContent>
             {konten.length === 0 ? (
@@ -69,7 +69,7 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan, waj
 
         <Card>
           <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
-            <CardTitle className="text-base">Keyword</CardTitle>
+            <CardTitle>Keyword</CardTitle>
             <div className="flex gap-2">
               <DialogCluster />
               <DialogKeyword keyword={null} cluster={cluster} pilihan={pilihan} wajib={wajib.keyword} />
@@ -85,7 +85,7 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan, waj
                   .map((satu) => (
                     <div
                       key={satu.Id}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3"
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3"
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">{satu.Keyword}</p>
@@ -120,7 +120,7 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan, waj
 
 function BarisKonten({ konten }: { konten: KontenPemasaran }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border p-3">
       <div className="min-w-0">
         <Link href={`${AKAR}/${konten.Id}`} className="truncate text-sm font-medium hover:underline">
           {konten.Judul}

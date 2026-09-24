@@ -166,7 +166,7 @@ function DialogTingkatLayanan({
                 rows={2}
               />
             </div>
-            <section className="space-y-3 rounded-[9px] border border-border p-4">
+            <section className="space-y-3 rounded-md border border-border p-4">
               <div>
                 <h3 className="font-medium">Kalender kerja</h3>
                 <p className="text-xs text-muted-foreground">
@@ -232,7 +232,7 @@ function DialogTingkatLayanan({
               {form.data.Aturan.map((aturan, indeks) => (
                 <div
                   key={aturan.Prioritas}
-                  className="grid items-end gap-3 rounded-[9px] border border-border p-3 sm:grid-cols-[100px_1fr_1fr_auto]"
+                  className="grid items-end gap-3 rounded-md border border-border p-3 sm:grid-cols-[100px_1fr_1fr_auto]"
                 >
                   <div>
                     <Label>Prioritas</Label>
@@ -285,7 +285,7 @@ function DialogTingkatLayanan({
                 </Button>
               </div>
               {form.data.Eskalasi.map((eskalasi, indeks) => (
-                <div key={indeks} className="space-y-3 rounded-[9px] border border-border p-3">
+                <div key={indeks} className="space-y-3 rounded-md border border-border p-3">
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div className="space-y-1.5">
                       <Label>Pemicu</Label>
@@ -407,7 +407,7 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna, w
             />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
       <div className="grid gap-4 xl:grid-cols-2">
         {tingkatLayanan.map((sla) => (
@@ -468,7 +468,7 @@ export default function TingkatLayananIndex({ tingkatLayanan, peran, pengguna, w
           </Card>
         ))}
         {tingkatLayanan.length === 0 && (
-          <div className="rounded-[9px] border border-dashed border-border p-10 text-center text-sm text-muted-foreground xl:col-span-2">
+          <div className="rounded-md border border-dashed border-border p-5 text-center text-sm text-muted-foreground xl:col-span-2">
             Belum ada tingkat layanan.
           </div>
         )}

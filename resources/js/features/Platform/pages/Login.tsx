@@ -20,12 +20,12 @@ export default function PlatformLogin() {
       <Head title="Masuk Konsol Platform" />
       <form
         onSubmit={kirim}
-        className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
+        className="w-full max-w-sm space-y-5 rounded-md border border-border bg-card p-5"
       >
         <div className="flex flex-col items-center gap-3 pb-1 text-center">
-          <ShieldCheck aria-hidden="true" className="size-12 text-primary" />
+          <ShieldCheck aria-hidden="true" className="size-8 text-primary" />
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Konsol Platform</h1>
+            <h1 className="text-[15px] font-semibold text-foreground">Konsol Platform</h1>
             <p className="text-sm text-muted-foreground">
               Kelola katalog paket dan langganan seluruh organisasi.
             </p>

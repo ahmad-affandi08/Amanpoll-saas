@@ -296,7 +296,7 @@ export default function ModelAsetIndex({ modelAset, kategoriAset, merek, filter,
             />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {modelAset.meta.total === 0 && !adaPenyaringAktif(filter) ? (

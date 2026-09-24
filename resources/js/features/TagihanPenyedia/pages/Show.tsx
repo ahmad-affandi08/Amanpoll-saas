@@ -158,10 +158,10 @@ export default function TagihanPenyediaShow({ tagihan, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={tagihan.NomorTagihan} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={ruteTagihanPenyedia.index}
-          className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
+          className="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
         >
           <ArrowLeft className="size-4" /> Kembali
         </Link>
@@ -211,7 +211,7 @@ export default function TagihanPenyediaShow({ tagihan, wajib }: Props) {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Sisa</p>
-              <p className="font-mono text-lg font-semibold">{formatUang(tagihan.Sisa)}</p>
+              <p className="font-mono font-semibold text-foreground">{formatUang(tagihan.Sisa)}</p>
             </div>
           </CardContent>
         </Card>
@@ -239,7 +239,7 @@ export default function TagihanPenyediaShow({ tagihan, wajib }: Props) {
               pembayaran.map((item) => (
                 <div
                   key={item.Id}
-                  className="flex flex-col gap-2 rounded-[9px] border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-md border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-mono font-medium">{item.NomorPembayaran}</p>

@@ -163,7 +163,7 @@ export default function PerintahKerjaShow({
       </div>
 
       <KepalaHalaman
-        className="mb-6"
+        className="mb-5"
         judul={perintahKerja.Judul}
         labelBreadcrumb={perintahKerja.Nomor}
         lencana={
@@ -233,9 +233,9 @@ export default function PerintahKerjaShow({
 
       {/* BANNER NOTIFIKASI SESI AKTIF */}
       {(sesiKerjaAktif || waktuHentiAktif) && (
-        <div className="mb-6 grid gap-3 sm:grid-cols-2">
+        <div className="mb-5 grid gap-3 sm:grid-cols-2">
           {sesiKerjaAktif && (
-            <div className="flex items-center justify-between rounded-lg border border-teknisi-600/30 bg-teknisi-600/10 p-3 text-sm">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-teknisi-600/30 bg-teknisi-600/10 p-3 text-sm">
               <div>
                 <span className="font-semibold text-teknisi-700">Sesi Kerja Berjalan: </span>
                 <span>
@@ -248,15 +248,11 @@ export default function PerintahKerjaShow({
                     size="sm"
                     variant="outline"
                     onClick={() => tanganiWaktuKerja('Jeda')}
-                    className="cursor-pointer h-7 text-xs"
+                    className="cursor-pointer"
                   >
                     Jeda
                   </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => tanganiWaktuKerja('Selesai')}
-                    className="cursor-pointer h-7 text-xs bg-teknisi-700 text-white"
-                  >
+                  <Button size="sm" onClick={() => tanganiWaktuKerja('Selesai')} className="cursor-pointer">
                     Selesai Kerja
                   </Button>
                 </div>
@@ -265,7 +261,7 @@ export default function PerintahKerjaShow({
           )}
 
           {waktuHentiAktif && (
-            <div className="flex items-center justify-between rounded-lg border border-bahaya-600/30 bg-bahaya-600/10 p-3 text-sm">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-bahaya-600/30 bg-bahaya-600/10 p-3 text-sm">
               <div>
                 <span className="font-semibold text-bahaya-700">Downtime Aktif: </span>
                 <span>
@@ -278,13 +274,13 @@ export default function PerintahKerjaShow({
       )}
 
       {/* MAIN TWO COLUMN LAYOUT */}
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
         {/* KOLOM UTAMA */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* DETAIL & INSTRUKSI */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base font-semibold">Instruksi & Lingkup Pekerjaan</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
+              <CardTitle>Instruksi & Lingkup Pekerjaan</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
@@ -293,9 +289,7 @@ export default function PerintahKerjaShow({
 
               {perintahKerja.RingkasanPenyelesaian && (
                 <div className="rounded-md border border-sukses-600/20 bg-sukses-600/5 p-3">
-                  <div className="text-xs font-semibold text-sukses-700 uppercase tracking-wider">
-                    Ringkasan Penyelesaian
-                  </div>
+                  <div className="text-xs font-medium text-sukses-700">Ringkasan Penyelesaian</div>
                   <p className="mt-1 text-sm text-foreground">{perintahKerja.RingkasanPenyelesaian}</p>
                 </div>
               )}
@@ -327,8 +321,8 @@ export default function PerintahKerjaShow({
 
           {/* DAFTAR ASET TERKAIT */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">Aset yang Ditangani</CardTitle>
+            <CardHeader>
+              <CardTitle>Aset yang Ditangani</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="divide-y divide-border">
@@ -354,9 +348,9 @@ export default function PerintahKerjaShow({
 
           {/* SUKU CADANG & BAHAN */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
               <div>
-                <CardTitle className="text-base font-semibold">Suku Cadang & Bahan</CardTitle>
+                <CardTitle>Suku Cadang & Bahan</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Reservasi suku cadang dari gudang dan catat pemakaian aktualnya.
                 </p>
@@ -372,13 +366,11 @@ export default function PerintahKerjaShow({
             <CardContent className="space-y-4">
               {/* TABEL RESERVASI */}
               <div>
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Daftar Reservasi
-                </h4>
+                <h4 className="text-xs font-medium text-grafit-500 mb-2">Daftar Reservasi</h4>
                 {perintahKerja.ReservasiSukuCadang && perintahKerja.ReservasiSukuCadang.length > 0 ? (
-                  <div className="overflow-x-auto rounded border border-border">
+                  <div className="overflow-x-auto rounded-md border border-border">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-muted/40 text-muted-foreground border-b border-border">
+                      <thead className="bg-permukaan-50 text-grafit-500 border-b border-border [&_th]:font-medium">
                         <tr>
                           <th className="px-3 py-2">Suku Cadang</th>
                           <th className="px-3 py-2">Gudang</th>
@@ -404,7 +396,7 @@ export default function PerintahKerjaShow({
                                   <Button
                                     size="sm"
                                     onClick={() => tanganiAksiSukuCadang(res.Id, 'Pakai')}
-                                    className="cursor-pointer h-6 px-2 text-[11px] bg-teknisi-700 text-white"
+                                    className="cursor-pointer h-6 px-2 text-[11px]"
                                   >
                                     Pakai
                                   </Button>
@@ -434,12 +426,10 @@ export default function PerintahKerjaShow({
               {/* PEMAKAIAN AKTUAL */}
               {perintahKerja.PemakaianSukuCadang && perintahKerja.PemakaianSukuCadang.length > 0 && (
                 <div className="pt-2">
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Pemakaian Aktual & Biaya
-                  </h4>
-                  <div className="overflow-x-auto rounded border border-border">
+                  <h4 className="text-xs font-medium text-grafit-500 mb-2">Pemakaian Aktual & Biaya</h4>
+                  <div className="overflow-x-auto rounded-md border border-border">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-muted/40 text-muted-foreground border-b border-border">
+                      <thead className="bg-permukaan-50 text-grafit-500 border-b border-border [&_th]:font-medium">
                         <tr>
                           <th className="px-3 py-2">Suku Cadang</th>
                           <th className="px-3 py-2">Jumlah</th>
@@ -472,9 +462,9 @@ export default function PerintahKerjaShow({
 
           {/* ANALISIS KEGAGALAN */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
               <div>
-                <CardTitle className="text-base font-semibold">Analisis Kegagalan & Akar Masalah</CardTitle>
+                <CardTitle>Analisis Kegagalan & Akar Masalah</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Standar taksonomi Problem-Cause-Remedy untuk evaluasi keandalan aset.
                 </p>
@@ -491,23 +481,19 @@ export default function PerintahKerjaShow({
               {perintahKerja.AnalisisKegagalan ? (
                 <dl className="grid gap-3 text-sm sm:grid-cols-3">
                   <div className="rounded-md border border-border p-3 bg-muted/20">
-                    <dt className="text-xs font-semibold text-muted-foreground uppercase">Akar Masalah</dt>
+                    <dt className="text-xs font-medium text-grafit-500">Akar Masalah</dt>
                     <dd className="mt-1 text-sm font-medium">
                       {perintahKerja.AnalisisKegagalan.AkarMasalah || '—'}
                     </dd>
                   </div>
                   <div className="rounded-md border border-border p-3 bg-muted/20">
-                    <dt className="text-xs font-semibold text-muted-foreground uppercase">
-                      Tindakan Korektif
-                    </dt>
+                    <dt className="text-xs font-medium text-grafit-500">Tindakan Korektif</dt>
                     <dd className="mt-1 text-sm font-medium">
                       {perintahKerja.AnalisisKegagalan.TindakanKorektif || '—'}
                     </dd>
                   </div>
                   <div className="rounded-md border border-border p-3 bg-muted/20">
-                    <dt className="text-xs font-semibold text-muted-foreground uppercase">
-                      Tindakan Pencegahan
-                    </dt>
+                    <dt className="text-xs font-medium text-grafit-500">Tindakan Pencegahan</dt>
                     <dd className="mt-1 text-sm font-medium">
                       {perintahKerja.AnalisisKegagalan.TindakanPencegahan || '—'}
                     </dd>
@@ -526,7 +512,7 @@ export default function PerintahKerjaShow({
         </div>
 
         {/* KOLOM KANAN / SIDEBAR */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* KONFIRMASI PENERIMA (PRD 8.22) */}
           <KartuKonfirmasiPenerima
             perintahKerja={perintahKerja}
@@ -536,8 +522,8 @@ export default function PerintahKerjaShow({
 
           {/* PENUGASAN TEKNISI */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base font-semibold">Penugasan Teknisi</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
+              <CardTitle>Penugasan Teknisi</CardTitle>
               {dapatMengelola && (
                 <DialogTugaskanTeknisi
                   perintahKerja={perintahKerja}
@@ -580,19 +566,15 @@ export default function PerintahKerjaShow({
 
           {/* WAKTU KERJA / PENCATATAN JAM */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
               <div>
-                <CardTitle className="text-base font-semibold">Waktu Kerja</CardTitle>
-                <div className="text-xs font-semibold text-teknisi-700 mt-0.5">
+                <CardTitle>Waktu Kerja</CardTitle>
+                <div className="text-xs text-grafit-500 mt-0.5">
                   Total: {perintahKerja.TotalWaktuKerjaMenit ?? 0} Menit
                 </div>
               </div>
               {dapatMengoperasikan && !sesiKerjaAktif && (
-                <Button
-                  size="sm"
-                  onClick={() => tanganiWaktuKerja('Mulai')}
-                  className="cursor-pointer bg-teknisi-700 text-white h-7 text-xs"
-                >
+                <Button size="sm" onClick={() => tanganiWaktuKerja('Mulai')} className="cursor-pointer">
                   Mulai Kerja
                 </Button>
               )}
@@ -603,7 +585,7 @@ export default function PerintahKerjaShow({
                   {perintahKerja.WaktuKerja.map((w) => (
                     <div
                       key={w.Id}
-                      className="rounded border border-border p-2 flex justify-between items-center"
+                      className="rounded-sm border border-border p-2 flex justify-between items-center"
                     >
                       <div>
                         <span className="font-medium block">{w.NamaPengguna ?? 'Teknisi'}</span>
@@ -626,10 +608,10 @@ export default function PerintahKerjaShow({
 
           {/* DOWNTIME ASET */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
               <div>
-                <CardTitle className="text-base font-semibold">Downtime Aset</CardTitle>
-                <div className="text-xs font-semibold text-bahaya-600 mt-0.5">
+                <CardTitle>Downtime Aset</CardTitle>
+                <div className="text-xs font-medium text-bahaya-700 mt-0.5">
                   Total: {perintahKerja.TotalDowntimeMenit ?? 0} Menit
                 </div>
               </div>
@@ -643,7 +625,7 @@ export default function PerintahKerjaShow({
                   {perintahKerja.WaktuHenti.map((h) => (
                     <div
                       key={h.Id}
-                      className="rounded border border-border p-2 flex justify-between items-center"
+                      className="rounded-sm border border-border p-2 flex justify-between items-center"
                     >
                       <div>
                         <span className="font-medium block">{h.NamaAset ?? 'Aset'}</span>
@@ -665,10 +647,10 @@ export default function PerintahKerjaShow({
 
           {/* BIAYA PEKERJAAN */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
               <div>
-                <CardTitle className="text-base font-semibold">Biaya Pekerjaan</CardTitle>
-                <div className="text-xs font-semibold text-foreground mt-0.5">
+                <CardTitle>Biaya Pekerjaan</CardTitle>
+                <div className="text-xs text-grafit-500 mt-0.5">
                   Total: {formatRupiah(perintahKerja.TotalBiaya ?? 0)}
                 </div>
               </div>
@@ -695,8 +677,8 @@ export default function PerintahKerjaShow({
 
           {/* RIWAYAT STATUS */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">Riwayat Status</CardTitle>
+            <CardHeader>
+              <CardTitle>Riwayat Status</CardTitle>
             </CardHeader>
             <CardContent>
               <ol className="space-y-4">

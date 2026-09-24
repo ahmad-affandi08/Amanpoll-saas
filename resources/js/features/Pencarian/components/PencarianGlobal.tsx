@@ -202,11 +202,11 @@ export function PencarianGlobal({ halaman }: { halaman: HalamanTujuan[] }) {
         onClick={() => setBuka(true)}
         aria-label="Cari"
         aria-keyshortcuts="Control+K Meta+K"
-        className="inline-flex size-11 items-center justify-center rounded-[7px] text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9 sm:w-64 sm:justify-start sm:gap-2 sm:border sm:border-input sm:bg-card sm:px-3 sm:text-sm sm:text-muted-foreground sm:hover:border-teknisi-300 sm:hover:bg-card sm:hover:text-foreground lg:w-80"
+        className="inline-flex size-11 items-center justify-center rounded-sm text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-8 sm:w-64 sm:justify-start sm:gap-2 sm:border sm:border-input sm:bg-card sm:px-3 sm:text-sm sm:text-muted-foreground sm:hover:border-teknisi-300 sm:hover:bg-card sm:hover:text-foreground lg:w-80"
       >
         <Search className="size-[18px] shrink-0 sm:size-4" strokeWidth={1.75} />
         <span className="hidden flex-1 truncate text-left sm:inline">Cari aset, perintah kerja…</span>
-        <kbd className="hidden rounded-[4px] border border-garis-300 bg-permukaan-100 px-1.5 py-0.5 font-mono text-[11px] text-grafit-700 sm:inline">
+        <kbd className="hidden rounded-xs border border-garis-300 bg-permukaan-100 px-1.5 py-0.5 font-mono text-[11px] text-grafit-700 sm:inline">
           {pintasan}
         </kbd>
       </button>
@@ -296,7 +296,7 @@ export function PencarianGlobal({ halaman }: { halaman: HalamanTujuan[] }) {
                         onMouseMove={() => setAktif(indeks)}
                         onClick={() => bukaPilihan(satu)}
                         className={cn(
-                          'mx-1.5 flex min-h-11 cursor-pointer items-center gap-3 rounded-[7px] px-2.5 py-2 sm:min-h-0',
+                          'mx-1.5 flex min-h-11 cursor-pointer items-center gap-3 rounded-sm px-2.5 py-2 sm:min-h-0',
                           terpilih && 'bg-accent text-accent-foreground',
                         )}
                       >

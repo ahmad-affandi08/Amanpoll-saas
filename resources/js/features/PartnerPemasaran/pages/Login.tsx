@@ -16,16 +16,18 @@ export default function PartnerPemasaranLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 p-6">
+    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 px-4 py-6">
       <Head title="Masuk Portal Partner" />
       <form
         onSubmit={kirim}
-        className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
+        className="w-full max-w-sm space-y-5 rounded-md border border-border bg-card p-6"
       >
         <div className="flex flex-col items-center gap-3 pb-1 text-center">
           <Handshake aria-hidden="true" className="size-12 text-primary" />
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Portal Partner</h1>
+            <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.01em] text-foreground">
+              Portal Partner
+            </h1>
             <p className="text-sm text-muted-foreground">
               Kirim lead, pantau perjalanannya, dan lihat komisi Anda.
             </p>

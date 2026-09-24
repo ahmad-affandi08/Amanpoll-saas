@@ -8,7 +8,7 @@ export function CacChannel({ baris, takTerpecah }: { baris: BarisCac[]; takTerpe
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">CAC per Channel</CardTitle>
+        <CardTitle>CAC per Channel</CardTitle>
       </CardHeader>
       <CardContent>
         {baris.length === 0 ? (
@@ -46,7 +46,7 @@ export function CacChannel({ baris, takTerpecah }: { baris: BarisCac[]; takTerpe
         )}
 
         {takTerpecah.Kampanye.length > 0 ? (
-          <p className="mt-3 rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
+          <p className="mt-3 rounded-md border border-dashed p-3 text-xs text-muted-foreground">
             {takTerpecah.Kampanye.length} kampanye berjalan di lebih dari satu channel (
             {takTerpecah.Kampanye.join(', ')}), sehingga {formatAngka(takTerpecah.Biaya)} belanja dan{' '}
             {takTerpecah.Pelanggan} pelanggan barunya tidak dapat dipecah per channel tanpa menebak. Angkanya

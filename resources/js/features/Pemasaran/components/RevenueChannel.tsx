@@ -18,7 +18,7 @@ export function RevenueChannel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Revenue per Channel</CardTitle>
+        <CardTitle>Revenue per Channel</CardTitle>
         <p className="text-xs text-muted-foreground">
           Model {attribution.Label.toLowerCase()}
           {attribution.Model === 'TimeDecay' ? ` · paruh ${attribution.ParuhHari} hari` : ''} ·{' '}

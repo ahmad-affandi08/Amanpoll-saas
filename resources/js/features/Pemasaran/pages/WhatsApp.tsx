@@ -40,12 +40,12 @@ export default function PemasaranWhatsApp({
         deskripsi="Template menunggu persetujuan penyedia sebelum boleh berangkat, dan setiap nomor dapat berhenti kapan saja."
         tanpaBreadcrumb
         aksi={<DialogFormTemplate template={null} variabel={variabel} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       <RingkasanKiriman ringkasan={ringkasanKiriman} kataBerhenti={kataBerhenti} />
 
-      <Tabs defaultValue="template" className="mt-6">
+      <Tabs defaultValue="template" className="mt-5">
         <TabsList>
           <TabsTrigger value="template">Template</TabsTrigger>
           <TabsTrigger value="menu">Menu Percakapan</TabsTrigger>
@@ -82,7 +82,7 @@ function RingkasanKiriman({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Kiriman WhatsApp</CardTitle>
+        <CardTitle>Kiriman WhatsApp</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-3">
@@ -139,7 +139,7 @@ function KartuTemplate({
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <CardTitle className="text-base">{template.Nama}</CardTitle>
+          <CardTitle>{template.Nama}</CardTitle>
           <p className="font-mono text-xs text-muted-foreground">
             {template.Kode} · {template.Bahasa} · {template.Kategori}
           </p>

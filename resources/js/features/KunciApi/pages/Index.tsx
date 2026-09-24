@@ -162,7 +162,7 @@ function DialogBuatKunci({ wajib }: { wajib: AturanWajib }) {
               {katalog &&
                 Object.entries(katalog).map(([modul, daftar]) => (
                   <div key={modul} className="mb-3">
-                    <h4 className="mb-1 text-xs font-semibold uppercase text-muted-foreground">{modul}</h4>
+                    <h4 className="mb-1 text-xs font-medium text-grafit-500">{modul}</h4>
                     {daftar.map((izin) => (
                       <label key={izin.Id} className="flex items-center gap-2 text-sm">
                         <Checkbox
@@ -298,7 +298,7 @@ export default function KunciApiIndex({ kunciApi, filter, wajib }: Props) {
             <DialogBuatKunci wajib={wajib.kunciApi} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

@@ -46,11 +46,11 @@ export default function PemasaranOtomasiIndex({ otomasi, pilihan, wajib }: Props
         deskripsi="Pemicu, kondisi, jeda, dan aksi. Setiap versi dikunci saat diaktifkan."
         tanpaBreadcrumb
         aksi={<DialogOtomasi pilihan={pilihan} wajib={wajib.otomasi} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {belumBerlaku.length > 0 ? (
-        <div className="mb-4 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+        <div className="mb-4 rounded-md border border-dashed p-4 text-sm text-muted-foreground">
           {belumBerlaku.length} otomasi menyala tetapi pemicunya belum ada sumbernya, jadi tidak akan pernah
           berjalan: <span className="font-mono">{belumBerlaku.map((satu) => satu.Kode).join(', ')}</span>.
         </div>
@@ -64,7 +64,7 @@ export default function PemasaranOtomasiIndex({ otomasi, pilihan, wajib }: Props
             <Card key={satu.Id}>
               <CardHeader className="flex-row items-start justify-between gap-2 space-y-0">
                 <div className="min-w-0">
-                  <CardTitle className="text-base">
+                  <CardTitle>
                     <Link href={`${AKAR}/${satu.Kode}`} className="hover:underline">
                       {satu.Nama}
                     </Link>

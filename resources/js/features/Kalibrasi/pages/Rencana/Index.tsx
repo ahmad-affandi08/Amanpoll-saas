@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Trash2, ArrowRight, Filter, Search } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
@@ -89,7 +89,7 @@ export default function KalibrasiRencanaIndex({
     <KerangkaAplikasi>
       <Head title="Rencana Kalibrasi Berkala" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Header */}
         <KepalaHalaman
           judul="Rencana Kalibrasi"
@@ -115,91 +115,75 @@ export default function KalibrasiRencanaIndex({
           }
         />
 
-        {/* Filter Card */}
-        <Card className="border-border">
-          <CardHeader className="p-4 sm:p-5 border-b border-border">
-            <div
-              className={
-                unitPengelolaDipakai
-                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3'
-                  : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'
-              }
-            >
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                <Input
-                  placeholder="Cari aset atau instrumen..."
-                  value={pencarian}
-                  onChange={(e) => setPencarian(e.target.value)}
-                  className="pl-8 h-9 text-xs"
-                />
-              </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
+            <Input
+              aria-label="Cari aset atau instrumen"
+              placeholder="Cari aset atau instrumen..."
+              value={pencarian}
+              onChange={(e) => setPencarian(e.target.value)}
+              className="pl-8"
+            />
+          </div>
 
-              <div>
-                <Select
-                  value={filter.status ?? '__all__'}
-                  onValueChange={(val) => terapkanFilter('status', val)}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Status Kepatuhan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__all__">Semua Status Kepatuhan</SelectItem>
-                    <SelectItem value="Valid">Valid</SelectItem>
-                    <SelectItem value="SegeraJatuhTempo">Segera Jatuh Tempo</SelectItem>
-                    <SelectItem value="Terlambat">Terlambat</SelectItem>
-                    <SelectItem value="TidakAktif">Tidak Aktif</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <Select value={filter.status ?? '__all__'} onValueChange={(val) => terapkanFilter('status', val)}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Status Kepatuhan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">Semua Status Kepatuhan</SelectItem>
+              <SelectItem value="Valid">Valid</SelectItem>
+              <SelectItem value="SegeraJatuhTempo">Segera Jatuh Tempo</SelectItem>
+              <SelectItem value="Terlambat">Terlambat</SelectItem>
+              <SelectItem value="TidakAktif">Tidak Aktif</SelectItem>
+            </SelectContent>
+          </Select>
 
-              <div>
-                <Combobox
-                  nilai={filter.jenisKalibrasiId ?? '__all__'}
-                  onPilih={(val) => terapkanFilter('jenisKalibrasiId', val)}
-                  opsi={[
-                    { nilai: '__all__', label: 'Semua Jenis Kalibrasi' },
-                    ...opsiDari(jenisKalibrasi, (jk) => jk.Nama),
-                  ]}
-                  placeholder="Jenis Kalibrasi"
-                  className="h-9 text-xs"
-                />
-              </div>
+          <Combobox
+            nilai={filter.jenisKalibrasiId ?? '__all__'}
+            onPilih={(val) => terapkanFilter('jenisKalibrasiId', val)}
+            opsi={[
+              { nilai: '__all__', label: 'Semua Jenis Kalibrasi' },
+              ...opsiDari(jenisKalibrasi, (jk) => jk.Nama),
+            ]}
+            placeholder="Jenis Kalibrasi"
+            className="w-full sm:w-48"
+          />
 
-              <div>
-                <Combobox
-                  nilai={filter.asetId ?? '__all__'}
-                  onPilih={(val) => terapkanFilter('asetId', val)}
-                  opsi={[
-                    { nilai: '__all__', label: 'Semua Aset' },
-                    ...opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`),
-                  ]}
-                  placeholder="Pilih Aset Spesifik"
-                  className="h-9 text-xs"
-                />
-              </div>
+          <Combobox
+            nilai={filter.asetId ?? '__all__'}
+            onPilih={(val) => terapkanFilter('asetId', val)}
+            opsi={[
+              { nilai: '__all__', label: 'Semua Aset' },
+              ...opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`),
+            ]}
+            placeholder="Pilih Aset Spesifik"
+            className="w-full sm:w-48"
+          />
 
-              {unitPengelolaDipakai && (
-                <div>
-                  <Combobox
-                    nilai={filter.unitPengelolaId ?? '__all__'}
-                    onPilih={(val) => terapkanFilter('unitPengelolaId', val)}
-                    opsi={[
-                      { nilai: '__all__', label: 'Semua Unit Pengelola' },
-                      ...opsiDari(
-                        saringanUnitPengelola,
-                        (unit) => unit.Nama,
-                        (unit) => unit.Kode,
-                      ),
-                    ]}
-                    placeholder="Unit Pengelola"
-                    className="h-9 text-xs"
-                  />
-                </div>
-              )}
-            </div>
-          </CardHeader>
+          {unitPengelolaDipakai && (
+            <Combobox
+              nilai={filter.unitPengelolaId ?? '__all__'}
+              onPilih={(val) => terapkanFilter('unitPengelolaId', val)}
+              opsi={[
+                { nilai: '__all__', label: 'Semua Unit Pengelola' },
+                ...opsiDari(
+                  saringanUnitPengelola,
+                  (unit) => unit.Nama,
+                  (unit) => unit.Kode,
+                ),
+              ]}
+              placeholder="Unit Pengelola"
+              className="w-full sm:w-48"
+            />
+          )}
+        </div>
 
+        <Card>
           <CardContent className="p-0">
             {filteredList.length === 0 ? (
               <div className="py-12">
@@ -210,8 +194,8 @@ export default function KalibrasiRencanaIndex({
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-permukaan-50 text-muted-foreground border-b border-border">
+                <table className="w-full text-left text-[13px]">
+                  <thead className="border-b border-border bg-permukaan-50 text-[12.5px] text-grafit-500">
                     <tr>
                       <th className="px-4 py-3 font-medium">Aset / Instrumen</th>
                       <th className="px-4 py-3 font-medium">Jenis Kalibrasi</th>

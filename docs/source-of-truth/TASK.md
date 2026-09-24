@@ -3962,6 +3962,27 @@ Sisa risiko: belum ada uji bolak-balik ke R2/S3 sungguhan (malam pertama produks
 
 ---
 
+# FASE 46 — Arah desain N "Presisi" untuk dasbor dan konsol
+
+Pemilik produk menilai tampilan terlalu generik bawaan shadcn ("norak"). Setelah empat putaran mockup (13 arah, tanpa gradien dan tanpa mode gelap), dipilih arah N: rapi, presisi, betah dilihat, tidak ramai (24 September 2026). Koordinator mengerjakan fondasi; lima agen paralel menyapu halaman fitur per kelompok folder.
+
+- [x] 46.01 Token: latar halaman putih, border Garis-200, tepi isian Garis-300, sidebar terang Permukaan-50.
+- [x] 46.02 Komponen dasar `components/ui`: tombol dan isian 32px radius 6px tanpa bayangan, kartu datar, badge tanpa garis tepi, kepala tabel Permukaan-50, tab segmen netral, bayangan hanya untuk lapisan mengapung.
+- [x] 46.03 Kerangka tenant dan konsol platform: sidebar terang (item aktif putih bercincin), topbar 52px menempel, grup menu kalimat biasa.
+- [x] 46.04 Komponen bersama: `KepalaHalaman`, `KartuStatistik` + `DeretStatistik` (angka berjajar dalam satu bingkai bersekat), toolbar DataTable berikon cari.
+- [x] 46.05 Dashboard: KPI angka berurutan digabung ke satu deret bersekat; baris filter satu baris tanpa kartu dengan segmen 7/30/90 hari.
+- [x] 46.06 Sapu halaman fitur (± 150 berkas): tanpa bayangan dan radius besar, label angka tanpa huruf kapital, angka netral, penyaring satu baris tanpa kartu, chip solid menjadi segmen netral, palet mentah menjadi token.
+- [x] 46.07 DESIGN.md §1, §4, §6–§9, §12, §13 diperbarui.
+
+Yang dipilih:
+- Mode Lapangan (§36) dan halaman autentikasi (§37) tidak disentuh; keduanya tetap pada arah masing-masing.
+- Tinggi ponsel isian dijaga lewat `min-h-10 sm:min-h-0`, bukan `h-10 sm:h-8`: pola terakhir membuat `sm:h-8` menimpa tinggi khusus pemanggil di desktop (isian autentikasi 52px sempat mengecil ke 32px).
+- Tombol hijau "Terima Tugas" dan "Selesaikan & Kunci Checklist" dibiarkan hijau karena menandai penyelesaian.
+
+Verifikasi: tsc, build, Pint, PHPStan 164 (tidak bertambah), 2.416 test lulus; 17 halaman tenant dan konsol ditangkap layar dan diperiksa.
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text

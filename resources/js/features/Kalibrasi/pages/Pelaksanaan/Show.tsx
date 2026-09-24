@@ -3,11 +3,11 @@ import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, FileBadge, Calendar, ShieldCheck } from 'lucide-react';
+import { FileBadge, Calendar, ShieldCheck } from 'lucide-react';
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
-import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { tanggal } from '@/components/shared/riwayat';
 import { DialogFinalisasiKalibrasi } from '@/features/Kalibrasi/components/DialogFinalisasiKalibrasi';
 import { EditorTitikUkur } from '@/features/Kalibrasi/components/EditorTitikUkur';
@@ -28,48 +28,39 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
   return (
     <KerangkaAplikasi>
       <Head title={`Kalibrasi ${pelaksanaan.Nomor} - ${pelaksanaan.aset?.Nama}`} />
-      <BreadcrumbHalaman />
-
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Button asChild variant="outline" size="icon" className="sm:size-8">
-              <Link href={ruteKalibrasi.pelaksanaan}>
-                <ArrowLeft className="size-4" />
-              </Link>
-            </Button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold tracking-tight text-foreground font-mono">
-                  {pelaksanaan.Nomor}
-                </h1>
-                <Badge variant="outline" className={badgeHasil.className}>
-                  {badgeHasil.label}
+      <div className="space-y-5">
+        <KepalaHalaman
+          judul={<span className="font-mono">{pelaksanaan.Nomor}</span>}
+          lencana={
+            <>
+              <Badge variant="outline" className={badgeHasil.className}>
+                {badgeHasil.label}
+              </Badge>
+              {sudahVerifikasi && (
+                <Badge variant="sukses" className="gap-1">
+                  <ShieldCheck className="size-3" />
+                  Terverifikasi
                 </Badge>
-                {sudahVerifikasi && (
-                  <Badge variant="outline" className="border-sukses-200 bg-sukses-50 text-sukses-700 gap-1">
-                    <ShieldCheck className="size-3" />
-                    Terverifikasi
-                  </Badge>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Aset: <span className="font-semibold text-foreground">{pelaksanaan.aset?.Nama}</span> (
-                <span className="font-mono">{pelaksanaan.aset?.KodeAset}</span>)
-                {pelaksanaan.rencanaKalibrasi && ` • Terhubung ke Rencana Kalibrasi`}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {!sudahVerifikasi && <DialogFinalisasiKalibrasi pelaksanaan={pelaksanaan} wajib={wajib.hasil} />}
-          </div>
-        </div>
+              )}
+            </>
+          }
+          deskripsi={
+            <>
+              Aset: <span className="font-medium text-foreground">{pelaksanaan.aset?.Nama}</span> (
+              <span className="font-mono">{pelaksanaan.aset?.KodeAset}</span>)
+              {pelaksanaan.rencanaKalibrasi && ` • Terhubung ke Rencana Kalibrasi`}
+            </>
+          }
+          aksi={
+            !sudahVerifikasi ? (
+              <DialogFinalisasiKalibrasi pelaksanaan={pelaksanaan} wajib={wajib.hasil} />
+            ) : undefined
+          }
+        />
 
         {/* Certificate Authorized Banner if verified */}
         {sudahVerifikasi && (
-          <div className="p-4 rounded-[8px] bg-sukses-50 border border-sukses-200 flex items-start gap-3">
+          <div className="flex items-start gap-3 rounded-md border border-sukses-200 bg-sukses-50 p-4">
             <FileBadge className="size-5 text-sukses-600 mt-0.5 shrink-0" />
             <div className="space-y-1 text-xs">
               <div className="font-semibold text-foreground">
@@ -82,19 +73,19 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
                   {pelaksanaan.diverifikasiOleh?.Nama ?? 'Petugas Berwenang'}
                 </span>{' '}
                 pada {pelaksanaan.DiverifikasiPada}. Berlaku sampai dengan{' '}
-                <span className="font-bold">{tanggal(pelaksanaan.TanggalBerlakuSampai ?? null)}</span>. Siklus
-                kalibrasi berikutnya pada instrumen telah otomatis diperbarui.
+                <span className="font-semibold">{tanggal(pelaksanaan.TanggalBerlakuSampai ?? null)}</span>.
+                Siklus kalibrasi berikutnya pada instrumen telah otomatis diperbarui.
               </p>
             </div>
           </div>
         )}
 
         {/* Metadata Overview Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-border">
-            <CardHeader className="pb-3 border-b border-border">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Calendar className="size-4 text-teknisi-700" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="border-b border-border pb-3">
+              <CardTitle className="flex items-center gap-1.5">
+                <Calendar className="size-4 text-grafit-500" />
                 Informasi Kalibrasi
               </CardTitle>
             </CardHeader>
@@ -117,7 +108,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-muted-foreground">Nomor Sertifikat:</span>
-                <span className="font-mono font-bold text-foreground">
+                <span className="font-mono font-semibold text-foreground">
                   {pelaksanaan.NomorSertifikat || (
                     <span className="text-muted-foreground font-normal italic">Belum terbit</span>
                   )}
@@ -126,11 +117,9 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
             </CardContent>
           </Card>
 
-          <Card className="border-border">
-            <CardHeader className="pb-3 border-b border-border">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                Pelaksana & Verifikator
-              </CardTitle>
+          <Card>
+            <CardHeader className="border-b border-border pb-3">
+              <CardTitle className="flex items-center gap-1.5">Pelaksana & Verifikator</CardTitle>
             </CardHeader>
             <CardContent className="pt-3 space-y-2.5 text-xs">
               <div className="flex justify-between py-1 border-b border-border/50">
@@ -160,11 +149,9 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
             </CardContent>
           </Card>
 
-          <Card className="border-border">
-            <CardHeader className="pb-3 border-b border-border">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                Kondisi Lingkungan & Catatan
-              </CardTitle>
+          <Card>
+            <CardHeader className="border-b border-border pb-3">
+              <CardTitle className="flex items-center gap-1.5">Kondisi Lingkungan & Catatan</CardTitle>
             </CardHeader>
             <CardContent className="pt-3 space-y-2.5 text-xs">
               <div className="flex justify-between py-1 border-b border-border/50">
@@ -181,7 +168,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
               </div>
               <div className="py-1">
                 <span className="text-muted-foreground block mb-1">Catatan Pengujian:</span>
-                <p className="text-grafit-700 italic bg-permukaan-100 p-2 rounded-[6px] text-[11px] border border-border">
+                <p className="text-grafit-700 italic bg-permukaan-100 p-2 rounded-sm text-[11px] border border-border">
                   {pelaksanaan.Catatan || 'Tidak ada catatan khusus.'}
                 </p>
               </div>

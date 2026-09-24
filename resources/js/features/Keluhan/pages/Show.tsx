@@ -278,7 +278,7 @@ export default function KeluhanShow({
         </Link>
       </div>
       <KepalaHalaman
-        className="mb-6"
+        className="mb-5"
         judul={keluhan.Judul}
         labelBreadcrumb={keluhan.Nomor}
         lencana={

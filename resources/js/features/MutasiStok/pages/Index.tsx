@@ -164,7 +164,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter, wajib }: P
             <DialogBuatMutasi gudang={gudang} wajib={wajib.mutasi} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {mutasiStok.data.length === 0 ? (
@@ -174,30 +174,32 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter, wajib }: P
           deskripsi="Buat mutasi pertama untuk mulai mencatat pergerakan stok."
         />
       ) : (
-        <div className="space-y-2">
-          {mutasiStok.data.map((m) => (
-            <Link
-              key={m.Id}
-              href={ruteMutasiStok.detail(m.Id)}
-              className="flex items-center justify-between rounded-[9px] border border-border bg-card p-4 hover:border-teknisi-600/40"
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-sm text-muted-foreground">{m.Nomor}</span>
-                  <Badge variant="netral">{LABEL_JENIS[m.Jenis]}</Badge>
+        <div className="overflow-hidden rounded-md border border-border bg-card">
+          <div className="divide-y divide-border">
+            {mutasiStok.data.map((m) => (
+              <Link
+                key={m.Id}
+                href={ruteMutasiStok.detail(m.Id)}
+                className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-permukaan-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-sm text-muted-foreground">{m.Nomor}</span>
+                    <Badge variant="netral">{LABEL_JENIS[m.Jenis]}</Badge>
+                  </div>
+                  <div className="mt-1 text-sm text-foreground">
+                    {m.NamaGudangAsal && <span>{m.NamaGudangAsal}</span>}
+                    {m.NamaGudangAsal && m.NamaGudangTujuan && <span className="mx-1">&rarr;</span>}
+                    {m.NamaGudangTujuan && <span>{m.NamaGudangTujuan}</span>}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(m.Tanggal).toLocaleString('id-ID')} &middot; {m.NamaDibuatOleh}
+                  </div>
                 </div>
-                <div className="mt-1 text-sm text-foreground">
-                  {m.NamaGudangAsal && <span>{m.NamaGudangAsal}</span>}
-                  {m.NamaGudangAsal && m.NamaGudangTujuan && <span className="mx-1">&rarr;</span>}
-                  {m.NamaGudangTujuan && <span>{m.NamaGudangTujuan}</span>}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {new Date(m.Tanggal).toLocaleString('id-ID')} &middot; {m.NamaDibuatOleh}
-                </div>
-              </div>
-              <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[m.Status]}>{m.Status}</Badge>
-            </Link>
-          ))}
+                <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[m.Status]}>{m.Status}</Badge>
+              </Link>
+            ))}
+          </div>
           <KontrolPaginasi
             meta={mutasiStok.meta}
             onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}

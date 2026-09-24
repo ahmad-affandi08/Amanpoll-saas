@@ -476,7 +476,7 @@ export default function PenggunaIndex({
         judul="Pengguna"
         deskripsi="Kelola akun pengguna dan penetapan peran."
         aksi={<>{bolehKelola && <DialogFormPengguna pengguna={null} wajib={wajib.pengguna} />}</>}
-        className="mb-6"
+        className="mb-5"
       />
 
       {pengguna.meta.total === 0 && !adaPenyaringAktif(filter) ? (

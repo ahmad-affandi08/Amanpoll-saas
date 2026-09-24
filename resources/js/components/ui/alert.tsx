@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
  * Teks dan ikon shade -700, sama dengan Badge: shade -600 di atas tint-nya 2,7-4,4:1.
  */
 const alertVariants = cva(
-  'relative flex w-full items-start gap-3 rounded-[9px] border px-4 py-3 text-sm [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:translate-y-0.5',
+  'relative flex w-full items-start gap-3 rounded-md border px-4 py-3 text-sm [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:translate-y-0.5',
   {
     variants: {
       variant: {

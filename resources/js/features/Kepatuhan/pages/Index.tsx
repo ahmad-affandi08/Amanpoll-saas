@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ClipboardCheck, Search, Trash2 } from 'lucide-react';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
@@ -71,7 +72,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
   return (
     <KerangkaAplikasi>
       <Head title="Kepatuhan" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Kepatuhan"
           deskripsi="Standar yang berlaku bagi organisasi, persyaratannya, dan status kepatuhan tiap aset."
@@ -86,19 +87,12 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           }
         />
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { label: 'Kepatuhan', nilai: `${ringkasan.persentaseKepatuhan}%`, kelas: 'text-foreground' },
-            { label: 'Belum diperiksa', nilai: ringkasan.belumDiperiksa, kelas: 'text-muted-foreground' },
-            { label: 'Tidak patuh', nilai: ringkasan.tidakPatuh, kelas: 'text-bahaya-600' },
-            { label: 'Kedaluwarsa', nilai: ringkasan.kedaluwarsa, kelas: 'text-safety-600' },
-          ].map((kartu) => (
-            <div key={kartu.label} className="rounded-[9px] border border-border bg-card p-4">
-              <p className="text-xs text-muted-foreground">{kartu.label}</p>
-              <p className={`mt-1 text-2xl font-semibold ${kartu.kelas}`}>{kartu.nilai}</p>
-            </div>
-          ))}
-        </div>
+        <DeretStatistik kolom={4}>
+          <KartuStatistik menyatu label="Kepatuhan" nilai={`${ringkasan.persentaseKepatuhan}%`} />
+          <KartuStatistik menyatu label="Belum diperiksa" nilai={ringkasan.belumDiperiksa} />
+          <KartuStatistik menyatu label="Tidak patuh" nilai={ringkasan.tidakPatuh} />
+          <KartuStatistik menyatu label="Kedaluwarsa" nilai={ringkasan.kedaluwarsa} />
+        </DeretStatistik>
 
         <Card>
           <CardHeader>
@@ -116,7 +110,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
                   <Link
                     key={item.Id}
                     href={ruteKepatuhan.standarDetail(item.Id)}
-                    className="flex items-center justify-between rounded-[9px] border border-border p-3 transition hover:border-primary/40"
+                    className="flex items-center justify-between rounded-md border border-border p-3 transition hover:border-primary/40"
                   >
                     <div className="min-w-0">
                       <p className="truncate font-medium">{item.Nama}</p>
@@ -136,19 +130,22 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
           </CardContent>
         </Card>
 
-        <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_13rem_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari kode atau nama aset"
               placeholder="Cari kode atau nama aset"
-              className="pl-9"
+              className="pl-8"
               value={cari}
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -160,7 +157,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -172,10 +169,10 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
             deskripsi="Tugaskan standar ke aset agar status kepatuhannya dapat dipantau."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Aset</th>
                     <th className="px-4 py-3">Persyaratan</th>

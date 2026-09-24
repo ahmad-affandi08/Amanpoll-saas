@@ -123,12 +123,16 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
       <KepalaHalaman
         judul="Stok Suku Cadang"
         deskripsi="Saldo stok per gudang -- hanya baca. Perubahan hanya lewat Mutasi Stok atau Reservasi."
+        className="mb-5"
       />
 
-      <div className="mb-4 grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label>Gudang</Label>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="w-full sm:w-48">
+          <Label htmlFor="filter-stok-gudang" className="sr-only">
+            Gudang
+          </Label>
           <Combobox
+            id="filter-stok-gudang"
             nilai={gudangId}
             onPilih={(v) => {
               setGudangId(v);
@@ -137,9 +141,12 @@ export default function StokSukuCadangIndex({ stok, gudang, sukuCadang, filter }
             opsi={[{ nilai: SEMUA, label: 'Semua Gudang' }, ...opsiDari(gudang, (g) => g.Nama)]}
           />
         </div>
-        <div className="space-y-1.5">
-          <Label>Suku Cadang</Label>
+        <div className="w-full sm:w-56">
+          <Label htmlFor="filter-stok-suku-cadang" className="sr-only">
+            Suku Cadang
+          </Label>
           <Combobox
+            id="filter-stok-suku-cadang"
             nilai={sukuCadangId}
             onPilih={(v) => {
               setSukuCadangId(v);

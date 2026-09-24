@@ -68,10 +68,10 @@ export default function PemasaranDemo({ demo, peristiwa, pilihan, wajib }: Props
         deskripsi="Sandbox yang dicoba calon pelanggan. Datasetnya dibangun ulang berkala dan tidak pernah menyentuh tenant sungguhan."
         tanpaBreadcrumb
         aksi={<DialogFormDemo demo={null} pilihan={pilihan} wajib={wajib.demo} />}
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           {demo.length === 0 ? (
             <p className="text-sm text-muted-foreground">Belum ada demo yang disiapkan.</p>
@@ -91,7 +91,7 @@ function KartuDemo({ demo, pilihan, wajib }: { demo: Demo; pilihan: Pilihan; waj
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <CardTitle className="text-base">{demo.Nama}</CardTitle>
+          <CardTitle>{demo.Nama}</CardTitle>
           <p className="font-mono text-xs text-muted-foreground">{demo.Kode}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -172,7 +172,7 @@ function PeristiwaDemo({ peristiwa }: { peristiwa: Record<string, number> }) {
   return (
     <Card className="h-fit">
       <CardHeader>
-        <CardTitle className="text-base">Peristiwa Demo</CardTitle>
+        <CardTitle>Peristiwa Demo</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {baris.map(([jenis, jumlah]) => (

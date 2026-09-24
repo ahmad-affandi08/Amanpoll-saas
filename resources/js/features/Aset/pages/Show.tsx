@@ -69,7 +69,7 @@ export default function AsetShow({
     <KerangkaAplikasi>
       <Head title={aset.Nama} />
       <KepalaHalaman
-        className="mb-6"
+        className="mb-5"
         judul={aset.Nama}
         labelBreadcrumb={aset.KodeAset}
         lencana={<Badge variant={VARIAN_BADGE_STATUS_ASET[aset.Status]}>{aset.Status}</Badge>}
@@ -98,7 +98,7 @@ export default function AsetShow({
         }
       />
 
-      <div className="mb-6 grid gap-4 md:grid-cols-[minmax(0,280px)_1fr] md:items-start">
+      <div className="mb-5 grid gap-4 md:grid-cols-[minmax(0,280px)_1fr] md:items-start">
         <KartuFotoUtama
           aset={aset}
           jumlahFoto={foto.length}

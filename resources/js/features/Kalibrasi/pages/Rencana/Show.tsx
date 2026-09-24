@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { tanggal } from '@/components/shared/riwayat';
-import { ArrowLeft, Sliders, Clock, Building2, Plus } from 'lucide-react';
+import { Sliders, Clock, Building2, Plus } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge, statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
-import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 interface Props {
   rencana: RencanaKalibrasi;
@@ -23,52 +23,39 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={`Rencana Kalibrasi - ${rencana.aset?.Nama}`} />
-      <BreadcrumbHalaman />
-
-      <div className="space-y-6">
-        {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Button asChild variant="outline" size="icon" className="sm:size-8">
-              <Link href={ruteKalibrasi.rencana}>
-                <ArrowLeft className="size-4" />
-              </Link>
-            </Button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold tracking-tight text-foreground">
-                  {rencana.aset?.Nama ?? 'Aset'}
-                </h1>
-                <Badge variant="outline" className={badgeKepatuhan.className}>
-                  {badgeKepatuhan.label}
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Kode Aset: <span className="font-mono">{rencana.aset?.KodeAset}</span> • Interval: Setiap{' '}
-                {rencana.IntervalHari} hari
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
+      <div className="space-y-5">
+        <KepalaHalaman
+          judul={rencana.aset?.Nama ?? 'Aset'}
+          lencana={
+            <Badge variant="outline" className={badgeKepatuhan.className}>
+              {badgeKepatuhan.label}
+            </Badge>
+          }
+          deskripsi={
+            <>
+              Kode Aset: <span className="font-mono">{rencana.aset?.KodeAset}</span> • Interval: Setiap{' '}
+              {rencana.IntervalHari} hari
+            </>
+          }
+          aksi={
             <Button asChild size="sm">
               <Link
                 href={`/kalibrasi/pelaksanaan?bukaModal=1&rencanaId=${rencana.Id}&asetId=${rencana.AsetId}`}
               >
-                <Plus className="mr-1.5 size-4" />
+                <Plus className="size-4" />
                 Jadwalkan Kalibrasi
               </Link>
             </Button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Overview Information Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Card 1: Siklus Kalibrasi */}
-          <Card className="border-border">
-            <CardHeader className="pb-3 border-b border-border">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <Clock className="size-4 text-teknisi-700" />
+          <Card>
+            <CardHeader className="border-b border-border pb-3">
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="size-4 text-grafit-500" />
                 Status Siklus & Jatuh Tempo
               </CardTitle>
             </CardHeader>
@@ -79,7 +66,7 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Jatuh Tempo Berikutnya:</span>
-                <span className="font-bold text-foreground">{tanggal(rencana.TanggalBerikutnya)}</span>
+                <span className="font-semibold text-foreground">{tanggal(rencana.TanggalBerikutnya)}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-border/50">
                 <span className="text-muted-foreground">Sisa Waktu:</span>
@@ -107,10 +94,10 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
           </Card>
 
           {/* Card 2: Metode & Jenis Kalibrasi */}
-          <Card className="border-border">
-            <CardHeader className="pb-3 border-b border-border">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <Sliders className="size-4 text-teknisi-700" />
+          <Card>
+            <CardHeader className="border-b border-border pb-3">
+              <CardTitle className="flex items-center gap-2">
+                <Sliders className="size-4 text-grafit-500" />
                 Spesifikasi & Metode
               </CardTitle>
             </CardHeader>
@@ -137,10 +124,10 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
           </Card>
 
           {/* Card 3: Penyedia Rekanan / Lab */}
-          <Card className="border-border">
-            <CardHeader className="pb-3 border-b border-border">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <Building2 className="size-4 text-teknisi-700" />
+          <Card>
+            <CardHeader className="border-b border-border pb-3">
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="size-4 text-grafit-500" />
                 Laboratorium & Rekanan
               </CardTitle>
             </CardHeader>
@@ -157,7 +144,7 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-muted-foreground">Total Riwayat Pelaksanaan:</span>
-                <span className="font-bold text-foreground">
+                <span className="font-semibold text-foreground">
                   {rencana.pelaksanaanKalibrasi?.length ?? 0} Kali
                 </span>
               </div>
@@ -166,11 +153,9 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
         </div>
 
         {/* Riwayat Pelaksanaan Kalibrasi Terkait Rencana Ini */}
-        <Card className="border-border">
-          <CardHeader className="p-4 sm:p-5 border-b border-border">
-            <CardTitle className="text-base font-semibold text-foreground">
-              Riwayat Pelaksanaan & Log Sertifikat
-            </CardTitle>
+        <Card>
+          <CardHeader className="border-b border-border pb-4">
+            <CardTitle className="text-[15px]">Riwayat Pelaksanaan & Log Sertifikat</CardTitle>
             <p className="text-xs text-muted-foreground mt-0.5">
               Daftar kalibrasi yang telah dilakukan untuk rencana instrumen ini
             </p>
@@ -186,8 +171,8 @@ export default function KalibrasiRencanaShow({ rencana }: Props) {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-permukaan-50 text-muted-foreground border-b border-border">
+                <table className="w-full text-left text-[13px]">
+                  <thead className="border-b border-border bg-permukaan-50 text-[12.5px] text-grafit-500">
                     <tr>
                       <th className="px-4 py-3 font-medium">Nomor</th>
                       <th className="px-4 py-3 font-medium">Tanggal Kalibrasi</th>

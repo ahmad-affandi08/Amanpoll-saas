@@ -133,7 +133,7 @@ function DialogBuatRfq({
               {penyedia.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Belum ada penyedia aktif yang dapat diundang.</p>
               ) : (
-                <div className="max-h-56 space-y-1 overflow-y-auto rounded-[9px] border border-border p-2">
+                <div className="max-h-56 space-y-1 overflow-y-auto rounded-md border border-border p-2">
                   {penyedia.map((item) => (
                     <label
                       key={item.Id}
@@ -198,7 +198,7 @@ export default function PermintaanPenawaranIndex({
   return (
     <KerangkaAplikasi>
       <Head title="Permintaan Penawaran" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Permintaan Penawaran"
           deskripsi="Undang penyedia, catat penawaran masuk, dan pilih hasil evaluasi."
@@ -214,19 +214,22 @@ export default function PermintaanPenawaranIndex({
           }
         />
 
-        <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_12rem_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari nomor RFQ"
               placeholder="Cari nomor RFQ"
-              className="pl-9"
+              className="pl-8"
               value={cari}
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -238,7 +241,7 @@ export default function PermintaanPenawaranIndex({
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -250,10 +253,10 @@ export default function PermintaanPenawaranIndex({
             deskripsi="Buat RFQ dari permintaan pembelian yang sudah disetujui."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Nomor</th>
                     <th className="px-4 py-3">Sumber</th>

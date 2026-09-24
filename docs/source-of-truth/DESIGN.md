@@ -20,6 +20,8 @@
 
 Amanpoll harus terasa seperti alat kerja profesional untuk teknisi dan operasional, bukan landing page startup, dashboard kripto, atau template admin generik.
 
+**Arah N "Presisi" (disetujui pemilik produk 24 September 2026) berlaku untuk dasbor web tenant dan konsol platform:** rapi, presisi, betah dilihat, tidak ramai. Halaman putih; kartu dan tabel dibatasi garis tipis Garis-200 tanpa bayangan; sidebar terang; satu warna aksen (Teknisi-700) untuk aksi utama dan penanda aktif; warna status hanya untuk status. Tanpa gradien, tanpa mode gelap. Mode Lapangan (§36) dan halaman autentikasi (§37) punya arahnya sendiri dan tidak mengikuti bagian ini.
+
 Karakter yang dituju:
 
 - Presisi.
@@ -184,7 +186,7 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 
 | Token | Hex | Fungsi |
 |---|---|---|
-| `Teknisi-900` | `#17324D` | Sidebar, heading kuat, identitas utama |
+| `Teknisi-900` | `#17324D` | Heading kuat, identitas utama |
 | `Teknisi-800` | `#1D4663` | Hover gelap |
 | `Teknisi-700` | `#205B78` | Secondary strong |
 | `Teknisi-600` | `#27718F` | Brand action |
@@ -207,11 +209,11 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 | `Grafit-950` | `#172027` | Teks utama |
 | `Grafit-700` | `#44515A` | Teks sekunder |
 | `Grafit-500` | `#5F6B73` | Metadata (≥ 4,5:1 di atas putih dan latar halaman) |
-| `Garis-300` | `#D7DEE3` | Border |
-| `Garis-200` | `#E7ECEF` | Divider |
-| `Permukaan-100` | `#F4F7F8` | Page background |
-| `Permukaan-50` | `#FAFBFC` | Subtle surface |
-| `Putih` | `#FFFFFF` | Card / form surface |
+| `Garis-300` | `#D7DEE3` | Tepi isian (token `input`) |
+| `Garis-200` | `#E7ECEF` | Border kartu, tabel, divider (token `border`) |
+| `Permukaan-100` | `#F4F7F8` | Segmen aktif, latar nonaktif |
+| `Permukaan-50` | `#FAFBFC` | Sidebar, kepala tabel, hover baris |
+| `Putih` | `#FFFFFF` | Latar halaman, kartu, form |
 
 ## 4.2 Penggunaan Warna
 
@@ -258,12 +260,11 @@ menghasilkan CSS sama sekali (`WarnaPaletTerdefinisiTest`).
 
 Teks status di atas latar tint (badge, alert, banner) memakai shade -700
 (`Sukses-700`, `Safety-700`, `Bahaya-700`, `Info-700`); shade -600 di atas tint
-jatuh di bawah 4,5:1. Baris tabel dan item menu yang di-hover memakai `accent`.
-Latar halaman `Permukaan-100` tidak dipakai sebagai latar komponen di atas
-halaman: tombol sekunder, chip, dan panel di atasnya memakai putih atau
-Teknisi-100, sebab Permukaan-100 di atas Permukaan-100 lenyap. Dialog dan sheet
-berlatar putih. Item sidebar aktif ditandai garis kiri selain latarnya, dan
-cincin fokus sidebar memakai Teknisi-300 agar terlihat di atas Teknisi-900.
+jatuh di bawah 4,5:1. Latar halaman putih (arah N); kartu di atasnya dibedakan
+oleh garis Garis-200, bukan oleh bayangan atau latar abu. Tombol sekunder, ghost,
+dan segmen memakai tint transparan Grafit-950 (5–8%) supaya terbaca di atas putih
+maupun Permukaan-50. Angka KPI berwarna netral (Grafit-950); warna status hanya
+di keterangan kecil, titik, atau badge. Dialog dan sheet berlatar putih.
 
 ---
 
@@ -324,30 +325,27 @@ Tidak membuat token dark mode.
 
 # 6. Radius
 
-Amanpoll tidak menggunakan bentuk terlalu bulat.
+Amanpoll tidak menggunakan bentuk terlalu bulat (arah N).
 
-| Komponen | Radius |
-|---|---:|
-| Input | 7px |
-| Button | 7px |
-| Select | 7px |
-| Card | 9px |
-| Dialog | 10px |
-| Dropdown | 8px |
-| Table container | 9px |
-| Badge | 5px |
-| Toast | 8px |
-| Mobile bottom sheet | 12px pada sudut atas |
+| Komponen | Radius | Kelas |
+|---|---:|---|
+| Input, Select, Combobox, pemilih tanggal | 6px | `rounded-sm` |
+| Button | 6px | `rounded-sm` |
+| Badge | 4px | `rounded-xs` |
+| Card, table container, panel, dropdown, popover | 8px | `rounded-md` |
+| Dialog | 10px | `rounded-lg` |
+| Mobile bottom sheet | 12px pada sudut atas | |
 
 Hindari:
 
 ```text
+rounded-xl
 rounded-2xl
 rounded-3xl
 rounded-full
 ```
 
-`rounded-full` hanya boleh untuk indikator bulat kecil/avatar, bukan tombol utama atau badge status default.
+`rounded-full` hanya boleh untuk indikator bulat kecil, progress bar, dan avatar, bukan tombol utama atau badge status default.
 
 ---
 
@@ -369,12 +367,13 @@ Gunakan skala 4 px.
 
 Default:
 
-- Page gap: 24px desktop, 16px mobile.
-- Card padding: 20px desktop, 16px mobile.
+- Isi halaman: padding 28px × 32px desktop, 20px × 16px mobile.
+- Page gap: 20–24px desktop, 16px mobile.
+- Card padding: 20px (`px-5 py-4`) desktop, 16px mobile.
 - Form field gap: 16px.
 - Label to input: 6px.
-- Table row: 44–48px.
-- Toolbar: 12px gap.
+- Table row: 48px.
+- Toolbar/penyaring: 8px gap dalam satu baris.
 
 Jangan membuat dashboard terlalu lega sampai informasi penting tersebar jauh.
 
@@ -382,23 +381,18 @@ Jangan membuat dashboard terlalu lega sampai informasi penting tersebar jauh.
 
 # 8. Shadow
 
-Shadow tipis.
+Arah N: kartu, panel, tabel, tombol, dan isian **tanpa bayangan**; batasnya garis Garis-200.
 
-Card default lebih mengandalkan border daripada shadow.
-
-```css
-box-shadow: 0 1px 2px rgb(23 32 39 / 0.05);
-```
-
-Popover/dialog:
+Bayangan hanya untuk lapisan yang benar-benar mengapung di atas halaman:
 
 ```css
-box-shadow:
-  0 8px 24px rgb(23 32 39 / 0.10),
-  0 2px 6px rgb(23 32 39 / 0.06);
+/* dropdown, popover, select, tooltip grafik */
+box-shadow: 0 6px 20px rgb(23 32 39 / 0.08);
+/* dialog */
+box-shadow: 0 16px 48px rgb(23 32 39 / 0.14);
 ```
 
-Hindari shadow tebal, glow, dan floating-card berlebihan.
+Cincin fokus dan halo `0 0 0 Npx` bukan bayangan dan tetap dipakai. Hindari shadow tebal, glow, dan floating-card.
 
 ---
 
@@ -408,7 +402,7 @@ Hindari shadow tebal, glow, dan floating-card berlebihan.
 
 ```text
 ┌──────── Sidebar 264 ────────┬──────────────────────────────┐
-│ Amanpoll                    │ Topbar 56                    │
+│ Amanpoll                    │ Topbar 52                    │
 │                             ├──────────────────────────────┤
 │ Dashboard                   │ Breadcrumb                   │
 │ Aset                        │ Page title        Actions    │
@@ -425,11 +419,13 @@ Sidebar:
 
 - 264px expanded.
 - 72px collapsed.
-- Background `Teknisi-900`.
-- Active item memakai surface yang jelas, bukan glow.
-- Group label kecil dan tenang.
-- Icon Lucide 18–20px.
-- Maksimal dua level navigasi langsung.
+- Background `Permukaan-50` dengan garis kanan Garis-200 (arah N).
+- Item setinggi 32px, teks 13,5px Grafit-700, ikon Lucide 16px Grafit-500.
+- Hover: tint Grafit-950/5. Item aktif: latar putih dengan cincin Garis-200, teks tebal Grafit-950, ikon Teknisi-700. Bukan blok berwarna, bukan glow.
+- Group label kalimat biasa 12px Grafit-500 (bukan huruf kapital).
+- Maksimal dua level navigasi langsung; submenu bergaris kiri Garis-200.
+
+Topbar 52px putih bergaris bawah, menempel di atas saat halaman digulir.
 
 Topbar:
 
@@ -537,7 +533,7 @@ Menu disembunyikan berdasarkan izin, tetapi authorization tetap dilakukan backen
 
 ## 11.1 Konsol platform
 
-Konsol platform (`/admin-platform`) memakai kerangka yang sama dengan dashboard tenant: sidebar gelap yang bisa diciutkan, menu bergrup dari komponen bersama `MenuSidebar`, profil di kaki sidebar, dan header putih. Pembedanya hanya label "Konsol Platform" di kepala sidebar dan header.
+Konsol platform (`/admin-platform`) memakai kerangka yang sama dengan dashboard tenant: sidebar terang yang bisa diciutkan, menu bergrup dari komponen bersama `MenuSidebar`, profil di kaki sidebar, dan header putih. Pembedanya hanya label "Konsol Platform" di kepala sidebar dan header.
 
 ```text
 Bisnis
@@ -567,7 +563,7 @@ Setiap halaman daftar:
 Breadcrumb
 Judul + deskripsi singkat                [Aksi Utama]
 
-Search | Filter | Filter | Reset
+Search | Filter | Filter | Reset        (satu baris, tanpa kartu)
 
 Summary ringan bila berguna
 
@@ -577,6 +573,12 @@ Pagination
 ```
 
 Jangan memberi setiap halaman 4–6 kartu statistik bila tidak menambah nilai.
+
+Baris penyaring (arah N): satu baris `flex-wrap gap-2` tanpa bingkai kartu. Kotak cari
+256px berikon Search di kiri; Select/Combobox penyaring berlebar tetap (160–192px),
+bukan merentang. Label penyaring boleh hanya untuk pembaca layar (`sr-only`) bila nilai
+kontrolnya sudah menyebut apa yang disaring ("Semua status", "Semua lokasi"). Tombol
+Terapkan varian sekunder; Reset varian ghost dan hanya tampil bila ada penyaring aktif.
 
 Setiap halaman detail:
 
@@ -607,16 +609,16 @@ Variant:
 - `ghost`
 - `bahaya`
 
-Ukuran:
+Ukuran (arah N):
 
-- sm 32px.
-- md 36px.
-- lg 40px.
-- mobile primary action minimal 44px.
+- sm dan md 32px desktop, teks 13px, radius 6px, tanpa bayangan.
+- lg 36px.
+- Ponsel: semua tombol minimal 44px.
 
+Hanya tombol utama yang berwarna (Teknisi-700). Outline: putih bertepi Garis-300.
+Sekunder: tint Grafit-950/5 tanpa tepi. Ghost: teks Grafit-700, hover tint Grafit-950/5.
 Keadaan nonaktif memakai warna (`Garis-200` dengan teks `Grafit-500`), bukan
 `opacity-50`: separuh transparansi menurunkan teks tombol utama ke sekitar 1,6:1.
-Tombol sekunder bersifat tonal (Teknisi-100 dengan teks Teknisi-900).
 
 Button text menggunakan kata kerja:
 
@@ -641,8 +643,8 @@ Yes
 
 ## 13.2 Input
 
-- Height desktop 36–40px.
-- Mobile 44px untuk form utama.
+- Height desktop 32px (sama dengan tombol), radius 6px, latar putih, tanpa bayangan.
+- Mobile 40–44px untuk form utama.
 - Border `Garis-300`.
 - Focus ring tipis `Teknisi-600`.
 - Error border `Bahaya-600`.
@@ -651,7 +653,7 @@ Yes
 
 ## 13.3 Badge Status
 
-Bentuk kotak lembut radius 5px.
+Bentuk kotak datar radius 4px, teks 12px, tint tipis **tanpa garis tepi** (arah N).
 
 Contoh:
 
@@ -673,8 +675,12 @@ status yang berlawanan (Aktif/Nonaktif, Terbit/Draf) tidak boleh sama-sama abu.
 
 Header:
 
-- 12px/600.
-- Surface `Permukaan-50`.
+- 12,5px/500 Grafit-500, kalimat biasa.
+- Surface `Permukaan-50`, garis bawah Garis-200.
+
+Baris 48px, isi 14px Grafit-700 (kolom utama menebalkan dirinya sendiri), garis
+antarbaris Garis-200, hover Permukaan-50, angka rata kanan dengan digit tabular.
+Wadah tabel `rounded-md` bergaris Garis-200; toolbar di dalamnya dipisah garis bawah.
 - Sticky bila tabel panjang dan konteks memungkinkan.
 
 Fitur:
@@ -694,13 +700,18 @@ Kolom ID/kode dapat memakai IBM Plex Mono.
 
 Gunakan hemat.
 
-Format:
+Format (arah N):
 
 ```text
-LABEL
-1.248
-+ metadata kecil
+Label kalimat biasa (13px Grafit-700)      Kelompok (12px)
+1.248 (26px/600, netral)
+metadata kecil (12,5px)
 ```
+
+Beberapa angka yang berjajar digabung ke satu bingkai bersekat garis tipis
+(`DeretStatistik` + `KartuStatistik menyatu`; di Dashboard, KPI angka selebar satu
+kolom yang berurutan otomatis digabung), bukan kartu-kartu terpisah. Label tidak
+berhuruf kapital, angka tidak diwarnai status.
 
 Tidak menggunakan chart mini dekoratif bila tidak ada makna.
 

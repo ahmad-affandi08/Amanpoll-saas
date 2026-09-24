@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { Badge } from '@/components/ui/badge';
 import { varianAktif, varianStatus } from '@/features/Pemasaran/status';
 import { Button } from '@/components/ui/button';
@@ -61,21 +62,16 @@ export default function PartnerPemasaranKonsol({
         }
         tanpaBreadcrumb
         aksi={<DialogProgram program={null} />}
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <DeretStatistik kolom={4}>
         {Object.entries(ringkasanKomisi).map(([status, jumlah]) => (
-          <Card key={status}>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Komisi {status}</p>
-              <p className="text-lg font-semibold text-foreground">{jumlah}</p>
-            </CardContent>
-          </Card>
+          <KartuStatistik key={status} menyatu label={`Komisi ${status}`} nilai={jumlah} />
         ))}
-      </div>
+      </DeretStatistik>
 
-      <Tabs defaultValue="partner" className="mt-6">
+      <Tabs defaultValue="partner" className="mt-5">
         <TabsList>
           <TabsTrigger value="partner">Partner</TabsTrigger>
           <TabsTrigger value="program">Program</TabsTrigger>
@@ -92,9 +88,9 @@ export default function PartnerPemasaranKonsol({
           )}
           {partner.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-4">
                 <div>
-                  <CardTitle className="text-base">{satu.NamaPerusahaan}</CardTitle>
+                  <CardTitle className="text-[15px]">{satu.NamaPerusahaan}</CardTitle>
                   <p className="text-sm text-muted-foreground">
                     {satu.LabelJenis} · Kode {satu.Kode} · {satu.Program ?? 'Tanpa program'}
                   </p>
@@ -116,7 +112,7 @@ export default function PartnerPemasaranKonsol({
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
+              <CardContent className="pt-0 text-sm text-muted-foreground">
                 Perjanjian: {satu.ReferensiPerjanjian ?? '—'} · Referensi payout:{' '}
                 {satu.ReferensiPayout ?? '—'} · Terakhir masuk: {waktu(satu.TerakhirMasukPada)}
               </CardContent>
@@ -130,9 +126,9 @@ export default function PartnerPemasaranKonsol({
           )}
           {program.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-4">
                 <div>
-                  <CardTitle className="text-base">{satu.Nama}</CardTitle>
+                  <CardTitle className="text-[15px]">{satu.Nama}</CardTitle>
                   <p className="text-sm text-muted-foreground">
                     Kode {satu.Kode} · atribusi {satu.HariAtribusi} hari · {satu.JumlahPartner} partner
                   </p>
@@ -143,7 +139,7 @@ export default function PartnerPemasaranKonsol({
                 </div>
               </CardHeader>
               {satu.Keterangan && (
-                <CardContent className="text-sm text-muted-foreground">{satu.Keterangan}</CardContent>
+                <CardContent className="pt-0 text-sm text-muted-foreground">{satu.Keterangan}</CardContent>
               )}
             </Card>
           ))}
@@ -154,9 +150,9 @@ export default function PartnerPemasaranKonsol({
           {aturan.length === 0 && <p className="text-sm text-muted-foreground">Belum ada aturan komisi.</p>}
           {aturan.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-4">
                 <div>
-                  <CardTitle className="text-base">{satu.Nama}</CardTitle>
+                  <CardTitle className="text-[15px]">{satu.Nama}</CardTitle>
                   <p className="text-sm text-muted-foreground">
                     {satu.LabelJenis} ·{' '}
                     {satu.Jenis === 'Persentase' ? `${satu.Nilai}%` : formatUang(satu.Nilai)} ·{' '}
@@ -179,9 +175,9 @@ export default function PartnerPemasaranKonsol({
           )}
           {lead.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-4">
                 <div>
-                  <CardTitle className="text-base">{satu.NamaPerusahaan}</CardTitle>
+                  <CardTitle className="text-[15px]">{satu.NamaPerusahaan}</CardTitle>
                   <p className="text-sm text-muted-foreground">
                     {satu.NamaKontak} · {satu.Email} · dari {satu.Partner}
                   </p>
@@ -224,9 +220,9 @@ export default function PartnerPemasaranKonsol({
           )}
           {komisi.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-4">
                 <div>
-                  <CardTitle className="text-base">
+                  <CardTitle className="text-[15px]">
                     {formatUang(satu.Jumlah)} untuk {satu.Partner}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
@@ -264,9 +260,9 @@ export default function PartnerPemasaranKonsol({
           {payout.length === 0 && <p className="text-sm text-muted-foreground">Belum ada payout disusun.</p>}
           {payout.map((satu) => (
             <Card key={satu.Id}>
-              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-4">
                 <div>
-                  <CardTitle className="text-base">
+                  <CardTitle className="text-[15px]">
                     {satu.Nomor} · {formatUang(satu.Jumlah)}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">

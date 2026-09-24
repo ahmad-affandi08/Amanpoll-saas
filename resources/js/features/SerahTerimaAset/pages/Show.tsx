@@ -183,7 +183,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset, wajib }: Props)
   return (
     <KerangkaAplikasi>
       <Head title={serahTerima.Nomor} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul={serahTerima.Jenis}
           labelBreadcrumb={serahTerima.Nomor}
@@ -204,7 +204,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset, wajib }: Props)
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[9px] border border-border bg-card p-4">
+          <div className="rounded-md border border-border bg-card px-5 py-4">
             <p className="text-xs text-muted-foreground">Diserahkan Pada</p>
             <p className="text-sm font-medium text-foreground">
               {serahTerima.DiserahkanPada
@@ -212,7 +212,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset, wajib }: Props)
                 : '—'}
             </p>
           </div>
-          <div className="rounded-[9px] border border-border bg-card p-4">
+          <div className="rounded-md border border-border bg-card px-5 py-4">
             <p className="text-xs text-muted-foreground">Diterima Pada</p>
             <p className="text-sm font-medium text-foreground">
               {serahTerima.DiterimaPada ? new Date(serahTerima.DiterimaPada).toLocaleString('id-ID') : '—'}
@@ -220,7 +220,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset, wajib }: Props)
           </div>
         </div>
 
-        <div className="rounded-[9px] border border-border bg-card p-4">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Daftar Aset</h2>
             {serahTerima.Status === 'Diserahkan' && (
@@ -235,7 +235,7 @@ export default function SerahTerimaAsetShow({ serahTerima, aset, wajib }: Props)
           )}
           <div className="space-y-2">
             {serahTerima.DetailSerahTerimaAset.map((d) => (
-              <div key={d.Id} className="rounded-md border border-border px-3 py-2 text-sm">
+              <div key={d.Id} className="rounded-sm border border-border px-3 py-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-foreground">{d.NamaAset ?? '—'}</span>
                   <span className="font-mono text-xs text-muted-foreground">{d.KodeAset}</span>

@@ -64,7 +64,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
       <Head title={`Inspeksi ${inspeksi.Nomor}`} />
       <BreadcrumbHalaman />
 
-      <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="space-y-5 max-w-4xl mx-auto">
         {/* Navigasi Balik */}
         <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
@@ -77,11 +77,11 @@ export default function InspeksiShow({ inspeksi }: Props) {
         </div>
 
         {/* Header Kartu Inspeksi */}
-        <div className="bg-card border border-garis-200 rounded-xl p-6 shadow-sm">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm font-bold text-grafit-950">{inspeksi.Nomor}</span>
+                <span className="font-mono text-sm font-semibold text-grafit-950">{inspeksi.Nomor}</span>
                 <Badge variant="outline" className={statusBadge.kelas}>
                   {statusBadge.label}
                 </Badge>
@@ -92,7 +92,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
                 )}
               </div>
 
-              <h1 className="text-xl font-bold text-grafit-950">
+              <h1 className="text-[15px] font-semibold text-foreground">
                 {inspeksi.templat_inspeksi?.Nama ?? 'Inspeksi Aset'}
               </h1>
 
@@ -118,29 +118,26 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
             <div className="flex items-center gap-2 self-start">
               {inspeksi.Status !== 'Selesai' && (
-                <Button
-                  className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-1.5"
-                  onClick={() => setBukaDialogHasil(true)}
-                >
+                <Button className="cursor-pointer" onClick={() => setBukaDialogHasil(true)}>
                   <FileCheck className="h-4 w-4" />
                   Catat Hasil Inspeksi
                 </Button>
               )}
 
               {inspeksi.PerintahKerjaId ? (
-                <Link
-                  href={rutePerintahKerja.detail(inspeksi.PerintahKerjaId)}
-                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-teknisi-50 text-teknisi-700 border border-teknisi-200 hover:bg-teknisi-100 cursor-pointer"
-                >
-                  <Wrench className="h-3.5 w-3.5" />
-                  Buka WO ({inspeksi.perintah_kerja?.Nomor ?? 'Tindak Lanjut'})
-                </Link>
+                <Button asChild variant="outline">
+                  <Link href={rutePerintahKerja.detail(inspeksi.PerintahKerjaId)}>
+                    <Wrench className="h-3.5 w-3.5" />
+                    Buka WO ({inspeksi.perintah_kerja?.Nomor ?? 'Tindak Lanjut'})
+                  </Link>
+                </Button>
               ) : (
                 (inspeksi.Hasil === 'Gagal' ||
                   inspeksi.Hasil === 'PerluPerhatian' ||
                   Boolean(inspeksi.Temuan)) && (
                   <Button
-                    className="cursor-pointer bg-destructive hover:bg-bahaya-700 text-white gap-1.5 text-xs"
+                    variant="destructive"
+                    className="cursor-pointer"
                     onClick={() => setBukaDialogPK(true)}
                   >
                     <PlusCircle className="h-4 w-4" />
@@ -154,9 +151,9 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
         {/* Tautan Lembar Checklist jika terhubung */}
         {inspeksi.PelaksanaanDaftarPeriksaId && (
-          <div className="bg-info-600/5 border border-info-600/25 rounded-xl p-5 flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-info-600/25 bg-info-600/5 px-4 py-3">
             <div className="flex items-center gap-3">
-              <FileCheck className="h-5 w-5 text-info-700" />
+              <FileCheck aria-hidden="true" className="size-4 shrink-0 text-info-700" />
               <div>
                 <h3 className="font-semibold text-info-700 text-sm">Lembar Checklist Terlampir</h3>
                 <p className="text-xs text-info-700">
@@ -165,22 +162,21 @@ export default function InspeksiShow({ inspeksi }: Props) {
               </div>
             </div>
 
-            <Link
-              href={ruteDaftarPeriksa.pelaksanaanDetail(inspeksi.PelaksanaanDaftarPeriksaId)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-info-700 border border-info-600/40 hover:bg-info-600/10 shadow-sm cursor-pointer"
-            >
-              <span>Buka Checklist</span>
-              <ExternalLink className="h-3.5 w-3.5" />
-            </Link>
+            <Button asChild variant="outline">
+              <Link href={ruteDaftarPeriksa.pelaksanaanDetail(inspeksi.PelaksanaanDaftarPeriksaId)}>
+                <span>Buka Checklist</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
           </div>
         )}
 
         {/* Rincian Hasil & Temuan */}
-        <div className="bg-card border border-garis-200 rounded-xl p-6 space-y-4">
-          <h2 className="text-base font-semibold text-grafit-950">Hasil & Catatan Temuan Lapangan</h2>
+        <div className="rounded-md border border-border bg-card p-5 space-y-4">
+          <h2 className="text-sm font-semibold text-foreground">Hasil & Catatan Temuan Lapangan</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 bg-permukaan-50 rounded-lg space-y-1">
+            <div className="p-4 bg-permukaan-50 rounded-md space-y-1">
               <span className="text-xs text-grafit-500 font-medium">Kesimpulan Kondisi</span>
               <div className="pt-1">
                 {hasilBadge ? (
@@ -193,7 +189,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
               </div>
             </div>
 
-            <div className="p-4 bg-permukaan-50 rounded-lg space-y-1">
+            <div className="p-4 bg-permukaan-50 rounded-md space-y-1">
               <span className="text-xs text-grafit-500 font-medium">Waktu & Pelaksana</span>
               <div className="text-xs font-semibold text-grafit-950 pt-1">
                 {inspeksi.DilaksanakanPada ? (
@@ -210,14 +206,14 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
           <div className="space-y-1.5">
             <Label className="text-xs text-grafit-500 font-medium">Deskripsi Temuan Lapangan</Label>
-            <div className="p-3 bg-white border border-garis-200 rounded-lg text-sm text-grafit-950 min-h-[60px] whitespace-pre-wrap">
+            <div className="p-3 bg-card border border-border rounded-md text-sm text-grafit-950 min-h-[60px] whitespace-pre-wrap">
               {inspeksi.Temuan || <span className="text-grafit-500 italic">Tidak ada temuan khusus.</span>}
             </div>
           </div>
 
           <div className="space-y-1.5">
             <Label className="text-xs text-grafit-500 font-medium">Rekomendasi Tindak Lanjut</Label>
-            <div className="p-3 bg-white border border-garis-200 rounded-lg text-sm text-grafit-950 min-h-[60px] whitespace-pre-wrap">
+            <div className="p-3 bg-card border border-border rounded-md text-sm text-grafit-950 min-h-[60px] whitespace-pre-wrap">
               {inspeksi.TindakLanjut || (
                 <span className="text-grafit-500 italic">Belum ada rekomendasi tindak lanjut.</span>
               )}
@@ -288,11 +284,7 @@ export default function InspeksiShow({ inspeksi }: Props) {
               >
                 Batal
               </Button>
-              <Button
-                type="submit"
-                className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                disabled={formHasil.processing}
-              >
+              <Button type="submit" className="cursor-pointer" disabled={formHasil.processing}>
                 {formHasil.processing ? 'Menyimpan...' : 'Simpan Hasil'}
               </Button>
             </DialogFooter>
@@ -361,7 +353,8 @@ export default function InspeksiShow({ inspeksi }: Props) {
               </Button>
               <Button
                 type="submit"
-                className="cursor-pointer bg-destructive hover:bg-bahaya-700 text-white"
+                variant="destructive"
+                className="cursor-pointer"
                 disabled={formPK.processing}
               >
                 {formPK.processing ? 'Membuat WO...' : 'Buat Perintah Kerja'}

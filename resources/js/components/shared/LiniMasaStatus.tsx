@@ -13,7 +13,7 @@ export interface TahapStatus {
 }
 
 const GAYA_TITIK: Record<NadaTahap, string> = {
-  selesai: 'border-emerald-600 bg-emerald-600',
+  selesai: 'border-sukses-600 bg-sukses-600',
   berjalan: 'border-primary bg-background',
   menunggu: 'border-border bg-background',
   gagal: 'border-destructive bg-destructive',

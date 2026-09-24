@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Plug, Plus, Webhook } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -255,7 +256,7 @@ function DialogBuatWebhook() {
             />
             {form.errors.Peristiwa && <p className="text-sm text-destructive">{form.errors.Peristiwa}</p>}
           </div>
-          <div className="flex items-center justify-between rounded-[9px] border border-border p-3">
+          <div className="flex items-center justify-between rounded-md border border-border p-3">
             <div>
               <p className="text-sm font-medium">Aktif</p>
               <p className="text-xs text-muted-foreground">Endpoint nonaktif tidak menerima pengiriman.</p>
@@ -288,7 +289,7 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa, w
   return (
     <KerangkaAplikasi>
       <Head title="Integrasi" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Integrasi"
           deskripsi="Sistem eksternal, panggilan balik web, dan antrean peristiwa keluar."
@@ -313,22 +314,11 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa, w
           </Alert>
         )}
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          {[
-            { label: 'Peristiwa menunggu', nilai: antrianPeristiwa.menunggu, kelas: 'text-foreground' },
-            { label: 'Peristiwa gagal', nilai: antrianPeristiwa.gagal, kelas: 'text-bahaya-600' },
-            {
-              label: 'Pengiriman bermasalah',
-              nilai: antrianPeristiwa.pengirimanGagal,
-              kelas: 'text-safety-600',
-            },
-          ].map((kartu) => (
-            <div key={kartu.label} className="rounded-[9px] border border-border bg-card p-4">
-              <p className="text-xs text-muted-foreground">{kartu.label}</p>
-              <p className={`mt-1 text-2xl font-semibold ${kartu.kelas}`}>{kartu.nilai}</p>
-            </div>
-          ))}
-        </div>
+        <DeretStatistik kolom={3}>
+          <KartuStatistik menyatu label="Peristiwa menunggu" nilai={antrianPeristiwa.menunggu} />
+          <KartuStatistik menyatu label="Peristiwa gagal" nilai={antrianPeristiwa.gagal} />
+          <KartuStatistik menyatu label="Pengiriman bermasalah" nilai={antrianPeristiwa.pengirimanGagal} />
+        </DeretStatistik>
 
         <Card>
           <CardHeader>
@@ -346,7 +336,7 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa, w
                 <Link
                   key={item.Id}
                   href={ruteIntegrasi.detail(item.Id)}
-                  className="flex flex-col gap-2 rounded-[9px] border border-border p-3 transition hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-md border border-border p-3 transition hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-medium">{item.Nama}</p>
@@ -380,7 +370,7 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa, w
               webhook.map((item) => (
                 <div
                   key={item.Id}
-                  className="flex flex-col gap-2 rounded-[9px] border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-md border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-medium">{item.Nama}</p>

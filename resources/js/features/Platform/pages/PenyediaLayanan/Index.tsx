@@ -26,7 +26,7 @@ export default function PlatformPenyediaLayananIndex({ kategori }: Props) {
     <KerangkaPlatform>
       <Head title="Pembayaran, WhatsApp & Email" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           tanpaBreadcrumb
           judul="Pembayaran, WhatsApp & Email"

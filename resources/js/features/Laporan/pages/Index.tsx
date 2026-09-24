@@ -130,7 +130,7 @@ export default function LaporanIndex({
         />
 
         {flash.sukses && (
-          <p className="rounded-[5px] border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-700">
+          <p className="rounded-md border border-sukses-600/25 bg-sukses-600/10 px-3 py-2 text-sm text-sukses-700">
             {flash.sukses}
           </p>
         )}
@@ -148,7 +148,7 @@ export default function LaporanIndex({
 
         <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
           <aside className="space-y-2">
-            <h2 className="text-sm font-medium">Laporan tersimpan</h2>
+            <h2 className="text-sm font-semibold text-foreground">Laporan tersimpan</h2>
             {laporan.length === 0 ? (
               <KeadaanKosong
                 judul="Belum ada laporan tersimpan."
@@ -159,7 +159,7 @@ export default function LaporanIndex({
                 {laporan.map((item) => (
                   <li key={item.Id}>
                     <div
-                      className={`flex items-center gap-2 rounded-[5px] border px-2.5 py-2 ${
+                      className={`flex items-center gap-2 rounded-sm border px-2.5 py-2 ${
                         dibuka?.Id === item.Id ? 'border-teknisi-600 bg-teknisi-600/5' : 'border-border'
                       }`}
                     >
@@ -200,13 +200,13 @@ export default function LaporanIndex({
 
             {eksporTerakhir.length > 0 && (
               <div className="pt-3">
-                <h2 className="mb-2 text-sm font-medium">Ekspor terakhir</h2>
+                <h2 className="mb-2 text-sm font-semibold text-foreground">Ekspor terakhir</h2>
                 <ul className="space-y-1.5">
                   {eksporTerakhir.map((ekspor) => (
                     <li key={ekspor.Id}>
                       <a
                         href={rutePelaporan.eksporUnduh(ekspor.Id)}
-                        className="flex items-center gap-2 rounded-[5px] border border-border px-2.5 py-2 hover:bg-accent"
+                        className="flex items-center gap-2 rounded-sm border border-border px-2.5 py-2 hover:bg-accent"
                       >
                         <Download className="size-4 shrink-0 text-muted-foreground" />
                         <span className="min-w-0 flex-1">
@@ -355,9 +355,9 @@ function DialogLaporanBaru({
 
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium">KPI ({form.data.KunciKpi.length} dipilih)</legend>
-            <div className="max-h-64 space-y-1.5 overflow-y-auto rounded-[5px] border border-border p-2">
+            <div className="max-h-64 space-y-1.5 overflow-y-auto rounded-sm border border-border p-2">
               {katalogKpi.map((kpi) => (
-                <label key={kpi.Kunci} className="flex items-start gap-2 rounded-[5px] p-1.5 hover:bg-accent">
+                <label key={kpi.Kunci} className="flex items-start gap-2 rounded-sm p-1.5 hover:bg-accent">
                   <Checkbox
                     checked={form.data.KunciKpi.includes(kpi.Kunci)}
                     onCheckedChange={() => alihkan(kpi.Kunci)}

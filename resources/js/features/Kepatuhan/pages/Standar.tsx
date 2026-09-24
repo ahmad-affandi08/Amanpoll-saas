@@ -21,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import type { PersyaratanKepatuhan, StandarKepatuhan } from '@/features/Kepatuhan/types';
 import { ruteKepatuhan } from '@/features/Kepatuhan/api';
-import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
 
 interface Props {
@@ -166,8 +166,7 @@ export default function KepatuhanStandar({ standar }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={`${standar.Kode} — Standar Kepatuhan`} />
-      <BreadcrumbHalaman />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={ruteKepatuhan.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -175,24 +174,26 @@ export default function KepatuhanStandar({ standar }: Props) {
           <ArrowLeft className="size-4" /> Kembali ke Kepatuhan
         </Link>
 
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">{standar.Nama}</h1>
-              <Badge variant={standar.Aktif ? 'sukses' : 'netral'}>
-                {standar.Aktif ? 'Aktif' : 'Nonaktif'}
-              </Badge>
-            </div>
-            <p className="font-mono text-sm text-muted-foreground">
+        <KepalaHalaman
+          judul={standar.Nama}
+          lencana={
+            <Badge variant={standar.Aktif ? 'sukses' : 'netral'}>
+              {standar.Aktif ? 'Aktif' : 'Nonaktif'}
+            </Badge>
+          }
+          deskripsi={
+            <span className="font-mono">
               {standar.Kode}
               {standar.VersiStandar ? ` · versi ${standar.VersiStandar}` : ''}
               {standar.Penerbit ? ` · ${standar.Penerbit}` : ''}
-            </p>
-          </div>
-          <Button size="sm" variant="destructive" className="min-h-11 sm:min-h-9" onClick={hapusStandar}>
-            <Trash2 /> Hapus Standar
-          </Button>
-        </header>
+            </span>
+          }
+          aksi={
+            <Button size="sm" variant="destructive" className="min-h-11 sm:min-h-9" onClick={hapusStandar}>
+              <Trash2 /> Hapus Standar
+            </Button>
+          }
+        />
 
         {standar.Deskripsi && (
           <Card>
@@ -221,7 +222,7 @@ export default function KepatuhanStandar({ standar }: Props) {
               />
             ) : (
               persyaratan.map((item) => (
-                <div key={item.Id} className="space-y-2 rounded-[9px] border border-border p-3">
+                <div key={item.Id} className="space-y-2 rounded-md border border-border p-3">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <p className="font-medium">{item.Nama}</p>

@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -116,7 +117,7 @@ export default function RencanaPemeliharaanIndex({
     <KerangkaAplikasi>
       <Head title="Rencana Pemeliharaan Preventif" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Header */}
         <KepalaHalaman
           judul="Rencana Pemeliharaan Preventif"
@@ -131,13 +132,13 @@ export default function RencanaPemeliharaanIndex({
                   onClick={jalankanScheduler}
                   disabled={menjalankanScheduler}
                 >
-                  <Play className="h-4 w-4 text-teknisi-600" />
+                  <Play className="h-4 w-4" />
                   {menjalankanScheduler ? 'Menjadwalkan...' : 'Jalankan Penjadwal'}
                 </Button>
 
                 <Dialog open={bukaDialog} onOpenChange={setBukaDialog}>
                   <DialogTrigger asChild>
-                    <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
+                    <Button className="cursor-pointer gap-2">
                       <Plus className="h-4 w-4" />
                       Buat Rencana Baru
                     </Button>
@@ -295,11 +296,7 @@ export default function RencanaPemeliharaanIndex({
                           >
                             Batal
                           </Button>
-                          <Button
-                            type="submit"
-                            className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
-                            disabled={form.processing}
-                          >
+                          <Button type="submit" className="cursor-pointer" disabled={form.processing}>
                             {form.processing ? 'Menyimpan...' : 'Simpan Rencana'}
                           </Button>
                         </DialogFooter>
@@ -313,47 +310,44 @@ export default function RencanaPemeliharaanIndex({
         />
 
         {/* Ringkasan Metrik */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-grafit-500 font-medium">Total Rencana Aktif</span>
-            <div className="text-2xl font-bold text-grafit-950 mt-1">
-              {rencana.filter((r) => r.Aktif).length} / {rencana.length}
-            </div>
-          </div>
-          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-grafit-500 font-medium">Total Aset Terjadwal</span>
-            <div className="text-2xl font-bold text-teknisi-700 mt-1">{totalAsetTerdaftar} Unit</div>
-          </div>
-          <div className="bg-card border border-garis-200 rounded-xl p-4 shadow-sm">
-            <span className="text-xs text-grafit-500 font-medium">Siklus Penjadwalan</span>
-            <div className="text-sm font-semibold text-sukses-700 mt-2 flex items-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4" />
-              Otomatis (Harian Pukul 01:00)
-            </div>
-          </div>
-        </div>
+        <DeretStatistik kolom={3}>
+          <KartuStatistik
+            menyatu
+            label="Total Rencana Aktif"
+            nilai={`${rencana.filter((r) => r.Aktif).length} / ${rencana.length}`}
+          />
+          <KartuStatistik menyatu label="Total Aset Terjadwal" nilai={`${totalAsetTerdaftar} Unit`} />
+          <KartuStatistik
+            menyatu
+            label="Siklus Penjadwalan"
+            nilai={
+              <span className="flex items-center gap-1.5 text-sm font-medium tracking-normal">
+                <CheckCircle2 aria-hidden="true" className="size-4 text-sukses-600" />
+                Otomatis (Harian Pukul 01:00)
+              </span>
+            }
+          />
+        </DeretStatistik>
 
         {/* Filter Pencarian */}
-        <div
-          className={
-            unitPengelolaDipakai
-              ? 'grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2'
-              : 'flex items-center gap-2 max-w-sm'
-          }
-        >
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-grafit-500" />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               type="text"
+              aria-label="Cari kode atau nama rencana"
               placeholder="Cari kode atau nama rencana..."
-              className="pl-9"
+              className="pl-8"
               value={pencarian}
               onChange={(e) => setPencarian(e.target.value)}
             />
           </div>
           {unitPengelolaDipakai && (
             <Select value={saringanUnit} onValueChange={setSaringanUnit}>
-              <SelectTrigger className="w-full cursor-pointer" aria-label="Saring unit pengelola">
+              <SelectTrigger className="w-full cursor-pointer sm:w-48" aria-label="Saring unit pengelola">
                 <SelectValue placeholder="Semua unit pengelola" />
               </SelectTrigger>
               <SelectContent>
@@ -382,27 +376,22 @@ export default function RencanaPemeliharaanIndex({
             {daftarTersaring.map((r) => (
               <div
                 key={r.Id}
-                className="bg-card border border-garis-200 rounded-xl p-5 hover:border-teknisi-300 hover:shadow-sm transition-all flex flex-col justify-between"
+                className="flex flex-col justify-between rounded-md border border-border bg-card p-5 transition-colors hover:border-teknisi-300"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700">
+                    <span className="rounded-sm bg-permukaan-100 px-2 py-0.5 font-mono text-xs font-semibold text-grafit-700">
                       {r.Kode}
                     </span>
-                    <Badge
-                      variant={r.Aktif ? 'default' : 'secondary'}
-                      className={r.Aktif ? 'bg-sukses-50 text-sukses-700 border-sukses-200' : ''}
-                    >
-                      {r.Aktif ? 'Aktif' : 'Nonaktif'}
-                    </Badge>
+                    <Badge variant={r.Aktif ? 'sukses' : 'netral'}>{r.Aktif ? 'Aktif' : 'Nonaktif'}</Badge>
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-grafit-950 text-base">{r.Nama}</h3>
+                    <h3 className="text-[15px] font-semibold text-foreground">{r.Nama}</h3>
                     <p className="text-xs text-grafit-500 mt-0.5">Prioritas: {r.Prioritas}</p>
                   </div>
 
-                  <div className="space-y-1.5 pt-2 border-t border-permukaan-100 text-xs text-grafit-700">
+                  <div className="space-y-1.5 border-t border-border pt-2 text-xs text-grafit-700">
                     <div className="flex items-center justify-between">
                       <span className="text-grafit-500">Interval:</span>
                       <span className="font-semibold text-grafit-950">
@@ -411,7 +400,7 @@ export default function RencanaPemeliharaanIndex({
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-grafit-500">Aset Didaftarkan:</span>
-                      <span className="font-semibold text-teknisi-700">
+                      <span className="font-semibold text-grafit-950">
                         {r.aset_count ?? r.aset?.length ?? 0} Aset
                       </span>
                     </div>
@@ -437,7 +426,7 @@ export default function RencanaPemeliharaanIndex({
                   </div>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-permukaan-100">
+                <div className="mt-4 border-t border-border pt-4">
                   <Link
                     href={ruteRencanaPemeliharaan.detail(r.Id)}
                     className="inline-flex items-center justify-between w-full text-xs font-medium text-teknisi-600 hover:text-teknisi-700 cursor-pointer"

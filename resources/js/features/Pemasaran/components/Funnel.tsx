@@ -9,7 +9,7 @@ export function Funnel({ funnel }: { funnel: TahapFunnel[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Funnel Visitor → Paid</CardTitle>
+        <CardTitle>Funnel Visitor → Paid</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {funnel.map((tahap) => (

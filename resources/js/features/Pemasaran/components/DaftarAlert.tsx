@@ -24,8 +24,8 @@ export function DaftarAlert({ alert }: { alert: AlertGrowth[] }) {
         : WARNA_STATUS.info;
 
   return (
-    <section className="mt-6 space-y-2">
-      <h2 className="text-sm font-medium text-foreground">Alert</h2>
+    <section className="mt-5 space-y-2">
+      <h2 className="text-sm font-semibold text-foreground">Alert</h2>
       {alert.map((satu) => (
         <Card key={satu.Id}>
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">

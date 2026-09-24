@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { http } from '@/lib/http';
-import { BarisKosong, KartuAngka, KepalaBagian, durasi, tanggal } from '@/components/shared/riwayat';
+import { BarisKosong, KepalaBagian, durasi, tanggal } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { BebanKerjaPengguna, Pengguna } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
@@ -31,17 +32,18 @@ export function TabBebanKerja({ pengguna }: { pengguna: Pengguna }) {
   const { ringkasan, penugasan, waktuKerja, tanggungJawabAset } = data;
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka
+    <div className="space-y-5">
+      <DeretStatistik kolom={4}>
+        <KartuStatistik
+          menyatu
           label="Penugasan Berjalan"
           nilai={ringkasan.JumlahPenugasanBerjalan}
-          catatan={`dari ${ringkasan.JumlahPenugasan} penugasan`}
+          keterangan={`dari ${ringkasan.JumlahPenugasan} penugasan`}
         />
-        <KartuAngka label="Total Waktu Kerja" nilai={durasi(ringkasan.TotalMenitKerja)} />
-        <KartuAngka label="Aset Ditanggung" nilai={ringkasan.JumlahAsetDitanggung} />
-        <KartuAngka label="Catatan Waktu" nilai={waktuKerja.total} />
-      </div>
+        <KartuStatistik menyatu label="Total Waktu Kerja" nilai={durasi(ringkasan.TotalMenitKerja)} />
+        <KartuStatistik menyatu label="Aset Ditanggung" nilai={ringkasan.JumlahAsetDitanggung} />
+        <KartuStatistik menyatu label="Catatan Waktu" nilai={waktuKerja.total} />
+      </DeretStatistik>
 
       <section className="space-y-1">
         <KepalaBagian judul="Penugasan" ditampilkan={penugasan.data.length} total={penugasan.total} />

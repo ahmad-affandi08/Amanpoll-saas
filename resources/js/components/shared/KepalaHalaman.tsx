@@ -41,14 +41,16 @@ export function KepalaHalaman({
     <header className={cn('space-y-3', className)}>
       {!tanpaBreadcrumb && <Breadcrumb jejak={jejak} />}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{judul}</h1>
+            <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.01em] text-foreground">
+              {judul}
+            </h1>
             {lencana}
           </div>
 
-          {deskripsi && <p className="text-sm text-muted-foreground">{deskripsi}</p>}
+          {deskripsi && <p className="text-[13.5px] text-muted-foreground">{deskripsi}</p>}
           {meta && <div className="pt-0.5 text-sm text-muted-foreground">{meta}</div>}
         </div>
 

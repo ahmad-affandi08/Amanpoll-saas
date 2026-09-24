@@ -209,6 +209,7 @@ export default function PermintaanPersetujuanIndex() {
       <KepalaHalaman
         judul="Persetujuan Saya"
         deskripsi="Kelola permintaan persetujuan yang Anda ajukan atau yang perlu tindakan Anda."
+        className="mb-5"
       />
 
       <Tabs defaultValue="inbox">

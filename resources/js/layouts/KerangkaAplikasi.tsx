@@ -84,23 +84,23 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar, bukaModeLap
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
                 >
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-teknisi-800 text-sidebar-primary-foreground p-1 shrink-0">
+                  <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm border border-border bg-card p-1">
                     <LogoLambang className="size-full object-contain" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate text-base font-bold text-white tracking-tight">Amanpoll</span>
+                    <span className="truncate text-sm font-semibold text-foreground">Amanpoll</span>
                     <span
-                      className="truncate text-[11px] text-sidebar-foreground font-medium leading-tight"
+                      className="truncate text-xs leading-tight text-grafit-500"
                       title="Asset & Maintenance Management Multi-Industri"
                     >
                       Asset & Maintenance Management Multi-Industri
                     </span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-sidebar-foreground/70" />
+                  <ChevronsUpDown className="ml-auto size-4 text-grafit-500 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg bg-card shadow-lg border border-border"
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
                 align="start"
                 side="bottom"
                 sideOffset={4}
@@ -158,38 +158,36 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar, bukaModeLap
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
                 >
-                  <Avatar className="h-8 w-8 rounded-lg">
+                  <Avatar className="size-8 rounded-full">
                     {auth.pengguna?.AvatarUrl ? (
                       <AvatarImage src={auth.pengguna.AvatarUrl} alt={auth.pengguna.Nama} />
                     ) : null}
-                    <AvatarFallback className="rounded-lg bg-teknisi-700 text-white font-bold text-xs">
+                    <AvatarFallback className="rounded-full bg-teknisi-100 text-xs font-semibold text-teknisi-800">
                       {getInisial(auth.pengguna?.Nama)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-semibold text-white">
+                    <span className="truncate font-medium text-foreground">
                       {auth.pengguna?.Nama ?? 'Pengguna'}
                     </span>
-                    <span className="truncate text-xs text-sidebar-foreground">
-                      {auth.pengguna?.Email ?? ''}
-                    </span>
+                    <span className="truncate text-xs text-grafit-500">{auth.pengguna?.Email ?? ''}</span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-sidebar-foreground/70" />
+                  <ChevronsUpDown className="ml-auto size-4 text-grafit-500 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg bg-card shadow-lg border border-border"
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
                 side={isCollapsed ? 'right' : 'bottom'}
                 align="end"
                 sideOffset={isCollapsed ? 10 : 4}
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
+                    <Avatar className="size-8 rounded-full">
                       {auth.pengguna?.AvatarUrl ? (
                         <AvatarImage src={auth.pengguna.AvatarUrl} alt={auth.pengguna.Nama} />
                       ) : null}
-                      <AvatarFallback className="rounded-lg bg-teknisi-700 text-white font-bold text-xs">
+                      <AvatarFallback className="rounded-full bg-teknisi-100 text-xs font-semibold text-teknisi-800">
                         {getInisial(auth.pengguna?.Nama)}
                       </AvatarFallback>
                     </Avatar>
@@ -337,7 +335,7 @@ function KerangkaDalam({ children }: PropsWithChildren) {
         bukaModeLapangan={bukaModeLapangan}
       />
       <SidebarInset>
-        <header className="flex h-14 items-center justify-between gap-3 border-b border-border bg-card px-4 sm:px-6">
+        <header className="sticky top-0 z-20 flex h-13 items-center justify-between gap-3 border-b border-border bg-background/95 px-4 backdrop-blur-sm sm:px-8">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
             <PencarianGlobal halaman={halamanTujuan} />
@@ -358,7 +356,7 @@ function KerangkaDalam({ children }: PropsWithChildren) {
             <LoncengNotifikasi />
           </div>
         </header>
-        <div className="p-4 sm:p-6">{children}</div>
+        <div className="px-4 py-5 sm:px-8 sm:py-7">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

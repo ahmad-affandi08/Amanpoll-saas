@@ -45,7 +45,7 @@ export function KonsolMenu({ menu, pratinjau }: { menu: MenuWhatsApp[]; pratinja
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid gap-5 lg:grid-cols-3">
       <form onSubmit={simpan} className="space-y-4 lg:col-span-2">
         {baris.map((satu, indeks) => (
           <Card key={satu.Id}>
@@ -109,7 +109,7 @@ export function KonsolMenu({ menu, pratinjau }: { menu: MenuWhatsApp[]; pratinja
 
       <Card className="h-fit">
         <CardHeader>
-          <CardTitle className="text-base">Pratinjau</CardTitle>
+          <CardTitle>Pratinjau</CardTitle>
         </CardHeader>
         <CardContent>
           <pre className="whitespace-pre-wrap rounded-md bg-muted p-3 font-sans text-sm text-foreground">

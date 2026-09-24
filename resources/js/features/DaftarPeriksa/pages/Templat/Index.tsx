@@ -77,7 +77,7 @@ function DialogBuatTemplat({
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer gap-2 bg-teknisi-600 text-white hover:bg-teknisi-700">
+        <Button className="cursor-pointer">
           <Plus className="h-4 w-4" />
           Buat Templat Baru
         </Button>
@@ -156,11 +156,7 @@ function DialogBuatTemplat({
               >
                 Batal
               </Button>
-              <Button
-                type="submit"
-                className="cursor-pointer bg-teknisi-600 text-white hover:bg-teknisi-700"
-                disabled={form.processing}
-              >
+              <Button type="submit" className="cursor-pointer" disabled={form.processing}>
                 {form.processing ? 'Menyimpan...' : 'Simpan & Lanjutkan'}
               </Button>
             </DialogFooter>
@@ -259,7 +255,7 @@ export default function DaftarPeriksaTemplatIndex({ templat, kategoriAset, filte
         judul="Templat Daftar Periksa"
         deskripsi="Kelola lembar periksa terstandarisasi untuk inspeksi dan pemeliharaan preventif."
         aksi={<DialogBuatTemplat kategoriAset={kategoriAset} wajib={wajib.templat} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {templat.meta.total === 0 && !adaPenyaringAktif(filter) ? (

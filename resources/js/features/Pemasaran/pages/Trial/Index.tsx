@@ -117,12 +117,12 @@ export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filte
         judul="Trial"
         deskripsi="Perjalanan tiap workspace percobaan, dari pendaftaran sampai konversi."
         tanpaBreadcrumb
-        className="mb-6"
+        className="mb-5"
       />
 
-      <Card className="mb-6">
+      <Card className="mb-5">
         <CardHeader>
-          <CardTitle className="text-base">Setelan berlaku</CardTitle>
+          <CardTitle>Setelan berlaku</CardTitle>
         </CardHeader>
         <CardContent>
           <dl className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">

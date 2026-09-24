@@ -123,7 +123,7 @@ export default function KalibrasiJenisIndex({ jenisKalibrasi, filter, wajib }: P
         judul="Jenis Kalibrasi"
         deskripsi="Atur metode, spesifikasi unit, dan template titik ukur standar untuk instrumen dan alat uji."
         aksi={<DialogFormJenis jenis={null} wajib={wajib.jenis} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {jenisKalibrasi.meta.total === 0 && !adaPenyaringAktif(filter) ? (

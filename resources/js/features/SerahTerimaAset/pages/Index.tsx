@@ -93,7 +93,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
   return (
     <KerangkaAplikasi>
       <Head title="Serah Terima Aset" />
-      <div className="space-y-4">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Serah Terima Aset"
           deskripsi="Dokumentasi serah terima aset -- pihak asal, tujuan, dan kondisi."
@@ -105,10 +105,10 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
           }
         />
 
-        <div className="w-56 space-y-1.5">
-          <Label>Status</Label>
+        <div className="w-full space-y-1.5 sm:w-48">
+          <Label htmlFor="filter-serah-terima-status">Status</Label>
           <Select value={status} onValueChange={terapkanFilter}>
-            <SelectTrigger>
+            <SelectTrigger id="filter-serah-terima-status" className="w-full">
               <SelectValue placeholder="Semua" />
             </SelectTrigger>
             <SelectContent>
@@ -123,7 +123,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
         </div>
 
         {serahTerima.data.length === 0 && (
-          <div className="rounded-[9px] border border-border bg-card">
+          <div className="rounded-md border border-border bg-card">
             <KeadaanKosong
               judul="Belum ada dokumen serah terima."
               deskripsi="Dokumen serah terima aset akan muncul di sini."
@@ -132,7 +132,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
         )}
 
         {serahTerima.data.length > 0 && (
-          <div className="rounded-[9px] border border-border bg-card">
+          <div className="rounded-md border border-border bg-card">
             <Table>
               <TableHeader>
                 <TableRow>

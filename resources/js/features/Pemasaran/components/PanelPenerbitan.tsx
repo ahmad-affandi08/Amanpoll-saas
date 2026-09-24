@@ -20,9 +20,9 @@ export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Penerbitan</CardTitle>
+        <CardTitle>Penerbitan</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-6">
+      <CardContent className="grid gap-5">
         <div className="flex flex-wrap items-center gap-3">
           <Button onClick={() => router.post(`${akar}/terbitkan`, {}, { preserveScroll: true })}>
             Terbitkan Draf Sekarang

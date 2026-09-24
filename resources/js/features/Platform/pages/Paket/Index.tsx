@@ -62,7 +62,7 @@ export default function PlatformPaketIndex({ paket, katalogFitur }: Props) {
     <KerangkaPlatform>
       <Head title="Paket Langganan" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           tanpaBreadcrumb
           judul="Paket Langganan"
@@ -279,7 +279,7 @@ function DialogPaket({
               if (!baris) return null;
 
               return (
-                <div key={definisi.Kode} className="rounded-[8px] border border-border p-3">
+                <div key={definisi.Kode} className="rounded-md border border-border p-3">
                   <label className="flex items-start gap-3">
                     <Switch
                       checked={baris.Diizinkan}

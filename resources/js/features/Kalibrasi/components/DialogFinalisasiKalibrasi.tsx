@@ -94,7 +94,7 @@ export function DialogFinalisasiKalibrasi({
                 Hasil Kesimpulan Kalibrasi *
               </Label>
               <Select value={form.data.Hasil} onValueChange={(val) => form.setData('Hasil', val)}>
-                <SelectTrigger className="h-9 text-xs">
+                <SelectTrigger>
                   <SelectValue placeholder="Pilih Hasil" />
                 </SelectTrigger>
                 <SelectContent>
@@ -115,7 +115,7 @@ export function DialogFinalisasiKalibrasi({
                 value={form.data.NomorSertifikat}
                 onChange={(e) => form.setData('NomorSertifikat', e.target.value)}
                 required
-                className="h-9 text-xs font-mono"
+                className="font-mono"
               />
               {form.errors.NomorSertifikat && (
                 <p className="text-xs text-bahaya-600">{form.errors.NomorSertifikat}</p>
@@ -131,7 +131,7 @@ export function DialogFinalisasiKalibrasi({
                   value={form.data.TanggalKalibrasi}
                   onChange={(nilai) => form.setData('TanggalKalibrasi', nilai)}
                   id="TglKalibrasi"
-                  className="h-9 text-xs font-mono"
+                  className="font-mono"
                   required
                 />
               </div>
@@ -144,7 +144,7 @@ export function DialogFinalisasiKalibrasi({
                   value={form.data.TanggalBerlakuSampai}
                   onChange={(nilai) => form.setData('TanggalBerlakuSampai', nilai)}
                   id="TglBerlaku"
-                  className="h-9 text-xs font-mono"
+                  className="font-mono"
                 />
                 <p className="text-[10px] text-muted-foreground">
                   Kosongkan jika ingin dihitung otomatis dari interval rencana kalibrasi.
@@ -161,7 +161,6 @@ export function DialogFinalisasiKalibrasi({
                 placeholder="mis. Balai Kalibrasi Standar Industri"
                 value={form.data.Laboratorium}
                 onChange={(e) => form.setData('Laboratorium', e.target.value)}
-                className="h-9 text-xs"
               />
             </div>
 
@@ -180,7 +179,6 @@ export function DialogFinalisasiKalibrasi({
                       Suhu: e.target.value,
                     })
                   }
-                  className="h-9 text-xs"
                 />
               </div>
               <div className="space-y-1.5">
@@ -197,7 +195,6 @@ export function DialogFinalisasiKalibrasi({
                       Kelembapan: e.target.value,
                     })
                   }
-                  className="h-9 text-xs"
                 />
               </div>
             </div>

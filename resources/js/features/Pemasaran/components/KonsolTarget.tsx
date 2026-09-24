@@ -47,7 +47,7 @@ export function KonsolTarget({
           const persen = sasaran > 0 ? Math.min((dicapai / sasaran) * 100, 100) : 0;
 
           return (
-            <div key={satu} className="rounded-lg border p-3">
+            <div key={satu} className="rounded-md border p-3">
               <Label htmlFor={`target-${satu}`}>{satu}</Label>
               {metrikUang.includes(satu) ? (
                 <InputUang

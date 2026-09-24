@@ -170,7 +170,7 @@ export default function HariLiburIndex({ hariLibur, filter, wajib }: Props) {
             <DialogTambahHariLibur wajib={wajib.hariLibur} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

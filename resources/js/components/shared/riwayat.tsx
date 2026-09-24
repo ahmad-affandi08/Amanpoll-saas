@@ -4,9 +4,9 @@ import type { ReactNode } from 'react';
 
 export function KartuAngka({ label, nilai, catatan }: { label: string; nilai: ReactNode; catatan?: string }) {
   return (
-    <div className="rounded-[9px] border border-border bg-card px-4 py-3">
+    <div className="rounded-md border border-border bg-card px-4 py-3">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-xl font-semibold tabular-nums text-foreground">{nilai}</p>
+      <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{nilai}</p>
       {catatan && <p className="mt-0.5 text-xs text-muted-foreground">{catatan}</p>}
     </div>
   );

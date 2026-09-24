@@ -7,7 +7,8 @@ import type { Aset, RiwayatKalibrasiAset } from '@/features/Aset/types';
 import { ruteAset } from '@/features/Aset/api';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
-import { BarisKosong, KartuAngka, KepalaBagian, tanggal } from '@/components/shared/riwayat';
+import { BarisKosong, KepalaBagian, tanggal } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 
 export function TabKalibrasi({ aset }: { aset: Aset }) {
   const [data, setData] = useState<RiwayatKalibrasiAset | null>(null);
@@ -33,22 +34,27 @@ export function TabKalibrasi({ aset }: { aset: Aset }) {
   const hasil = hasilKalibrasiBadge(ringkasan.HasilTerakhir);
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka label="Pelaksanaan" nilai={ringkasan.JumlahPelaksanaan} />
-        <KartuAngka label="Terakhir Dikalibrasi" nilai={tanggal(ringkasan.TerakhirPada)} />
-        <KartuAngka label="Hasil Terakhir" nilai={<span className="text-base">{hasil.label}</span>} />
-        <KartuAngka
+    <div className="space-y-6">
+      <DeretStatistik kolom={4}>
+        <KartuStatistik menyatu label="Pelaksanaan" nilai={ringkasan.JumlahPelaksanaan} />
+        <KartuStatistik menyatu label="Terakhir Dikalibrasi" nilai={tanggal(ringkasan.TerakhirPada)} />
+        <KartuStatistik
+          menyatu
+          label="Hasil Terakhir"
+          nilai={<span className="text-base">{hasil.label}</span>}
+        />
+        <KartuStatistik
+          menyatu
           label="Jatuh Tempo Berikutnya"
           nilai={tanggal(ringkasan.JatuhTempoBerikutnya)}
-          catatan={
+          keterangan={
             ringkasan.BerlakuSampai ? `Sertifikat berlaku s/d ${tanggal(ringkasan.BerlakuSampai)}` : undefined
           }
         />
-      </div>
+      </DeretStatistik>
 
       {ringkasan.JumlahPelaksanaan === 0 && rencana.length === 0 && (
-        <p className="rounded-[9px] border border-safety-600/25 bg-safety-600/5 p-4 text-sm text-grafit-700">
+        <p className="rounded-md border border-safety-600/25 bg-safety-600/5 p-4 text-sm text-grafit-700">
           Aset ini belum punya rencana kalibrasi. Bila kategorinya menuntut kalibrasi, aset ini terhitung
           tidak patuh di dasbor kepatuhan.
         </p>
@@ -118,7 +124,7 @@ export function TabKalibrasi({ aset }: { aset: Aset }) {
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <span
-                      className={cn('rounded-[4px] border px-2 py-0.5 text-xs font-medium', ragam.className)}
+                      className={cn('rounded-xs border px-2 py-0.5 text-xs font-medium', ragam.className)}
                     >
                       {ragam.label}
                     </span>

@@ -55,7 +55,7 @@ export default function PemasaranFormulirIndex({ formulir, pilihan, wajib }: Pro
         deskripsi="Formulir yang dipasang di halaman publik. Setiap pengiriman menjadi prospek beserta UTM-nya."
         tanpaBreadcrumb
         aksi={<DialogFormulir formulir={null} pilihan={pilihan} wajib={wajib.formulir} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {formulir.length === 0 ? (
@@ -69,7 +69,7 @@ export default function PemasaranFormulirIndex({ formulir, pilihan, wajib }: Pro
             <Card key={satu.Id}>
               <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
                 <div className="grid gap-1">
-                  <CardTitle className="text-base">{satu.Nama}</CardTitle>
+                  <CardTitle>{satu.Nama}</CardTitle>
                   <span className="font-mono text-xs text-muted-foreground">{satu.Kode}</span>
                 </div>
                 <div className="flex gap-1">
@@ -284,7 +284,7 @@ function DialogFormulir({
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-6">
+            <div className="flex flex-wrap gap-5">
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox
                   checked={form.data.WajibPersetujuan}
@@ -323,7 +323,7 @@ function DialogFormulir({
             </div>
 
             {field.map((satu, urutan) => (
-              <div key={urutan} className="grid gap-3 rounded-lg border p-3">
+              <div key={urutan} className="grid gap-3 rounded-md border p-3">
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div className="grid content-start gap-2">
                     <Label>Kode</Label>

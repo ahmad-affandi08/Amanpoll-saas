@@ -48,10 +48,10 @@ export default function PemasaranEmailSequence({ sequence, template, kodeSequenc
         deskripsi="Rangkaian email onboarding beserta jadwalnya, disusun dari konsol tanpa rilis."
         tanpaBreadcrumb
         aksi={<DialogSequence sequence={null} wajib={wajib.sequence} />}
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="mb-6 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+      <div className="mb-5 rounded-md border border-dashed p-4 text-sm text-muted-foreground">
         Sequence yang dijalankan saat trial dimulai ditentukan lewat setelan{' '}
         <span className="font-mono">{kodeSequenceTrial}</span> di halaman Pengaturan Pemasaran.
       </div>
@@ -97,7 +97,7 @@ function KartuSequence({
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-2 space-y-0">
         <div>
-          <CardTitle className="text-base">{sequence.Nama}</CardTitle>
+          <CardTitle>{sequence.Nama}</CardTitle>
           <p className="font-mono text-xs text-muted-foreground">{sequence.Kode}</p>
           {sequence.Keterangan ? (
             <p className="mt-1 text-sm text-muted-foreground">{sequence.Keterangan}</p>

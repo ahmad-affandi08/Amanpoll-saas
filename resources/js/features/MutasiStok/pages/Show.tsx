@@ -154,7 +154,7 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang, wajib }: Props)
   return (
     <KerangkaAplikasi>
       <Head title={mutasiStok.Nomor} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul={mutasiStok.Jenis}
           labelBreadcrumb={mutasiStok.Nomor}
@@ -185,7 +185,7 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang, wajib }: Props)
           }
         />
 
-        <div className="rounded-[9px] border border-border bg-card p-4">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Detail Baris</h2>
             {mutasiStok.Status === 'Draft' && (
@@ -202,7 +202,7 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang, wajib }: Props)
               {mutasiStok.DetailMutasiStok.map((d) => (
                 <div
                   key={d.Id}
-                  className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-sm border border-border px-3 py-2 text-sm"
                 >
                   <div>
                     <span className="font-medium text-foreground">{d.NamaSukuCadang}</span>

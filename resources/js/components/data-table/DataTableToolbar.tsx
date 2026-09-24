@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Table } from '@tanstack/react-table';
-import { X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableFacetedFilter } from '@/components/data-table/DataTableFacetedFilter';
@@ -32,14 +32,20 @@ export function DataTableToolbar<TData>({
   // menyusut dan terdorong keluar layar, sehingga tidak terjangkau sama sekali
   // di ponsel dan ikut melebarkan seluruh kartu tabel.
   return (
-    <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+    <div className="flex flex-col gap-2 border-b border-border p-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-        <Input
-          placeholder={pencarianPlaceholder ?? 'Cari...'}
-          value={(table.getState().globalFilter as string) ?? ''}
-          onChange={(e) => table.setGlobalFilter(e.target.value)}
-          className="h-10 w-full sm:h-8 sm:w-56"
-        />
+        <div className="relative w-full sm:w-64">
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+          />
+          <Input
+            placeholder={pencarianPlaceholder ?? 'Cari...'}
+            value={(table.getState().globalFilter as string) ?? ''}
+            onChange={(e) => table.setGlobalFilter(e.target.value)}
+            className="h-10 w-full pl-8 sm:h-8"
+          />
+        </div>
         {facetedFilters?.map((filter) => (
           <DataTableFacetedFilter
             key={filter.columnId}

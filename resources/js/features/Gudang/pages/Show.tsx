@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
@@ -36,15 +37,6 @@ interface Props {
     JumlahLokasi: number;
     ReservasiAktif: number;
   };
-}
-
-function Kartu({ label, nilai }: { label: string; nilai: string | number }) {
-  return (
-    <div className="rounded-[9px] border border-border bg-card p-4">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-xl font-semibold tabular-nums text-foreground">{nilai}</p>
-    </div>
-  );
 }
 
 export default function GudangShow({ gudang, lokasiGudang, stok, filter, ringkasan }: Props) {
@@ -108,7 +100,7 @@ export default function GudangShow({ gudang, lokasiGudang, stok, filter, ringkas
   return (
     <KerangkaAplikasi>
       <Head title={gudang.Nama} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul={gudang.Nama}
           labelBreadcrumb={gudang.Kode}
@@ -123,14 +115,14 @@ export default function GudangShow({ gudang, lokasiGudang, stok, filter, ringkas
           }
         />
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Kartu label="Jenis Suku Cadang" nilai={ringkasan.JenisSukuCadang} />
-          <Kartu label="Total Unit Fisik" nilai={ringkasan.TotalUnit} />
-          <Kartu label="Lokasi Rak" nilai={ringkasan.JumlahLokasi} />
-          <Kartu label="Reservasi Aktif" nilai={ringkasan.ReservasiAktif} />
-        </div>
+        <DeretStatistik kolom={4}>
+          <KartuStatistik menyatu label="Jenis Suku Cadang" nilai={ringkasan.JenisSukuCadang} />
+          <KartuStatistik menyatu label="Total Unit Fisik" nilai={ringkasan.TotalUnit} />
+          <KartuStatistik menyatu label="Lokasi Rak" nilai={ringkasan.JumlahLokasi} />
+          <KartuStatistik menyatu label="Reservasi Aktif" nilai={ringkasan.ReservasiAktif} />
+        </DeretStatistik>
 
-        <div className="rounded-[9px] border border-border bg-card p-4">
+        <div className="rounded-md border border-border bg-card px-5 py-4">
           <h2 className="mb-3 text-sm font-semibold text-foreground">Lokasi Rak</h2>
           {lokasiGudang.length === 0 ? (
             <p className="text-sm text-muted-foreground">
@@ -142,7 +134,7 @@ export default function GudangShow({ gudang, lokasiGudang, stok, filter, ringkas
               {lokasiGudang.map((satu) => (
                 <span
                   key={satu.Id}
-                  className="rounded-[6px] border border-border px-2.5 py-1 text-sm text-foreground"
+                  className="rounded-sm border border-border px-2.5 py-1 text-sm text-foreground"
                 >
                   {satu.Nama}
                   {satu.NamaInduk && (

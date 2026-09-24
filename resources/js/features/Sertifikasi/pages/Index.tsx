@@ -243,7 +243,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
   return (
     <KerangkaAplikasi>
       <Head title="Sertifikasi Aset" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Sertifikasi Aset"
           deskripsi="Sertifikat aset beserta penerbit, masa berlaku, dan statusnya."
@@ -258,19 +258,22 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
           }
         />
 
-        <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_13rem_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari nomor atau jenis sertifikat"
               placeholder="Cari nomor atau jenis sertifikat"
-              className="pl-9"
+              className="pl-8"
               value={cari}
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -282,7 +285,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -294,22 +297,22 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
             deskripsi="Catat sertifikat agar masa berlakunya ikut diingatkan."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500">
                   <tr>
-                    <th className="px-4 py-3">Sertifikat</th>
-                    <th className="px-4 py-3">Aset</th>
-                    <th className="px-4 py-3">Penerbit</th>
-                    <th className="px-4 py-3">Masa berlaku</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3" />
+                    <th className="h-10 px-4 font-medium">Sertifikat</th>
+                    <th className="h-10 px-4 font-medium">Aset</th>
+                    <th className="h-10 px-4 font-medium">Penerbit</th>
+                    <th className="h-10 px-4 font-medium">Masa berlaku</th>
+                    <th className="h-10 px-4 font-medium">Status</th>
+                    <th className="h-10 px-4 font-medium" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {sertifikasi.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-accent">
+                    <tr key={item.Id} className="hover:bg-permukaan-50">
                       <td className="px-4 py-3">
                         {item.JenisSertifikasi}
                         <p className="font-mono text-xs text-muted-foreground">
@@ -345,7 +348,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
               {sertifikasi.data.map((item) => (
                 <div key={item.Id} className="space-y-2 p-4">
                   <div className="flex items-start gap-3">
-                    <BadgeCheck className="size-5 shrink-0 text-primary" />
+                    <BadgeCheck className="mt-0.5 size-4 shrink-0 text-grafit-500" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{item.JenisSertifikasi}</p>
                       <p className="truncate font-mono text-xs text-muted-foreground">

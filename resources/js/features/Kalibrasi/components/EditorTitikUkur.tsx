@@ -123,12 +123,10 @@ export function EditorTitikUkur({
   const adaTitikGagal = titikRows.some((r) => r.Hasil === 'Gagal');
 
   return (
-    <Card className="border-border">
-      <CardHeader className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <Card>
+      <CardHeader className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <CardTitle className="text-base font-semibold text-foreground">
-            Hasil Uji Titik Ukur Instrumen
-          </CardTitle>
+          <CardTitle className="text-[15px]">Hasil Uji Titik Ukur Instrumen</CardTitle>
           <p className="text-xs text-muted-foreground mt-0.5">
             Nilai terukur, toleransi kesalahan maksimum, koreksi aktual, dan evaluasi lolos/gagal
           </p>
@@ -161,9 +159,9 @@ export function EditorTitikUkur({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-permukaan-50 text-muted-foreground border-b border-border">
+              <thead className="border-b border-border bg-permukaan-50 text-[12.5px] text-grafit-500">
                 <tr>
-                  <th className="px-3 py-2.5 w-8 text-center">#</th>
+                  <th className="px-3 py-2.5 w-8 text-center font-medium">#</th>
                   <th className="px-3 py-2.5 font-medium">Nama Titik Uji</th>
                   <th className="px-3 py-2.5 font-medium w-28">Nilai Referensi</th>
                   <th className="px-3 py-2.5 font-medium w-24">Toleransi (-)</th>
@@ -246,7 +244,7 @@ export function EditorTitikUkur({
 
                       <td className="px-3 py-2">
                         {sudahVerifikasi ? (
-                          <span className="font-mono font-bold text-foreground">
+                          <span className="font-mono font-semibold text-foreground">
                             {row.NilaiTerukur || '—'}
                           </span>
                         ) : (

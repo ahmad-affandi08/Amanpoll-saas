@@ -304,7 +304,7 @@ function Kerangka<TData, TValue>({
     // min-w-0: di dalam induk flex/grid, kartu ini boleh lebih sempit daripada
     // isinya. Tabel lebar lalu menggulung di wadahnya sendiri, bukan
     // melebarkan seluruh halaman ke samping.
-    <div className="min-w-0 rounded-[9px] border border-border bg-card">
+    <div className="min-w-0 overflow-hidden rounded-md border border-border bg-card">
       {catatan && (
         <p className="border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
           {catatan}

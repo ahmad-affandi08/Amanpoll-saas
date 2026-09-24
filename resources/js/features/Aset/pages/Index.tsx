@@ -1,6 +1,6 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ListFilter } from 'lucide-react';
+import { ListFilter, Search } from 'lucide-react';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { useIzin } from '@/hooks/use-izin';
 import { DialogImporAset } from '@/features/Aset/components/DialogImporAset';
@@ -90,6 +90,7 @@ function MedanFilterAset({
   kategoriAset,
   lokasi,
   penyaringUnitPengelola,
+  ringkas = false,
 }: {
   form: FilterAset;
   setForm: Dispatch<SetStateAction<FilterAset>>;
@@ -97,59 +98,95 @@ function MedanFilterAset({
   lokasi: Lokasi[];
   /** Kosong bila organisasi tidak memakai unit pengelola; penyaringnya lalu tidak ditampilkan. */
   penyaringUnitPengelola: UnitPengelolaRingkas[];
+  /**
+   * Satu baris di desktop (DESIGN.md 12): label hanya untuk pembaca layar, dan pilihan
+   * "Semua" menyebut apa yang disaring supaya tetap terbaca tanpa label di atasnya.
+   */
+  ringkas?: boolean;
 }) {
+  const kelasLabel = ringkas ? 'sr-only' : undefined;
+  const kelasBidang = ringkas ? 'contents' : 'space-y-1.5';
+  const semua = (apa: string) => (ringkas ? `Semua ${apa}` : 'Semua');
+  const awalanId = ringkas ? 'filter-aset-baris' : 'filter-aset-lembar';
+
   return (
     <>
-      <div className="space-y-1.5">
-        <Label>Cari</Label>
+      <div className={ringkas ? 'relative w-full sm:w-64' : 'space-y-1.5'}>
+        <Label htmlFor={`${awalanId}-cari`} className={kelasLabel}>
+          Cari
+        </Label>
+        {ringkas && (
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+          />
+        )}
         <Input
+          id={`${awalanId}-cari`}
           value={form.cari ?? ''}
           onChange={(e) => setForm((f) => ({ ...f, cari: e.target.value || undefined }))}
           placeholder="Nama, kode, atau nomor seri..."
+          className={ringkas ? 'pl-8' : undefined}
         />
       </div>
-      <div className="space-y-1.5">
-        <Label>Kategori</Label>
+      <div className={kelasBidang}>
+        <Label htmlFor={`${awalanId}-kategori`} className={kelasLabel}>
+          Kategori
+        </Label>
         <Combobox
+          id={`${awalanId}-kategori`}
           nilai={form.kategoriAsetId ?? SEMUA}
           onPilih={(v) => setForm((f) => ({ ...f, kategoriAsetId: v === SEMUA ? undefined : v }))}
-          opsi={[{ nilai: SEMUA, label: 'Semua' }, ...opsiDari(kategoriAset, (k) => k.Nama)]}
-          placeholder="Semua"
+          opsi={[{ nilai: SEMUA, label: semua('kategori') }, ...opsiDari(kategoriAset, (k) => k.Nama)]}
+          placeholder={semua('kategori')}
+          className={ringkas ? 'w-44' : undefined}
         />
       </div>
-      <div className="space-y-1.5">
-        <Label>Lokasi</Label>
+      <div className={kelasBidang}>
+        <Label htmlFor={`${awalanId}-lokasi`} className={kelasLabel}>
+          Lokasi
+        </Label>
         <Combobox
+          id={`${awalanId}-lokasi`}
           nilai={form.lokasiId ?? SEMUA}
           onPilih={(v) => setForm((f) => ({ ...f, lokasiId: v === SEMUA ? undefined : v }))}
-          opsi={[{ nilai: SEMUA, label: 'Semua' }, ...opsiDari(lokasi, (l) => l.Nama)]}
-          placeholder="Semua"
+          opsi={[{ nilai: SEMUA, label: semua('lokasi') }, ...opsiDari(lokasi, (l) => l.Nama)]}
+          placeholder={semua('lokasi')}
+          className={ringkas ? 'w-44' : undefined}
         />
       </div>
-      <div className="space-y-1.5">
-        <Label>Status</Label>
+      <div className={kelasBidang}>
+        <Label htmlFor={`${awalanId}-status`} className={kelasLabel}>
+          Status
+        </Label>
         <Combobox
+          id={`${awalanId}-status`}
           nilai={form.status ?? SEMUA}
           onPilih={(v) => setForm((f) => ({ ...f, status: v === SEMUA ? undefined : v }))}
           opsi={[
-            { nilai: SEMUA, label: 'Semua' },
+            { nilai: SEMUA, label: semua('status') },
             ...['Aktif', 'Nonaktif', 'Dipinjam', 'Rusak', 'Diarsipkan'].map((s) => ({ nilai: s, label: s })),
           ]}
-          placeholder="Semua"
+          placeholder={semua('status')}
+          className={ringkas ? 'w-36' : undefined}
         />
       </div>
       {penyaringUnitPengelola.length > 0 && (
-        <div className="space-y-1.5">
-          <Label>Unit Pengelola</Label>
+        <div className={kelasBidang}>
+          <Label htmlFor={`${awalanId}-unit-pengelola`} className={kelasLabel}>
+            Unit Pengelola
+          </Label>
           <Combobox
+            id={`${awalanId}-unit-pengelola`}
             nilai={form.unitPengelolaId ?? SEMUA}
             onPilih={(v) => setForm((f) => ({ ...f, unitPengelolaId: v === SEMUA ? undefined : v }))}
             opsi={[
-              { nilai: SEMUA, label: 'Semua' },
+              { nilai: SEMUA, label: semua('unit pengelola') },
               { nilai: TANPA_UNIT_PENGELOLA, label: 'Belum ada' },
               ...opsiUnitPengelola(penyaringUnitPengelola, false),
             ]}
-            placeholder="Semua"
+            placeholder={semua('unit pengelola')}
+            className={ringkas ? 'w-48' : undefined}
           />
         </div>
       )}
@@ -497,30 +534,28 @@ export default function AsetIndex({
           </Sheet>
         </div>
 
-        {/* Desktop/tablet: filter inline */}
-        <form
-          onSubmit={terapkanFilter}
-          className={`hidden grid-cols-2 gap-4 rounded-[9px] border border-border bg-card p-4 md:grid ${
-            unitPengelolaDipakai ? 'lg:grid-cols-6' : 'lg:grid-cols-5'
-          } [&>:first-child]:lg:col-span-2`}
-        >
+        {/* Desktop/tablet: satu baris penyaring tanpa kartu (DESIGN.md 12) */}
+        <form onSubmit={terapkanFilter} className="hidden flex-wrap items-center gap-2 md:flex">
           <MedanFilterAset
             form={form}
             setForm={setForm}
             kategoriAset={kategoriAset}
             lokasi={lokasi}
             penyaringUnitPengelola={penyaringUnitPengelola}
+            ringkas
           />
-          <div className="col-span-full flex items-end gap-2">
-            <Button type="submit">Terapkan</Button>
-            <Button type="button" variant="outline" onClick={resetFilter}>
+          <Button type="submit" variant="secondary">
+            Terapkan
+          </Button>
+          {jumlahAktif > 0 && (
+            <Button type="button" variant="ghost" onClick={resetFilter}>
               Reset
             </Button>
-          </div>
+          )}
         </form>
 
         {aset.data.length === 0 && (
-          <div className="rounded-[9px] border border-border bg-card">
+          <div className="rounded-md border border-border bg-card">
             <KeadaanKosong
               ilustrasi="/assets/3d/aset-qr.webp"
               judul="Belum ada aset."
@@ -537,7 +572,7 @@ export default function AsetIndex({
                 key={a.Id}
                 type="button"
                 onClick={() => router.visit(ruteAset.detail(a.Id))}
-                className="flex w-full items-start gap-3 rounded-[9px] border border-border bg-card p-4 text-left"
+                className="flex w-full items-start gap-3 rounded-md border border-border bg-card p-4 text-left"
               >
                 <FotoMini aset={a} className="size-14 rounded-[6px] bg-permukaan-100" />
                 <div className="min-w-0 flex-1">
@@ -566,7 +601,7 @@ export default function AsetIndex({
         )}
 
         {terpilih.length > 0 && (
-          <div className="hidden flex-wrap items-center justify-between gap-3 rounded-[9px] border border-border bg-muted/40 px-4 py-3 md:flex">
+          <div className="hidden flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-muted/40 px-4 py-3 md:flex">
             <p className="text-sm text-foreground">
               {terpilih.length} aset dipilih
               {terpilih.length > maksLabel && (
@@ -601,7 +636,7 @@ export default function AsetIndex({
 
         {/* Desktop/tablet: table */}
         {aset.data.length > 0 && (
-          <div className="hidden rounded-[9px] border border-border bg-card md:block">
+          <div className="hidden rounded-md border border-border bg-card md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -616,7 +651,7 @@ export default function AsetIndex({
                   <TableHead>Kategori</TableHead>
                   <TableHead>Lokasi</TableHead>
                   {unitPengelolaDipakai && <TableHead>Unit Pengelola</TableHead>}
-                  <TableHead>Harga Perolehan</TableHead>
+                  <TableHead className="text-right">Harga Perolehan</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -651,7 +686,9 @@ export default function AsetIndex({
                         {a.NamaUnitPengelola ?? <span className="text-muted-foreground">Belum ada</span>}
                       </TableCell>
                     )}
-                    <TableCell>{a.HargaPerolehan ? formatUang(a.HargaPerolehan, a.MataUang) : '—'}</TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {a.HargaPerolehan ? formatUang(a.HargaPerolehan, a.MataUang) : '—'}
+                    </TableCell>
                     <TableCell>{badgeStatus(a.Status)}</TableCell>
                   </TableRow>
                 ))}

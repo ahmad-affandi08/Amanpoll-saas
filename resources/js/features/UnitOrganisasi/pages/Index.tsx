@@ -280,7 +280,7 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
             <DialogFormUnit unit={null} semuaUnit={pilihanInduk} wajib={wajib.unit} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

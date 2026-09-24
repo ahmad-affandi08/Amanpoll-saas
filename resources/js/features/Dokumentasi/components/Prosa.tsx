@@ -18,7 +18,7 @@ export function Bagian({ id, judul, children }: { id: string; judul: string; chi
     <section aria-labelledby={id} className="mt-12 scroll-mt-24 first:mt-0">
       <h2
         id={id}
-        className="scroll-mt-24 border-b border-border pb-2 text-xl font-semibold tracking-tight text-foreground"
+        className="scroll-mt-24 border-b border-border pb-2 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-foreground"
       >
         {judul}
       </h2>
@@ -28,7 +28,7 @@ export function Bagian({ id, judul, children }: { id: string; judul: string; chi
 }
 
 export function SubJudul({ children }: { children: ReactNode }) {
-  return <h3 className="mt-8 text-base font-semibold text-foreground">{children}</h3>;
+  return <h3 className="mt-8 text-[15px] font-semibold text-foreground">{children}</h3>;
 }
 
 export function P({ children }: { children: ReactNode }) {
@@ -56,7 +56,7 @@ export function Tegas({ children }: { children: ReactNode }) {
 /** Nama menu, tombol, atau kolom persis seperti yang tampil di layar. */
 export function Ui({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-[4px] border border-border bg-card px-1.5 py-0.5 text-[0.8125rem] font-medium text-foreground">
+    <span className="rounded-xs border border-border bg-permukaan-50 px-1.5 py-0.5 text-[0.8125rem] font-medium text-foreground">
       {children}
     </span>
   );
@@ -65,7 +65,7 @@ export function Ui({ children }: { children: ReactNode }) {
 /** Nilai harfiah: kode izin, nama kolom, contoh kode. */
 export function Kode({ children }: { children: ReactNode }) {
   return (
-    <code className="rounded-[4px] border border-border bg-card px-1.5 py-0.5 font-mono text-[0.8125rem] text-foreground">
+    <code className="rounded-xs border border-border bg-permukaan-50 px-1.5 py-0.5 font-mono text-[0.8125rem] text-foreground">
       {children}
     </code>
   );
@@ -73,7 +73,7 @@ export function Kode({ children }: { children: ReactNode }) {
 
 export function Blok({ children }: { children: string }) {
   return (
-    <pre className="overflow-x-auto rounded-[9px] border border-border bg-permukaan-50 p-4 text-[0.8125rem] leading-6 text-foreground">
+    <pre className="overflow-x-auto rounded-md border border-border bg-permukaan-50 p-4 text-[0.8125rem] leading-6 text-foreground">
       <code className="font-mono">{children}</code>
     </pre>
   );
@@ -106,7 +106,7 @@ export function Jalur({ ruas }: { ruas: string[] }) {
 
 export function Catatan({ children }: { children: ReactNode }) {
   return (
-    <div className="flex gap-3 rounded-[9px] border border-info-600/20 bg-info-600/5 p-4">
+    <div className="flex gap-3 rounded-md border border-info-600/20 bg-info-600/5 p-4">
       <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-info-700" />
       <div className="text-sm leading-7 text-grafit-700">{children}</div>
     </div>
@@ -115,7 +115,7 @@ export function Catatan({ children }: { children: ReactNode }) {
 
 export function Awas({ children }: { children: ReactNode }) {
   return (
-    <div className="flex gap-3 rounded-[9px] border border-safety-600/25 bg-safety-600/5 p-4">
+    <div className="flex gap-3 rounded-md border border-safety-600/25 bg-safety-600/5 p-4">
       <TriangleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-safety-700" />
       <div className="text-sm leading-7 text-grafit-700">{children}</div>
     </div>
@@ -124,12 +124,12 @@ export function Awas({ children }: { children: ReactNode }) {
 
 export function Tabel({ kepala, baris }: { kepala: string[]; baris: ReactNode[][] }) {
   return (
-    <div className="overflow-x-auto rounded-[9px] border border-border bg-card">
+    <div className="overflow-x-auto rounded-md border border-border bg-card">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-border bg-permukaan-50">
             {kepala.map((satu) => (
-              <th key={satu} className="px-4 py-2.5 text-left font-semibold text-foreground">
+              <th key={satu} className="px-4 py-2.5 text-left text-[12.5px] font-medium text-grafit-500">
                 {satu}
               </th>
             ))}

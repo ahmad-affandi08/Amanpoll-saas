@@ -106,7 +106,7 @@ export default function PemasaranHalamanIndex({ halaman, pilihan, filter }: Prop
             <Link href={rutePemasaran.halamanBaru}>Halaman Baru</Link>
           </Button>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

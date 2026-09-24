@@ -305,7 +305,7 @@ export default function KodeKegagalanIndex({ kodeKegagalan, kategoriAset, filter
         judul="Kode Kegagalan"
         deskripsi="Katalog taksonomi Problem-Cause-Remedy untuk standarisasi analisis kegagalan aset."
         aksi={<DialogFormKodeKegagalan kategoriAset={kategoriAset} wajib={wajib.kodeKegagalan} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       {kodeKegagalan.meta.total === 0 && !adaPenyaringAktif(filter) ? (

@@ -121,7 +121,7 @@ export function DialogBuatStandar({ wajib }: { wajib: AturanWajib }) {
                 onChange={(event) => form.setData('Deskripsi', event.target.value)}
               />
             </div>
-            <div className="flex items-center justify-between rounded-[9px] border border-border p-3">
+            <div className="flex items-center justify-between rounded-md border border-border p-3">
               <div>
                 <p className="text-sm font-medium">Standar aktif</p>
                 <p className="text-xs text-muted-foreground">

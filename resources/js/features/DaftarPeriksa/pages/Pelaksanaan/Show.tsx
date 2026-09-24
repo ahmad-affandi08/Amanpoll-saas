@@ -118,7 +118,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
       <Head title={`Pelaksanaan: ${pelaksanaan.templat_daftar_periksa?.Nama ?? 'Checklist'}`} />
       <BreadcrumbHalaman />
 
-      <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="space-y-5 max-w-4xl mx-auto">
         {/* Navigasi Balik */}
         <div className="flex items-center gap-2 text-sm text-grafit-500">
           {pelaksanaan.PerintahKerjaId ? (
@@ -141,11 +141,11 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
         </div>
 
         {/* Header Lembar Periksa */}
-        <div className="bg-card border border-garis-200 rounded-xl p-6 shadow-sm">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700">
+                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-sm bg-permukaan-100 text-grafit-700">
                   {pelaksanaan.templat_daftar_periksa?.Kode}
                 </span>
                 <Badge variant="outline" className={badgeInfo.kelas}>
@@ -161,7 +161,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                 )}
               </div>
 
-              <h1 className="text-xl font-bold text-grafit-950">
+              <h1 className="text-[15px] font-semibold text-foreground">
                 {pelaksanaan.templat_daftar_periksa?.Nama}
               </h1>
 
@@ -198,9 +198,11 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
 
             {/* Skor Card jika selesai */}
             {pelaksanaan.Skor !== null && pelaksanaan.Skor !== undefined && (
-              <div className="p-4 bg-sukses-50 border border-sukses-200 rounded-xl text-center self-start sm:self-auto min-w-[140px]">
-                <span className="text-xs font-medium text-sukses-700">Skor Kepatuhan</span>
-                <div className="text-3xl font-black text-sukses-700 mt-0.5">{pelaksanaan.Skor}%</div>
+              <div className="self-start rounded-md border border-border bg-permukaan-50 px-5 py-4 min-w-[140px]">
+                <span className="text-[13px] text-grafit-700">Skor Kepatuhan</span>
+                <div className="mt-1.5 text-[26px] leading-tight font-semibold tabular-nums tracking-[-0.015em] text-foreground">
+                  {pelaksanaan.Skor}%
+                </div>
               </div>
             )}
           </div>
@@ -208,8 +210,8 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
 
         {/* Form Interaktif Butir Pertanyaan */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-grafit-950">Daftar Pemeriksaan Lapangan</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold text-foreground">Daftar Pemeriksaan Lapangan</h2>
             {!terkunci && (
               <span className="text-xs text-grafit-500">
                 Lengkapi seluruh butir wajib sebelum melakukan finalisasi.
@@ -241,12 +243,12 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
               return (
                 <div
                   key={b.Id}
-                  className={`bg-card border rounded-xl p-4 transition-all ${
-                    outOfRange ? 'border-bahaya-600/40 bg-bahaya-600/5' : 'border-garis-200'
+                  className={`bg-card border rounded-md p-4 transition-colors ${
+                    outOfRange ? 'border-bahaya-600/40 bg-bahaya-600/5' : 'border-border'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-permukaan-100 text-grafit-700 text-xs font-bold flex items-center justify-center mt-0.5">
+                    <span className="flex-shrink-0 size-6 rounded-sm bg-permukaan-100 text-grafit-700 text-xs font-medium tabular-nums flex items-center justify-center mt-0.5">
                       {idx + 1}
                     </span>
 
@@ -262,14 +264,14 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                       {/* Input Sesuai Tipe */}
                       <div className="pt-1">
                         {b.TipeJawaban === 'YaTidak' && (
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-wrap items-center gap-2">
                             <button
                               type="button"
                               disabled={terkunci}
-                              className={`px-4 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
+                              className={`inline-flex min-h-11 items-center px-3 sm:h-8 sm:min-h-0 rounded-sm text-[13px] font-medium border cursor-pointer transition-colors ${
                                 current.NilaiBoolean === true
-                                  ? 'bg-sukses-600 text-white border-sukses-600'
-                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-accent'
+                                  ? 'bg-sukses-50 text-sukses-700 border-sukses-600'
+                                  : 'bg-card text-grafit-700 border-input hover:bg-permukaan-50'
                               }`}
                               onClick={() => updateJawaban(b.Id, 'NilaiBoolean', true)}
                             >
@@ -278,10 +280,10 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                             <button
                               type="button"
                               disabled={terkunci}
-                              className={`px-4 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
+                              className={`inline-flex min-h-11 items-center px-3 sm:h-8 sm:min-h-0 rounded-sm text-[13px] font-medium border cursor-pointer transition-colors ${
                                 current.NilaiBoolean === false
-                                  ? 'bg-destructive text-white border-bahaya-600'
-                                  : 'bg-white text-grafit-700 border-garis-300 hover:bg-accent'
+                                  ? 'bg-bahaya-600/10 text-bahaya-700 border-bahaya-600'
+                                  : 'bg-card text-grafit-700 border-input hover:bg-permukaan-50'
                               }`}
                               onClick={() => updateJawaban(b.Id, 'NilaiBoolean', false)}
                             >
@@ -317,7 +319,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
                           <div className="max-w-xs">
                             <select
                               disabled={terkunci}
-                              className="w-full text-xs rounded-md border border-garis-300 bg-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-teknisi-500 cursor-pointer"
+                              className="w-full min-h-11 sm:h-8 sm:min-h-0 text-[13px] rounded-sm border border-input bg-card px-2.5 focus:outline-none focus:ring-2 focus:ring-teknisi-500 cursor-pointer"
                               value={current.NilaiTeks}
                               onChange={(e) => updateJawaban(b.Id, 'NilaiTeks', e.target.value)}
                             >
@@ -362,7 +364,7 @@ export default function DaftarPeriksaPelaksanaanShow({ pelaksanaan }: Props) {
         </div>
 
         {/* Catatan Keseluruhan */}
-        <div className="bg-card border border-garis-200 rounded-xl p-5 space-y-2">
+        <div className="rounded-md border border-border bg-card p-5 space-y-2">
           <Label htmlFor="CatatanPelaksanaan">Catatan Keseluruhan Pelaksanaan</Label>
           <Textarea
             id="CatatanPelaksanaan"

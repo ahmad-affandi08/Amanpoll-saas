@@ -193,7 +193,7 @@ export default function KategoriLokasiIndex({ kategoriLokasi, filter, wajib }: P
         judul="Kategori Lokasi"
         deskripsi="Klasifikasi lokasi, misalnya gedung, lantai, atau ruangan."
         aksi={<DialogFormKategoriLokasi kategori={null} wajib={wajib.kategoriLokasi} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

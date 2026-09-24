@@ -132,7 +132,7 @@ export default function PenyediaIndex({ penyedia, kategoriPenyedia, filter, waji
             </div>
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

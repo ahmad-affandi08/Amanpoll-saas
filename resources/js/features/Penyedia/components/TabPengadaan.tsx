@@ -3,7 +3,8 @@ import { Link } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { http } from '@/lib/http';
 import { formatUang } from '@/lib/uang';
-import { BarisKosong, KartuAngka, KepalaBagian, tanggal } from '@/components/shared/riwayat';
+import { BarisKosong, KepalaBagian, tanggal } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { Penyedia, RiwayatPengadaanPenyedia } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
@@ -32,21 +33,23 @@ export function TabPengadaan({ penyedia }: { penyedia: Penyedia }) {
   const { ringkasan, penawaran, pesanan, tagihan } = data;
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka
+    <div className="space-y-5">
+      <DeretStatistik kolom={4}>
+        <KartuStatistik
+          menyatu
           label="Penawaran"
           nilai={ringkasan.JumlahPenawaran}
-          catatan={`${ringkasan.JumlahPenawaranTerpilih} terpilih`}
+          keterangan={`${ringkasan.JumlahPenawaranTerpilih} terpilih`}
         />
-        <KartuAngka label="Pesanan Pembelian" nilai={ringkasan.JumlahPesanan} />
-        <KartuAngka label="Nilai Pesanan" nilai={formatUang(ringkasan.NilaiPesanan)} />
-        <KartuAngka
+        <KartuStatistik menyatu label="Pesanan Pembelian" nilai={ringkasan.JumlahPesanan} />
+        <KartuStatistik menyatu label="Nilai Pesanan" nilai={formatUang(ringkasan.NilaiPesanan)} />
+        <KartuStatistik
+          menyatu
           label="Sisa Tagihan"
           nilai={formatUang(ringkasan.SisaTagihan)}
-          catatan={`dari ${formatUang(ringkasan.NilaiTagihan)} ditagihkan`}
+          keterangan={`dari ${formatUang(ringkasan.NilaiTagihan)} ditagihkan`}
         />
-      </div>
+      </DeretStatistik>
 
       <section className="space-y-1">
         <KepalaBagian judul="Penawaran" ditampilkan={penawaran.data.length} total={penawaran.total} />

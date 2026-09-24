@@ -29,7 +29,8 @@
         'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
     --font-lapangan:
-        'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        sans-serif;
 
     --color-teknisi-900: #17324d;
     --color-teknisi-800: #1d4663;
@@ -197,7 +198,8 @@
 }
 
 :root {
-    --background: var(--color-permukaan-100);
+    /* Arah N "Presisi" (DESIGN.md 3): halaman putih, kartu dibatasi garis tipis, tanpa bayangan. */
+    --background: #ffffff;
     --foreground: var(--color-grafit-950);
     --card: #ffffff;
     --card-foreground: var(--color-grafit-950);
@@ -223,21 +225,25 @@
     --warning: var(--color-safety-600);
     --success: var(--color-sukses-600);
     --info: var(--color-info-600);
-    --border: var(--color-garis-300);
+    /* Garis pemisah Garis-200 (tipis); tepi isian tetap Garis-300 supaya kotak isian jelas terbaca. */
+    --border: var(--color-garis-200);
     --input: var(--color-garis-300);
     --ring: var(--color-teknisi-600);
     --radius: 0.5rem;
 
-    /* Sidebar Amanpoll (DESIGN.md 9.1): permukaan gelap Teknisi-900, terpisah dari tema utama yang light-only. */
-    --sidebar: var(--color-teknisi-900);
-    --sidebar-foreground: rgb(255 255 255 / 0.7);
-    --sidebar-primary: #ffffff;
-    --sidebar-primary-foreground: var(--color-teknisi-900);
-    --sidebar-accent: rgb(255 255 255 / 0.1);
-    --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: rgb(255 255 255 / 0.1);
-    /* Teknisi-500 hanya 3,2:1 di atas Teknisi-900 dan 2,4:1 di atas item yang di-hover. */
-    --sidebar-ring: var(--color-teknisi-300);
+    /*
+     * Sidebar Amanpoll (DESIGN.md 9.1): permukaan terang Permukaan-50 bergaris kanan tipis.
+     * Hover memakai tint Grafit-950/5 yang transparan; item aktif berlatar putih dengan
+     * cincin Garis-200 (lihat SidebarMenuButton), bukan blok berwarna.
+     */
+    --sidebar: var(--color-permukaan-50);
+    --sidebar-foreground: var(--color-grafit-700);
+    --sidebar-primary: var(--color-teknisi-700);
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: rgb(23 32 39 / 0.05);
+    --sidebar-accent-foreground: var(--color-grafit-950);
+    --sidebar-border: var(--color-garis-200);
+    --sidebar-ring: var(--color-teknisi-600);
 }
 
 /* Pemetaan agar utility shadcn/ui (bg-background, text-primary, dst) memakai token di atas. */
@@ -355,40 +361,6 @@ button:disabled,
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-grafit-500);
-}
-
-/* Styling Scrollbar Khusus Sidebar (Dark Theme) */
-[data-sidebar='content'],
-[data-slot='sidebar-content'],
-[data-sidebar='sidebar'] * {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(255 255 255 / 0.18) transparent;
-}
-
-[data-sidebar='content']::-webkit-scrollbar,
-[data-slot='sidebar-content']::-webkit-scrollbar,
-[data-sidebar='sidebar'] *::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-[data-sidebar='content']::-webkit-scrollbar-track,
-[data-slot='sidebar-content']::-webkit-scrollbar-track,
-[data-sidebar='sidebar'] *::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-[data-sidebar='content']::-webkit-scrollbar-thumb,
-[data-slot='sidebar-content']::-webkit-scrollbar-thumb,
-[data-sidebar='sidebar'] *::-webkit-scrollbar-thumb {
-    background: rgb(255 255 255 / 0.18);
-    border-radius: 9999px;
-}
-
-[data-sidebar='content']::-webkit-scrollbar-thumb:hover,
-[data-slot='sidebar-content']::-webkit-scrollbar-thumb:hover,
-[data-sidebar='sidebar'] *::-webkit-scrollbar-thumb:hover {
-    background: rgb(255 255 255 / 0.35);
 }
 
 /*

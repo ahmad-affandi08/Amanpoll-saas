@@ -3,7 +3,8 @@ import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { BarisKosong, KartuAngka, durasi, tanggal } from '@/components/shared/riwayat';
+import { BarisKosong, durasi, tanggal } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { LingkupEfektifPengguna, Pengguna, RingkasanPengguna } from '@/features/Pengguna/types';
 import { TabBebanKerja } from '@/features/Pengguna/components/TabBebanKerja';
 import { TabAktivitas } from '@/features/Pengguna/components/TabAktivitas';
@@ -20,7 +21,7 @@ export default function PenggunaShow({ pengguna, ringkasan, lingkupEfektif }: Pr
     <KerangkaAplikasi>
       <Head title={pengguna.Nama} />
       <KepalaHalaman
-        className="mb-6"
+        className="mb-5"
         judul={pengguna.Nama}
         labelBreadcrumb={pengguna.Nama}
         lencana={<Badge variant={pengguna.Status === 'Aktif' ? 'sukses' : 'netral'}>{pengguna.Status}</Badge>}
@@ -44,16 +45,17 @@ export default function PenggunaShow({ pengguna, ringkasan, lingkupEfektif }: Pr
         }
       />
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka label="Penugasan Berjalan" nilai={ringkasan.PenugasanBerjalan} />
-        <KartuAngka label="Total Waktu Kerja" nilai={durasi(ringkasan.TotalMenitKerja)} />
-        <KartuAngka label="Aset Ditanggung" nilai={ringkasan.AsetDitanggung} />
-        <KartuAngka
+      <DeretStatistik kolom={4} className="mb-5">
+        <KartuStatistik menyatu label="Penugasan Berjalan" nilai={ringkasan.PenugasanBerjalan} />
+        <KartuStatistik menyatu label="Total Waktu Kerja" nilai={durasi(ringkasan.TotalMenitKerja)} />
+        <KartuStatistik menyatu label="Aset Ditanggung" nilai={ringkasan.AsetDitanggung} />
+        <KartuStatistik
+          menyatu
           label="Peran"
           nilai={ringkasan.JumlahPeran}
-          catatan={pengguna.JenisPengguna === 'Eksternal' ? 'pengguna eksternal' : undefined}
+          keterangan={pengguna.JenisPengguna === 'Eksternal' ? 'pengguna eksternal' : undefined}
         />
-      </div>
+      </DeretStatistik>
 
       <KartuLingkupEfektif lingkup={lingkupEfektif} />
 

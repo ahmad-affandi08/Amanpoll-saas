@@ -85,7 +85,7 @@ export default function LanggananIndex({
     <KerangkaAplikasi>
       <Head title="Langganan" />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Langganan"
           deskripsi="Paket yang sedang berjalan, pemakaian terhadap batasnya, dan riwayat tagihan organisasi Anda."
@@ -95,7 +95,7 @@ export default function LanggananIndex({
         {!entitlement.AksesPenuh && (
           <div
             role="status"
-            className="flex items-start gap-3 rounded-[8px] border border-destructive/40 bg-destructive/5 p-4"
+            className="flex items-start gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-4"
           >
             <Lock aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-destructive" />
             <div className="space-y-0.5 text-sm">
@@ -136,7 +136,7 @@ export default function LanggananIndex({
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-5 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Modul yang termasuk</CardTitle>
@@ -322,7 +322,7 @@ export default function LanggananIndex({
 function Rincian({ label, nilai }: { label: string; nilai: string }) {
   return (
     <div className="space-y-0.5">
-      <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dt className="text-xs font-medium text-grafit-500">{label}</dt>
       <dd className="text-sm font-medium text-foreground">{nilai}</dd>
     </div>
   );
@@ -332,7 +332,7 @@ function KartuPembayaranKembali({ pembayaran }: { pembayaran: PembayaranKembali 
   return (
     <div
       role="status"
-      className="flex items-start gap-3 rounded-[8px] border border-border bg-permukaan-100 p-4"
+      className="flex items-start gap-3 rounded-md border border-border bg-permukaan-100 p-4"
     >
       {pembayaran.Lunas ? (
         <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-sukses-700" />
@@ -373,7 +373,7 @@ function KartuInstruksi({ instruksi }: { instruksi: InstruksiPembayaran }) {
         <dl className="grid gap-3 sm:grid-cols-2">
           {baris.map(([kunci, nilai]) => (
             <div key={kunci} className="space-y-0.5">
-              <dt className="text-xs uppercase tracking-wide text-muted-foreground">{kunci}</dt>
+              <dt className="text-xs font-medium text-grafit-500">{kunci}</dt>
               <dd className="text-sm font-medium text-foreground">{String(nilai ?? '—')}</dd>
             </div>
           ))}

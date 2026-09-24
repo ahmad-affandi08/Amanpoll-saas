@@ -438,7 +438,7 @@ export default function AlurPersetujuanIndex({
             <DialogFormAlur alur={null} jenisEntitasTersedia={jenisEntitasTersedia} wajib={wajib.alur} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

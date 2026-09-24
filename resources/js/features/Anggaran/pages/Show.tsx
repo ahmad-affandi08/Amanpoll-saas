@@ -4,7 +4,7 @@ import { Send, Trash2 } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { Anggaran, PosAnggaran, TransaksiAnggaran } from '@/features/Anggaran/types';
 import { formatUang } from '@/lib/uang';
 import { ruteAnggaran } from '@/features/Anggaran/api';
@@ -80,7 +80,7 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan, w
   return (
     <KerangkaAplikasi>
       <Head title={`${anggaran.Kode} — Anggaran`} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul={anggaran.Nama}
           labelBreadcrumb={anggaran.Kode}
@@ -115,28 +115,21 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan, w
           }
         />
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <DeretStatistik kolom={4}>
           {[
             ['Total Anggaran', formatUang(anggaran.Jumlah, anggaran.MataUang)],
             ['Realisasi', formatUang(ringkasan.terpakai, anggaran.MataUang)],
             ['Komitmen', formatUang(ringkasan.ditahan, anggaran.MataUang)],
             ['Sisa Pos', formatUang(ringkasan.sisa, anggaran.MataUang)],
           ].map(([label, value]) => (
-            <Card key={label}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {label}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="font-mono text-lg font-semibold">{value}</CardContent>
-            </Card>
+            <KartuStatistik key={label} menyatu label={label} nilai={value} />
           ))}
-        </div>
+        </DeretStatistik>
 
-        <section className="overflow-hidden rounded-[9px] border border-border bg-card">
+        <section className="overflow-hidden rounded-md border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border p-4">
             <div>
-              <h2 className="font-semibold">Pos Anggaran</h2>
+              <h2 className="text-sm font-semibold text-foreground">Pos Anggaran</h2>
               <p className="text-xs text-muted-foreground">
                 Saldo proyeksi selalu direkonsiliasi dari transaksi ledger.
               </p>
@@ -144,11 +137,11 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan, w
             {dapatUbah && <DialogPos anggaran={anggaran} semuaPos={posisi} wajib={wajib.pos} />}
           </div>
           {posisi.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">Belum ada pos anggaran.</div>
+            <div className="p-5 text-center text-sm text-muted-foreground">Belum ada pos anggaran.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-[860px] w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Pos</th>
                     <th className="px-4 py-3 text-right">Nilai</th>
@@ -213,19 +206,19 @@ export default function AnggaranShow({ anggaran, transaksi, dapatMenyesuaikan, w
           )}
         </section>
 
-        <section className="overflow-hidden rounded-[9px] border border-border bg-card">
+        <section className="overflow-hidden rounded-md border border-border bg-card">
           <div className="border-b border-border p-4">
-            <h2 className="font-semibold">Ledger Transaksi</h2>
+            <h2 className="text-sm font-semibold text-foreground">Ledger Transaksi</h2>
             <p className="text-xs text-muted-foreground">
               100 transaksi terbaru; baris tidak dapat diedit atau dihapus.
             </p>
           </div>
           {transaksi.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">Belum ada transaksi.</div>
+            <div className="p-5 text-center text-sm text-muted-foreground">Belum ada transaksi.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-[760px] w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Tanggal</th>
                     <th className="px-4 py-3">Pos</th>

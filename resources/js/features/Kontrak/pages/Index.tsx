@@ -4,6 +4,7 @@ import { FileSignature, Plus, Search } from 'lucide-react';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -278,7 +279,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
   return (
     <KerangkaAplikasi>
       <Head title="Kontrak" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Kontrak"
           deskripsi="Kontrak penyedia, aset yang tercakup, layanan, dan pengingat masa berlaku."
@@ -290,33 +291,29 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
           }
         />
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { label: 'Kontrak aktif', nilai: ringkasan.aktif, kelas: 'text-foreground' },
-            { label: 'Akan berakhir', nilai: ringkasan.akanBerakhir, kelas: 'text-safety-600' },
-            { label: 'Kedaluwarsa', nilai: ringkasan.kedaluwarsa, kelas: 'text-bahaya-600' },
-            { label: 'Tanpa penyedia', nilai: ringkasan.tanpaPenyedia, kelas: 'text-muted-foreground' },
-          ].map((kartu) => (
-            <div key={kartu.label} className="rounded-[9px] border border-border bg-card p-4">
-              <p className="text-xs text-muted-foreground">{kartu.label}</p>
-              <p className={`mt-1 text-2xl font-semibold ${kartu.kelas}`}>{kartu.nilai}</p>
-            </div>
-          ))}
-        </div>
+        <DeretStatistik kolom={4}>
+          <KartuStatistik menyatu label="Kontrak aktif" nilai={ringkasan.aktif} />
+          <KartuStatistik menyatu label="Akan berakhir" nilai={ringkasan.akanBerakhir} />
+          <KartuStatistik menyatu label="Kedaluwarsa" nilai={ringkasan.kedaluwarsa} />
+          <KartuStatistik menyatu label="Tanpa penyedia" nilai={ringkasan.tanpaPenyedia} />
+        </DeretStatistik>
 
-        <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_11rem_13rem_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari nomor atau nama kontrak"
               placeholder="Cari nomor atau nama kontrak"
-              className="pl-9"
+              className="pl-8"
               value={cari}
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full sm:w-40" aria-label="Saring status">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -328,12 +325,17 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
               ))}
             </SelectContent>
           </Select>
+          <Label htmlFor="filter-kontrak-penyedia" className="sr-only">
+            Penyedia
+          </Label>
           <Combobox
+            id="filter-kontrak-penyedia"
             nilai={penyediaFilter}
             onPilih={setPenyediaFilter}
             opsi={[{ nilai: SEMUA, label: 'Semua penyedia' }, ...opsiDari(penyedia, (item) => item.Nama)]}
+            className="w-full sm:w-48"
           />
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -345,10 +347,10 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
             deskripsi="Buat kontrak untuk menghubungkan penyedia dengan aset dan tingkat layanannya."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Kontrak</th>
                     <th className="px-4 py-3">Penyedia</th>
@@ -406,7 +408,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
                     href={ruteKontrak.detail(item.Id)}
                     className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                   >
-                    <FileSignature className="size-5 shrink-0 text-primary" />
+                    <FileSignature aria-hidden="true" className="size-4 shrink-0 text-grafit-500" />
                     <div className="min-w-0 flex-1">
                       <p className="line-clamp-2 font-medium">{item.Nama}</p>
                       <p className="truncate font-mono text-xs text-muted-foreground">{item.Nomor}</p>

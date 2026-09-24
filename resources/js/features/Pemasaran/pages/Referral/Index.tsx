@@ -54,12 +54,12 @@ export default function PemasaranReferralIndex({ program, corong, reward, piliha
         deskripsi="Program referral, kode tiap pelanggan, dan imbalan yang terutang."
         tanpaBreadcrumb
         aksi={<DialogProgram program={null} pilihan={pilihan} wajib={wajib.program} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       <Corong corong={corong} />
 
-      <Tabs defaultValue="program" className="mt-6">
+      <Tabs defaultValue="program" className="mt-5">
         <TabsList>
           <TabsTrigger value="program">Program</TabsTrigger>
           <TabsTrigger value="reward">Imbalan</TabsTrigger>
@@ -91,9 +91,11 @@ function Corong({ corong }: { corong: Record<string, number> }) {
     <div className="space-y-3">
       <ol className="grid gap-2 sm:grid-cols-4 lg:grid-cols-7">
         {URUTAN_CORONG.map((tahap) => (
-          <li key={tahap} className="rounded-md border p-3">
-            <p className="font-mono text-lg font-medium text-foreground">{corong[tahap] ?? 0}</p>
-            <p className="text-xs text-muted-foreground">{tahap}</p>
+          <li key={tahap} className="rounded-md border px-4 py-3">
+            <p className="text-[13px] text-grafit-700">{tahap}</p>
+            <p className="text-[26px] leading-tight font-semibold tracking-[-0.015em] text-foreground tabular-nums">
+              {corong[tahap] ?? 0}
+            </p>
           </li>
         ))}
       </ol>
@@ -121,7 +123,7 @@ function KartuProgram({
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-2 space-y-0">
         <div className="min-w-0">
-          <CardTitle className="text-base">{program.Nama}</CardTitle>
+          <CardTitle>{program.Nama}</CardTitle>
           <p className="font-mono text-xs text-muted-foreground">{program.Kode}</p>
           {program.Keterangan ? (
             <p className="mt-1 text-sm text-muted-foreground">{program.Keterangan}</p>

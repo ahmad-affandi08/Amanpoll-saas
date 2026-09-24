@@ -412,7 +412,7 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="sidebar-group"
       data-sidebar="group"
-      className={cn('relative flex w-full min-w-0 flex-col p-2', className)}
+      className={cn('relative flex w-full min-w-0 flex-col px-3 py-1.5', className)}
       {...props}
     />
   );
@@ -430,7 +430,7 @@ function SidebarGroupLabel({
       data-slot="sidebar-group-label"
       data-sidebar="group-label"
       className={cn(
-        'text-sidebar-foreground/85 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-[6px] px-2 text-[11px] font-medium tracking-wide uppercase outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+        'text-grafit-500 ring-sidebar-ring flex h-7 shrink-0 items-center rounded-[6px] px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}
@@ -495,12 +495,13 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
 }
 
 /*
- * Item aktif dan item yang di-hover sama-sama berlatar putih 10%; halaman yang sedang
- * dibuka ditandai garis Teknisi-300 di tepi kiri agar keduanya tidak tertukar. Induk
- * submenu (punya aria-expanded dari Collapsible atau DropdownMenu) tidak diberi garis: garisnya ada di subitem.
+ * Arah N (DESIGN.md 9.1): item di-hover diberi tint Grafit-950/5; halaman yang sedang dibuka
+ * berlatar putih dengan cincin Garis-200 dan ikon Teknisi-700, sehingga keduanya tidak tertukar.
+ * Induk submenu (punya aria-expanded dari Collapsible atau DropdownMenu) hanya menebal: kotak
+ * putihnya ada di subitem yang aktif.
  */
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-[7px] p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[active=true]:[&:not([aria-expanded])]:shadow-[inset_3px_0_0_var(--color-teknisi-300)] data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2! group-data-[collapsible=icon]:[&>span]:hidden group-data-[collapsible=icon]:[&>svg:not(:first-child)]:hidden group-data-[collapsible=icon]:[&_span]:hidden [&>span:last-child]:truncate [&>svg]:size-[18px] [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-sm px-2 py-1.5 text-left text-[13.5px] outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[active=true]:[&:not([aria-expanded])]:bg-card data-[active=true]:[&:not([aria-expanded])]:shadow-[0_0_0_1px_var(--color-garis-200)] [&>svg]:text-grafit-500 data-[active=true]:[&>svg]:text-teknisi-700 data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2! group-data-[collapsible=icon]:[&>span]:hidden group-data-[collapsible=icon]:[&>svg:not(:first-child)]:hidden group-data-[collapsible=icon]:[&_span]:hidden [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -510,7 +511,7 @@ const sidebarMenuButtonVariants = cva(
       },
       size: {
         // Di laci ponsel tiap item adalah target sentuh 40px; dari 768px kembali padat.
-        default: 'h-10 text-sm md:h-9',
+        default: 'h-10 md:h-8',
         sm: 'h-8 text-xs',
         lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
       },
@@ -639,7 +640,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<'ul'>) {
       data-slot="sidebar-menu-sub"
       data-sidebar="menu-sub"
       className={cn(
-        'border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-0.5 border-l px-2.5 py-0.5',
+        'border-sidebar-border ml-[17px] mr-0 flex min-w-0 translate-x-px flex-col gap-0.5 border-l py-0.5 pl-2.5',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}
@@ -675,10 +676,10 @@ function SidebarMenuSubButton({
       data-size={size}
       data-active={isActive}
       className={cn(
-        'text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-9 min-w-0 md:h-7 -translate-x-px cursor-pointer items-center gap-2 overflow-hidden rounded-[6px] px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
-        'data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[active=true]:shadow-[inset_3px_0_0_var(--color-teknisi-300)]',
+        'text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-9 min-w-0 md:h-7 -translate-x-px cursor-pointer items-center gap-2 overflow-hidden rounded-sm px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
+        'data-[active=true]:bg-card data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[active=true]:shadow-[0_0_0_1px_var(--color-garis-200)]',
         size === 'sm' && 'text-xs',
-        size === 'md' && 'text-sm',
+        size === 'md' && 'text-[13px]',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}

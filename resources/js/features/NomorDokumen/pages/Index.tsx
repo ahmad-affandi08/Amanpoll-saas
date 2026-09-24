@@ -214,7 +214,7 @@ export default function NomorDokumenIndex({ nomorDokumen, filter, wajib }: Props
             <DialogFormPola pola={null} wajib={wajib.nomorDokumen} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

@@ -180,7 +180,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
   return (
     <KerangkaAplikasi>
       <Head title="Anggaran" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Anggaran"
           deskripsi="Kelola pagu, pos, komitmen, realisasi, dan saldo yang dapat direkonsiliasi."
@@ -192,15 +192,15 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
           }
         />
 
-        <form
-          onSubmit={terapkanFilter}
-          className="flex flex-col gap-2 rounded-[9px] border border-border bg-card p-3 sm:flex-row"
-        >
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari anggaran"
-              className="pl-9"
+              className="pl-8"
               placeholder="Cari kode atau nama..."
               value={cari}
               onChange={(event) => setCari(event.target.value)}
@@ -216,9 +216,9 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
                 label: nilai === 'MenungguPersetujuan' ? 'Menunggu Persetujuan' : nilai,
               })),
             ]}
-            className="sm:w-52"
+            className="w-full sm:w-48"
           />
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -230,10 +230,10 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
             deskripsi="Buat anggaran periode pertama untuk mulai mengalokasikan pos."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                   <tr>
                     <th className="px-4 py-3">Anggaran</th>
                     <th className="px-4 py-3">Periode / Scope</th>
@@ -279,7 +279,7 @@ export default function AnggaranIndex({ anggaran, unitOrganisasi, filter, wajib 
                   href={ruteAnggaran.detail(item.Id)}
                   className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
-                  <WalletCards className="size-5 shrink-0 text-primary" />
+                  <WalletCards aria-hidden="true" className="size-4 shrink-0 text-grafit-500" />
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-2 font-medium">{item.Nama}</p>
                     <p className="font-mono text-xs text-muted-foreground">

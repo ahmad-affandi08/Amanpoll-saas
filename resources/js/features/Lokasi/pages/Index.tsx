@@ -361,7 +361,7 @@ export default function LokasiIndex({ lokasi, unitOrganisasi, kategoriLokasi, fi
             </div>
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {lokasi.meta.total === 0 && !adaPenyaringAktif(filter) ? (

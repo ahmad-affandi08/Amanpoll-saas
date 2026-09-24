@@ -281,11 +281,11 @@ export default function SukuCadangIndex({
             <DialogFormSukuCadang kategoriSukuCadang={kategoriSukuCadang} wajib={wajib.sukuCadang} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {jumlahDibawahMinimum > 0 && (
-        <div className="mb-4 rounded-[9px] border border-bahaya-600/25 bg-bahaya-600/10 px-4 py-3 text-sm text-bahaya-700">
+        <div className="mb-4 rounded-md border border-bahaya-600/25 bg-bahaya-600/10 px-4 py-3 text-sm text-bahaya-700">
           {jumlahDibawahMinimum} suku cadang berada di bawah atau sama dengan stok minimum.
         </div>
       )}

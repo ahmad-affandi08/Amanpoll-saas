@@ -91,11 +91,11 @@ export function KartuFotoUtama({
   const ikon = ikonAset(aset);
 
   return (
-    <div className="flex flex-col gap-3 rounded-[9px] border border-border bg-card p-3">
+    <div className="flex flex-col gap-3 rounded-md border border-border bg-card p-3">
       <button
         type="button"
         onClick={onLihatGaleri}
-        className="block overflow-hidden rounded-[6px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        className="block overflow-hidden rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         aria-label={jumlahFoto > 0 ? `Buka galeri foto ${aset.Nama}` : `Tambah foto ${aset.Nama}`}
       >
         <FotoAtauIkon3D
@@ -184,7 +184,7 @@ export function TabFoto({ aset, foto, maks, bolehTambah, bolehKelola }: PropsGal
       )}
 
       {foto.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-[9px] border border-dashed border-border bg-card px-6 py-10 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-border bg-card px-6 py-10 text-center">
           <span className="flex size-32 items-center justify-center rounded-full bg-permukaan-100">
             <Ikon3D nama={ikon.ikon} ukuran={80} />
           </span>
@@ -198,7 +198,7 @@ export function TabFoto({ aset, foto, maks, bolehTambah, bolehKelola }: PropsGal
       ) : (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {foto.map((satu, indeks) => (
-            <li key={satu.BerkasId} className="overflow-hidden rounded-[9px] border border-border bg-card">
+            <li key={satu.BerkasId} className="overflow-hidden rounded-md border border-border bg-card">
               <button
                 type="button"
                 onClick={() => setTerbuka(indeks)}
@@ -259,7 +259,7 @@ export function TabFoto({ aset, foto, maks, bolehTambah, bolehKelola }: PropsGal
               <DialogDescription>
                 Diunggah {new Date(aktif.DibuatPada).toLocaleString('id-ID')}
               </DialogDescription>
-              <div className="relative flex items-center justify-center rounded-[6px] bg-grafit-950">
+              <div className="relative flex items-center justify-center rounded-sm bg-grafit-950">
                 <img
                   src={aktif.UrlUnduh}
                   alt={`Foto ${terbuka + 1} ${aset.Nama}`}

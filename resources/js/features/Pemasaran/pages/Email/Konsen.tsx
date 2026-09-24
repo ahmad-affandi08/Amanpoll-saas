@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
+import { Search } from 'lucide-react';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
@@ -49,17 +50,27 @@ export default function PemasaranEmailKonsen({ cari, supresi, riwayat, permintaa
         judul="Consent dan Supresi"
         deskripsi="Siapa boleh dikirimi pesan pemasaran, sejak kapan, dan atas dasar apa."
         tanpaBreadcrumb
-        className="mb-6"
+        className="mb-5"
       />
 
-      <form onSubmit={telusuri} className="mb-6 flex gap-2">
-        <Input
-          value={kataKunci}
-          onChange={(e) => setKataKunci(e.target.value)}
-          placeholder="Cari alamat email..."
-          className="max-w-sm"
-        />
-        <Button type="submit" variant="outline">
+      <form onSubmit={telusuri} className="mb-5 flex flex-wrap items-center gap-2">
+        <div className="relative w-full sm:w-64">
+          <Label htmlFor="cari-konsen" className="sr-only">
+            Cari alamat email
+          </Label>
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+          />
+          <Input
+            id="cari-konsen"
+            value={kataKunci}
+            onChange={(e) => setKataKunci(e.target.value)}
+            placeholder="Cari alamat email..."
+            className="pl-8"
+          />
+        </div>
+        <Button type="submit" variant="secondary">
           Cari
         </Button>
       </form>

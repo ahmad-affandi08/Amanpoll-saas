@@ -167,7 +167,7 @@ function DialogCatatPenawaran({ rfq, wajib }: { rfq: Props['rfq']; wajib: Aturan
               {itemPermintaan.map((item, indeks) => (
                 <div
                   key={item.Id}
-                  className="grid gap-3 rounded-[9px] border border-border p-3 sm:grid-cols-[1fr_repeat(4,7rem)]"
+                  className="grid gap-3 rounded-md border border-border p-3 sm:grid-cols-[1fr_repeat(4,7rem)]"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-medium">{item.Deskripsi}</p>
@@ -252,7 +252,7 @@ export default function PermintaanPenawaranShow({ rfq, wajib }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={rfq.Nomor} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={rutePermintaanPenawaran.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -295,7 +295,7 @@ export default function PermintaanPenawaranShow({ rfq, wajib }: Props) {
             {(rfq.PenyediaDiundang ?? []).map((item) => (
               <div
                 key={item.Id}
-                className="flex items-center justify-between rounded-[9px] border border-border p-3"
+                className="flex items-center justify-between rounded-md border border-border p-3"
               >
                 <span className="text-sm">{item.NamaPenyedia}</span>
                 <Badge variant="netral">{item.Status}</Badge>
@@ -316,7 +316,7 @@ export default function PermintaanPenawaranShow({ rfq, wajib }: Props) {
               />
             ) : (
               penawaran.map((item) => (
-                <div key={item.Id} className="space-y-3 rounded-[9px] border border-border p-3">
+                <div key={item.Id} className="space-y-3 rounded-md border border-border p-3">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0">
                       <p className="font-medium">{item.NamaPenyedia}</p>

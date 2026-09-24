@@ -19,7 +19,7 @@ function tanggal(nilai: string | null): string {
 
 function Kotak({ children, judul, kanan }: { children: React.ReactNode; judul: string; kanan?: string }) {
   return (
-    <div className="rounded-[9px] border border-border bg-card p-4">
+    <div className="rounded-md border border-border bg-card px-5 py-4">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-sm font-semibold text-foreground">{judul}</h2>
         {kanan && <span className="text-xs text-muted-foreground">{kanan}</span>}
@@ -44,27 +44,24 @@ export function PanelStok({
     <Kotak judul="Stok per Gudang" kanan={`${stok.baris.length} penempatan`}>
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <div>
-          <p className="text-xs text-muted-foreground">Fisik</p>
-          <p className="text-lg font-semibold tabular-nums text-foreground">
-            {stok.TotalTersedia} <span className="text-xs font-normal">{satuan}</span>
+          <p className="text-[13px] text-grafit-700">Fisik</p>
+          <p className="text-[26px] leading-tight font-semibold tabular-nums tracking-[-0.015em] text-foreground">
+            {stok.TotalTersedia}{' '}
+            <span className="text-xs font-normal tracking-normal text-muted-foreground">{satuan}</span>
           </p>
         </div>
         <div>
-          <p className="text-xs text-muted-foreground">Ditahan reservasi</p>
-          <p className="text-lg font-semibold tabular-nums text-foreground">
-            {stok.TotalDitahan} <span className="text-xs font-normal">{satuan}</span>
+          <p className="text-[13px] text-grafit-700">Ditahan reservasi</p>
+          <p className="text-[26px] leading-tight font-semibold tabular-nums tracking-[-0.015em] text-foreground">
+            {stok.TotalDitahan}{' '}
+            <span className="text-xs font-normal tracking-normal text-muted-foreground">{satuan}</span>
           </p>
         </div>
         <div>
-          <p className="text-xs text-muted-foreground">Tersedia bersih</p>
-          <p
-            className={
-              dibawahMinimum
-                ? 'text-lg font-semibold tabular-nums text-destructive'
-                : 'text-lg font-semibold tabular-nums text-foreground'
-            }
-          >
-            {stok.TotalBersih} <span className="text-xs font-normal">{satuan}</span>
+          <p className="text-[13px] text-grafit-700">Tersedia bersih</p>
+          <p className="text-[26px] leading-tight font-semibold tabular-nums tracking-[-0.015em] text-foreground">
+            {stok.TotalBersih}{' '}
+            <span className="text-xs font-normal tracking-normal text-muted-foreground">{satuan}</span>
             {dibawahMinimum && (
               <Badge variant="bahaya" className="ml-2 align-middle">
                 Di bawah minimum

@@ -182,7 +182,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
             <DialogBuatReservasi gudang={gudang} sukuCadang={sukuCadang} wajib={wajib.reservasi} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {reservasi.data.length === 0 ? (
@@ -192,41 +192,40 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
           deskripsi="Buat reservasi untuk menahan stok bagi kebutuhan mendatang."
         />
       ) : (
-        <div className="space-y-2">
-          {reservasi.data.map((r) => (
-            <div
-              key={r.Id}
-              className="flex items-center justify-between rounded-[9px] border border-border bg-card p-4"
-            >
-              <div>
-                <div className="font-medium text-foreground">
-                  {r.NamaSukuCadang}{' '}
-                  <span className="font-mono text-xs text-muted-foreground">{r.KodeSukuCadang}</span>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {r.NamaGudang} &middot; {r.Jumlah} unit
-                </div>
-                {r.KadaluarsaPada && (
-                  <div className="text-xs text-muted-foreground">
-                    Kadaluarsa: {new Date(r.KadaluarsaPada).toLocaleString('id-ID')}
+        <div className="overflow-hidden rounded-md border border-border bg-card">
+          <div className="divide-y divide-border">
+            {reservasi.data.map((r) => (
+              <div key={r.Id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                <div>
+                  <div className="font-medium text-foreground">
+                    {r.NamaSukuCadang}{' '}
+                    <span className="font-mono text-xs text-muted-foreground">{r.KodeSukuCadang}</span>
                   </div>
-                )}
+                  <div className="text-sm text-muted-foreground">
+                    {r.NamaGudang} &middot; {r.Jumlah} unit
+                  </div>
+                  {r.KadaluarsaPada && (
+                    <div className="text-xs text-muted-foreground">
+                      Kadaluarsa: {new Date(r.KadaluarsaPada).toLocaleString('id-ID')}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={VARIAN_BADGE_STATUS_RESERVASI[r.Status]}>{r.Status}</Badge>
+                  {r.Status === 'Aktif' && (
+                    <>
+                      <Button size="sm" onClick={() => konsumsi(r)}>
+                        Pakai
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => lepaskan(r)}>
+                        Lepaskan
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={VARIAN_BADGE_STATUS_RESERVASI[r.Status]}>{r.Status}</Badge>
-                {r.Status === 'Aktif' && (
-                  <>
-                    <Button size="sm" onClick={() => konsumsi(r)}>
-                      Pakai
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => lepaskan(r)}>
-                      Lepaskan
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
           <KontrolPaginasi
             meta={reservasi.meta}
             onNavigasi={(halaman) => navigasiHalaman(halaman, filterAktif(filter))}

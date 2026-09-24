@@ -29,7 +29,7 @@ export default function PemasaranFormulirShow({ formulir, pengiriman }: Props) {
             <Link href={rutePemasaran.formulir}>Kembali</Link>
           </Button>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {pengiriman.length === 0 ? (

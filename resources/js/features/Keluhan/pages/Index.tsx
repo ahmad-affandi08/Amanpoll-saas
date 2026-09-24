@@ -267,15 +267,9 @@ export default function KeluhanIndex({
             />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
-      <div
-        className={
-          pakaiUnitPengelola
-            ? 'mb-4 grid gap-2 sm:grid-cols-2 xl:max-w-5xl xl:grid-cols-4'
-            : 'mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-4xl lg:grid-cols-3'
-        }
-      >
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <Combobox
           nilai={filter.status ?? TANPA_PILIHAN}
           onPilih={(value) => filterData('status', value)}
@@ -295,6 +289,7 @@ export default function KeluhanIndex({
             ).map((s) => ({ nilai: s, label: s })),
           ]}
           placeholder="Semua status"
+          className="w-full sm:w-44"
         />
         <Combobox
           nilai={filter.prioritas ?? TANPA_PILIHAN}
@@ -307,12 +302,14 @@ export default function KeluhanIndex({
             })),
           ]}
           placeholder="Semua prioritas"
+          className="w-full sm:w-44"
         />
         <Combobox
           nilai={filter.kategori ?? TANPA_PILIHAN}
           onPilih={(value) => filterData('kategori', value)}
           opsi={[opsiKosong('Semua kategori'), ...opsiDari(pilihanKategori, (item) => item.Nama)]}
           placeholder="Semua kategori"
+          className="w-full sm:w-44"
         />
         {pakaiUnitPengelola && (
           <Combobox
@@ -324,6 +321,7 @@ export default function KeluhanIndex({
               { nilai: TANPA_UNIT_PENGELOLA, label: 'Tanpa unit pengelola' },
             ]}
             placeholder="Semua unit pengelola"
+            className="w-full sm:w-48"
           />
         )}
       </div>
@@ -347,7 +345,7 @@ export default function KeluhanIndex({
             <Link
               key={item.Id}
               href={ruteKeluhan.detail(item.Id)}
-              className="block rounded-[9px] border border-border bg-card p-4 transition-colors hover:border-teknisi-600/40"
+              className="block rounded-md border border-border bg-card p-4 transition-colors hover:border-teknisi-600/40"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">

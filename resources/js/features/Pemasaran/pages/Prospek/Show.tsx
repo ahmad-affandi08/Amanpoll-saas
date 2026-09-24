@@ -69,17 +69,17 @@ export default function PemasaranProspekShow({
             ) : null}
           </dl>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="grid gap-6 lg:col-span-2">
+      <div className="grid gap-5 lg:grid-cols-3">
+        <div className="grid gap-5 lg:col-span-2">
           <KartuTahap prospek={prospek} tahap={tahap} wajib={wajib.tahap} />
           <KartuAktivitasBaru prospek={prospek} jenisAktivitas={jenisAktivitas} wajib={wajib.aktivitas} />
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Timeline</CardTitle>
+              <CardTitle>Timeline</CardTitle>
             </CardHeader>
             <CardContent>
               <RiwayatAktivitas
@@ -96,7 +96,7 @@ export default function PemasaranProspekShow({
           </Card>
         </div>
 
-        <div className="grid gap-6">
+        <div className="grid gap-5">
           <KartuKontak prospek={prospek} />
           <KartuRiwayatTahap riwayat={riwayatTahap} />
           <KartuSkor prospek={prospek} />
@@ -130,7 +130,7 @@ function KartuTahap({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Pindahkan Tahap</CardTitle>
+        <CardTitle>Pindahkan Tahap</CardTitle>
       </CardHeader>
       <CardContent>
         <AturanWajibProvider aturan={wajib}>
@@ -183,7 +183,7 @@ function KartuAktivitasBaru({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Catat Aktivitas</CardTitle>
+        <CardTitle>Catat Aktivitas</CardTitle>
       </CardHeader>
       <CardContent>
         <AturanWajibProvider aturan={wajib}>
@@ -247,7 +247,7 @@ function KartuKontak({ prospek }: { prospek: ProspekDetail }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Kontak</CardTitle>
+        <CardTitle>Kontak</CardTitle>
       </CardHeader>
       <CardContent>
         <dl className="grid gap-2 text-sm">
@@ -267,7 +267,7 @@ function KartuSkor({ prospek }: { prospek: ProspekDetail }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Rincian Skor</CardTitle>
+        <CardTitle>Rincian Skor</CardTitle>
       </CardHeader>
       <CardContent>
         {prospek.RincianSkor.length === 0 ? (
@@ -294,7 +294,7 @@ function KartuRiwayatTahap({ riwayat }: { riwayat: EntriRiwayatTahap[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Riwayat Tahap</CardTitle>
+        <CardTitle>Riwayat Tahap</CardTitle>
       </CardHeader>
       <CardContent>
         {riwayat.length === 0 ? (

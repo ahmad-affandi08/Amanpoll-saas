@@ -34,7 +34,7 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
   return (
     <KerangkaAplikasi>
       <Head title="Penerimaan Pembelian" />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Penerimaan Pembelian"
           deskripsi="Riwayat penerimaan barang; stok dan registrasi aset dibuat otomatis saat dokumen dicatat."
@@ -43,18 +43,21 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
           }
         />
 
-        <form onSubmit={terapkanFilter} className="grid gap-3 sm:grid-cols-[1fr_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-grafit-500"
+            />
             <Input
               aria-label="Cari nomor penerimaan atau surat jalan"
               placeholder="Cari nomor penerimaan atau surat jalan"
-              className="pl-9"
+              className="pl-8"
               value={cari}
               onChange={(event) => setCari(event.target.value)}
             />
           </div>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="secondary">
             Terapkan
           </Button>
         </form>
@@ -66,21 +69,21 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
             deskripsi="Catat penerimaan dari halaman pesanan pembelian yang sudah dikirim."
           />
         ) : (
-          <div className="overflow-hidden rounded-[9px] border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm">
-                <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500">
                   <tr>
-                    <th className="px-4 py-3">Nomor</th>
-                    <th className="px-4 py-3">Pesanan / Penyedia</th>
-                    <th className="px-4 py-3">Gudang</th>
-                    <th className="px-4 py-3">Tanggal</th>
-                    <th className="px-4 py-3">Item</th>
+                    <th className="h-10 px-4 font-medium">Nomor</th>
+                    <th className="h-10 px-4 font-medium">Pesanan / Penyedia</th>
+                    <th className="h-10 px-4 font-medium">Gudang</th>
+                    <th className="h-10 px-4 font-medium">Tanggal</th>
+                    <th className="h-10 px-4 font-medium">Item</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {penerimaan.data.map((item) => (
-                    <tr key={item.Id} className="hover:bg-accent">
+                    <tr key={item.Id} className="hover:bg-permukaan-50">
                       <td className="px-4 py-3">
                         <span className="font-mono font-medium">{item.Nomor}</span>
                         <p className="text-xs text-muted-foreground">
@@ -113,7 +116,7 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
                   href={rutePesananPembelian.detail(item.PesananPembelianId)}
                   className="flex min-h-24 items-center gap-3 p-4 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
-                  <PackageCheck className="size-5 shrink-0 text-primary" />
+                  <PackageCheck className="size-4 shrink-0 text-grafit-500" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-mono font-medium">{item.Nomor}</p>
                     <p className="truncate text-xs text-muted-foreground">

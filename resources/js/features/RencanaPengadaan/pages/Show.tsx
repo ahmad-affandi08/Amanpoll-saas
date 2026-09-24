@@ -4,7 +4,7 @@ import { ArrowLeft, CheckCircle2, Pencil, Plus, Trash2 } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import {
   Dialog,
   DialogContent,
@@ -308,7 +308,7 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
   return (
     <KerangkaAplikasi>
       <Head title={`${rencana.Nomor} — Rencana Pengadaan`} />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={ruteRencanaPengadaan.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -342,34 +342,23 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
             ) : undefined
           }
         />
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs uppercase text-muted-foreground">Total Estimasi</CardTitle>
-            </CardHeader>
-            <CardContent className="font-mono text-xl font-semibold">
-              {formatUang(rencana.TotalEstimasi)}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs uppercase text-muted-foreground">Jumlah Detail</CardTitle>
-            </CardHeader>
-            <CardContent className="font-mono text-xl font-semibold">{detail.length}</CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs uppercase text-muted-foreground">Pos Anggaran</CardTitle>
-            </CardHeader>
-            <CardContent className="truncate text-base font-semibold">
-              {rencana.NamaPosAnggaran ?? 'Belum dipilih'}
-            </CardContent>
-          </Card>
-        </div>
-        <section className="overflow-hidden rounded-[9px] border border-border bg-card">
+        <DeretStatistik kolom={3}>
+          <KartuStatistik menyatu label="Total Estimasi" nilai={formatUang(rencana.TotalEstimasi)} />
+          <KartuStatistik menyatu label="Jumlah Detail" nilai={detail.length} />
+          <KartuStatistik
+            menyatu
+            label="Pos Anggaran"
+            nilai={
+              <span className="block truncate text-base tracking-normal">
+                {rencana.NamaPosAnggaran ?? 'Belum dipilih'}
+              </span>
+            }
+          />
+        </DeretStatistik>
+        <section className="overflow-hidden rounded-md border border-border bg-card">
           <div className="flex items-center justify-between gap-3 border-b border-border p-4">
             <div>
-              <h2 className="font-semibold">Detail Pengadaan</h2>
+              <h2 className="text-sm font-semibold text-foreground">Detail Pengadaan</h2>
               <p className="text-xs text-muted-foreground">Estimasi dihitung secara server-side.</p>
             </div>
             {draft && (
@@ -381,14 +370,14 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
             )}
           </div>
           {detail.length === 0 ? (
-            <p className="p-8 text-center text-sm text-muted-foreground">
+            <p className="p-5 text-center text-sm text-muted-foreground">
               Belum ada detail. Tambahkan minimal satu detail sebelum finalisasi.
             </p>
           ) : (
             <>
               <div className="hidden overflow-x-auto md:block">
                 <table className="min-w-[800px] w-full text-sm">
-                  <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                  <thead className="border-b border-border bg-permukaan-50 text-left text-[12.5px] text-grafit-500 [&_th]:font-medium">
                     <tr>
                       <th className="px-4 py-3">Kebutuhan</th>
                       <th className="px-4 py-3 text-right">Jumlah</th>

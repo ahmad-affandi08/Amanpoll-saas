@@ -120,7 +120,7 @@ export function DatePicker({
           type="button"
           disabled={disabled}
           className={cn(
-            'flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-permukaan-100 disabled:text-grafit-500 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
+            'flex h-8 min-h-10 w-full min-w-0 items-center justify-between gap-2 rounded-sm border border-input bg-card px-2.5 py-1 text-sm sm:min-h-0 transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-permukaan-100 disabled:text-grafit-500 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
             !parsedValue && 'text-muted-foreground',
             className,
           )}
@@ -165,7 +165,7 @@ export function DatePicker({
       )}
 
       <PopoverContent
-        className="w-[288px] p-0 shadow-2xl border border-garis-200 bg-card rounded-2xl overflow-hidden"
+        className="w-[288px] p-0 shadow-[0_12px_32px_rgb(23_32_39_/_0.12)] border border-border bg-card rounded-lg overflow-hidden"
         align={align}
       >
         {/* Pilihan Cepat / Shortcuts */}
@@ -176,9 +176,9 @@ export function DatePicker({
               variant={isTodaySelected ? 'default' : 'ghost'}
               size="sm"
               className={cn(
-                'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
+                'h-7 text-xs px-2 flex-1 rounded-sm cursor-pointer transition-all',
                 isTodaySelected
-                  ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
+                  ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold'
                   : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900 font-medium',
               )}
               onClick={() => handleSelect(new Date())}
@@ -190,9 +190,9 @@ export function DatePicker({
               variant={isTomorrowSelected ? 'default' : 'ghost'}
               size="sm"
               className={cn(
-                'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
+                'h-7 text-xs px-2 flex-1 rounded-sm cursor-pointer transition-all',
                 isTomorrowSelected
-                  ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
+                  ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold'
                   : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900 font-medium',
               )}
               onClick={() => handleSelect(addDays(new Date(), 1))}
@@ -204,9 +204,9 @@ export function DatePicker({
               variant={isYesterdaySelected ? 'default' : 'ghost'}
               size="sm"
               className={cn(
-                'h-7 text-xs px-2 flex-1 rounded-lg cursor-pointer transition-all',
+                'h-7 text-xs px-2 flex-1 rounded-sm cursor-pointer transition-all',
                 isYesterdaySelected
-                  ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold shadow-xs'
+                  ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 font-semibold'
                   : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900 font-medium',
               )}
               onClick={() => handleSelect(subDays(new Date(), 1))}
@@ -278,7 +278,7 @@ export function DatePicker({
                       isDayToday && !isSelected && 'border border-teknisi-600 font-bold text-teknisi-700',
                       // Tanggal terpilih
                       isSelected
-                        ? 'bg-teknisi-700 text-white font-bold shadow-sm hover:bg-teknisi-800 hover:text-white'
+                        ? 'bg-teknisi-700 text-white font-semibold hover:bg-teknisi-800 hover:text-white'
                         : 'hover:bg-teknisi-100 hover:text-teknisi-900',
                       // Tetap terbaca; coretan menandai bahwa tanggal ini tidak bisa dipilih.
                       isDisabled && 'pointer-events-none text-grafit-500 line-through',
@@ -309,7 +309,7 @@ export function DatePicker({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-7 px-2.5 text-xs rounded-lg cursor-pointer text-grafit-700"
+                className="h-7 px-2.5 text-xs rounded-sm cursor-pointer text-grafit-700"
                 onClick={() => handleClear()}
               >
                 Kosongkan
@@ -318,7 +318,7 @@ export function DatePicker({
             <Button
               type="button"
               size="sm"
-              className="h-7 px-3 text-xs font-semibold rounded-lg cursor-pointer bg-teknisi-700 hover:bg-teknisi-800 text-white shadow-xs"
+              className="h-7 px-3 text-xs font-semibold rounded-sm cursor-pointer bg-teknisi-700 hover:bg-teknisi-800 text-white"
               onClick={() => handleSelect(new Date())}
             >
               Hari Ini

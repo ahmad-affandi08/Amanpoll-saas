@@ -239,7 +239,7 @@ export default function PermintaanPembelianShow(props: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={permintaan.Nomor} />
-      <div className="space-y-6 pb-28 sm:pb-6">
+      <div className="space-y-5 pb-28 sm:pb-6">
         <Link
           href={rutePermintaanPembelian.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -294,7 +294,7 @@ export default function PermintaanPembelianShow(props: Props) {
               detail.map((item) => (
                 <div
                   key={item.Id}
-                  className="grid gap-2 rounded-[9px] border border-border p-3 sm:grid-cols-[1fr_auto_auto] sm:items-center"
+                  className="grid gap-2 rounded-md border border-border p-3 sm:grid-cols-[1fr_auto_auto] sm:items-center"
                 >
                   <div className="min-w-0">
                     <p className="font-medium">{item.Deskripsi}</p>
@@ -323,10 +323,12 @@ export default function PermintaanPembelianShow(props: Props) {
           </CardContent>
         </Card>
 
-        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 p-4 backdrop-blur sm:static sm:rounded-[9px] sm:border sm:p-4">
+        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 p-4 backdrop-blur sm:static sm:rounded-md sm:border sm:p-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Total estimasi (dihitung server)</span>
-            <strong className="font-mono text-lg">{formatUang(permintaan.TotalEstimasi)}</strong>
+            <strong className="font-mono text-[15px] font-semibold">
+              {formatUang(permintaan.TotalEstimasi)}
+            </strong>
           </div>
         </div>
       </div>

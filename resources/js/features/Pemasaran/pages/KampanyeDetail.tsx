@@ -41,12 +41,12 @@ export default function PemasaranKampanyeDetail({ kampanye, biaya, target, konte
             <Link href={rutePemasaran.kampanye}>Kembali ke daftar</Link>
           </Button>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <RingkasanKampanye kampanye={kampanye} pilihan={pilihan} totalBiaya={totalBiaya} />
 
-      <Tabs defaultValue="biaya" className="mt-6">
+      <Tabs defaultValue="biaya" className="mt-5">
         <TabsList>
           <TabsTrigger value="biaya">Biaya</TabsTrigger>
           <TabsTrigger value="target">Target</TabsTrigger>

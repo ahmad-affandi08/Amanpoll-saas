@@ -17,7 +17,7 @@ import { ArrowLeft, Plus, Trash2, Calendar, Wrench, Clock } from 'lucide-react';
 import type { RencanaPemeliharaan } from '@/features/PreventifInspeksi/types';
 import { ruteRencanaPemeliharaan } from '@/features/RencanaPemeliharaan/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
-import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
@@ -85,10 +85,7 @@ export default function RencanaPemeliharaanShow({
   return (
     <KerangkaAplikasi>
       <Head title={`Rencana: ${rencana.Nama}`} />
-      <BreadcrumbHalaman />
-
-      <div className="space-y-6">
-        {/* Breadcrumb */}
+      <div className="space-y-5">
         <div className="flex items-center gap-2 text-sm text-grafit-500">
           <Link
             href={ruteRencanaPemeliharaan.index}
@@ -99,26 +96,22 @@ export default function RencanaPemeliharaanShow({
           </Link>
         </div>
 
-        {/* Info Rencana */}
-        <div className="bg-card border border-garis-200 rounded-xl p-6 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <KepalaHalaman
+          judul={rencana.Nama}
+          lencana={
+            <>
+              <span className="rounded-sm border border-garis-300 bg-permukaan-100 px-2 py-0.5 font-mono text-xs font-semibold text-grafit-700">
+                {rencana.Kode}
+              </span>
+              <Badge variant={rencana.Aktif ? 'sukses' : 'netral'}>
+                {rencana.Aktif ? 'Aktif' : 'Nonaktif'}
+              </Badge>
+              <Badge variant="outline">Prioritas: {rencana.Prioritas}</Badge>
+            </>
+          }
+          meta={
             <div className="space-y-2">
-              <div className="flex items-center gap-2.5">
-                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-permukaan-100 text-grafit-700 border border-garis-300">
-                  {rencana.Kode}
-                </span>
-                <Badge
-                  variant={rencana.Aktif ? 'default' : 'secondary'}
-                  className={rencana.Aktif ? 'bg-sukses-50 text-sukses-700 border-sukses-200' : ''}
-                >
-                  {rencana.Aktif ? 'Aktif' : 'Nonaktif'}
-                </Badge>
-                <Badge variant="outline">Prioritas: {rencana.Prioritas}</Badge>
-              </div>
-
-              <h1 className="text-xl font-bold text-grafit-950">{rencana.Nama}</h1>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-grafit-700">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-grafit-700">
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-4 w-4 text-grafit-500" />
                   <span>
@@ -145,7 +138,7 @@ export default function RencanaPemeliharaanShow({
               </div>
 
               {unitPengelolaDipakai && (
-                <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-grafit-700">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-grafit-700">
                   <span>
                     Unit pengelola: <strong>{rencana.unit_pengelola?.Nama ?? 'Mengikuti aset'}</strong>
                   </span>
@@ -158,10 +151,11 @@ export default function RencanaPemeliharaanShow({
                 </div>
               )}
             </div>
-
+          }
+          aksi={
             <Dialog open={bukaDialogAset} onOpenChange={setBukaDialogAset}>
               <DialogTrigger asChild>
-                <Button className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white gap-2">
+                <Button className="cursor-pointer gap-2">
                   <Plus className="h-4 w-4" />
                   Daftarkan Aset ke Rencana
                 </Button>
@@ -228,7 +222,7 @@ export default function RencanaPemeliharaanShow({
                       </Button>
                       <Button
                         type="submit"
-                        className="cursor-pointer bg-teknisi-600 hover:bg-teknisi-700 text-white"
+                        className="cursor-pointer"
                         disabled={formAset.processing || !formAset.data.AsetId}
                       >
                         {formAset.processing ? 'Mendaftarkan...' : 'Daftarkan Aset'}
@@ -238,13 +232,13 @@ export default function RencanaPemeliharaanShow({
                 </AturanWajibProvider>
               </DialogContent>
             </Dialog>
-          </div>
-        </div>
+          }
+        />
 
         {/* Tabel Aset Terdaftar */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-grafit-950">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold text-foreground">
               Aset Terdaftar ({rencana.aset?.length ?? 0})
             </h2>
             <span className="text-xs text-grafit-500">
@@ -253,14 +247,14 @@ export default function RencanaPemeliharaanShow({
           </div>
 
           {!rencana.aset || rencana.aset.length === 0 ? (
-            <div className="bg-card border border-dashed border-garis-300 rounded-xl p-8 text-center">
+            <div className="rounded-md border border-dashed border-garis-300 bg-card p-5 text-center">
               <p className="text-grafit-500 text-sm">Belum ada aset yang didaftarkan pada rencana ini.</p>
             </div>
           ) : (
-            <div className="bg-card border border-garis-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-hidden rounded-md border border-border bg-card">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-permukaan-50 border-b border-garis-200 text-xs font-semibold text-grafit-700 uppercase">
+                  <thead className="border-b border-border bg-permukaan-50 text-[12.5px] text-grafit-500 [&_th]:font-medium">
                     <tr>
                       <th className="px-5 py-3">Aset</th>
                       <th className="px-5 py-3">Lokasi</th>
@@ -270,9 +264,9 @@ export default function RencanaPemeliharaanShow({
                       <th className="px-5 py-3 text-right">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-permukaan-100">
+                  <tbody className="divide-y divide-border">
                     {rencana.aset.map((item) => (
-                      <tr key={item.Id} className="hover:bg-accent transition-colors">
+                      <tr key={item.Id} className="transition-colors hover:bg-permukaan-50">
                         <td className="px-5 py-4 font-medium text-grafit-950">
                           <div>
                             <span className="font-mono text-xs font-semibold text-grafit-500">
@@ -286,8 +280,8 @@ export default function RencanaPemeliharaanShow({
                         </td>
                         <td className="px-5 py-4 text-grafit-700 text-xs">{item.TanggalMulai}</td>
                         <td className="px-5 py-4">
-                          <span className="inline-flex items-center gap-1.5 font-semibold text-xs px-2.5 py-1 rounded-full bg-teknisi-50 text-teknisi-700 border border-teknisi-200">
-                            <Calendar className="h-3.5 w-3.5" />
+                          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-grafit-700">
+                            <Calendar aria-hidden="true" className="size-3.5 text-grafit-500" />
                             {item.TanggalBerikutnya ?? 'Belum dijadwalkan'}
                           </span>
                         </td>

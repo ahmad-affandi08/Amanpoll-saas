@@ -42,11 +42,11 @@ export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Prop
         }
       />
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {modul.map((satu) => (
           <Card key={satu.Kode}>
             <CardHeader className="flex-row items-start justify-between gap-3 space-y-0">
-              <CardTitle className="text-base">{satu.Nama}</CardTitle>
+              <CardTitle>{satu.Nama}</CardTitle>
               {satu.Aktif ? (
                 <Badge variant="sukses" className="gap-1">
                   <CircleCheck aria-hidden="true" className="size-3.5" />
@@ -64,8 +64,8 @@ export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Prop
         ))}
       </div>
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium text-foreground">Halaman Konsol</h2>
+      <section className="mt-5">
+        <h2 className="text-sm font-semibold text-foreground">Halaman Konsol</h2>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {HALAMAN_PEMASARAN.filter(
             (satu) =>
@@ -85,8 +85,8 @@ export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Prop
         </ul>
       </section>
 
-      <section className="mt-8">
-        <h2 className="text-sm font-medium text-foreground">Kewenangan Anda</h2>
+      <section className="mt-5">
+        <h2 className="text-sm font-semibold text-foreground">Kewenangan Anda</h2>
         {superAdmin ? (
           <p className="mt-2 text-sm text-muted-foreground">
             Super admin platform: seluruh izin pemasaran berlaku.

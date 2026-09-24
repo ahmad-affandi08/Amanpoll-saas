@@ -57,7 +57,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
       <KepalaHalaman
         judul={konten.Judul}
         deskripsi={`${konten.Slug} · ${konten.Jenis}`}
-        className="mb-6"
+        className="mb-5"
         aksi={
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant={varianStatus(konten.Status)}>{konten.Status}</Badge>
@@ -82,10 +82,10 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+      <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Draf</CardTitle>
+            <CardTitle>Draf</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={submit} className="grid gap-4">
@@ -154,7 +154,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                 />
               </div>
 
-              <fieldset className="grid gap-4 rounded-lg border p-4">
+              <fieldset className="grid gap-4 rounded-md border p-4">
                 <legend className="px-1 text-sm font-medium">Metadata SEO</legend>
 
                 <div className="grid content-start gap-2">
@@ -251,10 +251,10 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
           </CardContent>
         </Card>
 
-        <div className="grid gap-6">
+        <div className="grid gap-5">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Keyword</CardTitle>
+              <CardTitle>Keyword</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3">
               {konten.Keyword.length === 0 ? (
@@ -285,7 +285,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Riwayat versi</CardTitle>
+              <CardTitle>Riwayat versi</CardTitle>
             </CardHeader>
             <CardContent className="grid content-start gap-2">
               {versi.map((satu) => (

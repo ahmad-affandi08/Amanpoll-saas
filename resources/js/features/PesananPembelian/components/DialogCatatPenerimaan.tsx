@@ -152,7 +152,7 @@ export function DialogCatatPenerimaan({
 
             <div className="space-y-3">
               {detail.map((item, indeks) => (
-                <div key={item.Id} className="space-y-3 rounded-[9px] border border-border p-3">
+                <div key={item.Id} className="space-y-3 rounded-md border border-border p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-sm font-medium">{item.Deskripsi}</p>

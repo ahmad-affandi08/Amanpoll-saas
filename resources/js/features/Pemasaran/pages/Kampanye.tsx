@@ -452,7 +452,7 @@ export default function PemasaranKampanye({ kampanye, pilihan, filter, wajib }: 
         deskripsi="Kode kampanye menjadi utm_campaign pada tautan iklan, sehingga kunjungannya tertaut otomatis."
         tanpaBreadcrumb
         aksi={<DialogFormKampanye kampanye={null} pilihan={pilihan} wajib={wajib.kampanye} />}
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

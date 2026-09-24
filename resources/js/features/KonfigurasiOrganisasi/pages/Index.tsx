@@ -77,7 +77,11 @@ export default function KonfigurasiOrganisasiIndex({ konfigurasi }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title="Konfigurasi" />
-      <KepalaHalaman judul="Konfigurasi Organisasi" deskripsi="Pengaturan per fitur untuk organisasi Anda." />
+      <KepalaHalaman
+        judul="Konfigurasi Organisasi"
+        deskripsi="Pengaturan per fitur untuk organisasi Anda."
+        className="mb-5"
+      />
 
       <div className="space-y-4">
         {Object.entries(kelompok).map(([namespace, daftar]) => (

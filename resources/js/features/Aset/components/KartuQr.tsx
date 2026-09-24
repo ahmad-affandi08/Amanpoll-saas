@@ -9,7 +9,7 @@ export function KartuQr({ aset, qr, className }: { aset: Aset; qr: string | null
   return (
     <div
       className={cn(
-        'mb-6 flex flex-wrap items-center gap-4 rounded-[9px] border border-border bg-card p-4',
+        'mb-5 flex flex-wrap items-center gap-4 rounded-md border border-border bg-card p-4',
         className,
       )}
     >
@@ -20,7 +20,7 @@ export function KartuQr({ aset, qr, className }: { aset: Aset; qr: string | null
           dangerouslySetInnerHTML={{ __html: qr }}
         />
       ) : (
-        <div className="flex size-24 shrink-0 items-center justify-center rounded-[6px] border border-dashed border-border px-2 text-center text-xs text-muted-foreground">
+        <div className="flex size-24 shrink-0 items-center justify-center rounded-sm border border-dashed border-border px-2 text-center text-xs text-muted-foreground">
           Belum ada kode QR
         </div>
       )}

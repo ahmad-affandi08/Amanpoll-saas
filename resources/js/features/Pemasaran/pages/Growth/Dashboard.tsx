@@ -15,6 +15,7 @@ import type {
   TahapFunnel,
 } from '@/features/Pemasaran/types';
 import { BarisFilterGrowth } from '@/features/Pemasaran/components/BarisFilterGrowth';
+import { DeretStatistik } from '@/components/shared/KartuStatistik';
 import { KartuKpi } from '@/features/Pemasaran/components/KartuKpi';
 import { Funnel } from '@/features/Pemasaran/components/Funnel';
 import { RevenueChannel } from '@/features/Pemasaran/components/RevenueChannel';
@@ -63,23 +64,25 @@ export default function PemasaranGrowthDashboard({
         judul="Dashboard Growth"
         deskripsi="Channel mana menghasilkan customer, campaign mana menghasilkan revenue, halaman mana paling efektif."
         tanpaBreadcrumb
-        className="mb-6"
+        className="mb-5"
       />
 
       <BarisFilterGrowth filter={filter} pilihan={pilihan} />
 
       {alert.length > 0 ? <DaftarAlert alert={alert} /> : null}
 
-      <section className="mt-6">
-        <h2 className="mb-3 text-sm font-medium text-foreground">KPI Utama</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {tersedia.map((satu) => (
-            <KartuKpi key={satu.Kunci} kpi={satu} />
-          ))}
-        </div>
+      <section className="mt-5">
+        <h2 className="mb-3 text-sm font-semibold text-foreground">KPI Utama</h2>
+        {tersedia.length > 0 ? (
+          <DeretStatistik kolom={4}>
+            {tersedia.map((satu) => (
+              <KartuKpi key={satu.Kunci} kpi={satu} />
+            ))}
+          </DeretStatistik>
+        ) : null}
 
         {belum.length > 0 ? (
-          <div className="mt-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+          <div className="mt-3 rounded-md border border-dashed p-4 text-sm text-muted-foreground">
             {belum.length} KPI belum dapat dihitung karena sumbernya belum ada:{' '}
             {belum.map((satu) => satu.Nama).join(', ')}. Angkanya sengaja dikosongkan, bukan ditampilkan
             sebagai nol.
@@ -87,20 +90,20 @@ export default function PemasaranGrowthDashboard({
         ) : null}
       </section>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <Funnel funnel={funnel} />
         <RevenueChannel revenue={revenuePerChannel} attribution={attribution} />
       </div>
 
-      <section className="mt-6">
+      <section className="mt-5">
         <PerbandinganModel attribution={attribution} />
       </section>
 
-      <section className="mt-6">
+      <section className="mt-5">
         <CacChannel baris={cacPerChannel} takTerpecah={cacTakTerpecah} />
       </section>
 
-      <Tabs defaultValue="kampanye" className="mt-6">
+      <Tabs defaultValue="kampanye" className="mt-5">
         <TabsList>
           <TabsTrigger value="kampanye">Kampanye</TabsTrigger>
           <TabsTrigger value="halaman">Landing Page</TabsTrigger>

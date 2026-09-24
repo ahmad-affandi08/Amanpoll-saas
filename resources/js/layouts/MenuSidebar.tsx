@@ -91,7 +91,7 @@ export function MenuSidebar({ grup, pathSekarang }: PropsMenuSidebar) {
                               isActive={isActive}
                               className="cursor-pointer"
                             >
-                              <Icon size={18} strokeWidth={1.75} />
+                              <Icon size={16} strokeWidth={1.75} />
                               <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                             </SidebarMenuButton>
                           </DropdownMenuTrigger>
@@ -99,9 +99,9 @@ export function MenuSidebar({ grup, pathSekarang }: PropsMenuSidebar) {
                             side="right"
                             align="start"
                             sideOffset={10}
-                            className="min-w-52 rounded-xl bg-card p-1.5 shadow-xl border border-border"
+                            className="min-w-52 p-1"
                           >
-                            <DropdownMenuLabel className="text-xs font-bold text-muted-foreground uppercase px-2.5 py-1.5 tracking-wider">
+                            <DropdownMenuLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                               {item.label}
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
@@ -110,9 +110,9 @@ export function MenuSidebar({ grup, pathSekarang }: PropsMenuSidebar) {
                                 <Link
                                   href={subItem.href}
                                   className={cn(
-                                    'flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-md cursor-pointer transition-colors',
+                                    'flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-[13px] transition-colors',
                                     subAktif === subItem.href
-                                      ? 'bg-teknisi-700 text-white font-semibold'
+                                      ? 'bg-accent font-medium text-accent-foreground'
                                       : 'text-foreground',
                                   )}
                                 >
@@ -141,7 +141,7 @@ export function MenuSidebar({ grup, pathSekarang }: PropsMenuSidebar) {
                             isActive={isActive}
                             className="cursor-pointer"
                           >
-                            <Icon size={18} strokeWidth={1.75} />
+                            <Icon size={16} strokeWidth={1.75} />
                             <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                             <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                           </SidebarMenuButton>
@@ -173,7 +173,7 @@ export function MenuSidebar({ grup, pathSekarang }: PropsMenuSidebar) {
                       tooltip={item.label}
                     >
                       <Link href={item.href || '#'}>
-                        <Icon size={18} strokeWidth={1.75} />
+                        <Icon size={16} strokeWidth={1.75} />
                         <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PengunggahBerkas } from '@/components/shared/PengunggahBerkas';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { http } from '@/lib/http';
 import { ruteAset } from '@/features/Aset/api';
 import type { GalatImporAset, HasilPratinjauImporAset } from '@/features/Aset/types';
@@ -71,25 +72,22 @@ function formulir(berkas: File): FormData {
 
 function Ringkasan({ hasil }: { hasil: HasilPratinjauImporAset }) {
   const bergalat = hasil.jumlahBaris - hasil.jumlahSah;
-  const butir = [
-    { label: 'Baris dibaca', nilai: hasil.jumlahBaris, kelas: 'text-foreground' },
-    { label: 'Siap dibuat', nilai: hasil.jumlahSah, kelas: 'text-foreground' },
-    {
-      label: 'Baris bergalat',
-      nilai: bergalat,
-      kelas: bergalat > 0 ? 'text-destructive' : 'text-foreground',
-    },
-  ];
 
   return (
-    <dl className="grid grid-cols-3 gap-2">
-      {butir.map((satu) => (
-        <div key={satu.label} className="rounded-[8px] border border-border bg-card px-3 py-2">
-          <dt className="text-xs text-muted-foreground">{satu.label}</dt>
-          <dd className={`text-lg font-semibold tabular-nums ${satu.kelas}`}>{satu.nilai}</dd>
-        </div>
-      ))}
-    </dl>
+    <DeretStatistik kolom={3}>
+      <KartuStatistik menyatu label="Baris dibaca" nilai={hasil.jumlahBaris} />
+      <KartuStatistik menyatu label="Siap dibuat" nilai={hasil.jumlahSah} />
+      <KartuStatistik
+        menyatu
+        label="Baris bergalat"
+        nilai={
+          <span className="inline-flex items-center gap-2">
+            {bergalat}
+            {bergalat > 0 && <span aria-hidden="true" className="size-2 rounded-full bg-bahaya-600" />}
+          </span>
+        }
+      />
+    </DeretStatistik>
   );
 }
 
@@ -105,7 +103,7 @@ function DaftarGalat({ hasil }: { hasil: HasilPratinjauImporAset }) {
       {/* Layar sempit: dikelompokkan per baris. */}
       <ul className="max-h-80 space-y-2 overflow-y-auto pr-1 sm:hidden">
         {kelompok.map((satu) => (
-          <li key={satu.baris} className="rounded-[8px] border border-border bg-card px-3 py-2">
+          <li key={satu.baris} className="rounded-md border border-border bg-card px-3 py-2">
             <p className="text-sm font-medium text-foreground">Baris {satu.baris}</p>
             <ul className="mt-1 space-y-1">
               {satu.galat.map((g) => (
@@ -121,7 +119,7 @@ function DaftarGalat({ hasil }: { hasil: HasilPratinjauImporAset }) {
           </li>
         ))}
       </ul>
-      <div className="hidden max-h-80 overflow-y-auto rounded-[8px] border border-border sm:block">
+      <div className="hidden max-h-80 overflow-y-auto rounded-md border border-border sm:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -173,7 +171,7 @@ function ContohBaris({ hasil }: { hasil: HasilPratinjauImporAset }) {
       {/* Layar sempit: kartu, bukan tabel yang dipaksakan (DESIGN.md 20/33). */}
       <ul className="space-y-2 sm:hidden">
         {hasil.contoh.map((c) => (
-          <li key={c.baris} className="rounded-[8px] border border-border bg-card px-3 py-2 text-sm">
+          <li key={c.baris} className="rounded-md border border-border bg-card px-3 py-2 text-sm">
             <p className="font-medium text-foreground">{c.Nama}</p>
             <p className="font-mono text-xs text-muted-foreground">{c.KodeAset ?? 'Kode otomatis'}</p>
             <p className="text-muted-foreground">
@@ -183,7 +181,7 @@ function ContohBaris({ hasil }: { hasil: HasilPratinjauImporAset }) {
           </li>
         ))}
       </ul>
-      <div className="hidden rounded-[8px] border border-border sm:block">
+      <div className="hidden rounded-md border border-border sm:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -370,7 +368,7 @@ export function DialogImporAset() {
             {adaGalat ? (
               <DaftarGalat hasil={hasil} />
             ) : (
-              <div className="flex items-start gap-2 rounded-[8px] border border-border bg-card px-3 py-2 text-sm text-foreground">
+              <div className="flex items-start gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground">
                 <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
                 Semua baris sah. Periksa contoh di bawah, lalu lanjutkan impor.
               </div>
@@ -390,10 +388,7 @@ export function DialogImporAset() {
         )}
 
         {galatBerkas.length > 0 && (
-          <div
-            role="alert"
-            className="flex gap-2 rounded-[8px] border border-destructive/40 px-3 py-2 text-sm"
-          >
+          <div role="alert" className="flex gap-2 rounded-md border border-destructive/40 px-3 py-2 text-sm">
             <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-destructive" />
             <ul className="space-y-1 text-destructive">
               {galatBerkas.map((pesan) => (

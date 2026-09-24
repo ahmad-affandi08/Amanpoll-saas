@@ -110,7 +110,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
   return (
     <KerangkaAplikasi>
       <Head title="Penghapusan Aset" />
-      <div className="space-y-4">
+      <div className="space-y-5">
         <KepalaHalaman
           judul="Penghapusan Aset"
           deskripsi="Pengajuan pelepasan aset -- draft, persetujuan, sampai eksekusi."
@@ -122,10 +122,10 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
           }
         />
 
-        <div className="w-56 space-y-1.5">
-          <Label>Status</Label>
+        <div className="w-full space-y-1.5 sm:w-48">
+          <Label htmlFor="filter-penghapusan-status">Status</Label>
           <Select value={status} onValueChange={terapkanFilter}>
-            <SelectTrigger>
+            <SelectTrigger id="filter-penghapusan-status" className="w-full">
               <SelectValue placeholder="Semua" />
             </SelectTrigger>
             <SelectContent>
@@ -140,7 +140,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
         </div>
 
         {pengajuan.data.length === 0 && (
-          <div className="rounded-[9px] border border-border bg-card">
+          <div className="rounded-md border border-border bg-card">
             <KeadaanKosong
               judul="Belum ada pengajuan penghapusan."
               deskripsi="Pengajuan pelepasan aset akan muncul di sini."
@@ -149,7 +149,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
         )}
 
         {pengajuan.data.length > 0 && (
-          <div className="rounded-[9px] border border-border bg-card">
+          <div className="rounded-md border border-border bg-card">
             <Table>
               <TableHeader>
                 <TableRow>

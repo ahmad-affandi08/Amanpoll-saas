@@ -88,10 +88,10 @@ export default function PemasaranOtomasiShow({ otomasi, versi, eksekusi, pilihan
             {otomasi.Aktif ? 'Matikan' : 'Nyalakan'}
           </Button>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-5 flex flex-wrap gap-2">
         <Badge variant="outline" className="font-mono">
           {otomasi.Pemicu}
         </Badge>
@@ -170,7 +170,7 @@ function KartuVersi({
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-2 space-y-0">
         <div>
-          <CardTitle className="text-base">Versi {versi.Nomor}</CardTitle>
+          <CardTitle>Versi {versi.Nomor}</CardTitle>
           <p className="text-xs text-muted-foreground">
             {versi.Status}
             {versi.DiterbitkanPada ? ` · diaktifkan ${waktu(versi.DiterbitkanPada)}` : ''}

@@ -120,7 +120,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
             </Button>
           </div>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <Tabs defaultValue="isi">
@@ -134,7 +134,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
         <TabsContent value="isi" className="grid gap-4 pt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Identitas</CardTitle>
+              <CardTitle>Identitas</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div className="grid content-start gap-2">
@@ -194,7 +194,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
           </Card>
 
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold tracking-tight">Blok</h2>
+            <h2 className="text-sm font-semibold text-foreground">Blok</h2>
             <Button variant="outline" size="sm" onClick={tambahBlok}>
               Tambah Blok
             </Button>
@@ -224,7 +224,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
         <TabsContent value="seo" className="pt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Metadata</CardTitle>
+              <CardTitle>Metadata</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div className="grid content-start gap-2">

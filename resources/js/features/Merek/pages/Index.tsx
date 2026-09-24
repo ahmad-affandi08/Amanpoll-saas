@@ -158,7 +158,7 @@ export default function MerekIndex({ merek, filter, wajib }: Props) {
             <DialogFormMerek merek={null} wajib={wajib.merek} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       {merek.meta.total === 0 && !adaPenyaringAktif(filter) ? (

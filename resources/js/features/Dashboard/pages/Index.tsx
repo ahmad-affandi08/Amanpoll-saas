@@ -11,6 +11,7 @@ import { rutePelaporan } from '@/features/Pelaporan/api';
 import type {
   DasborTersimpanRingkas,
   FilterMetrik,
+  KomponenSusunan,
   MetrikKpi,
   PilihanDimensi,
   SusunanDasbor,
@@ -30,6 +31,30 @@ interface Props {
   pilihanUnit: PilihanDimensi[];
   pilihanLokasi: PilihanDimensi[];
   pilihanUnitPengelola: UnitPengelolaRingkas[];
+}
+
+/**
+ * Memecah komponen berurutan menjadi kelompok: KPI angka selebar satu kolom yang berjajar
+ * digabung ke satu deret bersekat (arah N), sisanya tetap kartu terpisah. Urutan susunan
+ * yang dipilih pengguna tidak berubah.
+ */
+function kelompokkanKomponen(
+  komponen: KomponenSusunan[],
+): { deretAngka: boolean; komponen: KomponenSusunan[] }[] {
+  const hasil: { deretAngka: boolean; komponen: KomponenSusunan[] }[] = [];
+
+  for (const satu of komponen) {
+    const angka = satu.Bentuk === 'Angka' && satu.Lebar <= 1;
+    const terakhir = hasil[hasil.length - 1];
+
+    if (terakhir && terakhir.deretAngka === angka) {
+      terakhir.komponen.push(satu);
+    } else {
+      hasil.push({ deretAngka: angka, komponen: [satu] });
+    }
+  }
+
+  return hasil;
 }
 
 /** Dasbor operasional (21.02). */
@@ -116,16 +141,45 @@ export default function DashboardIndex({
             }
           />
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-            {komponenTampil.map((komponen) => (
-              <KartuKpi
-                key={komponen.Id}
-                kpi={metrik[komponen.KunciKpi]}
-                bentuk={komponen.Bentuk}
-                judul={komponen.Judul}
-                lebar={komponen.Lebar}
-              />
-            ))}
+          <div className="space-y-4">
+            {kelompokkanKomponen(komponenTampil).map((kelompok) =>
+              kelompok.deretAngka ? (
+                // Deret KPI angka: satu bingkai bersekat garis tipis. Sekat kanan dan bawah
+                // sel terakhir terpotong oleh overflow-hidden lewat margin negatif.
+                <div
+                  key={kelompok.komponen[0].Id}
+                  className="overflow-hidden rounded-md border border-border bg-card"
+                >
+                  <div className="-mr-px -mb-px grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+                    {kelompok.komponen.map((komponen) => (
+                      <KartuKpi
+                        key={komponen.Id}
+                        kpi={metrik[komponen.KunciKpi]}
+                        bentuk={komponen.Bentuk}
+                        judul={komponen.Judul}
+                        lebar={komponen.Lebar}
+                        menyatu
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  key={kelompok.komponen[0].Id}
+                  className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4"
+                >
+                  {kelompok.komponen.map((komponen) => (
+                    <KartuKpi
+                      key={komponen.Id}
+                      kpi={metrik[komponen.KunciKpi]}
+                      bentuk={komponen.Bentuk}
+                      judul={komponen.Judul}
+                      lebar={komponen.Lebar}
+                    />
+                  ))}
+                </div>
+              ),
+            )}
           </div>
         )}
 

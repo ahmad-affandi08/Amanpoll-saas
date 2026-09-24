@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { KartuAngka } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { formatUang } from '@/lib/uang';
 import type { KategoriPenyedia, Penyedia, RingkasanPenyedia } from '@/features/Penyedia/types';
 import type { AturanWajib } from '@/lib/aturan-wajib';
@@ -30,7 +30,7 @@ export default function PenyediaShow({ penyedia, kategoriPenyedia, ringkasan, wa
     <KerangkaAplikasi>
       <Head title={penyedia.Nama} />
       <KepalaHalaman
-        className="mb-6"
+        className="mb-5"
         judul={penyedia.Nama}
         labelBreadcrumb={penyedia.Nama}
         lencana={<Badge variant={penyedia.Status === 'Aktif' ? 'sukses' : 'netral'}>{penyedia.Status}</Badge>}
@@ -54,20 +54,22 @@ export default function PenyediaShow({ penyedia, kategoriPenyedia, ringkasan, wa
         }
       />
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka label="Pesanan Pembelian" nilai={ringkasan.JumlahPesanan} />
-        <KartuAngka label="Nilai Pesanan" nilai={formatUang(ringkasan.NilaiPesanan)} />
-        <KartuAngka
+      <DeretStatistik kolom={4} className="mb-5">
+        <KartuStatistik menyatu label="Pesanan Pembelian" nilai={ringkasan.JumlahPesanan} />
+        <KartuStatistik menyatu label="Nilai Pesanan" nilai={formatUang(ringkasan.NilaiPesanan)} />
+        <KartuStatistik
+          menyatu
           label="Sisa Tagihan"
           nilai={formatUang(ringkasan.SisaTagihan)}
-          catatan={ringkasan.SisaTagihan > 0 ? 'masih ada yang belum lunas' : 'tidak ada tunggakan'}
+          keterangan={ringkasan.SisaTagihan > 0 ? 'masih ada yang belum lunas' : 'tidak ada tunggakan'}
         />
-        <KartuAngka
+        <KartuStatistik
+          menyatu
           label="Kontrak Aktif"
           nilai={ringkasan.JumlahKontrakAktif}
-          catatan={`${ringkasan.JumlahAset} aset dipasok`}
+          keterangan={`${ringkasan.JumlahAset} aset dipasok`}
         />
-      </div>
+      </DeretStatistik>
 
       <Tabs defaultValue="pengadaan">
         <TabsList>

@@ -25,9 +25,7 @@ function NavIsi({ slug, onPilih }: { slug: string; onPilih?: () => void }) {
     <nav aria-label="Daftar halaman dokumentasi" className="space-y-6">
       {grupDokumentasi.map((grup) => (
         <div key={grup.label} className="space-y-1">
-          <p className="px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            {grup.label}
-          </p>
+          <p className="px-2 text-xs font-medium text-grafit-500">{grup.label}</p>
           {grup.halaman.map((satu) => (
             <Link
               key={satu.slug}
@@ -35,10 +33,10 @@ function NavIsi({ slug, onPilih }: { slug: string; onPilih?: () => void }) {
               onClick={onPilih}
               aria-current={satu.slug === slug ? 'page' : undefined}
               className={cn(
-                'block rounded-[6px] px-2 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                'block rounded-sm px-2 py-1.5 text-[13.5px] transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                 satu.slug === slug
-                  ? 'bg-teknisi-100 font-medium text-teknisi-900'
-                  : 'text-grafit-700 hover:bg-card hover:text-teknisi-900',
+                  ? 'bg-permukaan-100 font-medium text-foreground'
+                  : 'text-grafit-700 hover:bg-permukaan-50 hover:text-foreground',
               )}
             >
               {satu.judul}
@@ -141,10 +139,12 @@ export function KerangkaDokumentasi({ slug, judul, ringkas, daftarIsi, children 
 
         <main className="min-w-0 flex-1 py-8 xl:py-10">
           <article className="max-w-3xl">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">{judul}</h1>
-            <p className="mt-3 text-base leading-7 text-muted-foreground">{ringkas}</p>
+            <h1 className="text-[26px] leading-tight font-semibold tracking-[-0.015em] text-foreground">
+              {judul}
+            </h1>
+            <p className="mt-2 text-[15px] leading-7 text-muted-foreground">{ringkas}</p>
 
-            <div className="mt-10">{children}</div>
+            <div className="mt-8">{children}</div>
 
             <nav
               aria-label="Halaman sebelum dan sesudah"
@@ -153,7 +153,7 @@ export function KerangkaDokumentasi({ slug, judul, ringkas, daftarIsi, children 
               {sebelum ? (
                 <Link
                   href={ruteDokumentasi.halaman(sebelum.slug)}
-                  className="group flex flex-1 items-center gap-3 rounded-[9px] border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  className="group flex flex-1 items-center gap-3 rounded-md border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <ArrowLeft aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
                   <span className="min-w-0">
@@ -170,7 +170,7 @@ export function KerangkaDokumentasi({ slug, judul, ringkas, daftarIsi, children 
               {sesudah ? (
                 <Link
                   href={ruteDokumentasi.halaman(sesudah.slug)}
-                  className="group flex flex-1 items-center justify-end gap-3 rounded-[9px] border border-border bg-card p-4 text-right transition-colors hover:border-primary/40 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  className="group flex flex-1 items-center justify-end gap-3 rounded-md border border-border bg-card p-4 text-right transition-colors hover:border-primary/40 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <span className="min-w-0">
                     <span className="block text-xs text-muted-foreground">Berikutnya</span>
@@ -190,9 +190,7 @@ export function KerangkaDokumentasi({ slug, judul, ringkas, daftarIsi, children 
         {daftarIsi.length > 0 && (
           <aside className="hidden w-56 shrink-0 xl:block">
             <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto py-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Di halaman ini
-              </p>
+              <p className="mb-3 text-xs font-medium text-grafit-500">Di halaman ini</p>
               <ul className="space-y-1 border-l border-border">
                 {daftarIsi.map((satu) => (
                   <li key={satu.id}>

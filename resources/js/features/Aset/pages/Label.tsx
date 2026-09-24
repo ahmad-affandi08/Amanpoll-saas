@@ -43,7 +43,7 @@ export default function AsetLabel({ label }: Props) {
       <div className="min-h-screen bg-background p-6 text-foreground">
         <div className="tanpa-cetak mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <div>
-            <h1 className="text-lg font-semibold">Label Aset</h1>
+            <h1 className="text-[22px] leading-tight font-semibold tracking-[-0.01em]">Label Aset</h1>
             <p className="text-sm text-muted-foreground">
               {label.length} label siap cetak.
               {tanpaQr > 0 && ` ${tanpaQr} di antaranya belum punya kode QR, jadi dicetak tanpa QR.`}
@@ -63,7 +63,7 @@ export default function AsetLabel({ label }: Props) {
           {label.map((satu) => (
             <figure
               key={satu.Id}
-              className="satu-label flex items-center gap-3 rounded-[6px] border border-border p-3"
+              className="satu-label flex items-center gap-3 rounded-sm border border-border p-3"
             >
               {satu.Svg ? (
                 <div
@@ -72,7 +72,7 @@ export default function AsetLabel({ label }: Props) {
                   dangerouslySetInnerHTML={{ __html: satu.Svg }}
                 />
               ) : (
-                <div className="flex size-[26mm] shrink-0 items-center justify-center rounded-[4px] border border-dashed border-border text-center text-[9px] text-muted-foreground">
+                <div className="flex size-[26mm] shrink-0 items-center justify-center rounded-xs border border-dashed border-border text-center text-[9px] text-muted-foreground">
                   Tanpa QR
                 </div>
               )}

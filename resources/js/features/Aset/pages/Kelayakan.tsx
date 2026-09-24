@@ -119,14 +119,14 @@ export default function AsetKelayakan({ aset, filter, parameter }: Props) {
       <KepalaHalaman
         judul="Kelayakan Aset"
         deskripsi="Perbandingan biaya perbaikan terhadap batas MMEL, sebagai dasar usulan penggantian."
-        className="mb-6"
+        className="mb-5"
       />
 
-      <p className="mb-4 rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+      <p className="mb-4 rounded-md border border-dashed border-border p-3 text-sm text-muted-foreground">
         Dihitung dengan laju inflasi {(parameter.LajuInflasi * 100).toFixed(1)}%, faktor MEL{' '}
         {parameter.FaktorMel.toFixed(2)}, dan anggaran pemeliharaan{' '}
-        {(parameter.PersenPemeliharaanAic * 100).toFixed(1)}% dari AIC. Ketiganya diatur per organisasi
-        — sesuaikan dengan acuan yang berlaku sebelum angkanya dipakai memutuskan penggantian alat.
+        {(parameter.PersenPemeliharaanAic * 100).toFixed(1)}% dari AIC. Ketiganya diatur per organisasi —
+        sesuaikan dengan acuan yang berlaku sebelum angkanya dipakai memutuskan penggantian alat.
       </p>
 
       <DataTable

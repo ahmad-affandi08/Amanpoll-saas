@@ -399,7 +399,7 @@ export default function KategoriKeluhanIndex({
             />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
       {pakaiUnitPengelola && jumlahTanpaUnitPengelola > 0 && (
         <Alert variant="perhatian" className="mb-4">

@@ -57,10 +57,10 @@ export default function PemasaranEmailTemplate({ template, pilihan, wajib }: Pro
         deskripsi="Naskah email pemasaran beserta variabelnya. Variabel yang salah ketik ditolak saat disimpan."
         tanpaBreadcrumb
         aksi={<DialogTemplate template={null} pilihan={pilihan} wajib={wajib.template} />}
-        className="mb-6"
+        className="mb-5"
       />
 
-      <div className="mb-6 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+      <div className="mb-5 rounded-md border border-dashed p-4 text-sm text-muted-foreground">
         Variabel yang tersedia:{' '}
         <span className="font-mono">{pilihan.Variabel.map((v) => `{{${v}}}`).join(', ')}</span>
       </div>
@@ -73,7 +73,7 @@ export default function PemasaranEmailTemplate({ template, pilihan, wajib }: Pro
             <Card key={satu.Id}>
               <CardHeader className="flex-row items-start justify-between gap-2 space-y-0">
                 <div>
-                  <CardTitle className="text-base">{satu.Nama}</CardTitle>
+                  <CardTitle>{satu.Nama}</CardTitle>
                   <p className="font-mono text-xs text-muted-foreground">{satu.Kode}</p>
                 </div>
                 <div className="flex shrink-0 gap-1">

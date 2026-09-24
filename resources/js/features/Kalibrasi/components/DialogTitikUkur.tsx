@@ -121,7 +121,7 @@ export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib
 
         <div className="space-y-6 pt-2">
           <AturanWajibProvider aturan={wajib}>
-            <form onSubmit={simpan} className="p-4 rounded-lg bg-permukaan-50 border border-border space-y-3">
+            <form onSubmit={simpan} className="p-4 rounded-md bg-permukaan-50 border border-border space-y-3">
               <div className="font-semibold text-xs text-grafit-950 flex items-center justify-between">
                 <span>{titikDiedit ? 'Edit Titik Ukur' : 'Tambah Titik Ukur Baru'}</span>
                 {titikDiedit && (
@@ -237,11 +237,11 @@ export function DialogTitikUkur({ jenis, wajib }: { jenis: JenisKalibrasi; wajib
             </h4>
 
             {titikUkur.length === 0 ? (
-              <div className="p-4 border border-dashed rounded-lg text-center text-xs text-grafit-500">
+              <div className="p-4 border border-dashed border-border rounded-md text-center text-xs text-grafit-500">
                 Belum ada titik ukur standar untuk jenis kalibrasi ini.
               </div>
             ) : (
-              <div className="border border-border rounded-lg overflow-hidden">
+              <div className="border border-border rounded-md overflow-hidden">
                 <table className="w-full text-xs text-left">
                   <thead className="bg-permukaan-50 text-grafit-500 border-b border-border">
                     <tr>

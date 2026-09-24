@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { KartuAngka } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { http } from '@/lib/http';
 import { formatUang } from '@/lib/uang';
 import { ruteAset } from '@/features/Aset/api';
@@ -32,35 +32,39 @@ export function TabKelayakan({ aset }: { aset: Aset }) {
   }, [aset.Id]);
 
   if (!data) {
-    return <div className="h-32 animate-pulse rounded-lg bg-muted" />;
+    return <div className="h-32 animate-pulse rounded-md bg-muted" />;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka
+    <div className="space-y-5">
+      <DeretStatistik kolom={4}>
+        <KartuStatistik
+          menyatu
           label="AIC"
           nilai={formatUang(data.Aic)}
-          catatan="biaya investasi per tahun"
+          keterangan="biaya investasi per tahun"
         />
-        <KartuAngka
+        <KartuStatistik
+          menyatu
           label="MMEL"
           nilai={formatUang(data.Mmel)}
-          catatan="batas biaya perbaikan"
+          keterangan="batas biaya perbaikan"
         />
-        <KartuAngka
+        <KartuStatistik
+          menyatu
           label="Biaya Perbaikan Kumulatif"
           nilai={formatUang(data.BiayaPerbaikanKumulatif)}
-          catatan="sepanjang umur aset"
+          keterangan="sepanjang umur aset"
         />
-        <KartuAngka
+        <KartuStatistik
+          menyatu
           label="Sisa Usia Manfaat"
           nilai={`${data.SisaUsiaManfaatTahun} th`}
-          catatan={`${persen(data.PersentaseUsiaManfaat)} dari usia teknis`}
+          keterangan={`${persen(data.PersentaseUsiaManfaat)} dari usia teknis`}
         />
-      </div>
+      </DeretStatistik>
 
-      <div className="rounded-lg border p-4">
+      <div className="rounded-md border border-border p-4">
         <div className="flex flex-wrap items-center gap-3">
           <Badge variant={data.LayakDiperbaiki ? 'sukses' : 'bahaya'}>
             {data.LayakDiperbaiki ? 'Layak diperbaiki' : 'Disarankan diganti'}
@@ -69,8 +73,8 @@ export function TabKelayakan({ aset }: { aset: Aset }) {
         </div>
       </div>
 
-      <div className="rounded-lg border p-4">
-        <h3 className="mb-3 font-medium text-foreground">Dasar perhitungan</h3>
+      <div className="rounded-md border border-border p-5">
+        <h3 className="mb-3 text-sm font-semibold text-foreground">Dasar perhitungan</h3>
         <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
           <Baris label="Harga perolehan (IIC)" nilai={formatUang(data.HargaPerolehan)} />
           <Baris label="Harga perkiraan pengganti" nilai={formatUang(data.HargaPerkiraanPengganti)} />
@@ -87,8 +91,8 @@ export function TabKelayakan({ aset }: { aset: Aset }) {
         </dl>
         <p className="mt-4 text-sm text-muted-foreground">
           AIC = harga perolehan × (1 + inflasi)<sup>usia pakai</sup> ÷ usia teknis. MMEL = faktor MEL ×
-          persentase sisa usia manfaat × harga perkiraan pengganti. Ketiga parameternya diatur per
-          organisasi; sesuaikan dengan acuan yang berlaku sebelum dipakai memutuskan penggantian.
+          persentase sisa usia manfaat × harga perkiraan pengganti. Ketiga parameternya diatur per organisasi;
+          sesuaikan dengan acuan yang berlaku sebelum dipakai memutuskan penggantian.
         </p>
       </div>
     </div>

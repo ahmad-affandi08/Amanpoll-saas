@@ -200,7 +200,7 @@ export default function KategoriSukuCadangIndex({ kategoriSukuCadang, pilihanInd
             />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

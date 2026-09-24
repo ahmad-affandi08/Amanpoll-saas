@@ -27,7 +27,7 @@ import type {
   StatusIntegrasi,
 } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
-import { BreadcrumbHalaman } from '@/components/shared/BreadcrumbHalaman';
+import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
@@ -247,8 +247,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
   return (
     <KerangkaAplikasi>
       <Head title={`${integrasi.Kode} — Integrasi`} />
-      <BreadcrumbHalaman />
-      <div className="space-y-6">
+      <div className="space-y-5">
         <Link
           href={ruteIntegrasi.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
@@ -256,34 +255,34 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
           <ArrowLeft className="size-4" /> Kembali ke Integrasi
         </Link>
 
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">{integrasi.Nama}</h1>
-              <Badge variant={VARIAN_STATUS[integrasi.Status]}>{integrasi.Status}</Badge>
-            </div>
-            <p className="font-mono text-sm text-muted-foreground">
+        <KepalaHalaman
+          judul={integrasi.Nama}
+          lencana={<Badge variant={VARIAN_STATUS[integrasi.Status]}>{integrasi.Status}</Badge>}
+          deskripsi={
+            <span className="font-mono">
               {integrasi.Kode} · {integrasi.Jenis} · {integrasi.MetodeAutentikasi ?? 'Tanpa autentikasi'}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Select value={integrasi.Status} onValueChange={ubahStatus}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS.map((item) => (
-                  <SelectItem key={item} value={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button size="sm" className="min-h-11 sm:min-h-9" disabled={memproses} onClick={ujiKoneksi}>
-              <PlugZap /> Uji Koneksi
-            </Button>
-          </div>
-        </header>
+            </span>
+          }
+          aksi={
+            <>
+              <Select value={integrasi.Status} onValueChange={ubahStatus}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button size="sm" className="min-h-11 sm:min-h-9" disabled={memproses} onClick={ujiKoneksi}>
+                <PlugZap /> Uji Koneksi
+              </Button>
+            </>
+          }
+        />
 
         {berkonflik.length > 0 && (
           <Alert variant="bahaya">
@@ -330,7 +329,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
               />
             ) : (
               pemetaan.map((item) => (
-                <div key={item.Id} className="space-y-2 rounded-[9px] border border-border p-3">
+                <div key={item.Id} className="space-y-2 rounded-md border border-border p-3">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0">
                       <p className="font-medium">
@@ -351,7 +350,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
                     </div>
                   </div>
                   {item.Konflik && (
-                    <div className="flex flex-wrap items-center gap-2 rounded-[9px] bg-bahaya-600/10 p-2">
+                    <div className="flex flex-wrap items-center gap-2 rounded-md bg-bahaya-600/10 p-2">
                       <p className="min-w-0 flex-1 text-xs text-bahaya-700">{item.AlasanKonflik}</p>
                       <Button size="sm" variant="outline" onClick={() => selesaikanKonflik(item, true)}>
                         Pertahankan ini
@@ -382,7 +381,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
               sinkronisasi.map((item) => (
                 <div
                   key={item.Id}
-                  className="flex flex-col gap-2 rounded-[9px] border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-md border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-medium">

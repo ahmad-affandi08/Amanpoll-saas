@@ -53,7 +53,7 @@ export function DialogKonflik({
         </DialogHeader>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-[9px] border border-border bg-permukaan-100 p-3">
+          <div className="rounded-md border border-border bg-permukaan-100 p-3">
             <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-foreground">
               <Package className="size-3.5" /> Di perangkat ini
             </p>
@@ -64,7 +64,7 @@ export function DialogKonflik({
               <p className="mt-1 text-xs text-muted-foreground">Versi {mutasi.Konflik.VersiKlien}</p>
             )}
           </div>
-          <div className="rounded-[9px] border border-border bg-card p-3">
+          <div className="rounded-md border border-border bg-card p-3">
             <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-foreground">
               <CheckCircle2 className="size-3.5" /> Di server
             </p>

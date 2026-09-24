@@ -195,7 +195,7 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi, filter, waji
             <DialogFormTemplat templat={null} wajib={wajib.templat} />
           </>
         }
-        className="mb-6"
+        className="mb-5"
       />
 
       <DataTable

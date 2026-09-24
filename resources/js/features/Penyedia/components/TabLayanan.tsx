@@ -3,7 +3,8 @@ import { Link } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { http } from '@/lib/http';
 import { formatUang } from '@/lib/uang';
-import { BarisKosong, KartuAngka, KepalaBagian, tanggal } from '@/components/shared/riwayat';
+import { BarisKosong, KepalaBagian, tanggal } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { Penyedia, RiwayatLayananPenyedia } from '@/features/Penyedia/types';
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { ruteKontrak } from '@/features/Kontrak/api';
@@ -32,17 +33,18 @@ export function TabLayanan({ penyedia }: { penyedia: Penyedia }) {
   const { ringkasan, kontrak, aset, kalibrasi } = data;
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KartuAngka
+    <div className="space-y-5">
+      <DeretStatistik kolom={4}>
+        <KartuStatistik
+          menyatu
           label="Kontrak Aktif"
           nilai={ringkasan.JumlahKontrakAktif}
-          catatan={`dari ${ringkasan.JumlahKontrak} kontrak`}
+          keterangan={`dari ${ringkasan.JumlahKontrak} kontrak`}
         />
-        <KartuAngka label="Nilai Kontrak Aktif" nilai={formatUang(ringkasan.NilaiKontrakAktif)} />
-        <KartuAngka label="Aset Dipasok" nilai={ringkasan.JumlahAset} />
-        <KartuAngka label="Kalibrasi Dikerjakan" nilai={ringkasan.JumlahKalibrasi} />
-      </div>
+        <KartuStatistik menyatu label="Nilai Kontrak Aktif" nilai={formatUang(ringkasan.NilaiKontrakAktif)} />
+        <KartuStatistik menyatu label="Aset Dipasok" nilai={ringkasan.JumlahAset} />
+        <KartuStatistik menyatu label="Kalibrasi Dikerjakan" nilai={ringkasan.JumlahKalibrasi} />
+      </DeretStatistik>
 
       <section className="space-y-1">
         <KepalaBagian judul="Kontrak" ditampilkan={kontrak.data.length} total={kontrak.total} />

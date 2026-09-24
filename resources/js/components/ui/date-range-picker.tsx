@@ -39,6 +39,8 @@ export interface DateRangePickerProps {
   disabled?: boolean;
   className?: string;
   align?: 'start' | 'center' | 'end';
+  /** Dipasang pada tombol pemicu agar dapat ditunjuk <Label htmlFor>. */
+  id?: string;
 }
 
 export function DateRangePicker({
@@ -50,6 +52,7 @@ export function DateRangePicker({
   disabled = false,
   className,
   align = 'start',
+  id: idPemicu,
 }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -330,7 +333,7 @@ export function DateRangePicker({
                       'border border-teknisi-600 font-bold text-teknisi-700',
                     // Titik awal & akhir terpilih
                     (isStart || isEnd) &&
-                      'bg-teknisi-700 text-white font-bold shadow-sm hover:bg-teknisi-800 hover:text-white',
+                      'bg-teknisi-700 text-white font-semibold hover:bg-teknisi-800 hover:text-white',
                     // Tanggal di antara rentang
                     inRange && !isStart && !isEnd && 'font-semibold text-teknisi-900 hover:bg-teknisi-200/80',
                     // Hover normal
@@ -351,19 +354,18 @@ export function DateRangePicker({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
+          id={idPemicu}
           type="button"
           disabled={disabled}
           className={cn(
-            'flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-permukaan-100 disabled:text-grafit-500 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
+            'flex h-8 min-h-10 w-full min-w-0 items-center justify-between gap-2 rounded-sm border border-input bg-card px-2.5 py-1 text-sm sm:min-h-0 transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-permukaan-100 disabled:text-grafit-500 cursor-pointer text-left dark:bg-input/30 dark:hover:bg-input/50',
             !parsedDari && 'text-muted-foreground',
             className,
           )}
         >
           <div className="flex items-center gap-2 truncate">
             <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
-            <span
-              className={cn('truncate font-medium', parsedDari ? 'text-foreground' : 'text-muted-foreground')}
-            >
+            <span className={cn('truncate', parsedDari ? 'text-foreground' : 'text-muted-foreground')}>
               {labelTampilan}
             </span>
           </div>
@@ -384,7 +386,7 @@ export function DateRangePicker({
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-auto max-w-[calc(100vw-1rem)] md:max-w-[730px] p-0 shadow-2xl border border-garis-200 bg-card rounded-2xl overflow-hidden"
+        className="w-auto max-w-[calc(100vw-1rem)] md:max-w-[730px] p-0 shadow-[0_12px_32px_rgb(23_32_39_/_0.12)] border border-border bg-card rounded-lg overflow-hidden"
         align={align}
       >
         {/* Presets Mobile: Scrollable pills */}
@@ -430,9 +432,9 @@ export function DateRangePicker({
                   variant={isActive ? 'default' : 'ghost'}
                   size="sm"
                   className={cn(
-                    'justify-start h-8 px-2.5 text-xs font-medium rounded-lg cursor-pointer transition-all',
+                    'justify-start h-8 px-2.5 text-xs font-medium rounded-sm cursor-pointer transition-all',
                     isActive
-                      ? 'bg-teknisi-700 text-white hover:bg-teknisi-800 shadow-xs'
+                      ? 'bg-teknisi-700 text-white hover:bg-teknisi-800'
                       : 'text-grafit-700 hover:bg-teknisi-100 hover:text-teknisi-900',
                   )}
                   onClick={() => handleApplyPreset(p.getRange)}
@@ -520,7 +522,7 @@ export function DateRangePicker({
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 px-3.5 text-xs rounded-lg cursor-pointer text-grafit-700"
+              className="h-8 px-3.5 text-xs rounded-sm cursor-pointer text-grafit-700"
               onClick={() => {
                 setTempDari(null);
                 setTempSampai(null);
@@ -534,7 +536,7 @@ export function DateRangePicker({
               type="button"
               size="sm"
               className={cn(
-                'h-8 px-4 text-xs font-semibold rounded-lg cursor-pointer shadow-xs transition-all',
+                'h-8 px-4 text-xs font-semibold rounded-sm cursor-pointer transition-all',
                 tempDari
                   ? 'bg-teknisi-700 hover:bg-teknisi-800 text-white'
                   : 'bg-garis-200 text-grafit-500 cursor-not-allowed pointer-events-none',

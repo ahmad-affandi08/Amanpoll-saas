@@ -18,7 +18,7 @@ import {
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { KartuAngka } from '@/components/shared/riwayat';
+import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import { useIzin } from '@/hooks/use-izin';
 import type { Paginasi } from '@/types/global';
@@ -82,9 +82,9 @@ function DialogImpor({ standar, label }: { standar: string; label: string }) {
             />
             <p className="text-sm text-muted-foreground">
               Berisi kolom <span className="font-mono">Kode</span> dan{' '}
-              <span className="font-mono">Uraian</span>. Baris yang kodenya tidak sesuai format standar
-              ini ditolak dan jumlahnya dilaporkan — kode salah bentuk baru ketahuan saat sudah masuk
-              laporan, jadi lebih baik ditahan di sini.
+              <span className="font-mono">Uraian</span>. Baris yang kodenya tidak sesuai format standar ini
+              ditolak dan jumlahnya dilaporkan — kode salah bentuk baru ketahuan saat sudah masuk laporan,
+              jadi lebih baik ditahan di sini.
             </p>
           </div>
           <DialogFooter>
@@ -98,13 +98,7 @@ function DialogImpor({ standar, label }: { standar: string; label: string }) {
   );
 }
 
-export default function KodefikasiIndex({
-  standar,
-  daftarStandar,
-  kodeBarang,
-  filter,
-  ringkasan,
-}: Props) {
+export default function KodefikasiIndex({ standar, daftarStandar, kodeBarang, filter, ringkasan }: Props) {
   const { boleh } = useIzin();
   const bolehKelola = boleh('Aset.Ubah');
   const label = daftarStandar.find((s) => s.nilai === standar)?.label ?? standar;
@@ -148,7 +142,7 @@ export default function KodefikasiIndex({
       <KepalaHalaman
         judul="Kodefikasi Barang"
         deskripsi="Kode barang milik negara dan daerah, beserta NUP dan kode registrasinya."
-        className="mb-6"
+        className="mb-5"
         aksi={
           <>
             {bolehKelola && <DialogImpor standar={standar} label={label} />}
@@ -159,7 +153,7 @@ export default function KodefikasiIndex({
         }
       />
 
-      <div className="mb-4 max-w-sm">
+      <div className="mb-4 w-full space-y-1.5 sm:w-64">
         <Label nama="standar">Standar</Label>
         <Combobox
           nilai={standar}
@@ -168,15 +162,16 @@ export default function KodefikasiIndex({
         />
       </div>
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-3">
-        <KartuAngka label="Kode di Katalog" nilai={ringkasan.JumlahKode} />
-        <KartuAngka label="Aset Sudah Berkode" nilai={ringkasan.AsetBerkode} />
-        <KartuAngka
+      <DeretStatistik kolom={3} className="mb-5">
+        <KartuStatistik menyatu label="Kode di Katalog" nilai={ringkasan.JumlahKode} />
+        <KartuStatistik menyatu label="Aset Sudah Berkode" nilai={ringkasan.AsetBerkode} />
+        <KartuStatistik
+          menyatu
           label="Aset Belum Berkode"
           nilai={ringkasan.AsetBelumBerkode}
-          catatan={ringkasan.AsetBelumBerkode > 0 ? 'belum dapat dilaporkan' : 'seluruhnya siap'}
+          keterangan={ringkasan.AsetBelumBerkode > 0 ? 'belum dapat dilaporkan' : 'seluruhnya siap'}
         />
-      </div>
+      </DeretStatistik>
 
       <DataTable
         columns={columns}
