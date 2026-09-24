@@ -147,6 +147,13 @@ final class KalkulatorPublikTest extends KasusLeadMagnet
         ])->assertSessionHasErrors('JumlahAset');
     }
 
+    /** Formulir publik sempat menampilkan `validation.required` karena berkas bahasa Indonesia tidak ada. */
+    public function test_pesan_galat_formulir_terbaca_bukan_kunci_terjemahan(): void
+    {
+        $this->post($this->urlPublik('/tools/kalkulator'), [])
+            ->assertSessionHasErrors(['JumlahAset' => 'Jumlah aset wajib diisi.']);
+    }
+
     public function test_masukan_bukan_angka_ditolak(): void
     {
         $this->post($this->urlPublik('/tools/kalkulator'), [

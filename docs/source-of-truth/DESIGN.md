@@ -759,6 +759,12 @@ Validation failed.
 
 Server error umum ditampilkan pada alert/toast yang dapat dipahami.
 
+Pesan bawaan aturan validasi berbahasa Indonesia (`lang/id/validation.php`).
+Nama isian PascalCase ditulis sebagai kata (`JumlahAset` → "Jumlah aset wajib
+diisi."), dan isian baris ditulis dengan nomor barisnya (`Detail.1.HargaSatuan` →
+"Harga satuan baris 2 wajib diisi."). Pesan khusus di `messages()` hanya perlu
+bila kalimat bawaannya belum menjelaskan aturan bisnisnya.
+
 ---
 
 # 15. Dashboard

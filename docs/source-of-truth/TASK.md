@@ -1445,10 +1445,18 @@ Pemindaian itu juga membuka bug yang bukan soal warna:
   berisi jumlah, jam, atau uang, sehingga kini punya `SatuanRincian` sendiri yang
   juga dipakai ekspor.
 
-Yang sengaja belum disentuh adalah pesan validasi bawaan Laravel. `APP_LOCALE=id`
-tanpa folder `lang/` membuat setiap aturan tanpa `messages()` tampil sebagai kunci
-mentah (`validation.required`). Perbaikannya butuh folder dasar baru, jadi
-menunggu persetujuan.
+Pesan validasi bawaan Laravel juga tidak terbaca. `APP_LOCALE=id` tanpa folder
+`lang/` membuat setiap aturan tanpa `messages()` tampil sebagai kunci mentah
+(`validation.required`) di seluruh aplikasi. Setelah folder dasar baru itu
+disetujui, `lang/id/validation.php` menerjemahkan semua kunci bawaan. Laravel
+sendiri sudah memecah nama isian PascalCase menjadi kata. Namun isian hasil
+pemekaran bintang dibiarkannya mentah ("Detail.0.HargaSatuan"), jadi
+`NamaIsianBaris` dipasang lewat resolver validator. Resolver dipilih karena hanya
+lewat jalur itu format bawaan berlaku untuk setiap validator, termasuk
+`Validator::make` di layanan, bukan hanya FormRequest. Label dari `attributes()`
+tetap didahulukan. Hanya berkas validasi yang diterjemahkan: auth, passwords,
+dan pagination tidak dipakai, sebab aplikasi menulis pesan dan paginasinya
+sendiri.
 
 ### Gate 23
 
