@@ -40,7 +40,7 @@ export function LayarTerkirim({
   return (
     <div className="flex flex-col pt-6">
       <div className="relative flex justify-center">
-        <div className="gradien-ilustrasi-lapangan flex size-28 items-center justify-center rounded-full shadow-[0_20px_40px_rgb(15_42_68_/_0.1)]">
+        <div className="gradien-ilustrasi-lapangan flex size-28 items-center justify-center rounded-full shadow-lapangan-apung">
           <Ikon3D nama={offline ? 'mobile_phone' : 'check_mark_button'} ukuran={72} segera />
         </div>
         <span className="absolute top-[-8px] left-[calc(50%+30px)] rotate-[8deg]">

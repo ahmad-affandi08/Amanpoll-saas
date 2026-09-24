@@ -68,7 +68,7 @@ export function IlustrasiMomen({
       <div className="relative flex w-full justify-center">
         <div
           className={cn(
-            'gradien-ilustrasi-lapangan flex items-center justify-center rounded-full shadow-[0_20px_40px_rgb(15_42_68_/_0.1)]',
+            'gradien-ilustrasi-lapangan flex items-center justify-center rounded-full shadow-lapangan-apung',
             ringkas ? 'size-28' : 'size-[150px]',
           )}
         >

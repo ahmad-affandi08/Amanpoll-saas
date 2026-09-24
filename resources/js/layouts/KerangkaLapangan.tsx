@@ -386,7 +386,7 @@ function NavBawah({ item, aktif }: { item: ItemNav[]; aktif: KunciNavLapangan | 
   return (
     <nav
       aria-label="Navigasi utama"
-      className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[480px] rounded-t-[26px] bg-white px-1.5 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+10px)] shadow-[0_-6px_24px_rgb(15_42_68_/_0.08)]"
+      className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[480px] rounded-t-[26px] bg-white px-1.5 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+10px)] shadow-lapangan-bilah"
     >
       <ul className="grid grid-cols-5">
         {item.map((satu) => {
@@ -455,7 +455,7 @@ function KerangkaDalam(props: PropsKerangkaLapangan) {
       <Head title={judulHalaman} />
       <div
         className={cn(
-          'relative mx-auto flex min-h-dvh w-full max-w-[480px] flex-col min-[481px]:shadow-[0_0_40px_rgb(11_34_57_/_0.12)]',
+          'relative mx-auto flex min-h-dvh w-full max-w-[480px] flex-col min-[481px]:shadow-[0_0_0_1px_rgb(11_34_57_/_0.06)]',
           latar === 'putih' ? 'bg-white' : 'bg-lapangan-latar',
         )}
       >

@@ -603,7 +603,7 @@ function LangkahDitemukan({
               ukuranIkon={62}
               alt={`Foto ${aset.Nama}`}
               segera
-              className="gradien-ilustrasi-lapangan size-[88px] rounded-full shadow-[0_10px_20px_rgb(15_42_68_/_0.1)]"
+              className="gradien-ilustrasi-lapangan size-[88px] rounded-full shadow-lapangan-apung"
             />
           </div>
           <h2 className="mt-2.5 text-[21px] leading-tight font-bold tracking-[-0.01em]">{aset.Nama}</h2>
@@ -762,7 +762,7 @@ function LangkahMasalah(p: PropsLangkahMasalah) {
                 className={cn(
                   'flex h-12 items-center gap-2.5 rounded-[14px] px-3.5 text-left text-sm font-bold focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-lapangan-biru-500/50',
                   pilih
-                    ? 'bg-lapangan-navy-800 text-white shadow-[0_6px_14px_rgb(18_50_79_/_0.25)]'
+                    ? 'bg-lapangan-navy-800 text-white shadow-[0_1px_2px_rgb(18_50_79_/_0.18)]'
                     : 'bg-white text-lapangan-teks shadow-[inset_0_0_0_1.5px_var(--color-lapangan-garis)]',
                 )}
               >

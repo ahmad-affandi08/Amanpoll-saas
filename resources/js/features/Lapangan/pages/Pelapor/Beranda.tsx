@@ -73,7 +73,7 @@ function IsiBeranda({ kategori, laporanAktif, jumlahAktif }: PropsBerandaPelapor
           href={ruteLapangan.pelapor.lapor}
           className="flex items-center gap-3.5 border-b-[1.5px] border-lapangan-garis-2 bg-[linear-gradient(120deg,var(--color-lapangan-oranye-50),white_75%)] px-4 py-3.5 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-lapangan-biru-500/50 focus-visible:ring-inset"
         >
-          <span className="flex size-16 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgb(194_83_10_/_0.15)]">
+          <span className="flex size-16 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-lapangan-oranye">
             <Ikon3D nama="megaphone" ukuran={46} segera />
           </span>
           <span className="min-w-0 flex-1">

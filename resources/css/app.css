@@ -112,11 +112,11 @@
     --color-lapangan-oranye-200: #ffc58f;
     --color-lapangan-biru-100: #cfe2ef;
 
-    --shadow-lapangan-kartu: 0 1px 2px rgb(15 42 68 / 0.04), 0 6px 20px rgb(15 42 68 / 0.08);
-    --shadow-lapangan-apung: 0 12px 32px rgb(11 34 57 / 0.16);
-    --shadow-lapangan-bilah: 0 -8px 24px rgb(15 42 68 / 0.08);
-    --shadow-lapangan-oranye: 0 6px 16px rgb(194 83 10 / 0.3);
-    --shadow-lapangan-fab: 0 10px 22px rgb(194 83 10 / 0.4);
+    --shadow-lapangan-kartu: 0 1px 2px rgb(15 42 68 / 0.05);
+    --shadow-lapangan-apung: 0 2px 8px rgb(11 34 57 / 0.06);
+    --shadow-lapangan-bilah: 0 -1px 0 rgb(15 42 68 / 0.06);
+    --shadow-lapangan-oranye: 0 1px 2px rgb(194 83 10 / 0.16);
+    --shadow-lapangan-fab: 0 3px 8px rgb(194 83 10 / 0.22);
     --shadow-lapangan-formulir: 0 1px 2px rgb(15 42 68 / 0.04), 0 24px 56px rgb(11 34 57 / 0.2);
     --shadow-lapangan-tiket: 0 18px 40px rgb(11 34 57 / 0.22);
 }

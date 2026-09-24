@@ -1531,6 +1531,18 @@ Token dipasang di `resources/css/app.css` dengan awalan `lapangan-` supaya tidak
 - Font Mode Lapangan: **Plus Jakarta Sans** (400–800), paket `@fontsource/plus-jakarta-sans`, disetujui pemilik produk pada 24 September 2026. Font dipasang lewat atribut `data-tampilan="lapangan"` pada `<html>` selama `KerangkaLapangan` terpasang, sehingga konten portal (lembar bawah, dialog, toast) ikut memakainya. Halaman autentikasi memakai font yang sama lewat `data-tampilan="autentikasi"` (§37, disetujui pada tanggal yang sama bersama arah desain 2). Dasbor web tetap IBM Plex Sans.
 - Angka dan jam penting besar dan tebal (22–24px, 800) dengan `tabular-nums`. Teks isi 15px. Minimum 12px.
 
+**Bayangan** (diputuskan pemilik produk, 24 September 2026): Mode Lapangan memakai bayangan setipis mungkin. Kartu dan tiket dibedakan dari latar lewat warna putih di atas latar abu dan garis tipis, bukan bayangan tebal.
+
+| Token | Nilai | Dipakai untuk |
+| --- | --- | --- |
+| `shadow-lapangan-kartu` | `0 1px 2px` 5% | Kartu dan tiket |
+| `shadow-lapangan-apung` | `0 2px 8px` 6% | Kartu yang mengapung di atas hero, lingkaran ilustrasi |
+| `shadow-lapangan-bilah` | garis `0 -1px 0` 6% | Nav bawah dan bilah aksi |
+| `shadow-lapangan-oranye` | `0 1px 2px` 16% | Tombol oranye |
+| `shadow-lapangan-fab` | `0 3px 8px` 22% | Tombol tengah nav bawah (satu-satunya yang boleh sedikit terangkat) |
+
+Jangan menambah bayangan berblur besar (mis. `0 20px 40px`) atau `shadow-lg` di layar Mode Lapangan. Cincin fokus dan halo status (`0 0 0 Npx`) bukan bayangan dan tetap boleh.
+
 ## 36.5 Ikon
 
 - **Ikon 3D clay**: Microsoft Fluent Emoji 3D (lisensi MIT). Berkas PNG 256px disimpan sebagai aset statis di `public/images/3d/<nama>.png`, beserta berkas lisensinya. Hanya salin ikon yang benar-benar dipakai; ini bukan paket npm. Komponennya (`Ikon3D`, `WadahIkon3D`, daftar `NAMA_IKON_3D`) ada di `resources/js/components/shared/Ikon3D.tsx` karena dipakai Mode Lapangan dan halaman autentikasi; `Ikon3DTersediaTest` memastikan daftar nama dan berkas di folder itu cocok. Ukuran tampil paling besar ±256px (ukuran berkasnya) agar tidak buram.

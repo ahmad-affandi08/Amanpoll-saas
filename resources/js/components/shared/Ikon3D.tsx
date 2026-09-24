@@ -125,7 +125,7 @@ export function Ikon3D({ nama, ukuran = 'md', alt = '', segera = false, classNam
       decoding="async"
       draggable={false}
       className={cn(
-        'block shrink-0 object-contain drop-shadow-[0_4px_6px_rgb(11_34_57_/_0.15)] select-none',
+        'block shrink-0 object-contain drop-shadow-[0_2px_3px_rgb(11_34_57_/_0.1)] select-none',
         className,
       )}
       style={{ width: piksel, height: piksel }}

@@ -48,7 +48,7 @@ export function KartuTeknisi({ teknisi }: { teknisi: TeknisiLaporan }) {
         <a
           href={`tel:${teknisi.Telepon.replace(/[^\d+]/g, '')}`}
           aria-label={`Telepon ${teknisi.Nama}`}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-lapangan-hijau-700 text-white shadow-[0_6px_14px_rgb(14_122_79_/_0.28)] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-lapangan-biru-500/50"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-lapangan-hijau-700 text-white shadow-[0_1px_2px_rgb(14_122_79_/_0.2)] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-lapangan-biru-500/50"
         >
           <Phone aria-hidden className="size-5" />
         </a>

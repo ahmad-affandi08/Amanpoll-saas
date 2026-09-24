@@ -185,7 +185,7 @@ function IsiSiapkan({ tiketId, asetId, jumlah }: PropsSiapkanTeknisi) {
   return (
     <div className="flex flex-col px-1 pt-10">
       <div className="relative mx-auto">
-        <div className="gradien-ilustrasi-lapangan flex size-[150px] items-center justify-center rounded-full shadow-[0_20px_40px_rgb(15_42_68_/_0.1)]">
+        <div className="gradien-ilustrasi-lapangan flex size-[150px] items-center justify-center rounded-full shadow-lapangan-apung">
           <Ikon3D nama="mobile_phone" ukuran={96} segera />
         </div>
         <Ikon3D nama="cloud" ukuran={64} className="absolute -top-2 left-[calc(50%+34px)]" segera />

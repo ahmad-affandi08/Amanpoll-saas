@@ -35,7 +35,7 @@ export default function TerimaKasihPelapor() {
     >
       <div className="flex flex-col px-2 pt-10 text-center">
         <div className="relative flex justify-center">
-          <div className="flex size-[150px] items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_40%,white_0%,var(--color-lapangan-kuning-50)_70%)] shadow-[0_20px_40px_rgb(15_42_68_/_0.1)]">
+          <div className="flex size-[150px] items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_40%,white_0%,var(--color-lapangan-kuning-50)_70%)] shadow-lapangan-apung">
             <Ikon3D nama="star" ukuran={104} segera />
           </div>
           <span className="absolute top-[-8px] left-[calc(50%+46px)]">
