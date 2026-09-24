@@ -1262,7 +1262,7 @@ Tampilan bergaya aplikasi HP (PWA) untuk peran lapangan. Desain dan papan acuann
 - Urgensi yang dipilih pelapor adalah **usulan**. Ia disimpan terstruktur pada keluhan dan mengisi otomatis pilihan prioritas di formulir koordinator. Prioritas tetap hanya diubah pemegang `Keluhan.Kelola`.
 - Pelapor boleh memantau laporan rekan pada alat atau lokasi dalam lingkupnya, **hanya garis waktu status**: nomor, judul, alat/lokasi, status, dan jam. Tidak ada nama pelapor, nama teknisi, keterangan, atau foto.
 - Saat konfirmasi, pelapor melihat foto berkategori **Sesudah** dari perintah kerja yang berasal dari keluhannya sendiri. Lampiran lain tetap tertutup.
-- Tanda tangan penerima opsional secara bawaan dan bisa diwajibkan per organisasi lewat konfigurasi. Bila diwajibkan, server menolak penyelesaian tanpa tanda tangan.
+- Tanda tangan penerima diganti **konfirmasi penerima** (8.22). Konfirmasi opsional secara bawaan dan bisa diwajibkan per organisasi; bila diwajibkan, koordinator tidak bisa memverifikasi perintah kerja sebelum penerima mengonfirmasi.
 - Konfirmasi pelapor (4.6) hanya untuk keluhan miliknya yang berstatus `Selesai`, dan disimpan di kolom `Rating`/`Ulasan`.
   - "Sudah beres" menutup keluhan (`Ditutup`).
   - "Masih bermasalah" mengembalikannya ke `Diproses`, dengan alasan yang tercatat di riwayat status.
@@ -1323,6 +1323,32 @@ Satu organisasi bisa punya lebih dari satu bagian yang memelihara aset, masing-m
 
 - Perintah artisan eksplisit mengisi unit pengelola yang kosong pada keluhan, perintah kerja, dan rencana dari kategori dan aset. Perintah ini punya mode pratinjau, bisa dijalankan per organisasi, idempoten, dan tercatat di audit. Tidak ada pengisian diam-diam saat migrasi.
 - Panduan penyiapan (halaman `/dokumentasi`) menjelaskan langkah menyiapkan beberapa unit pengelola, dengan contoh IPSRS dan IT.
+
+
+## 8.22 Konfirmasi penerima dan tanda tangan tersimpan
+
+Disetujui pemilik produk pada 24 September 2026. Menggantikan kewajiban menggambar tanda tangan setiap kali pekerjaan selesai.
+
+### Tanda tangan tersimpan di profil
+
+- Setiap pengguna boleh punya **satu tanda tangan tersimpan** (`Pengguna.TandaTanganBerkasId`). Ia bisa membuat, mengganti, atau menghapusnya di halaman profil (dasbor) dan halaman Akun (Mode Lapangan).
+- Bila pengguna mengonfirmasi dan belum punya tanda tangan tersimpan, ia **menggambar sekali**, lalu tanda tangan itu langsung tersimpan ke profilnya. Konfirmasi berikutnya cukup satu ketukan.
+- Tanda tangan tersimpan **hanya dicap** ke sebuah konfirmasi saat pemiliknya sendiri yang mengonfirmasi dari akunnya. Tidak ada jalur untuk menempelkan tanda tangan orang lain.
+- Mengganti atau menghapus tanda tangan tidak mengubah konfirmasi lama: setiap konfirmasi merujuk berkas tanda tangan yang dipakai saat itu, dan berkas itu tidak dihapus selama masih dirujuk.
+
+### Konfirmasi penerima pekerjaan
+
+Konfirmasi dicatat per perintah kerja (siapa, cara, waktu, nama dan jabatan penerima, tanda tangan yang dicap). Ada tiga cara:
+
+1. **Pelapor dari akunnya sendiri.** Untuk perintah kerja yang berasal dari keluhan, pelapor mendapat permintaan konfirmasi di Mode Lapangan begitu teknisi menyelesaikan pekerjaan. Pilihannya "Sudah beres" (boleh dengan penilaian) atau "Masih bermasalah" (alasan wajib; perintah kerja kembali ke Dikerjakan dan teknisi diberi tahu). Bila pelapor sudah mengonfirmasi "Sudah beres", keluhannya ditutup otomatis setelah koordinator memverifikasi, tanpa konfirmasi kedua.
+2. **Pindai QR di lokasi.** Teknisi menampilkan QR dari layar tiket. Penerima memindai dengan HP-nya sendiri, masuk dengan akunnya bila belum, lalu menekan "Terima pekerjaan" atau "Masih bermasalah". QR berisi token bertanda tangan server yang berlaku singkat (bawaan 10 menit) dan hanya untuk satu perintah kerja. Penerima harus pengguna aktif di organisasi yang sama dan lingkupnya mencakup perintah kerja itu. Menampilkan QR membutuhkan sinyal di HP teknisi.
+3. **Tanda tangan di HP teknisi** untuk penerima tanpa akun (tamu, penyewa, pihak luar), berikut nama penerima. Cara ini tetap berjalan offline.
+
+### Status dan setelan
+
+- Teknisi **selalu bisa** menyelesaikan pekerjaan ke Menunggu Verifikasi. Bila konfirmasi belum ada, perintah kerja menampilkan keterangan **"Menunggu konfirmasi penerima"**.
+- Setelan organisasi **"Wajibkan konfirmasi penerima"** (bawaan mati; menggantikan "Wajibkan tanda tangan penerima", nilai lama dipindahkan): bila menyala, koordinator tidak bisa memverifikasi (Menunggu Verifikasi → Selesai) sebelum ada konfirmasi "Sudah beres". Server menolak dengan pesan yang jelas.
+- Detail perintah kerja di dasbor menampilkan kartu konfirmasi (cara, penerima, waktu, tanda tangan).
 
 ---
 

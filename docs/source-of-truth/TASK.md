@@ -3853,6 +3853,24 @@ Jebakan yang ditemukan:
 - GD diam-diam mengisi bagian JPEG yang terpotong dengan abu-abu. Peringatan libjpeg dinyalakan, dan berkas seperti itu disimpan apa adanya.
 
 
+
+---
+
+# FASE 43 — Konfirmasi penerima dan tanda tangan tersimpan
+
+Aturan di PRD 8.22. Disetujui pemilik produk pada 24 September 2026. Dikerjakan koordinator (tanda tangan tersimpan di profil) dan satu agen (konfirmasi penerima) secara paralel, dengan kontrak yang ditetapkan lebih dulu.
+
+## 43.01 Tanda tangan tersimpan di profil
+
+- [ ] Kolom `Pengguna.TandaTanganBerkasId`, Action simpan/hapus, rute profil, dan komponen pad tanda tangan bersama.
+- [ ] Kelola tanda tangan di profil dasbor dan halaman Akun Mode Lapangan.
+
+## 43.02 Konfirmasi penerima
+
+- [ ] Catatan konfirmasi per perintah kerja; tiga cara (pelapor, pindai QR bertoken, tanda tangan di HP teknisi); "gambar sekali lalu tersimpan".
+- [ ] Setelan "Wajibkan konfirmasi penerima" menggantikan setelan tanda tangan; penjaga pindah ke verifikasi koordinator; keterangan "Menunggu konfirmasi penerima".
+- [ ] Penggabungan dengan konfirmasi keluhan pelapor, kartu konfirmasi di detail perintah kerja, dan layar Mode Lapangan terkait.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
@@ -3945,6 +3963,8 @@ Jebakan yang ditemukan:
 41 Login tanpa kode organisasi
 ↓
 42 Mesin kompresi berkas dan foto aset
+↓
+43 Konfirmasi penerima dan tanda tangan tersimpan
 ```
 
 Alasan urutan tersebut: setiap fase memakai fondasi dari fase sebelumnya. Dashboard berada dekat akhir karena dashboard harus membaca data transaksi yang sudah benar, bukan menjadi halaman demo yang lebih dulu dibuat.
