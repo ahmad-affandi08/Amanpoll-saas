@@ -2,11 +2,17 @@ import { Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import type { Aset } from '@/features/Aset/types';
 import { ruteAset } from '@/features/Aset/api';
+import { cn } from '@/lib/utils';
 
 /** QR aset yang benar-benar dapat dipindai, beserta jalan pintas mencetaknya. */
-export function KartuQr({ aset, qr }: { aset: Aset; qr: string | null }) {
+export function KartuQr({ aset, qr, className }: { aset: Aset; qr: string | null; className?: string }) {
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-4 rounded-[9px] border border-border bg-card p-4">
+    <div
+      className={cn(
+        'mb-6 flex flex-wrap items-center gap-4 rounded-[9px] border border-border bg-card p-4',
+        className,
+      )}
+    >
       {qr ? (
         <div
           className="size-24 shrink-0 [&>svg]:h-full [&>svg]:w-full"

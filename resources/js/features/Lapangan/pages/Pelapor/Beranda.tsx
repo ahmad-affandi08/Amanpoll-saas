@@ -10,7 +10,7 @@ import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
 import { PitaPelapor } from '@/features/Lapangan/components/pelapor/PitaPelapor';
 import { namaDepan } from '@/features/Lapangan/components/pelapor/status';
 import { TiketLaporan } from '@/features/Lapangan/components/pelapor/TiketLaporan';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { KategoriLaporan, PropsBerandaPelapor } from '@/features/Lapangan/types';
 
 /** Kategori di grid kartu apung (papan: 8 ikon, yang terakhir "Lainnya"). */

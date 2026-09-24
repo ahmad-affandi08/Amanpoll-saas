@@ -8,6 +8,7 @@ use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
+use App\Domain\Kolaborasi\Application\Services\PenyimpanBerkas;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
@@ -450,7 +451,14 @@ final class UnitPengelolaLaporanTest extends KasusPelaporan
 
         $berkas = Berkas::query()->where('DiunggahOleh', $pengguna->Id)->where('DataTambahan->Judul', $judul)->firstOrFail();
 
-        return (string) Storage::disk($berkas->MediaPenyimpanan)->get($berkas->LokasiPenyimpanan);
+        // Lewat PenyimpanBerkas: CSV ekspor tersimpan gzip (PRD 11.1).
+        $aliran = app(PenyimpanBerkas::class)->bukaAliran($berkas);
+
+        try {
+            return (string) stream_get_contents($aliran);
+        } finally {
+            fclose($aliran);
+        }
     }
 
     /** @return TestResponse<Response> */

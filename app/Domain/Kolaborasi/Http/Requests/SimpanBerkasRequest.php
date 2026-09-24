@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Kolaborasi\Http\Requests;
 
+use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SimpanBerkasRequest extends FormRequest
 {
@@ -26,7 +28,8 @@ final class SimpanBerkasRequest extends FormRequest
             'Berkas' => ['required', 'file', 'mimes:'.self::MIME_DIIZINKAN, 'max:'.self::UKURAN_MAKS_KB],
             'JenisEntitas' => ['nullable', 'string', 'required_with:EntitasId'],
             'EntitasId' => ['nullable', 'string', 'required_with:JenisEntitas'],
-            'Kategori' => ['nullable', 'string', 'max:80'],
+            // Kategori foto galeri aset dikelola domain Aset (batas 10, foto utama): unggah lewat `aset.foto.store`.
+            'Kategori' => ['nullable', 'string', 'max:80', Rule::notIn([GaleriFotoAset::KATEGORI])],
             'Keterangan' => ['nullable', 'string', 'max:1000'],
         ];
     }

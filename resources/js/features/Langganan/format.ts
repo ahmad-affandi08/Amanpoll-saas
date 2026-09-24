@@ -9,6 +9,23 @@ export function angka(nilai: number): string {
   return JUMLAH.format(nilai);
 }
 
+/** Ukuran berkas terbaca, mis. "1,5 MB". */
+export function ukuranBerkas(byte: number): string {
+  const satuan = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let nilai = byte;
+  let indeks = 0;
+
+  while (nilai >= 1024 && indeks < satuan.length - 1) {
+    nilai /= 1024;
+    indeks += 1;
+  }
+
+  const teks =
+    indeks === 0 ? JUMLAH.format(nilai) : nilai.toLocaleString('id-ID', { maximumFractionDigits: 1 });
+
+  return `${teks} ${satuan[indeks]}`;
+}
+
 export function tanggal(nilai: string | null): string {
   if (!nilai) return '—';
 

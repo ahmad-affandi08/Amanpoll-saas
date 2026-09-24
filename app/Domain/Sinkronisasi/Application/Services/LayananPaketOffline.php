@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Sinkronisasi\Application\Services;
 
+use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Application\Services\AturanTandaTanganPenerima;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
@@ -202,6 +203,8 @@ final class LayananPaketOffline
                 'Kondisi' => $aset->Kondisi,
                 'TingkatKritis' => $aset->TingkatKritis,
                 'NamaLokasi' => $aset->lokasi?->Nama,
+                // Tanpa sinyal gambarnya tampil bila masih ada di cache HTTP peramban; bila tidak, ikon 3D kategori.
+                'FotoUtamaThumbnailUrl' => GaleriFotoAset::urlThumbnail($aset->FotoUtamaBerkasId),
                 'Versi' => $aset->Versi,
             ])
             ->values()

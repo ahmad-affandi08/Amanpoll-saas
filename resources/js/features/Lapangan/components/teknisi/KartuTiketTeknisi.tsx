@@ -6,7 +6,7 @@ import { ChipStatus, labelStatus } from '@/features/Lapangan/components/ChipStat
 import { Ikon3D } from '@/components/shared/Ikon3D';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';
 import { JudulTiket, Tiket } from '@/features/Lapangan/components/Tiket';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { TiketTeknisi } from '@/features/Lapangan/types';
 import { lamaTerlambat, ruteTiket, teksLokasi } from '@/features/Lapangan/components/teknisi/waktuTiket';
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Http\Resources;
 
+use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -54,6 +55,9 @@ final class AsetResource extends JsonResource
             'KodeQr' => $aset->KodeQr,
             'NfcUid' => $aset->NfcUid,
             'KodeBatang' => $aset->KodeBatang,
+            // Dari kolomnya saja, tanpa memuat Berkas: daftar aset tidak menambah kueri per baris.
+            'FotoUtamaBerkasId' => $aset->FotoUtamaBerkasId,
+            'FotoUtamaThumbnailUrl' => GaleriFotoAset::urlThumbnail($aset->FotoUtamaBerkasId),
             'Catatan' => $aset->Catatan,
             'Versi' => $aset->Versi,
             'NamaDibuatOleh' => $this->whenLoaded('dibuatOleh', fn () => $aset->dibuatOleh?->Nama),

@@ -30,7 +30,7 @@ import { Kartu } from '@/features/Lapangan/components/Kartu';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';
 import { Tiket } from '@/features/Lapangan/components/Tiket';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type {
   ButirChecklistTeknisi,
   JawabanChecklistTeknisi,
@@ -1343,7 +1343,7 @@ function LangkahRingkasan(props: PropsIsi) {
         )}
         <KanvasTandaTangan
           label="Kotak tanda tangan penerima"
-          urlAwal={urlTtd ?? ttdServer?.Url ?? null}
+          urlAwal={urlTtd ?? ttdServer?.UrlUnduh ?? ttdServer?.Url ?? null}
           onBerubah={ubahTandaTangan}
         />
         {wajibTtd && !adaTtd && (

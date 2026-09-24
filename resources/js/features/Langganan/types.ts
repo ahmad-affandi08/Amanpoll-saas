@@ -39,6 +39,14 @@ export interface TagihanItem {
   DapatDibayar: boolean;
 }
 
+/** Pemakaian ruang berkas organisasi; "tersimpan" menghitung salinan bersama sekali (PRD 11.1). */
+export interface RingkasanPenyimpanan {
+  JumlahBerkas: number;
+  UkuranAsliByte: number;
+  UkuranTersimpanByte: number;
+  PersenHemat: number;
+}
+
 export interface InstruksiPembayaran {
   Penyedia: string;
   NomorTagihan: string;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kolaborasi\Http\Controllers;
 
 use App\Core\Entitas\RegistriEntitas;
+use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Kolaborasi\Application\Actions\HapusBerkas;
 use App\Domain\Kolaborasi\Application\Actions\LampirkanBerkas;
 use App\Domain\Kolaborasi\Application\Actions\UnggahBerkas;
@@ -12,7 +13,9 @@ use App\Domain\Kolaborasi\Application\Services\PenyimpanBerkas;
 use App\Domain\Kolaborasi\Http\Requests\SimpanBerkasRequest;
 use App\Domain\Kolaborasi\Http\Resources\BerkasResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
+use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
 use App\Http\Controllers\Controller;
+use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -66,6 +69,11 @@ final class BerkasController extends Controller
     public function destroy(Berkas $berkas, HapusBerkas $aksi): RedirectResponse
     {
         $this->authorize('delete', $berkas);
+
+        // Foto galeri aset dihapus lewat galerinya, supaya foto utama ikut berpindah (PRD 8.4).
+        if (LampiranEntitas::query()->where('BerkasId', $berkas->Id)->where('Kategori', GaleriFotoAset::KATEGORI)->exists()) {
+            throw new AturanBisnisDilanggar('Berkas ini foto galeri aset. Hapus lewat galeri foto di halaman aset.');
+        }
 
         $aksi->jalankan($berkas);
 

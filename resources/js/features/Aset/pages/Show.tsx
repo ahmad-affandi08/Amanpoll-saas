@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import { Printer } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
@@ -5,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
-import type { Aset, KategoriAset, ModelAset } from '@/features/Aset/types';
+import type { Aset, FotoAset, KategoriAset, ModelAset } from '@/features/Aset/types';
 import type { Lokasi } from '@/features/Lokasi/types';
 import type { UnitOrganisasi, UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
@@ -24,11 +25,17 @@ import { TabMeter } from '@/features/Aset/components/TabMeter';
 import { TabPemeliharaan } from '@/features/Aset/components/TabPemeliharaan';
 import { TabKalibrasi } from '@/features/Aset/components/TabKalibrasi';
 import { KartuQr } from '@/features/Aset/components/KartuQr';
+import { KartuFotoUtama, TabFoto } from '@/features/Aset/components/GaleriFoto';
 import type { AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
   aset: Aset;
   qr: string | null;
+  /** Galeri foto (PRD 8.4 "Foto Aset"). */
+  foto: FotoAset[];
+  fotoMaks: number;
+  bolehTambahFoto: boolean;
+  bolehKelolaFoto: boolean;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
   kategoriAset: KategoriAset[];
@@ -43,6 +50,10 @@ interface Props {
 export default function AsetShow({
   aset,
   qr,
+  foto,
+  fotoMaks,
+  bolehTambahFoto,
+  bolehKelolaFoto,
   wajib,
   kategoriAset,
   modelAset,
@@ -52,6 +63,8 @@ export default function AsetShow({
   unitPengelolaDipakai,
   pilihanUnitPengelola,
 }: Props) {
+  const [tab, setTab] = useState('info');
+
   return (
     <KerangkaAplikasi>
       <Head title={aset.Nama} />
@@ -85,11 +98,20 @@ export default function AsetShow({
         }
       />
 
-      <KartuQr aset={aset} qr={qr} />
+      <div className="mb-6 grid gap-4 md:grid-cols-[minmax(0,280px)_1fr] md:items-start">
+        <KartuFotoUtama
+          aset={aset}
+          jumlahFoto={foto.length}
+          maks={fotoMaks}
+          onLihatGaleri={() => setTab('foto')}
+        />
+        <KartuQr aset={aset} qr={qr} className="mb-0 h-full" />
+      </div>
 
-      <Tabs defaultValue="info">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="info">Info</TabsTrigger>
+          <TabsTrigger value="foto">Foto{foto.length > 0 ? ` (${foto.length})` : ''}</TabsTrigger>
           <TabsTrigger value="lokasi">Lokasi</TabsTrigger>
           <TabsTrigger value="penanggung-jawab">Penanggung Jawab</TabsTrigger>
           <TabsTrigger value="relasi">Relasi</TabsTrigger>
@@ -112,6 +134,15 @@ export default function AsetShow({
             wajib={wajib.aset}
             unitPengelolaDipakai={unitPengelolaDipakai}
             pilihanUnitPengelola={pilihanUnitPengelola}
+          />
+        </TabsContent>
+        <TabsContent value="foto">
+          <TabFoto
+            aset={aset}
+            foto={foto}
+            maks={fotoMaks}
+            bolehTambah={bolehTambahFoto}
+            bolehKelola={bolehKelolaFoto}
           />
         </TabsContent>
         <TabsContent value="lokasi">

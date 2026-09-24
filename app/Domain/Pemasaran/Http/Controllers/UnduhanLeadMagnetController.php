@@ -20,7 +20,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 final class UnduhanLeadMagnetController extends Controller
 {
-    public function __construct(private readonly PerekamEventPemasaran $event) {}
+    public function __construct(
+        private readonly PerekamEventPemasaran $event,
+        private readonly BerkasLeadMagnet $berkas,
+    ) {}
 
     public function __invoke(Request $request, PengirimanFormulir $pengiriman): StreamedResponse
     {
@@ -40,7 +43,7 @@ final class UnduhanLeadMagnetController extends Controller
 
         $this->catatUnduhan($request, $pengiriman);
 
-        return $disk->download($lokasi, (string) $formulir->BerkasNamaAsli);
+        return $this->berkas->responsUnduh($formulir);
     }
 
     private function catatUnduhan(Request $request, PengirimanFormulir $pengiriman): void

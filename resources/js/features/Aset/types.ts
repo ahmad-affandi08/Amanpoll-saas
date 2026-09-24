@@ -82,6 +82,9 @@ export interface Aset {
   KodeQr: string | null;
   NfcUid: string | null;
   KodeBatang: string | null;
+  /** Foto utama galeri (PRD 8.4 "Foto Aset"); `null` = tampilkan ikon 3D kategori. */
+  FotoUtamaBerkasId: string | null;
+  FotoUtamaThumbnailUrl: string | null;
   Catatan: string | null;
   Versi: number;
   NamaDibuatOleh: string | null;
@@ -306,4 +309,16 @@ export interface HasilPratinjauImporAset {
   jumlahGalat: number;
   galat: GalatImporAset[];
   contoh: ContohImporAset[];
+}
+
+/** Satu foto di galeri aset (`GaleriFotoAset::ringkas`). */
+export interface FotoAset {
+  BerkasId: string;
+  NamaAsli: string;
+  UkuranByte: number;
+  DibuatPada: string;
+  Utama: boolean;
+  UrlThumbnail: string;
+  /** Ukuran penuh (WebP hasil kompresi), untuk tampilan besar. */
+  UrlUnduh: string;
 }

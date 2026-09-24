@@ -1,4 +1,5 @@
 import { router, usePage } from '@inertiajs/react';
+import { isAxiosError } from 'axios';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '@/lib/http';
 import {
@@ -260,6 +261,189 @@ export function useFotoTertunda(perintahKerjaId: string | null) {
   }, [konteks, perintahKerjaId, muat]);
 
   return { foto, tambah, hapus, unggahSemua, muatUlang: muat };
+}
+
+/**
+ * Foto aset yang diambil teknisi dari HP (PRD 8.4 "Foto Aset"), menunggu dikirim ke galeri
+ * aset. Kuncinya berawalan `teknisi:foto-aset:`, jadi tidak tercampur dengan foto tiket.
+ */
+export interface FotoAsetTertunda {
+  Kunci: string;
+  AsetId: string;
+  NamaAset: string;
+  Berkas: Blob;
+  NamaBerkas: string;
+  DibuatPada: string;
+  /**
+   * Pesan penolakan server, mis. penugasan teknisi sudah berakhir atau galeri penuh. Foto yang
+   * ditolak tidak dicoba ulang otomatis dan tetap di HP sampai teknisi membuangnya, supaya
+   * penolakannya terlihat, bukan hilang diam-diam.
+   */
+  Ditolak?: string | null;
+}
+
+const AWALAN_FOTO_ASET = 'teknisi:foto-aset:';
+const awalanFotoAset = (asetId: string) => `${AWALAN_FOTO_ASET}${asetId}:`;
+
+/**
+ * Pesan penolakan yang dapat dibaca teknisi, atau `null` bila kegagalannya sementara (tanpa
+ * sinyal, sesi habis, galat server) sehingga foto dicoba lagi nanti.
+ */
+function pesanPenolakan(galat: unknown): string | null {
+  if (!isAxiosError(galat) || !galat.response) return null;
+  const { status, data } = galat.response;
+  if (status >= 500 || status === 401 || status === 419 || status === 429) return null;
+  if (data && typeof data === 'object') {
+    if ('pesan' in data && typeof data.pesan === 'string') return data.pesan;
+    if ('errors' in data && data.errors && typeof data.errors === 'object') {
+      const pertama = Object.values(data.errors as Record<string, string[] | undefined>)[0]?.[0];
+      if (pertama) return pertama;
+    }
+  }
+  if (status === 403) return 'Kamu tidak lagi berhak menambah foto aset ini.';
+  if (status === 404) return 'Aset ini tidak ditemukan atau di luar aksesmu.';
+  return 'Foto ditolak server.';
+}
+
+async function unggahSatuFotoAset(
+  foto: Pick<FotoAsetTertunda, 'AsetId' | 'Berkas' | 'NamaBerkas'>,
+): Promise<void> {
+  const data = new FormData();
+  data.append('Foto[]', new File([foto.Berkas], foto.NamaBerkas, { type: foto.Berkas.type || 'image/jpeg' }));
+  await http.post(ruteLapangan.teknisi.fotoAset(foto.AsetId), data);
+}
+
+/**
+ * Mengirim foto aset yang tersimpan di HP ke galeri asetnya. Yang gagal karena jaringan tetap
+ * di HP untuk dicoba lagi; yang ditolak server ditandai `Ditolak` beserta pesannya. Berjalan di
+ * rantai unggahan yang sama dengan foto tiket, jadi tidak ada draf yang terkirim dua kali.
+ *
+ * Dipanggil layar aset, beranda teknisi, dan `useSinkronisasiOffline` saat sinyal kembali.
+ *
+ * @param asetId satu aset, atau `null` untuk semua draf foto aset
+ */
+export function unggahFotoAsetTertunda(
+  konteks: KonteksOffline,
+  asetId: string | null,
+): Promise<{ berhasil: number; gagal: number; ditolak: number }> {
+  const jalan = rantaiUnggahan.then(async () => {
+    let berhasil = 0;
+    let gagal = 0;
+    let ditolak = 0;
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return { berhasil, gagal, ditolak };
+    const kunci = await daftarKunciDraf(konteks, asetId ? awalanFotoAset(asetId) : AWALAN_FOTO_ASET).catch(
+      () => [] as string[],
+    );
+    for (const satu of kunci) {
+      const nilai = await ambilDraf<FotoAsetTertunda>(konteks, satu).catch(() => undefined);
+      if (!nilai || nilai.Ditolak) continue;
+      try {
+        await unggahSatuFotoAset(nilai);
+        await hapusDraf(konteks, satu);
+        berhasil++;
+      } catch (galat) {
+        const pesan = pesanPenolakan(galat);
+        if (pesan) {
+          await simpanDraf(konteks, satu, { ...nilai, Ditolak: pesan }).catch(() => undefined);
+          ditolak++;
+        } else {
+          gagal++;
+        }
+      }
+    }
+    return { berhasil, gagal, ditolak };
+  });
+  rantaiUnggahan = jalan.catch(() => undefined);
+  return jalan;
+}
+
+/**
+ * Foto aset yang menunggu dikirim (atau ditolak) untuk satu aset, atau semua bila `null`.
+ * `tambah` mengecilkan foto lebih dulu, menyimpannya di HP, lalu langsung mengirimnya bila
+ * ada sinyal; tanpa sinyal foto menunggu sampai online lagi.
+ */
+export function useFotoAsetTertunda(asetId: string | null) {
+  const konteks = useKonteksOffline();
+  const [foto, setFoto] = useState<FotoAsetTertunda[]>([]);
+
+  const muat = useCallback(async () => {
+    if (!konteks) return;
+    const kunci = await daftarKunciDraf(konteks, asetId ? awalanFotoAset(asetId) : AWALAN_FOTO_ASET).catch(
+      () => [] as string[],
+    );
+    const isi = await Promise.all(
+      kunci.map((satu) => ambilDraf<FotoAsetTertunda>(konteks, satu).catch(() => undefined)),
+    );
+    setFoto(
+      isi
+        .filter((satu): satu is FotoAsetTertunda => satu !== undefined)
+        .sort((a, b) => a.DibuatPada.localeCompare(b.DibuatPada)),
+    );
+  }, [konteks, asetId]);
+
+  useEffect(() => {
+    void muat();
+  }, [muat]);
+
+  /** Mengirim draf aset ini; bila ada yang masuk, layar dimuat ulang supaya foto utamanya tampil. */
+  const unggahSemua = useCallback(async () => {
+    if (!konteks || !navigator.onLine) return { berhasil: 0, gagal: 0, ditolak: 0 };
+    const hasil = await unggahFotoAsetTertunda(konteks, asetId).finally(() => muat());
+    if (hasil.berhasil > 0) router.reload();
+    return hasil;
+  }, [konteks, asetId, muat]);
+
+  const tambah = useCallback(
+    async (asetIdFoto: string, namaAset: string, berkas: Blob): Promise<'terkirim' | 'di-hp' | string> => {
+      const kecil = await perkecilFoto(berkas);
+      const ekstensi = kecil.type === 'image/png' ? 'png' : kecil.type === 'image/webp' ? 'webp' : 'jpg';
+      const nama = `FotoAset-${new Date().toISOString().replace(/[:.]/g, '-')}.${ekstensi}`;
+
+      // Tanpa IndexedDB (mode privat) foto langsung dikirim; gagal berarti harus diambil ulang.
+      if (!konteks) {
+        try {
+          await unggahSatuFotoAset({ AsetId: asetIdFoto, Berkas: kecil, NamaBerkas: nama });
+          router.reload();
+          return 'terkirim';
+        } catch (galat) {
+          return pesanPenolakan(galat) ?? 'Foto belum terkirim. Coba lagi saat ada sinyal.';
+        }
+      }
+
+      const nilai: FotoAsetTertunda = {
+        Kunci: `${awalanFotoAset(asetIdFoto)}${crypto.randomUUID()}`,
+        AsetId: asetIdFoto,
+        NamaAset: namaAset,
+        Berkas: kecil,
+        NamaBerkas: nama,
+        DibuatPada: new Date().toISOString(),
+      };
+      await simpanDraf(konteks, nilai.Kunci, nilai);
+      await muat();
+      if (!navigator.onLine) return 'di-hp';
+
+      const hasil = await unggahFotoAsetTertunda(konteks, asetIdFoto).finally(() => muat());
+      if (hasil.berhasil > 0) {
+        router.reload();
+        return 'terkirim';
+      }
+      const ditolak = (await ambilDraf<FotoAsetTertunda>(konteks, nilai.Kunci).catch(() => undefined))
+        ?.Ditolak;
+      return ditolak ?? 'di-hp';
+    },
+    [konteks, muat],
+  );
+
+  const buang = useCallback(
+    async (kunci: string) => {
+      if (!konteks) return;
+      await hapusDraf(konteks, kunci).catch(() => undefined);
+      await muat();
+    },
+    [konteks, muat],
+  );
+
+  return { foto, tambah, buang, unggahSemua, muatUlang: muat };
 }
 
 /** URL pratinjau untuk Blob lokal; dicabut saat komponen dilepas. */

@@ -618,7 +618,7 @@ Disetujui pemilik produk pada 24 September 2026.
 - Setiap aset boleh punya **galeri foto** (paling banyak 10) dengan satu **foto utama** (`Aset.FotoUtamaBerkasId`). Foto disimpan sebagai lampiran berkategori `FotoAset` lewat Kolaborasi dan melewati mesin kompresi (11.1), termasuk thumbnail.
 - Foto utama tampil sebagai thumbnail di daftar aset, sebagai gambar besar di detail aset, dan di layar Mode Lapangan yang menampilkan aset (aset ditemukan sesudah pindai QR, riwayat aset, daftar aset pelapor, langkah "alat ditemukan"). Aset tanpa foto tetap menampilkan ikon 3D kategorinya.
 - Pemegang `Aset.Ubah` boleh menambah, menghapus, dan memilih foto utama. Teknisi yang sedang ditugaskan pada perintah kerja aktif untuk aset itu boleh **menambah** foto dari HP, termasuk saat offline (foto dikirim begitu sinyal kembali), tetapi tidak menghapus atau mengganti foto utama. Foto pertama otomatis menjadi foto utama.
-- Halaman QR publik tidak menampilkan foto aset.
+- Pengunjung yang belum login tidak pernah menerima foto aset; resolver QR aset mewajibkan login.
 
 ### Aturan
 

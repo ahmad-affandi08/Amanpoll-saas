@@ -23,7 +23,7 @@ import {
 } from '@/lib/penyimpanan-offline';
 import { bersihkanCache, pasangServiceWorker, terapkanPembaruan, tetapkanKonteksCache } from '@/lib/pwa';
 import { ruteOffline } from '@/features/Sinkronisasi/api';
-import { unggahFotoTertunda } from '@/features/Lapangan/components/teknisi/sesiKerja';
+import { unggahFotoAsetTertunda, unggahFotoTertunda } from '@/features/Lapangan/components/teknisi/sesiKerja';
 import type {
   AntrianServer,
   KeputusanKonflik,
@@ -165,6 +165,9 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
     if (!aktif || !konteks || sedangMendorong.current || !navigator.onLine) return;
 
     sedangMendorong.current = true;
+    // Foto aset dari HP (PRD 8.4) tidak bergantung pada antrean mutasi: dikirim tiap sinyal kembali.
+    // Yang ditolak server ditandai di draf dan ditampilkan di layar aset, bukan dibuang diam-diam.
+    await unggahFotoAsetTertunda(konteks, null).catch(() => undefined);
     const lokal = await ambilAntrian(konteks).catch(() => [] as MutasiOffline[]);
     // IndexedDB mengurutkan menurut KunciOperasi (UUID acak); server memproses menurut
     // urutan kiriman, jadi urutan pembuatan harus dipulihkan dulu (terima → mulai → selesai).

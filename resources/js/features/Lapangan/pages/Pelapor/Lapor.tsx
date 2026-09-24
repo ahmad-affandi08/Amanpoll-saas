@@ -9,6 +9,7 @@ import { ruteLapangan } from '@/features/Lapangan/api';
 import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { Ikon3D, WadahIkon3D } from '@/components/shared/Ikon3D';
+import { FotoAtauIkon3D } from '@/components/shared/FotoAtauIkon3D';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
 import { AreaTiket, IsianTiket } from '@/features/Lapangan/components/IsianTiket';
 import { JudulBagian, Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
@@ -17,7 +18,12 @@ import { PerhentianAppbar, type LangkahPerhentian } from '@/features/Lapangan/co
 import { Sobekan } from '@/features/Lapangan/components/Tiket';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
 import { kodeDariPindaian } from '@/features/Lapangan/components/pelapor/pindai';
-import { BarisPilihAset, ikonAset, kondisiAset } from '@/features/Lapangan/components/pelapor/BarisAset';
+import {
+  BarisPilihAset,
+  FotoAset,
+  ikonAset,
+  kondisiAset,
+} from '@/features/Lapangan/components/pelapor/BarisAset';
 import { FotoPilihan, usePratinjauFoto } from '@/features/Lapangan/components/pelapor/FotoPilihan';
 import { LayarTerkirim } from '@/features/Lapangan/components/pelapor/LayarTerkirim';
 import { LembarLokasi } from '@/features/Lapangan/components/pelapor/LembarLokasi';
@@ -31,7 +37,7 @@ import { PilihanChip } from '@/features/Lapangan/components/pelapor/PilihanChip'
 import { namaDepan, tampilanStatus } from '@/features/Lapangan/components/pelapor/status';
 import { TombolDikte } from '@/features/Lapangan/components/pelapor/TombolDikte';
 import { waktuLengkap } from '@/features/Lapangan/components/pelapor/waktu';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type {
   AsetPelapor,
   KategoriLaporan,
@@ -591,9 +597,14 @@ function LangkahDitemukan({
             {dariPindai ? 'QR terbaca' : 'Alat terpilih'}
           </ChipStatus>
           <div className="mt-2.5 flex justify-center">
-            <span className="gradien-ilustrasi-lapangan flex size-[88px] items-center justify-center rounded-full shadow-[0_10px_20px_rgb(15_42_68_/_0.1)]">
-              <Ikon3D nama={ikon.ikon} ukuran={62} segera />
-            </span>
+            <FotoAtauIkon3D
+              url={aset.FotoUtamaThumbnailUrl}
+              ikon={ikon.ikon}
+              ukuranIkon={62}
+              alt={`Foto ${aset.Nama}`}
+              segera
+              className="gradien-ilustrasi-lapangan size-[88px] rounded-full shadow-[0_10px_20px_rgb(15_42_68_/_0.1)]"
+            />
           </div>
           <h2 className="mt-2.5 text-[21px] leading-tight font-bold tracking-[-0.01em]">{aset.Nama}</h2>
           <p className="text-[13px] font-semibold text-lapangan-teks-3">{aset.KodeAset}</p>
@@ -837,7 +848,11 @@ function LangkahTinjau(p: PropsLangkahTinjau) {
 
       <article className="rounded-[20px] bg-white shadow-lapangan-kartu">
         <div className="flex items-center gap-3 px-4 pt-4 pb-3">
-          <WadahIkon3D nama={ikon.ikon} tint={ikon.tint} className="size-11 rounded-[14px]" />
+          {p.aset ? (
+            <FotoAset aset={p.aset} />
+          ) : (
+            <WadahIkon3D nama={ikon.ikon} tint={ikon.tint} className="size-11 rounded-[14px]" />
+          )}
           <div className="min-w-0 flex-1">
             <h2 className="truncate text-base leading-[1.3] font-bold tracking-[-0.01em]">
               {p.aset?.Nama ?? 'Lokasi saja'}

@@ -31,8 +31,8 @@ use Symfony\Component\HttpFoundation\Response;
  *    katalog izin, riwayat aset, lampiran dan komentar, dan sejenisnya.
  * 5. Jalurnya tidak termasuk `JALUR_BEBAS`: Mode Lapangan sendiri, API
  *    sinkronisasi offline, resolver label QR aset (`aset/pindai/*`, yang
- *    sendiri mengarahkan ke layar Mode Lapangan), unduhan berkas (dibuka
- *    sebagai navigasi peramban),
+ *    sendiri mengarahkan ke layar Mode Lapangan), unduhan dan thumbnail berkas
+ *    (dibuka sebagai navigasi peramban atau `<img>`),
  *    pencarian global, ringkasan notifikasi, logout, robots.txt, dan konsol
  *    platform yang memakai guard terpisah.
  *
@@ -67,6 +67,8 @@ final class ArahkanPenggunaLapangan
         'offline/*',
         'aset/pindai/*',
         'kolaborasi/berkas/*/unduh',
+        // Thumbnail foto (grid foto tiket, foto aset) dimuat `<img>` tanpa header JSON (PRD 8.4, 11.1).
+        'kolaborasi/berkas/*/thumbnail',
         'cari',
         'notifikasi/ringkasan',
         'logout',

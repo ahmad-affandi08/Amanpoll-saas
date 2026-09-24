@@ -26,6 +26,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { pampatkanGambar } from '@/lib/pemampat-gambar';
 
 interface KategoriRingkas {
   Id: string;
@@ -66,6 +67,7 @@ function DialogBuatKeluhan({
   wajib,
 }: Pick<Props, 'kategori' | 'aset' | 'lokasi' | 'dapatMengelola'> & { wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
+  const [memampatkan, setMemampatkan] = useState(false);
   const form = useForm({
     KategoriKeluhanId: '',
     AsetId: TANPA_PILIHAN,
@@ -76,6 +78,17 @@ function DialogBuatKeluhan({
     Lampiran: [] as File[],
   });
   const kategoriDipilih = kategori.find((item) => item.Id === form.data.KategoriKeluhanId);
+
+  /** Foto bukti dikecilkan di peramban sebelum dikirim (PRD 11.1); dokumen dikirim apa adanya. */
+  const pilihLampiran = async (daftar: FileList | null) => {
+    const dipilih = Array.from(daftar ?? []);
+    setMemampatkan(true);
+    try {
+      form.setData('Lampiran', await Promise.all(dipilih.map((satu) => pampatkanGambar(satu))));
+    } finally {
+      setMemampatkan(false);
+    }
+  };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -179,12 +192,12 @@ function DialogBuatKeluhan({
                 type="file"
                 multiple
                 accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.csv,.txt"
-                onChange={(event) => form.setData('Lampiran', Array.from(event.target.files ?? []))}
+                onChange={(event) => void pilihLampiran(event.target.files)}
               />
               {form.errors.Lampiran && <p className="text-sm text-destructive">{form.errors.Lampiran}</p>}
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={form.processing}>
+              <Button type="submit" disabled={form.processing || memampatkan}>
                 Kirim Keluhan
               </Button>
             </DialogFooter>

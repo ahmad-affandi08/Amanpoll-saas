@@ -1,3 +1,4 @@
+import { ruteAset } from '@/features/Aset/api';
 import { ruteInspeksi } from '@/features/Inspeksi/api';
 import { ruteKolaborasi } from '@/features/Kolaborasi/api';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
@@ -59,6 +60,8 @@ export const ruteLapangan = {
     reservasiSukuCadang: rutePerintahKerja.reservasiSukuCadang,
     berkas: ruteKolaborasi.berkas,
     laksanakanInspeksi: ruteInspeksi.laksanakan,
+    /** POST `Foto[]`: foto aset dari HP (policy `tambahFoto`: teknisi yang ditugaskan pada tiket aktif aset itu). */
+    fotoAset: ruteAset.foto,
   },
 
   // Pelapor (D)

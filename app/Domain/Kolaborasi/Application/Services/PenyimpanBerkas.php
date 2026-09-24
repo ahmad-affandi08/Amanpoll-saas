@@ -11,8 +11,11 @@ use App\Shared\Infrastructure\Kompresi\HasilPemampatan;
 use App\Shared\Infrastructure\Kompresi\MetodeKompresi;
 use App\Shared\Infrastructure\Kompresi\PemampatBerkas;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -220,6 +223,218 @@ final class PenyimpanBerkas
         );
 
         return $media->response($berkas->LokasiPenyimpanan, $berkas->namaUnduhan(), $header + ['Content-Type' => (string) $berkas->JenisMime]);
+    }
+
+    /**
+     * Memadatkan ulang satu salinan fisik lama (perintah `berkas:pampatkan`, PRD 11.1).
+     *
+     * Semua baris organisasi itu yang merujuk `(MediaPenyimpanan, LokasiPenyimpanan)`
+     * yang sama diperbarui bersama dalam satu transaksi, di bawah kunci hash yang
+     * sama dengan simpan dan hapus. Salinan lama baru dihapus sesudah salinan baru
+     * tertulis, terverifikasi (dibaca balik dan di-hash), dan tercatat; kegagalan
+     * apa pun meninggalkan salinan lama dan barisnya utuh. Gambar yang belum punya
+     * thumbnail dibuatkan, walau isinya sendiri tidak dapat diperkecil.
+     *
+     * Tidak butuh konteks organisasi: baris dibaca melewati ScopeOrganisasi dan
+     * disaring ke organisasi `$wakil`.
+     *
+     * @return array{Hasil: 'dipadatkan'|'thumbnail'|'tetap'|'gagal', JumlahBaris: int, UkuranSebelum: int, UkuranSesudah: int, Pesan: ?string}
+     */
+    public function pampatkanUlang(Berkas $wakil, bool $pratinjau = false): array
+    {
+        $kunci = $wakil->HashSha256 ?? 'lokasi:'.sha1($wakil->LokasiPenyimpanan);
+
+        return $this->dalamKunci((string) $wakil->OrganisasiId, $kunci, fn (): array => $this->pampatkanUlangDalamKunci($wakil, $pratinjau));
+    }
+
+    /**
+     * @return array{Hasil: 'dipadatkan'|'thumbnail'|'tetap'|'gagal', JumlahBaris: int, UkuranSebelum: int, UkuranSesudah: int, Pesan: ?string}
+     */
+    private function pampatkanUlangDalamKunci(Berkas $wakil, bool $pratinjau): array
+    {
+        $organisasiId = (string) $wakil->OrganisasiId;
+        $disk = $wakil->MediaPenyimpanan;
+        $lokasiLama = $wakil->LokasiPenyimpanan;
+        $media = Storage::disk($disk);
+        $hasil = ['Hasil' => 'tetap', 'JumlahBaris' => 0, 'UkuranSebelum' => 0, 'UkuranSesudah' => 0, 'Pesan' => null];
+
+        $saudara = fn (): Builder => Berkas::query()
+            ->withoutGlobalScope(ScopeOrganisasi::class)
+            ->where('OrganisasiId', $organisasiId)
+            ->where('MediaPenyimpanan', $disk)
+            ->where('LokasiPenyimpanan', $lokasiLama);
+
+        // Dibaca ulang di bawah kunci: proses lain mungkin baru saja memadatkannya.
+        $segar = $saudara()->whereKey($wakil->Id)->first();
+        if ($segar === null || $segar->MetodeKompresi !== MetodeKompresi::Tidak) {
+            return $hasil;
+        }
+
+        $hasil['JumlahBaris'] = $saudara()->count();
+
+        if (! $media->exists($lokasiLama)) {
+            return ['Pesan' => 'Salinan fisik tidak ditemukan.', 'Hasil' => 'gagal'] + $hasil;
+        }
+
+        $hasil['UkuranSebelum'] = $hasil['UkuranSesudah'] = (int) $media->size($lokasiLama);
+        $sementara = null;
+        $pemampatan = null;
+        $ditulis = [];
+
+        try {
+            $sementara = $this->salinKeSementara($media, $lokasiLama);
+            $hash = hash_file('sha256', $sementara);
+            if ($hash === false || ($segar->HashSha256 !== null && ! hash_equals($segar->HashSha256, $hash))) {
+                return ['Pesan' => 'Isi tidak cocok dengan hash tercatat; dilewati.', 'Hasil' => 'gagal'] + $hasil;
+            }
+
+            $pemampatan = $this->pemampat->pampatkan(
+                $sementara,
+                (string) $segar->JenisMime,
+                $segar->NamaAsli,
+                pathinfo($lokasiLama, PATHINFO_EXTENSION) ?: null,
+            );
+
+            $lebihKecil = $pemampatan->metode !== MetodeKompresi::Tidak || $pemampatan->ukuranTersimpan < $hasil['UkuranSebelum'];
+            $perluThumbnail = $pemampatan->lokasiThumbnail !== null && $segar->LokasiThumbnail === null;
+
+            if (! $lebihKecil && ! $perluThumbnail) {
+                return $hasil;
+            }
+
+            $hasil['Hasil'] = $lebihKecil ? 'dipadatkan' : 'thumbnail';
+            if ($lebihKecil) {
+                $hasil['UkuranSesudah'] = $pemampatan->ukuranTersimpan;
+            }
+
+            if ($pratinjau) {
+                return $hasil;
+            }
+
+            $direktori = dirname($lokasiLama);
+            $ulid = strtolower((string) Str::ulid());
+            $perubahan = [];
+
+            if ($lebihKecil) {
+                $kembar = Berkas::query()
+                    ->withoutGlobalScope(ScopeOrganisasi::class)
+                    ->where('OrganisasiId', $organisasiId)
+                    ->where('HashSha256', $hash)
+                    ->where('MetodeKompresi', $pemampatan->metode->value)
+                    ->where('MediaPenyimpanan', $disk)
+                    ->where('LokasiPenyimpanan', '!=', $lokasiLama)
+                    ->oldest('DibuatPada')
+                    ->first();
+
+                if ($kembar !== null && $media->exists($kembar->LokasiPenyimpanan)) {
+                    $lokasiBaru = $kembar->LokasiPenyimpanan;
+                    $hasil['UkuranSesudah'] = $kembar->UkuranTersimpanByte ?? (int) $media->size($lokasiBaru);
+                    if ($kembar->LokasiThumbnail !== null && $media->exists($kembar->LokasiThumbnail)) {
+                        $perubahan['LokasiThumbnail'] = $kembar->LokasiThumbnail;
+                    }
+                } else {
+                    $lokasiBaru = $direktori.'/'.$ulid.'.'.$pemampatan->ekstensi;
+                    $this->tulisAliran($media, $lokasiBaru, $pemampatan->bukaIsi());
+                    $ditulis['LokasiPenyimpanan'] = $lokasiBaru;
+
+                    $harapan = $pemampatan->metode === MetodeKompresi::Gzip ? $hash : hash_file('sha256', $pemampatan->lokasiIsi);
+                    if ($this->hashTersimpan($media, $lokasiBaru, $pemampatan->metode) !== $harapan) {
+                        throw new RuntimeException('Salinan baru tidak lolos verifikasi baca-balik.');
+                    }
+                }
+
+                $perubahan += [
+                    'LokasiPenyimpanan' => $lokasiBaru,
+                    'NamaPenyimpanan' => basename($lokasiBaru),
+                    'JenisMime' => $pemampatan->jenisMime,
+                    'UkuranByte' => $pemampatan->metode === MetodeKompresi::Gzip ? $pemampatan->ukuranAsli : $hasil['UkuranSesudah'],
+                    'MetodeKompresi' => $pemampatan->metode->value,
+                    'UkuranAsliByte' => $pemampatan->ukuranAsli,
+                    'UkuranTersimpanByte' => $hasil['UkuranSesudah'],
+                ];
+            }
+
+            if (! isset($perubahan['LokasiThumbnail']) && ($aliranThumbnail = $pemampatan->bukaThumbnail()) !== null) {
+                $lokasiThumbnail = $direktori.'/thumbnail/'.$ulid.'.webp';
+                $this->tulisAliran($media, $lokasiThumbnail, $aliranThumbnail);
+                $ditulis['LokasiThumbnail'] = $lokasiThumbnail;
+                $perubahan['LokasiThumbnail'] = $lokasiThumbnail;
+            }
+
+            // Baris yang sudah dihapus lunak ikut dipindah supaya pemulihannya tidak menunjuk salinan yang lenyap.
+            DB::transaction(fn (): int => $saudara()->withTrashed()->update($perubahan));
+        } catch (Throwable $galat) {
+            foreach ($ditulis as $kolom => $lokasiDitulis) {
+                $this->hapusBilaYatim($organisasiId, $disk, $kolom, $lokasiDitulis);
+            }
+
+            Log::warning('Pemadatan ulang berkas gagal; salinan lama dipertahankan.', [
+                'organisasi' => $organisasiId,
+                'lokasi' => $lokasiLama,
+                'galat' => $galat->getMessage(),
+            ]);
+
+            return ['Hasil' => 'gagal', 'UkuranSesudah' => $hasil['UkuranSebelum'], 'Pesan' => $galat->getMessage()] + $hasil;
+        } finally {
+            $pemampatan?->bersihkan();
+            if ($sementara !== null) {
+                @unlink($sementara);
+            }
+        }
+
+        if (($perubahan['LokasiPenyimpanan'] ?? $lokasiLama) !== $lokasiLama) {
+            $this->hapusBilaYatim($organisasiId, $disk, 'LokasiPenyimpanan', $lokasiLama);
+        }
+
+        return $hasil;
+    }
+
+    private function salinKeSementara(Filesystem $media, string $lokasi): string
+    {
+        $sementara = tempnam(sys_get_temp_dir(), 'amanpoll-pampat-');
+        if ($sementara === false) {
+            throw new RuntimeException('Tidak dapat membuat berkas sementara.');
+        }
+
+        $masuk = $media->readStream($lokasi);
+        $keluar = fopen($sementara, 'wb');
+
+        try {
+            if (! is_resource($masuk) || $keluar === false || stream_copy_to_stream($masuk, $keluar) === false) {
+                throw new RuntimeException('Salinan fisik tidak dapat dibaca.');
+            }
+        } finally {
+            if (is_resource($masuk)) {
+                fclose($masuk);
+            }
+            if (is_resource($keluar)) {
+                fclose($keluar);
+            }
+        }
+
+        return $sementara;
+    }
+
+    /** Hash isi yang dibaca balik dari disk; gzip dibuka sehingga hasilnya hash isi asli. */
+    private function hashTersimpan(Filesystem $media, string $lokasi, MetodeKompresi $metode): ?string
+    {
+        $aliran = $media->readStream($lokasi);
+        if (! is_resource($aliran)) {
+            return null;
+        }
+
+        try {
+            if ($metode === MetodeKompresi::Gzip) {
+                stream_filter_append($aliran, 'zlib.inflate', STREAM_FILTER_READ, ['window' => 31]);
+            }
+
+            $konteks = hash_init('sha256');
+            hash_update_stream($konteks, $aliran);
+
+            return hash_final($konteks);
+        } finally {
+            fclose($aliran);
+        }
     }
 
     /**

@@ -263,7 +263,9 @@ final class LapanganTeknisiTugasController extends Controller
                 'Kategori' => $lampiran->Kategori,
                 'Keterangan' => $lampiran->Keterangan,
                 'DibuatPada' => $lampiran->DibuatPada->toIso8601String(),
-                'Url' => $lampiran->berkas === null ? null : route('kolaborasi.berkas.unduh', $lampiran->berkas->Id, false),
+                // Grid foto memakai thumbnail (PRD 11.1); ukuran penuh hanya untuk tanda tangan yang digambar ulang di kanvas.
+                'Url' => $lampiran->berkas === null ? null : route('kolaborasi.berkas.thumbnail', $lampiran->berkas->Id, false),
+                'UrlUnduh' => $lampiran->berkas === null ? null : route('kolaborasi.berkas.unduh', $lampiran->berkas->Id, false),
             ])
             ->all());
     }

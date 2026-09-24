@@ -6,12 +6,20 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { angka, labelBatas, persenPemakaian, rupiah, tanggal } from '@/features/Langganan/format';
+import {
+  angka,
+  labelBatas,
+  persenPemakaian,
+  rupiah,
+  tanggal,
+  ukuranBerkas,
+} from '@/features/Langganan/format';
 import type { PageProps } from '@/types/global';
 import type {
   DefinisiFitur,
   Entitlement,
   InstruksiPembayaran,
+  RingkasanPenyimpanan,
   StatusLangganan,
   TagihanItem,
 } from '@/features/Langganan/types';
@@ -22,6 +30,7 @@ import { ruteLangganan } from '@/features/Langganan/api';
 interface Props {
   entitlement: Entitlement;
   pemakaian: Record<string, number>;
+  penyimpanan: RingkasanPenyimpanan;
   katalogFitur: DefinisiFitur[];
   tagihan: TagihanItem[];
 }
@@ -48,7 +57,13 @@ const NADA_STATUS: Record<
   },
 };
 
-export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, tagihan }: Props) {
+export default function LanggananIndex({
+  entitlement,
+  pemakaian,
+  penyimpanan,
+  katalogFitur,
+  tagihan,
+}: Props) {
   const { flash } = usePage<PageProps>().props;
   const instruksi = flash.instruksiPembayaran as InstruksiPembayaran | undefined;
 
@@ -182,6 +197,29 @@ export default function LanggananIndex({ entitlement, pemakaian, katalogFitur, t
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Penyimpanan berkas</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <dl className="grid gap-4 sm:grid-cols-3">
+              <Rincian label="Tersimpan di server" nilai={ukuranBerkas(penyimpanan.UkuranTersimpanByte)} />
+              <Rincian
+                label={`Ukuran asli (${angka(penyimpanan.JumlahBerkas)} berkas)`}
+                nilai={ukuranBerkas(penyimpanan.UkuranAsliByte)}
+              />
+              <Rincian
+                label="Hemat berkat kompresi"
+                nilai={`${penyimpanan.PersenHemat.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%`}
+              />
+            </dl>
+            <p className="text-sm text-muted-foreground">
+              Gambar disimpan sebagai WebP, sedangkan CSV dan PDF dipadatkan otomatis. Berkas yang diunduh
+              tetap utuh seperti aslinya. Berkas identik hanya disimpan satu kali.
+            </p>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

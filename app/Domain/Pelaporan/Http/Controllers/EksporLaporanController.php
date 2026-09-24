@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pelaporan\Http\Controllers;
 
 use App\Core\Organisasi\KalenderOrganisasi;
+use App\Domain\Kolaborasi\Application\Services\PenyimpanBerkas;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
@@ -17,7 +18,6 @@ use App\Shared\Domain\Exceptions\AksesDitolak;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Permintaan dan pengunduhan ekspor laporan (21.05). */
@@ -56,7 +56,7 @@ final class EksporLaporanController extends Controller
     }
 
     /** Unduhan diotorisasi per berkas, bukan hanya per rute. */
-    public function unduh(Request $request, Berkas $berkas): StreamedResponse
+    public function unduh(Request $request, Berkas $berkas, PenyimpanBerkas $penyimpan): StreamedResponse
     {
         $this->authorize('view', $berkas);
 
@@ -69,6 +69,7 @@ final class EksporLaporanController extends Controller
             throw new AksesDitolak('Ekspor hanya dapat diunduh oleh pemesannya.');
         }
 
-        return Storage::disk($berkas->MediaPenyimpanan)->download($berkas->LokasiPenyimpanan, $berkas->NamaAsli);
+        // Lewat PenyimpanBerkas: CSV tersimpan gzip dan harus dibuka sebelum sampai ke pengguna.
+        return $penyimpan->responsUnduh($berkas);
     }
 }

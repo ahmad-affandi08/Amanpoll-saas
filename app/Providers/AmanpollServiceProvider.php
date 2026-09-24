@@ -19,6 +19,7 @@ use App\Domain\Kepatuhan\Application\Services\RegistriAdapterSinkronisasi;
 use App\Domain\Kepatuhan\Domain\Contracts\AdapterSinkronisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SertifikasiAset;
 use App\Domain\Kepatuhan\Infrastructure\Services\AdapterSinkronisasiRest;
+use App\Domain\Kolaborasi\Application\Services\PenyimpanBerkas;
 use App\Domain\Kontrak\Infrastructure\Persistence\Models\Kontrak;
 use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
 use App\Domain\Langganan\Domain\Contracts\PembacaPembayaranLangganan;
@@ -186,6 +187,7 @@ final class AmanpollServiceProvider extends ServiceProvider
                 $app->make(LayananNotifikasi::class),
                 $app->make(LayananAudit::class),
                 $app->make(PenjagaFilterMetrik::class),
+                $app->make(PenyimpanBerkas::class),
             );
             foreach ([PenulisEksporCsv::class, PenulisEksporXlsx::class, PenulisEksporPdf::class] as $penulis) {
                 $layanan->daftarkanPenulis($app->make($penulis));
@@ -271,7 +273,8 @@ final class AmanpollServiceProvider extends ServiceProvider
         $registri->daftarkan('UnitOrganisasi', UnitOrganisasi::class, 'Pengaturan.Kelola');
         $registri->daftarkan('Lokasi', Lokasi::class, 'Pengaturan.Kelola');
         $registri->daftarkan('Penyedia', Penyedia::class, 'Penyedia.Kelola');
-        $registri->daftarkan('Aset', Aset::class, 'Aset.Ubah');
+        // Foto galeri aset terbuka untuk dilihat siapa pun yang boleh melihat asetnya (PRD 8.4 "Foto Aset").
+        $registri->daftarkan('Aset', Aset::class, 'Aset.Ubah', null, 'lihatLampiran');
         $registri->daftarkan('GaransiAset', GaransiAset::class, 'Aset.Ubah');
         $registri->daftarkan('PermintaanMutasiAset', PermintaanMutasiAset::class, 'Aset.Ubah');
         $registri->daftarkan('SerahTerimaAset', SerahTerimaAset::class, 'Aset.Ubah');

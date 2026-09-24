@@ -3817,21 +3817,41 @@ Urutan: 42.01 dikerjakan lebih dulu; 42.02 dan 42.03 paralel sesudahnya.
 
 ## 42.01 Mesin kompresi (fondasi)
 
-- [ ] Layanan pemampat bersama: gambar (orientasi, buang metadata, batas sisi, WebP, thumbnail), gzip untuk teks dan PDF yang hemat, lewati berkas yang sudah terkompresi; gagal tidak menggagalkan unggahan.
-- [ ] Kolom metode kompresi, ukuran asli, dan ukuran tersimpan pada `Berkas`; unduhan membuka gzip otomatis dan mengirim nama/MIME yang benar; endpoint thumbnail terotorisasi.
-- [ ] Berbagi salinan fisik untuk berkas identik dalam satu organisasi, dengan penghapusan fisik yang aman.
-- [ ] Pengecil gambar di peramban untuk semua unggahan gambar.
+- [x] Layanan pemampat bersama: gambar (orientasi, buang metadata, batas sisi, WebP, thumbnail), gzip untuk teks dan PDF yang hemat, lewati berkas yang sudah terkompresi; gagal tidak menggagalkan unggahan.
+- [x] Kolom metode kompresi, ukuran asli, dan ukuran tersimpan pada `Berkas`; unduhan membuka gzip otomatis dan mengirim nama/MIME yang benar; endpoint thumbnail terotorisasi.
+- [x] Berbagi salinan fisik untuk berkas identik dalam satu organisasi, dengan penghapusan fisik yang aman.
+- [x] Pengecil gambar di peramban untuk semua unggahan gambar.
 
 ## 42.02 Foto aset
 
-- [ ] Galeri foto aset dan foto utama di detail aset, thumbnail di daftar aset, izin tambah/hapus/utama.
-- [ ] Foto di layar Mode Lapangan yang menampilkan aset; teknisi yang ditugaskan menambah foto dari HP, termasuk offline.
+- [x] Galeri foto aset dan foto utama di detail aset, thumbnail di daftar aset, izin tambah/hapus/utama.
+- [x] Foto di layar Mode Lapangan yang menampilkan aset; teknisi yang ditugaskan menambah foto dari HP, termasuk offline.
 
 ## 42.03 Kompresi di semua jalur penyimpanan
 
-- [ ] Semua jalur yang menulis ke disk penyimpanan memakai mesin kompresi (logo organisasi, media dan lead magnet pemasaran, ekspor laporan, cadangan, dan jalur lain yang ditemukan).
-- [ ] Perintah artisan pemadat berkas lama (pratinjau, per organisasi, idempoten, diaudit) dan laporan penghematan.
-- [ ] Panduan di `/dokumentasi` bila ada yang perlu diketahui pengguna.
+- [x] Semua jalur yang menulis ke disk penyimpanan memakai mesin kompresi (logo organisasi, media dan lead magnet pemasaran, ekspor laporan, cadangan, dan jalur lain yang ditemukan).
+- [x] Perintah artisan pemadat berkas lama (pratinjau, per organisasi, idempoten, diaudit) dan laporan penghematan.
+- [x] Panduan di `/dokumentasi` bila ada yang perlu diketahui pengguna.
+
+Dikerjakan tiga agen: mesin kompresi lebih dulu, lalu foto aset dan pemasangan kompresi di semua jalur secara paralel. Tinjauan dan gate penuh oleh koordinator.
+
+Yang dipilih:
+- Satu pintu `PemampatBerkas` untuk memadatkan dan satu jalur `PenyimpanBerkas` untuk menyimpan, membaca, dan menghapus. Dengan begitu tidak ada jalur baca yang lupa membuka gzip. `UkuranByte` dan `JenisMime` tetap berarti apa yang diterima pengguna saat mengunduh, dan `HashSha256` dihitung atas isi asli.
+- Metadata gambar (termasuk GPS) selalu dibuang, juga saat WebP tidak lebih kecil dan gambar asli yang disimpan. Gambar dengan orientasi EXIF miring selalu dikodekan ulang, karena membuang EXIF-nya saja akan membuat gambar tampil terputar.
+- Orientasi dibaca parser sendiri, jadi tidak bergantung pada ekstensi `exif` di hosting. Ukuran piksel diperiksa dari header sebelum dekode, supaya gambar raksasa tidak menghabiskan memori.
+- Berkas identik dalam satu organisasi berbagi satu salinan fisik, dengan kunci hash yang sama untuk simpan dan hapus. Salinan fisik baru dihapus bila tidak ada lagi `Berkas` yang merujuknya.
+- Logo organisasi disimpan WebP (dompdf membacanya untuk kop PDF). Disk publik tidak pernah menerima berkas gzip, karena server web tidak menyajikannya dengan header yang benar.
+- Foto aset memakai lampiran Kolaborasi berkategori `FotoAset` ditambah kolom `Aset.FotoUtamaBerkasId`. Jalur lampiran umum menolak kategori itu, sehingga batas 10 foto dan aturan foto utama tidak bisa dilewati.
+- Teknisi hanya boleh menambah foto bila punya penugasan aktif pada perintah kerja yang sedang dikerjakan untuk aset itu. Foto dari HP saat offline dikirim otomatis. Bila server menolak, foto tetap di HP dengan pesan penolakannya dan bisa dibuang dari pita beranda.
+- Thumbnail berkas privat tidak disimpan di cache service worker. Saat offline, aset tanpa salinan foto di cache peramban menampilkan ikon 3D kategorinya.
+- Belum ada kuota penyimpanan di paket langganan. Halaman Langganan menampilkan ukuran tersimpan, ukuran asli, dan persen hemat.
+
+Jebakan yang ditemukan:
+- `ArahkanPenggunaLapangan` belum membebaskan rute thumbnail, sehingga gambar di Mode Lapangan (termasuk grid foto teknisi) dialihkan ke `/lapangan` dan rusak.
+- Arsip cadangan berkas memuat folder cadangan itu sendiri, sehingga setiap arsip menyimpan semua cadangan sebelumnya. Folder itu kini dikecualikan.
+- Unduhan ekspor laporan memakai `Storage::download` langsung; begitu CSV tersimpan gzip, pengguna akan menerima isi yang masih terkompresi. Kini lewat jalur unduh bersama.
+- GD diam-diam mengisi bagian JPEG yang terpotong dengan abu-abu. Peringatan libjpeg dinyalakan, dan berkas seperti itu disimpan apa adanya.
+
 
 ---
 

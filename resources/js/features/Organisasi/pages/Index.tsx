@@ -11,6 +11,7 @@ import type { Organisasi } from '@/features/Organisasi/types';
 import { ruteOrganisasi } from '@/features/Organisasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { pampatkanGambar } from '@/lib/pemampat-gambar';
 
 interface Props {
   organisasi: Organisasi;
@@ -23,9 +24,11 @@ const ZONA_WAKTU = ['Asia/Jakarta', 'Asia/Makassar', 'Asia/Jayapura'];
 function FormLogo({ organisasi }: { organisasi: Organisasi }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const pilihBerkas = (e: ChangeEvent<HTMLInputElement>) => {
-    const berkas = e.target.files?.[0];
-    if (!berkas) return;
+  const pilihBerkas = async (e: ChangeEvent<HTMLInputElement>) => {
+    const dipilih = e.target.files?.[0];
+    if (!dipilih) return;
+    // Dikecilkan di peramban lebih dulu (PRD 11.1); server tetap memampatkan ulang.
+    const berkas = await pampatkanGambar(dipilih);
     router.post(
       ruteOrganisasi.logo,
       { Logo: berkas },
@@ -60,7 +63,13 @@ function FormLogo({ organisasi }: { organisasi: Organisasi }) {
           <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()}>
             Ganti Logo
           </Button>
-          <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={pilihBerkas} />
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => void pilihBerkas(e)}
+          />
         </div>
       </CardContent>
     </Card>

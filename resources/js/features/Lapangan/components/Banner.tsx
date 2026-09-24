@@ -89,11 +89,13 @@ interface PropsPitaInfo {
   ikon?: NamaIkon3D;
   /** Tautan di kanan, mis. `{ label: 'Lihat', href: ruteLapangan.akun }`. */
   tautan?: { label: string; href: string };
+  /** Tombol di sebelah tautan, mis. `{ label: 'Buang', onClick }` untuk membersihkan pita. */
+  aksi?: { label: string; onClick: () => void };
   className?: string;
 }
 
 /** Pita info bertint (papan Teknisi layar 16: "3 perubahan menunggu dikirim · Lihat"). */
-export function PitaInfo({ nada, judul, teks, ikon, tautan, className }: PropsPitaInfo) {
+export function PitaInfo({ nada, judul, teks, ikon, tautan, aksi, className }: PropsPitaInfo) {
   const setelan = KELAS_PITA[nada];
 
   return (
@@ -116,6 +118,18 @@ export function PitaInfo({ nada, judul, teks, ikon, tautan, className }: PropsPi
         >
           {tautan.label}
         </Link>
+      )}
+      {aksi && (
+        <button
+          type="button"
+          onClick={aksi.onClick}
+          className={cn(
+            '-my-2 inline-flex min-h-11 items-center text-[13px] font-bold whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lapangan-biru-500',
+            setelan.tautan,
+          )}
+        >
+          {aksi.label}
+        </button>
       )}
     </div>
   );

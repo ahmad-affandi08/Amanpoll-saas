@@ -3,6 +3,7 @@
 import { type DragEvent, useId, useRef, useState } from 'react';
 import { FileUp, Paperclip, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { pampatkanGambar } from '@/lib/pemampat-gambar';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -43,13 +44,21 @@ export function PengunggahBerkas({
   const [seret, setSeret] = useState(false);
   const [ditolak, setDitolak] = useState<string[]>([]);
 
-  const terapkan = (masuk: FileList | null) => {
+  const terapkan = async (masuk: FileList | null) => {
     if (!masuk) return;
+
+    // Disalin dulu: FileList ikut kosong begitu input direset di bawah.
+    const dipilih = Array.from(masuk);
+    // Input direset supaya berkas yang sama dapat dipilih lagi setelah dihapus.
+    if (input.current) input.current.value = '';
+
+    // Gambar dikecilkan sebelum diperiksa ukurannya (PRD 11.1); berkas lain dikembalikan apa adanya.
+    const siap = await Promise.all(dipilih.map((f) => pampatkanGambar(f)));
 
     const diterima: File[] = [];
     const tolak: string[] = [];
 
-    for (const f of Array.from(masuk)) {
+    for (const f of siap) {
       if (maksMb !== undefined && f.size > maksMb * 1024 * 1024) {
         tolak.push(`${f.name} melebihi ${maksMb} MB`);
         continue;
@@ -59,15 +68,12 @@ export function PengunggahBerkas({
 
     setDitolak(tolak);
     onUbah(banyak ? [...berkas, ...diterima] : diterima.slice(0, 1));
-
-    // Input direset supaya berkas yang sama dapat dipilih lagi setelah dihapus.
-    if (input.current) input.current.value = '';
   };
 
   const jatuhkan = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setSeret(false);
-    if (!disabled) terapkan(e.dataTransfer.files);
+    if (!disabled) void terapkan(e.dataTransfer.files);
   };
 
   const hapus = (indeks: number) => {
@@ -98,7 +104,7 @@ export function PengunggahBerkas({
           accept={terima}
           multiple={banyak}
           disabled={disabled}
-          onChange={(e) => terapkan(e.target.files)}
+          onChange={(e) => void terapkan(e.target.files)}
           className="sr-only"
         />
 

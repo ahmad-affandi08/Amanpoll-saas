@@ -10,7 +10,7 @@ import { Ikon3D } from '@/components/shared/Ikon3D';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { PemindaiQr } from '@/features/Lapangan/components/PemindaiQr';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { AsetDitemukanTeknisi, PropsPindaiTeknisi, TiketTeknisi } from '@/features/Lapangan/types';
 import { waktuRelatif } from '@/features/Lapangan/waktu';
 import { IsiAsetDitemukan } from '@/features/Lapangan/components/teknisi/IsiAsetDitemukan';
@@ -73,6 +73,7 @@ function asetDariPaket(paket: PaketOffline | null, kode: string): AsetDitemukanT
     Kategori: null,
     Kondisi: aset.Kondisi,
     Lokasi: aset.NamaLokasi ? { Nama: aset.NamaLokasi, Induk: null } : null,
+    FotoUtamaThumbnailUrl: aset.FotoUtamaThumbnailUrl ?? null,
     Status: aset.Status,
     TingkatKritis: aset.TingkatKritis,
     MerekTipe: null,
@@ -82,6 +83,8 @@ function asetDariPaket(paket: PaketOffline | null, kode: string): AsetDitemukanT
     Inspeksi: null,
     BolehLapor: true,
     BolehLihatRiwayat: true,
+    // Paket hanya membawa aset dari tiket aktif teknisi; server memeriksa ulang saat foto terkirim.
+    BolehTambahFoto: penugasan !== undefined,
   };
 }
 

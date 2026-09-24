@@ -9,6 +9,7 @@ use App\Domain\Aset\Application\Actions\AturUnitPengelolaAset;
 use App\Domain\Aset\Application\Actions\BuatAset;
 use App\Domain\Aset\Application\Actions\HapusAset;
 use App\Domain\Aset\Application\Actions\UbahAset;
+use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Aset\Http\Requests\AturUnitPengelolaAsetRequest;
 use App\Domain\Aset\Http\Requests\CetakLabelAsetRequest;
 use App\Domain\Aset\Http\Requests\SimpanAsetRequest;
@@ -153,9 +154,10 @@ final class AsetController extends Controller
         );
     }
 
-    public function show(Aset $aset, PembuatQrAset $pembuat): Response
+    public function show(Aset $aset, PembuatQrAset $pembuat, GaleriFotoAset $galeri, Request $request): Response
     {
         $this->authorize('view', $aset);
+        $pengguna = $request->user('web');
 
         $aset->load(['kategoriAset', 'modelAset.merek', 'alkesAspak', 'lokasi', 'unitOrganisasi', 'unitPengelola:Id,Kode,Nama', 'penyedia', 'dibuatOleh']);
 
@@ -163,6 +165,11 @@ final class AsetController extends Controller
             'aset' => new AsetResource($aset),
             // KodeQr dulu hanya ditampilkan sebagai teks, jadi tidak pernah bisa dipindai.
             'qr' => $aset->KodeQr === null ? null : $pembuat->untuk([$aset->KodeQr], 1)[0]['Svg'],
+            // Galeri foto (PRD 8.4 "Foto Aset"); tombol mengikuti policy yang sama dengan endpointnya.
+            'foto' => $galeri->ringkas($aset),
+            'fotoMaks' => GaleriFotoAset::MAKS_FOTO,
+            'bolehTambahFoto' => $pengguna->can('tambahFoto', $aset),
+            'bolehKelolaFoto' => $pengguna->can('kelolaFoto', $aset),
             'wajib' => ['aset' => AturanWajib::untuk(SimpanAsetRequest::class)],
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
             'modelAset' => ModelAsetResource::collection(ModelAset::query()->orderBy('Nama')->get()),

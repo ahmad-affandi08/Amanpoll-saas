@@ -6,6 +6,7 @@ import {
   Catatan,
   Daftar,
   Jalur,
+  Kode,
   P,
   SubJudul,
   Tegas,
@@ -17,6 +18,7 @@ export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'unit', judul: 'Unit organisasi' },
   { id: 'lokasi', judul: 'Lokasi' },
   { id: 'konfigurasi', judul: 'Konfigurasi sistem' },
+  { id: 'berkas', judul: 'Berkas dan lampiran' },
 ];
 
 export function Organisasi() {
@@ -86,6 +88,21 @@ export function Organisasi() {
           Berisi setelan perilaku yang berlaku seluruh organisasi. Ubah seperlunya saja; nilai bawaannya
           dipilih agar aman untuk sebagian besar organisasi.
         </P>
+      </Bagian>
+
+      <Bagian id="berkas" judul="Berkas dan lampiran">
+        <P>
+          Setiap berkas yang disimpan — lampiran, foto, logo, dan hasil ekspor laporan — dipadatkan otomatis
+          supaya hemat ruang dan kuota internet. Foto dan gambar diperkecil di perangkat Anda sebelum dikirim,
+          lalu disimpan sebagai <Tegas>WebP</Tegas> dengan data lokasi (GPS) dibuang; karena itu gambar yang
+          diunduh kembali bisa bernama <Kode>.webp</Kode>. Berkas CSV, teks, dan PDF dipadatkan di server,
+          tetapi yang Anda unduh <Tegas>tetap utuh</Tegas> sama persis dengan aslinya. Excel, Word, dan ZIP
+          disimpan apa adanya.
+        </P>
+        <Catatan>
+          Pemakaian ruang berkas dan persentase penghematannya terlihat di kartu <Ui>Penyimpanan berkas</Ui>{' '}
+          pada <Jalur ruas={['Administrasi', 'Langganan']} />.
+        </Catatan>
       </Bagian>
     </>
   );

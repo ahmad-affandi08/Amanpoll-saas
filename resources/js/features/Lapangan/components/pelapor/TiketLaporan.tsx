@@ -4,7 +4,7 @@ import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { WadahIkon3D } from '@/components/shared/Ikon3D';
 import { Sobekan } from '@/features/Lapangan/components/Tiket';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { LaporanPelapor } from '@/features/Lapangan/types';
 import { JejakLaporan } from '@/features/Lapangan/components/pelapor/JejakLaporan';
 import { namaDepan, tampilanStatus, teksLangkah } from '@/features/Lapangan/components/pelapor/status';

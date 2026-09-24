@@ -51,6 +51,17 @@ enum StatusPerintahKerja: string
         return in_array($this, [self::Ditutup, self::Dibatalkan], true);
     }
 
+    /**
+     * Tiket yang masih di tangan teknisi: sudah ditugaskan, belum diserahkan
+     * untuk verifikasi. Dipakai hak teknisi atas aset tiketnya (PRD 8.4 "Foto Aset").
+     *
+     * @return list<self>
+     */
+    public static function dikerjakanTeknisi(): array
+    {
+        return [self::Ditugaskan, self::Diterima, self::Dikerjakan, self::MenungguSukuCadang, self::MenungguPenyedia, self::Dijeda];
+    }
+
     public function dapatMencatatOperasional(): bool
     {
         return in_array($this, [self::Diterima, self::Dikerjakan, self::MenungguSukuCadang, self::MenungguPenyedia, self::Dijeda], true);

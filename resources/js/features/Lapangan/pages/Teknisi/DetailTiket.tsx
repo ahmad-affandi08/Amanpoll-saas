@@ -13,7 +13,7 @@ import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';
 import { JudulTiket, Tiket } from '@/features/Lapangan/components/Tiket';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { PropsDetailTiketTeknisi } from '@/features/Lapangan/types';
 import { jamPendek, tanggalPendek } from '@/features/Lapangan/waktu';
 import { useAksiTiket } from '@/features/Lapangan/components/teknisi/aksiTiket';

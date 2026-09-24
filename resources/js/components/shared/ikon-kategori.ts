@@ -9,7 +9,7 @@ interface PadananIkon {
 /**
  * Pemetaan nama kategori/jenis aset atau kategori keluhan ke ikon 3D (DESIGN.md 36.5).
  * Dicocokkan dari kata kunci karena nama kategori ditentukan tenant; yang tidak cocok
- * memakai `toolbox`.
+ * memakai `toolbox`. Bersama Mode Lapangan dan dasbor (cadangan foto aset, PRD 8.4).
  */
 const PADANAN: PadananIkon[] = [
   { pola: /genset|generator|baterai|ups\b|aki\b/i, ikon: 'battery', tint: 'hijau' },

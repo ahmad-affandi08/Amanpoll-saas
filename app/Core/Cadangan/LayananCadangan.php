@@ -60,7 +60,11 @@ final class LayananCadangan
 
         $tujuan = $this->berkas->jalurBaru('berkas', 'tar.gz', $pada);
 
-        $argumen = ['tar', '-czf', $tujuan, '-C', storage_path('app')];
+        $argumen = ['tar', '-czf', $tujuan];
+        foreach ($this->polaDikecualikan($sumber) as $pola) {
+            $argumen[] = '--exclude='.$pola;
+        }
+        array_push($argumen, '-C', storage_path('app'));
         foreach ($sumber as $folder) {
             $argumen[] = $folder;
         }
@@ -156,6 +160,34 @@ final class LayananCadangan
             $dikonfigurasi,
             fn (string $folder): bool => File::isDirectory(storage_path('app/'.$folder)),
         ));
+    }
+
+    /**
+     * Folder cadangan sendiri bila ia berada di dalam folder sumber (bawaan:
+     * `private/cadangan`). Tanpa pengecualian ini setiap arsip berkas memuat
+     * seluruh cadangan sebelumnya, sehingga ukurannya berlipat tiap malam.
+     *
+     * @param  list<string>  $sumber
+     * @return list<string>
+     */
+    private function polaDikecualikan(array $sumber): array
+    {
+        $akar = rtrim(storage_path('app'), '/').'/';
+        $folderCadangan = rtrim($this->berkas->folder(), '/');
+
+        if (! str_starts_with($folderCadangan, $akar)) {
+            return [];
+        }
+
+        $relatif = substr($folderCadangan, strlen($akar));
+
+        foreach ($sumber as $folder) {
+            if ($relatif === $folder || str_starts_with($relatif, rtrim($folder, '/').'/')) {
+                return [$relatif];
+            }
+        }
+
+        return [];
     }
 
     private function perintahDump(): string

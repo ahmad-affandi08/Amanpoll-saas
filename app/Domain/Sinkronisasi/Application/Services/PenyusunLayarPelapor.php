@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Sinkronisasi\Application\Services;
 
 use App\Core\Izin\ScopeLingkup;
+use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
@@ -165,6 +166,7 @@ final class PenyusunLayarPelapor
             'LokasiId' => $aset->LokasiId,
             'LokasiNama' => $lokasi?->getAttribute('Nama'),
             'LokasiLabel' => $lokasi instanceof Lokasi ? $this->labelLokasi($lokasi) : null,
+            'FotoUtamaThumbnailUrl' => GaleriFotoAset::urlThumbnail($aset->FotoUtamaBerkasId),
             'LaporanTerbuka' => $laporanTerbuka,
         ];
     }

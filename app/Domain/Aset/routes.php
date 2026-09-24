@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Domain\Aset\Http\Controllers\AsetController;
 use App\Domain\Aset\Http\Controllers\AsetPindaiController;
+use App\Domain\Aset\Http\Controllers\FotoAsetController;
 use App\Domain\Aset\Http\Controllers\GaransiAsetController;
 use App\Domain\Aset\Http\Controllers\ImporAsetController;
 use App\Domain\Aset\Http\Controllers\KartuRiwayatAsetController;
@@ -63,6 +64,11 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::get('/{aset}', [AsetController::class, 'show'])->name('show');
             Route::put('/{aset}', [AsetController::class, 'update'])->name('update');
             Route::delete('/{aset}', [AsetController::class, 'destroy'])->name('destroy');
+
+            // Galeri foto aset (PRD 8.4 "Foto Aset").
+            Route::post('/{aset}/foto', [FotoAsetController::class, 'store'])->name('foto.store');
+            Route::put('/{aset}/foto/{berkas}/utama', [FotoAsetController::class, 'jadikanUtama'])->name('foto.utama');
+            Route::delete('/{aset}/foto/{berkas}', [FotoAsetController::class, 'destroy'])->name('foto.destroy');
 
             Route::get('/{aset}/kelayakan', [KelayakanAsetController::class, 'satu'])->name('kelayakan.satu');
             Route::get('/{aset}/kartu-riwayat', [KartuRiwayatAsetController::class, 'cetak'])->middleware('throttle:ekspor')->name('kartu-riwayat');

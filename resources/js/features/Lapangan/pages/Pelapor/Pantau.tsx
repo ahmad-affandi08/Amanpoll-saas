@@ -7,7 +7,7 @@ import { Kartu } from '@/features/Lapangan/components/Kartu';
 import { PerhentianLinimasa, type TitikLinimasa } from '@/features/Lapangan/components/Perhentian';
 import { Sobekan } from '@/features/Lapangan/components/Tiket';
 import { tampilanStatus } from '@/features/Lapangan/components/pelapor/status';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { PropsPantauPelapor, StatusKeluhanPelapor } from '@/features/Lapangan/types';
 import { jamPendek, kelompokHari } from '@/features/Lapangan/waktu';
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Sinkronisasi\Application\Services;
 
 use App\Core\Organisasi\KalenderOrganisasi;
+use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Aset\Domain\Enums\StatusGaransiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
@@ -201,6 +202,8 @@ final class PenyusunLayarTeknisi
             'Kategori' => $aset->kategoriAset?->Nama,
             'Kondisi' => $aset->Kondisi,
             'Lokasi' => $aset->lokasi === null ? null : $this->ringkasLokasi($aset->lokasi),
+            // Dari kolomnya saja, tanpa kueri tambahan per aset (PRD 8.4 "Foto Aset").
+            'FotoUtamaThumbnailUrl' => GaleriFotoAset::urlThumbnail($aset->FotoUtamaBerkasId),
         ];
     }
 
@@ -271,6 +274,8 @@ final class PenyusunLayarTeknisi
             ],
             'BolehLapor' => $gerbang->allows('create', Keluhan::class),
             'BolehLihatRiwayat' => $gerbang->allows('view', $aset),
+            // Teknisi yang ditugaskan pada tiket aktif aset ini boleh menambah foto dari HP.
+            'BolehTambahFoto' => $gerbang->allows('tambahFoto', $aset),
         ];
     }
 

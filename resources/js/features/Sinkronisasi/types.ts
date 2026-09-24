@@ -87,6 +87,8 @@ export interface AsetOffline {
   Kondisi: string | null;
   TingkatKritis: string | null;
   NamaLokasi: string | null;
+  /** Thumbnail foto utama; tanpa sinyal tampil hanya bila masih di cache peramban (PRD 8.4). */
+  FotoUtamaThumbnailUrl?: string | null;
   Versi: number;
 }
 

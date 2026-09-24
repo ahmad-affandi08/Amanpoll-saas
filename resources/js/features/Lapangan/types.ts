@@ -67,6 +67,8 @@ export interface AsetRingkasTeknisi {
   Kategori: string | null;
   Kondisi: string | null;
   Lokasi: LokasiRingkasTeknisi | null;
+  /** Thumbnail foto utama (PRD 8.4 "Foto Aset"); `null` = ikon 3D kategori. */
+  FotoUtamaThumbnailUrl: string | null;
 }
 
 /** Tiket kerja teknisi (`PenyusunLayarTeknisi::ringkas`). */
@@ -185,7 +187,10 @@ export interface FotoTiketTeknisi {
   Kategori: 'FotoSebelum' | 'FotoSesudah' | 'TandaTangan' | string;
   Keterangan: string | null;
   DibuatPada: string;
+  /** Thumbnail untuk grid foto. */
   Url: string | null;
+  /** Ukuran penuh, untuk tanda tangan yang digambar ulang di kanvas. */
+  UrlUnduh: string | null;
 }
 
 /** Props `Lapangan/Teknisi/Kerjakan` (layar 07–12 dalam satu halaman). */
@@ -224,6 +229,8 @@ export interface AsetDitemukanTeknisi extends AsetRingkasTeknisi {
   Inspeksi: { Id: string; Nomor: string; DijadwalkanPada: string | null } | null;
   BolehLapor: boolean;
   BolehLihatRiwayat: boolean;
+  /** Teknisi yang ditugaskan pada tiket aktif aset ini (atau pemegang `Aset.Ubah`) boleh menambah foto. */
+  BolehTambahFoto: boolean;
 }
 
 /** Props `Lapangan/Teknisi/Pindai`. */
@@ -325,6 +332,8 @@ export interface AsetPelapor {
   LaporanTerbuka: LaporanTerbukaAset[];
   /** "Menara A · Lt. 12". */
   LokasiLabel: string | null;
+  /** Thumbnail foto utama (PRD 8.4 "Foto Aset"); `null` = ikon 3D kategori. */
+  FotoUtamaThumbnailUrl: string | null;
 }
 
 export interface KategoriLaporan {

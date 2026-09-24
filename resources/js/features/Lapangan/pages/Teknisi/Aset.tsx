@@ -7,11 +7,13 @@ import { ruteLapangan } from '@/features/Lapangan/api';
 import { Banner } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { WadahIkon3D } from '@/components/shared/Ikon3D';
+import { kelasTint } from '@/components/shared/Ikon3D';
+import { FotoAtauIkon3D } from '@/components/shared/FotoAtauIkon3D';
+import { cn } from '@/lib/utils';
 import { IsianTiket, MasukanTiket } from '@/features/Lapangan/components/IsianTiket';
 import { BarisDaftar, JudulBagian, Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { AsetRingkasTeknisi, PropsAsetTeknisi } from '@/features/Lapangan/types';
 import { IsiAsetDitemukan } from '@/features/Lapangan/components/teknisi/IsiAsetDitemukan';
 import { usePeringatanOffline } from '@/features/Lapangan/components/teknisi/umum';
@@ -72,6 +74,7 @@ function IsiAset({ aset, cari, asetTerpilih, bolehLihat }: PropsAsetTeknisi) {
           Kategori: null,
           Kondisi: satu.Kondisi,
           Lokasi: satu.NamaLokasi ? { Nama: satu.NamaLokasi, Induk: null } : null,
+          FotoUtamaThumbnailUrl: satu.FotoUtamaThumbnailUrl ?? null,
         }))
       : null;
   const daftar = dariPaket ?? aset;
@@ -169,7 +172,15 @@ function IsiAset({ aset, cari, asetTerpilih, bolehLihat }: PropsAsetTeknisi) {
             return (
               <BarisDaftar
                 key={satu.Id}
-                ikon={<WadahIkon3D nama={ikon.ikon} tint={ikon.tint} />}
+                ikon={
+                  <FotoAtauIkon3D
+                    url={satu.FotoUtamaThumbnailUrl}
+                    ikon={ikon.ikon}
+                    ukuranIkon={32}
+                    alt=""
+                    className={cn('size-12 rounded-[14px]', kelasTint(ikon.tint))}
+                  />
+                }
                 judul={satu.Nama}
                 keterangan={[satu.KodeAset, satu.Lokasi?.Nama].filter(Boolean).join(' · ')}
                 kanan={

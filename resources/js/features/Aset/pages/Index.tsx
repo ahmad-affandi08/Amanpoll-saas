@@ -37,6 +37,8 @@ import { PemilihNomenklatur } from '@/features/Aset/components/PemilihNomenklatu
 import { opsiDari, opsiUnitPengelola, TANPA_PILIHAN, TANPA_UNIT_PENGELOLA } from '@/lib/pilihan';
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { InputUang } from '@/components/shared/InputUang';
+import { FotoAtauIkon3D } from '@/components/shared/FotoAtauIkon3D';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 
 interface Props {
   aset: Paginasi<Aset>;
@@ -61,6 +63,22 @@ interface Props {
 }
 
 const SEMUA = '__semua__';
+
+/** Thumbnail foto utama (lazy) dengan cadangan ikon 3D kategori (PRD 8.4 "Foto Aset"). */
+function FotoMini({ aset, className }: { aset: Aset; className?: string }) {
+  const dariKategori = ikonKategori(aset.NamaKategoriAset);
+  const ikon = dariKategori.ikon !== 'toolbox' ? dariKategori : ikonKategori(aset.Nama);
+
+  return (
+    <FotoAtauIkon3D
+      url={aset.FotoUtamaThumbnailUrl}
+      ikon={ikon.ikon}
+      ukuranIkon={26}
+      alt=""
+      className={className ?? 'size-10 rounded-[6px] bg-permukaan-100'}
+    />
+  );
+}
 
 function badgeStatus(status: Aset['Status']) {
   return <Badge variant={VARIAN_BADGE_STATUS_ASET[status]}>{status}</Badge>;
@@ -519,22 +537,25 @@ export default function AsetIndex({
                 key={a.Id}
                 type="button"
                 onClick={() => router.visit(ruteAset.detail(a.Id))}
-                className="block w-full rounded-[9px] border border-border bg-card p-4 text-left"
+                className="flex w-full items-start gap-3 rounded-[9px] border border-border bg-card p-4 text-left"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <span className="font-mono text-xs text-muted-foreground">{a.KodeAset}</span>
-                  {badgeStatus(a.Status)}
-                </div>
-                <div className="mt-0.5 font-medium text-foreground">{a.Nama}</div>
-                <div className="text-sm text-muted-foreground">
-                  {a.NamaLokasi ?? 'Lokasi belum diatur'} · {a.NamaKategoriAset ?? '—'}
-                </div>
-                <div className="mt-1 text-sm text-muted-foreground">Kondisi: {a.Kondisi}</div>
-                {unitPengelolaDipakai && (
-                  <div className="text-sm text-muted-foreground">
-                    Unit pengelola: {a.NamaUnitPengelola ?? 'Belum ada'}
+                <FotoMini aset={a} className="size-14 rounded-[6px] bg-permukaan-100" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="font-mono text-xs text-muted-foreground">{a.KodeAset}</span>
+                    {badgeStatus(a.Status)}
                   </div>
-                )}
+                  <div className="mt-0.5 font-medium text-foreground">{a.Nama}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {a.NamaLokasi ?? 'Lokasi belum diatur'} · {a.NamaKategoriAset ?? '—'}
+                  </div>
+                  <div className="mt-1 text-sm text-muted-foreground">Kondisi: {a.Kondisi}</div>
+                  {unitPengelolaDipakai && (
+                    <div className="text-sm text-muted-foreground">
+                      Unit pengelola: {a.NamaUnitPengelola ?? 'Belum ada'}
+                    </div>
+                  )}
+                </div>
               </button>
             ))}
             <KontrolPaginasi
@@ -615,8 +636,13 @@ export default function AsetIndex({
                       />
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium text-foreground">{a.Nama}</div>
-                      <div className="font-mono text-xs text-muted-foreground">{a.KodeAset}</div>
+                      <div className="flex items-center gap-3">
+                        <FotoMini aset={a} />
+                        <div className="min-w-0">
+                          <div className="font-medium text-foreground">{a.Nama}</div>
+                          <div className="font-mono text-xs text-muted-foreground">{a.KodeAset}</div>
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell>{a.NamaKategoriAset ?? '—'}</TableCell>
                     <TableCell>{a.NamaLokasi ?? '—'}</TableCell>

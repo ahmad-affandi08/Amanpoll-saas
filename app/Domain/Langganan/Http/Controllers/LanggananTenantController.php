@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Langganan\Http\Controllers;
 
+use App\Domain\Kolaborasi\Application\Services\RingkasanPenyimpananBerkas;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
 use App\Domain\Langganan\Application\Services\PenjagaBatasLangganan;
 use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
@@ -73,13 +74,15 @@ final class LanggananTenantController extends Controller
         );
     }
 
-    public function index(): Response
+    public function index(RingkasanPenyimpananBerkas $penyimpanan): Response
     {
         $this->authorize('viewAny', Langganan::class);
 
         return Inertia::render('Langganan/Index', [
             'entitlement' => $this->entitlement->sekarang()->keArray(),
             'pemakaian' => $this->penjagaBatas->pemakaian(),
+            // Paket belum membatasi ruang berkas; kartu ini hanya melaporkan pemakaian dan hasil kompresinya (PRD 11.1).
+            'penyimpanan' => $penyimpanan->sekarang(),
             'katalogFitur' => array_values(array_map(
                 fn (DefinisiFitur $definisi): array => $definisi->keArray(),
                 KatalogFitur::semua(),

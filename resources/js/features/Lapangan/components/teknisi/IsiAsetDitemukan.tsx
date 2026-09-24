@@ -8,15 +8,17 @@ import { cn } from '@/lib/utils';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { Ikon3D, kelasTint, type NamaIkon3D, type TintIkon } from '@/components/shared/Ikon3D';
+import { FotoAtauIkon3D } from '@/components/shared/FotoAtauIkon3D';
 import { AreaTiket, IsianTiket } from '@/features/Lapangan/components/IsianTiket';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { AsetDitemukanTeknisi } from '@/features/Lapangan/types';
 import { jamPendek, tanggalPendek } from '@/features/Lapangan/waktu';
 import { useAksiTiket } from '@/features/Lapangan/components/teknisi/aksiTiket';
 import { STATUS_SEDANG_DIKERJAKAN } from '@/features/Lapangan/components/teknisi/statusLokal';
 import { teksLokasi } from '@/features/Lapangan/components/teknisi/waktuTiket';
+import { BagianFotoAset } from '@/features/Lapangan/components/teknisi/FotoAsetTeknisi';
 
 const KONDISI: Record<string, { label: string; warna: 'hijau' | 'kuning' | 'merah' }> = {
   Baik: { label: 'Baik', warna: 'hijau' },
@@ -101,9 +103,14 @@ export function IsiAsetDitemukan({
   return (
     <div className="flex flex-col gap-3.5">
       <div className="flex items-center gap-3.5">
-        <span className="flex size-[92px] shrink-0 items-center justify-center rounded-[26px] gradien-ilustrasi-lapangan shadow-[inset_0_0_0_1.5px_var(--color-lapangan-biru-50)]">
-          <Ikon3D nama={ikon.ikon} ukuran={66} segera />
-        </span>
+        <FotoAtauIkon3D
+          url={aset.FotoUtamaThumbnailUrl}
+          ikon={ikon.ikon}
+          ukuranIkon={66}
+          alt={`Foto ${aset.Nama}`}
+          segera
+          className="size-[92px] rounded-[26px] gradien-ilustrasi-lapangan shadow-[inset_0_0_0_1.5px_var(--color-lapangan-biru-50)]"
+        />
         <div className="min-w-0 flex-1">
           {chip && (
             <ChipStatus warna="hijau" ikon={CircleCheck}>
@@ -207,6 +214,8 @@ export function IsiAsetDitemukan({
           })}
         </ul>
       </nav>
+
+      <BagianFotoAset aset={aset} />
 
       <dl className="grid grid-cols-2 gap-2.5">
         <div className="rounded-[14px] bg-lapangan-latar px-3 py-2.5">

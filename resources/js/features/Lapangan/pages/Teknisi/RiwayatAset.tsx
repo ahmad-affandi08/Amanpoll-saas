@@ -4,7 +4,9 @@ import { cn } from '@/lib/utils';
 import KerangkaLapangan, { TombolAppbar } from '@/layouts/KerangkaLapangan';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
+import { Ikon3D, kelasTint, type NamaIkon3D } from '@/components/shared/Ikon3D';
+import { FotoAtauIkon3D } from '@/components/shared/FotoAtauIkon3D';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import { Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
@@ -112,36 +114,56 @@ export default function RiwayatAsetTeknisi(props: PropsRiwayatAsetTeknisi) {
 }
 
 function IsiRiwayat({
+  aset,
   ringkasan,
   linimasa,
   saringan,
 }: PropsRiwayatAsetTeknisi & { saringan: SaringanRiwayat }) {
   usePeringatanOffline();
   const tampil = linimasa.filter((satu) => saringan === 'Semua' || kelompok(satu) === saringan);
+  const ikon = ikonKategori(aset.Kategori ?? aset.Nama);
 
   return (
     <>
-      <KartuApung className="grid grid-cols-3 px-1 py-4 text-center">
-        {[
-          { nilai: String(ringkasan.PekerjaanTahunIni), label: 'pekerjaan tahun ini' },
-          {
-            nilai: `${ringkasan.PersenBeroperasi.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%`,
-            label: 'beroperasi 30 hari',
-          },
-          {
-            nilai: ringkasan.HariAntarKerusakan === null ? '—' : `${ringkasan.HariAntarKerusakan} hr`,
-            label: 'rata-rata antar kerusakan',
-          },
-        ].map((satu, i) => (
-          <div key={satu.label} className={cn('px-2', i > 0 && 'border-l-[1.5px] border-lapangan-garis-2')}>
-            <strong className="block text-[22px] leading-tight font-extrabold tracking-[-0.02em] tabular-nums">
-              {satu.nilai}
-            </strong>
-            <small className="mt-0.5 block text-xs leading-tight font-semibold text-lapangan-teks-3">
-              {satu.label}
-            </small>
+      <KartuApung className="overflow-hidden">
+        <div className="flex items-center gap-3 px-4 pt-4 pb-3">
+          <FotoAtauIkon3D
+            url={aset.FotoUtamaThumbnailUrl}
+            ikon={ikon.ikon}
+            ukuranIkon={40}
+            alt={`Foto ${aset.Nama}`}
+            segera
+            className={cn('size-16 rounded-[18px]', kelasTint(ikon.tint))}
+          />
+          <div className="min-w-0">
+            <b className="block truncate text-[15px] leading-snug font-bold">{aset.Nama}</b>
+            <span className="block truncate text-[13px] font-medium text-lapangan-teks-3">
+              {[aset.KodeAset, aset.Kategori, aset.Lokasi?.Nama].filter(Boolean).join(' · ')}
+            </span>
           </div>
-        ))}
+        </div>
+        <div className="grid grid-cols-3 border-t-[1.5px] border-lapangan-garis-2 px-1 py-4 text-center">
+          {[
+            { nilai: String(ringkasan.PekerjaanTahunIni), label: 'pekerjaan tahun ini' },
+            {
+              nilai: `${ringkasan.PersenBeroperasi.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%`,
+              label: 'beroperasi 30 hari',
+            },
+            {
+              nilai: ringkasan.HariAntarKerusakan === null ? '—' : `${ringkasan.HariAntarKerusakan} hr`,
+              label: 'rata-rata antar kerusakan',
+            },
+          ].map((satu, i) => (
+            <div key={satu.label} className={cn('px-2', i > 0 && 'border-l-[1.5px] border-lapangan-garis-2')}>
+              <strong className="block text-[22px] leading-tight font-extrabold tracking-[-0.02em] tabular-nums">
+                {satu.nilai}
+              </strong>
+              <small className="mt-0.5 block text-xs leading-tight font-semibold text-lapangan-teks-3">
+                {satu.label}
+              </small>
+            </div>
+          ))}
+        </div>
       </KartuApung>
 
       {tampil.length === 0 ? (

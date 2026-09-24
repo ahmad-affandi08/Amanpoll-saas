@@ -13,12 +13,16 @@ import { JudulBagian, Kartu, KartuApung } from '@/features/Lapangan/components/K
 import { MenuGrid3D } from '@/features/Lapangan/components/MenuGrid3D';
 import { PerhentianJadwal, type HalteJadwal } from '@/features/Lapangan/components/Perhentian';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
-import { ikonKategori } from '@/features/Lapangan/ikon';
+import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { PropsBerandaTeknisi, TiketTeknisi } from '@/features/Lapangan/types';
 import { jamPendek, tanggalPendek } from '@/features/Lapangan/waktu';
 import { useAksiTiket } from '@/features/Lapangan/components/teknisi/aksiTiket';
 import { KartuTiketTeknisi } from '@/features/Lapangan/components/teknisi/KartuTiketTeknisi';
-import { useFotoTertunda, useKonteksOffline } from '@/features/Lapangan/components/teknisi/sesiKerja';
+import {
+  useFotoAsetTertunda,
+  useFotoTertunda,
+  useKonteksOffline,
+} from '@/features/Lapangan/components/teknisi/sesiKerja';
 import { STATUS_SEDANG_DIKERJAKAN, tiketLokal } from '@/features/Lapangan/components/teknisi/statusLokal';
 import {
   KUNCI_SIAPKAN_DILEWATI,
@@ -74,6 +78,9 @@ function IsiBeranda({ tiket, selesai, inspeksi }: PropsBerandaTeknisi) {
   const konteks = useKonteksOffline();
   const { mulai, memproses } = useAksiTiket();
   const fotoTertunda = useFotoTertunda(null);
+  const fotoAset = useFotoAsetTertunda(null);
+  const fotoAsetMenunggu = fotoAset.foto.filter((satu) => !satu.Ditolak).length;
+  const fotoAsetDitolak = fotoAset.foto.find((satu) => satu.Ditolak);
 
   // Pertama kali di perangkat ini: siapkan data offline lebih dulu (layar 02).
   useEffect(() => {
@@ -89,6 +96,11 @@ function IsiBeranda({ tiket, selesai, inspeksi }: PropsBerandaTeknisi) {
   useEffect(() => {
     if (daring && fotoTertunda.foto.length > 0) void fotoTertunda.unggahSemua();
   }, [daring, fotoTertunda.foto.length]);
+
+  // Begitu pula foto aset (PRD 8.4); yang ditolak server tetap di HP dan ditampilkan di bawah.
+  useEffect(() => {
+    if (daring && fotoAsetMenunggu > 0) void fotoAset.unggahSemua();
+  }, [daring, fotoAsetMenunggu]);
 
   const sekarang = new Date();
   const lokal = useMemo(() => tiket.map((satu) => tiketLokal(satu, antrian)), [tiket, antrian]);
@@ -150,7 +162,7 @@ function IsiBeranda({ tiket, selesai, inspeksi }: PropsBerandaTeknisi) {
     })),
   ];
 
-  const fotoDiHp = fotoTertunda.foto.length;
+  const fotoDiHp = fotoTertunda.foto.length + fotoAsetMenunggu;
   const konflikPertama = antrian.find((satu) => satu.Status === 'Konflik');
 
   return (
@@ -237,6 +249,17 @@ function IsiBeranda({ tiket, selesai, inspeksi }: PropsBerandaTeknisi) {
           tautan={{ label: 'Lihat', href: ruteLapangan.akun }}
         />
       ) : null}
+
+      {fotoAsetDitolak && (
+        <PitaInfo
+          nada="merah"
+          ikon="warning"
+          judul={`Foto ${fotoAsetDitolak.NamaAset} tidak terkirim`}
+          teks={fotoAsetDitolak.Ditolak ?? undefined}
+          tautan={{ label: 'Lihat', href: ruteLapangan.teknisi.asetPilih(fotoAsetDitolak.AsetId) }}
+          aksi={{ label: 'Buang', onClick: () => void fotoAset.buang(fotoAsetDitolak.Kunci) }}
+        />
+      )}
 
       <JudulBagian
         judul={selesaiHariIni.length > 0 ? 'Kerjakan berikutnya' : 'Kerjakan sekarang'}

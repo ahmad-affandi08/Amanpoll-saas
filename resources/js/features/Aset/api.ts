@@ -6,6 +6,10 @@ export const ruteAset = {
   detail: (id: string) => `/aset/${id}`,
   kelayakan: (id: string) => `/aset/${id}/kelayakan`,
   kartuRiwayat: (id: string) => `/aset/${id}/kartu-riwayat`,
+  /** Galeri foto aset (PRD 8.4): unggah (POST, `Foto[]`), jadikan utama (PUT), hapus (DELETE). */
+  foto: (id: string) => `/aset/${id}/foto`,
+  fotoDetail: (id: string, berkasId: string) => `/aset/${id}/foto/${berkasId}`,
+  fotoUtama: (id: string, berkasId: string) => `/aset/${id}/foto/${berkasId}/utama`,
   kelayakanIndex: '/aset/kelayakan',
   garansi: (id: string) => `/aset/${id}/garansi`,
   meter: (id: string) => `/aset/${id}/meter`,

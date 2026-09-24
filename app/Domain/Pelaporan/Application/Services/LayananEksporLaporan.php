@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pelaporan\Application\Services;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Kolaborasi\Application\Services\PenyimpanBerkas;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
@@ -16,7 +17,6 @@ use App\Shared\Infrastructure\Ekspor\LogoKopEkspor;
 use App\Shared\Infrastructure\Ekspor\PenulisEkspor;
 use App\Shared\Infrastructure\Ekspor\PenulisEksporPdf;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -34,6 +34,7 @@ final class LayananEksporLaporan
         private readonly LayananNotifikasi $notifikasi,
         private readonly LayananAudit $audit,
         private readonly PenjagaFilterMetrik $penjagaFilter,
+        private readonly PenyimpanBerkas $penyimpan,
     ) {}
 
     public function daftarkanPenulis(PenulisEkspor $penulis): void
@@ -70,10 +71,6 @@ final class LayananEksporLaporan
             $penulis = $penulis->denganLogo(LogoKopEkspor::dataUri($organisasi?->LogoUrl));
         }
 
-        $disk = (string) config('amanpoll.disk_berkas', 'local');
-        $namaPenyimpanan = (string) Str::ulid().'.'.$format->ekstensi();
-        $tujuan = 'ekspor-laporan/'.$pengguna->OrganisasiId.'/'.$namaPenyimpanan;
-
         // Ditulis ke berkas sementara lebih dulu.
         $pathSementara = tempnam(sys_get_temp_dir(), 'ekspor-');
         if ($pathSementara === false) {
@@ -93,22 +90,15 @@ final class LayananEksporLaporan
                 'Oleh' => $pengguna->Nama,
             ]);
 
-            $isi = file_get_contents($pathSementara);
-            if ($isi === false) {
-                throw new RuntimeException('Gagal membaca hasil ekspor sementara.');
-            }
-            Storage::disk($disk)->put($tujuan, $isi);
-
-            $berkas = Berkas::create([
-                'OrganisasiId' => $pengguna->OrganisasiId,
-                'NamaAsli' => $this->namaBerkas($judul, $format, $filter->zona),
-                'NamaPenyimpanan' => $namaPenyimpanan,
-                'MediaPenyimpanan' => $disk,
-                'LokasiPenyimpanan' => $tujuan,
-                'JenisMime' => $format->jenisMime(),
-                'UkuranByte' => strlen($isi),
-                'HashSha256' => hash('sha256', $isi),
-                'DataTambahan' => [
+            // Lewat mesin kompresi (PRD 11.1): CSV tersimpan gzip, XLSX apa adanya,
+            // PDF gzip bila hemat. Unduhannya dibuka lagi oleh PenyimpanBerkas.
+            $berkas = $this->penyimpan->simpan(
+                lokasiSumber: $pathSementara,
+                jenisMime: $format->jenisMime(),
+                namaAsli: $this->namaBerkas($judul, $format, $filter->zona),
+                pengunggahId: $pengguna->Id,
+                ekstensi: $format->ekstensi(),
+                dataTambahan: [
                     'Jenis' => self::JENIS_BERKAS,
                     'Format' => $format->value,
                     'Judul' => $judul,
@@ -116,8 +106,8 @@ final class LayananEksporLaporan
                     'Filter' => $filter->keArray(),
                     'JumlahBaris' => count($baris),
                 ],
-                'DiunggahOleh' => $pengguna->Id,
-            ]);
+                direktori: 'ekspor-laporan/'.$pengguna->OrganisasiId,
+            );
         } finally {
             @unlink($pathSementara);
         }
