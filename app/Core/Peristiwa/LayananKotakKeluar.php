@@ -7,6 +7,7 @@ namespace App\Core\Peristiwa;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\IntegrasiAudit\Domain\Enums\StatusKotakKeluarPeristiwa;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\KotakKeluarPeristiwa;
+use App\Shared\Infrastructure\Persistence\KunciBarisAntrean;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +39,8 @@ final class LayananKotakKeluar
     /**
      * Mengambil sekumpulan peristiwa siap proses dan menandainya sedang diproses
      * dalam satu transaksi. Baris dikunci dengan SELECT ... FOR UPDATE SKIP LOCKED
-     * supaya dua worker yang berjalan bersamaan tidak mengambil peristiwa sama.
+     * (bila server mendukungnya, lihat `KunciBarisAntrean`) supaya dua worker yang
+     * berjalan bersamaan tidak mengambil peristiwa sama dan tidak saling menunggu.
      *
      * @return Collection<int, KotakKeluarPeristiwa>
      */
@@ -51,7 +53,7 @@ final class LayananKotakKeluar
                 ->where('TersediaPada', '<=', now())
                 ->orderBy('TersediaPada')
                 ->limit($batas)
-                ->lockForUpdate()
+                ->lock(KunciBarisAntrean::klausa(DB::connection()))
                 ->get();
 
             if ($peristiwa->isEmpty()) {

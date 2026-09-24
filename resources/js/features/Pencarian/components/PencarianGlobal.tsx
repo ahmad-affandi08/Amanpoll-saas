@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { router } from '@inertiajs/react';
 import {
@@ -40,7 +41,7 @@ interface Pilihan {
   url: string;
 }
 
-type Keadaan = 'diam' | 'memuat' | 'selesai' | 'gagal';
+type Keadaan = 'diam' | 'memuat' | 'selesai' | 'gagal' | 'terlaluCepat';
 
 /** Setiap kata ketikan harus menjadi awal salah satu kata teksnya: "vent" tidak mencocokkan "Preventif". */
 function cocokAwalKata(teks: string, kataKetik: string[]): boolean {
@@ -102,9 +103,9 @@ export function PencarianGlobal({ halaman }: { halaman: HalamanTujuan[] }) {
           setKelompokServer(respons.data.kelompok);
           setKeadaan('selesai');
         })
-        .catch(() => {
+        .catch((galat: unknown) => {
           if (!pembatal.signal.aborted) {
-            setKeadaan('gagal');
+            setKeadaan(isAxiosError(galat) && galat.response?.status === 429 ? 'terlaluCepat' : 'gagal');
           }
         });
     }, JEDA_KETIK_MS);
@@ -254,6 +255,12 @@ export function PencarianGlobal({ halaman }: { halaman: HalamanTujuan[] }) {
               <p className="px-4 py-6 text-sm text-muted-foreground">
                 Ketik minimal {PANJANG_MINIMUM} huruf untuk mencari aset, perintah kerja, keluhan, suku
                 cadang, penyedia, kontrak, atau halaman.
+              </p>
+            )}
+
+            {cukupPanjang && keadaan === 'terlaluCepat' && pilihan.length === 0 && (
+              <p className="px-4 py-6 text-sm text-muted-foreground" role="status">
+                Terlalu banyak pencarian dalam waktu singkat. Tunggu sebentar lalu ketik lagi.
               </p>
             )}
 

@@ -37,6 +37,11 @@ final class BatasLajuServiceProvider extends ServiceProvider
         RateLimiter::for('daftar', fn (Request $request): Limit => Limit::perMinute(3)
             ->by((string) $request->ip()));
 
+        // Pencarian global: tiap ketikan (setelah jeda 250 ms) menjalankan LIKE di enam modul.
+        // 120 per menit tetap longgar untuk orang yang mengetik, tetapi memutus skrip yang membanjiri.
+        RateLimiter::for('pencarian', fn (Request $request): Limit => Limit::perMinute(120)
+            ->by($this->kunciPemesan($request)));
+
         // Pengiriman formulir pemasaran.
         RateLimiter::for('formulir', fn (Request $request): Limit => Limit::perMinute(5)
             ->by((string) $request->ip()));

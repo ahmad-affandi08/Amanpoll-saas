@@ -101,7 +101,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
 // Panduan pemakaian; di luar prefix platform karena bukan halaman pengaturan.
 Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
-    Route::get('/cari', PencarianGlobalController::class)->name('cari');
+    Route::get('/cari', PencarianGlobalController::class)->middleware('throttle:pencarian')->name('cari');
     Route::get('/dokumentasi', DokumentasiController::class)->name('dokumentasi.index');
     Route::get('/dokumentasi/{halaman}', DokumentasiController::class)->name('dokumentasi.halaman');
 

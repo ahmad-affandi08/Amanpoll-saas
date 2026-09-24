@@ -125,6 +125,19 @@ final class PencarianGlobalTest extends TestCase
         $this->cari($this->buatPengguna(['Aset.Lihat']), '__')->assertExactJson(['kelompok' => []]);
     }
 
+    /** Batas laju per akun: skrip yang membanjiri /cari berhenti, pengguna lain tidak ikut terkena. */
+    public function test_pencarian_dibatasi_lajunya_per_akun(): void
+    {
+        $pembanjir = $this->buatPengguna(['Aset.Lihat']);
+
+        for ($i = 0; $i < 120; $i++) {
+            $this->cari($pembanjir, 'zz')->assertOk();
+        }
+
+        $this->cari($pembanjir, 'zz')->assertStatus(429);
+        $this->cari($this->buatPengguna(['Aset.Lihat']), 'zz')->assertOk();
+    }
+
     public function test_tamu_tidak_dapat_mencari(): void
     {
         $this->getJson('/cari?q=aset')->assertUnauthorized();
