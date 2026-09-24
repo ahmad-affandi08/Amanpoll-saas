@@ -511,6 +511,12 @@ Wajib diaudit:
 
 - Email unik minimal dalam scope organisasi.
 - User nonaktif tidak dapat login.
+- **Login cukup email dan kata sandi**, tanpa kode organisasi (disetujui pemilik produk, 24 September 2026). Sistem mencari akun aktif dengan email itu di organisasi aktif dan mencocokkan kata sandinya:
+  - satu akun cocok: langsung masuk;
+  - lebih dari satu akun cocok (email yang sama terdaftar di beberapa organisasi dengan kata sandi yang cocok): layar **Pilih organisasi** menampilkan nama organisasi akun-akun yang cocok saja, lalu pengguna memilih satu;
+  - tidak ada yang cocok: pesan umum "Email atau kata sandi tidak sesuai." tanpa membocorkan apakah email itu terdaftar.
+  - Daftar organisasi hanya tampil sesudah kata sandi terbukti benar. Pilihan disimpan sementara di sesi (kedaluwarsa singkat), dan server hanya menerima akun yang ada di daftar itu.
+- **Lupa kata sandi cukup dengan email.** Tautan reset dikirim untuk setiap akun aktif yang memakai email itu (satu tautan per organisasi, menyebut nama organisasinya), dengan jawaban layar yang sama apa pun hasilnya.
 - Peran bawaan tidak dapat dihapus bila masih digunakan.
 - Penomoran dokumen harus aman terhadap concurrency.
 - Hari libur digunakan pada kalkulasi kalender kerja jika aturan SLA mengaktifkannya.

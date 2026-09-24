@@ -3781,6 +3781,18 @@ Jebakan yang ditemukan:
 - Komponen DataTable menyembunyikan kolom ber-`accessorKey` yang juga punya faset sebagai "kolom bayangan"; kolom Status di Unit Organisasi dan Lokasi tidak pernah tampil di desktop.
 - Validasi rak pada mutasi stok menerima rak dari gudang mana pun. Kini rak harus milik gudang mutasi itu.
 
+
+---
+
+# FASE 41 — Login tanpa kode organisasi
+
+Aturan di PRD 8.1. Disetujui pemilik produk pada 24 September 2026. Halaman login yang ada tetap dipakai; hanya isian kode organisasinya dihapus.
+
+- [ ] Login dengan email dan kata sandi: satu akun cocok langsung masuk, beberapa akun cocok ke layar Pilih organisasi, tidak ada yang cocok memberi pesan umum. Pembatasan percobaan, catatan akses, "ingat saya", dan pengarahan Mode Lapangan tetap berlaku.
+- [ ] Layar Pilih organisasi: hanya organisasi akun yang kata sandinya cocok, disimpan sementara di sesi, server menolak akun di luar daftar.
+- [ ] Lupa kata sandi dengan email saja: tautan untuk setiap akun aktif ber-email itu, jawaban layar sama apa pun hasilnya.
+- [ ] Teks yang masih menyebut kode organisasi untuk masuk (pesan pendaftaran trial, panduan) diperbarui.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
@@ -3869,6 +3881,8 @@ Jebakan yang ditemukan:
 39 Mode Lapangan (Teknisi + Pelapor)
 ↓
 40 Unit Pengelola
+↓
+41 Login tanpa kode organisasi
 ```
 
 Alasan urutan tersebut: setiap fase memakai fondasi dari fase sebelumnya. Dashboard berada dekat akhir karena dashboard harus membaca data transaksi yang sudah benar, bukan menjadi halaman demo yang lebih dulu dibuat.
