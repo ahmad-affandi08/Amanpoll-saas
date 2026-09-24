@@ -14,6 +14,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ruteAuth } from '@/features/Auth/api';
 import { ruteDokumentasi } from '@/features/Dokumentasi/api';
+import { PencarianGlobal } from '@/features/Pencarian/components/PencarianGlobal';
+import type { HalamanTujuan } from '@/features/Pencarian/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -435,6 +437,21 @@ function KerangkaDalam({ children }: PropsWithChildren) {
     }))
     .filter((grup) => grup.items.length > 0);
 
+  // Halaman yang dapat dicari sama persis dengan menu yang tampil: izin dan paket sudah tersaring di atas.
+  const halamanTujuan: HalamanTujuan[] = grupTampil.flatMap((grup) =>
+    grup.items.flatMap((item) => {
+      const jalurGrup = grup.label ?? '';
+      if (item.subItems) {
+        return item.subItems.map((sub) => ({
+          label: sub.label,
+          href: sub.href,
+          jalur: [jalurGrup, item.label].filter(Boolean).join(' › '),
+        }));
+      }
+      return item.href ? [{ label: item.label, href: item.href, jalur: jalurGrup }] : [];
+    }),
+  );
+
   return (
     <SidebarProvider>
       <AppSidebar
@@ -448,6 +465,7 @@ function KerangkaDalam({ children }: PropsWithChildren) {
         <header className="flex h-14 items-center justify-between gap-3 border-b border-border bg-card px-4 sm:px-6">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
+            <PencarianGlobal halaman={halamanTujuan} />
           </div>
           <div className="flex min-w-0 items-center gap-3">
             {adaPembaruanAplikasi && (

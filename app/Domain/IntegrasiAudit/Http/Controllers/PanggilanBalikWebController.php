@@ -9,6 +9,7 @@ use App\Domain\IntegrasiAudit\Http\Requests\SimpanPanggilanBalikWebRequest;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
 use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -80,21 +81,23 @@ final class PanggilanBalikWebController extends Controller
     {
         $this->authorize('view', $panggilanBalikWeb);
 
-        $pengiriman = $panggilanBalikWeb->pengiriman()
+        $halamanPengiriman = $panggilanBalikWeb->pengiriman()
             ->orderByDesc('DibuatPada')
             ->paginate(25)
-            ->withQueryString()
-            ->through(fn (PengirimanPanggilanBalikWeb $item): array => [
-                'Id' => $item->Id,
-                'Peristiwa' => $item->Peristiwa,
-                'Status' => $item->Status,
-                'StatusHttp' => $item->StatusHttp,
-                'Percobaan' => $item->Percobaan,
-                'JadwalCobaLagiPada' => $item->JadwalCobaLagiPada?->toIso8601String(),
-                'DikirimPada' => $item->DikirimPada?->toIso8601String(),
-                'DibuatPada' => $item->DibuatPada->toIso8601String(),
-                'Respons' => $item->Respons,
-            ]);
+            ->withQueryString();
+
+        // Dibungkus agar halaman menerima `meta`; paginator mentah berserialisasi datar dan KontrolPaginasi jatuh.
+        $pengiriman = DaftarTersaring::paginasi($halamanPengiriman, fn (PengirimanPanggilanBalikWeb $item): array => [
+            'Id' => $item->Id,
+            'Peristiwa' => $item->Peristiwa,
+            'Status' => $item->Status,
+            'StatusHttp' => $item->StatusHttp,
+            'Percobaan' => $item->Percobaan,
+            'JadwalCobaLagiPada' => $item->JadwalCobaLagiPada?->toIso8601String(),
+            'DikirimPada' => $item->DikirimPada?->toIso8601String(),
+            'DibuatPada' => $item->DibuatPada->toIso8601String(),
+            'Respons' => $item->Respons,
+        ]);
 
         return Inertia::render('Integrasi/Pengiriman', [
             'webhook' => [

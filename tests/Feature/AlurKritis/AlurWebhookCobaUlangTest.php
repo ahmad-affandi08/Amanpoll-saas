@@ -184,6 +184,7 @@ final class AlurWebhookCobaUlangTest extends TestCase
                 ->has('pengiriman.data', 1)
                 ->where('pengiriman.data.0.Status', StatusPengirimanPanggilanBalikWeb::Berhasil->value)
                 ->where('pengiriman.data.0.Percobaan', 2)
+                ->where('pengiriman.meta.last_page', 1)
                 ->etc());
     }
 

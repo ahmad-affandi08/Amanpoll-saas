@@ -534,9 +534,11 @@ final class PreventifInspeksiTest extends TestCase
         $this->assertTrue(RencanaPemeliharaanAset::where('RencanaPemeliharaanId', $rencana->Id)->exists());
 
         // 8. Inspeksi Web Flows
+        // Halaman membaca `inspeksi.meta` untuk KontrolPaginasi; tanpa itu ia jatuh begitu ada satu baris.
         $this->actingAs($pengguna)
             ->get('/preventif-inspeksi/inspeksi')
-            ->assertOk();
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman->where('inspeksi.meta.last_page', 1)->etc());
     }
 
     /** @param list<string> $izin */

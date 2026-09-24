@@ -430,6 +430,14 @@ Sidebar:
 - Icon Lucide 18–20px.
 - Maksimal dua level navigasi langsung.
 
+Topbar:
+
+- Kiri: tombol sidebar, lalu kotak cari global (ikon saja di ponsel).
+- Kanan: indikator sinkronisasi dan pembaruan (hanya saat relevan), lalu lonceng notifikasi.
+- Pencarian global dibuka juga dengan Ctrl+K / ⌘K atau "/". Hasilnya dikelompokkan
+  per modul dengan ikon dan keterangan (kode, nomor seri, lokasi, status), dan
+  dapat dipilih dengan panah atas/bawah lalu Enter.
+
 ## 9.2 Tablet
 
 - Sidebar dapat collapse.

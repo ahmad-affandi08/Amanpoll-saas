@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
+use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -113,7 +114,8 @@ final class InspeksiController extends Controller
 
         return Inertia::render('Inspeksi/Index', [
             'wajib' => ['inspeksi' => AturanWajib::untuk(SimpanInspeksiRequest::class)],
-            'inspeksi' => $daftarInspeksi,
+            // Dibungkus agar halaman menerima `meta`; paginator mentah berserialisasi datar dan KontrolPaginasi jatuh.
+            'inspeksi' => DaftarTersaring::paginasi($daftarInspeksi, fn (Inspeksi $satu): Inspeksi => $satu),
             'templatInspeksi' => $templatList,
             'aset' => $asetList,
             'inspektor' => $inspektorList,

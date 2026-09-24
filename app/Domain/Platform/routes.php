@@ -11,6 +11,7 @@ use App\Domain\Platform\Http\Controllers\KunciApiController;
 use App\Domain\Platform\Http\Controllers\LokasiController;
 use App\Domain\Platform\Http\Controllers\NomorDokumenController;
 use App\Domain\Platform\Http\Controllers\OrganisasiController;
+use App\Domain\Platform\Http\Controllers\PencarianGlobalController;
 use App\Domain\Platform\Http\Controllers\PenggunaController;
 use App\Domain\Platform\Http\Controllers\PenggunaPeranController;
 use App\Domain\Platform\Http\Controllers\PeranController;
@@ -97,6 +98,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
 
 // Panduan pemakaian; di luar prefix platform karena bukan halaman pengaturan.
 Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
+    Route::get('/cari', PencarianGlobalController::class)->name('cari');
     Route::get('/dokumentasi', DokumentasiController::class)->name('dokumentasi.index');
     Route::get('/dokumentasi/{halaman}', DokumentasiController::class)->name('dokumentasi.halaman');
 });

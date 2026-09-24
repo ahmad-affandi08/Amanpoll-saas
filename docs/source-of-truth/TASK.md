@@ -1370,6 +1370,30 @@ Implementasi visual mengikuti `DESIGN.md`.
 - [x] Notification center.
 - [x] User menu.
 
+Topbar sempat hanya berisi tombol sidebar dan lonceng. Kini ada pencarian global
+yang dibuka dari kotak di header, Ctrl+K / ⌘K, atau "/". Isinya enam modul (aset,
+perintah kerja, keluhan, suku cadang, penyedia, kontrak) ditambah halaman menu.
+
+Keputusan dan alasannya:
+- Tidak memakai mesin pencari atau indeks terpisah, karena shared hosting tidak
+  mengizinkannya. Tiap modul dicari dengan LIKE lewat model Eloquent biasa, pada
+  kolom yang sama dengan kotak cari halaman daftarnya. Tenancy dan lingkup
+  unit/ruangan ikut berlaku dari global scope tanpa kode tambahan.
+- Izin dibaca dari policy `viewAny` halaman daftar masing-masing, jadi modul yang
+  daftarnya tidak boleh dibuka memang tidak dicari.
+- Kode yang persis sama didahulukan. Tanpa itu, mengetik "AST-12" bisa
+  menenggelamkan aset AST-12 di bawah AST-1200.
+- Halaman menu dicari di klien dari menu yang sudah tersaring izin dan paket.
+  Pencocokannya per awal kata, karena pencocokan substring membuat "vent" memunculkan
+  deretan halaman "Preventif" di atas ventilatornya.
+- Cmdk ditolak karena menambah dependensi. Dialognya dirakit dari Dialog yang ada,
+  dengan peran combobox/listbox untuk papan ketik dan pembaca layar.
+
+Saat mencoba hasilnya, dua halaman ternyata jatuh begitu ada satu baris data:
+Inspeksi Berkala dan riwayat pengiriman webhook. Controller-nya mengirim paginator
+mentah yang berserialisasi datar, padahal halaman membaca `meta`. Keduanya kini
+dibungkus `DaftarTersaring::paginasi`.
+
 ## 23.02 Standard Components
 
 - [x] Button.
