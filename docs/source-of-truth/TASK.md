@@ -3555,8 +3555,8 @@ Urutan pengerjaan di bawah ini mengikat: 39.01 dan 39.02 menutup celah akses, ja
 
 ## 39.02 Penanda Tampilan Lapangan dan pengarahan
 
-- [ ] Kolom boolean `TampilanLapangan` pada `Peran` (migrasi), bisa diubah di halaman Peran. Katalog: `TEKNISI` dan `PELAPOR` bernilai benar.
-- [ ] Layanan penentu "pengguna lapangan murni" (seluruh perannya bertanda), di-cache seperti `LingkupAkses`.
+- [ ] Kolom `TampilanLapangan` pada `Peran` (migrasi; enum kosong/`Teknisi`/`Pelapor`), bisa diubah di halaman Peran. Katalog: `TEKNISI` → `Teknisi`, `PELAPOR` → `Pelapor`.
+- [ ] Layanan penentu "pengguna lapangan murni" (seluruh perannya bertanda) dan mode-nya (Teknisi menang bila memegang keduanya), di-cache seperti `LingkupAkses`.
 - [ ] Setelah login berhasil, pengguna lapangan murni diarahkan ke `/lapangan`.
 - [ ] Middleware host dasbor: pengguna lapangan murni yang membuka halaman dasbor dialihkan ke `/lapangan`. Rute JSON
   bersama (notifikasi, cari, sinkronisasi, unduhan berkas) tetap bisa diakses.

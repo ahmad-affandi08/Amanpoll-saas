@@ -1194,8 +1194,9 @@ Tampilan bergaya aplikasi HP (PWA) untuk peran lapangan. Desain dan papan acuann
 
 ### Siapa yang masuk Mode Lapangan
 
-- Peran memiliki penanda **Tampilan Lapangan** (kolom boolean pada `Peran`). Admin organisasi bisa mengubahnya di halaman Peran. Katalog peran bawaan menandai `TEKNISI` dan `PELAPOR`.
+- Peran memiliki penanda **Tampilan Lapangan** (kolom `TampilanLapangan` pada `Peran`): kosong, `Teknisi`, atau `Pelapor`. Admin organisasi bisa mengubahnya di halaman Peran. Katalog peran bawaan menandai `TEKNISI` sebagai `Teknisi` dan `PELAPOR` sebagai `Pelapor`.
 - **Pengguna lapangan murni** adalah pengguna yang *seluruh* perannya bertanda Tampilan Lapangan.
+- **Mode** Mode Lapangan ditentukan dari penanda perannya. Bila ia memegang peran `Teknisi` dan `Pelapor` sekaligus, ia masuk mode Teknisi, karena teknisi juga bisa melapor lewat aksi cepat.
   - Setelah login, ia diarahkan ke Mode Lapangan.
   - Setiap rute halaman dasbor web yang ia buka dialihkan ke beranda Mode Lapangan. Pengalihan dilakukan middleware di sisi server, bukan hanya dengan menyembunyikan menu.
 - **Pengguna campuran** (punya peran lapangan dan peran meja) tetap masuk dasbor. Ia bisa berpindah ke Mode Lapangan dan kembali lewat menu Akun; pilihannya diingat di perangkat itu.
