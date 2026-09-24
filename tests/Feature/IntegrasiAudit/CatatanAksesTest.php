@@ -34,7 +34,6 @@ class CatatanAksesTest extends TestCase
         $pengguna = $this->buatPengguna();
 
         $this->post('/login', [
-            'KodeOrganisasi' => 'AMANPOLL',
             'Email' => 'admin@amanpoll.test',
             'KataSandi' => 'kata-sandi-benar',
         ])->assertRedirect(route('dashboard'));
@@ -53,7 +52,6 @@ class CatatanAksesTest extends TestCase
         $this->buatPengguna();
 
         $this->post('/login', [
-            'KodeOrganisasi' => 'AMANPOLL',
             'Email' => 'admin@amanpoll.test',
             'KataSandi' => 'salah',
         ]);
@@ -68,13 +66,12 @@ class CatatanAksesTest extends TestCase
         $this->assertNotNull($catatan->AlasanGagal);
     }
 
-    public function test_login_dengan_kode_organisasi_tidak_ada_tetap_tercatat_tanpa_organisasi(): void
+    public function test_login_dengan_email_tidak_terdaftar_tetap_tercatat_tanpa_organisasi(): void
     {
         $this->buatPengguna();
 
         $this->post('/login', [
-            'KodeOrganisasi' => 'TIDAK-ADA',
-            'Email' => 'admin@amanpoll.test',
+            'Email' => 'tidak-ada@amanpoll.test',
             'KataSandi' => 'kata-sandi-benar',
         ]);
 

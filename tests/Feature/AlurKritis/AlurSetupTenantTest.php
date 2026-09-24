@@ -96,8 +96,8 @@ final class AlurSetupTenantTest extends TestCase
             ->where('Kode', 'MANAJER-ASET')
             ->sole();
 
-        // Langkah 2 — pemilik masuk memakai kode organisasi barunya.
-        $this->masuk($organisasi->Kode, 'dewi@sehat.test');
+        // Langkah 2 — pemilik masuk dengan email yang didaftarkannya.
+        $this->masuk('dewi@sehat.test');
         $this->assertAuthenticatedAs($pemilik);
 
         // Langkah 3 — pemilik menambah pengguna kedua lalu memberinya peran Manajer Aset.
@@ -141,7 +141,7 @@ final class AlurSetupTenantTest extends TestCase
         $this->assertGuest();
 
         // Langkah 5 — manajer masuk; perannya tidak memuat pengaturan lokasi.
-        $this->masuk($organisasi->Kode, 'bima@sehat.test');
+        $this->masuk('bima@sehat.test');
         $this->assertAuthenticatedAs($manajer);
 
         $this->post(route('platform.lokasi.store'), [
@@ -197,7 +197,7 @@ final class AlurSetupTenantTest extends TestCase
         $this->post(route('logout'))->assertRedirect(route('login'));
 
         // Langkah 7 — organisasi lain tidak melihat apa pun milik tenant baru.
-        $this->masuk($pembanding['organisasi']->Kode, $pembanding['pengguna']->Email);
+        $this->masuk($pembanding['pengguna']->Email);
         $this->assertAuthenticatedAs($pembanding['pengguna']);
 
         $this->get(route('aset.index'))
@@ -224,10 +224,9 @@ final class AlurSetupTenantTest extends TestCase
             ->where('OrganisasiId', $pembanding['organisasi']->Id)->count());
     }
 
-    private function masuk(string $kodeOrganisasi, string $email): void
+    private function masuk(string $email): void
     {
         $this->post(route('login.store'), [
-            'KodeOrganisasi' => $kodeOrganisasi,
             'Email' => $email,
             'KataSandi' => self::KATA_SANDI,
         ])->assertSessionHasNoErrors()->assertRedirect(route('dashboard'));

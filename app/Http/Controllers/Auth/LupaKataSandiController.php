@@ -22,7 +22,6 @@ final class LupaKataSandiController extends Controller
     public function store(Request $request, MintaResetKataSandi $aksi): RedirectResponse
     {
         $data = $request->validate([
-            'KodeOrganisasi' => ['required', 'string', 'max:50'],
             'Email' => ['required', 'email'],
         ]);
 
@@ -32,7 +31,7 @@ final class LupaKataSandiController extends Controller
         }
         RateLimiter::hit($kunci, 60);
 
-        $aksi->jalankan($data['KodeOrganisasi'], $data['Email']);
+        $aksi->jalankan($data['Email']);
 
         return back()->with('sukses', 'Bila akun ditemukan, tautan reset kata sandi sudah dikirim.');
     }

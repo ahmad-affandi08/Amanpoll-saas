@@ -63,7 +63,9 @@ export function Pengguna() {
         </P>
         <Daftar>
           <Butir>
-            <Ui>Email</Ui> harus unik dalam satu organisasi dan dipakai untuk masuk.
+            <Ui>Email</Ui> harus unik dalam satu organisasi dan dipakai untuk masuk. Pengguna masuk cukup
+            dengan email dan kata sandi, tanpa kode organisasi. Bila email yang sama terdaftar di beberapa
+            organisasi dengan kata sandi yang sama, ia diminta memilih organisasinya sesudah masuk.
           </Butir>
           <Butir>
             <Ui>Jenis</Ui> membedakan pengguna internal dari pihak luar seperti teknisi vendor.

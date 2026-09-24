@@ -3788,10 +3788,23 @@ Jebakan yang ditemukan:
 
 Aturan di PRD 8.1. Disetujui pemilik produk pada 24 September 2026. Halaman login yang ada tetap dipakai; hanya isian kode organisasinya dihapus.
 
-- [ ] Login dengan email dan kata sandi: satu akun cocok langsung masuk, beberapa akun cocok ke layar Pilih organisasi, tidak ada yang cocok memberi pesan umum. Pembatasan percobaan, catatan akses, "ingat saya", dan pengarahan Mode Lapangan tetap berlaku.
-- [ ] Layar Pilih organisasi: hanya organisasi akun yang kata sandinya cocok, disimpan sementara di sesi, server menolak akun di luar daftar.
-- [ ] Lupa kata sandi dengan email saja: tautan untuk setiap akun aktif ber-email itu, jawaban layar sama apa pun hasilnya.
-- [ ] Teks yang masih menyebut kode organisasi untuk masuk (pesan pendaftaran trial, panduan) diperbarui.
+- [x] Login dengan email dan kata sandi: satu akun cocok langsung masuk, beberapa akun cocok ke layar Pilih organisasi, tidak ada yang cocok memberi pesan umum. Pembatasan percobaan, catatan akses, "ingat saya", dan pengarahan Mode Lapangan tetap berlaku.
+- [x] Layar Pilih organisasi: hanya organisasi akun yang kata sandinya cocok, disimpan sementara di sesi, server menolak akun di luar daftar.
+- [x] Lupa kata sandi dengan email saja: tautan untuk setiap akun aktif ber-email itu, jawaban layar sama apa pun hasilnya.
+- [x] Teks yang masih menyebut kode organisasi untuk masuk (pesan pendaftaran trial, panduan) diperbarui.
+
+Pencarian akun ada di `PencariAkunMasuk`: akun Aktif di organisasi Aktif, dicari menurut email di luar konteks tenancy, lalu kata sandinya dicocokkan satu per satu. Layar Pilih organisasi memakai kartu yang sama dengan halaman login, bukan halaman login baru.
+
+Yang dipilih:
+- Daftar akun yang cocok disimpan di sesi selama lima menit, dan sesi di-regenerate saat daftar itu disimpan (penangkal session fixation). Saat memilih, akun dan organisasinya diperiksa ulang karena bisa dinonaktifkan di antara dua langkah.
+- Batas percobaan kini berkunci email + IP, dengan batas yang sama seperti sebelumnya.
+- Email yang tidak terdaftar tetap menghitung satu hash tiruan, supaya lama jawaban tidak membocorkan apakah email itu ada.
+- Indeks `IdxPenggunaEmail` ditambahkan, karena indeks unik `(OrganisasiId, Email)` tidak menolong pencarian yang tidak menyaring organisasi.
+- Halaman login kini menampilkan pesan sukses dari langkah sebelumnya (pendaftaran trial, reset kata sandi), yang sebelumnya tidak pernah tampil.
+
+Jebakan yang ditemukan:
+- Test "login meregenerasi sesi" hampa: setiap permintaan test sudah mendapat Id sesi baru. Kini cookie sesi dibawa eksplisit.
+
 
 ---
 

@@ -6,6 +6,8 @@ namespace Tests\Feature\Lapangan;
 
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Middleware\ArahkanPenggunaLapangan;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Http\UploadedFile;
@@ -30,6 +32,26 @@ final class PengalihanLapanganTest extends KasusLapangan
         $campuran = $this->penggunaMeja(['Aset.Lihat'], $this->penggunaDenganPeran(['TEKNISI']));
 
         $this->post('/login', $this->kredensial($campuran->Email))->assertRedirect('/');
+    }
+
+    /** Email yang sama di organisasi lain: tujuan sesudah layar Pilih organisasi tetap mengikuti akun yang dipilih. */
+    public function test_teknisi_murni_yang_memilih_organisasi_tetap_diarahkan_ke_mode_lapangan(): void
+    {
+        $teknisi = $this->penggunaDenganPeran(['TEKNISI']);
+        $organisasiLain = Organisasi::create(['Kode' => 'ORG-LAIN-'.uniqid(), 'Nama' => 'Organisasi Lain', 'Status' => 'Aktif']);
+        Pengguna::create([
+            'OrganisasiId' => $organisasiLain->Id,
+            'Nama' => 'Akun Kedua',
+            'Email' => $teknisi->Email,
+            'KataSandi' => 'rahasia',
+            'Status' => 'Aktif',
+        ]);
+
+        $this->post('/login', $this->kredensial($teknisi->Email))->assertRedirect(route('login.organisasi'));
+        $this->get('/login/organisasi')->assertOk();
+
+        $this->post('/login/organisasi', ['PenggunaId' => $teknisi->Id])->assertRedirect('/lapangan');
+        $this->assertAuthenticatedAs($teknisi);
     }
 
     /** `intended()` tetap dihormati; halaman dasbornya yang lalu dialihkan middleware. */
@@ -246,9 +268,9 @@ final class PengalihanLapanganTest extends KasusLapangan
                 ->where('jumlahBelumDibaca', 1));
     }
 
-    /** @return array{KodeOrganisasi: string, Email: string, KataSandi: string} */
+    /** @return array{Email: string, KataSandi: string} */
     private function kredensial(string $email): array
     {
-        return ['KodeOrganisasi' => $this->organisasi->Kode, 'Email' => $email, 'KataSandi' => 'rahasia'];
+        return ['Email' => $email, 'KataSandi' => 'rahasia'];
     }
 }

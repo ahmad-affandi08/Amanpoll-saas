@@ -152,7 +152,7 @@ final class DaftarkanTrial
         return $peran;
     }
 
-    /** Kode organisasi dipakai saat masuk, jadi harus terbaca manusia sekaligus unik. */
+    /** Kode organisasi tidak lagi dipakai saat masuk, tetapi tetap tampil di konsol platform: terbaca manusia sekaligus unik. */
     private function kodeUnik(string $nama): string
     {
         $dasar = Str::upper(Str::substr(Str::slug($nama, ''), 0, 8));

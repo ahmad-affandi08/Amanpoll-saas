@@ -89,7 +89,7 @@ final class AlurWebhookCobaUlangTest extends TestCase
 
         $konteks = $this->siapkanTenantIntegrasi();
         app(KonteksOrganisasi::class)->bersihkan();
-        $this->masuk($konteks['organisasi']->Kode, $konteks['pengguna']->Email);
+        $this->masuk($konteks['pengguna']->Email);
 
         // Langkah 1 — pengguna mendaftarkan endpoint penerima.
         $this->post(route('integrasi.panggilan-balik.store'), [
@@ -255,10 +255,9 @@ final class AlurWebhookCobaUlangTest extends TestCase
         $this->assertSame(1, $this->jumlahPeristiwaPembayaranBerhasil($organisasiId));
     }
 
-    private function masuk(string $kodeOrganisasi, string $email): void
+    private function masuk(string $email): void
     {
         $this->post(route('login.store'), [
-            'KodeOrganisasi' => $kodeOrganisasi,
             'Email' => $email,
             'KataSandi' => self::KATA_SANDI,
         ])->assertSessionHasNoErrors()->assertRedirect(route('dashboard'));

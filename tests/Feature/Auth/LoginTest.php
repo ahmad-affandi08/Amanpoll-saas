@@ -33,7 +33,6 @@ class LoginTest extends TestCase
     private function payloadLogin(array $override = []): array
     {
         return array_merge([
-            'KodeOrganisasi' => 'AMANPOLL',
             'Email' => 'admin@amanpoll.test',
             'KataSandi' => 'kata-sandi-benar',
         ], $override);
@@ -56,7 +55,9 @@ class LoginTest extends TestCase
         $this->get('/login');
         $idSessionSebelum = session()->getId();
 
-        $this->post('/login', $this->payloadLogin());
+        // Cookie sesi dibawa eksplisit: tanpa itu tiap permintaan test sudah mendapat Id baru.
+        $this->withCookie((string) config('session.cookie'), $idSessionSebelum)
+            ->post('/login', $this->payloadLogin());
 
         $this->assertNotSame($idSessionSebelum, session()->getId());
     }
@@ -67,17 +68,17 @@ class LoginTest extends TestCase
 
         $response = $this->post('/login', $this->payloadLogin(['KataSandi' => 'salah']));
 
-        $response->assertSessionHasErrors(['Email' => 'Organisasi, email, atau kata sandi tidak sesuai.']);
+        $response->assertSessionHasErrors(['Email' => 'Email atau kata sandi tidak sesuai.']);
         $this->assertGuest();
     }
 
-    public function test_login_gagal_dengan_pesan_generik_saat_kode_organisasi_salah(): void
+    public function test_login_gagal_dengan_pesan_generik_yang_sama_saat_email_tidak_terdaftar(): void
     {
         $this->buatPengguna();
 
-        $response = $this->post('/login', $this->payloadLogin(['KodeOrganisasi' => 'TIDAK-ADA']));
+        $response = $this->post('/login', $this->payloadLogin(['Email' => 'tidak-ada@amanpoll.test']));
 
-        $response->assertSessionHasErrors(['Email' => 'Organisasi, email, atau kata sandi tidak sesuai.']);
+        $response->assertSessionHasErrors(['Email' => 'Email atau kata sandi tidak sesuai.']);
         $this->assertGuest();
     }
 

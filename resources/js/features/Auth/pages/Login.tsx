@@ -1,5 +1,5 @@
 import { FormEvent } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,8 @@ const TAUTAN =
   'rounded-sm text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none';
 
 export default function AuthLogin() {
-  const form = useForm({ KodeOrganisasi: '', Email: '', KataSandi: '', IngatSaya: false });
+  const { props } = usePage<{ flash: { sukses?: string | null } }>();
+  const form = useForm({ Email: '', KataSandi: '', IngatSaya: false });
   const submit = (e: FormEvent) => {
     e.preventDefault();
     form.post(ruteAuth.login, { onFinish: () => form.reset('KataSandi') });
@@ -32,23 +33,20 @@ export default function AuthLogin() {
             <p className="text-sm text-muted-foreground">Masuk untuk melanjutkan pekerjaan operasional.</p>
           </div>
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="kode-organisasi">Kode Organisasi</Label>
-          <Input
-            id="kode-organisasi"
-            value={form.data.KodeOrganisasi}
-            onChange={(e) => form.setData('KodeOrganisasi', e.target.value)}
-            autoComplete="organization"
-          />
-          {form.errors.KodeOrganisasi && (
-            <p className="text-sm text-destructive">{form.errors.KodeOrganisasi}</p>
-          )}
-        </div>
+        {props.flash?.sukses && (
+          <p
+            role="status"
+            className="rounded-md border border-sukses-200 bg-sukses-50 p-3 text-sm text-sukses-700"
+          >
+            {props.flash.sukses}
+          </p>
+        )}
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
+            autoComplete="username"
             value={form.data.Email}
             onChange={(e) => form.setData('Email', e.target.value)}
           />

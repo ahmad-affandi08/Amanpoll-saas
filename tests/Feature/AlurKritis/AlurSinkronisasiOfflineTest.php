@@ -67,7 +67,6 @@ final class AlurSinkronisasiOfflineTest extends TestCase
 
         // Langkah 1 — teknisi masuk dan menarik paket offline sebelum turun ke lapangan.
         $this->post(route('login.store'), [
-            'KodeOrganisasi' => $organisasi->Kode,
             'Email' => $teknisi->Email,
             'KataSandi' => self::KATA_SANDI,
         ])->assertSessionHasNoErrors()->assertRedirect(route('dashboard'));

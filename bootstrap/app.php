@@ -67,8 +67,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: [PastikanLanggananMengizinkanTulis::class]);
 
         // Konsol platform punya halaman masuk sendiri. Tanpa ini, admin platform
-        // yang sesinya habis akan dilempar ke halaman masuk tenant, yang meminta
-        // kode organisasi — kredensial yang memang tidak ia miliki.
+        // yang sesinya habis akan dilempar ke halaman masuk tenant, yang mencari
+        // akun pengguna organisasi — kredensial yang memang tidak ia miliki.
         // Portal partner hidup di hostnya sendiri, jadi ia dikenali dari host, bukan dari jalurnya.
         $middleware->redirectGuestsTo(function (Request $request): string {
             if (app(PetaHost::class)->adalahHostPartner($request->getHost())) {

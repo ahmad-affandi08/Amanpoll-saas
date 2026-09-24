@@ -45,11 +45,11 @@ final class DaftarTrialController extends Controller
 
     public function store(DaftarTrialRequest $request, DaftarkanTrial $aksi): RedirectResponse
     {
-        $trial = $aksi->jalankan($request->validated(), $this->pengenalPengunjung($request));
+        $aksi->jalankan($request->validated(), $this->pengenalPengunjung($request));
 
         return redirect()
             ->route('login')
-            ->with('sukses', "Workspace Anda siap. Masuk dengan kode organisasi {$trial->organisasi?->Kode}.");
+            ->with('sukses', 'Workspace Anda siap. Masuk dengan email dan kata sandi yang Anda daftarkan.');
     }
 
     /** Pengenal kunjungan dibawa dari cookie berdomain induk supaya attribution tidak putus. */

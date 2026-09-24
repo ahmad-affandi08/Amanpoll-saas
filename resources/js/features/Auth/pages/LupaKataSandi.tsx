@@ -8,7 +8,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 export default function AuthLupaKataSandi() {
   const { props } = usePage<{ flash: { sukses?: string | null } }>();
-  const form = useForm({ KodeOrganisasi: '', Email: '' });
+  const form = useForm({ Email: '' });
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -24,7 +24,7 @@ export default function AuthLupaKataSandi() {
       >
         <KepalaHalaman
           judul="Lupa Kata Sandi"
-          deskripsi="Masukkan kode organisasi dan email untuk menerima tautan reset kata sandi."
+          deskripsi="Masukkan email akun Anda. Bila email itu terdaftar di beberapa organisasi, tautan reset dikirim untuk masing-masing."
           tanpaBreadcrumb
         />
         {props.flash?.sukses && (
@@ -35,18 +35,6 @@ export default function AuthLupaKataSandi() {
             {props.flash.sukses}
           </p>
         )}
-        <div className="space-y-1.5">
-          <Label htmlFor="kode-organisasi">Kode Organisasi</Label>
-          <Input
-            id="kode-organisasi"
-            autoComplete="organization"
-            value={form.data.KodeOrganisasi}
-            onChange={(e) => form.setData('KodeOrganisasi', e.target.value)}
-          />
-          {form.errors.KodeOrganisasi && (
-            <p className="text-sm text-destructive">{form.errors.KodeOrganisasi}</p>
-          )}
-        </div>
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input

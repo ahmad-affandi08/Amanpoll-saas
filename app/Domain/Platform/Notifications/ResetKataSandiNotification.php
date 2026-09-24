@@ -29,10 +29,12 @@ final class ResetKataSandiNotification extends Notification
     {
         /** @var Pengguna $notifiable */
         $url = url('/reset-kata-sandi/'.$notifiable->Id.'/'.$this->tokenMentah);
+        $namaOrganisasi = (string) $notifiable->organisasi?->Nama;
 
         return (new MailMessage)
-            ->subject('Permintaan Reset Kata Sandi Amanpoll')
-            ->line('Kami menerima permintaan reset kata sandi untuk akun Anda.')
+            ->subject("Permintaan Reset Kata Sandi Amanpoll — {$namaOrganisasi}")
+            ->line("Kami menerima permintaan reset kata sandi untuk akun Anda di organisasi {$namaOrganisasi}.")
+            ->line('Bila email Anda terdaftar di beberapa organisasi, tiap organisasi mengirim tautannya sendiri.')
             ->action('Reset Kata Sandi', $url)
             ->line('Tautan ini berlaku selama 60 menit. Abaikan email ini bila Anda tidak meminta reset kata sandi.');
     }

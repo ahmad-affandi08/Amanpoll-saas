@@ -16,6 +16,14 @@ Route::domain(app(PetaHost::class)->dashboard())->group(function (): void {
             ->middleware('throttle:masuk')
             ->name('login.store');
 
+        // Layar Pilih organisasi bila email yang sama cocok di beberapa organisasi (PRD 8.1).
+        Route::get('/login/organisasi', [LoginController::class, 'pilihOrganisasi'])->name('login.organisasi');
+        Route::post('/login/organisasi', [LoginController::class, 'masukKeOrganisasi'])
+            ->middleware('throttle:masuk')
+            ->name('login.organisasi.store');
+        Route::delete('/login/organisasi', [LoginController::class, 'batalPilihOrganisasi'])
+            ->name('login.organisasi.batal');
+
         // Formulir trial ada di host dashboard, bukan host publik (MARKETING.md 34.1).
         Route::get('/daftar', [DaftarTrialController::class, 'create'])->name('daftar');
         Route::post('/daftar', [DaftarTrialController::class, 'store'])

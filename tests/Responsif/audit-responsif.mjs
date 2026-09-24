@@ -73,7 +73,6 @@ const MIN_SENTUH_TABLET = 24;
 
 async function masuk(page) {
   await page.goto(`${PANGKAL}/login`, { waitUntil: 'networkidle' });
-  await page.getByLabel('Kode Organisasi').fill(process.env.AUDIT_ORG ?? 'AMANPOLL');
   await page.getByLabel('Email').fill(process.env.AUDIT_EMAIL ?? 'admin@amanpoll.test');
   await page.getByLabel('Kata Sandi').fill(process.env.AUDIT_PASS ?? 'password');
   await page.getByRole('button', { name: 'Masuk' }).click();
