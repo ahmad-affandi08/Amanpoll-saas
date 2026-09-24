@@ -7,7 +7,12 @@ import { Sobekan } from '@/features/Lapangan/components/Tiket';
 import { ikonKategori } from '@/components/shared/ikon-kategori';
 import type { LaporanPelapor } from '@/features/Lapangan/types';
 import { JejakLaporan } from '@/features/Lapangan/components/pelapor/JejakLaporan';
-import { namaDepan, tampilanStatus, teksLangkah } from '@/features/Lapangan/components/pelapor/status';
+import {
+  namaDepan,
+  perluKonfirmasi,
+  tampilanStatus,
+  teksLangkah,
+} from '@/features/Lapangan/components/pelapor/status';
 import { waktuSingkat } from '@/features/Lapangan/components/pelapor/waktu';
 
 /** Ikon 3D laporan: dari jenis aset, lalu nama aset, lalu kategori keluhan. */
@@ -19,14 +24,19 @@ export function ikonLaporan(laporan: Pick<LaporanPelapor, 'Aset' | 'KategoriNama
 }
 
 /** Tujuan saat tiket diketuk: laporan yang menunggu konfirmasi langsung ke layar konfirmasi. */
-export function tujuanLaporan(laporan: Pick<LaporanPelapor, 'Id' | 'Status'>): string {
-  return laporan.Status === 'Selesai'
+export function tujuanLaporan(
+  laporan: Pick<LaporanPelapor, 'Id' | 'Status' | 'KonfirmasiPekerjaan'>,
+): string {
+  return perluKonfirmasi(laporan)
     ? ruteLapangan.pelapor.konfirmasi(laporan.Id)
     : ruteLapangan.pelapor.laporanDetail(laporan.Id);
 }
 
 function keteranganSingkat(laporan: LaporanPelapor, ragam: 'beranda' | 'daftar'): string {
   const teknisi = laporan.Teknisi?.Nama;
+  if (laporan.KonfirmasiPekerjaan === 'Diminta') {
+    return `Selesai dikerjakan${teknisi ? ` ${namaDepan(teknisi)}` : ''} · menunggu konfirmasimu`;
+  }
   switch (laporan.Status) {
     case 'Selesai':
       return ragam === 'beranda'
@@ -49,10 +59,11 @@ interface PropsTiketLaporan {
 
 /** Tiket laporan keluhan milik pelapor (papan pelapor layar 02 dan 09). Seluruh tiket dapat diketuk. */
 export function TiketLaporan({ laporan, ragam = 'daftar' }: PropsTiketLaporan) {
-  const status = tampilanStatus(laporan.Status);
+  // Permintaan konfirmasi tahap pekerjaan (PRD 8.22) tampil sama dengan keluhan yang menunggu konfirmasi.
+  const status = tampilanStatus(laporan.KonfirmasiPekerjaan === 'Diminta' ? 'Selesai' : laporan.Status);
   const ikon = ikonLaporan(laporan);
-  const perluKonfirmasi = laporan.Status === 'Selesai';
-  const berjalan = !perluKonfirmasi && !['Ditutup', 'Ditolak', 'Dibatalkan'].includes(laporan.Status);
+  const menungguJawaban = perluKonfirmasi(laporan);
+  const berjalan = !menungguJawaban && !['Ditutup', 'Ditolak', 'Dibatalkan'].includes(laporan.Status);
 
   const kepala = (
     <div className="flex items-center justify-between gap-3">
@@ -68,7 +79,7 @@ export function TiketLaporan({ laporan, ragam = 'daftar' }: PropsTiketLaporan) {
       href={tujuanLaporan(laporan)}
       className={cn(
         'block rounded-[20px] bg-white shadow-lapangan-kartu transition-shadow focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-lapangan-biru-500/50',
-        perluKonfirmasi && 'ring-2 ring-lapangan-oranye-100',
+        menungguJawaban && 'ring-2 ring-lapangan-oranye-100',
       )}
     >
       <div className={cn('px-4 pt-4', ragam === 'daftar' && berjalan ? 'pb-3' : 'pb-4')}>
@@ -96,7 +107,7 @@ export function TiketLaporan({ laporan, ragam = 'daftar' }: PropsTiketLaporan) {
                 {keteranganSingkat(laporan, ragam)}
               </p>
             </div>
-            {ragam === 'beranda' && perluKonfirmasi && (
+            {ragam === 'beranda' && menungguJawaban && (
               <span className="inline-flex h-11 shrink-0 items-center rounded-xl bg-lapangan-oranye-700 px-4 text-sm font-bold text-white shadow-lapangan-oranye">
                 Konfirmasi
               </span>

@@ -16,6 +16,7 @@ import { waktuRelatif } from '@/features/Lapangan/waktu';
 import { IsiAsetDitemukan } from '@/features/Lapangan/components/teknisi/IsiAsetDitemukan';
 import { useKonteksOffline } from '@/features/Lapangan/components/teknisi/sesiKerja';
 import { usePeringatanOffline } from '@/features/Lapangan/components/teknisi/umum';
+import { tautanKonfirmasiPenerima } from '@/features/Lapangan/components/pelapor/pindai';
 
 const KUNCI_TERAKHIR = 'teknisi:terakhir-dipindai';
 
@@ -136,6 +137,12 @@ function IsiPindai({ asetDitemukan, galatPindai, tanpaIzin }: PropsPindaiTeknisi
   }, [konteks, asetDitemukan?.Id]);
 
   const tanganiHasil = (teks: string) => {
+    // QR konfirmasi penerima dari HP teknisi lain (PRD 8.22) dibuka sebagai halaman konfirmasi.
+    const konfirmasi = tautanKonfirmasiPenerima(teks);
+    if (konfirmasi) {
+      router.visit(konfirmasi);
+      return;
+    }
     const kode = kodeDariPindaian(teks);
     if (navigator.onLine) {
       router.visit(ruteLapangan.teknisi.pindaiKode(kode), { preserveState: true, replace: true });

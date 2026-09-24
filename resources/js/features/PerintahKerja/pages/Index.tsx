@@ -212,6 +212,9 @@ export default function PerintahKerjaIndex({
                     </Link>
                     <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[item.Prioritas]}>{item.Prioritas}</Badge>
                     <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
+                    {item.MenungguKonfirmasiPenerima && (
+                      <Badge variant="perhatian">Menunggu konfirmasi penerima</Badge>
+                    )}
                   </div>
 
                   <p className="text-sm font-medium text-foreground">{item.Judul}</p>
@@ -309,6 +312,9 @@ export default function PerintahKerjaIndex({
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
+                        {item.MenungguKonfirmasiPenerima && (
+                          <div className="mt-1 text-xs text-safety-700">Menunggu konfirmasi penerima</div>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         {item.Penugasan && item.Penugasan.length > 0 ? (

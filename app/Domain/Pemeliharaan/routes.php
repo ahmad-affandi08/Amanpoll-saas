@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Pemeliharaan\Http\Controllers\KategoriKeluhanController;
 use App\Domain\Pemeliharaan\Http\Controllers\KeluhanController;
 use App\Domain\Pemeliharaan\Http\Controllers\KodeKegagalanController;
+use App\Domain\Pemeliharaan\Http\Controllers\KonfirmasiPenerimaController;
 use App\Domain\Pemeliharaan\Http\Controllers\OperasionalPerintahKerjaController;
 use App\Domain\Pemeliharaan\Http\Controllers\PenugasanPerintahKerjaController;
 use App\Domain\Pemeliharaan\Http\Controllers\PerintahKerjaController;
@@ -53,6 +54,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/perintah-kerja/{perintahKerja}/suku-cadang', [OperasionalPerintahKerjaController::class, 'sukuCadang'])->name('perintah-kerja.suku-cadang');
         Route::post('/perintah-kerja/{perintahKerja}/biaya', [OperasionalPerintahKerjaController::class, 'biaya'])->name('perintah-kerja.biaya');
         Route::put('/perintah-kerja/{perintahKerja}/analisis-kegagalan', [OperasionalPerintahKerjaController::class, 'analisis'])->name('perintah-kerja.analisis');
+        // Gambar tanda tangan yang dicap pada konfirmasi penerima (PRD 8.22); policy `view` perintah kerjanya.
+        Route::get('/perintah-kerja/{perintahKerja}/konfirmasi-penerima/{konfirmasi}/tanda-tangan', [KonfirmasiPenerimaController::class, 'tandaTangan'])->name('perintah-kerja.konfirmasi-penerima.tanda-tangan');
 
         Route::get('/kode-kegagalan', [KodeKegagalanController::class, 'index'])->name('kode-kegagalan.index');
         // Sebelum '/kode-kegagalan/{kodeKegagalan}' supaya 'ekspor' tidak tertelan sebagai id.

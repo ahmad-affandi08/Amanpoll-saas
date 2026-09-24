@@ -7,6 +7,7 @@ use App\Domain\Kepatuhan\Http\Controllers\IntegrasiEksternalController;
 use App\Domain\Sinkronisasi\Http\Controllers\AntrianSinkronisasiController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganAkunController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganBerandaController;
+use App\Domain\Sinkronisasi\Http\Controllers\LapanganKonfirmasiPenerimaController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganNotifikasiController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporAsetController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporBerandaController;
@@ -17,6 +18,7 @@ use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporPantauController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTampilanController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiAsetController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiBerandaController;
+use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiKonfirmasiPenerimaController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiKonflikController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiPindaiController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiSiapkanController;
@@ -75,6 +77,13 @@ Route::middleware(['web', 'auth', 'organisasi'])
         // Pilihan tampilan pengguna campuran; pagarnya ada di controller.
         Route::post('/tampilan', LapanganTampilanController::class)->name('tampilan');
 
+        // Konfirmasi penerima hasil pindai QR (PRD 8.22): terbuka bagi pengguna lapangan
+        // murni dan pengguna dasbor, jadi di luar pagar `mode.lapangan`. Tanda tangan
+        // tautan, tenancy, dan policy yang menjaga; lihat controllernya.
+        Route::get('/konfirmasi-penerima/{perintahKerja}', [LapanganKonfirmasiPenerimaController::class, 'show'])->name('konfirmasi-penerima');
+        Route::post('/konfirmasi-penerima/{perintahKerja}', [LapanganKonfirmasiPenerimaController::class, 'store'])->name('konfirmasi-penerima.simpan');
+        Route::get('/konfirmasi-penerima/{perintahKerja}/hasil', [LapanganKonfirmasiPenerimaController::class, 'hasil'])->name('konfirmasi-penerima.hasil');
+
         Route::middleware('mode.lapangan')->group(function (): void {
             Route::get('/', LapanganBerandaController::class)->name('beranda');
             Route::get('/notifikasi', LapanganNotifikasiController::class)->name('notifikasi');
@@ -93,6 +102,10 @@ Route::middleware(['web', 'auth', 'organisasi'])
                 Route::get('/tugas/{perintahKerja}', [LapanganTeknisiTugasController::class, 'show'])->name('tugas.show');
                 Route::get('/tugas/{perintahKerja}/kerjakan', [LapanganTeknisiTugasController::class, 'kerjakan'])->name('tugas.kerjakan');
                 Route::get('/tugas/{perintahKerja}/suku-cadang', [LapanganTeknisiSukuCadangController::class, 'cari'])->name('tugas.suku-cadang');
+                // Konfirmasi penerima dari HP teknisi (PRD 8.22): QR bertoken, status, tanda tangan tamu.
+                Route::get('/tugas/{perintahKerja}/konfirmasi-penerima', [LapanganTeknisiKonfirmasiPenerimaController::class, 'status'])->name('tugas.konfirmasi-penerima');
+                Route::post('/tugas/{perintahKerja}/konfirmasi-penerima/qr', [LapanganTeknisiKonfirmasiPenerimaController::class, 'qr'])->name('tugas.konfirmasi-penerima.qr');
+                Route::post('/tugas/{perintahKerja}/konfirmasi-penerima/tanda-tangan', [LapanganTeknisiKonfirmasiPenerimaController::class, 'tandaTangan'])->name('tugas.konfirmasi-penerima.tanda-tangan');
                 Route::get('/suku-cadang', [LapanganTeknisiSukuCadangController::class, 'index'])->name('suku-cadang');
                 // `pindai?aset=<AsetId>` adalah tujuan pengalihan `aset.pindai` untuk pengguna mode Teknisi.
                 Route::get('/pindai', LapanganTeknisiPindaiController::class)->name('pindai');
@@ -117,6 +130,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
                 Route::get('/laporan/{keluhan}/terkirim', [LapanganPelaporLaporanController::class, 'terkirim'])->name('laporan.terkirim');
                 Route::get('/laporan/{keluhan}/konfirmasi', [LapanganPelaporKonfirmasiController::class, 'create'])->name('laporan.konfirmasi');
                 Route::post('/laporan/{keluhan}/konfirmasi', [LapanganPelaporKonfirmasiController::class, 'store'])->name('laporan.konfirmasi.store');
+                // Konfirmasi pelapor di tahap perintah kerja (PRD 8.22, cara 1).
+                Route::post('/laporan/{keluhan}/konfirmasi-pekerjaan', [LapanganPelaporKonfirmasiController::class, 'storePekerjaan'])->name('laporan.konfirmasi-pekerjaan.store');
                 Route::get('/laporan/{keluhan}/terima-kasih', [LapanganPelaporKonfirmasiController::class, 'terimaKasih'])->name('laporan.terima-kasih');
                 Route::get('/aset', LapanganPelaporAsetController::class)->name('aset');
                 // Garis waktu status keluhan rekan dalam lingkup pelapor (PRD 8.20).

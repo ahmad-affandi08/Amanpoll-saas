@@ -3862,14 +3862,26 @@ Aturan di PRD 8.22. Disetujui pemilik produk pada 24 September 2026. Dikerjakan 
 
 ## 43.01 Tanda tangan tersimpan di profil
 
-- [ ] Kolom `Pengguna.TandaTanganBerkasId`, Action simpan/hapus, rute profil, dan komponen pad tanda tangan bersama.
-- [ ] Kelola tanda tangan di profil dasbor dan halaman Akun Mode Lapangan.
+- [x] Kolom `Pengguna.TandaTanganBerkasId`, Action simpan/hapus, rute profil, dan komponen pad tanda tangan bersama.
+- [x] Kelola tanda tangan di profil dasbor dan halaman Akun Mode Lapangan.
 
 ## 43.02 Konfirmasi penerima
 
-- [ ] Catatan konfirmasi per perintah kerja; tiga cara (pelapor, pindai QR bertoken, tanda tangan di HP teknisi); "gambar sekali lalu tersimpan".
-- [ ] Setelan "Wajibkan konfirmasi penerima" menggantikan setelan tanda tangan; penjaga pindah ke verifikasi koordinator; keterangan "Menunggu konfirmasi penerima".
-- [ ] Penggabungan dengan konfirmasi keluhan pelapor, kartu konfirmasi di detail perintah kerja, dan layar Mode Lapangan terkait.
+- [x] Catatan konfirmasi per perintah kerja; tiga cara (pelapor, pindai QR bertoken, tanda tangan di HP teknisi); "gambar sekali lalu tersimpan".
+- [x] Setelan "Wajibkan konfirmasi penerima" menggantikan setelan tanda tangan; penjaga pindah ke verifikasi koordinator; keterangan "Menunggu konfirmasi penerima".
+- [x] Penggabungan dengan konfirmasi keluhan pelapor, kartu konfirmasi di detail perintah kerja, dan layar Mode Lapangan terkait.
+
+Tanda tangan tersimpan dikerjakan koordinator, konfirmasi penerima oleh satu agen, secara paralel dengan kontrak yang ditetapkan lebih dulu. Tinjauan dan gate penuh oleh koordinator (2133 test, PHPStan 164).
+
+Yang dipilih:
+- Tanda tangan tersimpan hanya dicap ke konfirmasi yang dilakukan pemiliknya dari akunnya sendiri. Rute profil tidak menerima parameter pengguna, sehingga tidak ada jalan ke tanda tangan orang lain. Gambar tanda tangan di detail perintah kerja disajikan lewat rute terotorisasi per perintah kerja.
+- Konfirmasi merujuk berkas tanda tangan yang dipakai saat itu. Mengganti atau menghapus tanda tangan profil tidak menghapus berkas lama, sehingga konfirmasi lama tetap utuh.
+- Satu konfirmasi "Diterima" yang berlaku per siklus penyelesaian (kolom `Berlaku`). Perintah kerja yang kembali ke Dikerjakan dari jalur mana pun mencabutnya; semua itu terjadi di `UbahStatusPerintahKerja`.
+- Tanda tangan di HP teknisi (tamu) boleh sejak pekerjaan dipegang teknisi, karena Ringkasan mengambil tanda tangan sebelum "Kirim laporan" dan antrean offline mengirim draf lebih dulu. Pelapor dan pindai QR hanya saat Menunggu Verifikasi.
+- Token QR dibuat dengan `URL::temporarySignedRoute` relatif (tanpa host, aman di balik proxy), berlaku 10 menit. Halamannya berada di luar pagar mode lapangan supaya bisa dibuka pengguna lapangan murni maupun pengguna dasbor. Teknisi yang ditugaskan tidak bisa mengonfirmasi pekerjaannya sendiri.
+- "Sudah beres" dari akun pelapor menutup keluhannya otomatis saat perintah kerja diverifikasi, dengan penilaian yang ikut; pelapor tidak dimintai konfirmasi kedua.
+- Penjaga pindah dari penyelesaian teknisi ke verifikasi koordinator. Teknisi tidak pernah lagi tertahan karena tanda tangan, sehingga penolakan palsu di antrean offline hilang.
+
 
 ---
 

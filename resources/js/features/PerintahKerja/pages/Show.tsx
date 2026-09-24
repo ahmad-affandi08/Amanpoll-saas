@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type {
   KodeKegagalan,
+  KonfirmasiPenerimaPerintahKerja,
   PenugasanPerintahKerjaItem,
   PerintahKerja,
   StatusPerintahKerja,
@@ -19,6 +20,7 @@ import {
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DialogUbahStatus } from '@/features/PerintahKerja/components/DialogUbahStatus';
+import { KartuKonfirmasiPenerima } from '@/features/PerintahKerja/components/KartuKonfirmasiPenerima';
 import { DialogTugaskanTeknisi } from '@/features/PerintahKerja/components/DialogTugaskanTeknisi';
 import { DialogAlihkanUnitPengelola } from '@/features/PerintahKerja/components/DialogAlihkanUnitPengelola';
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
@@ -54,6 +56,12 @@ interface Props {
   gudang: GudangOpsi[];
   penyedia: PenyediaOpsi[];
   kodeKegagalan: KodeKegagalan[];
+  /** Seluruh jawaban penerima, terbaru dulu (PRD 8.22). */
+  konfirmasiPenerima: KonfirmasiPenerimaPerintahKerja[];
+  /** Organisasi mewajibkan konfirmasi penerima sebelum verifikasi. */
+  konfirmasiWajib: boolean;
+  /** Alasan verifikasi ke Selesai dikunci, atau `null` bila boleh. */
+  alasanVerifikasiDiblokir: string | null;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
@@ -83,6 +91,9 @@ export default function PerintahKerjaShow({
   pilihanUnitPengelola,
   stok,
   kodeKegagalan,
+  konfirmasiPenerima,
+  konfirmasiWajib,
+  alasanVerifikasiDiblokir,
   wajib,
 }: Props) {
   const dapatDialihkan =
@@ -168,6 +179,9 @@ export default function PerintahKerjaShow({
             {perintahKerja.NomorKeluhan && (
               <Badge variant="info">Keluhan: {perintahKerja.NomorKeluhan}</Badge>
             )}
+            {perintahKerja.MenungguKonfirmasiPenerima && (
+              <Badge variant="perhatian">Menunggu konfirmasi penerima</Badge>
+            )}
           </>
         }
         deskripsi={
@@ -211,6 +225,7 @@ export default function PerintahKerjaShow({
               perintahKerja={perintahKerja}
               transisi={transisiDiizinkan}
               wajib={wajib.status}
+              alasanVerifikasiDiblokir={alasanVerifikasiDiblokir}
             />
           </>
         }
@@ -512,6 +527,13 @@ export default function PerintahKerjaShow({
 
         {/* KOLOM KANAN / SIDEBAR */}
         <div className="space-y-6">
+          {/* KONFIRMASI PENERIMA (PRD 8.22) */}
+          <KartuKonfirmasiPenerima
+            perintahKerja={perintahKerja}
+            konfirmasi={konfirmasiPenerima}
+            wajib={konfirmasiWajib}
+          />
+
           {/* PENUGASAN TEKNISI */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">

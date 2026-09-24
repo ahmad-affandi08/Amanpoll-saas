@@ -38,6 +38,13 @@ final class LapanganPelaporLaporanController extends Controller
             ->pluck('Jumlah', 'Status');
         $hitung = fn (array $status): int => (int) collect($status)->sum(fn (StatusKeluhan $satu): int => (int) ($jumlah[$satu->value] ?? 0));
 
+        $terbuka = array_values((clone $kueri)
+            ->whereIn('Status', [StatusKeluhan::Diterima->value, StatusKeluhan::Diproses->value])
+            ->pluck('Id')
+            ->map(fn (mixed $id): string => (string) $id)
+            ->all());
+        $pekerjaanDiminta = count(array_keys($penyusun->konfirmasiPekerjaan($terbuka, $pengguna->Id), 'Diminta'));
+
         $laporan = (clone $kueri)
             ->latest('DilaporkanPada')
             ->orderBy('Id')
@@ -50,7 +57,8 @@ final class LapanganPelaporLaporanController extends Controller
             'jumlah' => [
                 // Yang menunggu konfirmasi masih aktif bagi pelapor (papan pelapor layar 09).
                 'Aktif' => $hitung([...PenyusunLayarPelapor::STATUS_TERBUKA, StatusKeluhan::Selesai]),
-                'PerluKonfirmasi' => $hitung([StatusKeluhan::Selesai]),
+                // Keluhan Selesai, ditambah pekerjaan yang menunggu jawaban pelapor (PRD 8.22).
+                'PerluKonfirmasi' => $hitung([StatusKeluhan::Selesai]) + $pekerjaanDiminta,
                 'Selesai' => $hitung([StatusKeluhan::Ditutup, StatusKeluhan::Ditolak, StatusKeluhan::Dibatalkan]),
             ],
         ]);
@@ -67,6 +75,7 @@ final class LapanganPelaporLaporanController extends Controller
             'laporan' => [
                 ...$penyusun->ringkasLaporan($keluhan),
                 'Teknisi' => $penyusun->teknisiUntuk([$keluhan->Id])[$keluhan->Id] ?? null,
+                'KonfirmasiPekerjaan' => $penyusun->konfirmasiPekerjaan([$keluhan->Id], $pengguna->Id)[$keluhan->Id] ?? null,
                 'LokasiLabel' => $penyusun->labelLokasi($penyusun->cariLokasi($keluhan->LokasiId)),
             ],
             'riwayat' => $penyusun->riwayat($keluhan, $pengguna),

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ChevronRight, ClockAlert, Siren } from 'lucide-react';
+import { ChevronRight, ClockAlert, Hourglass, Siren } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { ChipStatus, labelStatus } from '@/features/Lapangan/components/ChipStatus';
@@ -135,6 +135,12 @@ export function KartuTiketTeknisi({
               ) : null
             }
           />
+          {tiket.MenungguKonfirmasiPenerima && (
+            <p className="mt-2 flex items-center gap-1.5 text-[13px] font-semibold text-lapangan-kuning-700">
+              <Hourglass aria-hidden className="size-4" />
+              Menunggu konfirmasi penerima
+            </p>
+          )}
           {catatan}
         </>
       }

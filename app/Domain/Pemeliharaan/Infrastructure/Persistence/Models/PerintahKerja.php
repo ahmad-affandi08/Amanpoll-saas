@@ -169,6 +169,16 @@ final class PerintahKerja extends ModelDasar implements BerlingkupUnit
         return $this->hasMany(RiwayatStatusPerintahKerja::class, 'PerintahKerjaId', 'Id')->oldest('DiubahPada');
     }
 
+    /**
+     * Seluruh jawaban penerima, termasuk siklus penyelesaian sebelumnya (PRD 8.22).
+     *
+     * @return HasMany<KonfirmasiPenerimaPerintahKerja, $this>
+     */
+    public function konfirmasiPenerima(): HasMany
+    {
+        return $this->hasMany(KonfirmasiPenerimaPerintahKerja::class, 'PerintahKerjaId', 'Id');
+    }
+
     /** @return HasMany<WaktuKerja, $this> */
     public function waktuKerja(): HasMany
     {

@@ -131,8 +131,6 @@ export interface PaketOffline {
   DaftarPeriksa: DaftarPeriksaOffline[];
   Token: Record<string, string>;
   OperasiDidukung: OperasiOffline[];
-  /** Setelan organisasi untuk layar tanpa sinyal; kosong pada paket lama yang tersimpan sebelum 39.10. */
-  Pengaturan?: { TandaTanganPenerimaWajib: boolean };
   DibuatPada: string;
 }
 

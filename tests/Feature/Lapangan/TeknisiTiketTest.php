@@ -160,9 +160,10 @@ final class TeknisiTiketTest extends KasusTeknisi
                 ->component('Lapangan/Teknisi/Kerjakan')
                 ->has('daftarPeriksa.Butir', 2)
                 ->where('tiket.StatusTujuan', ['MenungguSukuCadang', 'MenungguPenyedia', 'Dijeda', 'MenungguVerifikasi'])
-                ->has('foto', 2)
-                ->where('foto.0.Kategori', 'FotoSebelum')
-                ->where('foto.1.Kategori', 'TandaTangan'));
+                // Lampiran TandaTangan lama tidak lagi ditampilkan: tanda tangan penerima kini
+                // konfirmasi penerima, bukan lampiran (PRD 8.22).
+                ->has('foto', 1)
+                ->where('foto.0.Kategori', 'FotoSebelum'));
     }
 
     /**

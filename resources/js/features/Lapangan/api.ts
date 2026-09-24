@@ -29,6 +29,12 @@ export const ruteLapangan = {
   /** `lapangan.tampilan` (POST): pengguna campuran berpindah Mode Lapangan ⇄ dasbor. */
   tampilan: '/lapangan/tampilan',
 
+  /** Halaman konfirmasi hasil pindai QR (PRD 8.22); jalurnya lengkap dengan tanda tangan tautan dari server. */
+  konfirmasiPenerimaHasil: (perintahKerjaId: string) =>
+    `/lapangan/konfirmasi-penerima/${perintahKerjaId}/hasil`,
+  /** Pola jalur QR konfirmasi penerima, untuk pemindai di dalam aplikasi. */
+  polaKonfirmasiPenerima: /\/lapangan\/konfirmasi-penerima\/[^/?#]+\?[^#\s]*signature=/,
+
   // Teknisi (C)
   teknisi: {
     beranda: '/lapangan/teknisi',
@@ -62,6 +68,11 @@ export const ruteLapangan = {
     laksanakanInspeksi: ruteInspeksi.laksanakan,
     /** POST `Foto[]`: foto aset dari HP (policy `tambahFoto`: teknisi yang ditugaskan pada tiket aktif aset itu). */
     fotoAset: ruteAset.foto,
+    /** Konfirmasi penerima (PRD 8.22): JSON status, POST QR bertoken, POST tanda tangan tamu (cara 3). */
+    konfirmasiPenerima: (id: string) => `/lapangan/teknisi/tugas/${id}/konfirmasi-penerima`,
+    konfirmasiPenerimaQr: (id: string) => `/lapangan/teknisi/tugas/${id}/konfirmasi-penerima/qr`,
+    konfirmasiPenerimaTandaTangan: (id: string) =>
+      `/lapangan/teknisi/tugas/${id}/konfirmasi-penerima/tanda-tangan`,
   },
 
   // Pelapor (D)
@@ -78,6 +89,8 @@ export const ruteLapangan = {
     laporanDetail: (id: string) => `/lapangan/pelapor/laporan/${id}`,
     terkirim: (id: string) => `/lapangan/pelapor/laporan/${id}/terkirim`,
     konfirmasi: (id: string) => `/lapangan/pelapor/laporan/${id}/konfirmasi`,
+    /** POST jawaban pelapor di tahap perintah kerja (PRD 8.22, cara 1). */
+    konfirmasiPekerjaan: (id: string) => `/lapangan/pelapor/laporan/${id}/konfirmasi-pekerjaan`,
     terimaKasih: (id: string) => `/lapangan/pelapor/laporan/${id}/terima-kasih`,
     /** `lapangan.pelapor.pantau`: garis waktu status laporan rekan; milik sendiri dialihkan ke Lacak. */
     pantau: (id: string) => `/lapangan/pelapor/pantau/${id}`,

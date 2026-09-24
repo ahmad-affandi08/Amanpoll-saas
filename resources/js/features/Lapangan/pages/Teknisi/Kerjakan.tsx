@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { http } from '@/lib/http';
 import { hapusMutasi } from '@/lib/penyimpanan-offline';
 import { cn } from '@/lib/utils';
+import type { KendaliPadTandaTangan } from '@/components/shared/PadTandaTangan';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
 import KerangkaLapangan from '@/layouts/KerangkaLapangan';
@@ -25,7 +26,7 @@ import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
 import { Ikon3D } from '@/components/shared/Ikon3D';
-import { AreaTiket, IsianTiket, MasukanTiket } from '@/features/Lapangan/components/IsianTiket';
+import { AreaTiket, IsianTiket } from '@/features/Lapangan/components/IsianTiket';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';
 import { Tiket } from '@/features/Lapangan/components/Tiket';
@@ -39,7 +40,10 @@ import type {
 import { jamPendek } from '@/features/Lapangan/waktu';
 import { useAksiTiket } from '@/features/Lapangan/components/teknisi/aksiTiket';
 import { BarisDikte } from '@/features/Lapangan/components/teknisi/BarisDikte';
-import { KanvasTandaTangan } from '@/features/Lapangan/components/teknisi/KanvasTandaTangan';
+import {
+  IsianTandaTanganTamu,
+  KartuKonfirmasiPenerimaTeknisi,
+} from '@/features/Lapangan/components/teknisi/KonfirmasiPenerimaTeknisi';
 import { labelStatusTiket } from '@/features/Lapangan/components/teknisi/KartuTiketTeknisi';
 import { LembarMintaSukuCadang } from '@/features/Lapangan/components/teknisi/LembarMintaSukuCadang';
 import {
@@ -135,7 +139,7 @@ export default function KerjakanTeknisi(props: PropsKerjakanTeknisi) {
           </TombolLapangan>
         }
       >
-        <LayarSelesai {...props} sesiKerja={sesiKerja} setLangkah={setLangkah} />
+        <LayarSelesai {...props} sesiKerja={sesiKerja} fotoHook={foto} setLangkah={setLangkah} />
       </KerangkaLapangan>
     );
   }
@@ -1113,41 +1117,21 @@ function RuteKerja({
 }
 
 function LangkahRingkasan(props: PropsIsi) {
-  const {
-    tiket,
-    daftarPeriksa,
-    permintaanSukuCadang,
-    foto,
-    fotoHook,
-    pengawas,
-    sesiKerja,
-    analisis,
-    setLangkah,
-  } = props;
-  const { antrian, antrikan, daring, dorong, paket } = useSinkronisasiOffline();
+  const { tiket, daftarPeriksa, permintaanSukuCadang, foto, fotoHook, sesiKerja, analisis, setLangkah } =
+    props;
+  const { antrian, antrikan, daring, dorong } = useSinkronisasiOffline();
   const konteksOffline = useKonteksOffline();
   const { detik } = useDetikKerja(props, sesiKerja.sesi);
   const [kondisi, setKondisi] = useState<string>(sesiKerja.sesi.Kondisi ?? KONDISI_ASET[0]);
-  const [namaPengawas, setNamaPengawas] = useState(sesiKerja.sesi.Pengawas?.Nama ?? pengawas?.Nama ?? '');
-  const [tandaTangan, setTandaTangan] = useState<Blob | null>(null);
-  /** "Ulangi" ditekan: tanda tangan lama (draf/server) tidak dihitung lagi sampai digores ulang. */
-  const [kanvasDikosongkan, setKanvasDikosongkan] = useState(false);
-  const [ubahNama, setUbahNama] = useState(false);
   const [mengirim, setMengirim] = useState(false);
+  // Konfirmasi penerima cara 3 (PRD 8.22): opsional, tidak pernah mengunci "Kirim laporan".
+  const pad = useRef<KendaliPadTandaTangan>(null);
+  const [adaGoresan, setAdaGoresan] = useState(false);
+  const [namaPenerima, setNamaPenerima] = useState('');
+  const [jabatanPenerima, setJabatanPenerima] = useState('');
   const ttdTersimpan = fotoHook.foto.find((satu) => satu.Kategori === 'TandaTangan');
-  const ttdServer = foto.find((satu) => satu.Kategori === 'TandaTangan');
   const urlTtd = useUrlBlob(ttdTersimpan?.Berkas);
-  // Tanpa sinyal, props halaman berasal dari cache; paket offline membawa setelan yang sama.
-  // Keduanya digabung "atau" supaya tanda tangan tidak terlewat lalu ditolak server.
-  const wajibTtd =
-    props.tandaTanganWajib || (!daring && Boolean(paket?.Pengaturan?.TandaTanganPenerimaWajib));
-  const adaTtd = tandaTangan !== null || (!kanvasDikosongkan && Boolean(ttdTersimpan ?? ttdServer));
   const ditolak = penyelesaianDitolak(tiket.Id, antrian);
-
-  const ubahTandaTangan = (gambar: Blob | null) => {
-    setTandaTangan(gambar);
-    setKanvasDikosongkan(gambar === null);
-  };
 
   const jawaban = {
     ...Object.fromEntries(
@@ -1181,8 +1165,8 @@ function LangkahRingkasan(props: PropsIsi) {
       setLangkah('checklist');
       return;
     }
-    if (wajibTtd && !adaTtd) {
-      toast.error('Minta tanda tangan penerima dulu. Organisasimu mewajibkannya sebelum laporan dikirim.');
+    if (adaGoresan && namaPenerima.trim() === '') {
+      toast.error('Isi nama penerima yang menandatangani.');
       return;
     }
 
@@ -1211,8 +1195,8 @@ function LangkahRingkasan(props: PropsIsi) {
       `Tindakan: ${tindakan.trim()}`,
       penyebab.trim() ? `Penyebab: ${penyebab.trim()}` : null,
       `Kondisi aset: ${kondisi}`,
-      namaPengawas.trim()
-        ? `Disaksikan: ${namaPengawas.trim()}${pengawas?.Jabatan && namaPengawas.trim() === pengawas.Nama ? ` (${pengawas.Jabatan})` : ''}`
+      adaGoresan && namaPenerima.trim()
+        ? `Diterima: ${namaPenerima.trim()}${jabatanPenerima.trim() ? ` (${jabatanPenerima.trim()})` : ''}`
         : null,
     ]
       .filter(Boolean)
@@ -1231,16 +1215,16 @@ function LangkahRingkasan(props: PropsIsi) {
     );
 
     try {
-      // Tanda tangan disimpan sebagai draf SEBELUM mutasi diantrikan: pengirim antrean
-      // (`useSinkronisasiOffline`) mengunggah draf tiket ini dulu, baru mengirim "selesai".
-      if (ttdTersimpan && (tandaTangan || kanvasDikosongkan)) await fotoHook.hapus(ttdTersimpan.Kunci);
-      if (tandaTangan) {
-        await fotoHook.tambah(
-          tiket.Id,
-          'TandaTangan',
-          tandaTangan,
-          namaPengawas.trim() ? `Tanda tangan ${namaPengawas.trim()}` : 'Tanda tangan penerima',
-        );
+      // Tanda tangan penerima disimpan sebagai draf SEBELUM mutasi diantrikan: pengirim antrean
+      // (`useSinkronisasiOffline`) mengirim draf tiket ini dulu sebagai konfirmasi penerima,
+      // baru mengirim "selesai". Tanpa sinyal keduanya menunggu di HP.
+      const gambar = adaGoresan ? await pad.current?.ambilBlob() : null;
+      if (gambar) {
+        if (ttdTersimpan) await fotoHook.hapus(ttdTersimpan.Kunci);
+        await fotoHook.tambah(tiket.Id, 'TandaTangan', gambar, `Tanda tangan ${namaPenerima.trim()}`, {
+          NamaPenerima: namaPenerima.trim(),
+          JabatanPenerima: jabatanPenerima.trim() || null,
+        });
       }
       // Kiriman yang ditolak sebelumnya diganti kiriman baru ini, jadi tidak ditampilkan lagi.
       if (konteksOffline) {
@@ -1253,7 +1237,6 @@ function LangkahRingkasan(props: PropsIsi) {
         MulaiPada: null,
         ...(finalisasiChecklist ? { ChecklistFinal: true } : {}),
         Kondisi: kondisi,
-        Pengawas: { Nama: namaPengawas.trim(), Jabatan: pengawas?.Jabatan ?? null },
         Selesai: { MulaiPada: mulai, SelesaiPada: selesaiPada.toISOString(), Menit: menit, Kondisi: kondisi },
       });
       if (daring) {
@@ -1315,41 +1298,48 @@ function LangkahRingkasan(props: PropsIsi) {
         </div>
       </Kartu>
 
-      <Kartu pad className="relative">
-        <h2 className="flex flex-wrap items-center gap-x-2 gap-y-1 pr-24 text-[17px] font-bold tracking-[-0.01em]">
-          Tanda tangan penerima
-          <ChipStatus warna={wajibTtd ? 'oranye' : 'abu'}>{wajibTtd ? 'Wajib' : 'Opsional'}</ChipStatus>
+      <Kartu pad>
+        <h2 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[17px] font-bold tracking-[-0.01em]">
+          Konfirmasi penerima
+          <ChipStatus warna="abu">Opsional</ChipStatus>
         </h2>
-        {ubahNama || !pengawas ? (
-          <IsianTiket label="Nama penerima" className="mt-3">
-            <MasukanTiket
-              value={namaPengawas}
-              onChange={(event) => setNamaPengawas(event.target.value)}
-              placeholder="Nama yang menyaksikan"
-              autoFocus={ubahNama}
-            />
-          </IsianTiket>
+        {props.konfirmasiPenerima ? (
+          <p className="mt-1.5 text-sm text-lapangan-teks-2">
+            Sudah diterima <b className="font-bold">{props.konfirmasiPenerima.NamaPenerima}</b> pukul{' '}
+            {jamPendek(props.konfirmasiPenerima.DikonfirmasiPada)}.
+          </p>
+        ) : ttdTersimpan && !adaGoresan ? (
+          <div className="mt-2">
+            {urlTtd && (
+              <img
+                src={urlTtd}
+                alt={`Tanda tangan ${ttdTersimpan.NamaPenerima ?? 'penerima'}`}
+                className="h-24 w-full rounded-[14px] bg-lapangan-latar/60 object-contain"
+              />
+            )}
+            <p className="mt-1.5 text-[13px] text-lapangan-teks-3">
+              {ttdTersimpan.NamaPenerima ?? 'Penerima'} sudah menandatangani di HP ini. Terkirim bersama
+              laporan.
+            </p>
+          </div>
         ) : (
-          <p className="text-[13px] text-lapangan-teks-3">
-            {[namaPengawas, pengawas.Jabatan].filter(Boolean).join(' · ')}{' '}
-            <button
-              type="button"
-              onClick={() => setUbahNama(true)}
-              className="-my-2 inline-flex min-h-11 items-center font-bold text-lapangan-biru-600"
-            >
-              Ganti
-            </button>
-          </p>
-        )}
-        <KanvasTandaTangan
-          label="Kotak tanda tangan penerima"
-          urlAwal={urlTtd ?? ttdServer?.UrlUnduh ?? ttdServer?.Url ?? null}
-          onBerubah={ubahTandaTangan}
-        />
-        {wajibTtd && !adaTtd && (
-          <p className="mt-2 text-[13px] font-semibold text-lapangan-oranye-teks">
-            Organisasimu mewajibkan tanda tangan penerima sebelum laporan dikirim.
-          </p>
+          <>
+            <p className="mt-1 mb-3 text-[13px] leading-[1.45] text-lapangan-teks-3">
+              Penerima tanpa akun bisa tanda tangan di sini. Penerima yang punya akun bisa memindai QR setelah
+              laporan terkirim{tiket.DariKeluhan ? ', dan pelapor diminta konfirmasi lewat aplikasinya' : ''}.
+            </p>
+            <div className="flex flex-col gap-3">
+              <IsianTandaTanganTamu
+                nama={namaPenerima}
+                jabatan={jabatanPenerima}
+                onNama={setNamaPenerima}
+                onJabatan={setJabatanPenerima}
+                padRef={pad}
+                onPadBerubah={setAdaGoresan}
+                galatNama={adaGoresan && namaPenerima.trim() === '' ? 'Nama penerima wajib diisi.' : null}
+              />
+            </div>
+          </>
         )}
       </Kartu>
 
@@ -1363,7 +1353,7 @@ function LangkahRingkasan(props: PropsIsi) {
       )}
 
       <BilahTetap>
-        <TombolLapangan penuh disabled={mengirim || (wajibTtd && !adaTtd)} onClick={() => void kirim()}>
+        <TombolLapangan penuh disabled={mengirim} onClick={() => void kirim()}>
           <Send aria-hidden />
           {mengirim ? 'Mengirim…' : 'Kirim laporan'}
         </TombolLapangan>
@@ -1375,16 +1365,20 @@ function LangkahRingkasan(props: PropsIsi) {
 /* ---------------------------------------------------------------- Selesai (12) */
 
 function LayarSelesai(
-  props: PropsKerjakanTeknisi & { sesiKerja: SesiKerjaHook; setLangkah: (langkah: LangkahKerja) => void },
+  props: PropsKerjakanTeknisi & {
+    sesiKerja: SesiKerjaHook;
+    fotoHook: FotoHook;
+    setLangkah: (langkah: LangkahKerja) => void;
+  },
 ) {
-  const { tiket, berikutnya, waktuKerja, sesiKerja, setLangkah } = props;
+  const { tiket, berikutnya, waktuKerja, sesiKerja, fotoHook, setLangkah } = props;
   const sesi = sesiKerja.sesi;
   const { antrian, daring } = useSinkronisasiOffline();
   const keadaan = keadaanLokal(tiket, antrian);
   const ditolak = STATUS_SELESAI_TEKNISI.includes(tiket.Status) ? [] : penyelesaianDitolak(tiket.Id, antrian);
 
-  // Server menolak "selesai" (mis. tanda tangan penerima wajib belum ada): kembali ke Ringkasan
-  // untuk diperbaiki, bukan menampilkan "Pekerjaan selesai" untuk laporan yang tidak pernah diterima.
+  // Server menolak "selesai" (mis. versi tiket berubah atau sesi kerja masih terbuka): kembali ke
+  // Ringkasan untuk diperbaiki, bukan menampilkan "Pekerjaan selesai" untuk laporan yang tidak pernah diterima.
   useEffect(() => {
     if (ditolak.length === 0 || !sesi.Selesai) return;
     toast.error(ditolak[0].Konflik?.Pesan ?? 'Laporan selesai ditolak server.');
@@ -1439,6 +1433,16 @@ function LayarSelesai(
         }
         bawah={<RuteKerja mulai={mulai} selesai={selesai} menit={menit} />}
       />
+
+      {/* Konfirmasi penerima (PRD 8.22) selama belum diverifikasi koordinator. */}
+      {tiket.Status !== 'Selesai' && tiket.Status !== 'Ditutup' && (
+        <KartuKonfirmasiPenerimaTeknisi
+          tiket={tiket}
+          konfirmasiAwal={props.konfirmasiPenerima}
+          fotoHook={fotoHook}
+          sudahTerkirim={tiket.Status === 'MenungguVerifikasi' && keadaan.Tertunda === 0}
+        />
+      )}
 
       {berikutnya && ikonBerikutnya && (
         <Link

@@ -34,11 +34,11 @@ final class DefinisiKonfigurasi
                 'Label' => 'Penomoran perintah kerja otomatis',
                 'Rahasia' => false,
             ],
-            'Pemeliharaan.WajibTandaTanganPenerima' => [
+            'Pemeliharaan.WajibKonfirmasiPenerima' => [
                 'Namespace' => 'Pemeliharaan',
                 'Tipe' => 'boolean',
                 'Default' => false,
-                'Label' => 'Wajibkan tanda tangan penerima saat teknisi menyelesaikan tiket',
+                'Label' => 'Wajibkan konfirmasi penerima sebelum koordinator memverifikasi',
                 'Rahasia' => false,
             ],
             'Persetujuan.AmbangNilai' => [

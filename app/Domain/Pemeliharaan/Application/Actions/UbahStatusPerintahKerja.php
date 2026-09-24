@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
-use App\Domain\Pemeliharaan\Application\Services\AturanTandaTanganPenerima;
+use App\Core\Izin\ScopeLingkup;
+use App\Domain\Pemeliharaan\Application\Services\AturanKonfirmasiPenerima;
+use App\Domain\Pemeliharaan\Application\Services\PemberiTahuKonfirmasiPenerima;
+use App\Domain\Pemeliharaan\Application\Services\PenyelarasKeluhanTerkonfirmasi;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
@@ -15,12 +18,24 @@ use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use App\Shared\Domain\Exceptions\VersiDataBerubah;
 
+/**
+ * Satu-satunya jalan mengubah status perintah kerja, dari dasbor, antrean offline,
+ * maupun Mode Lapangan.
+ *
+ * Konfirmasi penerima (PRD 8.22): teknisi selalu bisa menyerahkan pekerjaan ke
+ * Menunggu Verifikasi (pelapor keluhan asal langsung diminta mengonfirmasi);
+ * verifikasi ke Selesai ditolak tanpa konfirmasi "Diterima" bila organisasi
+ * mewajibkannya; kembali ke Dikerjakan dari Menunggu Verifikasi/Selesai/Ditutup
+ * mengakhiri siklus penyelesaian sehingga konfirmasinya dicabut.
+ */
 final class UbahStatusPerintahKerja
 {
     public function __construct(
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananAudit $audit,
-        private readonly AturanTandaTanganPenerima $tandaTanganPenerima,
+        private readonly AturanKonfirmasiPenerima $konfirmasiPenerima,
+        private readonly PenyelarasKeluhanTerkonfirmasi $penyelarasKeluhan,
+        private readonly PemberiTahuKonfirmasiPenerima $pemberiTahu,
     ) {}
 
     public function jalankan(
@@ -31,9 +46,12 @@ final class UbahStatusPerintahKerja
         int $versi,
         string $penggunaId,
     ): PerintahKerja {
-        return $this->transaksi->jalankan(function () use ($perintahKerja, $tujuan, $catatan, $ringkasan, $versi, $penggunaId): PerintahKerja {
+        $hasil = $this->transaksi->jalankan(function () use ($perintahKerja, $tujuan, $catatan, $ringkasan, $versi, $penggunaId): PerintahKerja {
+            // Tanpa ScopeLingkup: pemanggil sudah memegang tiket ini dan otorisasinya dijaga
+            // policy. Pelapor yang menjawab "masih bermasalah" (PRD 8.22) mengembalikan tiket
+            // yang tidak selalu masuk lingkupnya sendiri.
             /** @var PerintahKerja $terkunci */
-            $terkunci = PerintahKerja::query()->lockForUpdate()->findOrFail($perintahKerja->Id);
+            $terkunci = PerintahKerja::query()->withoutGlobalScope(ScopeLingkup::class)->lockForUpdate()->findOrFail($perintahKerja->Id);
             if ($terkunci->Versi !== $versi) {
                 throw new VersiDataBerubah('Perintah kerja telah berubah. Muat ulang halaman sebelum mencoba lagi.');
             }
@@ -55,8 +73,8 @@ final class UbahStatusPerintahKerja
             if ($tujuan === StatusPerintahKerja::MenungguVerifikasi && blank($ringkasan)) {
                 throw new AturanBisnisDilanggar('Ringkasan penyelesaian wajib diisi sebelum verifikasi.');
             }
-            if ($tujuan === StatusPerintahKerja::MenungguVerifikasi) {
-                $this->tandaTanganPenerima->pastikanTerpenuhi($terkunci, $penggunaId);
+            if ($tujuan === StatusPerintahKerja::Selesai && $asal === StatusPerintahKerja::MenungguVerifikasi) {
+                $this->konfirmasiPenerima->pastikanBolehDiverifikasi($terkunci);
             }
 
             $sebelum = $terkunci->toArray();
@@ -68,6 +86,9 @@ final class UbahStatusPerintahKerja
                 $terkunci->DiterimaPada = $sekarang;
             }
             if ($tujuan === StatusPerintahKerja::Dikerjakan) {
+                if (in_array($asal, [StatusPerintahKerja::MenungguVerifikasi, StatusPerintahKerja::Selesai, StatusPerintahKerja::Ditutup], true)) {
+                    $this->konfirmasiPenerima->cabut($terkunci);
+                }
                 $terkunci->DimulaiPada ??= $sekarang;
                 if (in_array($asal, [StatusPerintahKerja::Selesai, StatusPerintahKerja::Ditutup], true)) {
                     $terkunci->DiselesaikanPada = null;
@@ -109,8 +130,18 @@ final class UbahStatusPerintahKerja
             ]);
             $this->audit->catat('UbahStatus', 'PerintahKerja', $terkunci->Id, $sebelum, $terkunci->toArray());
 
+            if ($tujuan === StatusPerintahKerja::Selesai) {
+                $this->penyelarasKeluhan->setelahDiverifikasi($terkunci, $penggunaId);
+            }
+
             return $terkunci;
         });
+
+        if ($tujuan === StatusPerintahKerja::MenungguVerifikasi) {
+            $this->pemberiTahu->mintaPelapor($hasil);
+        }
+
+        return $hasil;
     }
 
     /**

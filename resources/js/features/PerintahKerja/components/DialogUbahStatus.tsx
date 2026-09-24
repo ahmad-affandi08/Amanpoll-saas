@@ -20,10 +20,13 @@ export function DialogUbahStatus({
   perintahKerja,
   transisi,
   wajib,
+  alasanVerifikasiDiblokir = null,
 }: {
   perintahKerja: PerintahKerja;
   transisi: StatusPerintahKerja[];
   wajib: AturanWajib;
+  /** Verifikasi ke Selesai dikunci setelan "Wajibkan konfirmasi penerima" (PRD 8.22). */
+  alasanVerifikasiDiblokir?: string | null;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -42,6 +45,7 @@ export function DialogUbahStatus({
   };
 
   const butuhRingkasan = form.data.Status === 'Selesai' || form.data.Status === 'Ditutup';
+  const verifikasiDiblokir = form.data.Status === 'Selesai' && Boolean(alasanVerifikasiDiblokir);
 
   return (
     <Dialog open={buka} onOpenChange={setBuka}>
@@ -65,6 +69,14 @@ export function DialogUbahStatus({
                 className="cursor-pointer"
               />
               {form.errors.Status && <p className="text-sm text-destructive">{form.errors.Status}</p>}
+              {verifikasiDiblokir && (
+                <p
+                  role="alert"
+                  className="rounded-md border border-safety-600/30 bg-safety-500/10 p-2.5 text-sm text-safety-700"
+                >
+                  {alasanVerifikasiDiblokir}
+                </p>
+              )}
             </div>
 
             {butuhRingkasan && (
@@ -94,7 +106,11 @@ export function DialogUbahStatus({
             </div>
 
             <DialogFooter>
-              <Button type="submit" disabled={form.processing} className="cursor-pointer">
+              <Button
+                type="submit"
+                disabled={form.processing || verifikasiDiblokir}
+                className="cursor-pointer"
+              >
                 Simpan Perubahan
               </Button>
             </DialogFooter>

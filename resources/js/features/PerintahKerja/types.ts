@@ -106,6 +106,24 @@ export interface PemakaianSukuCadangItem {
   DipakaiPada: string | null;
 }
 
+/** Jawaban penerima atas pekerjaan (PRD 8.22, `KonfirmasiPenerimaResource`). */
+export interface KonfirmasiPenerimaPerintahKerja {
+  Id: string;
+  Metode: 'Pelapor' | 'PindaiQr' | 'TandaTanganPerangkat';
+  LabelMetode: string;
+  Hasil: 'Diterima' | 'MasihBermasalah';
+  NamaPenerima: string;
+  JabatanPenerima: string | null;
+  Alasan: string | null;
+  Ulasan: string | null;
+  Penilaian: number | null;
+  /** Konfirmasi "Diterima" siklus penyelesaian yang sedang berjalan. */
+  Berlaku: boolean;
+  DikonfirmasiPada: string;
+  /** Gambar tanda tangan lewat rute terotorisasi per perintah kerja. */
+  UrlTandaTangan: string | null;
+}
+
 export interface PerintahKerja {
   Id: string;
   Nomor: string;
@@ -134,6 +152,8 @@ export interface PerintahKerja {
   MembutuhkanWaktuHenti: boolean;
   MembutuhkanPersetujuan: boolean;
   RingkasanPenyelesaian: string | null;
+  /** Menunggu Verifikasi tanpa konfirmasi penerima (PRD 8.22); `null` bila server tidak menghitungnya. */
+  MenungguKonfirmasiPenerima?: boolean | null;
   Versi: number;
   Aset: AsetPerintahKerja[];
   Penugasan: PenugasanPerintahKerjaItem[];

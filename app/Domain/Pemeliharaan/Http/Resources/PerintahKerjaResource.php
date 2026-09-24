@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Http\Resources;
 
+use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -46,6 +47,10 @@ final class PerintahKerjaResource extends JsonResource
             'MembutuhkanWaktuHenti' => (bool) $this->MembutuhkanWaktuHenti,
             'MembutuhkanPersetujuan' => (bool) $this->MembutuhkanPersetujuan,
             'RingkasanPenyelesaian' => $this->RingkasanPenyelesaian,
+            // Keterangan "Menunggu konfirmasi penerima" (PRD 8.22); hanya bila pemanggil memuat `SudahDikonfirmasiPenerima`.
+            'MenungguKonfirmasiPenerima' => $perintahKerja !== null && $perintahKerja->hasAttribute('SudahDikonfirmasiPenerima')
+                ? $perintahKerja->Status === StatusPerintahKerja::MenungguVerifikasi->value && ! (bool) $perintahKerja->getAttribute('SudahDikonfirmasiPenerima')
+                : null,
             'Versi' => $this->Versi,
             'Aset' => $this->whenLoaded('aset', fn () => $this->aset->map(fn ($aset) => [
                 'Id' => $aset->Id,

@@ -131,7 +131,7 @@ class KonfigurasiOrganisasiControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_tanda_tangan_penerima_bawaan_tidak_wajib_dan_admin_dapat_mewajibkannya(): void
+    public function test_konfirmasi_penerima_bawaan_tidak_wajib_dan_admin_dapat_mewajibkannya(): void
     {
         $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
         $admin = $this->buatAdmin($organisasi);
@@ -140,19 +140,19 @@ class KonfigurasiOrganisasiControllerTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $inertia) => $inertia
                 ->where('konfigurasi', fn (Collection $daftar): bool => $daftar->contains(
-                    fn (array $item): bool => $item['Kunci'] === 'Pemeliharaan.WajibTandaTanganPenerima'
+                    fn (array $item): bool => $item['Kunci'] === 'Pemeliharaan.WajibKonfirmasiPenerima'
                         && $item['Tipe'] === 'boolean'
                         && $item['Nilai'] === false
-                        && $item['Label'] === 'Wajibkan tanda tangan penerima saat teknisi menyelesaikan tiket',
+                        && $item['Label'] === 'Wajibkan konfirmasi penerima sebelum koordinator memverifikasi',
                 )));
 
-        $this->actingAs($admin)->put('/platform/konfigurasi/Pemeliharaan.WajibTandaTanganPenerima', ['Nilai' => true])
+        $this->actingAs($admin)->put('/platform/konfigurasi/Pemeliharaan.WajibKonfirmasiPenerima', ['Nilai' => true])
             ->assertSessionDoesntHaveErrors();
 
-        $this->assertTrue($this->nilai($organisasi, 'Pemeliharaan.WajibTandaTanganPenerima'));
+        $this->assertTrue($this->nilai($organisasi, 'Pemeliharaan.WajibKonfirmasiPenerima'));
     }
 
-    public function test_pengguna_tanpa_izin_pengaturan_tidak_dapat_mewajibkan_tanda_tangan_penerima(): void
+    public function test_pengguna_tanpa_izin_pengaturan_tidak_dapat_mewajibkan_konfirmasi_penerima(): void
     {
         $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
         $biasa = Pengguna::create([
@@ -163,10 +163,10 @@ class KonfigurasiOrganisasiControllerTest extends TestCase
             'Status' => 'Aktif',
         ]);
 
-        $this->actingAs($biasa)->put('/platform/konfigurasi/Pemeliharaan.WajibTandaTanganPenerima', ['Nilai' => true])
+        $this->actingAs($biasa)->put('/platform/konfigurasi/Pemeliharaan.WajibKonfirmasiPenerima', ['Nilai' => true])
             ->assertForbidden();
 
-        $this->assertFalse($this->nilai($organisasi, 'Pemeliharaan.WajibTandaTanganPenerima'));
+        $this->assertFalse($this->nilai($organisasi, 'Pemeliharaan.WajibKonfirmasiPenerima'));
     }
 
     private function nilai(Organisasi $organisasi, string $kunci): mixed

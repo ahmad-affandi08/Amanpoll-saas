@@ -7,6 +7,7 @@ namespace App\Domain\Sinkronisasi\Application\Services;
 use App\Core\Izin\ScopeLingkup;
 use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Pemeliharaan\Application\Services\KonfirmasiPelaporKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
@@ -30,6 +31,8 @@ use Illuminate\Support\Facades\DB;
  */
 final class PenyusunLayarPelapor
 {
+    public function __construct(private readonly KonfirmasiPelaporKeluhan $konfirmasiPelapor) {}
+
     /** Batas pilihan lokasi di lembar "Ganti lokasi". */
     public const MAKS_LOKASI = 300;
 
@@ -283,11 +286,39 @@ final class PenyusunLayarPelapor
             ->selectRaw('KeluhanId, MAX(DiubahPada) as Terakhir')
             ->pluck('Terakhir', 'KeluhanId');
 
+        $konfirmasi = $this->konfirmasiPekerjaan($id, $keluhan->first()?->PelaporId);
+
         return array_values($keluhan->map(fn (Keluhan $satu): array => [
             ...$this->ringkasLaporan($satu),
             'StatusSejak' => $this->waktuMentah($statusSejak[$satu->Id] ?? null),
             'Teknisi' => $teknisi[$satu->Id] ?? null,
+            'KonfirmasiPekerjaan' => $konfirmasi[$satu->Id] ?? null,
         ])->all());
+    }
+
+    /**
+     * Keadaan konfirmasi pelapor di tahap perintah kerja (PRD 8.22), per keluhan:
+     * `Diminta` bila pekerjaannya menunggu jawaban pelapor, `Dikonfirmasi` bila ia
+     * sudah menjawab "Sudah beres" dan tinggal menunggu verifikasi koordinator.
+     *
+     * @param  list<string>  $keluhanId
+     * @return array<string, 'Diminta'|'Dikonfirmasi'>
+     */
+    public function konfirmasiPekerjaan(array $keluhanId, ?string $pelaporId): array
+    {
+        if ($pelaporId === null || $keluhanId === []) {
+            return [];
+        }
+
+        $hasil = [];
+        foreach ($this->konfirmasiPelapor->sudahDikonfirmasiPelapor($keluhanId, $pelaporId) as $id) {
+            $hasil[$id] = 'Dikonfirmasi';
+        }
+        foreach (array_keys($this->konfirmasiPelapor->menungguPelapor($keluhanId, $pelaporId)) as $id) {
+            $hasil[$id] = 'Diminta';
+        }
+
+        return $hasil;
     }
 
     /** @return array<string, mixed> */

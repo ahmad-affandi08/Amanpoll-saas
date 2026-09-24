@@ -1,6 +1,7 @@
 import { router, usePage } from '@inertiajs/react';
 import { Check } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState, type RefObject } from 'react';
+import type { KendaliPadTandaTangan } from '@/components/shared/PadTandaTangan';
 import { cn } from '@/lib/utils';
 import { useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
 import KerangkaLapangan from '@/layouts/KerangkaLapangan';
@@ -9,6 +10,7 @@ import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 import { AreaTiket, IsianTiket } from '@/features/Lapangan/components/IsianTiket';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
+import { TandaTanganSaya, useSudahPunyaTandaTangan } from '@/features/Lapangan/components/TandaTanganSaya';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
 import { AvatarTeknisi } from '@/features/Lapangan/components/pelapor/KartuTeknisi';
 import { PitaPelapor } from '@/features/Lapangan/components/pelapor/PitaPelapor';
@@ -24,23 +26,48 @@ interface Jawaban {
   ulasan: string;
 }
 
-/** Konfirmasi selesai (DESIGN.md 36.7 layar 12): hasil kerja, jempol/silang, bintang 1–5, komentar. */
+/** Tanda tangan pelapor di tahap pekerjaan: pad (belum punya) atau tanda tangan tersimpan. */
+interface TandaTanganPelapor {
+  pad: RefObject<KendaliPadTandaTangan | null>;
+  siap: boolean;
+  setSiap: (siap: boolean) => void;
+}
+
+/**
+ * Konfirmasi selesai (DESIGN.md 36.7 layar 12): hasil kerja, jempol/silang, bintang 1–5, komentar.
+ *
+ * Dua tahap (PRD 8.22): `Pekerjaan` saat teknisi baru menyerahkan pekerjaan (penilaian boleh
+ * dilewati, "Sudah beres" dicap tanda tangan yang digambar sekali lalu tersimpan), dan
+ * `Keluhan` untuk keluhan Selesai yang belum dikonfirmasi di tahap pekerjaan.
+ */
 export default function KonfirmasiPelapor() {
   const { props } = usePage<PropsKonfirmasiPelapor>();
   const [jawaban, setJawaban] = useState<Jawaban>({ beres: null, nilai: 0, ulasan: '' });
   const [galat, setGalat] = useState<Record<string, string>>({});
+  const pad = useRef<KendaliPadTandaTangan>(null);
+  const punyaTandaTangan = useSudahPunyaTandaTangan();
+  const [siap, setSiap] = useState(punyaTandaTangan);
+  const tandaTangan: TandaTanganPelapor = { pad, siap, setSiap };
 
   return (
     <KerangkaLapangan
       judulHalaman={`Konfirmasi ${props.laporan.Nomor}`}
       varian="appbar"
       mode="Pelapor"
-      judul="Konfirmasi perbaikan"
-      subjudul={<span className="tabular-nums">{props.laporan.Nomor}</span>}
+      judul={props.tahap === 'Pekerjaan' ? 'Konfirmasi pekerjaan' : 'Konfirmasi perbaikan'}
+      subjudul={<span className="tabular-nums">{props.pekerjaan?.Nomor ?? props.laporan.Nomor}</span>}
       kembali={ruteLapangan.pelapor.laporanDetail(props.laporan.Id)}
-      bilahAksi={<TombolKonfirmasi {...props} jawaban={jawaban} onGalat={setGalat} />}
+      bilahAksi={
+        <TombolKonfirmasi {...props} jawaban={jawaban} onGalat={setGalat} tandaTangan={tandaTangan} />
+      }
     >
-      <IsiKonfirmasi {...props} jawaban={jawaban} onJawaban={setJawaban} galat={galat} />
+      <IsiKonfirmasi
+        {...props}
+        jawaban={jawaban}
+        onJawaban={setJawaban}
+        galat={galat}
+        tandaTangan={tandaTangan}
+      />
     </KerangkaLapangan>
   );
 }
@@ -91,18 +118,23 @@ function PilihanBesar({
 
 function IsiKonfirmasi({
   laporan,
+  tahap,
+  pekerjaan,
   foto,
   fotoSesudah,
   jawaban,
   onJawaban,
   galat,
+  tandaTangan,
 }: PropsKonfirmasiPelapor & {
   jawaban: Jawaban;
   onJawaban: (jawaban: Jawaban) => void;
   galat: Record<string, string>;
+  tandaTangan: TandaTanganPelapor;
 }) {
   const teknisi = laporan.Teknisi;
   const pesanGalat = Object.values(galat);
+  const tahapPekerjaan = tahap === 'Pekerjaan';
 
   return (
     <>
@@ -119,12 +151,14 @@ function IsiKonfirmasi({
               {teknisi ? `${namaDepan(teknisi.Nama)} sudah selesai` : 'Tim teknik sudah selesai'}
             </b>
             <span className="block truncate text-[13px] font-medium text-lapangan-teks-3">
-              {waktuLengkap(laporan.DiresolusikanPada)} · {laporan.Judul}
+              {waktuLengkap(tahapPekerjaan ? pekerjaan?.DiserahkanPada : laporan.DiresolusikanPada)} ·{' '}
+              {laporan.Judul}
             </span>
           </div>
         </div>
         <p className="mt-2.5 text-sm leading-[1.45] text-lapangan-teks-2">
-          {teknisi?.Ringkasan ??
+          {(tahapPekerjaan ? pekerjaan?.RingkasanPenyelesaian : null) ??
+            teknisi?.Ringkasan ??
             'Perbaikan sudah dilaporkan selesai. Cek kondisinya di lokasi, lalu beri tahu kami.'}
         </p>
         {foto.length > 0 && (
@@ -171,7 +205,10 @@ function IsiKonfirmasi({
       {jawaban.beres !== false && (
         <Kartu className="px-4 py-3.5">
           <div className="mb-2.5 flex items-center justify-between">
-            <h3 className="text-[15px] font-bold">Nilai perbaikannya</h3>
+            <h3 className="text-[15px] font-bold">
+              Nilai perbaikannya
+              {tahapPekerjaan && <span className="font-medium text-lapangan-teks-3"> (boleh dilewati)</span>}
+            </h3>
             <span className="text-sm font-bold text-lapangan-oranye-teks">{LABEL_NILAI[jawaban.nilai]}</span>
           </div>
           <div role="radiogroup" aria-label="Nilai perbaikan" className="flex justify-center gap-1.5">
@@ -213,6 +250,13 @@ function IsiKonfirmasi({
           }
         />
       </IsianTiket>
+
+      {tahapPekerjaan && jawaban.beres === true && (
+        <Kartu pad>
+          <h2 className="mb-3 text-[17px] font-bold tracking-[-0.01em]">Tanda tanganmu</h2>
+          <TandaTanganSaya padRef={tandaTangan.pad} onSiap={tandaTangan.setSiap} />
+        </Kartu>
+      )}
     </>
   );
 }
@@ -259,20 +303,60 @@ function GaleriSesudah({ foto }: { foto: FotoSesudahLaporan[] }) {
 
 function TombolKonfirmasi({
   laporan,
+  tahap,
   jawaban,
   onGalat,
-}: PropsKonfirmasiPelapor & { jawaban: Jawaban; onGalat: (galat: Record<string, string>) => void }) {
+  tandaTangan,
+}: PropsKonfirmasiPelapor & {
+  jawaban: Jawaban;
+  onGalat: (galat: Record<string, string>) => void;
+  tandaTangan: TandaTanganPelapor;
+}) {
   const { daring } = useSinkronisasiOffline();
   const [mengirim, setMengirim] = useState(false);
+  const tahapPekerjaan = tahap === 'Pekerjaan';
   const lengkap =
     jawaban.beres === true
-      ? jawaban.nilai > 0
+      ? tahapPekerjaan
+        ? tandaTangan.siap
+        : jawaban.nilai > 0
       : jawaban.beres === false
         ? jawaban.ulasan.trim() !== ''
         : false;
 
+  const opsiKirim = {
+    onStart: () => setMengirim(true),
+    onError: onGalat,
+    onNetworkError: () => {
+      onGalat({ Kirim: 'Sinyal terputus. Konfirmasi belum terkirim, coba lagi.' });
+      return false;
+    },
+    onFinish: () => setMengirim(false),
+  };
+
+  /** Tahap pekerjaan: jawaban penerima atas perintah kerja, bersama tanda tangan bila beres. */
+  const kirimPekerjaan = async () => {
+    const beres = jawaban.beres === true;
+    const gambar = beres ? await tandaTangan.pad.current?.ambilBlob() : null;
+    router.post(
+      ruteLapangan.pelapor.konfirmasiPekerjaan(laporan.Id),
+      {
+        Hasil: beres ? 'Diterima' : 'MasihBermasalah',
+        Penilaian: beres && jawaban.nilai > 0 ? jawaban.nilai : null,
+        Ulasan: beres ? jawaban.ulasan.trim() || null : null,
+        Alasan: beres ? null : jawaban.ulasan.trim(),
+        TandaTangan: gambar ? new File([gambar], 'tanda-tangan.png', { type: 'image/png' }) : null,
+      },
+      { ...opsiKirim, forceFormData: true },
+    );
+  };
+
   const kirim = () => {
     if (!lengkap || !daring) return;
+    if (tahapPekerjaan) {
+      void kirimPekerjaan();
+      return;
+    }
     router.post(
       ruteLapangan.pelapor.konfirmasi(laporan.Id),
       {
@@ -281,15 +365,7 @@ function TombolKonfirmasi({
         Ulasan: jawaban.ulasan.trim() || null,
         Versi: laporan.Versi,
       },
-      {
-        onStart: () => setMengirim(true),
-        onError: onGalat,
-        onNetworkError: () => {
-          onGalat({ Kirim: 'Sinyal terputus. Konfirmasi belum terkirim, coba lagi.' });
-          return false;
-        },
-        onFinish: () => setMengirim(false),
-      },
+      opsiKirim,
     );
   };
 

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Sinkronisasi\Http\Controllers;
 
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
-use App\Domain\Pemeliharaan\Application\Services\AturanTandaTanganPenerima;
+use App\Domain\Pemeliharaan\Application\Services\AturanKonfirmasiPenerima;
+use App\Domain\Pemeliharaan\Http\Resources\KonfirmasiPenerimaResource;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\AnalisisKegagalan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KodeKegagalan;
-use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuKerja;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
@@ -34,12 +34,12 @@ use Inertia\Response;
  */
 final class LapanganTeknisiTugasController extends Controller
 {
-    /** Kategori lampiran yang dipakai layar foto dan tanda tangan. */
-    public const KATEGORI_FOTO = ['FotoSebelum', 'FotoSesudah', AturanTandaTanganPenerima::KATEGORI_LAMPIRAN];
+    /** Kategori lampiran yang dipakai layar foto. Tanda tangan penerima kini konfirmasi, bukan lampiran (PRD 8.22). */
+    public const KATEGORI_FOTO = ['FotoSebelum', 'FotoSesudah'];
 
     public function __construct(
         private readonly PenyusunLayarTeknisi $penyusun,
-        private readonly AturanTandaTanganPenerima $tandaTanganPenerima,
+        private readonly AturanKonfirmasiPenerima $konfirmasiPenerima,
     ) {}
 
     /** Tiket Saya (layar 05): tab Hari ini/Terlambat dihitung klien dari tiket aktif. */
@@ -94,10 +94,8 @@ final class LapanganTeknisiTugasController extends Controller
         $this->authorize('operate', $perintahKerja);
         $pengguna = $request->user('web');
         $tiket = $this->muat($perintahKerja, $pengguna);
-        $tiket->loadMissing(['penugasan.ditugaskanOleh:Id,Nama,Jabatan', 'dibuatOleh:Id,Nama,Jabatan']);
-        $penugasan = $tiket->penugasan->first(fn (PenugasanPerintahKerja $satu): bool => $satu->PenggunaId === $pengguna->Id);
-        $pengawas = $penugasan->ditugaskanOleh ?? $tiket->dibuatOleh;
         $berikutnya = collect($this->penyusun->tiketAktif($pengguna))->first(fn (array $satu): bool => $satu['Id'] !== $tiket->Id);
+        $konfirmasi = $this->konfirmasiPenerima->berlaku($tiket);
 
         return Inertia::render('Lapangan/Teknisi/Kerjakan', [
             'tiket' => [
@@ -118,9 +116,8 @@ final class LapanganTeknisiTugasController extends Controller
             'permintaanSukuCadang' => $this->permintaanSukuCadang($tiket),
             'foto' => $this->foto($tiket),
             'waktuKerja' => $this->waktuKerja($tiket, $pengguna),
-            'pengawas' => $pengawas instanceof Pengguna ? ['Nama' => $pengawas->Nama, 'Jabatan' => $pengawas->Jabatan] : null,
-            // Layar Ringkasan menandai tanda tangan "Wajib"; server tetap menolak penyelesaian tanpa lampirannya.
-            'tandaTanganWajib' => $this->tandaTanganPenerima->wajib($tiket->OrganisasiId),
+            // Konfirmasi penerima siklus ini (PRD 8.22); teknisi tidak pernah dikunci olehnya.
+            'konfirmasiPenerima' => $konfirmasi === null ? null : KonfirmasiPenerimaResource::ringkas($konfirmasi),
             'berikutnya' => $berikutnya,
         ]);
     }
@@ -263,7 +260,7 @@ final class LapanganTeknisiTugasController extends Controller
                 'Kategori' => $lampiran->Kategori,
                 'Keterangan' => $lampiran->Keterangan,
                 'DibuatPada' => $lampiran->DibuatPada->toIso8601String(),
-                // Grid foto memakai thumbnail (PRD 11.1); ukuran penuh hanya untuk tanda tangan yang digambar ulang di kanvas.
+                // Grid foto memakai thumbnail (PRD 11.1); ukuran penuh untuk dibuka saat diketuk.
                 'Url' => $lampiran->berkas === null ? null : route('kolaborasi.berkas.thumbnail', $lampiran->berkas->Id, false),
                 'UrlUnduh' => $lampiran->berkas === null ? null : route('kolaborasi.berkas.unduh', $lampiran->berkas->Id, false),
             ])

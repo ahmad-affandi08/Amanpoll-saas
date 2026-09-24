@@ -93,6 +93,8 @@ export interface TiketTeknisi {
   DitugaskanPada: string | null;
   /** Policy `view` masih mengizinkan tiket ini dibuka. */
   DapatDibuka: boolean;
+  /** Menunggu Verifikasi tanpa konfirmasi penerima (PRD 8.22). Opsional: paket offline tidak membawanya. */
+  MenungguKonfirmasiPenerima?: boolean;
   Aset: AsetRingkasTeknisi | null;
   Lokasi: LokasiRingkasTeknisi | null;
 }
@@ -184,13 +186,48 @@ export interface PermintaanSukuCadangTeknisi {
 
 export interface FotoTiketTeknisi {
   Id: string;
-  Kategori: 'FotoSebelum' | 'FotoSesudah' | 'TandaTangan' | string;
+  Kategori: 'FotoSebelum' | 'FotoSesudah' | string;
   Keterangan: string | null;
   DibuatPada: string;
   /** Thumbnail untuk grid foto. */
   Url: string | null;
-  /** Ukuran penuh, untuk tanda tangan yang digambar ulang di kanvas. */
+  /** Ukuran penuh, dibuka saat foto diketuk. */
   UrlUnduh: string | null;
+}
+
+/** Cara penerima mengonfirmasi pekerjaan (PRD 8.22). */
+export type MetodeKonfirmasiPenerima = 'Pelapor' | 'PindaiQr' | 'TandaTanganPerangkat';
+
+/** Satu konfirmasi penerima (`KonfirmasiPenerimaResource::ringkas`). */
+export interface KonfirmasiPenerima {
+  Id: string;
+  Metode: MetodeKonfirmasiPenerima;
+  LabelMetode: string;
+  Hasil: 'Diterima' | 'MasihBermasalah';
+  NamaPenerima: string;
+  JabatanPenerima: string | null;
+  Alasan: string | null;
+  Ulasan: string | null;
+  Penilaian: number | null;
+  Berlaku: boolean;
+  DikonfirmasiPada: string;
+  /** Rute terotorisasi dasbor; layar Mode Lapangan tidak memuatnya. */
+  UrlTandaTangan: string | null;
+}
+
+/** QR konfirmasi penerima dari server (`TautanKonfirmasiPenerima::buat`). */
+export interface QrKonfirmasiPenerima {
+  Url: string;
+  /** SVG QR buatan server (bacon/bacon-qr-code), aman disisipkan. */
+  Svg: string;
+  BerlakuSampai: string;
+}
+
+/** Status konfirmasi yang dibaca berkala layar QR teknisi. */
+export interface StatusKonfirmasiPenerima {
+  Status: string;
+  Konfirmasi: KonfirmasiPenerima | null;
+  Terakhir: KonfirmasiPenerima | null;
 }
 
 /** Props `Lapangan/Teknisi/Kerjakan` (layar 07–12 dalam satu halaman). */
@@ -202,10 +239,9 @@ export interface PropsKerjakanTeknisi extends PropsLapangan {
   permintaanSukuCadang: PermintaanSukuCadangTeknisi[];
   foto: FotoTiketTeknisi[];
   waktuKerja: { TotalMenit: number; MulaiPertama: string | null };
-  pengawas: { Nama: string; Jabatan: string | null } | null;
   berikutnya: TiketTeknisi | null;
-  /** Organisasi mewajibkan tanda tangan penerima sebelum tiket dikirim ke koordinator. */
-  tandaTanganWajib: boolean;
+  /** Konfirmasi "Diterima" siklus ini; teknisi tidak pernah dikunci olehnya (PRD 8.22). */
+  konfirmasiPenerima: KonfirmasiPenerima | null;
 }
 
 /** Hasil pencarian suku cadang untuk lembar "Minta suku cadang". */
@@ -376,6 +412,11 @@ export interface LaporanPelapor {
   StatusSejak?: string | null;
   Teknisi?: TeknisiLaporan | null;
   LokasiLabel?: string | null;
+  /**
+   * Konfirmasi pelapor di tahap perintah kerja (PRD 8.22): `Diminta` = pekerjaan diserahkan
+   * teknisi dan menunggu jawabanmu; `Dikonfirmasi` = kamu sudah menjawab "Sudah beres".
+   */
+  KonfirmasiPekerjaan?: 'Diminta' | 'Dikonfirmasi' | null;
 }
 
 export interface RiwayatLaporan {
@@ -433,8 +474,47 @@ export interface FotoSesudahLaporan {
 
 export interface PropsKonfirmasiPelapor extends PropsLapangan {
   laporan: LaporanPelapor;
+  /** `Pekerjaan`: konfirmasi penerima saat teknisi menyerahkan pekerjaan; `Keluhan`: keluhan Selesai. */
+  tahap: 'Pekerjaan' | 'Keluhan';
+  pekerjaan: {
+    Id: string;
+    Nomor: string;
+    RingkasanPenyelesaian: string | null;
+    DiserahkanPada: string | null;
+  } | null;
   foto: FotoLaporan[];
   fotoSesudah: FotoSesudahLaporan[];
+}
+
+/** Ringkasan pekerjaan di halaman konfirmasi hasil pindai QR. */
+export interface PekerjaanKonfirmasiPenerima {
+  Id: string;
+  Nomor: string;
+  Judul: string;
+  Status: string;
+  RingkasanPenyelesaian: string | null;
+  Aset: { Nama: string; KodeAset: string; Kategori: string | null } | null;
+  Lokasi: string | null;
+  Teknisi: string[];
+  DimulaiPada: string | null;
+  DiserahkanPada: string | null;
+}
+
+/** Props `Lapangan/KonfirmasiPenerima` (cara 2, PRD 8.22). */
+export interface PropsKonfirmasiPenerima extends PropsLapangan {
+  keadaan: 'Siap' | 'SudahDikonfirmasi' | 'TidakMenunggu' | 'TanpaAkses' | 'Kedaluwarsa' | 'TautanTidakSah';
+  pesan: string | null;
+  pekerjaan: PekerjaanKonfirmasiPenerima | null;
+  konfirmasi: { NamaPenerima: string; DikonfirmasiPada: string; OlehSaya: boolean } | null;
+  /** Jalur halaman ini beserta tanda tangan tautannya, tujuan formulir. */
+  urlKirim: string;
+}
+
+/** Props `Lapangan/KonfirmasiPenerimaHasil`. */
+export interface PropsKonfirmasiPenerimaHasil extends PropsLapangan {
+  pekerjaan: PekerjaanKonfirmasiPenerima;
+  hasil: 'Diterima' | 'MasihBermasalah';
+  dikonfirmasiPada: string;
 }
 
 /**

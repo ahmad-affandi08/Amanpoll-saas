@@ -11,6 +11,8 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Application\Actions\AlihkanUnitPengelolaPerintahKerja;
 use App\Domain\Pemeliharaan\Application\Actions\BuatPerintahKerja;
 use App\Domain\Pemeliharaan\Application\Actions\UbahStatusPerintahKerja;
+use App\Domain\Pemeliharaan\Application\Services\AturanKonfirmasiPenerima;
+use App\Domain\Pemeliharaan\Domain\Enums\HasilKonfirmasiPenerima;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Http\Requests\AksiWaktuHentiAsetRequest;
@@ -20,9 +22,11 @@ use App\Domain\Pemeliharaan\Http\Requests\SimpanBiayaPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanPenugasanPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\UbahStatusPerintahKerjaRequest;
+use App\Domain\Pemeliharaan\Http\Resources\KonfirmasiPenerimaResource;
 use App\Domain\Pemeliharaan\Http\Resources\PerintahKerjaResource;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KodeKegagalan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KonfirmasiPenerimaPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
@@ -97,6 +101,9 @@ final class PerintahKerjaController extends Controller
             ->withSum('waktuKerja as TotalWaktuKerjaMenit', 'DurasiMenit')
             ->withSum('waktuHenti as TotalDowntimeMenit', 'DurasiMenit')
             ->withSum('biaya as TotalBiaya', 'Jumlah')
+            ->withExists(['konfirmasiPenerima as SudahDikonfirmasiPenerima' => fn ($konfirmasi) => $konfirmasi
+                ->where('Berlaku', true)
+                ->where('Hasil', HasilKonfirmasiPenerima::Diterima->value)])
             ->when(! $dapatMengelola, fn ($query) => $query->whereHas('penugasan', fn ($penugasan) => $penugasan->where('PenggunaId', $request->user('web')->Id)->whereIn('Status', ['Ditugaskan', 'Diterima'])))
             ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
             ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
@@ -166,7 +173,11 @@ final class PerintahKerjaController extends Controller
             'reservasiSukuCadang.sukuCadang', 'reservasiSukuCadang.gudang', 'pemakaianSukuCadang.sukuCadang',
         ])->loadSum('waktuKerja as TotalWaktuKerjaMenit', 'DurasiMenit')
             ->loadSum('waktuHenti as TotalDowntimeMenit', 'DurasiMenit')
-            ->loadSum('biaya as TotalBiaya', 'Jumlah');
+            ->loadSum('biaya as TotalBiaya', 'Jumlah')
+            ->loadExists(['konfirmasiPenerima as SudahDikonfirmasiPenerima' => fn ($konfirmasi) => $konfirmasi
+                ->where('Berlaku', true)
+                ->where('Hasil', HasilKonfirmasiPenerima::Diterima->value)]);
+        $aturanKonfirmasi = app(AturanKonfirmasiPenerima::class);
 
         $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola');
         $beban = PenugasanPerintahKerja::query()
@@ -210,6 +221,15 @@ final class PerintahKerjaController extends Controller
                 ->filter(fn (StatusPerintahKerja $status): bool => Gate::allows('ubahStatus', [$perintahKerja, $status->value]))
                 ->map(fn (StatusPerintahKerja $status): string => $status->value)->values(),
             'penugasanSaya' => $perintahKerja->penugasan->firstWhere('PenggunaId', $request->user('web')->Id),
+            // Kartu "Konfirmasi penerima" (PRD 8.22): seluruh jawaban, terbaru dulu, dan alasan verifikasi dikunci.
+            'konfirmasiPenerima' => $perintahKerja->konfirmasiPenerima()
+                ->latest('DikonfirmasiPada')
+                ->orderByDesc('Id')
+                ->get()
+                ->map(fn (KonfirmasiPenerimaPerintahKerja $konfirmasi): array => KonfirmasiPenerimaResource::ringkas($konfirmasi))
+                ->values(),
+            'konfirmasiWajib' => $aturanKonfirmasi->wajib($perintahKerja->OrganisasiId),
+            'alasanVerifikasiDiblokir' => $aturanKonfirmasi->alasanVerifikasiDiblokir($perintahKerja),
             'teknisi' => $teknisi,
             'jumlahTeknisiDiluarLingkup' => $calonTeknisi->count() - $teknisi->count(),
             'unitPengelolaDipakai' => OpsiUnitPengelola::dipakai(),

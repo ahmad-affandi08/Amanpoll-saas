@@ -16,7 +16,8 @@ use Inertia\Response;
 /**
  * Beranda Mode Lapangan untuk pelapor (DESIGN §36.7, papan pelapor layar 02):
  * aksi "Laporkan Kerusakan", kategori keluhan, dan laporan aktif miliknya.
- * Laporan yang menunggu konfirmasi (Selesai) didahulukan.
+ * Laporan yang menunggu konfirmasi (Selesai, atau pekerjaannya menunggu jawaban
+ * pelapor) didahulukan.
  */
 final class LapanganPelaporBerandaController extends Controller
 {
@@ -38,8 +39,16 @@ final class LapanganPelaporBerandaController extends Controller
             ->where('PelaporId', $pengguna->Id)
             ->whereIn('Status', $status);
 
+        // Yang menunggu konfirmasi didahulukan: keluhan Selesai, dan keluhan yang pekerjaannya
+        // baru diserahkan teknisi dan menunggu jawaban pelapor (PRD 8.22).
+        $diminta = array_keys($penyusun->konfirmasiPekerjaan(
+            array_values((clone $kueriAktif)->pluck('Id')->map(fn (mixed $id): string => (string) $id)->all()),
+            $pengguna->Id,
+        ), 'Diminta');
+        $tandaTempat = implode(',', array_fill(0, max(1, count($diminta)), '?'));
+
         $laporanAktif = (clone $kueriAktif)
-            ->orderByRaw('CASE WHEN Status = ? THEN 0 ELSE 1 END', [StatusKeluhan::Selesai->value])
+            ->orderByRaw("CASE WHEN Status = ? OR Id IN ({$tandaTempat}) THEN 0 ELSE 1 END", [StatusKeluhan::Selesai->value, ...($diminta === [] ? [''] : $diminta)])
             ->latest('DilaporkanPada')
             ->orderBy('Id')
             ->limit(self::JUMLAH_LAPORAN_AKTIF)

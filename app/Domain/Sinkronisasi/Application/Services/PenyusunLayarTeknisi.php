@@ -9,6 +9,7 @@ use App\Domain\Aset\Application\Services\GaleriFotoAset;
 use App\Domain\Aset\Domain\Enums\StatusGaransiAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\GaransiAset;
+use App\Domain\Pemeliharaan\Domain\Enums\HasilKonfirmasiPenerima;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
@@ -131,7 +132,9 @@ final class PenyusunLayarTeknisi
             'aset.lokasi.induk:Id,Nama',
             'aset.kategoriAset:Id,Nama',
             'penugasan' => fn ($penugasan) => $penugasan->where('PenggunaId', $pengguna->Id),
-        ]);
+        ])->withExists(['konfirmasiPenerima as SudahDikonfirmasiPenerima' => fn ($konfirmasi) => $konfirmasi
+            ->where('Berlaku', true)
+            ->where('Hasil', HasilKonfirmasiPenerima::Diterima->value)]);
     }
 
     /**
@@ -172,6 +175,9 @@ final class PenyusunLayarTeknisi
             'PerluRespons' => $penugasan?->Status === StatusPenugasanPerintahKerja::Ditugaskan->value,
             'DitugaskanPada' => $penugasan?->DitugaskanPada?->toIso8601String(),
             'DapatDibuka' => Gate::forUser($pengguna)->allows('view', $perintahKerja),
+            // Keterangan "Menunggu konfirmasi penerima" (PRD 8.22); dihitung `muatRelasi` tanpa kueri per tiket.
+            'MenungguKonfirmasiPenerima' => $perintahKerja->Status === StatusPerintahKerja::MenungguVerifikasi->value
+                && ! (bool) $perintahKerja->getAttribute('SudahDikonfirmasiPenerima'),
             'Aset' => $aset === null ? null : $this->ringkasAset($aset),
             'Lokasi' => $lokasi === null ? null : $this->ringkasLokasi($lokasi),
         ];

@@ -5,38 +5,53 @@ declare(strict_types=1);
 namespace App\Domain\Sinkronisasi\Http\Controllers;
 
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
+use App\Domain\Pemeliharaan\Application\Actions\KonfirmasiPenerimaOlehPelapor;
 use App\Domain\Pemeliharaan\Application\Actions\KonfirmasiPenyelesaianKeluhan;
+use App\Domain\Pemeliharaan\Application\Services\KonfirmasiPelaporKeluhan;
+use App\Domain\Pemeliharaan\Domain\Enums\HasilKonfirmasiPenerima;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
 use App\Domain\Pemeliharaan\Http\Policies\PerintahKerjaPolicy;
+use App\Domain\Pemeliharaan\Http\Requests\KonfirmasiPenerimaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\KonfirmasiPenyelesaianKeluhanRequest;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Sinkronisasi\Application\Services\PenyusunLayarPelapor;
 use App\Http\Controllers\Controller;
+use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use App\Shared\Domain\Exceptions\VersiDataBerubah;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 use Inertia\Response;
 
 /**
  * Konfirmasi selesai dan layar terima kasih (DESIGN §36.7 layar 12–13).
  * Aturannya milik Pemeliharaan: `KeluhanPolicy::konfirmasi` dan
- * `KonfirmasiPenyelesaianKeluhan`.
+ * `KonfirmasiPenyelesaianKeluhan` untuk keluhan Selesai, serta
+ * `PerintahKerjaPolicy::konfirmasiSebagaiPelapor` dan `KonfirmasiPenerimaOlehPelapor`
+ * untuk konfirmasi di tahap perintah kerja (PRD 8.22).
  */
 final class LapanganPelaporKonfirmasiController extends Controller
 {
     /** Batas foto Sesudah di galeri konfirmasi. */
     private const MAKS_FOTO_SESUDAH = 6;
 
-    public function create(Request $request, Keluhan $keluhan, PenyusunLayarPelapor $penyusun): Response|RedirectResponse
+    /**
+     * Satu layar untuk dua tahap (PRD 8.22): konfirmasi **pekerjaan** begitu teknisi
+     * menyerahkannya (perintah kerja Menunggu Verifikasi), atau konfirmasi **keluhan**
+     * yang sudah Selesai bila pelapor belum menjawab di tahap pekerjaan. Tahap pekerjaan
+     * didahulukan karena itulah yang ditunggu teknisi dan koordinator.
+     */
+    public function create(Request $request, Keluhan $keluhan, PenyusunLayarPelapor $penyusun, KonfirmasiPelaporKeluhan $konfirmasiPelapor): Response|RedirectResponse
     {
         $pengguna = $request->user('web');
         $this->pastikanMilikSendiri($keluhan, $pengguna);
+        $pekerjaan = $konfirmasiPelapor->menungguPelapor([$keluhan->Id], $pengguna->Id)[$keluhan->Id] ?? null;
 
         // Tautan lama (notifikasi, beranda) ke keluhan yang sudah dikonfirmasi atau dibuka lagi.
-        if (! $pengguna->can('konfirmasi', $keluhan)) {
+        if ($pekerjaan === null && ! $pengguna->can('konfirmasi', $keluhan)) {
             return redirect()->route('lapangan.pelapor.laporan.show', $keluhan);
         }
 
@@ -47,9 +62,63 @@ final class LapanganPelaporKonfirmasiController extends Controller
                 ...$penyusun->ringkasLaporan($keluhan),
                 'Teknisi' => $penyusun->teknisiUntuk([$keluhan->Id])[$keluhan->Id] ?? null,
             ],
+            'tahap' => $pekerjaan === null ? 'Keluhan' : 'Pekerjaan',
+            'pekerjaan' => $pekerjaan === null ? null : [
+                'Id' => $pekerjaan->Id,
+                'Nomor' => $pekerjaan->Nomor,
+                'RingkasanPenyelesaian' => $pekerjaan->RingkasanPenyelesaian,
+                'DiserahkanPada' => $pekerjaan->DiperbaruiPada->toIso8601String(),
+            ],
             'foto' => $this->fotoKeluhan($keluhan),
             'fotoSesudah' => $this->fotoSesudah($keluhan),
         ]);
+    }
+
+    /**
+     * Jawaban pelapor di tahap pekerjaan (cara 1). "Sudah beres" mencap tanda tangannya
+     * (digambar sekali lalu tersimpan di profil) dan menutup keluhannya otomatis saat
+     * koordinator memverifikasi; "Masih bermasalah" mengembalikan pekerjaan ke teknisi.
+     */
+    public function storePekerjaan(
+        KonfirmasiPenerimaRequest $request,
+        Keluhan $keluhan,
+        KonfirmasiPelaporKeluhan $konfirmasiPelapor,
+        KonfirmasiPenerimaOlehPelapor $aksi,
+    ): RedirectResponse {
+        $pengguna = $request->user('web');
+        $this->pastikanMilikSendiri($keluhan, $pengguna);
+        $pekerjaan = $konfirmasiPelapor->menungguPelapor([$keluhan->Id], $pengguna->Id)[$keluhan->Id] ?? null;
+
+        if ($pekerjaan === null) {
+            return redirect()->route('lapangan.pelapor.laporan.show', $keluhan)
+                ->with('gagal', 'Pekerjaan ini tidak sedang menunggu konfirmasimu.');
+        }
+
+        $this->authorize('konfirmasiSebagaiPelapor', $pekerjaan);
+        $hasil = HasilKonfirmasiPenerima::from($request->string('Hasil')->toString());
+        $gambar = $request->file('TandaTangan');
+        $komentar = $hasil === HasilKonfirmasiPenerima::Diterima ? $request->validated('Ulasan') : $request->validated('Alasan');
+        $penilaian = $request->validated('Penilaian');
+
+        try {
+            $aksi->jalankan(
+                $pekerjaan,
+                $pengguna,
+                $hasil,
+                is_numeric($penilaian) ? (int) $penilaian : null,
+                is_string($komentar) ? $komentar : null,
+                $gambar instanceof UploadedFile ? $gambar : null,
+            );
+        } catch (AturanBisnisDilanggar $e) {
+            return back()->withErrors(['Konfirmasi' => $e->getMessage()]);
+        }
+
+        return redirect()->route('lapangan.pelapor.laporan.show', $keluhan)->with(
+            'sukses',
+            $hasil === HasilKonfirmasiPenerima::Diterima
+                ? 'Terima kasih. Laporanmu ditutup setelah koordinator memverifikasi pekerjaannya.'
+                : 'Terima kasih. Pekerjaan dikembalikan ke teknisi untuk diperiksa lagi.',
+        );
     }
 
     public function store(

@@ -3,6 +3,7 @@ import { MessageCircle, Share2 } from 'lucide-react';
 import { useState } from 'react';
 import KerangkaLapangan, { TombolAppbar } from '@/layouts/KerangkaLapangan';
 import { ruteLapangan } from '@/features/Lapangan/api';
+import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { Ikon3D } from '@/components/shared/Ikon3D';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
@@ -14,10 +15,11 @@ import { KartuTeknisi } from '@/features/Lapangan/components/pelapor/KartuTeknis
 import { LembarKeterangan } from '@/features/Lapangan/components/pelapor/LembarKeterangan';
 import { PitaPelapor } from '@/features/Lapangan/components/pelapor/PitaPelapor';
 import {
+  PERHENTIAN_LAPORAN,
   durasiRingkas,
   indeksPerhentian,
   namaDepan,
-  PERHENTIAN_LAPORAN,
+  perluKonfirmasi,
   statusPerhentian,
   tampilanStatus,
 } from '@/features/Lapangan/components/pelapor/status';
@@ -127,7 +129,7 @@ export default function LacakPelapor() {
   const { props } = usePage<PropsLacakPelapor>();
   const { laporan } = props;
   const [bukaKeterangan, setBukaKeterangan] = useState(false);
-  const perluKonfirmasi = laporan.Status === 'Selesai';
+  const menungguJawaban = perluKonfirmasi(laporan);
   const akhir = STATUS_AKHIR.includes(laporan.Status);
 
   const bagikan = () => {
@@ -154,13 +156,13 @@ export default function LacakPelapor() {
           <>
             <TombolLapangan
               ragam="garis"
-              className={perluKonfirmasi ? 'px-4' : 'flex-1'}
+              className={menungguJawaban ? 'px-4' : 'flex-1'}
               onClick={() => setBukaKeterangan(true)}
             >
               <MessageCircle aria-hidden />
-              {perluKonfirmasi ? 'Keterangan' : 'Tambah keterangan'}
+              {menungguJawaban ? 'Keterangan' : 'Tambah keterangan'}
             </TombolLapangan>
-            {perluKonfirmasi && (
+            {menungguJawaban && (
               <TombolLapangan asChild className="flex-1">
                 <Link href={ruteLapangan.pelapor.konfirmasi(laporan.Id)}>Konfirmasi</Link>
               </TombolLapangan>
@@ -234,6 +236,24 @@ function IsiLacak({ laporan, riwayat, jumlahFoto }: PropsLacakPelapor) {
       </article>
 
       <PitaPelapor />
+
+      {laporan.KonfirmasiPekerjaan === 'Diminta' && (
+        <PitaInfo
+          nada="kuning"
+          ikon="handshake"
+          judul="Menunggu konfirmasimu"
+          teks="Teknisi sudah menyelesaikan pekerjaannya. Cek hasilnya, lalu konfirmasi."
+          tautan={{ label: 'Konfirmasi', href: ruteLapangan.pelapor.konfirmasi(laporan.Id) }}
+        />
+      )}
+      {laporan.KonfirmasiPekerjaan === 'Dikonfirmasi' && (
+        <PitaInfo
+          nada="hijau"
+          ikon="check_mark_button"
+          judul="Kamu sudah mengonfirmasi"
+          teks="Laporan ditutup otomatis setelah koordinator memverifikasi pekerjaannya."
+        />
+      )}
 
       <Kartu className="pt-4 pr-3 pb-0 pl-2">
         <h2 className="mb-3.5 pl-2 text-[15px] font-bold tracking-[-0.01em]">Perjalanan laporan</h2>

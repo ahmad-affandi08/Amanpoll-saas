@@ -8,7 +8,7 @@ import {
   Wrench,
   type LucideIcon,
 } from 'lucide-react';
-import type { StatusKeluhanPelapor, WarnaChip } from '@/features/Lapangan/types';
+import type { LaporanPelapor, StatusKeluhanPelapor, WarnaChip } from '@/features/Lapangan/types';
 
 /** Perhentian perjalanan laporan (DESIGN.md 36.3): Dilaporkan → Ditinjau → Ditugaskan → Dikerjakan → Selesai. */
 export const PERHENTIAN_LAPORAN = ['Dilaporkan', 'Ditinjau', 'Ditugaskan', 'Dikerjakan', 'Selesai'] as const;
@@ -71,10 +71,22 @@ export type TabLaporan = 'aktif' | 'konfirmasi' | 'selesai';
  * Laporan yang menunggu konfirmasi masih aktif bagi pelapor, jadi tampil di keduanya
  * (papan pelapor layar 09).
  */
-export function diTabLaporan(status: StatusKeluhanPelapor, tab: TabLaporan): boolean {
+/**
+ * Laporan yang menunggu jawaban pelapor: keluhan Selesai, atau pekerjaannya baru diserahkan
+ * teknisi dan menunggu konfirmasi penerima (PRD 8.22).
+ */
+export function perluKonfirmasi(laporan: Pick<LaporanPelapor, 'Status' | 'KonfirmasiPekerjaan'>): boolean {
+  return laporan.Status === 'Selesai' || laporan.KonfirmasiPekerjaan === 'Diminta';
+}
+
+export function diTabLaporan(
+  laporan: Pick<LaporanPelapor, 'Status' | 'KonfirmasiPekerjaan'>,
+  tab: TabLaporan,
+): boolean {
+  const { Status: status } = laporan;
   const selesai = status === 'Ditutup' || status === 'Ditolak' || status === 'Dibatalkan';
   if (tab === 'selesai') return selesai;
-  if (tab === 'konfirmasi') return status === 'Selesai';
+  if (tab === 'konfirmasi') return perluKonfirmasi(laporan);
   return !selesai;
 }
 

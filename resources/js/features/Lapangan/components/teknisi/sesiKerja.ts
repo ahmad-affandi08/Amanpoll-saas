@@ -47,11 +47,21 @@ export interface SesiKerja {
 export interface FotoTertunda {
   Kunci: string;
   PerintahKerjaId: string;
+  /** `TandaTangan`: konfirmasi penerima tanpa akun (PRD 8.22, cara 3), bukan lampiran. */
   Kategori: 'FotoSebelum' | 'FotoSesudah' | 'TandaTangan';
   Berkas: Blob;
   NamaBerkas: string;
   Keterangan: string | null;
   DibuatPada: string;
+  /** Hanya untuk `TandaTangan`: nama (wajib) dan jabatan penerima yang menandatangani. */
+  NamaPenerima?: string;
+  JabatanPenerima?: string | null;
+}
+
+/** Isian penerima untuk draf tanda tangan di HP teknisi. */
+export interface PenerimaTandaTangan {
+  NamaPenerima: string;
+  JabatanPenerima: string | null;
 }
 
 const AWALAN_FOTO = 'teknisi:foto:';
@@ -134,7 +144,36 @@ function lengkapiSesi(sesi: SesiKerja): SesiKerja {
   return !sesi.MulaiPertama && sesi.MulaiPada ? { ...sesi, MulaiPertama: sesi.MulaiPada } : sesi;
 }
 
+/**
+ * Tanda tangan penerima tanpa akun menjadi konfirmasi `TandaTanganPerangkat` (PRD 8.22).
+ * Kunci draf dikirim sebagai kunci perangkat, jadi kiriman ulang tidak menggandakannya.
+ */
+async function kirimTandaTanganPenerima(foto: FotoTertunda): Promise<void> {
+  const data = new FormData();
+  data.append(
+    'TandaTangan',
+    new File([foto.Berkas], foto.NamaBerkas, { type: foto.Berkas.type || 'image/png' }),
+  );
+  data.append('NamaPenerima', foto.NamaPenerima ?? '');
+  if (foto.JabatanPenerima) data.append('JabatanPenerima', foto.JabatanPenerima);
+  data.append('KunciPerangkat', foto.Kunci.split(':').pop() ?? foto.Kunci);
+  await http.post(ruteLapangan.teknisi.konfirmasiPenerimaTandaTangan(foto.PerintahKerjaId), data);
+}
+
+/**
+ * Penolakan yang tidak akan berubah bila dicoba ulang (tiket sudah dikonfirmasi orang lain,
+ * sudah diverifikasi, atau bukan tugas teknisi ini lagi): draf tanda tangan dibuang.
+ */
+function ditolakPermanen(galat: unknown): boolean {
+  const status = isAxiosError(galat) ? galat.response?.status : undefined;
+  return status === 403 || status === 404 || status === 409 || status === 422;
+}
+
 async function unggahSatu(foto: FotoTertunda): Promise<void> {
+  if (foto.Kategori === 'TandaTangan') {
+    await kirimTandaTanganPenerima(foto);
+    return;
+  }
   const data = new FormData();
   data.append('Berkas', new File([foto.Berkas], foto.NamaBerkas, { type: foto.Berkas.type || 'image/jpeg' }));
   data.append('JenisEntitas', 'PerintahKerja');
@@ -148,12 +187,13 @@ async function unggahSatu(foto: FotoTertunda): Promise<void> {
 let rantaiUnggahan: Promise<unknown> = Promise.resolve();
 
 /**
- * Mengunggah foto dan tanda tangan yang tersimpan di perangkat ke lampiran Kolaborasi tiket;
- * yang gagal tetap di perangkat untuk dicoba lagi.
+ * Mengunggah foto (lampiran Kolaborasi tiket) dan tanda tangan penerima (konfirmasi penerima,
+ * PRD 8.22) yang tersimpan di perangkat; yang gagal karena jaringan tetap di perangkat untuk
+ * dicoba lagi.
  *
- * Dipanggil juga oleh `useSinkronisasiOffline` tepat sebelum antrean dikirim: tanda tangan
- * penerima harus sudah menjadi lampiran ketika mutasi "selesai" tiba, karena organisasi yang
- * mewajibkannya menolak penyelesaian tanpa lampiran itu (TASK 39.10).
+ * Dipanggil juga oleh `useSinkronisasiOffline` tepat sebelum antrean dikirim, sehingga tanda
+ * tangan penerima sudah tercatat saat mutasi "selesai" tiba dan pelapor tidak diminta
+ * mengonfirmasi pekerjaan yang sudah ditandatangani.
  *
  * @param perintahKerjaId satu tiket, beberapa tiket, atau `null` untuk semua draf
  */
@@ -177,7 +217,10 @@ export function unggahFotoTertunda(
           await unggahSatu(nilai);
           await hapusDraf(konteks, satu);
           berhasil++;
-        } catch {
+        } catch (galat) {
+          if (nilai.Kategori === 'TandaTangan' && ditolakPermanen(galat)) {
+            await hapusDraf(konteks, satu).catch(() => undefined);
+          }
           gagal++;
         }
       }
@@ -189,8 +232,8 @@ export function unggahFotoTertunda(
 }
 
 /**
- * Foto dan tanda tangan yang menunggu diunggah ke lampiran Kolaborasi tiket.
- * Tersimpan sebagai `Blob` di perangkat; diunggah begitu ada sinyal.
+ * Foto dan tanda tangan penerima yang menunggu dikirim.
+ * Tersimpan sebagai `Blob` di perangkat; dikirim begitu ada sinyal.
  */
 export function useFotoTertunda(perintahKerjaId: string | null) {
   const konteks = useKonteksOffline();
@@ -220,6 +263,7 @@ export function useFotoTertunda(perintahKerjaId: string | null) {
       kategori: FotoTertunda['Kategori'],
       berkas: Blob,
       keterangan: string | null = null,
+      penerima: PenerimaTandaTangan | null = null,
     ) => {
       if (!konteks) return;
       const id = crypto.randomUUID();
@@ -234,6 +278,7 @@ export function useFotoTertunda(perintahKerjaId: string | null) {
         NamaBerkas: `${kategori}-${new Date().toISOString().replace(/[:.]/g, '-')}.${ekstensi}`,
         Keterangan: keterangan,
         DibuatPada: new Date().toISOString(),
+        ...(penerima ?? {}),
       };
       await simpanDraf(konteks, nilai.Kunci, nilai);
       await muat();
@@ -255,7 +300,7 @@ export function useFotoTertunda(perintahKerjaId: string | null) {
     if (!konteks || !navigator.onLine) return { berhasil: 0, gagal: 0 };
     const hasil = await unggahFotoTertunda(konteks, perintahKerjaId).finally(() => muat());
     if (hasil.berhasil > 0 && perintahKerjaId) {
-      router.reload({ only: ['foto'] });
+      router.reload({ only: ['foto', 'konfirmasiPenerima'] });
     }
     return hasil;
   }, [konteks, perintahKerjaId, muat]);

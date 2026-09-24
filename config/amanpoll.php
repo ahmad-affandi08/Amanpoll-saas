@@ -62,6 +62,20 @@ return [
     | bukan kerahasiaan nilai ini.
     |
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Konfirmasi penerima (PRD 8.22)
+    |--------------------------------------------------------------------------
+    |
+    | QR yang ditampilkan teknisi berisi tautan bertanda tangan server untuk
+    | satu perintah kerja. Masa berlakunya singkat supaya foto layar QR tidak
+    | bisa dipakai belakangan; teknisi tinggal memperbaruinya.
+    |
+    */
+    'konfirmasi_penerima' => [
+        'menit_berlaku_qr' => (int) env('AMANPOLL_KONFIRMASI_QR_MENIT', 10),
+    ],
+
     'demo' => [
         'kata_sandi' => env('AMANPOLL_DEMO_KATA_SANDI', 'password'),
     ],

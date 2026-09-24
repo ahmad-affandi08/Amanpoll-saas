@@ -181,8 +181,8 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
 
     setMengirim(true);
     try {
-      // Foto dan tanda tangan yang tersimpan di HP menjadi lampiran lebih dulu, supaya
-      // mutasi "selesai" tidak ditolak karena tanda tangan penerima belum sampai (39.10).
+      // Foto dan tanda tangan penerima yang tersimpan di HP dikirim lebih dulu, supaya
+      // konfirmasi penerima sudah tercatat saat mutasi "selesai" tiba (PRD 8.22).
       // Yang gagal diunggah tidak menahan antrean; penolakannya tampil sebagai mutasi Gagal.
       const entitas = belumTuntas.flatMap((m) => (m.EntitasId ? [m.EntitasId] : []));
       await unggahFotoTertunda(konteks, [...new Set(entitas)]).catch(() => undefined);

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Http\Policies;
 
 use App\Core\Izin\PemeriksaIzin;
+use App\Core\Izin\PemeriksaLingkupBaris;
+use App\Core\Izin\ScopeLingkup;
+use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Pemeliharaan\Application\Services\AturanKonfirmasiPenerima;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
@@ -16,7 +20,12 @@ final class PerintahKerjaPolicy
     /** Kategori lampiran foto hasil kerja teknisi yang boleh dilihat pelapor keluhannya. */
     public const KATEGORI_FOTO_SESUDAH = 'FotoSesudah';
 
-    public function __construct(private readonly PemeriksaIzin $izin) {}
+    public function __construct(
+        private readonly PemeriksaIzin $izin,
+        private readonly PemeriksaLingkupBaris $pemeriksaLingkup,
+        private readonly KonteksOrganisasi $konteks,
+        private readonly AturanKonfirmasiPenerima $aturanKonfirmasi,
+    ) {}
 
     public function viewAny(Pengguna $pengguna): bool
     {
@@ -86,6 +95,39 @@ final class PerintahKerjaPolicy
             ->whereKey($perintahKerja->KeluhanId)
             ->where('PelaporId', $pengguna->Id)
             ->exists();
+    }
+
+    /**
+     * Cara 1 konfirmasi penerima (PRD 8.22): pelapor keluhan asal, dari akunnya sendiri.
+     * Keadaan tiketnya (sedang menunggu konfirmasi atau belum) diperiksa Action.
+     */
+    public function konfirmasiSebagaiPelapor(Pengguna $pengguna, PerintahKerja $perintahKerja): bool
+    {
+        if ($pengguna->Status !== 'Aktif' || $perintahKerja->KeluhanId === null) {
+            return false;
+        }
+
+        $pelaporKeluhan = Keluhan::query()
+            ->withoutGlobalScope(ScopeLingkup::class)
+            ->whereKey($perintahKerja->KeluhanId)
+            ->value('PelaporId');
+
+        return $pelaporKeluhan === $pengguna->Id && ! $this->aturanKonfirmasi->ditugaskan($perintahKerja, $pengguna->Id);
+    }
+
+    /**
+     * Cara 2 konfirmasi penerima (PRD 8.22): siapa pun yang memindai QR-nya, asalkan
+     * pengguna aktif di organisasi yang sama, lingkupnya mencakup tiket ini, dan bukan
+     * teknisi yang mengerjakannya. Tidak butuh izin tambahan: penerima pekerjaan
+     * biasanya bukan pemegang izin pemeliharaan.
+     */
+    public function konfirmasiLewatPindai(Pengguna $pengguna, PerintahKerja $perintahKerja): bool
+    {
+        return $pengguna->Status === 'Aktif'
+            && $pengguna->OrganisasiId === $perintahKerja->OrganisasiId
+            && $perintahKerja->OrganisasiId === $this->konteks->id()
+            && $this->pemeriksaLingkup->mencakup($pengguna->Id, $perintahKerja)
+            && ! $this->aturanKonfirmasi->ditugaskan($perintahKerja, $pengguna->Id);
     }
 
     public function manageCost(Pengguna $pengguna, PerintahKerja $perintahKerja): bool

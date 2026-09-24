@@ -7,6 +7,7 @@ namespace App\Domain\Pemeliharaan\Http\Policies;
 use App\Core\Izin\PemeriksaIzin;
 use App\Core\Izin\PemeriksaLingkupBaris;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Pemeliharaan\Application\Services\KonfirmasiPelaporKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -17,6 +18,7 @@ final class KeluhanPolicy
         private readonly PemeriksaIzin $izin,
         private readonly PemeriksaLingkupBaris $pemeriksaLingkup,
         private readonly KonteksOrganisasi $konteks,
+        private readonly KonfirmasiPelaporKeluhan $konfirmasiPelapor,
     ) {}
 
     public function viewAny(Pengguna $pengguna): bool
@@ -71,11 +73,16 @@ final class KeluhanPolicy
      * Verifikasi hasil perbaikan (PRD 4.6): hanya pelapornya sendiri, dan hanya
      * selagi keluhan berstatus Selesai. Izin Kelola tidak membukanya, karena
      * yang ditanyakan adalah pendapat orang yang melapor.
+     *
+     * Pelapor yang sudah menjawab "Sudah beres" di tahap perintah kerja (PRD 8.22)
+     * tidak ditanya kedua kalinya: keluhannya ditutup otomatis saat perintah kerja
+     * itu diverifikasi (`UbahStatusKeluhan::tutupBilaTerkonfirmasi`).
      */
     public function konfirmasi(Pengguna $pengguna, Keluhan $keluhan): bool
     {
         return $keluhan->PelaporId === $pengguna->Id
-            && $keluhan->Status === StatusKeluhan::Selesai->value;
+            && $keluhan->Status === StatusKeluhan::Selesai->value
+            && ! $this->konfirmasiPelapor->sudahDikonfirmasi($keluhan);
     }
 
     public function ubahPrioritas(Pengguna $pengguna, Keluhan $keluhan): bool

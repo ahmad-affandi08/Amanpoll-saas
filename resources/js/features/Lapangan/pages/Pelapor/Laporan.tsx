@@ -72,7 +72,7 @@ function IsiLaporan({ laporan, jumlah, cariBuka }: PropsLaporanPelapor & { cariB
   const kata = cari.trim().toLowerCase();
   const tampil = laporan.filter(
     (satu) =>
-      diTabLaporan(satu.Status, tab) &&
+      diTabLaporan(satu, tab) &&
       (!kata || [satu.Judul, satu.Nomor, satu.Aset?.Nama].some((teks) => teks?.toLowerCase().includes(kata))),
   );
   const kosong = KOSONG[tab];

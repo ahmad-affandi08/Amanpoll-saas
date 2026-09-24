@@ -8,7 +8,7 @@ import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
 import { Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { PemindaiQr } from '@/features/Lapangan/components/PemindaiQr';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
-import { kodeDariPindaian } from '@/features/Lapangan/components/pelapor/pindai';
+import { kodeDariPindaian, tautanKonfirmasiPenerima } from '@/features/Lapangan/components/pelapor/pindai';
 import { BarisAsetLokasi } from '@/features/Lapangan/components/pelapor/BarisAset';
 import { LembarLokasi } from '@/features/Lapangan/components/pelapor/LembarLokasi';
 import type { LokasiPelapor, PropsAsetPelapor } from '@/features/Lapangan/types';
@@ -56,7 +56,11 @@ export default function AsetPelapor() {
           onTutup={() => setPindai(false)}
           onHasil={(kode) => {
             setPindai(false);
-            router.visit(ruteLapangan.pelapor.laporDengan({ kode: kodeDariPindaian(kode) }));
+            // QR konfirmasi penerima dari HP teknisi (PRD 8.22) dibuka sebagai halaman konfirmasi.
+            router.visit(
+              tautanKonfirmasiPenerima(kode) ??
+                ruteLapangan.pelapor.laporDengan({ kode: kodeDariPindaian(kode) }),
+            );
           }}
         />
       )}

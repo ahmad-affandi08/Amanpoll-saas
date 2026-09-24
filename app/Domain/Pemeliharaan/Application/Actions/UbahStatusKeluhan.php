@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Pemeliharaan\Application\Services\KonfirmasiPelaporKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KonfirmasiPenerimaPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\RiwayatStatusKeluhan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
@@ -14,7 +16,11 @@ use App\Shared\Domain\Exceptions\VersiDataBerubah;
 
 final class UbahStatusKeluhan
 {
-    public function __construct(private readonly TransaksiDatabase $transaksi, private readonly LayananAudit $audit) {}
+    public function __construct(
+        private readonly TransaksiDatabase $transaksi,
+        private readonly LayananAudit $audit,
+        private readonly KonfirmasiPelaporKeluhan $konfirmasiPelapor,
+    ) {}
 
     public function jalankan(Keluhan $keluhan, StatusKeluhan $tujuan, ?string $catatan, int $versi, string $penggunaId): Keluhan
     {
@@ -59,7 +65,53 @@ final class UbahStatusKeluhan
             ]);
             $this->audit->catat('UbahStatus', 'Keluhan', $terkunci->Id, $sebelum, $terkunci->toArray());
 
+            if ($tujuan === StatusKeluhan::Selesai) {
+                return $this->tutupBilaTerkonfirmasi($terkunci, $penggunaId);
+            }
+
             return $terkunci;
+        });
+    }
+
+    /**
+     * Keluhan Selesai yang pelapornya sudah menjawab "Sudah beres" di tahap perintah
+     * kerja (PRD 8.22) langsung ditutup, dengan penilaiannya, tanpa konfirmasi kedua.
+     * Keluhan yang belum dikonfirmasi di tahap itu dibiarkan Selesai dan menunggu
+     * konfirmasi pelapor seperti biasa (`KonfirmasiPenyelesaianKeluhan`).
+     */
+    public function tutupBilaTerkonfirmasi(Keluhan $keluhan, string $penggunaId): Keluhan
+    {
+        if ($keluhan->Status !== StatusKeluhan::Selesai->value) {
+            return $keluhan;
+        }
+
+        $konfirmasi = $this->konfirmasiPelapor->terverifikasi($keluhan);
+
+        if (! $konfirmasi instanceof KonfirmasiPenerimaPerintahKerja) {
+            return $keluhan;
+        }
+
+        return $this->transaksi->jalankan(function () use ($keluhan, $konfirmasi, $penggunaId): Keluhan {
+            $ditutup = $this->jalankan(
+                $keluhan,
+                StatusKeluhan::Ditutup,
+                'Ditutup otomatis: pelapor sudah mengonfirmasi pekerjaan beres.',
+                $keluhan->Versi,
+                $penggunaId,
+            );
+            $ditutup->Rating = $konfirmasi->Penilaian;
+            $ditutup->Ulasan = $konfirmasi->Ulasan;
+            $ditutup->save();
+
+            $this->audit->catat('KonfirmasiPelapor', 'Keluhan', $ditutup->Id, dataSesudah: [
+                'Beres' => true,
+                'Rating' => $ditutup->Rating,
+                'Ulasan' => $ditutup->Ulasan,
+                'Status' => $ditutup->Status,
+                'KonfirmasiPenerimaId' => $konfirmasi->Id,
+            ]);
+
+            return $ditutup;
         });
     }
 }
