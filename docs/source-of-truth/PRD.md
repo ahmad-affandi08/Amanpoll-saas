@@ -1252,6 +1252,49 @@ Katalog peran bawaan saat ini memberi izin terlalu luas bagi dua peran lapangan:
 
 Katalog hanya dipakai saat peran bawaan dipasang. Peran milik tenant yang sudah berjalan tidak diubah diam-diam; perubahan untuk tenant lama dilakukan lewat perintah artisan yang eksplisit dan tercatat di audit.
 
+
+## 8.21 Unit Pengelola (beberapa bagian pemeliharaan dalam satu organisasi)
+
+Satu organisasi bisa punya lebih dari satu bagian yang memelihara aset, masing-masing dengan inventaris, teknisi, gudang, dan antrian perbaikannya sendiri. Contohnya IPSRS dan IT di rumah sakit, Engineering dan IT di pabrik, atau ME dan IT di gedung. Disetujui pemilik produk pada 24 September 2026.
+
+### Konsep
+
+- **Unit organisasi** tetap menjawab "milik atau dipakai siapa" (mis. ICU). **Unit pengelola** menjawab "siapa yang memeliharanya" (mis. IT). Keduanya tercatat berdampingan; unit pengelola tidak menggantikan unit organisasi.
+- Unit pengelola **bukan entitas baru**. Ia adalah `UnitOrganisasi` biasa yang diberi tanda **Mengelola Aset** (kolom `UnitOrganisasi.MengelolaAset`, bawaan mati) oleh admin di halaman Unit Organisasi. Pilihan unit pengelola di semua formulir hanya berisi unit bertanda itu, dari organisasi yang sama.
+- Satu aset dikelola **paling banyak satu** unit pengelola. Kolom boleh kosong: organisasi dengan satu bagian pemeliharaan tidak perlu mengisinya, dan perilakunya sama seperti sebelum fitur ini.
+- Tanda Mengelola Aset tidak bisa dicabut selama unit itu masih dipakai sebagai unit pengelola oleh aset, kategori keluhan, gudang, atau tiket yang belum selesai.
+
+### Di mana unit pengelola dicatat
+
+- `Aset.UnitPengelolaId`: diisi di formulir aset, impor aset, dan bisa diubah massal.
+- `KategoriKeluhan.UnitPengelolaId`: kategori (atau induknya) menentukan antrian mana yang menerima keluhan.
+- `Keluhan.UnitPengelolaId`: ditentukan saat keluhan dibuat, dari mana pun keluhan dibuat (dasbor, Mode Lapangan, antrian offline). Urutannya: kategori keluhan (naik ke induk sampai ketemu) → aset → kosong. Koordinator pemegang `Keluhan.Kelola` bisa **mengalihkan** keluhan ke unit pengelola lain dengan alasan; pengalihan tercatat di audit dan riwayat.
+- `PerintahKerja.UnitPengelolaId`: isian eksplisit di formulir → keluhan asal → aset → rencana preventif/kalibrasi asal → kosong. Tiket preventif, kalibrasi, dan tindak lanjut inspeksi ikut terisi. `PerintahKerja.UnitOrganisasiId` yang kosong diisi dari unit organisasi aset.
+- `Gudang.UnitPengelolaId`: gudang milik satu bagian.
+- `RencanaPemeliharaan.UnitPengelolaId` dan `RencanaKalibrasi.UnitPengelolaId`: dipakai untuk menurunkan unit pengelola tiket yang dihasilkan dan untuk penyaringan.
+
+### Lingkup akses
+
+- Lingkup akses tetap diberikan per penetapan peran (`PenggunaPeran.UnitOrganisasiId` / `LokasiId`), tidak ada mekanisme lingkup kedua. Pengguna yang lingkupnya unit IT melihat baris yang **unit pengelola**-nya IT (atau turunannya), di ruangan mana pun, selain baris yang unit organisasi atau lokasinya ada di lingkupnya.
+- Kolom `UnitPengelolaId` ditambahkan ke peta lingkup Aset, Keluhan, Perintah Kerja, dan Gudang. Penambahan ini hanya **memperluas** apa yang terlihat oleh pengguna berlingkup; tidak ada baris yang sebelumnya terlihat menjadi tersembunyi.
+- Stok, mutasi stok, reservasi, dan pemakaian suku cadang mengikuti lingkup gudangnya: pengguna berlingkup hanya melihat dan hanya bisa mengirim transaksi untuk gudang yang terlihat olehnya. Master suku cadang tetap katalog bersama organisasi.
+- Penetapan peran tanpa lingkup membuat pengguna melihat seluruh organisasi. Halaman Pengguna menampilkan lingkup efektif setiap pengguna, dan formulir penetapan peran memperingatkan bila penetapan tanpa lingkup akan membuka seluruh organisasi bagi pengguna yang sebelumnya berlingkup.
+
+### Antrian, penugasan, dan notifikasi
+
+- Daftar keluhan dan perintah kerja bisa disaring menurut unit pengelola dan kategori.
+- Pilihan teknisi saat menugaskan perintah kerja hanya berisi pengguna aktif yang lingkupnya mencakup tiket itu. Server menolak penugasan kepada pengguna yang tidak bisa melihat tiketnya.
+- Notifikasi routing kategori (`PeranPenanggungJawabId`) dan eskalasi SLA hanya dikirim kepada pemegang peran yang lingkupnya mencakup keluhan itu. Bila kategori tidak menunjuk peran tetapi keluhan punya unit pengelola, notifikasi dikirim ke pemegang `Keluhan.Kelola` yang lingkupnya mencakup unit pengelola itu.
+
+### Laporan
+
+- Filter laporan dan dasbor mendapat dimensi **Unit Pengelola**, di samping unit organisasi dan lokasi. Keluhan dan perintah kerja memakai kolomnya sendiri, aset memakai kolom aset, dan stok memakai unit pengelola gudangnya.
+
+### Data lama
+
+- Perintah artisan eksplisit mengisi unit pengelola yang kosong pada keluhan, perintah kerja, dan rencana dari kategori dan aset. Perintah ini punya mode pratinjau, bisa dijalankan per organisasi, idempoten, dan tercatat di audit. Tidak ada pengisian diam-diam saat migrasi.
+- Panduan penyiapan (halaman `/dokumentasi`) menjelaskan langkah menyiapkan beberapa unit pengelola, dengan contoh IPSRS dan IT.
+
 ---
 
 ## 9. Search, Filter, dan Data Table

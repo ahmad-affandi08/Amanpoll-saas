@@ -3679,6 +3679,68 @@ Batas yang disadari:
 - Foto yang diambil offline disimpan sebagai draf lokal dan diunggah saat online, bukan lewat antrian.
 - Diagnosis yang diisi offline diantre sebagai catatan. Analisis kegagalan terstrukturnya dikirim saat ada sinyal.
 
+
+---
+
+# FASE 40 — Unit Pengelola
+
+Beberapa bagian pemeliharaan dalam satu organisasi (PRD 8.21). Disetujui pemilik produk pada 24 September 2026.
+
+Batasan yang tidak boleh dilanggar:
+- Unit pengelola adalah `UnitOrganisasi` bertanda `MengelolaAset`, bukan tabel atau domain baru.
+- Tidak ada mekanisme lingkup kedua. Kolom `UnitPengelolaId` masuk ke peta `kolomLingkup` bertipe `unit`, sehingga `ScopeLingkup` dan `LingkupAkses` yang ada bekerja tanpa diubah. Penambahan ini hanya memperluas apa yang terlihat.
+- Organisasi yang tidak memakai unit pengelola (semua kolom kosong) berperilaku persis seperti sebelumnya. Test yang ada harus tetap hijau tanpa diubah maknanya.
+- Penurunan unit pengelola dikerjakan Action domain pemiliknya, bukan controller, supaya dasbor, Mode Lapangan, dan antrian offline mendapat hasil yang sama.
+- Tidak ada pengisian data lama saat migrasi; hanya lewat perintah artisan eksplisit (40.06).
+
+Urutan: 40.01 dikerjakan lebih dulu karena seluruh bagian lain memakai kolom, aturan validasi, dan layanannya. 40.02–40.06 dikerjakan paralel sesudahnya.
+
+## 40.01 Fondasi
+
+- [ ] Migrasi: `UnitOrganisasi.MengelolaAset` (boolean, bawaan false) dan `UnitPengelolaId` (nullable, FK ke `UnitOrganisasi`, berindeks bersama `OrganisasiId`) pada `Aset`, `KategoriKeluhan`, `Keluhan`, `PerintahKerja`, `Gudang`, `RencanaPemeliharaan`, `RencanaKalibrasi`.
+- [ ] Model: fillable, relasi `unitPengelola()`, dan `kolomLingkup` Aset, Keluhan, PerintahKerja, Gudang ditambah `UnitPengelolaId => unit`.
+- [ ] Aturan validasi bersama untuk isian unit pengelola: unit organisasi yang sama, aktif, dan bertanda `MengelolaAset`.
+- [ ] Layanan pemeriksa "lingkup pengguna mencakup baris ini" untuk model berlingkup, dipakai penugasan dan notifikasi.
+- [ ] Layanan penurun unit pengelola: untuk keluhan (kategori naik ke induk → aset) dan perintah kerja (isian → keluhan → aset → rencana).
+- [ ] Opsi unit pengelola untuk formulir (satu sumber di backend), tanda Mengelola Aset di formulir dan daftar Unit Organisasi, dan penolakan mencabut tanda selama unit masih dipakai.
+
+## 40.02 Aset dan persediaan
+
+- [ ] Isian, kolom daftar, faset saring, detail, dan ubah massal Unit Pengelola pada aset; kolom unit pengelola di impor dan ekspor aset.
+- [ ] Unit pengelola pada gudang (formulir, daftar, detail).
+- [ ] Stok, mutasi, reservasi, dan pemakaian suku cadang mengikuti lingkup gudang, baik di daftar maupun di validasi kiriman (gudang yang tidak terlihat ditolak).
+
+## 40.03 Keluhan
+
+- [ ] Unit pengelola pada kategori keluhan (formulir dan daftar), dengan peringatan bagi kategori tanpa unit pengelola di organisasi yang memakai fitur ini.
+- [ ] Penurunan unit pengelola saat keluhan dibuat dari dasbor, Mode Lapangan, dan antrian offline.
+- [ ] Alihkan keluhan ke unit pengelola lain (izin `Keluhan.Kelola`, alasan wajib, audit, riwayat).
+- [ ] Saring daftar keluhan menurut unit pengelola dan kategori; unit pengelola tampil di detail.
+- [ ] Notifikasi routing kategori dan eskalasi SLA hanya kepada penerima yang lingkupnya mencakup keluhan; cadangan ke pemegang `Keluhan.Kelola` berlingkup unit pengelola bila kategori tidak menunjuk peran.
+
+## 40.04 Perintah kerja, preventif, dan kalibrasi
+
+- [ ] Penurunan unit pengelola (dan unit organisasi yang kosong) saat perintah kerja dibuat dari formulir, keluhan, preventif, kalibrasi, dan tindak lanjut inspeksi.
+- [ ] Isian, kolom, dan saring unit pengelola pada perintah kerja; unit pengelola pada rencana pemeliharaan dan rencana kalibrasi.
+- [ ] Pilihan teknisi hanya berisi pengguna yang lingkupnya mencakup tiket; server menolak penugasan kepada pengguna yang tidak bisa melihat tiketnya.
+
+## 40.05 Laporan dan dasbor
+
+- [ ] Dimensi Unit Pengelola pada filter metrik, laporan, laporan tersimpan, ekspor, dan dasbor.
+
+## 40.06 Lingkup pengguna, data lama, dan panduan
+
+- [ ] Lingkup efektif pengguna tampil di halaman Pengguna; peringatan saat penetapan peran tanpa lingkup akan membuka seluruh organisasi.
+- [ ] Perintah artisan pengisi unit pengelola yang kosong (pratinjau, per organisasi, idempoten, diaudit).
+- [ ] Halaman panduan `/dokumentasi` untuk menyiapkan beberapa unit pengelola (contoh IPSRS dan IT), dan data demo dengan dua unit pengelola.
+- [ ] Test alur ujung-ke-ujung dua bagian: keluhan printer dari ICU masuk antrian IT dan tidak terlihat koordinator IPSRS; teknisi IT ditugaskan; stok gudang IT tidak terlihat IPSRS; laporan per unit pengelola.
+
+### Gate 40
+
+- Dua unit pengelola dalam satu organisasi: antrian keluhan, perintah kerja, pilihan teknisi, gudang, dan stok terpisah (diuji di test).
+- Organisasi tanpa unit pengelola tidak berubah perilakunya (seluruh test lama hijau).
+- Unit pengelola sama di dasbor, Mode Lapangan, dan antrian offline.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
@@ -3765,6 +3827,8 @@ Batas yang disadari:
 38 Pemasaran Lanjutan
 ↓
 39 Mode Lapangan (Teknisi + Pelapor)
+↓
+40 Unit Pengelola
 ```
 
 Alasan urutan tersebut: setiap fase memakai fondasi dari fase sebelumnya. Dashboard berada dekat akhir karena dashboard harus membaca data transaksi yang sudah benar, bukan menjadi halaman demo yang lebih dulu dibuat.
