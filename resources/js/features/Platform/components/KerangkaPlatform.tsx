@@ -49,7 +49,7 @@ export function KerangkaPlatform({ children }: PropsWithChildren) {
             Konsol Platform
           </span>
 
-          <nav aria-label="Navigasi platform" className="flex items-center gap-1">
+          <nav aria-label="Navigasi platform" className="flex flex-wrap items-center gap-1">
             {menu.map(({ label, href, ikon: Ikon }) => {
               const aktif = url.startsWith(href);
 
