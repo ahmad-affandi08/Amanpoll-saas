@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
+use App\Domain\Langganan\Application\Services\LayananKebijakanTenggang;
 use App\Domain\Platform\Application\Actions\MintaResetKataSandi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -14,9 +15,12 @@ use Inertia\Response;
 
 final class LupaKataSandiController extends Controller
 {
-    public function create(): Response
+    /** Durasi trial ikut dikirim untuk ajakan "Coba gratis" di panel pemasaran (DESIGN.md 37). */
+    public function create(LayananKebijakanTenggang $kebijakan): Response
     {
-        return Inertia::render('Auth/LupaKataSandi');
+        return Inertia::render('Auth/LupaKataSandi', [
+            'durasiTrialHari' => $kebijakan->hariUjiCoba(),
+        ]);
     }
 
     public function store(Request $request, MintaResetKataSandi $aksi): RedirectResponse

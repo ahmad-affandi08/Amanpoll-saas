@@ -31,6 +31,17 @@ class ResetKataSandiTest extends TestCase
         return [$organisasi, $pengguna];
     }
 
+    public function test_halaman_lupa_kata_sandi_membawa_durasi_trial_dari_kebijakan_langganan(): void
+    {
+        config(['amanpoll.langganan.hari_uji_coba' => 21]);
+
+        $this->get('/lupa-kata-sandi')
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->component('Auth/LupaKataSandi')
+                ->where('durasiTrialHari', 21));
+    }
+
     public function test_permintaan_reset_mengirim_notifikasi_untuk_akun_valid(): void
     {
         Notification::fake();

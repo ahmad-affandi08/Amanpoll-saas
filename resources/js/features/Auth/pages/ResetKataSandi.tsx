@@ -1,10 +1,14 @@
 import { FormEvent } from 'react';
-import { Head, useForm } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Link, useForm } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { ruteAuth } from '@/features/Auth/api';
-import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import {
+  BidangIsian,
+  IsianKataSandi,
+  TAUTAN_AUTENTIKASI,
+  TombolKirim,
+} from '@/features/Auth/components/IsianAutentikasi';
+import { KerangkaAutentikasi } from '@/features/Auth/components/KerangkaAutentikasi';
 
 interface ResetKataSandiProps {
   penggunaId: string;
@@ -20,44 +24,51 @@ export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandi
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 p-6">
-      <Head title="Reset Kata Sandi" />
-      <form
-        onSubmit={submit}
-        className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
-      >
-        <KepalaHalaman
-          judul="Reset Kata Sandi"
-          deskripsi="Masukkan kata sandi baru untuk akun Anda."
-          tanpaBreadcrumb
-        />
-        <div className="space-y-1.5">
-          <Label htmlFor="kata-sandi-baru">Kata Sandi Baru</Label>
-          <Input
-            id="kata-sandi-baru"
-            type="password"
-            autoComplete="new-password"
-            value={form.data.KataSandiBaru}
-            onChange={(e) => form.setData('KataSandiBaru', e.target.value)}
-          />
-          {form.errors.KataSandiBaru && (
-            <p className="text-sm text-destructive">{form.errors.KataSandiBaru}</p>
+    <KerangkaAutentikasi
+      judulTab="Reset Kata Sandi"
+      judul="Buat kata sandi baru"
+      deskripsi="Kata sandi baru berlaku untuk akun di organisasi yang disebut pada email reset."
+    >
+      <form onSubmit={submit} className="space-y-5" noValidate>
+        <BidangIsian
+          id="kata-sandi-baru"
+          label="Kata sandi baru"
+          bantuan="Minimal 8 karakter."
+          galat={form.errors.KataSandiBaru}
+        >
+          {(atribut) => (
+            <IsianKataSandi
+              {...atribut}
+              autoComplete="new-password"
+              autoFocus
+              value={form.data.KataSandiBaru}
+              onChange={(e) => form.setData('KataSandiBaru', e.target.value)}
+            />
           )}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="konfirmasi-kata-sandi">Konfirmasi Kata Sandi Baru</Label>
-          <Input
-            id="konfirmasi-kata-sandi"
-            type="password"
-            autoComplete="new-password"
-            value={form.data.KataSandiBaru_confirmation}
-            onChange={(e) => form.setData('KataSandiBaru_confirmation', e.target.value)}
-          />
-        </div>
-        <Button className="w-full" disabled={form.processing}>
-          Reset Kata Sandi
-        </Button>
+        </BidangIsian>
+
+        <BidangIsian id="konfirmasi-kata-sandi" label="Ulangi kata sandi baru">
+          {(atribut) => (
+            <IsianKataSandi
+              {...atribut}
+              autoComplete="new-password"
+              value={form.data.KataSandiBaru_confirmation}
+              onChange={(e) => form.setData('KataSandiBaru_confirmation', e.target.value)}
+            />
+          )}
+        </BidangIsian>
+
+        <TombolKirim memproses={form.processing} labelMemproses="Menyimpan...">
+          Simpan kata sandi baru
+        </TombolKirim>
+
+        <p className="text-center text-sm">
+          <Link href={ruteAuth.login} className={`inline-flex items-center gap-1.5 ${TAUTAN_AUTENTIKASI}`}>
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Kembali ke halaman masuk
+          </Link>
+        </p>
       </form>
-    </div>
+    </KerangkaAutentikasi>
   );
 }

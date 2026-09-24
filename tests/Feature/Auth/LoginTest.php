@@ -38,6 +38,17 @@ class LoginTest extends TestCase
         ], $override);
     }
 
+    public function test_halaman_masuk_membawa_durasi_trial_dari_kebijakan_langganan(): void
+    {
+        config(['amanpoll.langganan.hari_uji_coba' => 21]);
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertInertia(fn ($halaman) => $halaman
+                ->component('Auth/Login')
+                ->where('durasiTrialHari', 21));
+    }
+
     public function test_login_berhasil_dengan_kredensial_benar(): void
     {
         $pengguna = $this->buatPengguna();

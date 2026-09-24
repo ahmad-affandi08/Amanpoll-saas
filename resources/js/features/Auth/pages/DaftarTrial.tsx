@@ -1,11 +1,15 @@
 import { FormEvent } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
+import { Link, useForm } from '@inertiajs/react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { LogoLambang } from '@/components/shared/Logo';
 import { ruteAuth } from '@/features/Auth/api';
+import {
+  BidangIsian,
+  IsianAutentikasi,
+  IsianKataSandi,
+  TAUTAN_AUTENTIKASI,
+  TombolKirim,
+} from '@/features/Auth/components/IsianAutentikasi';
+import { KerangkaAutentikasi } from '@/features/Auth/components/KerangkaAutentikasi';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 
 interface Props {
@@ -43,158 +47,168 @@ export default function AuthDaftarTrial({
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 p-6">
-      <Head title="Coba Gratis" />
+    <KerangkaAutentikasi
+      judulTab="Coba Gratis"
+      judul={`Coba Amanpoll ${durasiHari} hari`}
+      deskripsi={
+        namaPaket
+          ? `Paket ${namaPaket}, tanpa biaya selama masa percobaan.`
+          : 'Tanpa biaya selama masa percobaan.'
+      }
+      lebar="lebar"
+    >
       <AturanWajibProvider aturan={wajib.trial}>
-        <form
-          onSubmit={submit}
-          className="w-full max-w-md space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
-        >
-          <div className="flex flex-col items-center gap-3 pb-1 text-center">
-            <LogoLambang className="size-14" />
-            <div>
-              <h1 className="text-xl font-semibold text-foreground">Coba Amanpoll {durasiHari} hari</h1>
-              <p className="text-sm text-muted-foreground">
-                {namaPaket
-                  ? `Paket ${namaPaket}, tanpa biaya selama masa percobaan.`
-                  : 'Tanpa biaya selama masa percobaan.'}
-              </p>
-            </div>
-          </div>
-
+        <form onSubmit={submit} className="space-y-5" noValidate>
           {terkunci ? (
-            <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+            <p className="rounded-md border border-safety-600/30 bg-safety-500/15 p-3 text-sm text-safety-700">
               Pendaftaran mandiri sedang ditutup karena trial menuntut kartu sementara penyedia pembayaran
               yang aktif belum dapat menerimanya. Hubungi tim penjualan untuk memulai.
             </p>
           ) : null}
 
-          <div className="space-y-1.5">
-            <Label nama="NamaOrganisasi" htmlFor="nama-organisasi">
-              Nama Organisasi
-            </Label>
-            <Input
-              id="nama-organisasi"
-              value={form.data.NamaOrganisasi}
-              onChange={(e) => form.setData('NamaOrganisasi', e.target.value)}
-              autoComplete="organization"
-              disabled={terkunci}
-            />
-            {form.errors.NamaOrganisasi && (
-              <p className="text-sm text-destructive">{form.errors.NamaOrganisasi}</p>
+          <BidangIsian
+            id="nama-organisasi"
+            label="Nama organisasi"
+            nama="NamaOrganisasi"
+            galat={form.errors.NamaOrganisasi}
+          >
+            {(atribut) => (
+              <IsianAutentikasi
+                {...atribut}
+                value={form.data.NamaOrganisasi}
+                onChange={(e) => form.setData('NamaOrganisasi', e.target.value)}
+                autoComplete="organization"
+                disabled={terkunci}
+              />
             )}
+          </BidangIsian>
+
+          <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+            <BidangIsian id="nama" label="Nama Anda" nama="Nama" galat={form.errors.Nama}>
+              {(atribut) => (
+                <IsianAutentikasi
+                  {...atribut}
+                  value={form.data.Nama}
+                  onChange={(e) => form.setData('Nama', e.target.value)}
+                  autoComplete="name"
+                  disabled={terkunci}
+                />
+              )}
+            </BidangIsian>
+
+            <BidangIsian id="telepon" label="Telepon (opsional)" nama="Telepon" galat={form.errors.Telepon}>
+              {(atribut) => (
+                <IsianAutentikasi
+                  {...atribut}
+                  type="tel"
+                  inputMode="tel"
+                  value={form.data.Telepon}
+                  onChange={(e) => form.setData('Telepon', e.target.value)}
+                  autoComplete="tel"
+                  disabled={terkunci}
+                />
+              )}
+            </BidangIsian>
           </div>
 
-          <div className="space-y-1.5">
-            <Label nama="nama" htmlFor="nama">
-              Nama Anda
-            </Label>
-            <Input
-              id="nama"
-              value={form.data.Nama}
-              onChange={(e) => form.setData('Nama', e.target.value)}
-              autoComplete="name"
-              disabled={terkunci}
-            />
-            {form.errors.Nama && <p className="text-sm text-destructive">{form.errors.Nama}</p>}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label nama="email" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={form.data.Email}
-              onChange={(e) => form.setData('Email', e.target.value)}
-              autoComplete="email"
-              disabled={terkunci}
-            />
-            {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label nama="telepon" htmlFor="telepon">
-              Telepon (opsional)
-            </Label>
-            <Input
-              id="telepon"
-              type="tel"
-              value={form.data.Telepon}
-              onChange={(e) => form.setData('Telepon', e.target.value)}
-              autoComplete="tel"
-              disabled={terkunci}
-            />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label nama="KataSandi" htmlFor="kata-sandi">
-                Kata Sandi
-              </Label>
-              <Input
-                id="kata-sandi"
-                type="password"
-                autoComplete="new-password"
-                value={form.data.KataSandi}
-                onChange={(e) => form.setData('KataSandi', e.target.value)}
+          <BidangIsian id="email" label="Email kerja" nama="Email" galat={form.errors.Email}>
+            {(atribut) => (
+              <IsianAutentikasi
+                {...atribut}
+                type="email"
+                inputMode="email"
+                value={form.data.Email}
+                onChange={(e) => form.setData('Email', e.target.value)}
+                autoComplete="email"
                 disabled={terkunci}
               />
-              {form.errors.KataSandi && <p className="text-sm text-destructive">{form.errors.KataSandi}</p>}
-            </div>
-            <div className="space-y-1.5">
-              <Label nama="KataSandi_confirmation" htmlFor="kata-sandi-ulang">
-                Ulangi
-              </Label>
-              <Input
-                id="kata-sandi-ulang"
-                type="password"
-                autoComplete="new-password"
-                value={form.data.KataSandi_confirmation}
-                onChange={(e) => form.setData('KataSandi_confirmation', e.target.value)}
-                disabled={terkunci}
-              />
-            </div>
+            )}
+          </BidangIsian>
+
+          <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+            <BidangIsian
+              id="kata-sandi"
+              label="Kata sandi"
+              nama="KataSandi"
+              bantuan="Minimal 8 karakter."
+              galat={form.errors.KataSandi}
+            >
+              {(atribut) => (
+                <IsianKataSandi
+                  {...atribut}
+                  autoComplete="new-password"
+                  value={form.data.KataSandi}
+                  onChange={(e) => form.setData('KataSandi', e.target.value)}
+                  disabled={terkunci}
+                />
+              )}
+            </BidangIsian>
+            <BidangIsian id="kata-sandi-ulang" label="Ulangi kata sandi" nama="KataSandi_confirmation">
+              {(atribut) => (
+                <IsianKataSandi
+                  {...atribut}
+                  autoComplete="new-password"
+                  value={form.data.KataSandi_confirmation}
+                  onChange={(e) => form.setData('KataSandi_confirmation', e.target.value)}
+                  disabled={terkunci}
+                />
+              )}
+            </BidangIsian>
           </div>
 
           {kartuDiminta && penyediaSiapKartu ? (
-            <div className="space-y-1.5">
-              <Label nama="TokenKartu" htmlFor="token-kartu">
-                Metode Pembayaran
-              </Label>
-              <Input
-                id="token-kartu"
-                value={form.data.TokenKartu}
-                onChange={(e) => form.setData('TokenKartu', e.target.value)}
-              />
-              <p className="text-sm text-muted-foreground">Kartu tidak ditagih selama masa percobaan.</p>
-              {form.errors.TokenKartu && <p className="text-sm text-destructive">{form.errors.TokenKartu}</p>}
-            </div>
+            <BidangIsian
+              id="token-kartu"
+              label="Metode pembayaran"
+              nama="TokenKartu"
+              bantuan="Kartu tidak ditagih selama masa percobaan."
+              galat={form.errors.TokenKartu}
+            >
+              {(atribut) => (
+                <IsianAutentikasi
+                  {...atribut}
+                  value={form.data.TokenKartu}
+                  onChange={(e) => form.setData('TokenKartu', e.target.value)}
+                />
+              )}
+            </BidangIsian>
           ) : null}
 
-          <label className="flex items-start gap-2 text-sm">
-            <Checkbox
-              checked={form.data.Persetujuan}
-              onCheckedChange={(nilai) => form.setData('Persetujuan', nilai === true)}
-              disabled={terkunci}
-            />
-            <span>Saya menyetujui syarat layanan dan kebijakan privasi Amanpoll.</span>
-          </label>
-          {form.errors.Persetujuan && <p className="text-sm text-destructive">{form.errors.Persetujuan}</p>}
+          <div className="space-y-1.5">
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-foreground">
+              <Checkbox
+                className="mt-0.5"
+                checked={form.data.Persetujuan}
+                onCheckedChange={(nilai) => form.setData('Persetujuan', nilai === true)}
+                disabled={terkunci}
+                aria-invalid={form.errors.Persetujuan ? true : undefined}
+                aria-describedby={form.errors.Persetujuan ? 'persetujuan-galat' : undefined}
+              />
+              <span>Saya menyetujui syarat layanan dan kebijakan privasi Amanpoll.</span>
+            </label>
+            {form.errors.Persetujuan ? (
+              <p id="persetujuan-galat" className="text-sm text-destructive">
+                {form.errors.Persetujuan}
+              </p>
+            ) : null}
+          </div>
 
-          <Button type="submit" className="w-full" disabled={form.processing || terkunci}>
-            {form.processing ? 'Menyiapkan workspace...' : 'Mulai Coba Gratis'}
-          </Button>
+          <TombolKirim
+            memproses={form.processing}
+            labelMemproses="Menyiapkan workspace..."
+            disabled={terkunci}
+          >
+            Mulai coba gratis
+          </TombolKirim>
 
           <p className="text-center text-sm text-muted-foreground">
             Sudah punya akun?{' '}
-            <Link href={ruteAuth.login} className="underline">
+            <Link href={ruteAuth.login} className={TAUTAN_AUTENTIKASI}>
               Masuk
             </Link>
           </p>
         </form>
       </AturanWajibProvider>
-    </div>
+    </KerangkaAutentikasi>
   );
 }

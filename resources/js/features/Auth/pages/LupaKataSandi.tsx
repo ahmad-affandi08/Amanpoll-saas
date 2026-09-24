@@ -1,12 +1,22 @@
 import { FormEvent } from 'react';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { ruteAuth } from '@/features/Auth/api';
-import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import {
+  BidangIsian,
+  IsianAutentikasi,
+  PesanSukses,
+  TAUTAN_AUTENTIKASI,
+  TombolKirim,
+} from '@/features/Auth/components/IsianAutentikasi';
+import { KerangkaAutentikasi } from '@/features/Auth/components/KerangkaAutentikasi';
 
-export default function AuthLupaKataSandi() {
+interface Props {
+  /** Durasi trial dari kebijakan langganan (`amanpoll.langganan.hari_uji_coba`). */
+  durasiTrialHari: number;
+}
+
+export default function AuthLupaKataSandi({ durasiTrialHari }: Props) {
   const { props } = usePage<{ flash: { sukses?: string | null } }>();
   const form = useForm({ Email: '' });
 
@@ -16,45 +26,40 @@ export default function AuthLupaKataSandi() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-permukaan-100 p-6">
-      <Head title="Lupa Kata Sandi" />
-      <form
-        onSubmit={submit}
-        className="w-full max-w-sm space-y-5 rounded-[10px] border border-border bg-card p-6 shadow-[0_8px_24px_rgb(23_32_39_/_0.10),0_2px_6px_rgb(23_32_39_/_0.06)]"
-      >
-        <KepalaHalaman
-          judul="Lupa Kata Sandi"
-          deskripsi="Masukkan email akun Anda. Bila email itu terdaftar di beberapa organisasi, tautan reset dikirim untuk masing-masing."
-          tanpaBreadcrumb
-        />
-        {props.flash?.sukses && (
-          <p
-            role="status"
-            className="rounded-md border border-sukses-200 bg-sukses-50 p-3 text-sm text-sukses-700"
-          >
-            {props.flash.sukses}
-          </p>
-        )}
-        <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={form.data.Email}
-            onChange={(e) => form.setData('Email', e.target.value)}
-          />
-          {form.errors.Email && <p className="text-sm text-destructive">{form.errors.Email}</p>}
-        </div>
-        <Button className="w-full" disabled={form.processing}>
-          Kirim Tautan Reset
-        </Button>
-        <a
-          href={ruteAuth.login}
-          className="block rounded-sm text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        >
-          Kembali ke halaman masuk
-        </a>
+    <KerangkaAutentikasi
+      judulTab="Lupa Kata Sandi"
+      judul="Lupa kata sandi"
+      deskripsi="Masukkan email akun Anda. Bila email itu terdaftar di beberapa organisasi, tautan reset dikirim untuk masing-masing."
+      durasiTrialHari={durasiTrialHari}
+    >
+      <form onSubmit={submit} className="space-y-5" noValidate>
+        {props.flash?.sukses ? <PesanSukses>{props.flash.sukses}</PesanSukses> : null}
+
+        <BidangIsian id="email" label="Email" galat={form.errors.Email}>
+          {(atribut) => (
+            <IsianAutentikasi
+              {...atribut}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoFocus
+              value={form.data.Email}
+              onChange={(e) => form.setData('Email', e.target.value)}
+            />
+          )}
+        </BidangIsian>
+
+        <TombolKirim memproses={form.processing} labelMemproses="Mengirim...">
+          Kirim tautan reset
+        </TombolKirim>
+
+        <p className="text-center text-sm">
+          <Link href={ruteAuth.login} className={`inline-flex items-center gap-1.5 ${TAUTAN_AUTENTIKASI}`}>
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Kembali ke halaman masuk
+          </Link>
+        </p>
       </form>
-    </div>
+    </KerangkaAutentikasi>
   );
 }

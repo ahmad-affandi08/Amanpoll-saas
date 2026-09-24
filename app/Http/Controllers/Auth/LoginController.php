@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Core\Audit\LayananCatatanAkses;
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Langganan\Application\Services\LayananKebijakanTenggang;
 use App\Domain\Platform\Application\Services\PencariAkunMasuk;
 use App\Domain\Platform\Application\Services\PenentuModeLapangan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -49,9 +50,12 @@ final class LoginController extends Controller
         private readonly PencariAkunMasuk $pencariAkun,
     ) {}
 
-    public function create(): Response
+    /** Durasi trial ikut dikirim untuk ajakan "Coba gratis" di panel pemasaran (DESIGN.md 37). */
+    public function create(LayananKebijakanTenggang $kebijakan): Response
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('Auth/Login', [
+            'durasiTrialHari' => $kebijakan->hariUjiCoba(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

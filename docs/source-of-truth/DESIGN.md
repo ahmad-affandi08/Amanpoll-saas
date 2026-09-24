@@ -184,6 +184,7 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 
 | Token | Hex | Fungsi |
 |---|---|---|
+| `Teknisi-950` | `#10263A` | Ujung gelap latar panel pemasaran halaman autentikasi (§37) |
 | `Teknisi-900` | `#17324D` | Sidebar, heading kuat, identitas utama |
 | `Teknisi-800` | `#1D4663` | Hover gelap |
 | `Teknisi-700` | `#205B78` | Secondary strong |
@@ -278,6 +279,7 @@ Contoh baseline:
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
+  --color-teknisi-950: #10263A;
   --color-teknisi-900: #17324D;
   --color-teknisi-800: #1D4663;
   --color-teknisi-700: #205B78;
@@ -1400,7 +1402,7 @@ bulat, dan nilai enum (`PerluPerhatian`) ditampilkan sebagai kata (`Perlu Perhat
 
 # 34. Visual QA Checklist
 
-Checklist ini berlaku untuk dasbor web. Halaman Mode Lapangan memakai checklist §36.9: font, gradien hero, dan radius besar di sana memang disengaja.
+Checklist ini berlaku untuk dasbor web. Halaman Mode Lapangan memakai checklist §36.9: font, gradien hero, dan radius besar di sana memang disengaja. Latar bergradien panel pemasaran halaman autentikasi juga pengecualian yang disengaja (§37).
 
 Sebelum halaman dianggap selesai:
 
@@ -1620,3 +1622,40 @@ Ikon jenis aset dipilih dari kategori aset. Kategori tanpa padanan memakai `tool
 - [ ] Keadaan kosong, memuat, galat, dan tanpa izin ada (memakai ilustrasi 3D).
 - [ ] Nyaman di lebar 360px; di layar lebar isi dipusatkan maksimum 480px.
 - [ ] Tidak ada dark mode.
+
+---
+
+# 37. Halaman Autentikasi
+
+Masuk, Lupa kata sandi, Pilih organisasi, Reset kata sandi, dan Daftar trial dilihat publik, jadi halaman ini juga membawa pesan produk. Kelimanya memakai satu kerangka, `features/Auth/components/KerangkaAutentikasi.tsx`. Fungsinya sama dengan halaman lain: tidak ada halaman login khusus Mode Lapangan (PRD 8.20).
+
+## 37.1 Tata letak
+
+- **Desktop (≥ 1024px): dua kolom.** Kiri berlatar putih: logo, judul, formulir selebar 400px (480px untuk Daftar trial) di tengah kolom, lalu tautan sekunder. Kanan: panel pemasaran yang tetap di tempat (`sticky`, setinggi layar) saat formulir panjang digulir.
+- **Tablet dan HP: formulir di layar pertama.** Panel diringkas menjadi pita manfaat di bawah formulir: pita "Baru", judul, empat manfaat versi singkat, dan ajakan trial. Pratinjau produk hanya tampil mulai 640px. Pita tidak boleh berada di atas formulir.
+- Tidak ada gulir horizontal di 390px, 768px, 1280px, maupun 1440px. Di layar setinggi 800px, panel desktop harus muat tanpa digulir; pratinjau hanya menampilkan satu tiket bila tinggi layar ≤ 840px.
+
+## 37.2 Isi panel pemasaran
+
+Seluruh salinan ada di `features/Auth/isi.ts`, tidak ditulis di komponen.
+
+1. Pita "Baru" kecil untuk fitur terbaru (saat ini Mode Lapangan dan Unit Pengelola).
+2. Judul nilai produk dan satu kalimat multi-industri. Amanpoll bukan produk khusus rumah sakit (PRD 1, 3.1).
+3. Ajakan "Coba gratis N hari" ke halaman Daftar trial. N diambil dari server (`amanpoll.langganan.hari_uji_coba`, lewat `LayananKebijakanTenggang::hariUjiCoba()`), bukan ditulis di frontend. Ajakan hanya tampil di Masuk dan Lupa kata sandi, dan hanya bila N > 0. Pilih organisasi, Reset kata sandi, dan Daftar trial tidak menampilkannya karena penggunanya sudah punya akun atau sedang mendaftar.
+4. Empat manfaat dengan ikon Lucide, masing-masing menunjuk fitur yang ada: tiket kerja dan SLA, Mode Lapangan, QR aset, unit pengelola.
+5. Pratinjau produk yang dirakit dari elemen UI dasbor (kartu angka, badge status, baris tiket) dengan data rekaan dan catatan "Contoh tampilan". Bukan gambar dan bukan tangkapan layar pelanggan.
+
+## 37.3 Larangan bukti sosial palsu
+
+Tidak ada testimoni, logo pelanggan, jumlah pengguna, rating, atau klaim angka (mis. "hemat 40%") kecuali sudah disetujui dan sumbernya tercatat di repo, misalnya blok CMS yang diterbitkan. Angka di pratinjau adalah contoh tampilan, bukan klaim, dan harus tetap berlabel begitu.
+
+## 37.4 Warna dan formulir
+
+- Latar panel memakai utilitas `latar-panel-autentikasi` di `app.css`: kisi halus di atas gradien Teknisi-900 ke Teknisi-950, dengan sorotan Teknisi-800. Titik paling terang tetap Teknisi-800, jadi teks putih dan Teknisi-100 di atasnya lolos 4,5:1. Jangan memakai teks Teknisi-300 atau lebih muda di sana.
+- Tombol ajakan di atas panel berlatar putih dengan teks Teknisi-900, bukan amber (§4.2).
+- Isian dan tombol utama setinggi 44px di semua lebar. Label di atas isian; galat di bawah isian dan terhubung lewat `aria-describedby`; bantuan disembunyikan bila galat tampil.
+- Kata sandi punya tombol tampilkan/sembunyikan yang dapat difokus dan bernama ("Tampilkan kata sandi").
+- Tombol utama menampilkan keadaan memuat (ikon berputar + kata kerja, mis. "Memeriksa...").
+- `autocomplete`: `email`, `current-password` (Masuk), `new-password` (Reset, Daftar).
+- Pesan sukses flash (sesudah reset atau pendaftaran) tampil di atas formulir dengan `role="status"`.
+- Font tetap IBM Plex Sans. Tanpa kelas `dark:`.
