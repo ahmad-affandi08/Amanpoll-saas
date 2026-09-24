@@ -3545,73 +3545,73 @@ Urutan pengerjaan di bawah ini mengikat: 39.01 dan 39.02 menutup celah akses, ja
 
 ## 39.01 Peran dan izin bawaan (prasyarat)
 
-- [ ] Cabut `Keluhan.Kelola` dari `PELAPOR` di `KatalogPeranAwal`: pelapor hanya melihat keluhan miliknya.
-- [ ] Cabut `PerintahKerja.Kelola` dan `Keluhan.Kelola` dari `TEKNISI`: teknisi hanya melihat tiket yang ditugaskan kepadanya.
-- [ ] Pastikan teknisi tetap bisa menerima, mengerjakan, dan menyelesaikan tiket yang ditugaskan tanpa `PerintahKerja.Kelola`.
+- [x] Cabut `Keluhan.Kelola` dari `PELAPOR` di `KatalogPeranAwal`: pelapor hanya melihat keluhan miliknya.
+- [x] Cabut `PerintahKerja.Kelola` dan `Keluhan.Kelola` dari `TEKNISI`: teknisi hanya melihat tiket yang ditugaskan kepadanya.
+- [x] Pastikan teknisi tetap bisa menerima, mengerjakan, dan menyelesaikan tiket yang ditugaskan tanpa `PerintahKerja.Kelola`.
   Periksa juga minta suku cadang dan pelaksanaan checklist/inspeksi. Bila ada aksi yang ternyata mensyaratkan Kelola,
   pisahkan izinnya; jangan mengembalikan Kelola.
-- [ ] Perbaiki `LayananDasbor::preset` agar peran teknisi tidak lagi mendapat Dasbor Supervisor.
-- [ ] Perintah artisan eksplisit untuk menerapkan katalog baru ke tenant lama, tercatat di audit. Jangan mengubah peran tenant diam-diam.
+- [x] Perbaiki `LayananDasbor::preset` agar peran teknisi tidak lagi mendapat Dasbor Supervisor.
+- [x] Perintah artisan eksplisit untuk menerapkan katalog baru ke tenant lama, tercatat di audit. Jangan mengubah peran tenant diam-diam.
 
 ## 39.02 Penanda Tampilan Lapangan dan pengarahan
 
-- [ ] Kolom `TampilanLapangan` pada `Peran` (migrasi; enum kosong/`Teknisi`/`Pelapor`), bisa diubah di halaman Peran. Katalog: `TEKNISI` → `Teknisi`, `PELAPOR` → `Pelapor`.
-- [ ] Layanan penentu "pengguna lapangan murni" (seluruh perannya bertanda) dan mode-nya (Teknisi menang bila memegang keduanya), di-cache seperti `LingkupAkses`.
-- [ ] Setelah login berhasil, pengguna lapangan murni diarahkan ke `/lapangan`.
-- [ ] Middleware host dasbor: pengguna lapangan murni yang membuka halaman dasbor dialihkan ke `/lapangan`. Rute JSON
+- [x] Kolom `TampilanLapangan` pada `Peran` (migrasi; enum kosong/`Teknisi`/`Pelapor`), bisa diubah di halaman Peran. Katalog: `TEKNISI` → `Teknisi`, `PELAPOR` → `Pelapor`.
+- [x] Layanan penentu "pengguna lapangan murni" (seluruh perannya bertanda) dan mode-nya (Teknisi menang bila memegang keduanya), di-cache seperti `LingkupAkses`.
+- [x] Setelah login berhasil, pengguna lapangan murni diarahkan ke `/lapangan`.
+- [x] Middleware host dasbor: pengguna lapangan murni yang membuka halaman dasbor dialihkan ke `/lapangan`. Rute JSON
   bersama (notifikasi, cari, sinkronisasi, unduhan berkas) tetap bisa diakses.
-- [ ] Pengguna campuran bisa beralih Mode Lapangan ⇄ dasbor dari menu Akun; pilihan diingat per perangkat.
-- [ ] `/offline/teknisi` dialihkan ke `/lapangan`.
+- [x] Pengguna campuran bisa beralih Mode Lapangan ⇄ dasbor dari menu Akun; pilihan diingat per perangkat.
+- [x] `/offline/teknisi` dialihkan ke `/lapangan`.
 
 ## 39.03 Kerangka dan fondasi visual
 
-- [ ] Token `lapangan-*` (DESIGN §36.4) di `app.css`; `WarnaPaletTerdefinisiTest` ikut memeriksa awalan ini.
-- [ ] `KerangkaLapangan`: hero atau appbar gradien, kartu apung, navigasi bawah dengan tombol tengah, bilah aksi, lembar bawah;
+- [x] Token `lapangan-*` (DESIGN §36.4) di `app.css`; `WarnaPaletTerdefinisiTest` ikut memeriksa awalan ini.
+- [x] `KerangkaLapangan`: hero atau appbar gradien, kartu apung, navigasi bawah dengan tombol tengah, bilah aksi, lembar bawah;
   lebar maksimum 480px di layar lebar.
-- [ ] Komponen tiket, rute jam, perhentian (stasiun), chip status, tab pil, isian bergaya tiket, banner, ilustrasi momen.
-- [ ] Aset ikon 3D di `public/aset/3d/` beserta lisensinya, dengan pemetaan makna → ikon sesuai DESIGN §36.5.
+- [x] Komponen tiket, rute jam, perhentian (stasiun), chip status, tab pil, isian bergaya tiket, banner, ilustrasi momen.
+- [x] Aset ikon 3D di `public/aset/3d/` beserta lisensinya, dengan pemetaan makna → ikon sesuai DESIGN §36.5.
 
 ## 39.04 Teknisi: beranda, notifikasi, tiket
 
-- [ ] Menyiapkan Mode Lapangan: pengunduhan paket offline pertama kali (papan layar 02).
-- [ ] Beranda: jadwal hari ini, grid menu, tiket "Kerjakan sekarang", banner (layar 03).
-- [ ] Notifikasi (layar 04).
-- [ ] Tiket Saya dan Detail tiket, termasuk Alihkan dan Terima & Mulai (layar 05–06).
+- [x] Menyiapkan Mode Lapangan: pengunduhan paket offline pertama kali (papan layar 02).
+- [x] Beranda: jadwal hari ini, grid menu, tiket "Kerjakan sekarang", banner (layar 03).
+- [x] Notifikasi (layar 04).
+- [x] Tiket Saya dan Detail tiket, termasuk Alihkan dan Terima & Mulai (layar 05–06).
 
 ## 39.05 Teknisi: mengerjakan tiket
 
-- [ ] Checklist dengan perhentian langkah dan timer (layar 07).
-- [ ] Diagnosis dan tindakan (layar 08).
-- [ ] Minta suku cadang lewat lembar bawah; hanya permintaan, bukan pengubahan stok (layar 09).
-- [ ] Foto sebelum/sesudah, tersimpan di perangkat saat offline (layar 10).
-- [ ] Ringkasan, tanda tangan, dan layar selesai (layar 11–12).
+- [x] Checklist dengan perhentian langkah dan timer (layar 07).
+- [x] Diagnosis dan tindakan (layar 08).
+- [x] Minta suku cadang lewat lembar bawah; hanya permintaan, bukan pengubahan stok (layar 09).
+- [x] Foto sebelum/sesudah, tersimpan di perangkat saat offline (layar 10).
+- [x] Ringkasan, tanda tangan, dan layar selesai (layar 11–12).
 
 ## 39.06 Teknisi: pindai aset
 
-- [ ] Kamera pindai (BarcodeDetector) dengan cadangan ketik kode aset; keadaan izin kamera ditolak (layar 13).
-- [ ] Aset ditemukan dengan aksi cepat sesuai izin (layar 14).
-- [ ] Riwayat aset (layar 15).
+- [x] Kamera pindai (BarcodeDetector) dengan cadangan ketik kode aset; keadaan izin kamera ditolak (layar 13).
+- [x] Aset ditemukan dengan aksi cepat sesuai izin (layar 14).
+- [x] Riwayat aset (layar 15).
 
 ## 39.07 Pelapor: lapor kerusakan
 
-- [ ] Beranda pelapor (papan pelapor layar 02) dan notifikasi (layar 03).
-- [ ] Langkah 1: pilih alat atau pindai QR; lapor lokasi saja (layar 04).
-- [ ] Alat ditemukan beserta pencegahan laporan ganda: pantau laporan yang ada atau tetap lapor (layar 05).
-- [ ] Langkah 2: masalah, urgensi berbahasa awam, foto (layar 06).
-- [ ] Langkah 3: tinjau & kirim; laporan terkirim, juga saat offline (layar 07–08).
+- [x] Beranda pelapor (papan pelapor layar 02) dan notifikasi (layar 03).
+- [x] Langkah 1: pilih alat atau pindai QR; lapor lokasi saja (layar 04).
+- [x] Alat ditemukan beserta pencegahan laporan ganda: pantau laporan yang ada atau tetap lapor (layar 05).
+- [x] Langkah 2: masalah, urgensi berbahasa awam, foto (layar 06).
+- [x] Langkah 3: tinjau & kirim; laporan terkirim, juga saat offline (layar 07–08).
 
 ## 39.08 Pelapor: pantau dan konfirmasi
 
-- [ ] Laporan Saya dan Lacak laporan (layar 09–10).
-- [ ] Tambah keterangan (layar 11).
-- [ ] Konfirmasi selesai dengan penilaian, dan layar terima kasih (layar 12–13).
-- [ ] Aset di lokasi (layar 14).
+- [x] Laporan Saya dan Lacak laporan (layar 09–10).
+- [x] Tambah keterangan (layar 11).
+- [x] Konfirmasi selesai dengan penilaian, dan layar terima kasih (layar 12–13).
+- [x] Aset di lokasi (layar 14).
 
 ## 39.09 Akun, offline, konflik
 
-- [ ] Akun dan sinkronisasi: antrian, konflik, data offline, keluar (papan teknisi layar 17, papan pelapor layar 15).
-- [ ] Beranda saat offline (layar 16) dan layar konflik (layar 18), memakai penyelesaian konflik FASE 20.
-- [ ] Keadaan kosong, memuat, galat, dan tanpa izin di setiap layar (DESIGN §36.9).
+- [x] Akun dan sinkronisasi: antrian, konflik, data offline, keluar (papan teknisi layar 17, papan pelapor layar 15).
+- [x] Beranda saat offline (layar 16) dan layar konflik (layar 18), memakai penyelesaian konflik FASE 20.
+- [x] Keadaan kosong, memuat, galat, dan tanpa izin di setiap layar (DESIGN §36.9).
 
 ### Gate 39
 
@@ -3619,7 +3619,39 @@ Urutan pengerjaan di bawah ini mengikat: 39.01 dan 39.02 menutup celah akses, ja
   kembali ke Mode Lapangan (diuji di test).
 - Teknisi hanya melihat tiket yang ditugaskan kepadanya; pelapor hanya melihat keluhannya sendiri (diuji di test, termasuk lingkup unit).
 - Alur teknisi dari terima sampai selesai dan alur lapor pelapor berjalan offline → online tanpa transaksi ganda.
-- Tampilan sesuai papan acuan dan checklist DESIGN §36.9, diperiksa di lebar 360px dan 390px.
+- Tampilan sesuai papan acuan dan checklist DESIGN §36.9, diperiksa di lebar 360px dan 390px. (Terpenuhi)
+
+Dikerjakan empat agen dalam tiga tahap. Tahap pertama: akses dan fondasi visual. Tahap kedua: layar Teknisi dan layar Pelapor secara paralel. Tahap ketiga: tinjauan dan gate penuh oleh koordinator (1818 test, PHPStan 165).
+
+Yang dipilih:
+- Penanda peran berupa mode (`Teknisi`/`Pelapor`), bukan ya/tidak. Setelah izin kedua peran dirapikan, ya/tidak tidak bisa lagi menentukan beranda mana yang ditampilkan. Bila memegang keduanya, Teknisi menang.
+- Rute Pelapor juga terbuka bagi Teknisi, karena teknisi melapor lewat aksi cepat.
+- Pengalihan dikerjakan middleware `ArahkanPenggunaLapangan` di grup `web`, sehingga tidak ada rute dasbor yang lupa dijaga. Hanya kunjungan halaman GET yang dialihkan. Permintaan JSON dan tulis tetap lewat, jadi layar lapangan memanggil endpoint domain yang sama dengan dasbor.
+- Konfirmasi pelapor tidak memerlukan migrasi, karena kolom `Rating`/`Ulasan` pada Keluhan sudah ada.
+  - "Sudah beres" memindahkan status Selesai → Ditutup.
+  - "Masih bermasalah" memindahkan Selesai → Diproses, dengan alasan yang tercatat di riwayat status.
+- Membuat keluhan menjadi operasi offline baru (`Keluhan.Buat`). Kunci perangkat didaftarkan lewat `LayananIdempotensi`, jadi kiriman online yang balasannya hilang lalu diantre ulang tetap menjadi satu keluhan.
+- Teknisi menyelesaikan tiket ke `MenungguVerifikasi`. Penutupan ke Selesai tetap milik koordinator.
+- Suku cadang hanya direservasi. Jalur "Pakai" yang mengurangi stok tidak pernah ditawarkan di Mode Lapangan.
+- Label QR diarahkan sesuai mode: Teknisi ke lembar aset ditemukan, Pelapor ke langkah lapor dengan aset terisi, pengguna meja ke halaman aset.
+- Service worker menyimpan halaman `/lapangan/*` per organisasi dan pengguna. Kuncinya ikut disimpan di cache meta, karena worker bisa dimatikan peramban kapan saja dan kehilangan kuncinya. Layar Siapkan memuat semua layar lebih dulu supaya terbuka tanpa sinyal.
+
+Jebakan yang ditemukan:
+- Melampirkan foto dan komentar pada perintah kerja mensyaratkan `PerintahKerja.Kelola`, sehingga mencabut Kelola dari teknisi ikut memblokir langkah foto. Kini lampiran juga terbuka lewat policy atas barisnya: `operate` untuk perintah kerja, `view` untuk keluhan.
+- IndexedDB mengembalikan antrian offline berurut kunci UUID acak, sehingga "terima → mulai → selesai" bisa tiba terbalik (bug FASE 20). Kini antrian diurutkan menurut `DibuatPada` sebelum dikirim.
+- Pola kategori "lift" ikut mencocokkan "Forklift" dan memberinya ikon lift.
+- `/aset/pindai/*` harus dibebaskan dari middleware pengalih. Tanpa itu, pengguna lapangan dilempar ke `/lapangan` sebelum resolver QR sempat berjalan.
+
+Keputusan produk yang masih terbuka:
+- Apakah urgensi pilihan pelapor boleh menjadi prioritas? Aturan domain saat ini mengabaikan prioritas dari pengguna tanpa `Keluhan.Kelola`. Karena itu, untuk pelapor biasa urgensinya ditulis ke deskripsi.
+- Apakah pelapor boleh memantau keluhan rekan pada alat yang sama? Saat ini ia hanya melihat nomor, judul, dan statusnya.
+- Apakah foto "sesudah" dari perintah kerja ditampilkan kepada pelapor?
+- Apakah tanda tangan penerima wajib? Saat ini opsional.
+
+Batas yang disadari:
+- Antrian offline belum melewati perubahan berikutnya ketika perubahan sebelumnya berkonflik; penutupnya perlu perubahan antrian di server.
+- Foto yang diambil offline disimpan sebagai draf lokal dan diunggah saat online, bukan lewat antrian.
+- Diagnosis yang diisi offline diantre sebagai catatan. Analisis kegagalan terstrukturnya dikirim saat ada sinyal.
 
 ---
 

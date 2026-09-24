@@ -25,6 +25,7 @@ const IKON_OPERASI: Record<OperasiOffline, NamaIkon3D> = {
   'PerintahKerja.TambahCatatan': 'memo',
   'DaftarPeriksa.SimpanJawaban': 'memo',
   'DaftarPeriksa.Finalisasi': 'check_mark_button',
+  'Keluhan.Buat': 'megaphone',
 };
 
 /** Akun & sinkronisasi (papan Teknisi layar 17, Pelapor layar 15). */
@@ -112,7 +113,16 @@ function IsiAkun() {
       ) : (
         <ul>
           {antreanUrut.slice(0, BATAS_BARIS_ANTREAN).map((mutasi) => (
-            <BarisAntrean key={mutasi.KunciOperasi} mutasi={mutasi} onPilihVersi={setKonflikTerpilih} />
+            <BarisAntrean
+              key={mutasi.KunciOperasi}
+              mutasi={mutasi}
+              // Teknisi memilih versi di layar "Pilih versi" (papan layar 18); pelapor tetap lewat dialog.
+              onPilihVersi={
+                teknisi
+                  ? (satu) => router.visit(ruteLapangan.teknisi.konflik(satu.KunciOperasi))
+                  : setKonflikTerpilih
+              }
+            />
           ))}
           {sisa > 0 && (
             <li className="px-4 py-2 text-[13px] font-semibold text-lapangan-teks-3">+{sisa} lainnya</li>

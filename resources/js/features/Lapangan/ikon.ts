@@ -14,7 +14,7 @@ interface PadananIkon {
  */
 const PADANAN: PadananIkon[] = [
   { pola: /genset|generator|baterai|ups\b|aki\b/i, ikon: 'battery', tint: 'hijau' },
-  { pola: /lift|elevator|eskalator/i, ikon: 'elevator', tint: 'ungu' },
+  { pola: /\blift\b|elevator|eskalator/i, ikon: 'elevator', tint: 'ungu' },
   { pola: /\bac\b|pendingin|udara|hvac|chiller|kulkas|freezer/i, ikon: 'snowflake', tint: 'biru' },
   { pola: /pompa|\bair\b|pipa|plumbing|sanitasi|keran/i, ikon: 'droplet', tint: 'biru' },
   { pola: /forklift|kendaraan|truk|alat berat/i, ikon: 'articulated_lorry', tint: 'kuning' },

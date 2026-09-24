@@ -164,7 +164,11 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
     if (!aktif || !konteks || sedangMendorong.current || !navigator.onLine) return;
 
     const lokal = await ambilAntrian(konteks);
-    const belumTuntas = lokal.filter((m) => m.Status === 'Menunggu' || m.Status === 'Diproses');
+    // IndexedDB mengurutkan menurut KunciOperasi (UUID acak); server memproses menurut
+    // urutan kiriman, jadi urutan pembuatan harus dipulihkan dulu (terima → mulai → selesai).
+    const belumTuntas = lokal
+      .filter((m) => m.Status === 'Menunggu' || m.Status === 'Diproses')
+      .sort((a, b) => a.DibuatPada.localeCompare(b.DibuatPada));
     if (belumTuntas.length === 0) return;
 
     sedangMendorong.current = true;

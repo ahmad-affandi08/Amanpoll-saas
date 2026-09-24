@@ -184,6 +184,9 @@ final class LayananPaketOffline
             ->map(fn (Aset $aset): array => [
                 'Id' => $aset->Id,
                 'KodeAset' => $aset->KodeAset,
+                // Kode label fisik, supaya pindai QR tetap menemukan asetnya tanpa sinyal.
+                'KodeQr' => $aset->KodeQr,
+                'KodeBatang' => $aset->KodeBatang,
                 'Nama' => $aset->Nama,
                 'NomorSeri' => $aset->NomorSeri,
                 'Status' => $aset->Status,

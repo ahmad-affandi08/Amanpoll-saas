@@ -1,30 +1,38 @@
 /*
- * Service worker Amanpoll (FASE 20.01/20.02).
+ * Service worker Amanpoll (FASE 20.01/20.02, Mode Lapangan FASE 39).
  *
  * Ditulis tangan dan berada di luar bundel Vite supaya cakupannya tetap `/`
  * dan berkasnya dapat dimuat browser tanpa manifest build.
  *
  * Aturan cache yang dipegang berkas ini:
  *
- * 1. Yang di-cache hanya aset statis dan satu halaman: ruang kerja teknisi.
- *    Halaman itu harus tetap terbuka tanpa sinyal, jadi kerangkanya disimpan;
- *    seluruh isi kerjanya sendiri datang dari IndexedDB, bukan dari cache ini.
- * 2. Respons endpoint data (/offline/paket, /offline/antrian, API) tidak
- *    pernah masuk cache. Jawaban basi di sana akan menyesatkan teknisi dan
- *    isinya milik satu organisasi.
+ * 1. Yang di-cache hanya aset statis dan layar Mode Lapangan (`/lapangan/...`):
+ *    navigasi peramban dan kunjungan Inertia (header `X-Inertia`) ke jalur itu.
+ *    Teknisi dan pelapor harus tetap bisa membuka layarnya tanpa sinyal.
+ *    Antrean dan paket kerjanya sendiri tinggal di IndexedDB, bukan di sini.
+ * 2. Respons endpoint data (/offline/paket, /offline/antrian, API, JSON
+ *    `@/lib/http`) tidak pernah masuk cache. Jawaban basi di sana akan
+ *    menyesatkan dan isinya milik satu organisasi.
  * 3. Nama cache runtime memuat kunci konteks (organisasi + pengguna), sehingga
  *    perangkat yang dipakai bergantian tidak pernah menyajikan respons dari
- *    sesi pengguna sebelumnya.
- * 4. Logout mengirim pesan BERSIHKAN dan cache runtime dibuang seluruhnya.
+ *    sesi pengguna sebelumnya. Kunci itu juga disimpan di cache meta karena
+ *    worker dapat dimatikan browser kapan saja dan kehilangan variabelnya.
+ *    Tanpa kunci konteks (tamu), layar lapangan tidak disimpan sama sekali.
+ * 4. Hanya respons 200 asli dari server ini yang disimpan: bukan pengalihan
+ *    ke halaman login, bukan kunjungan Inertia parsial, bukan galat.
+ * 5. Logout mengirim pesan BERSIHKAN: cache runtime dan kunci konteks dibuang.
  */
 
-const VERSI = 'v1';
+const VERSI = 'v2';
 const CACHE_KERANGKA = `amanpoll-kerangka-${VERSI}`;
+const CACHE_META = `amanpoll-meta-${VERSI}`;
 const AWALAN_RUNTIME = `amanpoll-runtime-${VERSI}-`;
 const HALAMAN_OFFLINE = '/offline.html';
+const KUNCI_META_KONTEKS = '/__amanpoll/konteks';
+const KONTEKS_TAMU = 'tamu';
 
-/** Kunci konteks aktif; diisi aplikasi lewat pesan TETAPKAN_KONTEKS. */
-let kunciKonteks = 'tamu';
+/** Kunci konteks aktif; diisi aplikasi lewat pesan TETAPKAN_KONTEKS. `null` = belum dibaca dari cache meta. */
+let kunciKonteks = null;
 
 /** Aset yang wajib ada supaya halaman offline tetap tampil rapi. */
 const KERANGKA = [
@@ -39,17 +47,53 @@ const KERANGKA = [
 const POLA_ASET_STATIS = [/^\/build\//, /^\/images\//, /^\/assets\//, /^\/icons\//, /^\/aset\//];
 
 /**
- * Satu-satunya halaman yang kerangkanya boleh disimpan. Ruang kerja teknisi
- * tidak akan berguna kalau hanya dapat dibuka saat ada sinyal.
+ * Layar Mode Lapangan (teknisi dan pelapor) yang boleh disimpan per konteks.
+ * Mode Lapangan tidak berguna kalau hanya dapat dibuka saat ada sinyal.
  */
-const HALAMAN_OFFLINE_DIIZINKAN = '/offline/teknisi';
+const POLA_HALAMAN_LAPANGAN = /^\/lapangan(\/|$)/;
 
-function cacheRuntime() {
-  return `${AWALAN_RUNTIME}${kunciKonteks}`;
-}
+/** Beranda tiap mode; yang terakhir dibuka menjadi tujuan pintu masuk saat offline. */
+const BERANDA_LAPANGAN = ['/lapangan/teknisi', '/lapangan/pelapor'];
+const PINTU_MASUK_LAPANGAN = ['/', '/lapangan', '/offline/teknisi'];
+const KUNCI_BERANDA_LAPANGAN = '/__amanpoll/beranda-lapangan';
+
+/** Batas tunggu jaringan sebelum memakai salinan tersimpan saat sinyal sangat lemah. */
+const BATAS_TUNGGU_JARINGAN_MS = 8000;
 
 function asetStatis(url) {
   return POLA_ASET_STATIS.some((pola) => pola.test(url.pathname));
+}
+
+function halamanLapangan(url) {
+  return POLA_HALAMAN_LAPANGAN.test(url.pathname);
+}
+
+async function kunciAktif() {
+  if (kunciKonteks !== null) {
+    return kunciKonteks;
+  }
+
+  const meta = await caches.open(CACHE_META);
+  const tersimpan = await meta.match(KUNCI_META_KONTEKS);
+  kunciKonteks = tersimpan ? await tersimpan.text() : KONTEKS_TAMU;
+
+  return kunciKonteks;
+}
+
+async function cacheRuntime() {
+  return caches.open(`${AWALAN_RUNTIME}${await kunciAktif()}`);
+}
+
+/** Kunjungan Inertia disimpan di bawah kunci tersendiri supaya tidak menimpa HTML navigasi di URL yang sama. */
+function kunciInertia(url) {
+  const salinan = new URL(url.href);
+  salinan.searchParams.set('__inertia', '1');
+  return salinan.href;
+}
+
+/** Respons asli 200 dari server ini, tanpa pengalihan (mis. sesi habis → halaman login). */
+function layakDisimpan(respons) {
+  return respons.ok && respons.status === 200 && respons.type === 'basic' && !respons.redirected;
 }
 
 self.addEventListener('install', (event) => {
@@ -78,7 +122,13 @@ self.addEventListener('activate', (event) => {
       .then((nama) =>
         Promise.all(
           nama
-            .filter((n) => n.startsWith('amanpoll-') && n !== CACHE_KERANGKA && !n.startsWith(AWALAN_RUNTIME))
+            .filter(
+              (n) =>
+                n.startsWith('amanpoll-') &&
+                n !== CACHE_KERANGKA &&
+                n !== CACHE_META &&
+                !n.startsWith(AWALAN_RUNTIME),
+            )
             .map((n) => caches.delete(n)),
         ),
       )
@@ -97,22 +147,29 @@ self.addEventListener('message', (event) => {
   }
 
   if (pesan.type === 'TETAPKAN_KONTEKS' && typeof pesan.kunci === 'string') {
-    const sebelumnya = cacheRuntime();
-    kunciKonteks = pesan.kunci;
-    if (sebelumnya !== cacheRuntime()) {
-      event.waitUntil(caches.delete(sebelumnya));
-    }
+    event.waitUntil(
+      kunciAktif().then(async (sebelumnya) => {
+        kunciKonteks = pesan.kunci;
+        const meta = await caches.open(CACHE_META);
+        await meta.put(KUNCI_META_KONTEKS, new Response(pesan.kunci));
+        if (sebelumnya !== pesan.kunci) {
+          await caches.delete(`${AWALAN_RUNTIME}${sebelumnya}`);
+        }
+      }),
+    );
     return;
   }
 
   if (pesan.type === 'BERSIHKAN') {
+    kunciKonteks = KONTEKS_TAMU;
     event.waitUntil(
       caches
         .keys()
-        .then((nama) => Promise.all(nama.filter((n) => n.startsWith(AWALAN_RUNTIME)).map((n) => caches.delete(n))))
-        .then(() => {
-          kunciKonteks = 'tamu';
-        }),
+        .then((nama) =>
+          Promise.all(nama.filter((n) => n.startsWith(AWALAN_RUNTIME)).map((n) => caches.delete(n))),
+        )
+        .then(() => caches.open(CACHE_META))
+        .then((meta) => meta.delete(KUNCI_META_KONTEKS)),
     );
   }
 });
@@ -136,45 +193,144 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Kunjungan Inertia antar-layar Mode Lapangan (klik tautan, muat ulang props).
+  if (halamanLapangan(url) && permintaan.headers.get('X-Inertia') === 'true') {
+    event.respondWith(kunjunganInertia(permintaan, url));
+    return;
+  }
+
+  // Layar "Menyiapkan Mode Lapangan" mengambil HTML utuh tiap layar lebih dulu, supaya
+  // membuka ulang aplikasi tanpa sinyal (navigasi peramban) tetap menemukan halamannya.
+  if (halamanLapangan(url) && permintaan.headers.get('X-Amanpoll-Simpan') === 'halaman') {
+    event.respondWith(simpanHalaman(permintaan, url));
+    return;
+  }
+
   if (asetStatis(url)) {
     event.respondWith(asetDariCache(permintaan));
     return;
   }
 
-  // Sisanya (Inertia, endpoint offline, unduhan berkas) sengaja dibiarkan
-  // lewat tanpa cache: isinya spesifik tenant dan tidak boleh mengendap di
-  // perangkat.
+  // Sisanya (endpoint offline, JSON, unduhan berkas) sengaja dibiarkan lewat
+  // tanpa cache: isinya spesifik tenant dan tidak boleh mengendap di perangkat.
 });
 
+/** Jaringan dengan batas waktu hanya bila ada salinan cadangan; tanpa cadangan tunggu sampai selesai. */
+function ambilDariJaringan(permintaan, adaCadangan) {
+  const ambil = fetch(permintaan);
+  if (!adaCadangan) {
+    return ambil;
+  }
+
+  return Promise.race([
+    ambil,
+    new Promise((_, gagal) =>
+      setTimeout(() => gagal(new Error('jaringan lambat')), BATAS_TUNGGU_JARINGAN_MS),
+    ),
+  ]);
+}
+
 /**
- * Network-first untuk seluruh navigasi. Ruang kerja teknisi disimpan ke cache
+ * Network-first untuk seluruh navigasi. Layar Mode Lapangan disimpan ke cache
  * runtime bertenant supaya tetap dapat dibuka tanpa sinyal; navigasi lain yang
  * gagal jatuh ke halaman cadangan.
  */
 async function navigasi(permintaan, url) {
-  const bolehDisimpan = url.pathname === HALAMAN_OFFLINE_DIIZINKAN;
+  const kunci = await kunciAktif();
+  const bolehDisimpan = halamanLapangan(url) && kunci !== KONTEKS_TAMU;
+  const cache = kunci !== KONTEKS_TAMU ? await cacheRuntime() : null;
+  const cadangan = bolehDisimpan && cache ? await cariTersimpan(cache, url.href) : undefined;
 
   try {
-    const respons = await fetch(permintaan);
-    if (bolehDisimpan && respons.ok && respons.type === 'basic') {
-      const cache = await caches.open(cacheRuntime());
-      cache.put(permintaan, respons.clone());
+    const respons = await ambilDariJaringan(permintaan, cadangan !== undefined);
+
+    if (bolehDisimpan && cache && layakDisimpan(respons)) {
+      await cache.put(url.href, respons.clone());
+      await ingatBerandaLapangan(cache, url);
     }
 
     return respons;
   } catch (galat) {
-    if (bolehDisimpan) {
-      const cache = await caches.open(cacheRuntime());
-      const tersimpan = await cache.match(permintaan, { ignoreSearch: true });
-      if (tersimpan) {
-        return tersimpan;
+    if (cadangan) {
+      return cadangan;
+    }
+
+    // Pintu masuk yang di server hanya mengalihkan (ikon PWA `/`, `/lapangan`,
+    // pintasan lama `/offline/teknisi`) diarahkan ke beranda lapangan terakhir.
+    if (cache && PINTU_MASUK_LAPANGAN.includes(url.pathname)) {
+      const beranda = await cache.match(KUNCI_BERANDA_LAPANGAN);
+      if (beranda) {
+        return Response.redirect(new URL(await beranda.text(), self.location.origin).href, 302);
       }
     }
 
     const kerangka = await caches.open(CACHE_KERANGKA);
-    const cadangan = await kerangka.match(HALAMAN_OFFLINE);
+    const halamanCadangan = await kerangka.match(HALAMAN_OFFLINE);
 
-    return cadangan || Response.error();
+    return halamanCadangan || Response.error();
+  }
+}
+
+/** Menyimpan HTML utuh satu layar lapangan di kunci yang sama dengan navigasinya. */
+async function simpanHalaman(permintaan, url) {
+  const respons = await fetch(permintaan);
+  if ((await kunciAktif()) !== KONTEKS_TAMU && layakDisimpan(respons)) {
+    const cache = await cacheRuntime();
+    await cache.put(url.href, respons.clone());
+    await ingatBerandaLapangan(cache, url);
+  }
+
+  return respons;
+}
+
+/** Mencatat beranda Mode Lapangan yang terakhir berhasil dibuka konteks ini. */
+async function ingatBerandaLapangan(cache, url) {
+  if (BERANDA_LAPANGAN.includes(url.pathname)) {
+    await cache.put(KUNCI_BERANDA_LAPANGAN, new Response(url.pathname));
+  }
+}
+
+/** Salinan tersimpan untuk URL persis, lalu URL yang sama tanpa kueri. */
+async function cariTersimpan(cache, href) {
+  return (
+    (await cache.match(href, { ignoreVary: true })) ||
+    (await cache.match(href, { ignoreVary: true, ignoreSearch: true }))
+  );
+}
+
+/**
+ * Kunjungan Inertia ke layar Mode Lapangan: network-first. Respons halaman
+ * utuh disimpan; kunjungan parsial (`X-Inertia-Partial-Data`) tidak, supaya
+ * props yang tersimpan selalu lengkap. Tanpa sinyal, salinan halaman utuh
+ * terakhir yang dipakai.
+ */
+async function kunjunganInertia(permintaan, url) {
+  const kunci = await kunciAktif();
+  if (kunci === KONTEKS_TAMU) {
+    return fetch(permintaan);
+  }
+
+  const cache = await cacheRuntime();
+  const kunciSimpan = kunciInertia(url);
+  const cadangan = await cariTersimpan(cache, kunciSimpan);
+  const parsial =
+    permintaan.headers.has('X-Inertia-Partial-Data') || permintaan.headers.has('X-Inertia-Partial-Except');
+
+  try {
+    const respons = await ambilDariJaringan(permintaan, cadangan !== undefined);
+
+    if (!parsial && layakDisimpan(respons) && respons.headers.get('X-Inertia') === 'true') {
+      await cache.put(kunciSimpan, respons.clone());
+      await ingatBerandaLapangan(cache, url);
+    }
+
+    return respons;
+  } catch (galat) {
+    if (cadangan) {
+      return cadangan;
+    }
+
+    throw galat;
   }
 }
 
@@ -183,7 +339,7 @@ async function navigasi(permintaan, url) {
  * namanya, jadi versi baru selalu memakai URL baru dan tidak pernah basi.
  */
 async function asetDariCache(permintaan) {
-  const cache = await caches.open(cacheRuntime());
+  const cache = await cacheRuntime();
   const tersimpan = await cache.match(permintaan);
   if (tersimpan) {
     return tersimpan;

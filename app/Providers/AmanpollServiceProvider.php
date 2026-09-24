@@ -90,6 +90,7 @@ use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PengajuanPenghapusan
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\PermintaanMutasiAset;
 use App\Domain\SiklusAset\Infrastructure\Persistence\Models\SerahTerimaAset;
 use App\Domain\Sinkronisasi\Application\Services\RegistriOperasiSinkronisasi;
+use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganBuatKeluhanLapangan;
 use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganCatatWaktuKerja;
 use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganFinalisasiDaftarPeriksa;
 use App\Domain\Sinkronisasi\Infrastructure\Services\PenanganResponsPenugasan;
@@ -146,6 +147,7 @@ final class AmanpollServiceProvider extends ServiceProvider
                 PenanganTambahCatatanPerintahKerja::class,
                 PenanganSimpanJawabanDaftarPeriksa::class,
                 PenanganFinalisasiDaftarPeriksa::class,
+                PenanganBuatKeluhanLapangan::class,
             ] as $penangan) {
                 $registri->daftarkan($app->make($penangan));
             }

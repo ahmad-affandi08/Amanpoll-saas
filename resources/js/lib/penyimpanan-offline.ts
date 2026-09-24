@@ -2,9 +2,11 @@ import type { MutasiOffline, PaketOffline } from '@/features/Sinkronisasi/types'
 
 /** Penyimpanan lokal perangkat untuk mode offline (FASE 20.02/20.03). */
 
-const VERSI_SKEMA = 1;
+const VERSI_SKEMA = 2;
 const TOKO_PAKET = 'paket';
 const TOKO_ANTRIAN = 'antrian';
+/** Draf layar lapangan (catatan, foto, tanda tangan) yang belum terkirim; ikut terhapus saat logout. */
+const TOKO_DRAF = 'draf';
 
 export interface KonteksOffline {
   organisasiId: string;
@@ -34,6 +36,9 @@ function buka(konteks: KonteksOffline): Promise<IDBDatabase> {
       }
       if (!db.objectStoreNames.contains(TOKO_ANTRIAN)) {
         db.createObjectStore(TOKO_ANTRIAN, { keyPath: 'KunciOperasi' });
+      }
+      if (!db.objectStoreNames.contains(TOKO_DRAF)) {
+        db.createObjectStore(TOKO_DRAF);
       }
     };
 
@@ -78,6 +83,29 @@ export function ambilAntrian(konteks: KonteksOffline): Promise<MutasiOffline[]> 
 
 export function hapusMutasi(konteks: KonteksOffline, kunciOperasi: string): Promise<unknown> {
   return jalankan(konteks, TOKO_ANTRIAN, 'readwrite', (store) => store.delete(kunciOperasi));
+}
+
+/**
+ * Draf per kunci bebas (mis. `teknisi:sesi:<Id>`). Nilainya boleh memuat `Blob` (foto),
+ * jadi foto yang diambil tanpa sinyal tetap di perangkat sampai terkirim.
+ */
+export function simpanDraf<T>(konteks: KonteksOffline, kunci: string, nilai: T): Promise<unknown> {
+  return jalankan(konteks, TOKO_DRAF, 'readwrite', (store) => store.put(nilai, kunci));
+}
+
+export function ambilDraf<T>(konteks: KonteksOffline, kunci: string): Promise<T | undefined> {
+  return jalankan<T | undefined>(konteks, TOKO_DRAF, 'readonly', (store) => store.get(kunci));
+}
+
+export function hapusDraf(konteks: KonteksOffline, kunci: string): Promise<unknown> {
+  return jalankan(konteks, TOKO_DRAF, 'readwrite', (store) => store.delete(kunci));
+}
+
+/** Seluruh kunci draf yang berawalan tertentu. */
+export function daftarKunciDraf(konteks: KonteksOffline, awalan: string): Promise<string[]> {
+  return jalankan<IDBValidKey[]>(konteks, TOKO_DRAF, 'readonly', (store) => store.getAllKeys()).then(
+    (kunci) => kunci.map(String).filter((satu) => satu.startsWith(awalan)),
+  );
 }
 
 /** Membuang seluruh data lokal milik konteks ini. */

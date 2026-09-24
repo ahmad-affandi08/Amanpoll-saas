@@ -1,5 +1,4 @@
 export const ruteOffline = {
-  teknisi: '/offline/teknisi',
   paket: '/offline/paket',
   ringkasan: '/offline/ringkasan',
   perangkatLepas: '/offline/perangkat/lepas',

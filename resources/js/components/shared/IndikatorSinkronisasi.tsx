@@ -1,9 +1,10 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { AlertTriangle, CloudOff, RefreshCw, TriangleAlert, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
-import { ruteOffline } from '@/features/Sinkronisasi/api';
+import { ruteLapangan } from '@/features/Lapangan/api';
 import type { StatusSinkronisasi } from '@/features/Sinkronisasi/types';
+import type { PageProps } from '@/types/global';
 
 const TAMPILAN: Record<
   StatusSinkronisasi,
@@ -36,6 +37,7 @@ const TAMPILAN: Record<
 /** Indikator sinkronisasi topbar (DESIGN.md 24). */
 export function IndikatorSinkronisasi({ className }: { className?: string }) {
   const { status, jumlahBelumTersinkron, jumlahKonflik } = useSinkronisasiOffline();
+  const { lapangan } = usePage<PageProps>().props;
 
   const perluTampil = status !== 'Online' || jumlahBelumTersinkron > 0;
   if (!perluTampil) {
@@ -50,19 +52,31 @@ export function IndikatorSinkronisasi({ className }: { className?: string }) {
         ? `${jumlahBelumTersinkron} perubahan belum tersinkron`
         : null;
 
-  return (
-    <Link
-      href={ruteOffline.teknisi}
-      title={keterangan ?? label}
-      className={cn(
-        'inline-flex items-center gap-2 rounded-[5px] border px-2 py-1 text-xs font-medium transition-colors',
-        kelas,
-        className,
-      )}
-    >
+  const kelasIndikator = cn(
+    'inline-flex items-center gap-2 rounded-[5px] border px-2 py-1 text-xs font-medium transition-colors',
+    kelas,
+    className,
+  );
+  const isi = (
+    <>
       <Ikon className={cn('size-3.5 shrink-0', berputar && 'animate-spin')} />
       <span>{label}</span>
       {keterangan && <span className="hidden font-normal sm:inline">· {keterangan}</span>}
+    </>
+  );
+
+  // Antrian dan konfliknya dikelola di Akun Mode Lapangan; pengguna tanpa peran lapangan hanya melihat statusnya.
+  if (!lapangan?.mode) {
+    return (
+      <span title={keterangan ?? label} className={kelasIndikator}>
+        {isi}
+      </span>
+    );
+  }
+
+  return (
+    <Link href={ruteLapangan.akun} title={keterangan ?? label} className={kelasIndikator}>
+      {isi}
     </Link>
   );
 }

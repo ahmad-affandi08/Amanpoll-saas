@@ -1230,6 +1230,11 @@ Tampilan bergaya aplikasi HP (PWA) untuk peran lapangan. Desain dan papan acuann
 - Lingkup unit/ruangan (`ScopeLingkup`) dan tenancy berlaku seperti biasa.
 - Teknisi **meminta** suku cadang ke gudang; stok berkurang hanya saat gudang menyerahkan barang. Teknisi tidak diberi `Stok.Kelola`.
 - Pelapor hanya melihat keluhan miliknya. Membuat keluhan tidak butuh izin tambahan (`KeluhanPolicy::create`).
+- Teknisi menyelesaikan tiket ke `MenungguVerifikasi`; penutupan ke `Selesai` tetap milik koordinator. Layar Pelapor juga terbuka bagi pengguna mode Teknisi, karena teknisi melapor lewat aksi cepat.
+- Konfirmasi pelapor (4.6) hanya untuk keluhan miliknya yang berstatus `Selesai`, dan disimpan di kolom `Rating`/`Ulasan`.
+  - "Sudah beres" menutup keluhan (`Ditutup`).
+  - "Masih bermasalah" mengembalikannya ke `Diproses`, dengan alasan yang tercatat di riwayat status.
+- Membuat keluhan bisa dilakukan offline. Operasinya idempoten lewat kunci perangkat, sehingga kiriman ulang tidak menggandakan keluhan.
 - Rute Mode Lapangan berada di bawah awalan `/lapangan`. Rute lama `/offline/teknisi` dialihkan ke `/lapangan`, supaya PWA yang sudah terpasang tetap berfungsi.
 - Pindai QR memakai resolusi aset yang sudah ada (`aset.pindai`). Kamera memakai BarcodeDetector bawaan peramban, dengan cadangan isian kode aset. Tidak ada pustaka pemindai baru tanpa persetujuan.
 

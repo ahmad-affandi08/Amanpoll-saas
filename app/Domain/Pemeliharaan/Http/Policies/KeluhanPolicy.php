@@ -39,6 +39,17 @@ final class KeluhanPolicy
             && in_array($keluhan->Status, [StatusKeluhan::Baru->value, StatusKeluhan::Ditinjau->value], true);
     }
 
+    /**
+     * Verifikasi hasil perbaikan (PRD 4.6): hanya pelapornya sendiri, dan hanya
+     * selagi keluhan berstatus Selesai. Izin Kelola tidak membukanya, karena
+     * yang ditanyakan adalah pendapat orang yang melapor.
+     */
+    public function konfirmasi(Pengguna $pengguna, Keluhan $keluhan): bool
+    {
+        return $keluhan->PelaporId === $pengguna->Id
+            && $keluhan->Status === StatusKeluhan::Selesai->value;
+    }
+
     public function ubahPrioritas(Pengguna $pengguna, Keluhan $keluhan): bool
     {
         return $this->dapatMengelola($pengguna);

@@ -12,7 +12,8 @@ export type OperasiOffline =
   | 'PerintahKerja.CatatWaktuKerja'
   | 'PerintahKerja.TambahCatatan'
   | 'DaftarPeriksa.SimpanJawaban'
-  | 'DaftarPeriksa.Finalisasi';
+  | 'DaftarPeriksa.Finalisasi'
+  | 'Keluhan.Buat';
 
 export interface DetailKonflik {
   Alasan: string;
@@ -77,6 +78,9 @@ export interface PenugasanOffline {
 export interface AsetOffline {
   Id: string;
   KodeAset: string;
+  /** Kode label fisik; dipakai pindai QR saat offline. */
+  KodeQr?: string | null;
+  KodeBatang?: string | null;
   Nama: string;
   NomorSeri: string | null;
   Status: string;

@@ -1,5 +1,6 @@
 import type { LapanganBersama, PageProps } from '@/types/global';
 import type { Notifikasi } from '@/features/Notifikasi/types';
+import type { AntrianServer } from '@/features/Sinkronisasi/types';
 
 /**
  * Prop Inertia bersama `lapangan` (didefinisikan di `@/types/global`, dibagikan `HandleInertiaRequests`):
@@ -55,4 +56,379 @@ export interface PropsHalamanNotifikasi extends PropsLapangan {
 
 // Teknisi (C)
 
+/** Lokasi ringkas: nama ruangan dan induknya ("Menara A · Shaft Timur"). */
+export interface LokasiRingkasTeknisi {
+  Nama: string;
+  Induk: string | null;
+}
+
+/** Aset ringkas di kartu tiket dan daftar aset. */
+export interface AsetRingkasTeknisi {
+  Id: string;
+  KodeAset: string;
+  Nama: string;
+  Kategori: string | null;
+  Kondisi: string | null;
+  Lokasi: LokasiRingkasTeknisi | null;
+}
+
+/** Tiket kerja teknisi (`PenyusunLayarTeknisi::ringkas`). */
+export interface TiketTeknisi {
+  Id: string;
+  Nomor: string;
+  Judul: string;
+  Jenis: string | null;
+  Status: string;
+  Prioritas: string;
+  Versi: number;
+  DariKeluhan: boolean;
+  DilaporkanPada: string | null;
+  DijadwalkanMulaiPada: string | null;
+  /** Batas penyelesaian (SLA) atau jadwal selesai. */
+  BatasPada: string | null;
+  DimulaiPada: string | null;
+  DiperbaruiPada: string | null;
+  PenugasanId: string | null;
+  /** Penugasan belum diterima teknisi ini. */
+  PerluRespons: boolean;
+  DitugaskanPada: string | null;
+  /** Policy `view` masih mengizinkan tiket ini dibuka. */
+  DapatDibuka: boolean;
+  Aset: AsetRingkasTeknisi | null;
+  Lokasi: LokasiRingkasTeknisi | null;
+}
+
+/** Tiket dengan transisi status yang diizinkan policy untuk pengguna ini. */
+export interface TiketTeknisiLengkap extends TiketTeknisi {
+  Deskripsi: string | null;
+  StatusTujuan: string[];
+  RingkasanPenyelesaian?: string | null;
+}
+
+export interface InspeksiMendatangTeknisi {
+  Id: string;
+  Nomor: string;
+  NamaAset: string | null;
+  Lokasi: string | null;
+  DijadwalkanPada: string | null;
+}
+
+/** Props `Lapangan/Teknisi/Beranda`. */
+export interface PropsBerandaTeknisi extends PropsLapangan {
+  tiket: TiketTeknisi[];
+  selesai: TiketTeknisi[];
+  inspeksi: InspeksiMendatangTeknisi[];
+  lokasiSaya: string | null;
+}
+
+/** Props `Lapangan/Teknisi/Tugas`. */
+export interface PropsTugasTeknisi extends PropsLapangan {
+  tiket: TiketTeknisi[];
+  selesai: TiketTeknisi[];
+}
+
+/** Props `Lapangan/Teknisi/DetailTiket`. */
+export interface PropsDetailTiketTeknisi extends PropsLapangan {
+  tiket: TiketTeknisiLengkap;
+  keluhan: { Nomor: string; Pelapor: string | null; Lokasi: string | null; Deskripsi: string | null } | null;
+  daftarPeriksa: { Id: string; NamaTemplat: string | null; Status: string; JumlahButir: number } | null;
+  riwayatAset: { JumlahPekerjaan: number; TerakhirDiservisPada: string | null } | null;
+}
+
+export interface ButirChecklistTeknisi {
+  Id: string;
+  Urutan: number;
+  Pertanyaan: string;
+  TipeJawaban: string;
+  Satuan: string | null;
+  Wajib: boolean;
+  Pilihan: string[] | null;
+  NilaiMinimum: number | null;
+  NilaiMaksimum: number | null;
+}
+
+export interface JawabanChecklistTeknisi {
+  ButirTemplatDaftarPeriksaId: string;
+  NilaiTeks?: string | null;
+  NilaiAngka?: number | null;
+  NilaiBoolean?: boolean | null;
+  Catatan?: string | null;
+  Sesuai?: boolean | null;
+}
+
+export interface ChecklistTeknisi {
+  Id: string;
+  PerintahKerjaId: string | null;
+  AsetId: string | null;
+  Status: string;
+  Skor: number | null;
+  NamaTemplat: string | null;
+  VersiTemplat: number | null;
+  Catatan: string | null;
+  Butir: ButirChecklistTeknisi[];
+  Jawaban: JawabanChecklistTeknisi[];
+}
+
+export interface PermintaanSukuCadangTeknisi {
+  Id: string;
+  Jumlah: number;
+  Status: string;
+  DibuatPada: string;
+  NamaSukuCadang: string | null;
+  KodeSukuCadang: string | null;
+  Satuan: string | null;
+  NamaGudang: string | null;
+  PerintahKerjaId?: string;
+  NomorTiket?: string | null;
+  JudulTiket?: string | null;
+}
+
+export interface FotoTiketTeknisi {
+  Id: string;
+  Kategori: 'FotoSebelum' | 'FotoSesudah' | 'TandaTangan' | string;
+  Keterangan: string | null;
+  DibuatPada: string;
+  Url: string | null;
+}
+
+/** Props `Lapangan/Teknisi/Kerjakan` (layar 07–12 dalam satu halaman). */
+export interface PropsKerjakanTeknisi extends PropsLapangan {
+  tiket: TiketTeknisiLengkap;
+  daftarPeriksa: ChecklistTeknisi | null;
+  kodeKegagalan: { Id: string; Kode: string; Nama: string }[];
+  analisis: { KodeMasalahId: string | null; AkarMasalah: string; TindakanKorektif: string } | null;
+  permintaanSukuCadang: PermintaanSukuCadangTeknisi[];
+  foto: FotoTiketTeknisi[];
+  waktuKerja: { TotalMenit: number; MulaiPertama: string | null };
+  pengawas: { Nama: string; Jabatan: string | null } | null;
+  berikutnya: TiketTeknisi | null;
+}
+
+/** Hasil pencarian suku cadang untuk lembar "Minta suku cadang". */
+export interface SukuCadangDicariTeknisi {
+  Id: string;
+  Kode: string;
+  Nama: string;
+  NomorBagian: string | null;
+  Satuan: string | null;
+  Stok: { GudangId: string; NamaGudang: string; TersediaBersih: number }[];
+}
+
+/** Aset hasil pindai atau pilihan daftar (`PenyusunLayarTeknisi::detailAset`). */
+export interface AsetDitemukanTeknisi extends AsetRingkasTeknisi {
+  Status: string | null;
+  TingkatKritis: string | null;
+  MerekTipe: string | null;
+  GaransiBerakhirPada: string | null;
+  ServisTerakhirPada: string | null;
+  TiketSaya: TiketTeknisi | null;
+  Inspeksi: { Id: string; Nomor: string; DijadwalkanPada: string | null } | null;
+  BolehLapor: boolean;
+  BolehLihatRiwayat: boolean;
+}
+
+/** Props `Lapangan/Teknisi/Pindai`. */
+export interface PropsPindaiTeknisi extends PropsLapangan {
+  asetDitemukan: AsetDitemukanTeknisi | null;
+  galatPindai: string | null;
+  tanpaIzin: boolean;
+}
+
+/** Props `Lapangan/Teknisi/Aset`. */
+export interface PropsAsetTeknisi extends PropsLapangan {
+  aset: AsetRingkasTeknisi[];
+  cari: string;
+  asetTerpilih: AsetDitemukanTeknisi | null;
+  bolehLihat: boolean;
+}
+
+export interface KejadianRiwayatAset {
+  Id: string;
+  Jenis: 'PerintahKerja' | 'Inspeksi';
+  Kategori: string | null;
+  Judul: string;
+  Status: string | null;
+  Prioritas: string | null;
+  Pada: string | null;
+  DurasiMenit: number | null;
+  Keterangan: string | null;
+  Teknisi: string[];
+}
+
+/** Props `Lapangan/Teknisi/RiwayatAset`. */
+export interface PropsRiwayatAsetTeknisi extends PropsLapangan {
+  aset: AsetRingkasTeknisi;
+  ringkasan: { PekerjaanTahunIni: number; PersenBeroperasi: number; HariAntarKerusakan: number | null };
+  linimasa: KejadianRiwayatAset[];
+}
+
+/** Props `Lapangan/Teknisi/SukuCadang`. */
+export interface PropsSukuCadangTeknisi extends PropsLapangan {
+  permintaan: PermintaanSukuCadangTeknisi[];
+}
+
+/** Props `Lapangan/Teknisi/Siapkan`. */
+export interface PropsSiapkanTeknisi extends PropsLapangan {
+  tiketId: string[];
+  asetId: string[];
+  jumlah: { Tiket: number; Aset: number; Lokasi: number; Templat: number; SukuCadang: number };
+}
+
+/** Props `Lapangan/Teknisi/Konflik`. */
+export interface PropsKonflikTeknisi extends PropsLapangan {
+  antrian: AntrianServer;
+  tiket: TiketTeknisi | null;
+  perubahanServer: {
+    Status: string | null;
+    Catatan: string | null;
+    Oleh: string | null;
+    Jabatan: string | null;
+    Pada: string;
+  } | null;
+}
+
 // Pelapor (D)
+
+/** Status keluhan (Pemeliharaan `StatusKeluhan`). */
+export type StatusKeluhanPelapor =
+  'Baru' | 'Ditinjau' | 'Diterima' | 'Diproses' | 'Selesai' | 'Ditutup' | 'Ditolak' | 'Dibatalkan';
+
+/** Urgensi berbahasa awam (server `UrgensiLaporanLapangan`), dipetakan ke prioritas keluhan. */
+export type UrgensiLaporan = 'TidakBuruBuru' | 'MenggangguKerja' | 'KerjaTerhenti' | 'Berbahaya';
+
+/** Lokasi dengan label induk, mis. `{ Nama: 'Lt. 12', Label: 'Menara A · Lt. 12' }`. */
+export interface LokasiPelapor {
+  Id: string;
+  Nama: string;
+  Label: string;
+}
+
+/** Keluhan terbuka pada satu aset (pencegah laporan ganda). Keluhan orang lain tanpa nama teknisi. */
+export interface LaporanTerbukaAset {
+  Id: string;
+  Nomor: string;
+  Judul: string;
+  Status: StatusKeluhanPelapor;
+  MilikSaya: boolean;
+  NamaTeknisi: string | null;
+}
+
+export interface AsetPelapor {
+  Id: string;
+  KodeAset: string;
+  Nama: string;
+  Kategori: string | null;
+  /** `KondisiAset`: Baik · PerluPerhatian · Rusak. */
+  Kondisi: string | null;
+  Status: string;
+  LokasiId: string | null;
+  LokasiNama: string | null;
+  LaporanTerbuka: LaporanTerbukaAset[];
+  /** "Menara A · Lt. 12". */
+  LokasiLabel: string | null;
+}
+
+export interface KategoriLaporan {
+  Id: string;
+  Nama: string;
+  AsetWajib?: boolean;
+}
+
+/** Teknisi pada perintah kerja dari keluhan milik pelapor. */
+export interface TeknisiLaporan {
+  Nama: string;
+  Telepon: string | null;
+  Jabatan: string | null;
+  StatusPekerjaan: string;
+  DitugaskanPada: string | null;
+  DimulaiPada: string | null;
+  /** Ringkasan penyelesaian dari teknisi. */
+  Ringkasan: string | null;
+}
+
+/** Satu keluhan milik pelapor. Waktu dalam ISO 8601. */
+export interface LaporanPelapor {
+  Id: string;
+  Nomor: string;
+  Judul: string;
+  Deskripsi: string;
+  Status: StatusKeluhanPelapor;
+  Versi: number;
+  KategoriNama: string | null;
+  Aset: { Id: string; KodeAset: string; Nama: string; Kategori: string | null } | null;
+  LokasiNama: string | null;
+  DilaporkanPada: string | null;
+  BatasResponsPada: string | null;
+  BatasPenyelesaianPada: string | null;
+  DiresolusikanPada: string | null;
+  DitutupPada: string | null;
+  Rating: number | null;
+  Ulasan: string | null;
+  /** Waktu perubahan status terakhir (daftar). */
+  StatusSejak?: string | null;
+  Teknisi?: TeknisiLaporan | null;
+  LokasiLabel?: string | null;
+}
+
+export interface RiwayatLaporan {
+  StatusSebelum: StatusKeluhanPelapor | null;
+  StatusSesudah: StatusKeluhanPelapor;
+  Catatan: string | null;
+  DiubahPada: string | null;
+  NamaPengubah: string | null;
+  OlehSaya: boolean;
+}
+
+export interface PropsBerandaPelapor extends PropsLapangan {
+  lokasi: LokasiPelapor | null;
+  kategori: KategoriLaporan[];
+  laporanAktif: LaporanPelapor[];
+  jumlahAktif: number;
+}
+
+export interface PropsLaporPelapor extends PropsLapangan {
+  bolehLihatAset: boolean;
+  lokasi: LokasiPelapor | null;
+  pilihanLokasi: LokasiPelapor[];
+  aset: AsetPelapor[];
+  asetTerpilih: AsetPelapor | null;
+  /** `?aset=`/`?kode=` diberikan tetapi asetnya tidak ada di lingkup pelapor. */
+  asetTidakDitemukan: boolean;
+  kategori: KategoriLaporan[];
+  kategoriAwal: string | null;
+  kontak: { Nama: string; Telepon: string | null };
+}
+
+export interface PropsLaporanPelapor extends PropsLapangan {
+  lokasi: LokasiPelapor | null;
+  laporan: LaporanPelapor[];
+  jumlah: { Aktif: number; PerluKonfirmasi: number; Selesai: number };
+}
+
+export interface PropsLacakPelapor extends PropsLapangan {
+  laporan: LaporanPelapor;
+  riwayat: RiwayatLaporan[];
+  jumlahFoto: number;
+}
+
+export interface FotoLaporan {
+  BerkasId: string;
+  Kategori: string | null;
+  Nama: string | null;
+}
+
+export interface PropsKonfirmasiPelapor extends PropsLapangan {
+  laporan: LaporanPelapor;
+  foto: FotoLaporan[];
+}
+
+export interface PropsLaporanTunggal extends PropsLapangan {
+  laporan: LaporanPelapor;
+}
+
+export interface PropsAsetPelapor extends PropsLapangan {
+  bolehLihat: boolean;
+  lokasi: LokasiPelapor | null;
+  pilihanLokasi: LokasiPelapor[];
+  aset: AsetPelapor[];
+}

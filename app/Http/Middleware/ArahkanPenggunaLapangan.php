@@ -30,7 +30,9 @@ use Symfony\Component\HttpFoundation\Response;
  *    `@/lib/http`) dibiarkan lewat: ringkasan notifikasi, pencarian global,
  *    katalog izin, riwayat aset, lampiran dan komentar, dan sejenisnya.
  * 5. Jalurnya tidak termasuk `JALUR_BEBAS`: Mode Lapangan sendiri, API
- *    sinkronisasi offline, unduhan berkas (dibuka sebagai navigasi peramban),
+ *    sinkronisasi offline, resolver label QR aset (`aset/pindai/*`, yang
+ *    sendiri mengarahkan ke layar Mode Lapangan), unduhan berkas (dibuka
+ *    sebagai navigasi peramban),
  *    pencarian global, ringkasan notifikasi, logout, robots.txt, dan konsol
  *    platform yang memakai guard terpisah.
  *
@@ -63,6 +65,7 @@ final class ArahkanPenggunaLapangan
         'lapangan',
         'lapangan/*',
         'offline/*',
+        'aset/pindai/*',
         'kolaborasi/berkas/*/unduh',
         'cari',
         'notifikasi/ringkasan',
