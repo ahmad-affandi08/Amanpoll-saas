@@ -6,6 +6,7 @@ namespace App\Domain\Kepatuhan\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
+use App\Shared\Infrastructure\Validasi\UrlKeluarPublik;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -33,7 +34,7 @@ final class SimpanIntegrasiEksternalRequest extends FormRequest
             ],
             'Nama' => ['required', 'string', 'max:180'],
             'Jenis' => ['required', 'string', 'max:80'],
-            'UrlDasar' => ['nullable', 'url', 'max:2000'],
+            'UrlDasar' => ['bail', 'nullable', 'url', 'max:2000', new UrlKeluarPublik],
             'MetodeAutentikasi' => ['nullable', Rule::in(['Bearer', 'ApiKey', 'Basic', 'TanpaAutentikasi'])],
             'Konfigurasi' => ['nullable', 'array'],
             'Konfigurasi.*' => ['nullable', 'string', 'max:2000'],

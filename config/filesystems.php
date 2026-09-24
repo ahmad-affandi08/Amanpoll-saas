@@ -60,6 +60,30 @@ return [
             'report' => false,
         ],
 
+        /*
+         * Salinan cadangan di luar server (FASE 45). Kompatibel S3: AWS S3,
+         * Cloudflare R2 (endpoint https://<akun>.r2.cloudflarestorage.com,
+         * region `auto`, path-style), atau penyedia S3 lain. Aktif bila
+         * AMANPOLL_CADANGAN_DISK_LUAR=cadangan_luar. Tanpa `visibility`: R2 tidak
+         * mengenal ACL, dan bucket cadangan memang harus privat seluruhnya.
+         * `throw` menyala supaya unggahan gagal tidak tampak berhasil.
+         */
+        'cadangan_luar' => [
+            'driver' => 's3',
+            'key' => env('AMANPOLL_CADANGAN_LUAR_KEY'),
+            'secret' => env('AMANPOLL_CADANGAN_LUAR_SECRET'),
+            'region' => env('AMANPOLL_CADANGAN_LUAR_REGION', 'auto'),
+            'bucket' => env('AMANPOLL_CADANGAN_LUAR_BUCKET'),
+            'endpoint' => env('AMANPOLL_CADANGAN_LUAR_ENDPOINT'),
+            'use_path_style_endpoint' => (bool) env('AMANPOLL_CADANGAN_LUAR_PATH_STYLE', true),
+            // Checksum permintaan bawaan AWS SDK baru tidak didukung semua penyedia S3-kompatibel;
+            // keutuhan salinan sudah diverifikasi sendiri lewat SHA-256 (SalinanLuarCadangan).
+            'request_checksum_calculation' => 'when_required',
+            'response_checksum_validation' => 'when_required',
+            'throw' => true,
+            'report' => false,
+        ],
+
     ],
 
     /*

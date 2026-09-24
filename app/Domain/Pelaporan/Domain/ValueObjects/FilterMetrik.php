@@ -49,13 +49,9 @@ final readonly class FilterMetrik
     {
         $hariIni = CarbonImmutable::now($zona)->startOfDay();
 
-        $dari = isset($data['Dari'])
-            ? CarbonImmutable::parse(substr((string) $data['Dari'], 0, 10), $zona)
-            : $hariIni->subDays(29);
-
-        $sampai = isset($data['Sampai'])
-            ? CarbonImmutable::parse(substr((string) $data['Sampai'], 0, 10), $zona)
-            : $hariIni;
+        // Tanggal yang tidak dapat dibaca kembali ke bawaannya, bukan menggagalkan halaman.
+        $dari = self::tanggalMasukan($data['Dari'] ?? null, $zona) ?? $hariIni->subDays(29);
+        $sampai = self::tanggalMasukan($data['Sampai'] ?? null, $zona) ?? $hariIni;
 
         // Rentang terbalik dinormalkan daripada menghasilkan laporan kosong yang membingungkan.
         if ($sampai->lessThan($dari)) {
@@ -70,6 +66,86 @@ final readonly class FilterMetrik
             $zona,
             self::daftarId($data['UnitPengelolaId'] ?? []),
         );
+    }
+
+    /**
+     * Tanggal kalender dari masukan (`2026-09-24`, atau awal teks ISO seperti
+     * `2026-09-24T00:00`), atau null bila bukan tanggal yang sah.
+     *
+     * Dibaca ketat: `abc`, `2026-02-31`, larik, dan tahun di luar 1900–2999
+     * ditolak. `CarbonImmutable::parse()` yang dulu dipakai melempar galat untuk
+     * teks sembarang (500) dan menerima `2026-02-31` sebagai 3 Maret.
+     */
+    public static function tanggalMasukan(mixed $nilai, string $zona): ?CarbonImmutable
+    {
+        if (! is_string($nilai) || preg_match('/^(\d{4})-(\d{2})-(\d{2})/', $nilai, $bagian) !== 1) {
+            return null;
+        }
+
+        [, $tahun, $bulan, $hari] = $bagian;
+        if ((int) $tahun < 1900 || (int) $tahun > 2999 || ! checkdate((int) $bulan, (int) $hari, (int) $tahun)) {
+            return null;
+        }
+
+        return CarbonImmutable::createFromFormat('!Y-m-d', "{$tahun}-{$bulan}-{$hari}", $zona) ?: null;
+    }
+
+    /** Apakah masukan tanggal ada tetapi tidak dapat dibaca (lihat tanggalMasukan()). */
+    public static function tanggalTidakSah(mixed $nilai, string $zona): bool
+    {
+        return $nilai !== null && $nilai !== '' && self::tanggalMasukan($nilai, $zona) === null;
+    }
+
+    /**
+     * Salinan yang rentangnya paling panjang `$maksHari` hari kalender, dipotong
+     * dari awal: hari terakhir yang diminta tetap, sehingga yang tampil adalah
+     * bagian terbaru rentang itu.
+     */
+    public function dibatasiHari(int $maksHari): self
+    {
+        if ($maksHari < 1 || $this->jumlahHari() <= $maksHari) {
+            return $this;
+        }
+
+        $dari = CarbonImmutable::parse($this->tanggalSampai(), $this->zona)
+            ->subDays($maksHari - 1)
+            ->startOfDay()
+            ->utc();
+
+        return new self(
+            $dari,
+            $this->sampai,
+            $this->unitOrganisasiId,
+            $this->lokasiId,
+            $this->zona,
+            $this->unitPengelolaId,
+        );
+    }
+
+    /**
+     * Seluruh nilai yang menentukan hasil KPI, dalam bentuk kanonik untuk kunci
+     * cache: momen persis (bukan hanya tanggal) dan daftar id yang diurutkan,
+     * supaya `[a, b]` dan `[b, a]` berbagi entri tetapi filter berbeda tidak pernah.
+     *
+     * @return array{Dari: string, Sampai: string, Zona: string, UnitOrganisasiId: list<string>, LokasiId: list<string>, UnitPengelolaId: list<string>}
+     */
+    public function sidik(): array
+    {
+        $urut = static function (array $daftar): array {
+            $daftar = array_values(array_unique($daftar));
+            sort($daftar, SORT_STRING);
+
+            return $daftar;
+        };
+
+        return [
+            'Dari' => $this->dari->utc()->format('Y-m-d H:i:s.u'),
+            'Sampai' => $this->sampai->utc()->format('Y-m-d H:i:s.u'),
+            'Zona' => $this->zona,
+            'UnitOrganisasiId' => $urut($this->unitOrganisasiId),
+            'LokasiId' => $urut($this->lokasiId),
+            'UnitPengelolaId' => $urut($this->unitPengelolaId),
+        ];
     }
 
     /**

@@ -25,11 +25,15 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Keamanan\PenjagaUrlKeluar;
+use App\Shared\Infrastructure\Keamanan\UrlKeluarDitolak;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\Client\Request as PermintaanHttp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
+use Tests\Dukungan\PenyelesaiDnsPalsu;
 use Tests\TestCase;
 
 /** FASE 19 — konfigurasi integrasi, pemetaan data, sinkronisasi, dan panggilan balik web. */
@@ -342,6 +346,157 @@ final class IntegrasiEksternalTest extends TestCase
         $this->get(route('integrasi.index'))->assertOk();
         $this->get(route('integrasi.show', $integrasi))->assertOk();
         $this->get(route('integrasi.panggilan-balik.pengiriman', $webhook))->assertOk();
+    }
+
+    public function test_simpan_webhook_ke_jaringan_internal_ditolak_dengan_pesan_indonesia(): void
+    {
+        $konteks = $this->siapkanKonteks();
+        $this->dnsPalsu()->petakan('erp.rumahsakit.test', ['192.168.10.5']);
+
+        foreach (['http://127.0.0.1:80/hook', 'https://erp.rumahsakit.test/hook', 'http://169.254.169.254/latest/meta-data/'] as $url) {
+            $this->post(route('integrasi.panggilan-balik.store'), [
+                'Nama' => 'Endpoint Internal',
+                'Url' => $url,
+                'Rahasia' => 'rahasia-penandatanganan',
+                'Peristiwa' => ['*'],
+                'Aktif' => true,
+            ])->assertSessionHasErrors(['Url' => UrlKeluarDitolak::PESAN_JARINGAN_INTERNAL]);
+        }
+
+        $this->assertSame(0, PanggilanBalikWeb::query()->withoutGlobalScopes()->where('OrganisasiId', $konteks['organisasi']->Id)->count());
+
+        // Pembanding: alamat publik diterima formulir yang sama.
+        $this->post(route('integrasi.panggilan-balik.store'), [
+            'Nama' => 'Endpoint Publik',
+            'Url' => 'https://penerima.contoh.co.id/hook',
+            'Rahasia' => 'rahasia-penandatanganan',
+            'Peristiwa' => ['*'],
+            'Aktif' => true,
+        ])->assertSessionHasNoErrors();
+        $this->assertSame(1, PanggilanBalikWeb::query()->withoutGlobalScopes()->where('OrganisasiId', $konteks['organisasi']->Id)->count());
+    }
+
+    public function test_simpan_integrasi_dengan_url_dasar_internal_ditolak(): void
+    {
+        $this->siapkanKonteks();
+
+        $this->post(route('integrasi.store'), [
+            'Kode' => 'ERP-INTERNAL',
+            'Nama' => 'ERP Internal',
+            'Jenis' => 'ERP',
+            'UrlDasar' => 'http://10.0.0.7/api',
+        ])->assertSessionHasErrors(['UrlDasar' => UrlKeluarDitolak::PESAN_JARINGAN_INTERNAL]);
+
+        $this->assertFalse(IntegrasiEksternal::query()->withoutGlobalScopes()->where('Kode', 'ERP-INTERNAL')->exists());
+    }
+
+    /** DNS diarahkan ke jaringan internal SESUDAH webhook disimpan: pengiriman ditolak tanpa permintaan keluar. */
+    public function test_kirim_webhook_ke_host_yang_kini_internal_tidak_mengirim_dan_gagal_permanen(): void
+    {
+        Http::preventStrayRequests();
+        Http::fake();
+        $konteks = $this->siapkanKonteks();
+        $webhook = $this->buatWebhook($konteks, ['*'], 'rahasia-penandatanganan');
+        $pengiriman = $this->buatPengiriman($konteks, $webhook);
+        $this->dnsPalsu()->petakan('contoh.test', ['127.0.0.1']);
+
+        $this->assertFalse(app(LayananPanggilanBalikWeb::class)->kirim($pengiriman));
+
+        Http::assertNothingSent();
+        $pengiriman->refresh();
+        $this->assertSame(StatusPengirimanPanggilanBalikWeb::GagalPermanen->value, $pengiriman->Status);
+        $this->assertNull($pengiriman->StatusHttp);
+        $this->assertSame(PenjagaUrlKeluar::PESAN_DITOLAK_SAAT_KIRIM.': '.UrlKeluarDitolak::PESAN_JARINGAN_INTERNAL, $pengiriman->Respons);
+        $this->assertStringNotContainsString('127.0.0.1', (string) $pengiriman->Respons);
+    }
+
+    public function test_kirim_webhook_ke_host_yang_belum_ditemukan_dijadwalkan_ulang_tanpa_permintaan(): void
+    {
+        Http::preventStrayRequests();
+        Http::fake();
+        $konteks = $this->siapkanKonteks();
+        $webhook = $this->buatWebhook($konteks, ['*'], 'rahasia-penandatanganan');
+        $pengiriman = $this->buatPengiriman($konteks, $webhook);
+        $this->dnsPalsu()->petakan('contoh.test', []);
+
+        $this->assertFalse(app(LayananPanggilanBalikWeb::class)->kirim($pengiriman));
+
+        Http::assertNothingSent();
+        $pengiriman->refresh();
+        $this->assertSame(StatusPengirimanPanggilanBalikWeb::Gagal->value, $pengiriman->Status);
+        $this->assertNotNull($pengiriman->JadwalCobaLagiPada);
+    }
+
+    public function test_kirim_webhook_memakai_ip_tersemat_dan_tidak_mengikuti_redirect(): void
+    {
+        $opsiTerkirim = [];
+        Http::preventStrayRequests();
+        Http::fake(function (PermintaanHttp $permintaan, array $opsi) use (&$opsiTerkirim) {
+            $opsiTerkirim[] = $opsi;
+
+            return Http::response('', 307, ['Location' => 'http://169.254.169.254/latest/meta-data/']);
+        });
+        $konteks = $this->siapkanKonteks();
+        $pengiriman = $this->buatPengiriman($konteks, $this->buatWebhook($konteks, ['*'], 'rahasia-penandatanganan'));
+
+        $this->assertFalse(app(LayananPanggilanBalikWeb::class)->kirim($pengiriman));
+
+        Http::assertSentCount(1);
+        $this->assertSame(['contoh.test:443:'.PenyelesaiDnsPalsu::ALAMAT_PUBLIK], $opsiTerkirim[0]['curl'][CURLOPT_RESOLVE] ?? null);
+        $this->assertSame(307, $pengiriman->refresh()->StatusHttp);
+        $this->assertSame(StatusPengirimanPanggilanBalikWeb::Gagal->value, $pengiriman->Status);
+    }
+
+    /** Balasan yang ditampilkan ke tenant dipangkas, dan isi non-teks tidak disimpan sama sekali. */
+    public function test_respons_webhook_yang_disimpan_dipangkas_dan_hanya_teks(): void
+    {
+        Http::preventStrayRequests();
+        Http::fake(['contoh.test/*' => Http::sequence()
+            ->push(str_repeat('a', 3000)."\x07", 500, ['Content-Type' => 'text/plain; charset=utf-8'])
+            ->push("\x89PNG\r\n\x1a\nrahasia-biner", 500, ['Content-Type' => 'image/png'])]);
+        $konteks = $this->siapkanKonteks();
+        $webhook = $this->buatWebhook($konteks, ['*'], 'rahasia-penandatanganan');
+        $layanan = app(LayananPanggilanBalikWeb::class);
+
+        $teks = $this->buatPengiriman($konteks, $webhook);
+        $layanan->kirim($teks);
+        $this->assertSame(str_repeat('a', LayananPanggilanBalikWeb::BATAS_CUPLIKAN_RESPONS), $teks->refresh()->Respons);
+
+        $biner = $this->buatPengiriman($konteks, $webhook);
+        $layanan->kirim($biner);
+        $this->assertSame('(Isi balasan bertipe image/png tidak disimpan.)', $biner->refresh()->Respons);
+    }
+
+    public function test_uji_koneksi_ke_alamat_internal_ditolak_tanpa_permintaan_keluar(): void
+    {
+        Http::preventStrayRequests();
+        Http::fake();
+        $konteks = $this->siapkanKonteks();
+        $integrasi = $this->buatIntegrasi($konteks);
+        // Ditulis langsung ke basis data, melewati validasi formulir, seperti data lama sebelum penjaga ada.
+        $integrasi->UrlDasar = 'http://[::ffff:127.0.0.1]:80/admin';
+        $integrasi->save();
+
+        $hasil = app(LayananSinkronisasiEksternal::class)->ujiKoneksi($integrasi);
+
+        $this->assertFalse($hasil['berhasil']);
+        $this->assertStringStartsWith(PenjagaUrlKeluar::PESAN_DITOLAK_SAAT_KIRIM, $hasil['pesan']);
+        $this->assertSame(StatusIntegrasiEksternal::Bermasalah->value, $integrasi->refresh()->Status);
+        Http::assertNothingSent();
+    }
+
+    public function test_adapter_rest_menolak_host_yang_kini_meresolusi_ke_ip_privat(): void
+    {
+        Http::preventStrayRequests();
+        Http::fake();
+        $konteks = $this->siapkanKonteks();
+        $integrasi = $this->buatIntegrasi($konteks);
+        $layanan = app(LayananSinkronisasiEksternal::class);
+        $sinkronisasi = $layanan->mulai($integrasi, 'Aset', ArahSinkronisasiEksternal::Tarik->value);
+        $this->dnsPalsu()->petakan('erp.test', ['172.20.0.3']);
+
+        $this->assertThrows(fn () => $layanan->jalankan($sinkronisasi), UrlKeluarDitolak::class);
+        Http::assertNothingSent();
     }
 
     /**

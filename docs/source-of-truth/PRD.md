@@ -1467,6 +1467,13 @@ Cron menangani:
 - Report generation.
 - Cleanup.
 
+Aturan yang mengikat (audit kesiapan produksi, 24 September 2026):
+
+- **Dua worker antrean.** Worker cepat (`high,default`) jalan tiap menit dengan timeout pendek. Worker panjang (`low`, koneksi `database-panjang`) khusus pekerjaan berat seperti ekspor laporan: satu pekerjaan per jalan, tiap tiga menit, kunci tumpang-tindih di atas timeout-nya. `retry_after` setiap koneksi selalu lebih panjang dari timeout pekerjaan terpanjang di koneksi itu, supaya satu pekerjaan tidak pernah dikerjakan dua kali.
+- **Cadangan keluar server.** Cadangan dibuat lokal, diunggah ke penyimpanan luar yang kompatibel S3 (mis. Cloudflare R2) dengan pemeriksaan checksum, lalu salinan lokal hanya disimpan 1–2 hari; salinan luar disimpan lebih lama. Arsip berkas tanpa gzip (media sudah terkompresi), penuh mingguan dan selisih harian. Tanpa penyimpanan luar, perintah cadangan memberi peringatan keras.
+- **Ukuran basis data dijaga.** Tabel operasional (notifikasi, outbox, pengiriman webhook, antrean sinkronisasi, event pemasaran anonim, catatan akses) dipangkas terjadwal per potongan, hanya baris berstatus akhir yang lewat masa simpannya. CatatanAudit tidak dihapus kecuali kebijakan arsip diisi, dan selalu diarsipkan ke berkas lebih dulu. Ukuran basis data dipantau harian terhadap batas hosting, dengan peringatan pada 70% dan 85%.
+- **Laporan interaktif maksimal 365 hari.** Rentang lebih panjang wajib lewat ekspor asinkron (batas atas sekitar lima tahun). KPI dashboard dicache singkat per organisasi, lingkup akses, dan filter.
+
 Seluruh host pada 5.4 dilayani satu instalasi yang sama: subdomain dibuat di hPanel dengan document root yang sama seperti domain utama, sehingga tidak ada duplikasi source, vendor, build, maupun `.env`.
 
 Ketika pindah ke VPS, queue dapat dipindah ke Redis/Horizon tanpa mengubah business contract.
@@ -1492,6 +1499,8 @@ Ketika pindah ke VPS, queue dapat dipindah ke Redis/Horizon tanpa mengubah busin
 - Host non-publik tidak dapat diindeks mesin pencari.
 - File authorization.
 - Mass assignment terkendali.
+- Rate limit pencarian global per akun.
+- Panggilan keluar ke URL isian pengguna (webhook, integrasi eksternal, server WhatsApp, langkah otomasi "Panggil webhook") hanya boleh ke host publik lewat https: alamat privat, loopback, link-local, metadata cloud, dan bentuk tersamarnya ditolak saat disimpan dan diperiksa ulang tepat sebelum kirim; koneksi dikunci ke IP yang sudah diperiksa dan redirect tidak diikuti.
 
 ### 13.2 Performance
 

@@ -21,7 +21,10 @@ final class LayananCadangan
     /** Potongan awal dump yang diperiksa keutuhannya, dalam byte setelah dekompresi. */
     private const BATAS_PERIKSA_BYTE = 1_048_576;
 
-    public function __construct(private readonly BerkasCadangan $berkas) {}
+    public function __construct(
+        private readonly BerkasCadangan $berkas,
+        private readonly SalinanLuarCadangan $luar,
+    ) {}
 
     /** Mencadangkan basis data; kembaliannya jalur absolut berkas dump terkompresi. */
     public function cadangkanBasisData(?CarbonImmutable $pada = null): string
@@ -48,7 +51,18 @@ final class LayananCadangan
         return $tujuan;
     }
 
-    /** Mencadangkan berkas unggahan; kembaliannya jalur absolut arsipnya, atau null bila tidak ada apa pun. */
+    /**
+     * Mencadangkan berkas unggahan; kembaliannya jalur absolut arsipnya, atau null bila tidak ada apa pun.
+     *
+     * Arsip penuh dibuat bila arsip penuh terakhir sudah berumur
+     * `berkas_penuh_tiap_hari`; di antaranya hanya arsip selisih berisi berkas
+     * yang berubah sejak arsip penuh itu. Pemulihan cukup dua langkah: arsip
+     * penuh lalu arsip selisih terbaru — tidak ada rantai inkremental yang
+     * satu mata rantainya hilang merusak semuanya.
+     *
+     * Arsipnya tar polos, tanpa gzip: unggahan tenant sebagian besar foto dan
+     * PDF yang sudah terkompresi, jadi gzip hanya membakar CPU shared hosting.
+     */
     public function cadangkanBerkas(?CarbonImmutable $pada = null): ?string
     {
         $pada ??= CarbonImmutable::now();
@@ -58,9 +72,15 @@ final class LayananCadangan
             return null;
         }
 
-        $tujuan = $this->berkas->jalurBaru('berkas', 'tar.gz', $pada);
+        $dasar = $this->dasarSelisih($pada);
+        $jenis = $dasar === null ? BerkasCadangan::JENIS_BERKAS_PENUH : BerkasCadangan::JENIS_BERKAS_SELISIH;
+        $tujuan = $this->berkas->jalurBaru($jenis, 'tar', $pada);
 
-        $argumen = ['tar', '-czf', $tujuan];
+        $argumen = ['tar', '-cf', $tujuan];
+        if ($dasar !== null) {
+            // Waktu di nama arsip penuh adalah saat ia MULAI dibuat; berkas yang berubah selama itu ikut di sini.
+            $argumen[] = '--newer-mtime=@'.$dasar->getTimestamp();
+        }
         foreach ($this->polaDikecualikan($sumber) as $pola) {
             $argumen[] = '--exclude='.$pola;
         }
@@ -95,6 +115,8 @@ final class LayananCadangan
      */
     public function pulihkanBasisData(string $jalurDump, ?string $namaBasisData = null): void
     {
+        $jalurDump = $this->jalurLokalAtauAmbilDariLuar($jalurDump);
+
         if (! File::exists($jalurDump)) {
             throw new AturanBisnisDilanggar("Berkas cadangan {$jalurDump} tidak ditemukan.");
         }
@@ -120,30 +142,251 @@ final class LayananCadangan
         }
     }
 
-    /** Menghapus cadangan yang lewat masa retensinya; kembaliannya jumlah berkas yang dihapus. */
-    public function pangkas(?CarbonImmutable $pada = null): int
+    /**
+     * Menyalin setiap cadangan lokal yang belum ada (utuh) di disk luar, terbaru lebih dulu.
+     *
+     * Yang gagal kemarin ikut dicoba lagi hari ini, jadi satu malam jaringan
+     * putus tidak meninggalkan lubang permanen di salinan luar. Kegagalan satu
+     * berkas tidak menghentikan yang lain.
+     *
+     * @return array{aktif: bool, terkirim: list<string>, gagal: array<string, string>}
+     */
+    public function kirimKeLuar(): array
     {
-        $pada ??= CarbonImmutable::now();
-        $hari = (int) config('amanpoll.cadangan.retensi_hari', 14);
-        $batas = $pada->subDays(max($hari, 1));
-        $dihapus = 0;
+        if (! $this->luar->aktif()) {
+            return ['aktif' => false, 'terkirim' => [], 'gagal' => []];
+        }
+
+        $diLuar = $this->ukuranDiLuar();
+        $terkirim = [];
+        $gagal = [];
 
         foreach ($this->berkas->semua() as $satu) {
-            if ($satu['dibuat']->lessThan($batas)) {
-                $this->berkas->hapus($satu['jalur']);
-                $dihapus++;
+            if (($diLuar[$satu['nama']] ?? null) === $satu['ukuran']) {
+                continue;
+            }
+
+            try {
+                $this->luar->kirim($satu['jalur']);
+                $terkirim[] = $satu['nama'];
+            } catch (AturanBisnisDilanggar $galat) {
+                $gagal[$satu['nama']] = $galat->getMessage();
             }
         }
 
-        return $dihapus;
+        return ['aktif' => true, 'terkirim' => $terkirim, 'gagal' => $gagal];
     }
 
     /**
-     * @return list<array{jalur: string, nama: string, ukuran: int, dibuat: CarbonImmutable}>
+     * Memangkas cadangan lokal; kembaliannya jumlah berkas yang dihapus.
+     *
+     * Tanpa disk luar, retensinya `retensi_hari`. Dengan disk luar, salinan
+     * lokal yang sudah utuh di luar dipangkas setelah `retensi_lokal_hari`,
+     * sedangkan yang belum berhasil disalin tetap ditahan sampai
+     * `retensi_hari` — unggahan yang gagal tidak pernah menghapus satu-satunya
+     * salinan.
+     */
+    public function pangkas(?CarbonImmutable $pada = null): int
+    {
+        $pada ??= CarbonImmutable::now();
+        $lokal = $this->berkas->semua();
+
+        $hapus = $this->lewatRetensi($lokal, $pada->subDays($this->hari('retensi_hari', 14)));
+
+        if ($this->luar->aktif()) {
+            try {
+                $diLuar = $this->ukuranDiLuar();
+            } catch (AturanBisnisDilanggar) {
+                // Disk luar tak terjangkau sudah dilaporkan kirimKeLuar(); tanpa bukti salinan luar, tahan semuanya.
+                $diLuar = [];
+            }
+
+            $ukuranLokal = array_column($lokal, 'ukuran', 'nama');
+
+            foreach ($this->lewatRetensi($lokal, $pada->subDays($this->hari('retensi_lokal_hari', 2))) as $nama) {
+                if (($diLuar[$nama] ?? null) === $ukuranLokal[$nama]) {
+                    $hapus[] = $nama;
+                }
+            }
+        }
+
+        $hapus = array_unique($hapus);
+
+        foreach ($lokal as $satu) {
+            if (in_array($satu['nama'], $hapus, true)) {
+                $this->berkas->hapus($satu['jalur']);
+            }
+        }
+
+        return count($hapus);
+    }
+
+    /** Memangkas salinan di disk luar menurut `retensi_luar_hari`; kembaliannya jumlah berkas yang dihapus. */
+    public function pangkasLuar(?CarbonImmutable $pada = null): int
+    {
+        if (! $this->luar->aktif()) {
+            return 0;
+        }
+
+        $pada ??= CarbonImmutable::now();
+        $hapus = $this->lewatRetensi($this->luar->daftar(), $pada->subDays($this->hari('retensi_luar_hari', 30)));
+
+        foreach ($hapus as $nama) {
+            $this->luar->hapus($nama);
+        }
+
+        return count($hapus);
+    }
+
+    public function salinanLuarAktif(): bool
+    {
+        return $this->luar->aktif();
+    }
+
+    /**
+     * @return list<array{jalur: string, nama: string, jenis: string, ukuran: int, dibuat: CarbonImmutable}>
      */
     public function daftar(): array
     {
         return $this->berkas->semua();
+    }
+
+    /**
+     * @return list<array{nama: string, jenis: string, ukuran: int, dibuat: CarbonImmutable}>
+     */
+    public function daftarLuar(): array
+    {
+        return $this->luar->daftar();
+    }
+
+    /** Nama cadangan basis data terbaru di disk luar, atau null. */
+    public function basisDataTerbaruDiLuar(): ?string
+    {
+        foreach ($this->luar->daftar() as $satu) {
+            if ($satu['jenis'] === BerkasCadangan::JENIS_BASIS_DATA) {
+                return $satu['nama'];
+            }
+        }
+
+        return null;
+    }
+
+    /** Mengunduh satu cadangan dari disk luar ke folder kerja lokal; kembaliannya jalur lokalnya. */
+    public function ambilDariLuar(string $nama): string
+    {
+        return $this->luar->ambil(basename($nama));
+    }
+
+    /**
+     * Nama cadangan yang lewat retensi dan boleh dihapus.
+     *
+     * Tiga pengecualian menjaga agar pemangkasan tidak pernah menyisakan
+     * cadangan yang tidak dapat dipulihkan:
+     * - cadangan basis data terbaru selalu disimpan, sekalipun sudah tua
+     *   (pencadangan yang berhenti berminggu-minggu tidak boleh berakhir tanpa
+     *   satu dump pun);
+     * - arsip berkas penuh terbaru beserta selisih sesudahnya selalu disimpan;
+     * - arsip penuh yang menjadi dasar selisih yang masih disimpan ikut disimpan,
+     *   karena selisih tanpa dasarnya tidak berguna.
+     *
+     * @param  list<array{nama: string, jenis: string, dibuat: CarbonImmutable}>  $daftar
+     * @return list<string>
+     */
+    private function lewatRetensi(array $daftar, CarbonImmutable $batas): array
+    {
+        usort($daftar, fn (array $a, array $b): int => $a['dibuat'] <=> $b['dibuat']);
+
+        $simpan = [];
+        $dasarDari = [];
+        $penuhTerbaru = null;
+        $basisDataTerbaru = null;
+
+        foreach ($daftar as $satu) {
+            if ($satu['dibuat']->greaterThanOrEqualTo($batas)) {
+                $simpan[$satu['nama']] = true;
+            }
+
+            if ($satu['jenis'] === BerkasCadangan::JENIS_BASIS_DATA) {
+                $basisDataTerbaru = $satu['nama'];
+            } elseif ($satu['jenis'] === BerkasCadangan::JENIS_BERKAS_PENUH) {
+                $penuhTerbaru = $satu['nama'];
+            } else {
+                $dasarDari[$satu['nama']] = $penuhTerbaru;
+            }
+        }
+
+        if ($basisDataTerbaru !== null) {
+            $simpan[$basisDataTerbaru] = true;
+        }
+
+        if ($penuhTerbaru !== null) {
+            $simpan[$penuhTerbaru] = true;
+        }
+
+        foreach ($dasarDari as $selisih => $dasar) {
+            if ($dasar !== null && $dasar === $penuhTerbaru) {
+                $simpan[$selisih] = true;
+            }
+        }
+
+        foreach ($dasarDari as $selisih => $dasar) {
+            if ($dasar !== null && isset($simpan[$selisih])) {
+                $simpan[$dasar] = true;
+            }
+        }
+
+        $hapus = [];
+        foreach ($daftar as $satu) {
+            if (! isset($simpan[$satu['nama']])) {
+                $hapus[] = $satu['nama'];
+            }
+        }
+
+        return $hapus;
+    }
+
+    /** @return array<string, int> nama berkas di disk luar => ukurannya */
+    private function ukuranDiLuar(): array
+    {
+        return array_column($this->luar->daftar(), 'ukuran', 'nama');
+    }
+
+    private function hari(string $kunci, int $bawaan): int
+    {
+        return max((int) config("amanpoll.cadangan.{$kunci}", $bawaan), 1);
+    }
+
+    /**
+     * Waktu arsip penuh yang menjadi dasar arsip selisih, atau null bila kali ini harus arsip penuh.
+     *
+     * Satu jam kelonggaran supaya jadwal harian yang mulai beberapa detik lebih
+     * awal dari pekan lalu tidak menunda arsip penuh satu hari.
+     */
+    private function dasarSelisih(CarbonImmutable $pada): ?CarbonImmutable
+    {
+        $hari = (int) config('amanpoll.cadangan.berkas_penuh_tiap_hari', 7);
+        $penuh = $this->berkas->berkasPenuhTerbaru();
+
+        if ($hari <= 1 || $penuh === null) {
+            return null;
+        }
+
+        return $penuh['dibuat']->greaterThan($pada->subDays($hari)->addHour()) ? $penuh['dibuat'] : null;
+    }
+
+    /**
+     * Jalur yang tidak ada di lokal tetapi bernama cadangan diambil dari disk
+     * luar lebih dulu — pemulihan setelah server hilang dimulai dari sini.
+     */
+    private function jalurLokalAtauAmbilDariLuar(string $jalurAtauNama): string
+    {
+        if (File::exists($jalurAtauNama) || ! $this->luar->aktif()) {
+            return $jalurAtauNama;
+        }
+
+        $nama = basename($jalurAtauNama);
+
+        return $this->berkas->urai($nama) === null ? $jalurAtauNama : $this->luar->ambil($nama);
     }
 
     /**

@@ -10,8 +10,8 @@ use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Actions\KelolaLaporanTersimpan;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
+use App\Domain\Pelaporan\Application\Services\PembatasRentangMetrik;
 use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
-use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Http\Requests\SimpanLaporanTersimpanRequest;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -95,6 +95,7 @@ final class LaporanTersimpanController extends Controller
         LayananMetrik $layananMetrik,
         KalenderOrganisasi $kalender,
         PenjagaFilterMetrik $penjagaFilter,
+        PembatasRentangMetrik $pembatasRentang,
     ): Response {
         $this->authorize('viewAny', LaporanTersimpan::class);
 
@@ -106,9 +107,14 @@ final class LaporanTersimpanController extends Controller
 
         $dibuka = $this->laporanDibuka($request, $laporan);
 
-        $filter = $penjagaFilter->bersihkan(
-            FilterMetrik::dariArray($this->dataFilter($request, $dibuka), $kalender->zona()),
-        );
+        /*
+         * Layar menghitung paling banyak rentang interaktif; laporan tersimpan
+         * boleh berentang lebih panjang (sampai batas ekspor). Rentang penuhnya
+         * dikirim sebagai `filterDiminta`, yang dipakai baris filter, simpan,
+         * dan ekspor -- supaya ekspor tidak ikut terpotong ke rentang layar.
+         */
+        $rentang = $pembatasRentang->interaktif($this->dataFilter($request, $dibuka), $kalender->zona());
+        $filter = $penjagaFilter->bersihkan($rentang['filter']);
 
         return Inertia::render('Laporan/Index', [
             'wajib' => ['laporan' => AturanWajib::untuk(SimpanLaporanTersimpanRequest::class)],
@@ -122,6 +128,8 @@ final class LaporanTersimpanController extends Controller
                     $pengguna,
                 ),
             'filter' => $filter->keArray(),
+            'filterDiminta' => $penjagaFilter->bersihkan($rentang['diminta'])->keArray(),
+            'catatanRentang' => $rentang['catatan'],
             'katalogKpi' => $layananMetrik->katalogUntuk($pengguna),
             'formatEkspor' => array_map(
                 fn (FormatEkspor $format): array => ['Nilai' => $format->value, 'Label' => $format->label()],
@@ -194,7 +202,7 @@ final class LaporanTersimpanController extends Controller
             return (array) ($dibuka->Konfigurasi['Filter'] ?? []);
         }
 
-        return $request->all();
+        return $request->query();
     }
 
     /** @param Collection<int, LaporanTersimpan> $laporan */

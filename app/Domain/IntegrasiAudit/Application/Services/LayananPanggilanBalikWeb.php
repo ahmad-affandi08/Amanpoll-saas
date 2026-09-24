@@ -9,7 +9,9 @@ use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\KotakKeluarPeris
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\PengirimanPanggilanBalikWeb;
 use App\Domain\IntegrasiAudit\Jobs\KirimPanggilanBalikWeb;
-use Illuminate\Support\Facades\Http;
+use App\Shared\Infrastructure\Keamanan\PenjagaUrlKeluar;
+use App\Shared\Infrastructure\Keamanan\UrlKeluarDitolak;
+use Illuminate\Http\Client\Response;
 
 /** Menerbitkan peristiwa kotak keluar ke endpoint webhook yang berlangganan. */
 final class LayananPanggilanBalikWeb
@@ -19,6 +21,11 @@ final class LayananPanggilanBalikWeb
     public const HEADER_PERISTIWA = 'X-Amanpoll-Event';
 
     public const HEADER_PENGIRIMAN = 'X-Amanpoll-Delivery';
+
+    /** Panjang maksimum cuplikan balasan endpoint yang disimpan dan ditampilkan ke tenant. */
+    public const BATAS_CUPLIKAN_RESPONS = 500;
+
+    public function __construct(private readonly PenjagaUrlKeluar $penjaga) {}
 
     /**
      * Membuat baris pengiriman untuk tiap webhook aktif yang berlangganan.
@@ -84,21 +91,41 @@ final class LayananPanggilanBalikWeb
             return false;
         }
 
+        // Diperiksa ulang tiap kirim: URL lolos saat disimpan, tetapi DNS-nya dapat
+        // diarahkan ke jaringan internal sesudahnya. Yang ditolak tidak pernah dikirim.
+        try {
+            $tujuan = $this->penjaga->periksa((string) $webhook->Url);
+            $klien = $this->penjaga->klien($tujuan);
+        } catch (UrlKeluarDitolak $galat) {
+            $pesan = PenjagaUrlKeluar::PESAN_DITOLAK_SAAT_KIRIM.': '.$galat->getMessage();
+            $pengiriman->StatusHttp = null;
+            $pengiriman->Respons = null;
+
+            // Host yang belum dapat di-resolve mungkin pulih; alamat internal tidak.
+            if ($galat->sementara) {
+                $this->jadwalkanUlang($pengiriman, $pesan);
+            } else {
+                $this->tandaiGagalPermanen($pengiriman, $pesan);
+            }
+
+            return false;
+        }
+
         $badan = (string) json_encode($pengiriman->MuatanData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $tandaTangan = $this->tandaTangan($badan, (string) $webhook->Rahasia);
 
         try {
-            $respons = Http::withHeaders([
+            $respons = $klien->withHeaders([
                 'Content-Type' => 'application/json',
                 self::HEADER_TANDA_TANGAN => $tandaTangan,
                 self::HEADER_PERISTIWA => $pengiriman->Peristiwa,
                 self::HEADER_PENGIRIMAN => $pengiriman->Id,
-            ])->timeout(10)->withBody($badan, 'application/json')->post($webhook->Url);
+            ])->timeout(10)->withBody($badan, 'application/json')->post($tujuan->url);
 
             /** @var int<0, max> $status */
             $status = $respons->status();
             $pengiriman->StatusHttp = $status;
-            $pengiriman->Respons = mb_substr($respons->body(), 0, 2000);
+            $pengiriman->Respons = $this->cuplikanRespons($respons);
 
             if ($respons->successful()) {
                 $pengiriman->Status = StatusPengirimanPanggilanBalikWeb::Berhasil->value;
@@ -119,6 +146,33 @@ final class LayananPanggilanBalikWeb
 
             return false;
         }
+    }
+
+    /**
+     * Cuplikan balasan yang aman disimpan lalu ditampilkan ke tenant.
+     *
+     * Hanya isi bertipe teks atau JSON, tanpa header, maksimal
+     * BATAS_CUPLIKAN_RESPONS karakter, dengan karakter kendali dibuang. Tenant
+     * cukup melihat pesan galat penerimanya; menyimpan balasan utuh menjadikan
+     * webhook alat membaca isi layanan lain bila penjaga jaringan suatu saat
+     * terlewati.
+     */
+    private function cuplikanRespons(Response $respons): ?string
+    {
+        $jenis = strtolower(trim(explode(';', $respons->header('Content-Type'))[0]));
+        $bolehDisimpan = str_starts_with($jenis, 'text/')
+            || $jenis === 'application/json'
+            || str_ends_with($jenis, '+json');
+
+        if (! $bolehDisimpan) {
+            return $respons->body() === '' ? null : '(Isi balasan bertipe '.($jenis !== '' ? mb_substr($jenis, 0, 60) : 'tak dikenal').' tidak disimpan.)';
+        }
+
+        $teks = mb_scrub(substr($respons->body(), 0, self::BATAS_CUPLIKAN_RESPONS * 4), 'UTF-8');
+        $teks = preg_replace('/[^\P{C}\n\t]+/u', '', $teks) ?? '';
+        $teks = trim(mb_substr($teks, 0, self::BATAS_CUPLIKAN_RESPONS));
+
+        return $teks === '' ? null : $teks;
     }
 
     public function tandaTangan(string $badan, string $rahasia): string
@@ -163,7 +217,7 @@ final class LayananPanggilanBalikWeb
     {
         $percobaan = $pengiriman->Percobaan + 1;
         $pengiriman->Percobaan = $percobaan;
-        $pengiriman->Respons = mb_substr($pengiriman->Respons ?? $kesalahan, 0, 2000);
+        $pengiriman->Respons = mb_substr($pengiriman->Respons ?? $kesalahan, 0, self::BATAS_CUPLIKAN_RESPONS);
 
         if ($percobaan >= PengirimanPanggilanBalikWeb::BATAS_PERCOBAAN) {
             $pengiriman->Status = StatusPengirimanPanggilanBalikWeb::GagalPermanen->value;

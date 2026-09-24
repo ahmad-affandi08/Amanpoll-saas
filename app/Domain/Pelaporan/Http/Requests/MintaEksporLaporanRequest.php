@@ -8,6 +8,7 @@ use App\Domain\Pelaporan\Domain\KatalogKpi;
 use App\Shared\Infrastructure\Ekspor\FormatEkspor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 final class MintaEksporLaporanRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ final class MintaEksporLaporanRequest extends FormRequest
         return [
             'Judul' => ['required', 'string', 'max:180'],
             'Format' => ['required', Rule::enum(FormatEkspor::class)],
-            'KunciKpi' => ['required', 'array', 'min:1', 'max:30'],
+            'KunciKpi' => ['required', 'array', 'min:1', 'max:'.BatasLaporanAsinkron::kpiMaks()],
             'KunciKpi.*' => ['required', 'string', Rule::in(KatalogKpi::kunci())],
             'Filter' => ['nullable', 'array'],
             'Filter.Dari' => ['nullable', 'date'],
@@ -33,6 +34,26 @@ final class MintaEksporLaporanRequest extends FormRequest
             'Filter.LokasiId.*' => ['string', 'max:26'],
             'Filter.UnitPengelolaId' => ['nullable', 'array'],
             'Filter.UnitPengelolaId.*' => ['string', 'max:26', new UnitPengelolaLaporanSah],
+        ];
+    }
+
+    /**
+     * Rentang dan jumlah KPI dibatasi untuk laporan yang dihitung di antrean.
+     *
+     * @return array<int, callable(Validator): void>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                BatasLaporanAsinkron::periksa(
+                    $validator,
+                    $this->input('Filter'),
+                    $this->input('KunciKpi'),
+                    'Filter.',
+                    'KunciKpi',
+                );
+            },
         ];
     }
 }

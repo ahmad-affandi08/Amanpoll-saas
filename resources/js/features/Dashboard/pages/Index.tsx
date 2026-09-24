@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { KartuKpi } from '@/components/grafik/KartuKpi';
 import { BarisFilter } from '@/features/Pelaporan/components/BarisFilter';
+import { CatatanRentang } from '@/features/Pelaporan/components/CatatanRentang';
 import { rutePelaporan } from '@/features/Pelaporan/api';
 import type {
   DasborTersimpanRingkas,
@@ -23,6 +24,8 @@ interface Props {
   susunan: SusunanDasbor;
   metrik: Record<string, MetrikKpi>;
   filter: FilterMetrik;
+  /** Rentang yang dipotong ke batas layar atau tanggal yang diabaikan; kosong bila tidak ada. */
+  catatanRentang: string[];
   dasborTersimpan: DasborTersimpanRingkas[];
   pilihanUnit: PilihanDimensi[];
   pilihanLokasi: PilihanDimensi[];
@@ -34,6 +37,7 @@ export default function DashboardIndex({
   susunan,
   metrik,
   filter,
+  catatanRentang,
   dasborTersimpan,
   pilihanUnit,
   pilihanLokasi,
@@ -97,6 +101,8 @@ export default function DashboardIndex({
           url={rutePelaporan.dasbor}
           paramTambahan={{ dasbor: susunan.Kunci }}
         />
+
+        <CatatanRentang catatan={catatanRentang} />
 
         {komponenTampil.length === 0 ? (
           <KeadaanKosong

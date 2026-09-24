@@ -4,17 +4,30 @@ declare(strict_types=1);
 
 namespace App\Domain\Pelaporan\Application\Queries;
 
-use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
+use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpiBerkelompok;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\RumusKeandalan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\WaktuHentiAset;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 
-/** KPI keandalan: downtime, ketersediaan, MTTR, dan MTBF (21.01). */
-final class QueryKeandalan implements PenyediaKpi
+/**
+ * KPI keandalan: downtime, ketersediaan, MTTR, dan MTBF (21.01).
+ *
+ * Keempatnya dihitung dari satu ringkasan sesi waktu henti yang diagregasi di
+ * basis data (dua kueri), bukan dari seluruh baris sesi yang ditarik ke PHP
+ * sekali per KPI. Menit efektif satu sesi tetap sama persis dengan versi PHP
+ * sebelumnya: selisih menit terpotong ke bawah antara `MulaiPada` dan
+ * `min(SelesaiPada ?? akhir rentang, akhir rentang)`, minimal nol --
+ * `TIMESTAMPDIFF(MINUTE, ...)` memotong ke arah nol dengan presisi mikrodetik,
+ * sama dengan `(int) diffInMinutes()`.
+ *
+ * @phpstan-type BarisRingkasan array{Jenis: string, Bulan: string, Jumlah: int, JumlahSelesai: int, Menit: int, MenitSelesai: int}
+ * @phpstan-type RingkasanKeandalan array{Kelompok: list<BarisRingkasan>, AsetSemua: int, AsetGagal: int}
+ */
+final class QueryKeandalan implements PenyediaKpiBerkelompok
 {
     use MenyaringLingkup;
 
@@ -28,47 +41,61 @@ final class QueryKeandalan implements PenyediaKpi
 
     public function hitung(string $kunci, FilterMetrik $filter): HasilKpi
     {
-        return match ($kunci) {
-            'downtime.total_jam' => $this->totalJam($filter),
-            'downtime.ketersediaan' => $this->ketersediaan($filter),
-            'keandalan.mttr' => $this->mttr($filter),
-            'keandalan.mtbf' => $this->mtbf($filter),
-            default => throw new DataTidakDitemukan("KPI {$kunci} bukan milik QueryKeandalan."),
-        };
+        return $this->hitungBanyak([$kunci], $filter)[$kunci];
     }
 
-    private function totalJam(FilterMetrik $filter): HasilKpi
+    public function hitungBanyak(array $kunci, FilterMetrik $filter): array
     {
-        $sesi = $this->sesiDalamRentang($filter);
+        foreach ($kunci as $satu) {
+            if (! in_array($satu, $this->kunciDilayani(), true)) {
+                throw new DataTidakDitemukan("KPI {$satu} bukan milik QueryKeandalan.");
+            }
+        }
+
+        // Diambil sekali untuk seluruh KPI keandalan yang diminta bersama.
+        $ringkasan = $this->ringkasan($filter);
+
+        $hasil = [];
+        foreach ($kunci as $satu) {
+            $hasil[$satu] = match ($satu) {
+                'downtime.total_jam' => $this->totalJam($ringkasan, $filter),
+                'downtime.ketersediaan' => $this->ketersediaan($ringkasan, $filter),
+                'keandalan.mttr' => $this->mttr($ringkasan),
+                default => $this->mtbf($ringkasan, $filter),
+            };
+        }
+
+        return $hasil;
+    }
+
+    /** @param RingkasanKeandalan $ringkasan */
+    private function totalJam(array $ringkasan, FilterMetrik $filter): HasilKpi
+    {
         $perJenis = [];
         $perBulan = [];
 
-        foreach ($sesi as $satu) {
-            $menit = $this->menitEfektif($satu, $filter);
-            $jenis = (string) $satu->Jenis;
-            $perJenis[$jenis] = ($perJenis[$jenis] ?? 0) + $menit;
-            $bulan = $satu->MulaiPada->setTimezone($filter->zona)->format('Y-m');
-            $perBulan[$bulan] = ($perBulan[$bulan] ?? 0) + $menit;
+        foreach ($ringkasan['Kelompok'] as $baris) {
+            $perJenis[$baris['Jenis']] = ($perJenis[$baris['Jenis']] ?? 0) + $baris['Menit'];
+            $perBulan[$baris['Bulan']] = ($perBulan[$baris['Bulan']] ?? 0) + $baris['Menit'];
         }
-
-        $totalMenit = array_sum($perJenis);
+        ksort($perJenis);
 
         return new HasilKpi(
-            RumusKeandalan::totalJam($totalMenit),
+            RumusKeandalan::totalJam(array_sum($perJenis)),
             $this->deretBulanan($filter, array_map(RumusKeandalan::totalJam(...), $perBulan)),
             ['PerJenisJam' => array_map(RumusKeandalan::totalJam(...), $perJenis)],
         );
     }
 
-    private function ketersediaan(FilterMetrik $filter): HasilKpi
+    /** @param RingkasanKeandalan $ringkasan */
+    private function ketersediaan(array $ringkasan, FilterMetrik $filter): HasilKpi
     {
-        $sesi = $this->sesiDalamRentang($filter);
-        if ($sesi->isEmpty()) {
+        if ($ringkasan['Kelompok'] === []) {
             return new HasilKpi(0.0, [], ['AdaData' => false, 'Penyebut' => 0]);
         }
 
-        $totalMenit = $sesi->sum(fn (WaktuHentiAset $satu): int => $this->menitEfektif($satu, $filter));
-        $menitTersedia = $this->menitOperasional($filter, $sesi->pluck('AsetId')->unique()->count());
+        $totalMenit = array_sum(array_column($ringkasan['Kelompok'], 'Menit'));
+        $menitTersedia = $this->menitOperasional($filter, $ringkasan['AsetSemua']);
 
         $menitAktif = RumusKeandalan::menitAktif($menitTersedia, $totalMenit);
 
@@ -82,64 +109,157 @@ final class QueryKeandalan implements PenyediaKpi
         );
     }
 
-    private function mttr(FilterMetrik $filter): HasilKpi
+    /** @param RingkasanKeandalan $ringkasan */
+    private function mttr(array $ringkasan): HasilKpi
     {
-        $selesai = $this->sesiDalamRentang($filter)
-            ->where('Jenis', self::JENIS_KEGAGALAN)
-            ->filter(fn (WaktuHentiAset $satu): bool => $satu->SelesaiPada !== null);
+        $jumlah = 0;
+        $totalMenit = 0;
+        foreach ($this->kegagalan($ringkasan) as $baris) {
+            $jumlah += $baris['JumlahSelesai'];
+            $totalMenit += $baris['MenitSelesai'];
+        }
 
-        if ($selesai->isEmpty()) {
+        if ($jumlah === 0) {
             return new HasilKpi(0.0, [], ['AdaData' => false, 'Penyebut' => 0]);
         }
 
-        $totalMenit = $selesai->sum(fn (WaktuHentiAset $satu): int => $this->menitEfektif($satu, $filter));
-
         return new HasilKpi(
-            RumusKeandalan::mttr($totalMenit, $selesai->count()),
+            RumusKeandalan::mttr($totalMenit, $jumlah),
             [],
-            ['AdaData' => true, 'Penyebut' => $selesai->count(), 'TotalMenit' => $totalMenit],
+            ['AdaData' => true, 'Penyebut' => $jumlah, 'TotalMenit' => $totalMenit],
         );
     }
 
-    private function mtbf(FilterMetrik $filter): HasilKpi
+    /** @param RingkasanKeandalan $ringkasan */
+    private function mtbf(array $ringkasan, FilterMetrik $filter): HasilKpi
     {
-        $kegagalan = $this->sesiDalamRentang($filter)->where('Jenis', self::JENIS_KEGAGALAN);
-        if ($kegagalan->isEmpty()) {
+        $jumlah = 0;
+        $menitDowntime = 0;
+        foreach ($this->kegagalan($ringkasan) as $baris) {
+            $jumlah += $baris['Jumlah'];
+            $menitDowntime += $baris['Menit'];
+        }
+
+        if ($jumlah === 0) {
             return new HasilKpi(0.0, [], ['AdaData' => false, 'Penyebut' => 0]);
         }
 
-        $menitDowntime = $kegagalan->sum(fn (WaktuHentiAset $satu): int => $this->menitEfektif($satu, $filter));
-        $menitOperasional = $this->menitOperasional($filter, $kegagalan->pluck('AsetId')->unique()->count());
+        $menitOperasional = $this->menitOperasional($filter, $ringkasan['AsetGagal']);
 
         return new HasilKpi(
-            RumusKeandalan::mtbf($menitOperasional, $menitDowntime, $kegagalan->count()),
+            RumusKeandalan::mtbf($menitOperasional, $menitDowntime, $jumlah),
             [],
             [
                 'AdaData' => true,
-                'Penyebut' => $kegagalan->count(),
+                'Penyebut' => $jumlah,
                 'MenitOperasional' => $menitOperasional,
                 'MenitDowntime' => $menitDowntime,
             ],
         );
     }
 
-    /** @return Collection<int, WaktuHentiAset> */
-    private function sesiDalamRentang(FilterMetrik $filter): Collection
+    /**
+     * @param  RingkasanKeandalan  $ringkasan
+     * @return list<BarisRingkasan>
+     */
+    private function kegagalan(array $ringkasan): array
     {
-        return $this->lingkup($filter)
-            ->whereBetween('MulaiPada', [$filter->dari, $filter->sampai])
-            ->get(['Id', 'AsetId', 'Jenis', 'MulaiPada', 'SelesaiPada', 'DurasiMenit']);
+        return array_values(array_filter(
+            $ringkasan['Kelompok'],
+            fn (array $baris): bool => strcasecmp($baris['Jenis'], self::JENIS_KEGAGALAN) === 0,
+        ));
     }
 
-    /** Menit downtime yang jatuh di dalam rentang. */
-    private function menitEfektif(WaktuHentiAset $sesi, FilterMetrik $filter): int
+    /**
+     * Ringkasan sesi yang dimulai di dalam rentang: per jenis dan bulan (zona
+     * organisasi) berisi jumlah sesi, jumlah yang sudah selesai, dan menit
+     * efektifnya; ditambah jumlah aset berbeda untuk seluruh sesi dan untuk
+     * kegagalan saja.
+     *
+     * @return RingkasanKeandalan
+     */
+    private function ringkasan(FilterMetrik $filter): array
     {
-        $selesai = $sesi->SelesaiPada ?? $filter->sampai;
-        if ($selesai->greaterThan($filter->sampai)) {
-            $selesai = $filter->sampai;
+        // Mikrodetik ikut dikirim: akhir rentang adalah 23:59:59.999999, dan
+        // tanpa pecahannya menit sesi yang masih terbuka bisa berbeda satu.
+        $akhir = $filter->sampai->utc()->format('Y-m-d H:i:s.u');
+        $menit = 'GREATEST(0, TIMESTAMPDIFF(MINUTE, MulaiPada, LEAST(COALESCE(SelesaiPada, ?), ?)))';
+        [$sqlBulan, $ikatanBulan] = $this->ekspresiBulan($filter);
+
+        $kelompok = $this->lingkup($filter)
+            ->selectRaw(
+                "Jenis, {$sqlBulan} AS Bulan, COUNT(*) AS Jumlah,"
+                .' SUM(CASE WHEN SelesaiPada IS NOT NULL THEN 1 ELSE 0 END) AS JumlahSelesai,'
+                ." SUM({$menit}) AS Menit,"
+                ." SUM(CASE WHEN SelesaiPada IS NOT NULL THEN {$menit} ELSE 0 END) AS MenitSelesai",
+                [...$ikatanBulan, $akhir, $akhir, $akhir, $akhir],
+            )
+            ->groupBy('Jenis', 'Bulan')
+            ->toBase()
+            ->get()
+            ->map(fn (object $baris): array => [
+                'Jenis' => (string) $baris->Jenis,
+                'Bulan' => (string) $baris->Bulan,
+                'Jumlah' => (int) $baris->Jumlah,
+                'JumlahSelesai' => (int) $baris->JumlahSelesai,
+                'Menit' => (int) $baris->Menit,
+                'MenitSelesai' => (int) $baris->MenitSelesai,
+            ])
+            ->all();
+        $kelompok = array_values($kelompok);
+
+        if ($kelompok === []) {
+            return ['Kelompok' => [], 'AsetSemua' => 0, 'AsetGagal' => 0];
         }
 
-        return max(0, (int) $sesi->MulaiPada->diffInMinutes($selesai));
+        $aset = $this->lingkup($filter)
+            ->selectRaw(
+                'COUNT(DISTINCT AsetId) AS AsetSemua, COUNT(DISTINCT CASE WHEN Jenis = ? THEN AsetId END) AS AsetGagal',
+                [self::JENIS_KEGAGALAN],
+            )
+            ->toBase()
+            ->first();
+
+        return [
+            'Kelompok' => $kelompok,
+            'AsetSemua' => (int) ($aset->AsetSemua ?? 0),
+            'AsetGagal' => (int) ($aset->AsetGagal ?? 0),
+        ];
+    }
+
+    /**
+     * Bulan kalender (zona organisasi) dari `MulaiPada`, sebagai CASE atas batas
+     * awal tiap bulan dalam UTC.
+     *
+     * Batasnya dihitung PHP dari nama zona, jadi tepat juga untuk zona yang
+     * mengenal waktu musim panas dan tidak menuntut tabel zona waktu MySQL --
+     * shared hosting tidak menjamin `CONVERT_TZ` dengan nama zona.
+     *
+     * @return array{0: literal-string, 1: list<string>}
+     */
+    private function ekspresiBulan(FilterMetrik $filter): array
+    {
+        $bulan = CarbonImmutable::parse($filter->tanggalDari(), $filter->zona)->startOfMonth();
+        $akhir = CarbonImmutable::parse($filter->tanggalSampai(), $filter->zona)->startOfMonth();
+
+        $ikatan = [];
+        while ($bulan->lessThan($akhir)) {
+            $berikutnya = $bulan->addMonth();
+            $ikatan[] = $berikutnya->utc()->format('Y-m-d H:i:s.u');
+            $ikatan[] = $bulan->format('Y-m');
+            $bulan = $berikutnya;
+        }
+
+        $ikatan[] = $akhir->format('Y-m');
+
+        // Rentang satu bulan: CASE tanpa WHEN bukan SQL yang sah.
+        if (count($ikatan) === 1) {
+            return ['?', $ikatan];
+        }
+
+        $cabang = str_repeat(' WHEN MulaiPada < ? THEN ?', intdiv(count($ikatan), 2));
+
+        return ["CASE{$cabang} ELSE ? END", $ikatan];
     }
 
     private function menitOperasional(FilterMetrik $filter, int $jumlahAset): float
@@ -153,6 +273,7 @@ final class QueryKeandalan implements PenyediaKpi
     /** @return Builder<WaktuHentiAset> */
     private function lingkup(FilterMetrik $filter): Builder
     {
-        return $this->saringLewatAset(WaktuHentiAset::query(), $filter);
+        return $this->saringLewatAset(WaktuHentiAset::query(), $filter)
+            ->whereBetween('MulaiPada', [$filter->dari, $filter->sampai]);
     }
 }

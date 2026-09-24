@@ -7,21 +7,27 @@ namespace App\Domain\Kepatuhan\Infrastructure\Services;
 use App\Domain\Kepatuhan\Domain\Contracts\AdapterSinkronisasi;
 use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\IntegrasiEksternal;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Keamanan\PenjagaUrlKeluar;
+use App\Shared\Infrastructure\Keamanan\UrlKeluarSah;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
 
 /** Adapter bawaan untuk sistem eksternal ber-REST. */
 final class AdapterSinkronisasiRest implements AdapterSinkronisasi
 {
-    public function __construct(private readonly PenyusunHeaderIntegrasi $header) {}
+    public function __construct(
+        private readonly PenyusunHeaderIntegrasi $header,
+        private readonly PenjagaUrlKeluar $penjaga,
+    ) {}
 
     /**
      * @return array{berhasil: int<0, max>, gagal: int<0, max>}
      */
     public function tarik(IntegrasiEksternal $integrasi, string $jenisProses): array
     {
-        return $this->hitung($this->permintaan($integrasi)->get($this->tujuan($integrasi, $jenisProses)));
+        $tujuan = $this->tujuan($integrasi, $jenisProses);
+
+        return $this->hitung($this->permintaan($integrasi, $tujuan)->get($tujuan->url));
     }
 
     /**
@@ -29,21 +35,27 @@ final class AdapterSinkronisasiRest implements AdapterSinkronisasi
      */
     public function dorong(IntegrasiEksternal $integrasi, string $jenisProses): array
     {
-        return $this->hitung($this->permintaan($integrasi)->post($this->tujuan($integrasi, $jenisProses)));
+        $tujuan = $this->tujuan($integrasi, $jenisProses);
+
+        return $this->hitung($this->permintaan($integrasi, $tujuan)->post($tujuan->url));
     }
 
-    private function permintaan(IntegrasiEksternal $integrasi): PendingRequest
+    private function permintaan(IntegrasiEksternal $integrasi, UrlKeluarSah $tujuan): PendingRequest
     {
-        return Http::timeout(30)->withHeaders($this->header->untuk($integrasi));
+        return $this->penjaga->klien($tujuan)->timeout(30)->withHeaders($this->header->untuk($integrasi));
     }
 
-    private function tujuan(IntegrasiEksternal $integrasi, string $jenisProses): string
+    /** URL akhir diperiksa penjaga jaringan tepat sebelum dipanggil, bukan hanya saat disimpan. */
+    private function tujuan(IntegrasiEksternal $integrasi, string $jenisProses): UrlKeluarSah
     {
         if (empty($integrasi->UrlDasar)) {
             throw new AturanBisnisDilanggar('URL dasar integrasi belum diisi.');
         }
 
-        return rtrim((string) $integrasi->UrlDasar, '/').'/'.ltrim(strtolower($jenisProses), '/');
+        // Tiap segmen dikodekan supaya spasi, "?", atau "#" pada nama proses tidak mengubah arti URL.
+        $jalur = implode('/', array_map(rawurlencode(...), explode('/', ltrim(strtolower($jenisProses), '/'))));
+
+        return $this->penjaga->periksa(rtrim((string) $integrasi->UrlDasar, '/').'/'.$jalur);
     }
 
     /**

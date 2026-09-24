@@ -44,6 +44,21 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
       })),
     [kpi.Rincian, deretWaktu],
   );
+  // Deret panjang dikelompokkan per minggu oleh server; titiknya membawa tanggal akhir minggunya.
+  const akhirPeriode = useMemo(
+    () =>
+      new Map(
+        kpi.Rincian.filter((baris) => typeof baris.SampaiTanggal === 'string').map((baris) => [
+          baris.Label,
+          String(baris.SampaiTanggal),
+        ]),
+      ),
+    [kpi.Rincian],
+  );
+  const labelPeriodePenuh = (label: string) => {
+    const akhir = akhirPeriode.get(label);
+    return akhir ? `${labelPeriode(label)}–${labelPeriode(akhir)}` : labelPeriode(label);
+  };
   const formatter = (nilai: number) => formatNilai(nilai, kpi.SatuanRincian, kpi.DesimalRincian);
   const formatterSumbu = (nilai: number) => formatSumbu(nilai, kpi.SatuanRincian, kpi.DesimalRincian);
   const sumbuBilanganBulat = kpi.SatuanRincian === 'Jumlah';
@@ -80,7 +95,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
                   className="size-2.5 shrink-0 rounded-[2px]"
                   style={{ backgroundColor: warnaIrisan(baris.Kunci, indeks) }}
                 />
-                <span className="truncate">{deretWaktu ? labelPeriode(baris.Label) : baris.Label}</span>
+                <span className="truncate">{deretWaktu ? labelPeriodePenuh(baris.Kunci) : baris.Label}</span>
               </td>
               <td className="py-1.5 text-right tabular-nums">{formatter(baris.Nilai)}</td>
             </tr>
@@ -120,7 +135,7 @@ export function GrafikKpi({ kpi, bentuk }: { kpi: MetrikKpi; bentuk: BentukKompo
               <Tooltip
                 cursor={{ stroke: WARNA_SUMBU, strokeWidth: 1 }}
                 content={(props) => (
-                  <TooltipGrafik {...props} formatNilai={formatter} formatLabel={labelPeriode} />
+                  <TooltipGrafik {...props} formatNilai={formatter} formatLabel={labelPeriodePenuh} />
                 )}
               />
               <Line

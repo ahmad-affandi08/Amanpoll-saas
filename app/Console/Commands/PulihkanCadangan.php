@@ -17,12 +17,16 @@ use Illuminate\Support\Facades\Log;
  * lebih dulu dan menyebut nama basis data yang akan ditimpa. Di produksi ia
  * menuntut konfirmasi mengetik ulang nama itu, supaya tidak ada yang memulihkan
  * ke basis data yang salah hanya karena menekan enter.
+ *
+ * Bila cadangan tidak ada di lokal — mis. setelah server hilang — ia diambil
+ * dari disk luar (FASE 45); `--dari-luar` memaksa itu walau ada salinan lokal.
  */
 final class PulihkanCadangan extends Command
 {
     protected $signature = 'cadangan:pulihkan
-        {berkas? : Jalur berkas dump; kosong berarti cadangan basis data terbaru}
+        {berkas? : Jalur atau nama berkas dump; kosong berarti cadangan basis data terbaru}
         {--ke= : Nama basis data tujuan; kosong berarti basis data koneksi aktif}
+        {--dari-luar : Ambil cadangan dari disk luar walau ada salinan lokal}
         {--paksa : Lewati konfirmasi, hanya untuk pemulihan tidak interaktif}';
 
     protected $description = 'Pulihkan basis data dari sebuah cadangan';
@@ -36,7 +40,13 @@ final class PulihkanCadangan extends Command
 
     public function handle(): int
     {
-        $jalur = $this->jalurDump();
+        try {
+            $jalur = $this->jalurDump();
+        } catch (AturanBisnisDilanggar $galat) {
+            $this->error($galat->getMessage());
+
+            return self::FAILURE;
+        }
 
         if ($jalur === null) {
             $this->error('Tidak ada cadangan basis data yang dapat dipulihkan.');
@@ -74,12 +84,29 @@ final class PulihkanCadangan extends Command
     private function jalurDump(): ?string
     {
         $diminta = $this->argument('berkas');
+        $diminta = is_string($diminta) && $diminta !== '' ? $diminta : null;
 
-        if (is_string($diminta) && $diminta !== '') {
+        if ($this->option('dari-luar')) {
+            $nama = $diminta === null ? $this->layanan->basisDataTerbaruDiLuar() : basename($diminta);
+
+            return $nama === null ? null : $this->layanan->ambilDariLuar($nama);
+        }
+
+        if ($diminta !== null) {
+            // Nama yang tidak ada di lokal diambil dari disk luar oleh pulihkanBasisData().
             return $diminta;
         }
 
-        return $this->berkas->basisDataTerbaru();
+        $lokal = $this->berkas->basisDataTerbaru();
+
+        if ($lokal !== null || ! $this->layanan->salinanLuarAktif()) {
+            return $lokal;
+        }
+
+        $this->warn('Tidak ada cadangan basis data lokal; mengambil yang terbaru dari disk luar.');
+        $nama = $this->layanan->basisDataTerbaruDiLuar();
+
+        return $nama === null ? null : $this->layanan->ambilDariLuar($nama);
     }
 
     private function namaTujuan(): string

@@ -89,25 +89,33 @@ final class QueryKeluhan implements PenyediaKpi
         );
     }
 
+    /**
+     * Rata-rata menit dari laporan sampai respons pertama, diagregasi di basis
+     * data. Per keluhan: selisih menit terpotong ke bawah, minimal nol --
+     * `TIMESTAMPDIFF(MINUTE, ...)` memotong ke arah nol dengan presisi
+     * mikrodetik, persis `(int) diffInMinutes()` yang dulu dijumlah di PHP.
+     * Pembulatan rata-ratanya tetap di PHP supaya aturannya tidak berubah.
+     */
     private function waktuRespons(FilterMetrik $filter): HasilKpi
     {
-        $sudahDirespons = $this->lingkup($filter)
+        $agregat = $this->lingkup($filter)
             ->whereNotNull('DiresponsPada')
             ->whereBetween('DilaporkanPada', [$filter->dari, $filter->sampai])
-            ->get(['DilaporkanPada', 'DiresponsPada']);
+            ->selectRaw('COUNT(*) AS Jumlah, SUM(GREATEST(0, TIMESTAMPDIFF(MINUTE, DilaporkanPada, DiresponsPada))) AS TotalMenit')
+            ->toBase()
+            ->first();
 
-        if ($sudahDirespons->isEmpty()) {
+        $jumlah = (int) ($agregat->Jumlah ?? 0);
+        if ($jumlah === 0) {
             return new HasilKpi(0.0, [], ['AdaData' => false, 'Penyebut' => 0]);
         }
 
-        $totalMenit = $sudahDirespons->sum(
-            fn (Keluhan $keluhan): int => max(0, (int) $keluhan->DilaporkanPada->diffInMinutes($keluhan->DiresponsPada)),
-        );
+        $totalMenit = (int) $agregat->TotalMenit;
 
         return new HasilKpi(
-            round($totalMenit / $sudahDirespons->count(), 0),
+            round($totalMenit / $jumlah, 0),
             [],
-            ['AdaData' => true, 'Penyebut' => $sudahDirespons->count(), 'TotalMenit' => $totalMenit],
+            ['AdaData' => true, 'Penyebut' => $jumlah, 'TotalMenit' => $totalMenit],
         );
     }
 

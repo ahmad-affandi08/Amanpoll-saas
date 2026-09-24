@@ -37,7 +37,7 @@ final class PenyusunBarisLaporan
                 $baris[] = [
                     (string) $kpi['Nama'],
                     (string) $kpi['LabelKelompok'],
-                    (string) ($rincian['Label'] ?? '-'),
+                    self::labelRincian($rincian),
                     (float) ($rincian['Nilai'] ?? 0),
                     (string) $kpi['SatuanRincian'],
                     '',
@@ -46,5 +46,19 @@ final class PenyusunBarisLaporan
         }
 
         return $baris;
+    }
+
+    /**
+     * Deret panjang dikelompokkan per minggu (FASE 45); labelnya tanggal awal,
+     * jadi berkas ekspor menyebut rentang minggunya supaya tidak terbaca harian.
+     *
+     * @param  array<string, mixed>  $rincian
+     */
+    private static function labelRincian(array $rincian): string
+    {
+        $label = (string) ($rincian['Label'] ?? '-');
+        $sampai = $rincian['SampaiTanggal'] ?? null;
+
+        return is_string($sampai) ? $label.' s.d. '.$sampai : $label;
     }
 }

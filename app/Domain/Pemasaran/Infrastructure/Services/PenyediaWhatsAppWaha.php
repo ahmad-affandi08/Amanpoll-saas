@@ -8,18 +8,25 @@ use App\Domain\Pemasaran\Domain\Enums\StatusPengirimanWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\PeristiwaWebhookWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\PesanMasukWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\StatusKirimanWhatsApp;
+use App\Domain\Platform\Application\Services\PembacaKredensialPenyedia;
 use App\Domain\Platform\Domain\ValueObjects\HasilUjiKoneksi;
 use App\Domain\Platform\Domain\ValueObjects\IsianKredensial;
 use App\Domain\Platform\Domain\ValueObjects\KredensialPenyedia;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Keamanan\PenjagaUrlKeluar;
+use App\Shared\Infrastructure\Keamanan\UrlKeluarDitolak;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
 
 /** WAHA (WhatsApp HTTP API) yang dipasang sendiri: satu sesi WhatsApp biasa hasil scan QR; tidak resmi. */
 final class PenyediaWhatsAppWaha extends PenyediaWhatsAppTidakResmi
 {
     private const SESI_BAWAAN = 'default';
+
+    public function __construct(PembacaKredensialPenyedia $pembaca, private readonly PenjagaUrlKeluar $penjaga)
+    {
+        parent::__construct($pembaca);
+    }
 
     public function kode(): string
     {
@@ -40,7 +47,7 @@ final class PenyediaWhatsAppWaha extends PenyediaWhatsAppTidakResmi
     protected function isianPenyedia(): array
     {
         return [
-            new IsianKredensial('UrlDasar', 'URL dasar', petunjuk: 'Alamat server WAHA, mis. https://waha.perusahaan.id.'),
+            new IsianKredensial('UrlDasar', 'URL dasar', petunjuk: 'Alamat publik server WAHA, mis. https://waha.perusahaan.id. Port selain 80/443 harus didaftarkan di AMANPOLL_HTTP_KELUAR_PORT_TAMBAHAN.'),
             new IsianKredensial('KunciApi', 'API key', rahasia: true, wajib: false, petunjuk: 'Nilai WAHA_API_KEY di server; kosongkan bila server tidak memakainya.'),
             new IsianKredensial('NamaSesi', 'Nama sesi', wajib: false, petunjuk: 'Sesi WAHA yang sudah dipindai.', bawaan: self::SESI_BAWAAN),
         ];
@@ -143,7 +150,7 @@ final class PenyediaWhatsAppWaha extends PenyediaWhatsAppTidakResmi
 
     private function http(KredensialPenyedia $kredensial): PendingRequest
     {
-        $permintaan = Http::baseUrl($this->urlDasar($kredensial))
+        $permintaan = $this->klienTerjaga($this->urlDasar($kredensial))
             ->acceptJson()
             ->timeout(self::BATAS_WAKTU_DETIK);
 
@@ -162,5 +169,18 @@ final class PenyediaWhatsAppWaha extends PenyediaWhatsAppTidakResmi
         }
 
         return $url;
+    }
+
+    /**
+     * Alamat isian admin tetap melewati penjaga jaringan: harus host publik,
+     * disematkan ke IP yang diperiksa, dan tanpa mengikuti redirect.
+     */
+    private function klienTerjaga(string $urlDasar): PendingRequest
+    {
+        try {
+            return $this->penjaga->klienDasar($urlDasar);
+        } catch (UrlKeluarDitolak $galat) {
+            throw new AturanBisnisDilanggar('URL dasar WAHA ditolak penjaga jaringan: '.$galat->getMessage());
+        }
     }
 }

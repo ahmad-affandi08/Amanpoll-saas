@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { KartuKpi } from '@/components/grafik/KartuKpi';
 import { BarisFilter } from '@/features/Pelaporan/components/BarisFilter';
+import { CatatanRentang } from '@/features/Pelaporan/components/CatatanRentang';
 import { rutePelaporan } from '@/features/Pelaporan/api';
 import { formatUkuranByte, waktuLokal } from '@/features/Pelaporan/format';
 import type {
@@ -42,7 +43,11 @@ interface Props {
   laporan: LaporanTersimpanItem[];
   dibuka: LaporanTersimpanItem | null;
   metrik: Record<string, MetrikKpi>;
+  /** Filter yang dihitung di layar, paling panjang batas rentang interaktif. */
   filter: FilterMetrik;
+  /** Rentang yang diminta, untuk baris filter, simpan, dan ekspor; bisa lebih panjang dari `filter`. */
+  filterDiminta: FilterMetrik;
+  catatanRentang: string[];
   katalogKpi: DefinisiKpi[];
   formatEkspor: { Nilai: FormatEkspor; Label: string }[];
   pilihanUnit: PilihanDimensi[];
@@ -56,7 +61,8 @@ export default function LaporanIndex({
   laporan,
   dibuka,
   metrik,
-  filter,
+  filterDiminta,
+  catatanRentang,
   katalogKpi,
   formatEkspor,
   pilihanUnit,
@@ -130,13 +136,15 @@ export default function LaporanIndex({
         )}
 
         <BarisFilter
-          filter={filter}
+          filter={filterDiminta}
           pilihanUnit={pilihanUnit}
           pilihanLokasi={pilihanLokasi}
           pilihanUnitPengelola={pilihanUnitPengelola}
           url={rutePelaporan.laporan}
           paramTambahan={dibuka ? { laporan: dibuka.Id } : {}}
         />
+
+        <CatatanRentang catatan={catatanRentang} />
 
         <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
           <aside className="space-y-2">
@@ -249,7 +257,7 @@ export default function LaporanIndex({
         terbuka={dialogBaru}
         onTutup={() => setDialogBaru(false)}
         katalogKpi={katalogKpi}
-        filter={filter}
+        filter={filterDiminta}
       />
       {dibuka && (
         <DialogEkspor
@@ -257,7 +265,7 @@ export default function LaporanIndex({
           onTutup={() => setDialogEkspor(false)}
           laporan={dibuka}
           kunciKpi={kpiDibuka}
-          filter={filter}
+          filter={filterDiminta}
           formatEkspor={formatEkspor}
         />
       )}
@@ -307,7 +315,8 @@ function DialogLaporanBaru({
           form.reset();
           onTutup();
         },
-        onError: () => toast.error('Laporan gagal disimpan. Periksa kembali isiannya.'),
+        onError: (galat) =>
+          toast.error(Object.values(galat)[0] ?? 'Laporan gagal disimpan. Periksa kembali isiannya.'),
       },
     );
   };
@@ -404,7 +413,8 @@ function DialogEkspor({
       {
         preserveScroll: true,
         onSuccess: () => onTutup(),
-        onError: () => toast.error('Permintaan ekspor ditolak.'),
+        // Pesan server (mis. rentang atau jumlah KPI melebihi batas) lebih berguna daripada penolakan umum.
+        onError: (galat) => toast.error(Object.values(galat)[0] ?? 'Permintaan ekspor ditolak.'),
       },
     );
   };

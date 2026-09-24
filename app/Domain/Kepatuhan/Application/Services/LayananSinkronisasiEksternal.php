@@ -12,7 +12,8 @@ use App\Domain\Kepatuhan\Infrastructure\Persistence\Models\SinkronisasiEksternal
 use App\Domain\Kepatuhan\Infrastructure\Services\PenyusunHeaderIntegrasi;
 use App\Domain\Kepatuhan\Jobs\JalankanSinkronisasiEksternal;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
-use Illuminate\Support\Facades\Http;
+use App\Shared\Infrastructure\Keamanan\PenjagaUrlKeluar;
+use App\Shared\Infrastructure\Keamanan\UrlKeluarDitolak;
 use Throwable;
 
 /** Abstraksi tarik/dorong data ke sistem eksternal (19.03). */
@@ -21,6 +22,7 @@ final class LayananSinkronisasiEksternal
     public function __construct(
         private readonly RegistriAdapterSinkronisasi $registri,
         private readonly PenyusunHeaderIntegrasi $header,
+        private readonly PenjagaUrlKeluar $penjaga,
     ) {}
 
     /** Menyiapkan satu baris sinkronisasi lalu menyerahkannya ke antrean. */
@@ -109,9 +111,11 @@ final class LayananSinkronisasiEksternal
         }
 
         try {
-            $respons = Http::timeout(10)
+            $tujuan = $this->penjaga->periksa((string) $integrasi->UrlDasar);
+            $respons = $this->penjaga->klien($tujuan)
+                ->timeout(10)
                 ->withHeaders($this->header->untuk($integrasi))
-                ->get((string) $integrasi->UrlDasar);
+                ->get($tujuan->url);
 
             $berhasil = $respons->successful();
             $integrasi->Status = $berhasil ? StatusIntegrasiEksternal::Aktif->value : StatusIntegrasiEksternal::Bermasalah->value;
@@ -122,6 +126,12 @@ final class LayananSinkronisasiEksternal
                 'status' => $respons->status(),
                 'pesan' => $berhasil ? 'Koneksi berhasil.' : "Sistem tujuan membalas status {$respons->status()}.",
             ];
+        } catch (UrlKeluarDitolak $e) {
+            // Ditolak sebelum ada permintaan keluar; kredensial tidak pernah terkirim.
+            $integrasi->Status = StatusIntegrasiEksternal::Bermasalah->value;
+            $integrasi->save();
+
+            return ['berhasil' => false, 'status' => null, 'pesan' => PenjagaUrlKeluar::PESAN_DITOLAK_SAAT_KIRIM.': '.$e->getMessage()];
         } catch (Throwable $e) {
             $integrasi->Status = StatusIntegrasiEksternal::Bermasalah->value;
             $integrasi->save();

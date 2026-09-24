@@ -74,7 +74,7 @@ php artisan db:seed --class=Database\\Seeders\\TahapPipelineSeeder --force
 
 Buat cron hPanel **setiap menit**. Jalankan `/bin/sh .../deploy/niagahoster/cron.sh`; template command ada di `deploy/niagahoster/cron.txt`. Pendekatan file .sh` juga menghindari masalah karakter khusus pada command cron hPanel.
 
-Scheduler Amanpoll akan menjalankan worker database dengan `--stop-when-empty`, jadi tidak memerlukan Supervisor/Horizon.
+Scheduler Amanpoll akan menjalankan worker database dengan `--stop-when-empty`, jadi tidak memerlukan Supervisor/Horizon. Ada dua worker: job pendek (`high,default`) tiap menit, dan ekspor laporan (`low`, koneksi `database-panjang`) satu job per jalan tiap tiga menit; alasannya di `docs/RUNBOOK-DEPLOYMENT.md` bagian Cron. Pastikan PHP CLI memuat `pcntl` (`php -m | grep pcntl`), karena tanpa itu batas waktu job tidak ditegakkan.
 
 ## Frontend
 

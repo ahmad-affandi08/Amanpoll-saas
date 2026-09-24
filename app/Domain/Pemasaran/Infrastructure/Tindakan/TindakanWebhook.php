@@ -8,7 +8,9 @@ use App\Domain\IntegrasiAudit\Application\Services\LayananPanggilanBalikWeb;
 use App\Domain\Pemasaran\Domain\Contracts\TindakanOtomasi;
 use App\Domain\Pemasaran\Domain\ValueObjects\KonteksOtomasi;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
-use Illuminate\Support\Facades\Http;
+use App\Shared\Infrastructure\Keamanan\PenjagaUrlKeluar;
+use App\Shared\Infrastructure\Keamanan\UrlKeluarDitolak;
+use App\Shared\Infrastructure\Validasi\UrlKeluarPublik;
 
 /**
  * Memanggil webhook luar dengan tanda tangan yang sama seperti FASE 19.
@@ -20,6 +22,8 @@ use Illuminate\Support\Facades\Http;
  */
 final class TindakanWebhook implements TindakanOtomasi
 {
+    public function __construct(private readonly PenjagaUrlKeluar $penjaga) {}
+
     public function kode(): string
     {
         return 'Webhook';
@@ -34,7 +38,7 @@ final class TindakanWebhook implements TindakanOtomasi
     public function aturan(): array
     {
         return [
-            'Url' => ['required', 'url', 'max:500'],
+            'Url' => ['bail', 'required', 'url', 'max:500', new UrlKeluarPublik],
             'Peristiwa' => ['nullable', 'string', 'max:120'],
         ];
     }
@@ -51,14 +55,22 @@ final class TindakanWebhook implements TindakanOtomasi
             );
         }
 
+        // Diperiksa ulang tiap kirim, karena DNS tujuan dapat berubah sejak langkah disimpan.
+        try {
+            $tujuan = $this->penjaga->periksa($url);
+            $klien = $this->penjaga->klien($tujuan);
+        } catch (UrlKeluarDitolak $galat) {
+            throw new AturanBisnisDilanggar(PenjagaUrlKeluar::PESAN_DITOLAK_SAAT_KIRIM.': '.$galat->getMessage());
+        }
+
         $badan = (string) json_encode($this->muatan($konteks, $konfigurasi), JSON_UNESCAPED_SLASHES);
 
-        $respons = Http::withHeaders([
+        $respons = $klien->withHeaders([
             'Content-Type' => 'application/json',
             LayananPanggilanBalikWeb::HEADER_TANDA_TANGAN => 'sha256='.hash_hmac('sha256', $badan, $rahasia),
             LayananPanggilanBalikWeb::HEADER_PERISTIWA => (string) ($konfigurasi['Peristiwa'] ?? 'OtomasiPemasaran'),
             LayananPanggilanBalikWeb::HEADER_PENGIRIMAN => $konteks->kunciLangkah,
-        ])->timeout(10)->withBody($badan, 'application/json')->post($url);
+        ])->timeout(10)->withBody($badan, 'application/json')->post($tujuan->url);
 
         if (! $respons->successful()) {
             throw new AturanBisnisDilanggar("Webhook membalas status {$respons->status()}.");

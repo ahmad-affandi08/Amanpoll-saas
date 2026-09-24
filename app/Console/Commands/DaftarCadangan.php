@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Core\Cadangan\LayananCadangan;
+use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Console\Command;
 
-/** Menampilkan cadangan yang tersedia beserta umur dan ukurannya (FASE 25.04). */
+/** Menampilkan cadangan yang tersedia beserta umur dan ukurannya, di lokal atau di disk luar (FASE 25.04, FASE 45). */
 final class DaftarCadangan extends Command
 {
-    protected $signature = 'cadangan:daftar';
+    protected $signature = 'cadangan:daftar {--luar : Tampilkan cadangan di disk luar}';
 
     protected $description = 'Tampilkan cadangan yang tersedia';
 
@@ -21,7 +22,13 @@ final class DaftarCadangan extends Command
 
     public function handle(): int
     {
-        $daftar = $this->layanan->daftar();
+        try {
+            $daftar = $this->option('luar') ? $this->layanan->daftarLuar() : $this->layanan->daftar();
+        } catch (AturanBisnisDilanggar $galat) {
+            $this->error($galat->getMessage());
+
+            return self::FAILURE;
+        }
 
         if ($daftar === []) {
             $this->warn('Belum ada cadangan sama sekali.');

@@ -7,10 +7,10 @@ namespace App\Domain\Pelaporan\Http\Controllers;
 use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pelaporan\Application\Services\LayananDasbor;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
+use App\Domain\Pelaporan\Application\Services\PembatasRentangMetrik;
 use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
 use App\Domain\Pelaporan\Domain\Enums\BentukKomponen;
 use App\Domain\Pelaporan\Domain\KatalogKpi;
-use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\DasborTersimpan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
@@ -29,9 +29,12 @@ final class DasborController extends Controller
         LayananMetrik $layananMetrik,
         KalenderOrganisasi $kalender,
         PenjagaFilterMetrik $penjagaFilter,
+        PembatasRentangMetrik $pembatasRentang,
     ): Response {
         $pengguna = $request->user('web');
-        $filter = $penjagaFilter->bersihkan(FilterMetrik::dariArray($request->all(), $kalender->zona()));
+        // Tanggal tak terbaca kembali ke bawaan dan rentang dipotong ke batas layar; keduanya dikabarkan lewat catatanRentang.
+        $rentang = $pembatasRentang->interaktif($request->query(), $kalender->zona());
+        $filter = $penjagaFilter->bersihkan($rentang['filter']);
 
         $tersimpan = $layananDasbor->dasborUntuk($pengguna);
         $dipilih = $this->pilihDasbor($request, $tersimpan);
@@ -49,6 +52,7 @@ final class DasborController extends Controller
             'susunan' => $susunan,
             'metrik' => $layananMetrik->hitungBanyak($kunciKpi, $filter, $pengguna),
             'filter' => $filter->keArray(),
+            'catatanRentang' => $rentang['catatan'],
             'dasborTersimpan' => $tersimpan
                 ->map(fn (DasborTersimpan $dasbor): array => [
                     'Id' => $dasbor->Id,

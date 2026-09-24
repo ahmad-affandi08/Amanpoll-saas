@@ -3,7 +3,9 @@
 - [ ] `php artisan test` lulus.
 - [ ] `npm run build` lulus.
 - [ ] `APP_DEBUG=false` di production.
-- [ ] Database backup tersedia.
+- [ ] Database backup tersedia: `php artisan cadangan:daftar --luar` menampilkan cadangan semalam di disk luar
+      (`AMANPOLL_CADANGAN_DISK_LUAR`). Tanpa disk luar, cadangan hilang bersama server.
+- [ ] `SESSION_DOMAIN=.amanpoll.id`, `SESSION_SECURE_COOKIE=true`, `MAIL_MAILER=amanpoll`.
 - [ ] Schema dibangun lewat `php artisan migrate --force`; `Amanpoll_Schema_Hosting.sql` hanya dokumentasi/jalur cadangan.
 - [ ] Folder `storage` dan `bootstrap/cache` writable.
 - [ ] `public_html` tidak berisi `.env`, `vendor`, source app, atau dump database.

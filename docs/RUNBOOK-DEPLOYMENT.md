@@ -63,7 +63,26 @@ DB_PASSWORD=…
 AMANPOLL_DOMAIN_DASHBOARD=app.amanpoll.id
 AMANPOLL_DOMAIN_PUBLIK=amanpoll.id
 AMANPOLL_DOMAIN_PARTNER=partner.amanpoll.id
+
+MAIL_MAILER=amanpoll            # penyedia email dipilih di konsol platform
+MAIL_FROM_ADDRESS=noreply@amanpoll.id
+
+AMANPOLL_CADANGAN_DISK_LUAR=cadangan_luar
+AMANPOLL_CADANGAN_LUAR_KEY=…
+AMANPOLL_CADANGAN_LUAR_SECRET=…
+AMANPOLL_CADANGAN_LUAR_BUCKET=…
+AMANPOLL_CADANGAN_LUAR_ENDPOINT=https://<ID-AKUN>.r2.cloudflarestorage.com
 ```
+
+Template lengkapnya `deploy/niagahoster/.env.production.example`.
+
+Disk luar cadangan menampung salinan cadangan di luar server; tanpa itu
+cadangan hilang bersama servernya. Cloudflare R2 cocok untuk ini (egress gratis,
+sehingga verifikasi checksum yang membaca ulang salinan tidak berbiaya): buat
+bucket privat, lalu token API R2 dengan izin *Object Read & Write* hanya untuk
+bucket itu. Region `auto` dan path-style sudah menjadi bawaan disk
+`cadangan_luar`. Simpan kredensial ini juga di luar server — pemulihan setelah
+server hilang membutuhkannya.
 
 `APP_DEBUG=false` bukan sekadar kerapian: dengan `true`, halaman galat
 menampilkan isi `.env` kepada siapa pun yang memicunya.
@@ -111,18 +130,30 @@ Satu baris di hPanel sudah cukup; sisanya diatur Laravel scheduler:
 * * * * * cd /home/USER/amanpoll && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-Scheduler menjalankan 29 jadwal, di antaranya:
+Scheduler menjalankan puluhan jadwal (daftar lengkapnya: `php artisan schedule:list`), di antaranya:
 
 | Jadwal | Jalan | Tugas |
 | --- | --- | --- |
-| `queue:work --stop-when-empty` | tiap menit | antrian, maksimal 50 detik per jalan |
-| `cadangan:jalankan` | 01:45 | cadangan basis data dan berkas |
+| `queue:work database --queue=high,default` | tiap menit | job pendek, maksimal 50 detik per jalan |
+| `queue:work database-panjang --queue=low --max-jobs=1` | tiap 3 menit | ekspor laporan, satu job (≤ 5 menit) per jalan |
+| `cadangan:jalankan` | 01:45 | cadangan basis data dan berkas, disalin ke disk luar |
 | `keluhan:proses-eskalasi-sla` | tiap jam | eskalasi SLA |
 | `pemeliharaan:jadwalkan-preventif` | harian | jadwal preventif |
 | `kalibrasi:kirim-peringatan-jatuh-tempo` | harian | peringatan kalibrasi |
 | `kontrak:kirim-peringatan-berakhir` | harian | kontrak akan berakhir |
 | `kepatuhan:kirim-peringatan-kedaluwarsa` | harian | sertifikat kedaluwarsa |
 | `outbox:proses` dan `panggilan-balik:kirim-ulang` | tiap menit | integrasi keluar dan percobaan ulang webhook |
+
+Antrean dibagi dua pekerja karena `retry_after` dimiliki koneksi, bukan job:
+ekspor yang berjalan lebih lama dari `retry_after` diambil ulang pekerja lain
+dan dikerjakan dobel. Job pendek memakai koneksi `database`
+(`DB_QUEUE_RETRY_AFTER=90`, pekerja `--timeout=45`), ekspor memakai koneksi
+`database-panjang` pada tabel yang sama (`DB_QUEUE_PANJANG_RETRY_AFTER=420`,
+pekerja `--timeout=310`, kunci 6 menit). Ekspor yang habis waktu langsung
+gagal, tidak diulang. Kedua pekerja dan `cadangan:jalankan` berjalan di latar
+supaya jadwal lain pada menit yang sama tidak menunggu. Batas waktu job hanya
+ditegakkan bila ekstensi `pcntl` ada di PHP CLI; periksa dengan
+`php -m | grep pcntl`.
 
 Tiap jadwal menyebut sendiri masa berlaku kuncinya dan tidak memakai bawaan
 `withoutOverlapping()` yang 1440 menit. Shared hosting rutin membunuh proses
@@ -154,6 +185,7 @@ diam-diam.
 php artisan about                     # versi, cache, koneksi basis data
 php artisan route:list --except-vendor | head
 php artisan cadangan:daftar           # pencadangan dapat menulis
+php artisan cadangan:daftar --luar    # disk luar cadangan terjangkau
 php artisan schedule:list             # scheduler terbaca
 curl -fsS -H 'Accept: application/json' https://<host>/up   # {"status":"up"}
 ```

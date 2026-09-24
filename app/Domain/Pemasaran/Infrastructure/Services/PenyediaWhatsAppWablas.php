@@ -8,17 +8,24 @@ use App\Domain\Pemasaran\Domain\Enums\StatusPengirimanWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\PeristiwaWebhookWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\PesanMasukWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\StatusKirimanWhatsApp;
+use App\Domain\Platform\Application\Services\PembacaKredensialPenyedia;
 use App\Domain\Platform\Domain\ValueObjects\HasilUjiKoneksi;
 use App\Domain\Platform\Domain\ValueObjects\IsianKredensial;
 use App\Domain\Platform\Domain\ValueObjects\KredensialPenyedia;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Infrastructure\Keamanan\PenjagaUrlKeluar;
+use App\Shared\Infrastructure\Keamanan\UrlKeluarDitolak;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
 
 /** Gateway Wablas: tiap akun memakai domain servernya sendiri; tidak resmi. */
 final class PenyediaWhatsAppWablas extends PenyediaWhatsAppTidakResmi
 {
+    public function __construct(PembacaKredensialPenyedia $pembaca, private readonly PenjagaUrlKeluar $penjaga)
+    {
+        parent::__construct($pembaca);
+    }
+
     public function kode(): string
     {
         return 'Wablas';
@@ -123,7 +130,7 @@ final class PenyediaWhatsAppWablas extends PenyediaWhatsAppTidakResmi
 
     private function http(KredensialPenyedia $kredensial): PendingRequest
     {
-        return Http::baseUrl($this->domain($kredensial))
+        return $this->klienTerjaga($this->domain($kredensial))
             ->withHeaders(['Authorization' => $kredensial->ambil('Token').'.'.$kredensial->ambil('SecretKey')])
             ->acceptJson()
             ->timeout(self::BATAS_WAKTU_DETIK);
@@ -143,5 +150,18 @@ final class PenyediaWhatsAppWablas extends PenyediaWhatsAppTidakResmi
         }
 
         return $domain;
+    }
+
+    /**
+     * Alamat isian admin tetap melewati penjaga jaringan: harus host publik,
+     * disematkan ke IP yang diperiksa, dan tanpa mengikuti redirect.
+     */
+    private function klienTerjaga(string $urlDasar): PendingRequest
+    {
+        try {
+            return $this->penjaga->klienDasar($urlDasar);
+        } catch (UrlKeluarDitolak $galat) {
+            throw new AturanBisnisDilanggar('Domain server Wablas ditolak penjaga jaringan: '.$galat->getMessage());
+        }
     }
 }

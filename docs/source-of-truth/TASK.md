@@ -3929,6 +3929,39 @@ Ditolak:
 
 ---
 
+# FASE 45 — Kesiapan produksi (hasil audit eksternal)
+
+Sepuluh temuan audit kesiapan produksi, diverifikasi satu per satu di kode lalu dikerjakan seluruhnya (24 September 2026). Tiga agen paralel (keamanan; antrean, cadangan, dan env; laporan dan retensi data) dan koordinator (#8, #9, dokumen, gate). Agen laporan dan retensi dihentikan sebelum melapor atas permintaan pemilik produk; koordinator menuntaskan dan memeriksa ulang pekerjaannya.
+
+- [x] #1 Penjaga SSRF untuk semua panggilan keluar ke URL isian pengguna.
+- [x] #2 Dua worker antrean dan `retry_after` yang selalu di atas timeout pekerjaan.
+- [x] #3 Cadangan ke penyimpanan luar kompatibel S3 dengan checksum, retensi lokal pendek.
+- [x] #4 Memoisasi dan cache singkat KPI dashboard.
+- [x] #5 Batas rentang laporan interaktif 365 hari; rentang panjang lewat ekspor asinkron.
+- [x] #6 Pemangkasan terjadwal tabel operasional dan pemantau ukuran basis data.
+- [x] #7 Indeks `CatatanAkses.DibuatPada` dan penghapusan bertahap.
+- [x] #8 Batas laju pencarian global.
+- [x] #9 `FOR UPDATE SKIP LOCKED` pada pengambilan outbox bila server mendukung.
+- [x] #10 Template `.env` produksi dilengkapi.
+
+Yang dipilih:
+- SSRF: satu pintu `PenjagaUrlKeluar` untuk webhook, integrasi eksternal, WAHA/Wablas, dan langkah otomasi "Panggil webhook" (yang ternyata juga tanpa penjaga). Diperiksa saat simpan dan lagi tepat sebelum kirim; ditolak bila salah satu alamat hasil resolusi internal (daftar CIDR eksplisit plus `filter_var`, termasuk IPv4 yang tertanam di IPv6 dan bentuk angka tersamar). Alamat yang lolos disematkan lewat `CURLOPT_RESOLVE` sehingga DNS tidak bisa berganti di tengah jalan, dan redirect tidak diikuti sama sekali. Isi balasan webhook yang disimpan dibatasi 500 karakter teks/JSON, karena dulu 2000 karakter apa pun tampil ke tenant. Resolusi DNS lewat antarmuka `PenyelesaiDns` yang dipalsukan di setiap test; test tidak pernah menyentuh jaringan.
+- Antrean: `retry_after` milik koneksi, jadi pekerjaan panjang mendapat koneksi sendiri (`database-panjang`, 420 detik) alih-alih menaikkan `retry_after` untuk semua (pekerjaan pendek yang macet akan menunggu tujuh menit). Worker panjang tiap tiga menit karena aturan jadwal yang sudah ada membatasi kunci maksimal dua kali selang jadwalnya. Test memeriksa setiap kelas `ShouldQueue` terhadap worker dan timeout-nya, bukan satu kelas saja.
+- Cadangan: tar tanpa gzip untuk berkas (media sudah terkompresi), penuh mingguan dan selisih harian terhadap penuh terakhir, sehingga pemulihan selalu dua arsip saja tanpa rantai yang bisa putus. Unggahan diverifikasi ukuran dan SHA-256 yang dibaca balik; salinan lokal baru dihapus setelah salinan luarnya terbukti utuh. Disk kerja wajib lokal: `AMANPOLL_CADANGAN_DISK=s3` kini ditolak jelas, bukan diam-diam tetap lokal.
+- Dashboard: dataset waktu henti dibaca sekali per permintaan untuk semua KPI keandalan, rata-rata waktu respons keluhan dihitung di SQL, dan hasil KPI dicache 45 detik dengan kunci organisasi, lingkup akses pengguna, dan seluruh filter.
+- Rentang laporan: tanggal tak terbaca di dashboard kembali ke bawaan, bukan galat 500; rentang di atas 365 hari dipotong dan dikabarkan di layar. Ekspor boleh sampai sekitar lima tahun dengan jumlah KPI lebih sedikit, dan deret harian rentang panjang dikelompokkan per minggu atau bulan tanpa mengubah totalnya.
+- Retensi: hanya baris berstatus akhir yang lewat masa simpan, per potongan 5.000 dengan jeda dan batas waktu total. CatatanAudit bawaannya tidak dihapus; bila kebijakan diisi, diarsipkan ke berkas gzip dulu dan potongan yang arsipnya gagal ditulis tidak dihapus. Pemantau ukuran membaca `information_schema` tanpa hak khusus.
+- Outbox: `SKIP LOCKED` dipakai hanya bila versi server mendukung (MySQL 8.0.1+, MariaDB 10.6+), dengan jalan mundur ke `FOR UPDATE` biasa. Dibuktikan dengan dua koneksi sungguhan.
+
+Jebakan yang ditemukan:
+- Test kueri Dashboard Growth dulu lulus karena dua selisih kebetulan saling menutup (kueri cache pertama dan kueri pemuat kampanye yang hanya jalan bila ada barisnya).
+- Mengisi variabel env dengan nilai kosong di `.env.example` mengalahkan bawaan `env()`; variabel yang bawaannya bergantung lingkungan dibiarkan sebagai komentar.
+- Hasil PHPUnit `--format agent` memisahkan `failures` dan `errors`; membaca salah satunya saja bisa membuat sabotase tampak lolos.
+
+Sisa risiko: belum ada uji bolak-balik ke R2/S3 sungguhan (malam pertama produksi wajib dicek dengan `cadangan:daftar --luar`); tanpa ekstensi `pcntl` di PHP CLI timeout pekerjaan hanya dijaga kunci jadwal dan `retry_after`; WAHA self-hosted wajib https dan portnya didaftarkan di `AMANPOLL_HTTP_KELUAR_PORT_TAMBAHAN`.
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text

@@ -181,6 +181,40 @@ final class PenyediaWhatsAppTidakResmiTest extends KasusWhatsApp
         Http::assertNothingSent();
     }
 
+    /** URL isian admin platform tetap dijaga: server WAHA harus host publik. */
+    public function test_waha_menolak_url_dasar_ke_jaringan_internal_tanpa_permintaan(): void
+    {
+        $this->aturPenyedia('Waha', ['UrlDasar' => 'http://127.0.0.1', 'KunciApi' => 'kunci-waha']);
+        Http::preventStrayRequests();
+        Http::fake();
+
+        try {
+            app(PenyediaWhatsAppWaha::class)->kirim($this->pesan());
+            $this->fail('Seharusnya ditolak.');
+        } catch (AturanBisnisDilanggar $galat) {
+            $this->assertStringContainsString('ditolak penjaga jaringan', $galat->getMessage());
+        }
+
+        Http::assertNothingSent();
+    }
+
+    public function test_wablas_menolak_domain_yang_meresolusi_ke_ip_privat(): void
+    {
+        $this->aturPenyedia('Wablas', ['Domain' => 'https://wablas.contoh.co.id', 'Token' => 'tok', 'SecretKey' => 'sek']);
+        $this->dnsPalsu()->petakan('wablas.contoh.co.id', ['10.1.1.1']);
+        Http::preventStrayRequests();
+        Http::fake();
+
+        try {
+            app(PenyediaWhatsAppWablas::class)->kirim($this->pesan());
+            $this->fail('Seharusnya ditolak.');
+        } catch (AturanBisnisDilanggar $galat) {
+            $this->assertStringContainsString('ditolak penjaga jaringan', $galat->getMessage());
+        }
+
+        Http::assertNothingSent();
+    }
+
     private function pesan(): PesanWhatsApp
     {
         return new PesanWhatsApp('0812-3456-7890', 'sapaan', 'id', 'Halo Budi, terima kasih.', naskahTemplate: 'Halo {{Nama}}, terima kasih.');

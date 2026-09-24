@@ -13,10 +13,33 @@ use Illuminate\Support\Facades\Schedule;
 | jarak ke jalan berikutnya (FASE 25.02, 25.03).
 */
 
-// | Shared hosting tidak menjalankan daemon queue secara permanen.
-Schedule::command('queue:work database --queue=high,default,low --stop-when-empty --sleep=1 --tries=3 --timeout=45 --max-time=50')
+/*
+| Shared hosting tidak menjalankan daemon queue secara permanen; antrean
+| dikerjakan dua pekerja cron yang berumur pendek (FASE 45).
+|
+| Pekerja cepat mengambil job pendek. Umur terpanjangnya --max-time ditambah
+| satu --timeout (50 + 45 detik), jadi kuncinya dua menit: kunci satu menit
+| kedaluwarsa selagi ia masih bekerja dan melahirkan pekerja kedua.
+|
+| Pekerja panjang khusus queue low (ekspor laporan): satu job per proses,
+| --timeout sedikit di atas timeout job terpanjang di sana (300 detik), dan
+| kunci enam menit yang melampaui --timeout itu. Ia memakai koneksi
+| `database-panjang` yang `retry_after`-nya 420 detik, supaya ekspor yang
+| masih berjalan tidak diambil ulang dan dikerjakan dobel.
+|
+| Keduanya berjalan di latar supaya jadwal lain pada menit yang sama tidak
+| menunggu antrean selesai. PekerjaAntreanCronTest menjaga angka-angka ini
+| terhadap job yang sungguh ada.
+*/
+Schedule::command('queue:work database --queue=high,default --stop-when-empty --sleep=1 --tries=3 --timeout=45 --max-time=50')
     ->everyMinute()
-    ->withoutOverlapping(1);
+    ->withoutOverlapping(2)
+    ->runInBackground();
+
+Schedule::command('queue:work database-panjang --queue=low --max-jobs=1 --stop-when-empty --sleep=1 --tries=1 --timeout=310')
+    ->everyThreeMinutes()
+    ->withoutOverlapping(6)
+    ->runInBackground();
 
 Schedule::command('queue:prune-failed --hours=168')
     ->dailyAt('02:15')
@@ -24,10 +47,12 @@ Schedule::command('queue:prune-failed --hours=168')
     ->withoutOverlapping(120);
 
 // Cadangan harian berjalan sebelum pembersihan apa pun, supaya yang tersimpan adalah keadaan utuh.
+// Di latar: dump dan unggahan ke disk luar dapat memakan belasan menit.
 Schedule::command('cadangan:jalankan')
     ->dailyAt('01:45')
     ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
-    ->withoutOverlapping(120);
+    ->withoutOverlapping(120)
+    ->runInBackground();
 
 Schedule::command('auth:clear-resets')
     ->dailyAt('02:30')
@@ -160,3 +185,16 @@ Schedule::command('pemasaran:proses-reward-referral')
 Schedule::command('pemasaran:reset-demo')
     ->everyFifteenMinutes()
     ->withoutOverlapping(15);
+
+// FASE 45: retensi tabel operasional dan pemantau ukuran basis data (batas hosting 3 GB).
+// Pemangkasan per potongan dengan batas waktu total (amanpoll.retensi.batas_detik).
+Schedule::command('retensi:pangkas')
+    ->dailyAt('03:15')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping(120);
+
+// Dicatat setelah seluruh pembersihan malam selesai, supaya angkanya keadaan sesudah pemangkasan.
+Schedule::command('basisdata:pantau-ukuran')
+    ->dailyAt('05:10')
+    ->timezone(config('amanpoll.zona_waktu_default', 'Asia/Jakarta'))
+    ->withoutOverlapping(60);

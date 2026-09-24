@@ -21,6 +21,12 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait MenyaringLingkup
 {
+    /** Rentang terpanjang (hari) yang deretnya masih per hari; kira-kira satu kuartal. */
+    private const BATAS_HARI_DERET_HARIAN = 92;
+
+    /** Rentang terpanjang (hari) yang deretnya per minggu (~105 titik); di atasnya per bulan. */
+    private const BATAS_HARI_DERET_MINGGUAN = 732;
+
     /**
      * Tabel yang punya kolom UnitOrganisasiId, LokasiId, dan UnitPengelolaId sendiri
      * (Aset, PerintahKerja).
@@ -126,19 +132,54 @@ trait MenyaringLingkup
      * hasil agregasi. Tanpa ini, grafik tren akan melompati hari tanpa data dan
      * membuat garis terlihat lebih mulus daripada kenyataannya.
      *
+     * Rentang panjang (ekspor bertahun-tahun) tidak dijadikan ribuan titik:
+     * di atas BATAS_HARI_DERET_HARIAN hari nilainya dijumlah per minggu (Senin
+     * sampai Minggu, dipotong batas rentang), dan di atas
+     * BATAS_HARI_DERET_MINGGUAN per bulan. Label minggu adalah tanggal awalnya
+     * dengan `SampaiTanggal` sebagai akhirnya; label bulan `Y-m`, sama dengan
+     * deretBulanan(). Hanya dipakai untuk hitungan (jumlah per hari), jadi
+     * menjumlahkan per kelompok tidak mengubah totalnya.
+     *
      * @param  array<string, float|int>  $nilaiPerTanggal
-     * @return list<array{Label: string, Nilai: float}>
+     * @return list<array{Label: string, Nilai: float, SampaiTanggal?: string}>
      */
     private function deretHarian(FilterMetrik $filter, array $nilaiPerTanggal): array
     {
+        $jumlahHari = $filter->jumlahHari();
+
+        if ($jumlahHari > self::BATAS_HARI_DERET_MINGGUAN) {
+            $perBulan = [];
+            foreach ($nilaiPerTanggal as $tanggal => $nilai) {
+                $bulan = substr((string) $tanggal, 0, 7);
+                $perBulan[$bulan] = ($perBulan[$bulan] ?? 0) + $nilai;
+            }
+
+            return $this->deretBulanan($filter, $perBulan);
+        }
+
         $deret = [];
         $tanggal = CarbonImmutable::parse($filter->tanggalDari());
         $akhir = CarbonImmutable::parse($filter->tanggalSampai());
+        $mingguan = $jumlahHari > self::BATAS_HARI_DERET_HARIAN;
 
         while ($tanggal->lessThanOrEqualTo($akhir)) {
-            $kunci = $tanggal->toDateString();
-            $deret[] = ['Label' => $kunci, 'Nilai' => (float) ($nilaiPerTanggal[$kunci] ?? 0)];
-            $tanggal = $tanggal->addDay();
+            $ujung = $mingguan ? $tanggal->endOfWeek(CarbonImmutable::SUNDAY)->startOfDay() : $tanggal;
+            if ($ujung->greaterThan($akhir)) {
+                $ujung = $akhir;
+            }
+
+            $nilai = 0.0;
+            for ($hari = $tanggal; $hari->lessThanOrEqualTo($ujung); $hari = $hari->addDay()) {
+                $nilai += (float) ($nilaiPerTanggal[$hari->toDateString()] ?? 0);
+            }
+
+            $titik = ['Label' => $tanggal->toDateString(), 'Nilai' => $nilai];
+            if ($mingguan) {
+                $titik['SampaiTanggal'] = $ujung->toDateString();
+            }
+
+            $deret[] = $titik;
+            $tanggal = $ujung->addDay();
         }
 
         return $deret;
