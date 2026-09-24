@@ -41,6 +41,16 @@ enum StatusPerintahKerja: string
         return in_array($tujuan, $this->tujuanYangDiizinkan(), true);
     }
 
+    /**
+     * Tiket yang sudah ditutup atau dibatalkan; setara StatusKeluhan::final().
+     *
+     * Selesai belum final: masih menunggu ditutup dan dapat dibuka kembali.
+     */
+    public function final(): bool
+    {
+        return in_array($this, [self::Ditutup, self::Dibatalkan], true);
+    }
+
     public function dapatMencatatOperasional(): bool
     {
         return in_array($this, [self::Diterima, self::Dikerjakan, self::MenungguSukuCadang, self::MenungguPenyedia, self::Dijeda], true);

@@ -174,8 +174,17 @@ function TabelServer<TData, TValue>({
 
   // Faset server boleh menyaring kolom yang tidak ditampilkan; tanpa kolom bayangan ini
   // DataTableFacetedFilter memanggil setFilterValue pada undefined dan penyaringnya diam saja.
+  // Kolom ber-accessorKey tanpa `id` tetap dihitung: TanStack memakai accessorKey sebagai id-nya,
+  // dan tanpa ini kolom itu ikut disembunyikan sebagai bayangan.
   const idBayangan = (facetedFilters ?? [])
-    .filter((filter) => !columns.some((kolom) => kolom.id === filter.columnId))
+    .filter(
+      (filter) =>
+        !columns.some(
+          (kolom) =>
+            (kolom.id ?? ('accessorKey' in kolom ? String(kolom.accessorKey) : undefined)) ===
+            filter.columnId,
+        ),
+    )
     .map((filter) => filter.columnId);
 
   const kunciBayangan = idBayangan.join(',');

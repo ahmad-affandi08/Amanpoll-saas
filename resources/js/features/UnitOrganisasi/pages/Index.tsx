@@ -26,6 +26,7 @@ import type { Paginasi } from '@/types/global';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { Switch } from '@/components/ui/switch';
 import { opsiDari } from '@/lib/pilihan';
 
 /** Hanya Id dan Nama: pemilih induk memuat seluruh unit, bukan barisnya. */
@@ -62,8 +63,16 @@ function DialogFormUnit({
           Jenis: unit.Jenis,
           Status: unit.Status,
           IndukId: unit.IndukId ?? TANPA_INDUK,
+          MengelolaAset: unit.MengelolaAset,
         }
-      : { Kode: '', Nama: '', Jenis: 'Unit', Status: 'Aktif' as const, IndukId: TANPA_INDUK },
+      : {
+          Kode: '',
+          Nama: '',
+          Jenis: 'Unit',
+          Status: 'Aktif' as const,
+          IndukId: TANPA_INDUK,
+          MengelolaAset: false,
+        },
   );
 
   const submit = (e: FormEvent) => {
@@ -146,6 +155,22 @@ function DialogFormUnit({
               />
               {form.errors.IndukId && <p className="text-sm text-destructive">{form.errors.IndukId}</p>}
             </div>
+            <div className="space-y-1">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <Switch
+                  checked={form.data.MengelolaAset}
+                  onCheckedChange={(v) => form.setData('MengelolaAset', v)}
+                />
+                Mengelola aset (unit pengelola pemeliharaan)
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Aktifkan untuk bagian yang memelihara aset, mis. IPSRS atau IT. Unit bertanda ini muncul
+                sebagai pilihan unit pengelola di aset, gudang, kategori keluhan, dan tiket.
+              </p>
+              {form.errors.MengelolaAset && (
+                <p className="text-sm text-destructive">{form.errors.MengelolaAset}</p>
+              )}
+            </div>
             <DialogFooter>
               <Button type="submit" disabled={form.processing}>
                 Simpan
@@ -214,6 +239,18 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
         meta: { label: 'Status' },
       },
       {
+        accessorKey: 'MengelolaAset',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Unit Pengelola" />,
+        cell: ({ row }) =>
+          row.original.MengelolaAset ? (
+            <Badge variant="info">Mengelola aset</Badge>
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          ),
+        enableSorting: false,
+        meta: { label: 'Unit Pengelola' },
+      },
+      {
         id: 'aksi',
         header: 'Aksi',
         cell: ({ row }) => (
@@ -259,6 +296,14 @@ export default function UnitOrganisasiIndex({ unitOrganisasi, pilihanInduk, filt
             options: [
               { label: 'Aktif', value: 'Aktif' },
               { label: 'Nonaktif', value: 'Nonaktif' },
+            ],
+          },
+          {
+            columnId: 'MengelolaAset',
+            title: 'Unit Pengelola',
+            options: [
+              { label: 'Mengelola aset', value: '1' },
+              { label: 'Bukan unit pengelola', value: '0' },
             ],
           },
         ]}

@@ -6,6 +6,7 @@ namespace App\Domain\Pemeliharaan\Infrastructure\Persistence\Models;
 
 use App\Core\Izin\BerlingkupUnit;
 use App\Core\Izin\DibatasiLingkup;
+use App\Core\Izin\ScopeLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
@@ -56,6 +57,7 @@ final class PerintahKerja extends ModelDasar implements BerlingkupUnit
         'Status',
         'LokasiId',
         'UnitOrganisasiId',
+        'UnitPengelolaId',
         'DijadwalkanMulaiPada',
         'DijadwalkanSelesaiPada',
         'DiterimaPada',
@@ -91,6 +93,19 @@ final class PerintahKerja extends ModelDasar implements BerlingkupUnit
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * Peta bawaan DibatasiLingkup ditambah unit pengelola.
+     *
+     * `UnitPengelolaId` hanya memperluas: pengguna berlingkup unit IT ikut melihat
+     * baris yang dipelihara IT di ruangan mana pun (PRD 8.21).
+     *
+     * @return array<string, 'unit'|'lokasi'>
+     */
+    public function kolomLingkup(): array
+    {
+        return ['UnitOrganisasiId' => 'unit', 'LokasiId' => 'lokasi', 'UnitPengelolaId' => 'unit'];
     }
 
     /** @return BelongsTo<Organisasi, $this> */
@@ -194,5 +209,20 @@ final class PerintahKerja extends ModelDasar implements BerlingkupUnit
     public function pelaksanaanDaftarPeriksa(): HasMany
     {
         return $this->hasMany(PelaksanaanDaftarPeriksa::class, 'PerintahKerjaId', 'Id');
+    }
+
+    /**
+     * Bagian yang memelihara baris ini (PRD 8.21); UnitOrganisasi bertanda MengelolaAset.
+     *
+     * Lepas dari ScopeLingkup (tenancy tetap berlaku): pengguna berlingkup ruangan
+     * yang melihat baris ini harus tetap membaca nama unit pengelolanya, walau
+     * unit itu sendiri di luar lingkupnya.
+     *
+     * @return BelongsTo<UnitOrganisasi, $this>
+     */
+    public function unitPengelola(): BelongsTo
+    {
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitPengelolaId', 'Id')
+            ->withoutGlobalScope(ScopeLingkup::class);
     }
 }

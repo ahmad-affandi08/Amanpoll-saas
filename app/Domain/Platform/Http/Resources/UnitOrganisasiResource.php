@@ -24,6 +24,7 @@ final class UnitOrganisasiResource extends JsonResource
             'Email' => $unit->Email,
             'Telepon' => $unit->Telepon,
             'Status' => $unit->Status,
+            'MengelolaAset' => $unit->MengelolaAset,
             'Urutan' => $unit->Urutan,
             'DibuatPada' => $unit->DibuatPada->toIso8601String(),
         ];

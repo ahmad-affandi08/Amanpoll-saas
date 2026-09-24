@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Platform\Application\Services\PemakaianUnitPengelola;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use Closure;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -37,6 +40,35 @@ final class SimpanUnitOrganisasiRequest extends FormRequest
             'Telepon' => ['nullable', 'string', 'max:50'],
             'Status' => ['required', 'string', Rule::in(['Aktif', 'Nonaktif'])],
             'Urutan' => ['nullable', 'integer'],
+            // Unit pengelola pemeliharaan (PRD 8.21). `sometimes`: pemanggil yang tidak
+            // mengirimnya tidak diam-diam mencabut tanda yang sudah ada.
+            'MengelolaAset' => ['sometimes', 'boolean'],
+        ];
+    }
+
+    /**
+     * Penolakan mencabut tanda Mengelola Aset tampil di isiannya, bukan halaman galat.
+     *
+     * UbahUnitOrganisasi tetap memeriksa ulang sebagai penjaga terakhir.
+     *
+     * @return list<Closure(Validator): void>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $unit = $this->route('unit');
+
+                if (! $unit instanceof UnitOrganisasi || ! $unit->MengelolaAset || ! $this->has('MengelolaAset') || $this->boolean('MengelolaAset')) {
+                    return;
+                }
+
+                $alasan = app(PemakaianUnitPengelola::class)->alasanTolakCabut($unit->Id);
+
+                if ($alasan !== null) {
+                    $validator->errors()->add('MengelolaAset', $alasan);
+                }
+            },
         ];
     }
 }

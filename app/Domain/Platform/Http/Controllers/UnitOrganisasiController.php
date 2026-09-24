@@ -33,7 +33,7 @@ final class UnitOrganisasiController extends Controller
         return DaftarTersaring::untuk($request, UnitOrganisasi::query())
             ->cari(['Kode', 'Nama', 'Email'])
             ->urut(['Urutan', 'Nama', 'Kode', 'Jenis', 'Status'], bawaan: 'Urutan')
-            ->faset(['Jenis', 'Status']);
+            ->faset(['Jenis', 'Status', 'MengelolaAset']);
     }
 
     public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
@@ -50,6 +50,7 @@ final class UnitOrganisasiController extends Controller
                 KolomEkspor::atribut('Telepon', 'Telepon'),
                 KolomEkspor::atribut('Urutan', 'Urutan'),
                 KolomEkspor::atribut('Status', 'Status'),
+                KolomEkspor::dari('Mengelola Aset', fn (UnitOrganisasi $unit): string => $unit->MengelolaAset ? 'Ya' : 'Tidak'),
             ],
             'daftar-unit-organisasi',
             EksporDaftar::formatDari($request),

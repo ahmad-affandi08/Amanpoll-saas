@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models;
 
+use App\Core\Izin\ScopeLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
+use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,6 +29,7 @@ final class RencanaPemeliharaan extends ModelDasar
         'Nama',
         'Jenis',
         'TemplatDaftarPeriksaId',
+        'UnitPengelolaId',
         'Prioritas',
         'StrategiJadwal',
         'IntervalNilai',
@@ -73,5 +76,20 @@ final class RencanaPemeliharaan extends ModelDasar
     public function aset(): HasMany
     {
         return $this->hasMany(RencanaPemeliharaanAset::class, 'RencanaPemeliharaanId', 'Id');
+    }
+
+    /**
+     * Bagian yang memelihara baris ini (PRD 8.21); UnitOrganisasi bertanda MengelolaAset.
+     *
+     * Lepas dari ScopeLingkup (tenancy tetap berlaku): pengguna berlingkup ruangan
+     * yang melihat baris ini harus tetap membaca nama unit pengelolanya, walau
+     * unit itu sendiri di luar lingkupnya.
+     *
+     * @return BelongsTo<UnitOrganisasi, $this>
+     */
+    public function unitPengelola(): BelongsTo
+    {
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitPengelolaId', 'Id')
+            ->withoutGlobalScope(ScopeLingkup::class);
     }
 }

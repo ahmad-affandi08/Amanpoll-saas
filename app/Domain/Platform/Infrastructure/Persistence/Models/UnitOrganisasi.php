@@ -16,6 +16,10 @@ final class UnitOrganisasi extends ModelDasar implements BerlingkupUnit
 {
     use DibatasiLingkup, MilikOrganisasi, PunyaKodeOtomatis, SoftDeletes;
 
+    protected $attributes = [
+        'MengelolaAset' => false,
+    ];
+
     protected $table = 'UnitOrganisasi';
 
     public const CREATED_AT = 'DibuatPada';
@@ -33,6 +37,7 @@ final class UnitOrganisasi extends ModelDasar implements BerlingkupUnit
         'Email',
         'Telepon',
         'Status',
+        'MengelolaAset',
         'Urutan',
     ];
 
@@ -40,6 +45,7 @@ final class UnitOrganisasi extends ModelDasar implements BerlingkupUnit
     {
         return [
             'Urutan' => 'integer',
+            'MengelolaAset' => 'boolean',
             'DibuatPada' => 'immutable_datetime',
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',

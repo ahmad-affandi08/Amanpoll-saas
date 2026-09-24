@@ -6,6 +6,7 @@ namespace App\Domain\Aset\Infrastructure\Persistence\Models;
 
 use App\Core\Izin\BerlingkupUnit;
 use App\Core\Izin\DibatasiLingkup;
+use App\Core\Izin\ScopeLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Core\Penomoran\PunyaKodeOtomatis;
 use App\Domain\Aspak\Infrastructure\Persistence\Models\AlkesAspak;
@@ -41,6 +42,7 @@ final class Aset extends ModelDasar implements BerlingkupUnit
     protected $fillable = [
         'OrganisasiId',
         'UnitOrganisasiId',
+        'UnitPengelolaId',
         'LokasiId',
         'KategoriAsetId',
         'ModelAsetId',
@@ -85,6 +87,19 @@ final class Aset extends ModelDasar implements BerlingkupUnit
             'DiperbaruiPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * Peta bawaan DibatasiLingkup ditambah unit pengelola.
+     *
+     * `UnitPengelolaId` hanya memperluas: pengguna berlingkup unit IT ikut melihat
+     * baris yang dipelihara IT di ruangan mana pun (PRD 8.21).
+     *
+     * @return array<string, 'unit'|'lokasi'>
+     */
+    public function kolomLingkup(): array
+    {
+        return ['UnitOrganisasiId' => 'unit', 'LokasiId' => 'lokasi', 'UnitPengelolaId' => 'unit'];
     }
 
     public function awalanKode(): string
@@ -269,5 +284,20 @@ final class Aset extends ModelDasar implements BerlingkupUnit
     public function waktuHenti(): HasMany
     {
         return $this->hasMany(WaktuHentiAset::class, 'AsetId', 'Id')->latest('MulaiPada');
+    }
+
+    /**
+     * Bagian yang memelihara baris ini (PRD 8.21); UnitOrganisasi bertanda MengelolaAset.
+     *
+     * Lepas dari ScopeLingkup (tenancy tetap berlaku): pengguna berlingkup ruangan
+     * yang melihat baris ini harus tetap membaca nama unit pengelolanya, walau
+     * unit itu sendiri di luar lingkupnya.
+     *
+     * @return BelongsTo<UnitOrganisasi, $this>
+     */
+    public function unitPengelola(): BelongsTo
+    {
+        return $this->belongsTo(UnitOrganisasi::class, 'UnitPengelolaId', 'Id')
+            ->withoutGlobalScope(ScopeLingkup::class);
     }
 }
