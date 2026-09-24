@@ -34,6 +34,13 @@ final class DefinisiKonfigurasi
                 'Label' => 'Penomoran perintah kerja otomatis',
                 'Rahasia' => false,
             ],
+            'Pemeliharaan.WajibTandaTanganPenerima' => [
+                'Namespace' => 'Pemeliharaan',
+                'Tipe' => 'boolean',
+                'Default' => false,
+                'Label' => 'Wajibkan tanda tangan penerima saat teknisi menyelesaikan tiket',
+                'Rahasia' => false,
+            ],
             'Persetujuan.AmbangNilai' => [
                 'Namespace' => 'Persetujuan',
                 'Tipe' => 'integer',

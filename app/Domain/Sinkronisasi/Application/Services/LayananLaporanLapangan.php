@@ -9,11 +9,11 @@ use App\Core\Izin\PemeriksaIzin;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Application\Actions\BuatKeluhan;
+use App\Domain\Pemeliharaan\Domain\Enums\UrgensiPelapor;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
-use App\Domain\Sinkronisasi\Domain\Enums\UrgensiLaporanLapangan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Http\JsonResponse;
@@ -26,9 +26,10 @@ use RuntimeException;
  *
  * Penomoran, SLA, riwayat status, audit, dan notifikasi tetap milik `BuatKeluhan`.
  * Yang ditambahkan di sini hanya hal khas layar lapangan:
- * - urgensi berbahasa awam dicatat di deskripsi; menjadi `Prioritas` hanya bila
- *   pelapornya memegang `Keluhan.Kelola`, aturan yang sama dengan dasbor
- *   (`KeluhanController::store`);
+ * - urgensi berbahasa awam disimpan terstruktur di `Keluhan.UsulanUrgensi` sebagai
+ *   usulan (PRD 8.20). Ia menjadi `Prioritas` hanya bila pelapornya memegang
+ *   `Keluhan.Kelola`, aturan yang sama dengan dasbor (`KeluhanController::store`);
+ *   pelapor biasa tidak pernah menentukan prioritas lewat jalur ini;
  * - lokasi dan aset wajib berada di lingkup pelapor;
  * - `KunciLaporan` dari perangkat membuat kiriman yang sama tidak pernah menjadi
  *   dua keluhan, baik lewat jalur online yang diulang maupun lewat antrean offline
@@ -60,7 +61,7 @@ final class LayananLaporanLapangan
 
         return [
             ...$aturanKeluhan,
-            'Urgensi' => ['nullable', 'string', 'in:'.implode(',', array_column(UrgensiLaporanLapangan::cases(), 'value'))],
+            'Urgensi' => ['nullable', 'string', 'in:'.implode(',', array_column(UrgensiPelapor::cases(), 'value'))],
             'KunciLaporan' => ['required', 'string', 'max:64'],
         ];
     }
@@ -136,8 +137,7 @@ final class LayananLaporanLapangan
      */
     private function susunData(array $data, Pengguna $pelapor): array
     {
-        $urgensi = filled($data['Urgensi'] ?? null) ? UrgensiLaporanLapangan::from((string) $data['Urgensi']) : null;
-        $deskripsi = (string) $data['Deskripsi'];
+        $urgensi = filled($data['Urgensi'] ?? null) ? UrgensiPelapor::from((string) $data['Urgensi']) : null;
         $lokasiId = $data['LokasiId'];
 
         if (filled($data['AsetId'] ?? null)) {
@@ -145,16 +145,13 @@ final class LayananLaporanLapangan
             $lokasiId = is_string($lokasiAset) ? $lokasiAset : $lokasiId;
         }
 
-        if ($urgensi !== null) {
-            $deskripsi .= "\n\nSeberapa mendesak (menurut pelapor): {$urgensi->label()}.";
-        }
-
         return [
             'KategoriKeluhanId' => $data['KategoriKeluhanId'],
             'AsetId' => filled($data['AsetId'] ?? null) ? $data['AsetId'] : null,
             'LokasiId' => $lokasiId,
             'Judul' => $data['Judul'],
-            'Deskripsi' => $deskripsi,
+            'Deskripsi' => $data['Deskripsi'],
+            'UsulanUrgensi' => $urgensi?->value,
             'Prioritas' => $urgensi !== null && $this->izin->boleh($pelapor->Id, 'Keluhan.Kelola')
                 ? $urgensi->prioritas()->value
                 : null,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Lapangan;
 
+use App\Domain\Pemeliharaan\Domain\Enums\UrgensiPelapor;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -44,7 +45,10 @@ final class PelaporOfflineTest extends KasusPelapor
         $keluhan = $this->dalamOrganisasi(fn () => Keluhan::query()->sole());
         $this->assertSame($this->pelapor->Id, $keluhan->PelaporId);
         $this->assertSame('Lapangan', $keluhan->Sumber);
-        $this->assertStringEndsWith('Seberapa mendesak (menurut pelapor): Kerja terhenti.', $keluhan->Deskripsi);
+        // Urgensi menjadi usulan terstruktur, bukan teks deskripsi atau prioritas.
+        $this->assertSame(UrgensiPelapor::KerjaTerhenti, $keluhan->UsulanUrgensi);
+        $this->assertSame('Mati total sejak pagi.', $keluhan->Deskripsi);
+        $this->assertSame('Normal', $keluhan->Prioritas);
     }
 
     public function test_kiriman_online_yang_ikut_diantrekan_tidak_menjadi_keluhan_kedua(): void

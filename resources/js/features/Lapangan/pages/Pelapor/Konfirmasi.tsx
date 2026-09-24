@@ -14,7 +14,7 @@ import { AvatarTeknisi } from '@/features/Lapangan/components/pelapor/KartuTekni
 import { PitaPelapor } from '@/features/Lapangan/components/pelapor/PitaPelapor';
 import { namaDepan } from '@/features/Lapangan/components/pelapor/status';
 import { waktuLengkap } from '@/features/Lapangan/components/pelapor/waktu';
-import type { PropsKonfirmasiPelapor } from '@/features/Lapangan/types';
+import type { FotoSesudahLaporan, PropsKonfirmasiPelapor } from '@/features/Lapangan/types';
 
 const LABEL_NILAI = ['', 'Buruk', 'Kurang', 'Cukup', 'Bagus', 'Sangat bagus'];
 
@@ -92,6 +92,7 @@ function PilihanBesar({
 function IsiKonfirmasi({
   laporan,
   foto,
+  fotoSesudah,
   jawaban,
   onJawaban,
   galat,
@@ -146,6 +147,7 @@ function IsiKonfirmasi({
             ))}
           </div>
         )}
+        <GaleriSesudah foto={fotoSesudah} />
       </Kartu>
 
       <h2 className="-mb-0.5 text-[17px] font-bold tracking-[-0.01em]">Apakah sudah beres?</h2>
@@ -212,6 +214,46 @@ function IsiKonfirmasi({
         />
       </IsianTiket>
     </>
+  );
+}
+
+/**
+ * Foto Sesudah dari teknisi (PRD 8.20): hanya foto berkategori Sesudah pada perintah kerja
+ * dari laporan ini. Ketuk untuk membuka ukuran penuh.
+ */
+function GaleriSesudah({ foto }: { foto: FotoSesudahLaporan[] }) {
+  return (
+    <section aria-label="Foto sesudah perbaikan" className="mt-3.5">
+      <h3 className="mb-2 text-[13px] font-bold text-lapangan-teks-2">Foto sesudah perbaikan</h3>
+      {foto.length > 0 ? (
+        <ul className="grid grid-cols-3 gap-2">
+          {foto.map((satu, i) => (
+            <li key={satu.BerkasId}>
+              <a
+                href={ruteLapangan.pelapor.fotoBerkas(satu.BerkasId)}
+                target="_blank"
+                rel="noreferrer"
+                className="block aspect-square overflow-hidden rounded-[14px] bg-lapangan-garis-2 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-lapangan-biru-500/50"
+              >
+                <img
+                  src={ruteLapangan.pelapor.fotoBerkas(satu.BerkasId)}
+                  alt={satu.Nama ?? `Foto sesudah ${i + 1}`}
+                  loading="lazy"
+                  className="size-full object-cover"
+                />
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="flex items-center gap-2.5 rounded-[14px] bg-lapangan-latar px-3 py-2.5">
+          <Ikon3D nama="camera" ukuran={28} />
+          <span className="text-[13px] leading-[1.4] font-medium text-lapangan-teks-3">
+            Teknisi belum melampirkan foto sesudah perbaikan.
+          </span>
+        </div>
+      )}
+    </section>
   );
 }
 

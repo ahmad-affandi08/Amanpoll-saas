@@ -9,6 +9,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
+use App\Domain\Pemeliharaan\Domain\Enums\UrgensiPelapor;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Platform\Domain\Enums\ModeLapangan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -129,7 +130,7 @@ final class PelaporLaporTest extends KasusPelapor
                 ->where('asetTerpilih', null));
     }
 
-    public function test_mengirim_laporan_membuat_keluhan_lewat_domain_dengan_urgensi_di_deskripsi(): void
+    public function test_mengirim_laporan_membuat_keluhan_lewat_domain_dengan_urgensi_sebagai_usulan(): void
     {
         Storage::fake('local');
         $printer = $this->aset('Printer Lt. 12', $this->lantai);
@@ -149,9 +150,11 @@ final class PelaporLaporTest extends KasusPelapor
         $this->assertSame(StatusKeluhan::Baru->value, $keluhan->Status);
         $this->assertStringStartsWith('KLH/', $keluhan->Nomor);
         $this->assertSame($this->lantai->Id, $keluhan->LokasiId);
-        // Pelapor tanpa Keluhan.Kelola tidak menentukan prioritas (aturan yang sama dengan dasbor).
+        // Pelapor tanpa Keluhan.Kelola tidak menentukan prioritas (aturan yang sama dengan dasbor):
+        // "Berbahaya" hanya tersimpan sebagai usulan, dan deskripsinya tetap apa yang ia tulis.
         $this->assertSame('Normal', $keluhan->Prioritas);
-        $this->assertStringEndsWith('Seberapa mendesak (menurut pelapor): Berbahaya.', $keluhan->Deskripsi);
+        $this->assertSame(UrgensiPelapor::Berbahaya, $keluhan->UsulanUrgensi);
+        $this->assertSame('Kertas macet. Nyangkut di baki 2.', $keluhan->Deskripsi);
         $this->assertDatabaseHas('RiwayatStatusKeluhan', ['KeluhanId' => $keluhan->Id, 'StatusSesudah' => 'Baru', 'DiubahOleh' => $pelapor->Id]);
         $this->assertSame(1, $this->dalamOrganisasi(fn () => LampiranEntitas::query()->where('JenisEntitas', 'Keluhan')->where('EntitasId', $keluhan->Id)->count()));
     }
@@ -166,7 +169,46 @@ final class PelaporLaporTest extends KasusPelapor
             'Urgensi' => 'Berbahaya',
         ])->assertSessionDoesntHaveErrors();
 
-        $this->assertSame('Kritis', $this->dalamOrganisasi(fn () => Keluhan::query()->sole()->Prioritas));
+        $keluhan = $this->dalamOrganisasi(fn () => Keluhan::query()->sole());
+        $this->assertSame('Kritis', $keluhan->Prioritas);
+        $this->assertSame(UrgensiPelapor::Berbahaya, $keluhan->UsulanUrgensi);
+    }
+
+    public function test_pelapor_tanpa_keluhan_kelola_tidak_pernah_menetapkan_prioritas_lewat_urgensi_atau_isian_prioritas(): void
+    {
+        $kategori = $this->kategori('Listrik', ['PrioritasBawaan' => 'Rendah']);
+        $pelapor = $this->pelaporDi($this->lantai);
+        $this->actingAs($pelapor);
+
+        foreach (['TidakBuruBuru', 'MenggangguKerja', 'KerjaTerhenti', 'Berbahaya'] as $i => $urgensi) {
+            $this->post('/lapangan/pelapor/lapor', [
+                ...$this->muatan($kategori->Id),
+                'Urgensi' => $urgensi,
+                // Isian Prioritas selundupan diabaikan: aturan lapangan membuangnya.
+                'Prioritas' => 'Kritis',
+                'KunciLaporan' => "kunci-{$i}",
+            ])->assertSessionDoesntHaveErrors();
+        }
+
+        $keluhan = $this->dalamOrganisasi(fn () => Keluhan::query()->get());
+        $this->assertCount(4, $keluhan);
+        // Semuanya berprioritas bawaan kategori; urgensinya hanya tercatat sebagai usulan.
+        $this->assertSame(['Rendah'], $keluhan->pluck('Prioritas')->unique()->values()->all());
+        $this->assertEqualsCanonicalizing(
+            ['TidakBuruBuru', 'MenggangguKerja', 'KerjaTerhenti', 'Berbahaya'],
+            $keluhan->map(fn (Keluhan $satu): ?string => $satu->UsulanUrgensi?->value)->all(),
+        );
+    }
+
+    public function test_urgensi_di_luar_pilihan_ditolak(): void
+    {
+        $kategori = $this->kategori('Listrik');
+
+        $this->actingAs($this->pelaporDi($this->lantai))
+            ->post('/lapangan/pelapor/lapor', [...$this->muatan($kategori->Id), 'Urgensi' => 'Kritis'])
+            ->assertSessionHasErrors('Urgensi');
+
+        $this->assertSame(0, $this->dalamOrganisasi(fn () => Keluhan::query()->count()));
     }
 
     public function test_kunci_laporan_yang_sama_tidak_pernah_menjadi_dua_keluhan(): void

@@ -3615,20 +3615,33 @@ Urutan pengerjaan di bawah ini mengikat: 39.01 dan 39.02 menutup celah akses, ja
 
 ## 39.10 Keputusan pemilik produk (24 September 2026)
 
-- [ ] **Urgensi pelapor menjadi usulan, bukan prioritas.** Urgensi berbahasa awam disimpan terstruktur pada keluhan
+- [x] **Urgensi pelapor menjadi usulan, bukan prioritas.** Urgensi berbahasa awam disimpan terstruktur pada keluhan
   (kolom tersendiri, bukan teks di deskripsi). Koordinator melihatnya sebagai "Usulan pelapor" di halaman keluhan dasbor, dan
   pilihan prioritas pada formulir tinjau/ubah prioritas otomatis terisi dari usulan itu. Prioritas tetap hanya diubah oleh
   pemegang `Keluhan.Kelola`, sehingga pelapor tidak bisa memberi label "Berbahaya" demi SLA tercepat.
-- [ ] **Pelapor boleh memantau laporan rekan pada alat/lokasi yang sama, hanya garis waktu status.** Yang tampil hanya nomor,
+- [x] **Pelapor boleh memantau laporan rekan pada alat/lokasi yang sama, hanya garis waktu status.** Yang tampil hanya nomor,
   judul, alat/lokasi, status, dan jam setiap perubahan status. Nama pelapor, nama teknisi, keterangan, dan foto tidak tampil.
   Hanya untuk keluhan dalam lingkup unit/ruangan pengguna itu. Dipakai dari langkah "Alat ditemukan" (tombol "Pantau laporan
   itu") dan dari penanda "ada laporan terbuka" di daftar aset.
-- [ ] **Foto "Sesudah" dari teknisi tampil kepada pelapor saat konfirmasi.** Hanya lampiran berkategori Sesudah pada perintah
+- [x] **Foto "Sesudah" dari teknisi tampil kepada pelapor saat konfirmasi.** Hanya lampiran berkategori Sesudah pada perintah
   kerja yang berasal dari keluhan milik pelapor itu sendiri. Lampiran lain pada perintah kerja tetap tertutup bagi pelapor.
-- [ ] **Tanda tangan penerima: opsional secara bawaan, bisa diwajibkan per organisasi.** Setelan konfigurasi organisasi
+- [x] **Tanda tangan penerima: opsional secara bawaan, bisa diwajibkan per organisasi.** Setelan konfigurasi organisasi
   "Wajibkan tanda tangan penerima saat teknisi menyelesaikan tiket" (bawaan mati), bisa diubah admin di halaman Konfigurasi.
   Saat menyala, server menolak penyelesaian ke `MenungguVerifikasi` tanpa lampiran tanda tangan, dan layar Ringkasan teknisi
   menandainya wajib. Alur offline harus tetap berjalan tanpa penolakan palsu (tanda tangan diunggah sebelum penyelesaian terkirim).
+
+Dikerjakan dua agen paralel (sisi pelapor dan tanda tangan), lalu ditinjau koordinator dengan gate penuh (1842 test, PHPStan 165).
+
+Yang dipilih:
+- Urgensi disimpan di kolom `Keluhan.UsulanUrgensi`. Enumnya pindah ke domain Pemeliharaan (`UrgensiPelapor`), karena model Keluhan yang meng-cast kolom itu, dan Pemeliharaan tidak boleh bergantung pada Sinkronisasi. Formulir ubah prioritas terisi dari usulan selama prioritas keluhan itu belum pernah diubah (belum ada audit `UbahPrioritas`).
+- Pemantauan laporan rekan memakai kemampuan policy baru `KeluhanPolicy::pantau`, yang memeriksa lingkup lokasi pengguna. Penyusun layarnya hanya membaca nomor, judul, alat, lokasi, status, dan jam riwayat. Test memastikan nama, catatan, dan foto tidak ada di props.
+- Foto Sesudah dibuka lewat jalur lihat-saja di `RegistriEntitas` (`kemampuanLihatLampiran`), yang diperiksa per kategori lampiran. Jalur ini hanya membuka unduhan. Daftar, unggah, dan hapus lampiran perintah kerja tetap tertutup bagi pelapor, dan `BerkasPolicy::delete` tidak lagi menumpang `view`.
+- Setelan tanda tangan adalah kunci konfigurasi boolean `Pemeliharaan.WajibTandaTanganPenerima`, sehingga tidak perlu migrasi dan halaman Konfigurasi menampilkannya otomatis. Penjaganya ada di Action `UbahStatusPerintahKerja`, jadi berlaku sama untuk jalur online, antrian offline, dan dasbor. Yang diwajibkan hanya pengguna yang ditugaskan pada tiket itu. Koordinator yang memindahkan status dari dasbor tidak diwajibkan, karena penerima menandatangani di hadapan teknisi.
+- Saat antrian offline dikirim, draf foto dan tanda tangan tiket yang ada di antrian diunggah lebih dulu, baru mutasinya. Bila penyelesaian tetap ditolak, tiket menampilkan pita "Laporan selesai belum diterima" dengan jalan perbaikan ke Ringkasan.
+
+Jebakan yang ditemukan:
+- `BerkasPolicy::delete` dulu memanggil `view`. Tanpa dipisah, membuka foto Sesudah bagi pelapor ikut memberinya hak menghapus foto itu.
+- Pengunggah draf foto semula hanya berjalan di layar kerja tiket. Penyelesaian yang dikirim dari layar lain saat sinyal kembali bisa tiba di server sebelum tanda tangannya.
 
 ### Gate 39
 
@@ -3659,7 +3672,7 @@ Jebakan yang ditemukan:
 - Pola kategori "lift" ikut mencocokkan "Forklift" dan memberinya ikon lift.
 - `/aset/pindai/*` harus dibebaskan dari middleware pengalih. Tanpa itu, pengguna lapangan dilempar ke `/lapangan` sebelum resolver QR sempat berjalan.
 
-Empat keputusan produk yang semula terbuka sudah diputuskan pemilik produk pada 24 September 2026. Pengerjaannya ada di 39.10.
+Empat keputusan produk yang semula terbuka sudah diputuskan pemilik produk pada 24 September 2026. Semuanya sudah dikerjakan di 39.10.
 
 Batas yang disadari:
 - Antrian offline belum melewati perubahan berikutnya ketika perubahan sebelumnya berkonflik; penutupnya perlu perubahan antrian di server.

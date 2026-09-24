@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Sinkronisasi\Application\Services;
 
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Pemeliharaan\Application\Services\AturanTandaTanganPenerima;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
@@ -35,7 +36,10 @@ final class LayananPaketOffline
     /** Batas jumlah pekerjaan yang diturunkan ke perangkat dalam satu paket. */
     private const BATAS_PENUGASAN = 50;
 
-    public function __construct(private readonly RegistriOperasiSinkronisasi $registri) {}
+    public function __construct(
+        private readonly RegistriOperasiSinkronisasi $registri,
+        private readonly AturanTandaTanganPenerima $tandaTanganPenerima,
+    ) {}
 
     /**
      * @return array{
@@ -44,6 +48,7 @@ final class LayananPaketOffline
      *     DaftarPeriksa: array<int, array<string, mixed>>,
      *     Token: array<string, string>,
      *     OperasiDidukung: list<string>,
+     *     Pengaturan: array{TandaTanganPenerimaWajib: bool},
      *     DibuatPada: string
      * }
      */
@@ -68,6 +73,10 @@ final class LayananPaketOffline
                 'PelaksanaanDaftarPeriksa' => $this->sidikJari($daftarPeriksa),
             ],
             'OperasiDidukung' => $this->registri->daftarOperasi(),
+            // Setelan organisasi yang dibaca layar tanpa sinyal (Ringkasan: tanda tangan wajib atau opsional).
+            'Pengaturan' => [
+                'TandaTanganPenerimaWajib' => $this->tandaTanganPenerima->wajib($pengguna->OrganisasiId),
+            ],
             'DibuatPada' => now()->toIso8601String(),
         ];
     }

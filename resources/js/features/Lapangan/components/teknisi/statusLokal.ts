@@ -69,6 +69,21 @@ export function keadaanLokal(tiket: TiketDasar, antrian: MutasiOffline[]): Keada
   return keadaan;
 }
 
+/**
+ * Mutasi "selesai, menunggu verifikasi" tiket ini yang ditolak server (mis. tanda tangan penerima
+ * wajib tetapi lampirannya belum ada). Layar kerja membukanya kembali di Ringkasan supaya bisa
+ * diperbaiki dan dikirim ulang, alih-alih diam-diam menampilkan "Pekerjaan selesai".
+ */
+export function penyelesaianDitolak(tiketId: string, antrian: MutasiOffline[]): MutasiOffline[] {
+  return antrian.filter(
+    (mutasi) =>
+      mutasi.EntitasId === tiketId &&
+      mutasi.Status === 'Gagal' &&
+      mutasi.Operasi === 'PerintahKerja.UbahStatus' &&
+      mutasi.MuatanData.Status === 'MenungguVerifikasi',
+  );
+}
+
 /** Terapkan keadaan lokal ke objek tiket untuk ditampilkan. */
 export function tiketLokal<T extends TiketDasar>(tiket: T, antrian: MutasiOffline[]): T {
   const keadaan = keadaanLokal(tiket, antrian);

@@ -13,6 +13,8 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\PenggunaPeran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PeranIzin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class KonfigurasiOrganisasiControllerTest extends TestCase
@@ -127,5 +129,55 @@ class KonfigurasiOrganisasiControllerTest extends TestCase
         $response = $this->actingAs($biasa)->put('/platform/konfigurasi/Notifikasi.EmailAktif', ['Nilai' => false]);
 
         $response->assertForbidden();
+    }
+
+    public function test_tanda_tangan_penerima_bawaan_tidak_wajib_dan_admin_dapat_mewajibkannya(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $admin = $this->buatAdmin($organisasi);
+
+        $this->actingAs($admin)->get('/platform/konfigurasi')
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $inertia) => $inertia
+                ->where('konfigurasi', fn (Collection $daftar): bool => $daftar->contains(
+                    fn (array $item): bool => $item['Kunci'] === 'Pemeliharaan.WajibTandaTanganPenerima'
+                        && $item['Tipe'] === 'boolean'
+                        && $item['Nilai'] === false
+                        && $item['Label'] === 'Wajibkan tanda tangan penerima saat teknisi menyelesaikan tiket',
+                )));
+
+        $this->actingAs($admin)->put('/platform/konfigurasi/Pemeliharaan.WajibTandaTanganPenerima', ['Nilai' => true])
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertTrue($this->nilai($organisasi, 'Pemeliharaan.WajibTandaTanganPenerima'));
+    }
+
+    public function test_pengguna_tanpa_izin_pengaturan_tidak_dapat_mewajibkan_tanda_tangan_penerima(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-A', 'Nama' => 'Organisasi A']);
+        $biasa = Pengguna::create([
+            'OrganisasiId' => $organisasi->Id,
+            'Nama' => 'Teknisi',
+            'Email' => 'teknisi@amanpoll.test',
+            'KataSandi' => 'rahasia',
+            'Status' => 'Aktif',
+        ]);
+
+        $this->actingAs($biasa)->put('/platform/konfigurasi/Pemeliharaan.WajibTandaTanganPenerima', ['Nilai' => true])
+            ->assertForbidden();
+
+        $this->assertFalse($this->nilai($organisasi, 'Pemeliharaan.WajibTandaTanganPenerima'));
+    }
+
+    private function nilai(Organisasi $organisasi, string $kunci): mixed
+    {
+        $konteks = app(KonteksOrganisasi::class);
+        $konteks->tetapkan($organisasi->Id);
+
+        try {
+            return app(LayananKonfigurasi::class)->ambil($organisasi->Id, $kunci);
+        } finally {
+            $konteks->bersihkan();
+        }
     }
 }

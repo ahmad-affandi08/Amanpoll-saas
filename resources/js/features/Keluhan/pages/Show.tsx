@@ -25,6 +25,8 @@ import { Combobox } from '@/components/ui/combobox';
 interface Props {
   keluhan: Keluhan;
   dapatMengelola: boolean;
+  /** Pilihan awal Ubah Prioritas: usulan pelapor selama prioritas belum ditetapkan. */
+  prioritasAwal: PrioritasKeluhan;
   transisiDiizinkan: StatusKeluhan[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
@@ -93,9 +95,18 @@ function DialogStatus({
   );
 }
 
-function DialogPrioritas({ keluhan, wajib }: { keluhan: Keluhan; wajib: AturanWajib }) {
+function DialogPrioritas({
+  keluhan,
+  prioritasAwal,
+  wajib,
+}: {
+  keluhan: Keluhan;
+  prioritasAwal: PrioritasKeluhan;
+  wajib: AturanWajib;
+}) {
   const [buka, setBuka] = useState(false);
-  const form = useForm({ Prioritas: keluhan.Prioritas, Alasan: '', Versi: keluhan.Versi });
+  const form = useForm({ Prioritas: prioritasAwal, Alasan: '', Versi: keluhan.Versi });
+  const dariUsulan = keluhan.PrioritasUsulan !== null && prioritasAwal !== keluhan.Prioritas;
   const submit = (event: FormEvent) => {
     event.preventDefault();
     form.put(ruteKeluhan.prioritas(keluhan.Id), {
@@ -124,6 +135,12 @@ function DialogPrioritas({ keluhan, wajib }: { keluhan: Keluhan; wajib: AturanWa
                   label: p,
                 }))}
               />
+              {dariUsulan && (
+                <p className="text-sm text-muted-foreground">
+                  Terisi dari usulan pelapor ({keluhan.LabelUsulanUrgensi}). Prioritas saat ini{' '}
+                  {keluhan.Prioritas}.
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label nama="Alasan">Alasan perubahan</Label>
@@ -142,7 +159,13 @@ function DialogPrioritas({ keluhan, wajib }: { keluhan: Keluhan; wajib: AturanWa
   );
 }
 
-export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan, wajib }: Props) {
+export default function KeluhanShow({
+  keluhan,
+  dapatMengelola,
+  prioritasAwal,
+  transisiDiizinkan,
+  wajib,
+}: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={keluhan.Nomor} />
@@ -172,7 +195,9 @@ export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan
         }
         aksi={
           <>
-            {dapatMengelola && <DialogPrioritas keluhan={keluhan} wajib={wajib.prioritas} />}
+            {dapatMengelola && (
+              <DialogPrioritas keluhan={keluhan} prioritasAwal={prioritasAwal} wajib={wajib.prioritas} />
+            )}
             <DialogStatus
               keluhan={keluhan}
               transisi={
@@ -210,6 +235,20 @@ export default function KeluhanShow({ keluhan, dapatMengelola, transisiDiizinkan
                   <dt className="text-muted-foreground">Tingkat layanan</dt>
                   <dd className="font-medium">{keluhan.NamaTingkatLayanan ?? 'Tanpa SLA'}</dd>
                 </div>
+                {keluhan.LabelUsulanUrgensi && (
+                  <div>
+                    <dt className="text-muted-foreground">Seberapa mendesak</dt>
+                    <dd className="font-medium">
+                      Usulan pelapor: {keluhan.LabelUsulanUrgensi}
+                      {keluhan.PrioritasUsulan && (
+                        <span className="font-normal text-muted-foreground">
+                          {' '}
+                          (setara prioritas {keluhan.PrioritasUsulan})
+                        </span>
+                      )}
+                    </dd>
+                  </div>
+                )}
               </dl>
             </CardContent>
           </Card>

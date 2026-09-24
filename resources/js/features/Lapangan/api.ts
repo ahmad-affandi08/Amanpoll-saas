@@ -76,6 +76,8 @@ export const ruteLapangan = {
     terkirim: (id: string) => `/lapangan/pelapor/laporan/${id}/terkirim`,
     konfirmasi: (id: string) => `/lapangan/pelapor/laporan/${id}/konfirmasi`,
     terimaKasih: (id: string) => `/lapangan/pelapor/laporan/${id}/terima-kasih`,
+    /** `lapangan.pelapor.pantau`: garis waktu status laporan rekan; milik sendiri dialihkan ke Lacak. */
+    pantau: (id: string) => `/lapangan/pelapor/pantau/${id}`,
     /** Keterangan dan foto tambahan memakai endpoint Kolaborasi yang ada (policy `view` pelapor). */
     komentar: ruteKolaborasi.komentar,
     berkas: ruteKolaborasi.berkas,

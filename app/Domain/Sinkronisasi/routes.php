@@ -13,6 +13,7 @@ use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporBerandaController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporKonfirmasiController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporLaporanController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporLaporController;
+use App\Domain\Sinkronisasi\Http\Controllers\LapanganPelaporPantauController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTampilanController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiAsetController;
 use App\Domain\Sinkronisasi\Http\Controllers\LapanganTeknisiBerandaController;
@@ -118,5 +119,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
                 Route::post('/laporan/{keluhan}/konfirmasi', [LapanganPelaporKonfirmasiController::class, 'store'])->name('laporan.konfirmasi.store');
                 Route::get('/laporan/{keluhan}/terima-kasih', [LapanganPelaporKonfirmasiController::class, 'terimaKasih'])->name('laporan.terima-kasih');
                 Route::get('/aset', LapanganPelaporAsetController::class)->name('aset');
+                // Garis waktu status keluhan rekan dalam lingkup pelapor (PRD 8.20).
+                Route::get('/pantau/{keluhan}', LapanganPelaporPantauController::class)->name('pantau');
             });
     });

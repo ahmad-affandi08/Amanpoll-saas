@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Pemeliharaan\Application\Services\AturanTandaTanganPenerima;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
@@ -16,7 +17,11 @@ use App\Shared\Domain\Exceptions\VersiDataBerubah;
 
 final class UbahStatusPerintahKerja
 {
-    public function __construct(private readonly TransaksiDatabase $transaksi, private readonly LayananAudit $audit) {}
+    public function __construct(
+        private readonly TransaksiDatabase $transaksi,
+        private readonly LayananAudit $audit,
+        private readonly AturanTandaTanganPenerima $tandaTanganPenerima,
+    ) {}
 
     public function jalankan(
         PerintahKerja $perintahKerja,
@@ -49,6 +54,9 @@ final class UbahStatusPerintahKerja
             }
             if ($tujuan === StatusPerintahKerja::MenungguVerifikasi && blank($ringkasan)) {
                 throw new AturanBisnisDilanggar('Ringkasan penyelesaian wajib diisi sebelum verifikasi.');
+            }
+            if ($tujuan === StatusPerintahKerja::MenungguVerifikasi) {
+                $this->tandaTanganPenerima->pastikanTerpenuhi($terkunci, $penggunaId);
             }
 
             $sebelum = $terkunci->toArray();

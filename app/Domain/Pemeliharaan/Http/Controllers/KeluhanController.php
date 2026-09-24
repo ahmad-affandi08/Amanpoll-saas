@@ -7,6 +7,7 @@ namespace App\Domain\Pemeliharaan\Http\Controllers;
 use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\IntegrasiAudit\Infrastructure\Persistence\Models\CatatanAudit;
 use App\Domain\Kolaborasi\Application\Actions\LampirkanBerkas;
 use App\Domain\Kolaborasi\Application\Actions\UnggahBerkas;
 use App\Domain\Pemeliharaan\Application\Actions\BuatKeluhan;
@@ -148,8 +149,30 @@ final class KeluhanController extends Controller
             'wajib' => ['status' => AturanWajib::untuk(UbahStatusKeluhanRequest::class), 'prioritas' => AturanWajib::untuk(UbahPrioritasKeluhanRequest::class)],
             'keluhan' => new KeluhanResource($keluhan),
             'dapatMengelola' => $this->izin->boleh((string) auth()->id(), 'Keluhan.Kelola'),
+            'prioritasAwal' => $this->prioritasAwal($keluhan),
             'transisiDiizinkan' => array_map(fn (StatusKeluhan $status) => $status->value, StatusKeluhan::from($keluhan->Status)->tujuanYangDiizinkan()),
         ]);
+    }
+
+    /**
+     * Pilihan awal formulir Ubah Prioritas. Selama prioritasnya belum pernah
+     * ditetapkan lewat formulir itu, pilihan terisi dari usulan urgensi pelapor
+     * (PRD 8.20); sesudahnya yang tampil adalah prioritas yang berlaku.
+     * Hanya mengisi formulir: prioritas tetap berubah lewat `ubahPrioritas`.
+     */
+    private function prioritasAwal(Keluhan $keluhan): string
+    {
+        if ($keluhan->UsulanUrgensi === null) {
+            return $keluhan->Prioritas;
+        }
+
+        $sudahDitetapkan = CatatanAudit::query()
+            ->where('JenisEntitas', 'Keluhan')
+            ->where('EntitasId', $keluhan->Id)
+            ->where('Aksi', 'UbahPrioritas')
+            ->exists();
+
+        return $sudahDitetapkan ? $keluhan->Prioritas : $keluhan->UsulanUrgensi->prioritas()->value;
     }
 
     public function ubahStatus(UbahStatusKeluhanRequest $request, Keluhan $keluhan, UbahStatusKeluhan $aksi): RedirectResponse

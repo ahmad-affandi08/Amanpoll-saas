@@ -10,6 +10,7 @@ use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
+use App\Domain\Pemeliharaan\Domain\Enums\UrgensiPelapor;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -47,6 +48,7 @@ final class Keluhan extends ModelDasar implements BerlingkupUnit
         'Judul',
         'Deskripsi',
         'Prioritas',
+        'UsulanUrgensi',
         'Status',
         'Sumber',
         'PelaporId',
@@ -66,6 +68,7 @@ final class Keluhan extends ModelDasar implements BerlingkupUnit
     protected function casts(): array
     {
         return [
+            'UsulanUrgensi' => UrgensiPelapor::class,
             'DilaporkanPada' => 'immutable_datetime',
             'DiresponsPada' => 'immutable_datetime',
             'BatasResponsPada' => 'immutable_datetime',

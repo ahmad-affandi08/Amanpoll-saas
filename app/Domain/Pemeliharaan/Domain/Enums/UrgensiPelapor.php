@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Sinkronisasi\Domain\Enums;
-
-use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
+namespace App\Domain\Pemeliharaan\Domain\Enums;
 
 /**
- * Tingkat urgensi dalam bahasa awam di layar "Apa masalahnya?" (DESIGN §36.7 layar 06),
- * dipetakan ke `PrioritasKeluhan` milik Pemeliharaan.
+ * Seberapa mendesak menurut pelapor, dalam bahasa awam (Mode Lapangan, DESIGN §36.7
+ * layar 06). Disimpan di `Keluhan.UsulanUrgensi` sebagai **usulan** (PRD 8.20):
+ * koordinator melihatnya dan formulir prioritasnya terisi dari `prioritas()`, tetapi
+ * `Prioritas` tetap hanya diubah pemegang `Keluhan.Kelola`.
  */
-enum UrgensiLaporanLapangan: string
+enum UrgensiPelapor: string
 {
     case TidakBuruBuru = 'TidakBuruBuru';
     case MenggangguKerja = 'MenggangguKerja';
     case KerjaTerhenti = 'KerjaTerhenti';
     case Berbahaya = 'Berbahaya';
 
+    /** Prioritas yang diusulkan urgensi ini. */
     public function prioritas(): PrioritasKeluhan
     {
         return match ($this) {

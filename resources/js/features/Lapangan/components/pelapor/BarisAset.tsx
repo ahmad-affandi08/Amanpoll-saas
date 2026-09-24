@@ -61,6 +61,8 @@ export function BarisAsetLokasi({ aset }: { aset: AsetPelapor }) {
   const ikon = ikonAset(aset);
   const kondisi = kondisiAset(aset);
   const jumlah = aset.LaporanTerbuka.length;
+  /** Penanda "laporan terbuka" membuka pantauan laporan terbaru (milik sendiri: Lacak). */
+  const pertama = aset.LaporanTerbuka[0];
   const ditangani =
     aset.Kondisi === 'Rusak' && aset.LaporanTerbuka.some((satu) => satu.Status === 'Diproses');
 
@@ -82,8 +84,16 @@ export function BarisAsetLokasi({ aset }: { aset: AsetPelapor }) {
       </Link>
       <div className="col-span-2 col-start-2 flex flex-wrap items-center gap-2.5">
         <ChipStatus warna={kondisi.warna}>{kondisi.label}</ChipStatus>
-        {jumlah > 0 && (
-          <span className="inline-flex items-center gap-1 text-[13px] font-bold text-lapangan-biru-600">
+        {pertama && (
+          <Link
+            href={
+              pertama.MilikSaya
+                ? ruteLapangan.pelapor.laporanDetail(pertama.Id)
+                : ruteLapangan.pelapor.pantau(pertama.Id)
+            }
+            aria-label={`Pantau laporan ${pertama.Nomor} untuk ${aset.Nama}`}
+            className="-my-2 inline-flex min-h-11 items-center gap-1 rounded-lg text-[13px] font-bold text-lapangan-biru-600 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-lapangan-biru-500/50"
+          >
             {ditangani ? (
               <>
                 <Wrench aria-hidden className="size-3.5" />
@@ -95,7 +105,7 @@ export function BarisAsetLokasi({ aset }: { aset: AsetPelapor }) {
                 {jumlah} laporan terbuka
               </>
             )}
-          </span>
+          </Link>
         )}
       </div>
     </li>

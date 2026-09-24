@@ -142,6 +142,50 @@ async function unggahSatu(foto: FotoTertunda): Promise<void> {
   await http.post(ruteLapangan.teknisi.berkas, data);
 }
 
+/** Unggahan berjalan berantai, jadi layar kerja dan pengirim antrean tidak mengunggah draf yang sama dua kali. */
+let rantaiUnggahan: Promise<unknown> = Promise.resolve();
+
+/**
+ * Mengunggah foto dan tanda tangan yang tersimpan di perangkat ke lampiran Kolaborasi tiket;
+ * yang gagal tetap di perangkat untuk dicoba lagi.
+ *
+ * Dipanggil juga oleh `useSinkronisasiOffline` tepat sebelum antrean dikirim: tanda tangan
+ * penerima harus sudah menjadi lampiran ketika mutasi "selesai" tiba, karena organisasi yang
+ * mewajibkannya menolak penyelesaian tanpa lampiran itu (TASK 39.10).
+ *
+ * @param perintahKerjaId satu tiket, beberapa tiket, atau `null` untuk semua draf
+ */
+export function unggahFotoTertunda(
+  konteks: KonteksOffline,
+  perintahKerjaId: string | string[] | null,
+): Promise<{ berhasil: number; gagal: number }> {
+  const jalan = rantaiUnggahan.then(async () => {
+    let berhasil = 0;
+    let gagal = 0;
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return { berhasil, gagal };
+    const daftarTiket = perintahKerjaId === null ? null : ([] as string[]).concat(perintahKerjaId);
+    const awalan = daftarTiket === null ? [AWALAN_FOTO] : daftarTiket.map(awalanFotoTiket);
+    for (const satuAwalan of awalan) {
+      const kunci = await daftarKunciDraf(konteks, satuAwalan).catch(() => [] as string[]);
+      for (const satu of kunci) {
+        // Dibaca ulang di dalam rantai: draf yang sudah diunggah pemanggil sebelumnya sudah terhapus.
+        const nilai = await ambilDraf<FotoTertunda>(konteks, satu).catch(() => undefined);
+        if (!nilai) continue;
+        try {
+          await unggahSatu(nilai);
+          await hapusDraf(konteks, satu);
+          berhasil++;
+        } catch {
+          gagal++;
+        }
+      }
+    }
+    return { berhasil, gagal };
+  });
+  rantaiUnggahan = jalan.catch(() => undefined);
+  return jalan;
+}
+
 /**
  * Foto dan tanda tangan yang menunggu diunggah ke lampiran Kolaborasi tiket.
  * Tersimpan sebagai `Blob` di perangkat; diunggah begitu ada sinyal.
@@ -149,7 +193,6 @@ async function unggahSatu(foto: FotoTertunda): Promise<void> {
 export function useFotoTertunda(perintahKerjaId: string | null) {
   const konteks = useKonteksOffline();
   const [foto, setFoto] = useState<FotoTertunda[]>([]);
-  const sedangMengunggah = useRef(false);
 
   const muat = useCallback(async () => {
     if (!konteks) return;
@@ -205,32 +248,12 @@ export function useFotoTertunda(perintahKerjaId: string | null) {
 
   /** Mengunggah semua yang tertunda; yang gagal tetap di perangkat untuk dicoba lagi. */
   const unggahSemua = useCallback(async (): Promise<{ berhasil: number; gagal: number }> => {
-    if (!konteks || sedangMengunggah.current || !navigator.onLine) return { berhasil: 0, gagal: 0 };
-    sedangMengunggah.current = true;
-    let berhasil = 0;
-    let gagal = 0;
-    try {
-      const awalan = perintahKerjaId ? awalanFotoTiket(perintahKerjaId) : AWALAN_FOTO;
-      const kunci = await daftarKunciDraf(konteks, awalan).catch(() => [] as string[]);
-      for (const satu of kunci) {
-        const nilai = await ambilDraf<FotoTertunda>(konteks, satu).catch(() => undefined);
-        if (!nilai) continue;
-        try {
-          await unggahSatu(nilai);
-          await hapusDraf(konteks, satu);
-          berhasil++;
-        } catch {
-          gagal++;
-        }
-      }
-    } finally {
-      sedangMengunggah.current = false;
-      await muat();
-    }
-    if (berhasil > 0 && perintahKerjaId) {
+    if (!konteks || !navigator.onLine) return { berhasil: 0, gagal: 0 };
+    const hasil = await unggahFotoTertunda(konteks, perintahKerjaId).finally(() => muat());
+    if (hasil.berhasil > 0 && perintahKerjaId) {
       router.reload({ only: ['foto'] });
     }
-    return { berhasil, gagal };
+    return hasil;
   }, [konteks, perintahKerjaId, muat]);
 
   return { foto, tambah, hapus, unggahSemua, muatUlang: muat };

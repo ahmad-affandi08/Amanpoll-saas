@@ -25,12 +25,20 @@ final class BerkasPolicy
             return true;
         }
 
-        return $this->bolehMelaluiLampiran($pengguna, $berkas);
+        return $this->bolehMelaluiLampiran($pengguna, $berkas) || $this->bolehLihatMelaluiLampiran($pengguna, $berkas);
     }
 
+    /**
+     * Sengaja tidak memakai `view()`: lampiran yang hanya boleh dilihat (mis. foto
+     * Sesudah bagi pelapor) tidak ikut boleh dihapus.
+     */
     public function delete(Pengguna $pengguna, Berkas $berkas): bool
     {
-        return $this->view($pengguna, $berkas);
+        if ($berkas->DiunggahOleh === $pengguna->Id) {
+            return true;
+        }
+
+        return $this->bolehMelaluiLampiran($pengguna, $berkas);
     }
 
     /**
@@ -48,6 +56,28 @@ final class BerkasPolicy
         foreach ($lampiran as $satu) {
             if ($this->registriEntitas->dikenal($satu->JenisEntitas)
                 && $this->registriEntitas->bolehKelolaRekaman($pengguna, $satu->JenisEntitas, (string) $satu->EntitasId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Lampiran yang dibuka hanya untuk dilihat, per kategori: kemampuan
+     * `kemampuanLihatLampiran` jenis entitasnya diperiksa untuk kategori tiap
+     * baris lampiran berkas ini (RegistriEntitas).
+     */
+    private function bolehLihatMelaluiLampiran(Pengguna $pengguna, Berkas $berkas): bool
+    {
+        $lampiran = LampiranEntitas::query()
+            ->where('BerkasId', $berkas->Id)
+            ->distinct()
+            ->get(['JenisEntitas', 'EntitasId', 'Kategori']);
+
+        foreach ($lampiran as $satu) {
+            if ($this->registriEntitas->dikenal($satu->JenisEntitas)
+                && $this->registriEntitas->bolehLihatLampiran($pengguna, $satu->JenisEntitas, (string) $satu->EntitasId, $satu->Kategori)) {
                 return true;
             }
         }

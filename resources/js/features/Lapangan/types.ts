@@ -202,6 +202,8 @@ export interface PropsKerjakanTeknisi extends PropsLapangan {
   waktuKerja: { TotalMenit: number; MulaiPertama: string | null };
   pengawas: { Nama: string; Jabatan: string | null } | null;
   berikutnya: TiketTeknisi | null;
+  /** Organisasi mewajibkan tanda tangan penerima sebelum tiket dikirim ke koordinator. */
+  tandaTanganWajib: boolean;
 }
 
 /** Hasil pencarian suku cadang untuk lembar "Minta suku cadang". */
@@ -293,7 +295,7 @@ export interface PropsKonflikTeknisi extends PropsLapangan {
 export type StatusKeluhanPelapor =
   'Baru' | 'Ditinjau' | 'Diterima' | 'Diproses' | 'Selesai' | 'Ditutup' | 'Ditolak' | 'Dibatalkan';
 
-/** Urgensi berbahasa awam (server `UrgensiLaporanLapangan`), dipetakan ke prioritas keluhan. */
+/** Urgensi berbahasa awam (server `UrgensiPelapor`), disimpan sebagai usulan pada keluhan. */
 export type UrgensiLaporan = 'TidakBuruBuru' | 'MenggangguKerja' | 'KerjaTerhenti' | 'Berbahaya';
 
 /** Lokasi dengan label induk, mis. `{ Nama: 'Lt. 12', Label: 'Menara A · Lt. 12' }`. */
@@ -417,9 +419,31 @@ export interface FotoLaporan {
   Nama: string | null;
 }
 
+/** Foto Sesudah dari teknisi pada perintah kerja keluhan milik pelapor. */
+export interface FotoSesudahLaporan {
+  BerkasId: string;
+  Nama: string | null;
+}
+
 export interface PropsKonfirmasiPelapor extends PropsLapangan {
   laporan: LaporanPelapor;
   foto: FotoLaporan[];
+  fotoSesudah: FotoSesudahLaporan[];
+}
+
+/**
+ * Props `Lapangan/Pelapor/Pantau`: laporan rekan, hanya garis waktu status.
+ * Sengaja tanpa nama pelapor/teknisi, keterangan, dan foto (PRD 8.20).
+ */
+export interface PropsPantauPelapor extends PropsLapangan {
+  laporan: {
+    Nomor: string;
+    Judul: string;
+    Status: StatusKeluhanPelapor;
+    Aset: { KodeAset: string; Nama: string; Kategori: string | null } | null;
+    LokasiLabel: string | null;
+  };
+  riwayat: { Status: StatusKeluhanPelapor; Pada: string | null }[];
 }
 
 export interface PropsLaporanTunggal extends PropsLapangan {

@@ -122,13 +122,21 @@ export function PitaMasalahTiket({ keadaan }: { keadaan: KeadaanLokalTiket }) {
   }
 
   if (gagal) {
+    const tiketDitolak =
+      gagal.Operasi === 'PerintahKerja.UbahStatus' && gagal.MuatanData.Status === 'MenungguVerifikasi'
+        ? gagal.EntitasId
+        : null;
     return (
       <PitaInfo
         nada="merah"
         ikon="warning"
-        judul="Perubahan ditolak server"
+        judul={tiketDitolak ? 'Laporan selesai belum diterima' : 'Perubahan ditolak server'}
         teks={gagal.Konflik?.Pesan ?? gagal.Label}
-        tautan={{ label: 'Lihat', href: ruteLapangan.akun }}
+        tautan={
+          tiketDitolak
+            ? { label: 'Perbaiki', href: ruteLapangan.teknisi.kerjakan(tiketDitolak, 'ringkasan') }
+            : { label: 'Lihat', href: ruteLapangan.akun }
+        }
       />
     );
   }

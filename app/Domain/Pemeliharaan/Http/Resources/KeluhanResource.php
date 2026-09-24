@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Http\Resources;
 
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,6 +12,8 @@ final class KeluhanResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $usulan = $this->resource instanceof Keluhan ? $this->resource->UsulanUrgensi : null;
+
         return [
             'Id' => $this->Id,
             'Nomor' => $this->Nomor,
@@ -21,6 +24,10 @@ final class KeluhanResource extends JsonResource
             'Judul' => $this->Judul,
             'Deskripsi' => $this->Deskripsi,
             'Prioritas' => $this->Prioritas,
+            // Usulan pelapor (PRD 8.20): hanya ditampilkan, tidak pernah menjadi prioritas sendiri.
+            'UsulanUrgensi' => $usulan?->value,
+            'LabelUsulanUrgensi' => $usulan?->label(),
+            'PrioritasUsulan' => $usulan?->prioritas()->value,
             'Status' => $this->Status,
             'Sumber' => $this->Sumber,
             'PelaporId' => $this->PelaporId,

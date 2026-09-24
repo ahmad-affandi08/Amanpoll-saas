@@ -634,11 +634,15 @@ function LangkahDitemukan({
           </div>
           <div className="mt-3 flex gap-2">
             <TombolLapangan asChild ragam="lembut" ukuran="kecil" className="flex-1">
-              {terbuka.MilikSaya ? (
-                <Link href={ruteLapangan.pelapor.laporanDetail(terbuka.Id)}>Pantau laporan itu</Link>
-              ) : (
-                <Link href={ruteLapangan.pelapor.beranda}>Tidak jadi lapor</Link>
-              )}
+              <Link
+                href={
+                  terbuka.MilikSaya
+                    ? ruteLapangan.pelapor.laporanDetail(terbuka.Id)
+                    : ruteLapangan.pelapor.pantau(terbuka.Id)
+                }
+              >
+                Pantau laporan itu
+              </Link>
             </TombolLapangan>
             <TombolLapangan ragam="garis" ukuran="kecil" onClick={onTetapLapor}>
               Tetap lapor

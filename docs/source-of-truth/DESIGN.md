@@ -1573,7 +1573,7 @@ Ikon jenis aset dipilih dari kategori aset. Kategori tanpa padanan memakai `tool
 8. Diagnosis & tindakan: chip kode kegagalan dengan ikon 3D, isian penyebab/tindakan, tombol dikte.
 9. Minta suku cadang (lembar bawah): stok per gudang, jumlah, gudang ambil. **Teknisi hanya meminta; stok berkurang saat gudang menyerahkan barang.**
 10. Foto sebelum/sesudah: foto tersimpan di HP saat offline (lencana "Di HP").
-11. Ringkasan & tanda tangan: rute Mulai → Selesai, kondisi aset, tanda tangan pengawas.
+11. Ringkasan & tanda tangan: rute Mulai → Selesai, kondisi aset, tanda tangan penerima (opsional; wajib bila organisasi menyalakan setelannya, PRD 8.20).
 12. Selesai: ilustrasi 3D, bukti tiket, tugas berikutnya, "Kembali ke Beranda".
 13. Kamera pindai: layar penuh gelap, bingkai pindai, senter, "Ketik kode aset".
 14. Aset ditemukan (lembar bawah di atas kamera): aset + kondisi, tiket terbuka, aksi cepat (Mulai kerja, Inspeksi, Lapor, Riwayat).

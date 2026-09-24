@@ -2,6 +2,8 @@ export type IdKeluhan = string;
 export type PrioritasKeluhan = 'Rendah' | 'Normal' | 'Tinggi' | 'Kritis';
 export type StatusKeluhan =
   'Baru' | 'Ditinjau' | 'Diterima' | 'Diproses' | 'Selesai' | 'Ditutup' | 'Ditolak' | 'Dibatalkan';
+/** Server `UrgensiPelapor` (Pemeliharaan). */
+export type UrgensiPelapor = 'TidakBuruBuru' | 'MenggangguKerja' | 'KerjaTerhenti' | 'Berbahaya';
 export type PemicuEskalasi = 'Menjelang' | 'Terlewati';
 
 export interface AturanTingkatLayanan {
@@ -73,6 +75,11 @@ export interface Keluhan {
   Judul: string;
   Deskripsi: string;
   Prioritas: PrioritasKeluhan;
+  /** Urgensi yang dipilih pelapor di Mode Lapangan; hanya usulan, bukan prioritas. */
+  UsulanUrgensi: UrgensiPelapor | null;
+  LabelUsulanUrgensi: string | null;
+  /** Prioritas yang diusulkan urgensi pelapor. */
+  PrioritasUsulan: PrioritasKeluhan | null;
   Status: StatusKeluhan;
   Sumber: string;
   PelaporId: string | null;

@@ -7,8 +7,10 @@ namespace App\Domain\Sinkronisasi\Http\Controllers;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
 use App\Domain\Pemeliharaan\Application\Actions\KonfirmasiPenyelesaianKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
+use App\Domain\Pemeliharaan\Http\Policies\PerintahKerjaPolicy;
 use App\Domain\Pemeliharaan\Http\Requests\KonfirmasiPenyelesaianKeluhanRequest;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Sinkronisasi\Application\Services\PenyusunLayarPelapor;
 use App\Http\Controllers\Controller;
@@ -25,6 +27,9 @@ use Inertia\Response;
  */
 final class LapanganPelaporKonfirmasiController extends Controller
 {
+    /** Batas foto Sesudah di galeri konfirmasi. */
+    private const MAKS_FOTO_SESUDAH = 6;
+
     public function create(Request $request, Keluhan $keluhan, PenyusunLayarPelapor $penyusun): Response|RedirectResponse
     {
         $pengguna = $request->user('web');
@@ -43,6 +48,7 @@ final class LapanganPelaporKonfirmasiController extends Controller
                 'Teknisi' => $penyusun->teknisiUntuk([$keluhan->Id])[$keluhan->Id] ?? null,
             ],
             'foto' => $this->fotoKeluhan($keluhan),
+            'fotoSesudah' => $this->fotoSesudah($keluhan),
         ]);
     }
 
@@ -99,8 +105,7 @@ final class LapanganPelaporKonfirmasiController extends Controller
 
     /**
      * Foto yang terlampir pada keluhan ini (dari pelapor atau yang dilampirkan
-     * tim teknik ke keluhannya). Foto di perintah kerja tetap milik teknisi dan
-     * koordinator, jadi tidak ditampilkan di sini.
+     * tim teknik ke keluhannya). Foto perintah kerja ada di `fotoSesudah()`.
      *
      * @return list<array{BerkasId: string, Kategori: string|null, Nama: string|null}>
      */
@@ -119,6 +124,39 @@ final class LapanganPelaporKonfirmasiController extends Controller
                 'Kategori' => $satu->Kategori,
                 'Nama' => $satu->berkas?->NamaAsli,
             ])
+            ->all());
+    }
+
+    /**
+     * Foto Sesudah dari teknisi pada perintah kerja yang berasal dari keluhan ini
+     * (PRD 8.20). Hanya kategori itu; lampiran lain di perintah kerja tetap milik
+     * teknisi dan koordinator. Unduhannya lolos `PerintahKerjaPolicy::lihatLampiran`.
+     *
+     * @return list<array{BerkasId: string, Nama: string|null}>
+     */
+    private function fotoSesudah(Keluhan $keluhan): array
+    {
+        $perintahKerjaId = PerintahKerja::query()->where('KeluhanId', $keluhan->Id)->pluck('Id');
+
+        if ($perintahKerjaId->isEmpty()) {
+            return [];
+        }
+
+        return array_values(LampiranEntitas::query()
+            ->with('berkas')
+            ->where('JenisEntitas', 'PerintahKerja')
+            ->whereIn('EntitasId', $perintahKerjaId)
+            ->where('Kategori', PerintahKerjaPolicy::KATEGORI_FOTO_SESUDAH)
+            ->oldest('DibuatPada')
+            ->orderBy('Id')
+            ->limit(self::MAKS_FOTO_SESUDAH)
+            ->get()
+            ->filter(fn (LampiranEntitas $satu): bool => str_starts_with((string) $satu->berkas?->JenisMime, 'image/'))
+            ->map(fn (LampiranEntitas $satu): array => [
+                'BerkasId' => (string) $satu->BerkasId,
+                'Nama' => $satu->berkas?->NamaAsli,
+            ])
+            ->values()
             ->all());
     }
 }

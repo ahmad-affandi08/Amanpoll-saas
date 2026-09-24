@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Sinkronisasi\Http\Controllers;
 
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\LampiranEntitas;
+use App\Domain\Pemeliharaan\Application\Services\AturanTandaTanganPenerima;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\AnalisisKegagalan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KodeKegagalan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
@@ -34,9 +35,12 @@ use Inertia\Response;
 final class LapanganTeknisiTugasController extends Controller
 {
     /** Kategori lampiran yang dipakai layar foto dan tanda tangan. */
-    public const KATEGORI_FOTO = ['FotoSebelum', 'FotoSesudah', 'TandaTangan'];
+    public const KATEGORI_FOTO = ['FotoSebelum', 'FotoSesudah', AturanTandaTanganPenerima::KATEGORI_LAMPIRAN];
 
-    public function __construct(private readonly PenyusunLayarTeknisi $penyusun) {}
+    public function __construct(
+        private readonly PenyusunLayarTeknisi $penyusun,
+        private readonly AturanTandaTanganPenerima $tandaTanganPenerima,
+    ) {}
 
     /** Tiket Saya (layar 05): tab Hari ini/Terlambat dihitung klien dari tiket aktif. */
     public function index(Request $request): Response
@@ -115,6 +119,8 @@ final class LapanganTeknisiTugasController extends Controller
             'foto' => $this->foto($tiket),
             'waktuKerja' => $this->waktuKerja($tiket, $pengguna),
             'pengawas' => $pengawas instanceof Pengguna ? ['Nama' => $pengawas->Nama, 'Jabatan' => $pengawas->Jabatan] : null,
+            // Layar Ringkasan menandai tanda tangan "Wajib"; server tetap menolak penyelesaian tanpa lampirannya.
+            'tandaTanganWajib' => $this->tandaTanganPenerima->wajib($tiket->OrganisasiId),
             'berikutnya' => $berikutnya,
         ]);
     }

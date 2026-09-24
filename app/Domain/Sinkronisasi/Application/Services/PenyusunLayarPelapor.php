@@ -345,6 +345,44 @@ final class PenyusunLayarPelapor
             ->all());
     }
 
+    /**
+     * Isi layar Pantau laporan rekan (PRD 8.20): hanya nomor, judul, alat/lokasi,
+     * status, dan jam tiap perubahan status. Nama pelapor, nama teknisi, catatan
+     * riwayat, deskripsi, dan foto sengaja tidak dibaca sama sekali, supaya tidak
+     * ada jalan bocor lewat props. Pemanggil wajib sudah memeriksa `KeluhanPolicy::pantau`.
+     *
+     * @return array{laporan: array{Nomor: string, Judul: string, Status: string, Aset: array{KodeAset: string, Nama: string, Kategori: string|null}|null, LokasiLabel: string|null}, riwayat: list<array{Status: string, Pada: string|null}>}
+     */
+    public function pantauan(Keluhan $keluhan): array
+    {
+        $aset = $keluhan->AsetId === null ? null : Aset::query()->with('kategoriAset')->find($keluhan->AsetId);
+        $kategoriAset = $aset?->relationLoaded('kategoriAset') ? $aset->getRelation('kategoriAset') : null;
+
+        return [
+            'laporan' => [
+                'Nomor' => (string) $keluhan->Nomor,
+                'Judul' => (string) $keluhan->Judul,
+                'Status' => (string) $keluhan->Status,
+                'Aset' => $aset === null ? null : [
+                    'KodeAset' => (string) $aset->KodeAset,
+                    'Nama' => (string) $aset->Nama,
+                    'Kategori' => $kategoriAset?->getAttribute('Nama'),
+                ],
+                'LokasiLabel' => $this->labelLokasi($this->cariLokasi($keluhan->LokasiId)),
+            ],
+            'riwayat' => array_values(RiwayatStatusKeluhan::query()
+                ->where('KeluhanId', $keluhan->Id)
+                ->oldest('DiubahPada')
+                ->orderBy('Id')
+                ->get(['StatusSesudah', 'DiubahPada'])
+                ->map(fn (RiwayatStatusKeluhan $satu): array => [
+                    'Status' => (string) $satu->StatusSesudah,
+                    'Pada' => $this->waktuMentah($satu->DiubahPada),
+                ])
+                ->all()),
+        ];
+    }
+
     private function waktu(?CarbonInterface $waktu): ?string
     {
         return $waktu?->toIso8601String();

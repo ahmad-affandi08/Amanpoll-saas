@@ -15,6 +15,7 @@ import {
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { toast } from 'sonner';
 import { http } from '@/lib/http';
+import { hapusMutasi } from '@/lib/penyimpanan-offline';
 import { cn } from '@/lib/utils';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
@@ -44,6 +45,7 @@ import { labelStatusTiket } from '@/features/Lapangan/components/teknisi/KartuTi
 import { LembarMintaSukuCadang } from '@/features/Lapangan/components/teknisi/LembarMintaSukuCadang';
 import {
   useFotoTertunda,
+  useKonteksOffline,
   useSesiKerja,
   useUrlBlob,
   type FotoTertunda,
@@ -55,6 +57,7 @@ import {
   antrikanBerurutan,
   detikSesiTertunda,
   keadaanLokal,
+  penyelesaianDitolak,
   rencanaUbahStatus,
   rencanaWaktuKerja,
   type PermintaanMutasiTeknisi,
@@ -133,7 +136,7 @@ export default function KerjakanTeknisi(props: PropsKerjakanTeknisi) {
           </TombolLapangan>
         }
       >
-        <LayarSelesai {...props} sesi={sesiKerja.sesi} />
+        <LayarSelesai {...props} sesiKerja={sesiKerja} setLangkah={setLangkah} />
       </KerangkaLapangan>
     );
   }
@@ -1122,15 +1125,30 @@ function LangkahRingkasan(props: PropsIsi) {
     analisis,
     setLangkah,
   } = props;
-  const { antrian, antrikan, daring, dorong } = useSinkronisasiOffline();
+  const { antrian, antrikan, daring, dorong, paket } = useSinkronisasiOffline();
+  const konteksOffline = useKonteksOffline();
   const { detik } = useDetikKerja(props, sesiKerja.sesi);
   const [kondisi, setKondisi] = useState<string>(sesiKerja.sesi.Kondisi ?? KONDISI_ASET[0]);
   const [namaPengawas, setNamaPengawas] = useState(sesiKerja.sesi.Pengawas?.Nama ?? pengawas?.Nama ?? '');
   const [tandaTangan, setTandaTangan] = useState<Blob | null>(null);
+  /** "Ulangi" ditekan: tanda tangan lama (draf/server) tidak dihitung lagi sampai digores ulang. */
+  const [kanvasDikosongkan, setKanvasDikosongkan] = useState(false);
   const [ubahNama, setUbahNama] = useState(false);
   const [mengirim, setMengirim] = useState(false);
   const ttdTersimpan = fotoHook.foto.find((satu) => satu.Kategori === 'TandaTangan');
+  const ttdServer = foto.find((satu) => satu.Kategori === 'TandaTangan');
   const urlTtd = useUrlBlob(ttdTersimpan?.Berkas);
+  // Tanpa sinyal, props halaman berasal dari cache; paket offline membawa setelan yang sama.
+  // Keduanya digabung "atau" supaya tanda tangan tidak terlewat lalu ditolak server.
+  const wajibTtd =
+    props.tandaTanganWajib || (!daring && Boolean(paket?.Pengaturan?.TandaTanganPenerimaWajib));
+  const adaTtd = tandaTangan !== null || (!kanvasDikosongkan && Boolean(ttdTersimpan ?? ttdServer));
+  const ditolak = penyelesaianDitolak(tiket.Id, antrian);
+
+  const ubahTandaTangan = (gambar: Blob | null) => {
+    setTandaTangan(gambar);
+    setKanvasDikosongkan(gambar === null);
+  };
 
   const jawaban = {
     ...Object.fromEntries(
@@ -1164,13 +1182,20 @@ function LangkahRingkasan(props: PropsIsi) {
       setLangkah('checklist');
       return;
     }
+    if (wajibTtd && !adaTtd) {
+      toast.error('Minta tanda tangan penerima dulu. Organisasimu mewajibkannya sebelum laporan dikirim.');
+      return;
+    }
 
     setMengirim(true);
     const selesaiPada = new Date();
     const menit = Math.round(detik / 60);
     const rencana: PermintaanMutasiTeknisi[] = [];
+    const finalisasiChecklist = Boolean(
+      daftarPeriksa && daftarPeriksa.Status !== 'Selesai' && !sesiKerja.sesi.ChecklistFinal,
+    );
 
-    if (daftarPeriksa && daftarPeriksa.Status !== 'Selesai' && !sesiKerja.sesi.ChecklistFinal) {
+    if (daftarPeriksa && finalisasiChecklist) {
       rencana.push({
         Operasi: 'DaftarPeriksa.Finalisasi',
         EntitasId: daftarPeriksa.Id,
@@ -1207,19 +1232,27 @@ function LangkahRingkasan(props: PropsIsi) {
     );
 
     try {
+      // Tanda tangan disimpan sebagai draf SEBELUM mutasi diantrikan: pengirim antrean
+      // (`useSinkronisasiOffline`) mengunggah draf tiket ini dulu, baru mengirim "selesai".
+      if (ttdTersimpan && (tandaTangan || kanvasDikosongkan)) await fotoHook.hapus(ttdTersimpan.Kunci);
       if (tandaTangan) {
-        if (ttdTersimpan) await fotoHook.hapus(ttdTersimpan.Kunci);
         await fotoHook.tambah(
           tiket.Id,
           'TandaTangan',
           tandaTangan,
-          namaPengawas.trim() ? `Tanda tangan ${namaPengawas.trim()}` : 'Tanda tangan pengawas',
+          namaPengawas.trim() ? `Tanda tangan ${namaPengawas.trim()}` : 'Tanda tangan penerima',
         );
+      }
+      // Kiriman yang ditolak sebelumnya diganti kiriman baru ini, jadi tidak ditampilkan lagi.
+      if (konteksOffline) {
+        for (const lama of ditolak)
+          await hapusMutasi(konteksOffline, lama.KunciOperasi).catch(() => undefined);
       }
       await antrikanBerurutan(antrikan, rencana);
       await dorong();
       await sesiKerja.ubah({
         MulaiPada: null,
+        ...(finalisasiChecklist ? { ChecklistFinal: true } : {}),
         Kondisi: kondisi,
         Pengawas: { Nama: namaPengawas.trim(), Jabatan: pengawas?.Jabatan ?? null },
         Selesai: { MulaiPada: mulai, SelesaiPada: selesaiPada.toISOString(), Menit: menit, Kondisi: kondisi },
@@ -1284,9 +1317,12 @@ function LangkahRingkasan(props: PropsIsi) {
       </Kartu>
 
       <Kartu pad className="relative">
-        <h2 className="pr-24 text-[17px] font-bold tracking-[-0.01em]">Tanda tangan pengawas</h2>
+        <h2 className="flex flex-wrap items-center gap-x-2 gap-y-1 pr-24 text-[17px] font-bold tracking-[-0.01em]">
+          Tanda tangan penerima
+          <ChipStatus warna={wajibTtd ? 'oranye' : 'abu'}>{wajibTtd ? 'Wajib' : 'Opsional'}</ChipStatus>
+        </h2>
         {ubahNama || !pengawas ? (
-          <IsianTiket label="Nama pengawas" className="mt-3">
+          <IsianTiket label="Nama penerima" className="mt-3">
             <MasukanTiket
               value={namaPengawas}
               onChange={(event) => setNamaPengawas(event.target.value)}
@@ -1306,7 +1342,16 @@ function LangkahRingkasan(props: PropsIsi) {
             </button>
           </p>
         )}
-        <KanvasTandaTangan label="Kotak tanda tangan pengawas" urlAwal={urlTtd} onBerubah={setTandaTangan} />
+        <KanvasTandaTangan
+          label="Kotak tanda tangan penerima"
+          urlAwal={urlTtd ?? ttdServer?.Url ?? null}
+          onBerubah={ubahTandaTangan}
+        />
+        {wajibTtd && !adaTtd && (
+          <p className="mt-2 text-[13px] font-semibold text-lapangan-oranye-teks">
+            Organisasimu mewajibkan tanda tangan penerima sebelum laporan dikirim.
+          </p>
+        )}
       </Kartu>
 
       {!daring && (
@@ -1319,7 +1364,7 @@ function LangkahRingkasan(props: PropsIsi) {
       )}
 
       <BilahTetap>
-        <TombolLapangan penuh disabled={mengirim} onClick={() => void kirim()}>
+        <TombolLapangan penuh disabled={mengirim || (wajibTtd && !adaTtd)} onClick={() => void kirim()}>
           <Send aria-hidden />
           {mengirim ? 'Mengirim…' : 'Kirim laporan'}
         </TombolLapangan>
@@ -1330,10 +1375,25 @@ function LangkahRingkasan(props: PropsIsi) {
 
 /* ---------------------------------------------------------------- Selesai (12) */
 
-function LayarSelesai(props: PropsKerjakanTeknisi & { sesi: SesiKerja }) {
-  const { tiket, sesi, berikutnya, waktuKerja } = props;
-  const { antrian } = useSinkronisasiOffline();
+function LayarSelesai(
+  props: PropsKerjakanTeknisi & { sesiKerja: SesiKerjaHook; setLangkah: (langkah: LangkahKerja) => void },
+) {
+  const { tiket, berikutnya, waktuKerja, sesiKerja, setLangkah } = props;
+  const sesi = sesiKerja.sesi;
+  const { antrian, daring } = useSinkronisasiOffline();
   const keadaan = keadaanLokal(tiket, antrian);
+  const ditolak = STATUS_SELESAI_TEKNISI.includes(tiket.Status) ? [] : penyelesaianDitolak(tiket.Id, antrian);
+
+  // Server menolak "selesai" (mis. tanda tangan penerima wajib belum ada): kembali ke Ringkasan
+  // untuk diperbaiki, bukan menampilkan "Pekerjaan selesai" untuk laporan yang tidak pernah diterima.
+  useEffect(() => {
+    if (ditolak.length === 0 || !sesi.Selesai) return;
+    toast.error(ditolak[0].Konflik?.Pesan ?? 'Laporan selesai ditolak server.');
+    void sesiKerja.ubah({ Selesai: undefined });
+    setLangkah('ringkasan');
+    if (daring) router.reload();
+  }, [ditolak.length, Boolean(sesi.Selesai)]);
+
   const selesaiLokal = sesi.Selesai;
   const mulai = selesaiLokal?.MulaiPada ?? waktuKerja.MulaiPertama ?? tiket.DimulaiPada;
   const selesai = selesaiLokal?.SelesaiPada ?? tiket.DiperbaruiPada;

@@ -6,12 +6,16 @@ namespace App\Domain\Pemeliharaan\Http\Policies;
 
 use App\Core\Izin\PemeriksaIzin;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 
 final class PerintahKerjaPolicy
 {
+    /** Kategori lampiran foto hasil kerja teknisi yang boleh dilihat pelapor keluhannya. */
+    public const KATEGORI_FOTO_SESUDAH = 'FotoSesudah';
+
     public function __construct(private readonly PemeriksaIzin $izin) {}
 
     public function viewAny(Pengguna $pengguna): bool
@@ -58,6 +62,24 @@ final class PerintahKerjaPolicy
     public function operate(Pengguna $pengguna, PerintahKerja $perintahKerja): bool
     {
         return $this->dapatMengelola($pengguna) || $this->ditugaskan($pengguna, $perintahKerja);
+    }
+
+    /**
+     * Melihat satu lampiran perintah kerja tanpa hak mengelolanya (PRD 8.20):
+     * pelapor keluhan asal perintah kerja ini boleh melihat foto Sesudah, dan
+     * hanya itu. Lampiran kategori lain tetap tertutup baginya. Dipanggil
+     * `RegistriEntitas::bolehLihatLampiran` untuk unduhan berkas.
+     */
+    public function lihatLampiran(Pengguna $pengguna, PerintahKerja $perintahKerja, ?string $kategori): bool
+    {
+        if ($kategori !== self::KATEGORI_FOTO_SESUDAH || $perintahKerja->KeluhanId === null) {
+            return false;
+        }
+
+        return Keluhan::query()
+            ->whereKey($perintahKerja->KeluhanId)
+            ->where('PelaporId', $pengguna->Id)
+            ->exists();
     }
 
     public function manageCost(Pengguna $pengguna, PerintahKerja $perintahKerja): bool

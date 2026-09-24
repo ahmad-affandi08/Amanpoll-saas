@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 final class RegistriEntitas
 {
     /**
-     * @var array<string, array{kelas: class-string<Model>, izinKelola: string, kemampuanRekaman: string|null}>
+     * @var array<string, array{kelas: class-string<Model>, izinKelola: string, kemampuanRekaman: string|null, kemampuanLihatLampiran: string|null}>
      */
     private array $peta = [];
 
@@ -29,11 +29,26 @@ final class RegistriEntitas
      * ditugaskan mengunggah foto ke perintah kerjanya (`operate`), pelapor
      * menambah keterangan pada keluhannya sendiri (`view`). PRD 8.20.
      *
+     * `$kemampuanLihatLampiran` adalah kemampuan policy yang hanya membuka
+     * **unduhan** lampiran tertentu, bukan daftar, unggah, atau hapusnya. Policy
+     * menerima barisnya dan kategori lampiran, mis. pelapor yang melihat foto
+     * Sesudah pada perintah kerja dari keluhannya sendiri (PRD 8.20).
+     *
      * @param  class-string<Model>  $kelasModel
      */
-    public function daftarkan(string $jenisEntitas, string $kelasModel, string $izinKelola, ?string $kemampuanRekaman = null): void
-    {
-        $this->peta[$jenisEntitas] = ['kelas' => $kelasModel, 'izinKelola' => $izinKelola, 'kemampuanRekaman' => $kemampuanRekaman];
+    public function daftarkan(
+        string $jenisEntitas,
+        string $kelasModel,
+        string $izinKelola,
+        ?string $kemampuanRekaman = null,
+        ?string $kemampuanLihatLampiran = null,
+    ): void {
+        $this->peta[$jenisEntitas] = [
+            'kelas' => $kelasModel,
+            'izinKelola' => $izinKelola,
+            'kemampuanRekaman' => $kemampuanRekaman,
+            'kemampuanLihatLampiran' => $kemampuanLihatLampiran,
+        ];
     }
 
     public function dikenal(string $jenisEntitas): bool
@@ -97,6 +112,28 @@ final class RegistriEntitas
         $entitas = $this->peta[$jenisEntitas]['kelas']::query()->find($entitasId);
 
         return $entitas !== null && Gate::forUser($pengguna)->allows($kemampuan, $entitas);
+    }
+
+    /**
+     * Boleh mengunduh satu lampiran pada baris entitas: siapa pun yang boleh
+     * mengelola barisnya, atau yang lolos `kemampuanLihatLampiran` untuk kategori
+     * lampiran itu. Tidak pernah membuka daftar, unggah, atau hapus lampiran.
+     */
+    public function bolehLihatLampiran(Pengguna $pengguna, string $jenisEntitas, string $entitasId, ?string $kategori): bool
+    {
+        if ($this->bolehKelolaRekaman($pengguna, $jenisEntitas, $entitasId)) {
+            return true;
+        }
+
+        $kemampuan = $this->peta[$jenisEntitas]['kemampuanLihatLampiran'] ?? null;
+
+        if ($kemampuan === null) {
+            return false;
+        }
+
+        $entitas = $this->peta[$jenisEntitas]['kelas']::query()->find($entitasId);
+
+        return $entitas !== null && Gate::forUser($pengguna)->allows($kemampuan, [$entitas, $kategori]);
     }
 
     /** Mengembalikan baris entitas HANYA jika ada. */

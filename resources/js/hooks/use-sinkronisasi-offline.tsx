@@ -23,6 +23,7 @@ import {
 } from '@/lib/penyimpanan-offline';
 import { bersihkanCache, pasangServiceWorker, terapkanPembaruan, tetapkanKonteksCache } from '@/lib/pwa';
 import { ruteOffline } from '@/features/Sinkronisasi/api';
+import { unggahFotoTertunda } from '@/features/Lapangan/components/teknisi/sesiKerja';
 import type {
   AntrianServer,
   KeputusanKonflik,
@@ -163,17 +164,25 @@ export function PenyediaSinkronisasiOffline({ children }: { children: ReactNode 
   const dorong = useCallback(async () => {
     if (!aktif || !konteks || sedangMendorong.current || !navigator.onLine) return;
 
-    const lokal = await ambilAntrian(konteks);
+    sedangMendorong.current = true;
+    const lokal = await ambilAntrian(konteks).catch(() => [] as MutasiOffline[]);
     // IndexedDB mengurutkan menurut KunciOperasi (UUID acak); server memproses menurut
     // urutan kiriman, jadi urutan pembuatan harus dipulihkan dulu (terima → mulai → selesai).
     const belumTuntas = lokal
       .filter((m) => m.Status === 'Menunggu' || m.Status === 'Diproses')
       .sort((a, b) => a.DibuatPada.localeCompare(b.DibuatPada));
-    if (belumTuntas.length === 0) return;
+    if (belumTuntas.length === 0) {
+      sedangMendorong.current = false;
+      return;
+    }
 
-    sedangMendorong.current = true;
     setMengirim(true);
     try {
+      // Foto dan tanda tangan yang tersimpan di HP menjadi lampiran lebih dulu, supaya
+      // mutasi "selesai" tidak ditolak karena tanda tangan penerima belum sampai (39.10).
+      // Yang gagal diunggah tidak menahan antrean; penolakannya tampil sebagai mutasi Gagal.
+      const entitas = belumTuntas.flatMap((m) => (m.EntitasId ? [m.EntitasId] : []));
+      await unggahFotoTertunda(konteks, [...new Set(entitas)]).catch(() => undefined);
       const { data } = await http.post<{ Antrean: AntrianServer[] }>(ruteOffline.antrian, {
         ...amplopPerangkat(),
         Mutasi: belumTuntas.map((m) => ({
