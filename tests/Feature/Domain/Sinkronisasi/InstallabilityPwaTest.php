@@ -110,6 +110,8 @@ final class InstallabilityPwaTest extends TestCase
         $this->assertTrue($hasil['inertiaTersimpanTerpisah'], 'Kunjungan Inertia disimpan di kunci tersendiri.');
         $this->assertFalse($hasil['inertiaParsialTersimpan'], 'Kunjungan Inertia parsial tidak boleh menimpa props utuh.');
         $this->assertFalse($hasil['dasborTersimpan'], 'Halaman dasbor tidak boleh disimpan.');
+        $this->assertFalse($hasil['inertiaDasborAsetTersimpan'], 'Kunjungan Inertia ke halaman aset dasbor tidak boleh disimpan sebagai aset statis.');
+        $this->assertTrue($hasil['ikon3dTersimpan'], 'Ikon 3D Mode Lapangan disimpan sebagai aset statis.');
         $this->assertFalse($hasil['jsonDitangani'], 'Permintaan data JSON dibiarkan lewat tanpa cache.');
         $this->assertFalse($hasil['postDitangani'], 'Permintaan tulis tidak pernah ditangani service worker.');
         $this->assertFalse($hasil['pengalihanTersimpan'], 'Respons pengalihan (mis. sesi habis) tidak boleh disimpan.');
@@ -278,7 +280,7 @@ final class InstallabilityPwaTest extends TestCase
         await pesan({ type: 'TETAPKAN_KONTEKS', kunci: 'org-1:pengguna-1' });
         jawaban = () => respons('beranda teknisi');
         await ambil('/lapangan/teknisi', { mode: 'navigate' });
-        hasil.navigasiTeknisiTersimpan = penyimpanan.get('amanpoll-runtime-v2-org-1:pengguna-1')?.has(ASAL + '/lapangan/teknisi') ?? false;
+        hasil.navigasiTeknisiTersimpan = penyimpanan.get('amanpoll-runtime-v3-org-1:pengguna-1')?.has(ASAL + '/lapangan/teknisi') ?? false;
 
         jawaban = () => respons('pelapor');
         for (const jalur of ['/lapangan/pelapor', '/lapangan/pelapor/lapor', '/lapangan/pelapor/laporan']) await ambil(jalur, { mode: 'navigate' });
@@ -293,6 +295,12 @@ final class InstallabilityPwaTest extends TestCase
         jawaban = () => respons('dasbor');
         await ambil('/aset', { mode: 'navigate' });
         hasil.dasborTersimpan = tersimpan('/aset');
+        jawaban = () => respons('{"component":"Aset/Show"}', { inertia: true });
+        await ambil('/aset/01ASETDASBOR', { headers: { 'X-Inertia': 'true' } });
+        hasil.inertiaDasborAsetTersimpan = tersimpan('/aset/01ASETDASBOR') || tersimpan('/aset/01ASETDASBOR?__inertia=1');
+        jawaban = () => respons('png');
+        await ambil('/images/3d/wrench.png');
+        hasil.ikon3dTersimpan = tersimpan('/images/3d/wrench.png');
         hasil.jsonDitangani = (await ambil('/offline/ringkasan', { headers: { Accept: 'application/json' } })) !== null;
         hasil.postDitangani = (await ambil('/lapangan/tampilan', { method: 'POST', mode: 'navigate' })) !== null;
 
@@ -308,7 +316,7 @@ final class InstallabilityPwaTest extends TestCase
         buatWorker();
         hasil.konteksBertahanSetelahWorkerMati = (await (await ambil('/lapangan/teknisi', { mode: 'navigate' })).text()) === 'beranda teknisi';
 
-        penyimpanan.set('amanpoll-kerangka-v2', new Map([[ASAL + '/offline.html', respons('cadangan')]]));
+        penyimpanan.set('amanpoll-kerangka-v3', new Map([[ASAL + '/offline.html', respons('cadangan')]]));
         await pesan({ type: 'BERSIHKAN' });
         hasil.cacheRuntimeSetelahLogout = runtime();
         hasil.offlineSetelahLogout = await (await ambil('/lapangan/teknisi', { mode: 'navigate' })).text();

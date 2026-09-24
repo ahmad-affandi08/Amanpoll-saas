@@ -2,6 +2,8 @@ import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ListFilter } from 'lucide-react';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
+import { useIzin } from '@/hooks/use-izin';
+import { DialogImporAset } from '@/features/Aset/components/DialogImporAset';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -381,6 +383,7 @@ export default function AsetIndex({
   pilihanUnitPengelola,
   penyaringUnitPengelola,
 }: Props) {
+  const { boleh } = useIzin();
   const [form, setForm] = useState<FilterAset>(filter);
   const [sheetFilterBuka, setSheetFilterBuka] = useState(false);
   // Paginasi memakai preserveState, jadi pilihan bertahan saat berpindah halaman.
@@ -426,6 +429,8 @@ export default function AsetIndex({
           aksi={
             <>
               <TombolEkspor url={ruteAset.ekspor} filter={filter as Record<string, string>} />
+              {/* Izinnya sama dengan mendaftarkan satu aset (PRD 8.4). */}
+              {boleh('Aset.Buat') && <DialogImporAset />}
               <DialogTambahAset
                 kategoriAset={kategoriAset}
                 lokasi={lokasi}

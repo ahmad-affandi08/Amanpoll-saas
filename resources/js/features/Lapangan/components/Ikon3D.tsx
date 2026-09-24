@@ -2,9 +2,9 @@ import { cn } from '@/lib/utils';
 import type { TintIkon } from '@/features/Lapangan/types';
 
 /**
- * Nama ikon 3D (Microsoft Fluent Emoji 3D, MIT) yang tersedia di `public/aset/3d/<nama>.png`.
+ * Nama ikon 3D (Microsoft Fluent Emoji 3D, MIT) yang tersedia di `public/images/3d/<nama>.png`.
  * Hanya ikon yang dipakai Mode Lapangan (DESIGN.md 36.5). Menambah ikon berarti menyalin
- * berkasnya ke `public/aset/3d/` lalu menambah namanya di sini.
+ * berkasnya ke `public/images/3d/` lalu menambah namanya di sini.
  */
 export const NAMA_IKON_3D = [
   'alarm_clock',
@@ -81,7 +81,7 @@ const UKURAN_IKON = {
 export type UkuranIkon3D = keyof typeof UKURAN_IKON | number;
 
 export function sumberIkon3D(nama: NamaIkon3D): string {
-  return `/aset/3d/${nama}.png`;
+  return `/images/3d/${nama}.png`;
 }
 
 interface PropsIkon3D {

@@ -20,4 +20,8 @@ export const ruteAset = {
   label: (id: string[]) => `/aset/label?${id.map((satu) => `id[]=${encodeURIComponent(satu)}`).join('&')}`,
   ekspor: '/aset/ekspor',
   unitPengelola: '/aset/unit-pengelola',
+  imporTemplat: (format: 'csv' | 'xlsx') => `/aset/impor/templat?format=${format}`,
+  imporPratinjau: '/aset/impor/pratinjau',
+  imporGalat: '/aset/impor/galat',
+  impor: '/aset/impor',
 };

@@ -279,3 +279,31 @@ export interface RiwayatKalibrasiAset {
   rencana: RencanaKalibrasiAset[];
   pelaksanaan: DaftarRiwayat<PelaksanaanKalibrasiAset>;
 }
+
+/** Satu galat baris impor aset (PRD 8.4); `baris` mengikuti nomor baris di lembar kerja. */
+export interface GalatImporAset {
+  baris: number;
+  kolom: string;
+  nilai: string;
+  pesan: string;
+}
+
+/** Contoh baris yang akan dibuat, dengan nama rujukan yang sudah diterjemahkan dari kodenya. */
+export interface ContohImporAset {
+  baris: number;
+  KodeAset: string | null;
+  Nama: string;
+  Kategori: string | null;
+  Lokasi: string | null;
+  UnitPengelola: string | null;
+}
+
+/** Balasan pratinjau impor; `galat` dipotong di server, `jumlahGalat` selalu utuh. */
+export interface HasilPratinjauImporAset {
+  namaBerkas: string;
+  jumlahBaris: number;
+  jumlahSah: number;
+  jumlahGalat: number;
+  galat: GalatImporAset[];
+  contoh: ContohImporAset[];
+}

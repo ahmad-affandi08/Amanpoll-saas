@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Aset\Http\Requests;
 
+use App\Core\Izin\PemeriksaLingkupBaris;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Domain\Enums\KondisiAset;
 use App\Domain\Aset\Domain\Enums\StatusAset;
@@ -12,6 +13,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Platform\Http\Requests\UnitPengelolaSah;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 final class SimpanAsetRequest extends FormRequest
 {
@@ -32,7 +34,7 @@ final class SimpanAsetRequest extends FormRequest
 
         return [
             'KodeAset' => ['nullable', 'string', 'max:100',
-                Rule::unique('Aset', 'KodeAset')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->whereNull('DihapusPada')->ignore($asetId, 'Id')],
+                Rule::unique('Aset', 'KodeAset')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))->ignore($asetId, 'Id')],
             'Nama' => ['required', 'string', 'max:200'],
             'KategoriAsetId' => ['required', 'string',
                 Rule::exists('KategoriAset', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
@@ -69,6 +71,45 @@ final class SimpanAsetRequest extends FormRequest
             'KodeBatang' => ['nullable', 'string', 'max:255'],
             'Catatan' => ['nullable', 'string'],
             'Versi' => ['nullable', 'integer'],
+        ];
+    }
+
+    /**
+     * Aset yang disimpan harus tetap terlihat oleh penyimpannya: semantik
+     * ScopeLingkup yang sama dengan daftar aset dan impor aset (PRD 8.21), jadi
+     * staf berlingkup satu ruangan tidak bisa membuat atau memindahkan aset ke
+     * ruangan lain. Pengguna tanpa batas tidak terpengaruh.
+     *
+     * Kode aset juga unik terhadap aset yang diarsipkan, karena indeks
+     * `UqAsetKode` menghitungnya; tanpa itu kode lama berujung galat basis data.
+     *
+     * @return array<int, callable(Validator): void>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $pengguna = $this->user();
+
+                if ($pengguna === null || $validator->errors()->hasAny(['LokasiId', 'UnitOrganisasiId', 'UnitPengelolaId'])) {
+                    return;
+                }
+
+                /** @var Aset|null $aset */
+                $aset = $this->route('aset');
+                $calon = $aset !== null ? $aset->replicate() : new Aset;
+                $calon->setAttribute('OrganisasiId', $aset->OrganisasiId ?? app(KonteksOrganisasi::class)->wajibId());
+
+                foreach (['LokasiId', 'UnitOrganisasiId', 'UnitPengelolaId'] as $ruas) {
+                    if ($this->exists($ruas)) {
+                        $calon->setAttribute($ruas, $this->input($ruas));
+                    }
+                }
+
+                if (! app(PemeriksaLingkupBaris::class)->mencakup((string) $pengguna->getAuthIdentifier(), $calon)) {
+                    $validator->errors()->add('LokasiId', 'Di luar lingkup akses Anda. Lokasi, unit organisasi, atau unit pengelolanya harus termasuk lingkup Anda.');
+                }
+            },
         ];
     }
 }

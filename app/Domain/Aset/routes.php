@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Aset\Http\Controllers\AsetController;
 use App\Domain\Aset\Http\Controllers\AsetPindaiController;
 use App\Domain\Aset\Http\Controllers\GaransiAsetController;
+use App\Domain\Aset\Http\Controllers\ImporAsetController;
 use App\Domain\Aset\Http\Controllers\KartuRiwayatAsetController;
 use App\Domain\Aset\Http\Controllers\KategoriAsetController;
 use App\Domain\Aset\Http\Controllers\KelayakanAsetController;
@@ -48,6 +49,11 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::get('/pindai/{kode}', [AsetPindaiController::class, 'tampilkan'])->name('pindai');
             // Sebelum '/{aset}' supaya 'ekspor' tidak tertelan sebagai id aset.
             Route::get('/ekspor', [AsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
+            // Impor (PRD 8.4). Sebelum '/{aset}' supaya 'impor' tidak tertelan sebagai id aset.
+            Route::get('/impor/templat', [ImporAsetController::class, 'templat'])->middleware('throttle:ekspor')->name('impor.templat');
+            Route::post('/impor/pratinjau', [ImporAsetController::class, 'pratinjau'])->name('impor.pratinjau');
+            Route::post('/impor/galat', [ImporAsetController::class, 'galat'])->middleware('throttle:ekspor')->name('impor.galat');
+            Route::post('/impor', [ImporAsetController::class, 'simpan'])->name('impor.simpan');
             // Sebelum '/{aset}' supaya 'unit-pengelola' tidak tertelan sebagai id aset.
             Route::put('/unit-pengelola', [AsetController::class, 'aturUnitPengelola'])->name('unit-pengelola');
             // Sebelum '/{aset}' supaya 'label' tidak tertelan sebagai id aset.

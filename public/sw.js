@@ -23,7 +23,7 @@
  * 5. Logout mengirim pesan BERSIHKAN: cache runtime dan kunci konteks dibuang.
  */
 
-const VERSI = 'v2';
+const VERSI = 'v3';
 const CACHE_KERANGKA = `amanpoll-kerangka-${VERSI}`;
 const CACHE_META = `amanpoll-meta-${VERSI}`;
 const AWALAN_RUNTIME = `amanpoll-runtime-${VERSI}-`;
@@ -44,7 +44,7 @@ const KERANGKA = [
 ];
 
 /** Path yang boleh disimpan di cache runtime: murni aset build dan gambar. */
-const POLA_ASET_STATIS = [/^\/build\//, /^\/images\//, /^\/assets\//, /^\/icons\//, /^\/aset\//];
+const POLA_ASET_STATIS = [/^\/build\//, /^\/images\//, /^\/assets\//, /^\/icons\//];
 
 /**
  * Layar Mode Lapangan (teknisi dan pelapor) yang boleh disimpan per konteks.

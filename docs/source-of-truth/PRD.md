@@ -609,7 +609,8 @@ Halaman detail aset harus menjadi pusat informasi:
 
 - Perubahan lokasi tidak menghapus histori.
 - Perubahan penanggung jawab tidak menghapus histori.
-- Identifier unik mengikuti scope organisasi.
+- Identifier unik mengikuti scope organisasi, termasuk terhadap aset yang diarsipkan.
+- Pengguna berlingkup hanya bisa membuat atau mengubah aset yang tetap berada dalam lingkupnya (lokasi, unit organisasi, atau unit pengelola), di formulir maupun impor.
 - Aset yang sudah memiliki transaksi historis tidak dihapus fisik.
 - Aset dapat memiliki parent/child relation.
 - Status aset dan kondisi aset diperlakukan sebagai konsep terpisah bila dibutuhkan.

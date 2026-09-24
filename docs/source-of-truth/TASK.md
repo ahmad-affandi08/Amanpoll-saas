@@ -3536,7 +3536,7 @@ Batasan yang tidak boleh dilanggar:
 - Penentuan pengguna lapangan memakai penanda pada `Peran`, bukan kode peran harfiah.
 - Dependensi baru butuh persetujuan pemilik produk. Font `@fontsource/plus-jakarta-sans` sudah disetujui (24 September 2026)
   dan hanya dipakai Mode Lapangan. Pustaka pemindai QR apa pun tetap butuh persetujuan (bawaannya BarcodeDetector peramban + isian kode). Ikon 3D Fluent Emoji (MIT)
-  adalah berkas statis di `public/aset/3d/`, bukan paket; salin hanya yang dipakai, bersama lisensinya.
+  adalah berkas statis di `public/images/3d/`, bukan paket; salin hanya yang dipakai, bersama lisensinya.
 - Rute di bawah `/lapangan`, didaftarkan di `app/Domain/Sinkronisasi/routes.php`, domain yang sudah memiliki ruang kerja
   teknisi offline. Membuat domain baru di `app/Domain` butuh persetujuan.
 - Halaman di `resources/js/features/Lapangan/`, kerangka di `resources/js/layouts/KerangkaLapangan.tsx`.
@@ -3569,7 +3569,7 @@ Urutan pengerjaan di bawah ini mengikat: 39.01 dan 39.02 menutup celah akses, ja
 - [x] `KerangkaLapangan`: hero atau appbar gradien, kartu apung, navigasi bawah dengan tombol tengah, bilah aksi, lembar bawah;
   lebar maksimum 480px di layar lebar.
 - [x] Komponen tiket, rute jam, perhentian (stasiun), chip status, tab pil, isian bergaya tiket, banner, ilustrasi momen.
-- [x] Aset ikon 3D di `public/aset/3d/` beserta lisensinya, dengan pemetaan makna → ikon sesuai DESIGN §36.5.
+- [x] Aset ikon 3D di `public/images/3d/` beserta lisensinya, dengan pemetaan makna → ikon sesuai DESIGN §36.5.
 
 ## 39.04 Teknisi: beranda, notifikasi, tiket
 
@@ -3739,9 +3739,22 @@ Urutan: 40.01 dikerjakan lebih dulu karena seluruh bagian lain memakai kolom, at
 
 Menutup celah 40.02 (kolom unit pengelola di impor). Aturan di PRD 8.4 "Impor Aset".
 
-- [ ] Templat CSV dan XLSX, unggah, pratinjau validasi per baris, dan konfirmasi (semua atau tidak sama sekali, satu transaksi).
-- [ ] Rujukan lewat kode (termasuk unit pengelola), kode aset kosong memakai mesin kode, kode kembar dan kode yang sudah ada ditolak, lingkup pengguna dihormati.
-- [ ] Aset dibuat lewat Action pembuat aset yang sama dengan formulir; audit impor; panduan di `/dokumentasi`.
+- [x] Templat CSV dan XLSX, unggah, pratinjau validasi per baris, dan konfirmasi (semua atau tidak sama sekali, satu transaksi).
+- [x] Rujukan lewat kode (termasuk unit pengelola), kode aset kosong memakai mesin kode, kode kembar dan kode yang sudah ada ditolak, lingkup pengguna dihormati.
+- [x] Aset dibuat lewat Action pembuat aset yang sama dengan formulir; audit impor; panduan di `/dokumentasi`.
+
+Pemeriksa impor memanggil aturan `SimpanAsetRequest` per baris, bukan salinannya, jadi aturan formulir dan impor tidak bisa berbeda. Setiap aset dibuat lewat `BuatAset` yang sama dengan formulir di dalam satu transaksi. Berkas dibaca OpenSpout, yang sudah terpasang.
+
+Yang dipilih:
+- Rujukan diisi kode. Merek tidak punya kolom, karena aset tidak menyimpan merek dan merek mengikuti kode model.
+- Baris yang berkode sendiri dibuat lebih dulu. Tanpa itu, baris berkode kosong bisa mendapat kode otomatis yang sama dengan kode tertulis di baris sesudahnya.
+- Kolom unit pengelola di templat hanya muncul bila organisasi memakai fitur itu, tetapi saat membaca kolomnya dikenali di mana pun.
+
+Jebakan yang ditemukan:
+- Aturan `unique` kode aset di formulir melewatkan aset yang diarsipkan, padahal indeks `UqAsetKode` menghitungnya, sehingga memakai kode lama berujung galat 500. Aset yang diarsipkan kini ikut dihitung.
+- Formulir aset tidak membatasi lingkup, jadi staf berlingkup bisa membuat aset yang lalu tidak terlihat olehnya. Kini formulir dan impor memakai pemeriksaan yang sama (`PemeriksaLingkupBaris`).
+- Ikon 3D Mode Lapangan ada di `public/aset/3d`. Folder `public/aset` membayangi rute `/aset` di server yang mengutamakan direktori nyata (`artisan serve`, dan Apache dengan `RewriteCond !-d` bawaan Laravel). Service worker juga menganggap semua `/aset/...` aset statis, sehingga kunjungan Inertia ke halaman aset dasbor tersimpan di cache. Ikon dipindah ke `public/images/3d`, pola `/aset/` dicabut, dan versi cache service worker dinaikkan agar salinan lama terhapus.
+
 
 ### Gate 40
 

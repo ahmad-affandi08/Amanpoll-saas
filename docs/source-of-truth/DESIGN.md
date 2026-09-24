@@ -1531,7 +1531,7 @@ Token dipasang di `resources/css/app.css` dengan awalan `lapangan-` supaya tidak
 
 ## 36.5 Ikon
 
-- **Ikon 3D clay**: Microsoft Fluent Emoji 3D (lisensi MIT). Berkas PNG 256px disimpan sebagai aset statis di `public/aset/3d/<nama>.png`, beserta berkas lisensinya. Hanya salin ikon yang benar-benar dipakai; ini bukan paket npm.
+- **Ikon 3D clay**: Microsoft Fluent Emoji 3D (lisensi MIT). Berkas PNG 256px disimpan sebagai aset statis di `public/images/3d/<nama>.png`, beserta berkas lisensinya. Hanya salin ikon yang benar-benar dipakai; ini bukan paket npm.
   - Dipakai untuk: grid menu, kepala kartu penting, ilustrasi jenis aset, kategori keluhan, banner, layar sukses/kosong, dan baris menu Akun.
   - Selalu di atas wadah tint radius 16–18px, atau berdiri bebas sebagai ilustrasi.
 - **Lucide** tetap dipakai untuk UI kecil: navigasi bawah, panah, tombol ikon, status bar, dan isi chip.

@@ -212,6 +212,41 @@ class UnitPengelolaAsetTest extends TestCase
         });
     }
 
+    public function test_formulir_aset_menolak_lokasi_dan_unit_di_luar_lingkup_pengguna(): void
+    {
+        $stafIt = $this->buatPengguna(self::IZIN_PENUH, $this->it);
+
+        $this->actingAs($stafIt)->post('/aset', $this->isianAset(['Nama' => 'Ventilator', 'UnitPengelolaId' => $this->ipsrs->Id]))
+            ->assertSessionHasErrors(['LokasiId' => 'Di luar lingkup akses Anda. Lokasi, unit organisasi, atau unit pengelolanya harus termasuk lingkup Anda.']);
+        $this->actingAs($stafIt)->post('/aset', $this->isianAset(['Nama' => 'Tanpa Lingkup']))
+            ->assertSessionHasErrors('LokasiId');
+
+        // Unit pengelola IT memperluas lingkup staf IT ke ruangan mana pun (PRD 8.21).
+        $this->actingAs($stafIt)->post('/aset', $this->isianAset(['Nama' => 'Printer IGD', 'UnitPengelolaId' => $this->it->Id]))
+            ->assertSessionHasNoErrors();
+
+        $milikIt = $this->buatAset('Switch', $this->it);
+        $this->actingAs($stafIt)->put('/aset/'.$milikIt->Id, $this->isianAset(['Nama' => 'Switch', 'UnitPengelolaId' => $this->ipsrs->Id]))
+            ->assertSessionHasErrors('LokasiId');
+
+        $this->dalamOrganisasi(function () use ($milikIt): void {
+            $kueri = fn () => Aset::query()->withoutGlobalScope(ScopeLingkup::class);
+            $this->assertSame(0, $kueri()->whereIn('Nama', ['Ventilator', 'Tanpa Lingkup'])->count());
+            $this->assertSame(1, $kueri()->where('Nama', 'Printer IGD')->count());
+            $this->assertSame($this->it->Id, $kueri()->whereKey($milikIt->Id)->value('UnitPengelolaId'));
+        });
+    }
+
+    public function test_formulir_aset_menolak_kode_milik_aset_yang_diarsipkan(): void
+    {
+        $admin = $this->buatPengguna(self::IZIN_PENUH);
+        $diarsipkan = $this->buatAset('Aset Lama', null, ['KodeAset' => 'AST-ARSIP-01']);
+        $this->dalamOrganisasi(fn () => $diarsipkan->delete());
+
+        $this->actingAs($admin)->post('/aset', $this->isianAset(['KodeAset' => 'AST-ARSIP-01']))
+            ->assertSessionHasErrors('KodeAset');
+    }
+
     public function test_ubah_massal_butuh_izin_ubah_aset(): void
     {
         $pembaca = $this->buatPengguna(['Aset.Lihat']);
