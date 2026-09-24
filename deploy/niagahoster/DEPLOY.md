@@ -35,7 +35,7 @@ Jangan meletakkan `.env`, `vendor`, `storage`, atau source Laravel lain di `publ
 2. Pilih PHP **8.4 jika tersedia**; Laravel 13 minimum PHP 8.3.
 3. Upload source ke folder `amanpoll/` satu tingkat di atas `public_html/`.
 4. Salin template `deploy/niagahoster/public_html/*` ke `public_html/`.
-5. Salin hasil `public/build/` ke `public_html/build/`.
+5. Salin seluruh isi `public/` selain `index.php` ke `public_html/`: `build/` (hasil `npm run build`), `images/` (logo dan ikon 3D), `icons/`, favicon, `sw.js`, `site.webmanifest`, `offline.html`, dan `robots.txt`. Tanpa `images/` dan `sw.js`, logo, ikon Mode Lapangan, dan mode offline tidak berfungsi.
 6. Buat `.env` production dari `deploy/niagahoster/.env.production.example`.
 7. Via SSH, jalankan Composer 2 dan Artisan.
 
@@ -85,7 +85,7 @@ npm ci
 npm run build
 ```
 
-Upload hasil `public/build`. Jangan bergantung pada Vite dev server di hosting.
+Upload hasil `public/build` bersama aset statis lain di `public/` (lihat langkah 5). Jangan bergantung pada Vite dev server di hosting.
 
 ## Permission
 
