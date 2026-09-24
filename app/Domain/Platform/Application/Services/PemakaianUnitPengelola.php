@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
  * Siapa saja yang masih menunjuk sebuah unit sebagai unit pengelolanya (PRD 8.21).
  *
  * Tanda Mengelola Aset tidak boleh dicabut, dan unitnya tidak boleh dihapus,
- * selama aset, kategori keluhan, gudang, atau tiket yang belum final masih
- * memakainya -- kalau tidak, antrian itu kehilangan pemiliknya tanpa ada yang
+ * selama aset, kategori keluhan, gudang, rencana pemeliharaan/kalibrasi,
+ * atau tiket yang belum final masih memakainya -- kalau tidak, antrian itu kehilangan pemiliknya tanpa ada yang
  * menyadari. Tiket final (StatusKeluhan::final(), StatusPerintahKerja::final())
  * tidak dihitung: riwayatnya tetap menyebut unit itu, dan itu memang benar.
  *
@@ -55,6 +55,8 @@ final class PemakaianUnitPengelola
                 ->whereNull('DihapusPada')
                 ->whereNotIn('Status', $statusPerintahKerjaFinal)
                 ->count(),
+            'rencana pemeliharaan' => DB::table('RencanaPemeliharaan')->where('UnitPengelolaId', $unitId)->count(),
+            'rencana kalibrasi' => DB::table('RencanaKalibrasi')->where('UnitPengelolaId', $unitId)->count(),
         ];
 
         return array_filter($jumlah, fn (int $satu): bool => $satu > 0);

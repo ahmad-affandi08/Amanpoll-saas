@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Http\Resources;
 
+use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -12,6 +13,8 @@ final class PerintahKerjaResource extends JsonResource
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
+        $perintahKerja = $this->resource instanceof PerintahKerja ? $this->resource : null;
+
         return [
             'Id' => $this->Id,
             'Nomor' => $this->Nomor,
@@ -25,6 +28,12 @@ final class PerintahKerjaResource extends JsonResource
             'LokasiId' => $this->LokasiId,
             'NamaLokasi' => $this->whenLoaded('lokasi', fn () => $this->lokasi?->Nama),
             'UnitOrganisasiId' => $this->UnitOrganisasiId,
+            'UnitPengelolaId' => $perintahKerja?->UnitPengelolaId,
+            'UnitPengelola' => $this->whenLoaded('unitPengelola', function () use ($perintahKerja): ?array {
+                $unit = $perintahKerja?->unitPengelola;
+
+                return $unit === null ? null : ['Id' => $unit->Id, 'Kode' => $unit->Kode, 'Nama' => $unit->Nama];
+            }),
             'DijadwalkanMulaiPada' => $this->DijadwalkanMulaiPada?->toIso8601String(),
             'DijadwalkanSelesaiPada' => $this->DijadwalkanSelesaiPada?->toIso8601String(),
             'DiterimaPada' => $this->DiterimaPada?->toIso8601String(),

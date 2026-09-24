@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Aset\Http\Controllers;
 
 use App\Core\Audit\LayananAudit;
+use App\Domain\Aset\Application\Actions\AturUnitPengelolaAset;
 use App\Domain\Aset\Application\Actions\BuatAset;
 use App\Domain\Aset\Application\Actions\HapusAset;
 use App\Domain\Aset\Application\Actions\UbahAset;
+use App\Domain\Aset\Http\Requests\AturUnitPengelolaAsetRequest;
 use App\Domain\Aset\Http\Requests\CetakLabelAsetRequest;
 use App\Domain\Aset\Http\Requests\SimpanAsetRequest;
 use App\Domain\Aset\Http\Resources\AsetResource;
@@ -18,6 +20,7 @@ use App\Domain\Aset\Infrastructure\Persistence\Models\KategoriAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\ModelAset;
 use App\Domain\Penyedia\Http\Resources\PenyediaResource;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Platform\Application\Services\OpsiUnitPengelola;
 use App\Domain\Platform\Http\Resources\LokasiResource;
 use App\Domain\Platform\Http\Resources\UnitOrganisasiResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -50,6 +53,8 @@ final class AsetController extends Controller
         'kategoriAsetId' => ['nullable', 'string'],
         'lokasiId' => ['nullable', 'string'],
         'status' => ['nullable', 'string'],
+        // Id unit pengelola, atau OpsiUnitPengelola::TANPA untuk aset yang belum punya.
+        'unitPengelolaId' => ['nullable', 'string'],
         'urutkan' => ['nullable', 'string', 'in:Nama,KodeAset,Status,DibuatPada'],
         'arah' => ['nullable', 'string', 'in:asc,desc'],
         'format' => ['nullable', 'string', 'in:Csv,Xlsx,Pdf,csv,xlsx,pdf'],
@@ -63,11 +68,20 @@ final class AsetController extends Controller
 
         $aset = $this->kueriTersaring($filter)->paginate(25)->withQueryString();
 
+        // Penyaring memuat unit nonaktif (aset lama bisa milik unit yang kini nonaktif);
+        // daftarnya kosong tepat bila organisasi tidak memakai unit pengelola, dan
+        // halaman lalu tampil persis seperti sebelum fitur ini ada.
+        $penyaringUnitPengelola = OpsiUnitPengelola::daftar(termasukNonaktif: true);
+
         return Inertia::render('Aset/Index', [
             'aset' => AsetResource::collection($aset),
             'filter' => $filter,
             // Dikirim dari server supaya batas di tombol cetak tidak pernah beda dengan validasinya.
             'maksLabel' => CetakLabelAsetRequest::MAKS_LABEL,
+            'maksUbahMassal' => AturUnitPengelolaAsetRequest::MAKS_ASET,
+            'unitPengelolaDipakai' => $penyaringUnitPengelola !== [],
+            'pilihanUnitPengelola' => $penyaringUnitPengelola === [] ? [] : OpsiUnitPengelola::daftar(),
+            'penyaringUnitPengelola' => $penyaringUnitPengelola,
             'wajib' => ['aset' => AturanWajib::untuk(SimpanAsetRequest::class)],
             'kategoriAset' => KategoriAsetResource::collection(KategoriAset::query()->orderBy('Nama')->get()),
             'lokasi' => LokasiResource::collection(Lokasi::query()->orderBy('Nama')->get()),
@@ -86,7 +100,7 @@ final class AsetController extends Controller
         $arah = $filter['arah'] ?? 'desc';
 
         return Aset::query()
-            ->with(['kategoriAset', 'lokasi', 'modelAset', 'unitOrganisasi'])
+            ->with(['kategoriAset', 'lokasi', 'modelAset', 'unitOrganisasi', 'unitPengelola:Id,Kode,Nama'])
             ->when($filter['cari'] ?? null, fn ($q, $v) => $q->where(fn ($qq) => $qq
                 ->where('Nama', 'like', "%{$v}%")
                 ->orWhere('KodeAset', 'like', "%{$v}%")
@@ -94,6 +108,7 @@ final class AsetController extends Controller
             ->when($filter['kategoriAsetId'] ?? null, fn ($q, $v) => $q->where('KategoriAsetId', $v))
             ->when($filter['lokasiId'] ?? null, fn ($q, $v) => $q->where('LokasiId', $v))
             ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
+            ->when($filter['unitPengelolaId'] ?? null, fn ($q, $v) => OpsiUnitPengelola::saring($q, $v))
             ->orderBy($urutkan, $arah)
             // Pemutus seri. Tanpa urutan yang pasti, dua aset dengan nilai urut
             // sama boleh ditukar MySQL antar permintaan -- satu baris muncul di
@@ -121,6 +136,10 @@ final class AsetController extends Controller
                 KolomEkspor::atribut('Nomor Seri', 'NomorSeri'),
                 KolomEkspor::atribut('Nomor Inventaris', 'NomorInventaris'),
                 KolomEkspor::dari('Unit', fn (Aset $a): string => BacaRelasi::teks(BacaRelasi::model($a, 'unitOrganisasi'), 'Nama')),
+                // Hanya bila organisasi memakai unit pengelola; berkas organisasi satu bagian tetap sama.
+                ...(OpsiUnitPengelola::dipakai()
+                    ? [KolomEkspor::dari('Unit Pengelola', fn (Aset $a): string => BacaRelasi::teks(BacaRelasi::model($a, 'unitPengelola'), 'Nama'))]
+                    : []),
                 KolomEkspor::dari('Lokasi', fn (Aset $a): string => BacaRelasi::teks(BacaRelasi::model($a, 'lokasi'), 'Nama')),
                 KolomEkspor::atribut('Status', 'Status'),
                 KolomEkspor::atribut('Kondisi', 'Kondisi'),
@@ -138,7 +157,7 @@ final class AsetController extends Controller
     {
         $this->authorize('view', $aset);
 
-        $aset->load(['kategoriAset', 'modelAset.merek', 'alkesAspak', 'lokasi', 'unitOrganisasi', 'penyedia', 'dibuatOleh']);
+        $aset->load(['kategoriAset', 'modelAset.merek', 'alkesAspak', 'lokasi', 'unitOrganisasi', 'unitPengelola:Id,Kode,Nama', 'penyedia', 'dibuatOleh']);
 
         return Inertia::render('Aset/Show', [
             'aset' => new AsetResource($aset),
@@ -150,7 +169,35 @@ final class AsetController extends Controller
             'penyedia' => PenyediaResource::collection(Penyedia::query()->orderBy('Nama')->get()),
             'unitOrganisasi' => UnitOrganisasiResource::collection(UnitOrganisasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get()),
             'lokasi' => LokasiResource::collection(Lokasi::query()->orderBy('Nama')->get()),
+            // Aset yang sudah punya unit pengelola tetap menampilkan isiannya walau
+            // seluruh unit bertanda kini nonaktif.
+            'unitPengelolaDipakai' => $aset->UnitPengelolaId !== null || OpsiUnitPengelola::dipakai(),
+            'pilihanUnitPengelola' => OpsiUnitPengelola::daftar($aset->UnitPengelolaId),
         ]);
+    }
+
+    /**
+     * Ubah massal unit pengelola dari pilihan di daftar aset (PRD 8.21).
+     *
+     * Aset dimuat lewat model, jadi ScopeLingkup berlaku: Id aset di luar lingkup
+     * pengguna tidak ditemukan dan seluruh permintaan ditolak, bukan dikerjakan
+     * sebagian diam-diam. Izinnya sama dengan mengubah satu aset.
+     */
+    public function aturUnitPengelola(AturUnitPengelolaAsetRequest $request, AturUnitPengelolaAset $aksi): RedirectResponse
+    {
+        $asetIds = $request->safe()->collect('AsetId');
+
+        $aset = Aset::query()->whereKey($asetIds->all())->get();
+
+        if ($aset->count() !== $asetIds->count()) {
+            return back()->withErrors(['AsetId' => 'Sebagian aset yang dipilih tidak ditemukan atau di luar lingkup akses Anda.']);
+        }
+
+        $aset->each(fn (Aset $satu) => $this->authorize('update', $satu));
+
+        $jumlah = $aksi->jalankan($aset, $request->validated('UnitPengelolaId'));
+
+        return back()->with('sukses', "Unit pengelola {$jumlah} aset berhasil diperbarui.");
     }
 
     public function store(SimpanAsetRequest $request, BuatAset $aksi): RedirectResponse

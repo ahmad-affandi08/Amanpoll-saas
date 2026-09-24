@@ -18,6 +18,10 @@ export interface Gudang {
   Id: string;
   LokasiId: string | null;
   NamaLokasi: string | null;
+  /** Bagian pemilik gudang (PRD 8.21). */
+  UnitPengelolaId: string | null;
+  KodeUnitPengelola?: string | null;
+  NamaUnitPengelola?: string | null;
   Kode: string;
   Nama: string;
   PenanggungJawabId: string | null;

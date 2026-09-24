@@ -30,6 +30,9 @@ export function opsiKosong(label = 'Tidak diisi'): { nilai: string; label: strin
   return { nilai: TANPA_PILIHAN, label };
 }
 
+/** Nilai penyaring "Belum ada unit pengelola"; pasangan `OpsiUnitPengelola::TANPA` di server. */
+export const TANPA_UNIT_PENGELOLA = 'tanpa';
+
 /**
  * Opsi Combobox unit pengelola (PRD 8.21): nama sebagai label, kode sebagai keterangan.
  *

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
+use App\Domain\Platform\Http\Requests\UnitPengelolaSah;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,6 +30,7 @@ final class SimpanRencanaKalibrasiRequest extends FormRequest
     public function rules(): array
     {
         $organisasiId = app(KonteksOrganisasi::class)->id();
+        $rencana = $this->route('rencanaKalibrasi');
 
         return [
             'AsetId' => ['required', 'string', 'max:26',
@@ -41,6 +44,7 @@ final class SimpanRencanaKalibrasiRequest extends FormRequest
             'TanggalBerikutnya' => ['nullable', 'date'],
             'PeringatanHariSebelum' => ['nullable', 'integer', 'min:1'],
             'Aktif' => ['sometimes', 'boolean'],
+            'UnitPengelolaId' => UnitPengelolaSah::aturan($rencana instanceof RencanaKalibrasi ? $rencana->UnitPengelolaId : null),
         ];
     }
 }

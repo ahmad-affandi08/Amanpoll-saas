@@ -1,3 +1,5 @@
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+
 export type TipeJawabanDaftarPeriksa = 'Teks' | 'Angka' | 'Pilihan' | 'YaTidak' | 'Foto';
 
 export interface ButirTemplatDaftarPeriksa {
@@ -91,6 +93,9 @@ export interface RencanaPemeliharaan {
   ToleransiHari: number;
   BuatPerintahKerjaHariSebelum: number;
   Aktif: boolean;
+  /** Cadangan unit pengelola tiket preventif bila asetnya belum punya (PRD 8.21). */
+  UnitPengelolaId?: string | null;
+  unit_pengelola?: UnitPengelolaRingkas | null;
   DibuatPada?: string;
   DiperbaruiPada?: string;
   aset_count?: number;

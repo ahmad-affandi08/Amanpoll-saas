@@ -69,21 +69,37 @@ final class QueryPreventif implements PenyediaKpi
         );
     }
 
-    /** @return Builder<JadwalPemeliharaan> */
+    /**
+     * Jadwal dimiliki pasangan rencana-aset. Unit organisasi dan lokasi dibaca
+     * dari asetnya; unit pengelola dari rencana, atau dari aset bila rencana
+     * belum diisi.
+     *
+     * @return Builder<JadwalPemeliharaan>
+     */
     private function lingkup(FilterMetrik $filter): Builder
     {
         $query = JadwalPemeliharaan::query();
 
+        if (! $filter->adaFilterUnit() && ! $filter->adaFilterLokasi() && ! $filter->adaFilterUnitPengelola()) {
+            return $query;
+        }
+
+        $rencanaAset = RencanaPemeliharaanAset::query()->select('RencanaPemeliharaanAset.Id');
+
         if ($filter->adaFilterUnit() || $filter->adaFilterLokasi()) {
-            $query->whereIn(
-                'RencanaPemeliharaanAsetId',
-                RencanaPemeliharaanAset::query()
-                    ->select('Id')
-                    ->whereIn('AsetId', $this->asetDalamLingkup($filter))
-                    ->getQuery(),
+            $rencanaAset->whereIn('RencanaPemeliharaanAset.AsetId', $this->asetDalamLingkup($filter, termasukUnitPengelola: false));
+        }
+
+        if ($filter->adaFilterUnitPengelola()) {
+            $rencanaAset->join('RencanaPemeliharaan', 'RencanaPemeliharaan.Id', '=', 'RencanaPemeliharaanAset.RencanaPemeliharaanId');
+            $this->saringUnitPengelolaRencana(
+                $rencanaAset,
+                $filter,
+                'RencanaPemeliharaan.UnitPengelolaId',
+                'RencanaPemeliharaanAset.AsetId',
             );
         }
 
-        return $query;
+        return $query->whereIn('RencanaPemeliharaanAsetId', $rencanaAset->getQuery());
     }
 }

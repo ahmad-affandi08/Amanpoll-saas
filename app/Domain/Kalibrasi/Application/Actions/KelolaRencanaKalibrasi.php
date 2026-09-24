@@ -59,6 +59,7 @@ final class KelolaRencanaKalibrasi
                 'TanggalBerikutnya' => $tanggalBerikutnya->toDateString(),
                 'PeringatanHariSebelum' => (int) ($data['PeringatanHariSebelum'] ?? 30),
                 'Aktif' => $data['Aktif'] ?? true,
+                'UnitPengelolaId' => filled($data['UnitPengelolaId'] ?? null) ? $data['UnitPengelolaId'] : null,
             ]);
 
             $this->layananAudit->catat(
@@ -105,6 +106,9 @@ final class KelolaRencanaKalibrasi
                 'TanggalBerikutnya' => $tanggalBerikutnya?->toDateString(),
                 'PeringatanHariSebelum' => isset($data['PeringatanHariSebelum']) ? (int) $data['PeringatanHariSebelum'] : $rencana->PeringatanHariSebelum,
                 'Aktif' => $data['Aktif'] ?? $rencana->Aktif,
+                'UnitPengelolaId' => array_key_exists('UnitPengelolaId', $data)
+                    ? (filled($data['UnitPengelolaId']) ? $data['UnitPengelolaId'] : null)
+                    : $rencana->UnitPengelolaId,
             ]);
 
             $this->layananAudit->catat(

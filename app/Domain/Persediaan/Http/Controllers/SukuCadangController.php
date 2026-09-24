@@ -13,6 +13,7 @@ use App\Domain\Persediaan\Application\Actions\HapusKelompokSukuCadang;
 use App\Domain\Persediaan\Application\Actions\HapusSukuCadang;
 use App\Domain\Persediaan\Application\Actions\UbahKelompokSukuCadang;
 use App\Domain\Persediaan\Application\Actions\UbahSukuCadang;
+use App\Domain\Persediaan\Application\Services\LingkupGudang;
 use App\Domain\Persediaan\Domain\Enums\StatusReservasiSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanKelompokSukuCadangRequest;
 use App\Domain\Persediaan\Http\Requests\SimpanKompatibilitasSukuCadangRequest;
@@ -46,6 +47,12 @@ final class SukuCadangController extends Controller
     private const MAKS_RIWAYAT = 50;
 
     /**
+     * Master suku cadang tetap katalog bersama organisasi; angka stok, pemakaian,
+     * dan reservasinya hanya dari gudang yang terlihat pengguna (PRD 8.21).
+     */
+    public function __construct(private readonly LingkupGudang $lingkupGudang) {}
+
+    /**
      * Penyaring daftar suku cadang, dipakai bersama halaman dan ekspornya.
      *
      * Kueri dasarnya dioper karena keduanya memilih kolom yang berbeda: halaman
@@ -75,9 +82,9 @@ final class SukuCadangController extends Controller
             ->with('kategoriSukuCadang')
             ->select('SukuCadang.*')
             ->selectSub(
-                DB::table('StokSukuCadang')
+                $this->lingkupGudang->saringDasar(DB::table('StokSukuCadang')
                     ->selectRaw('COALESCE(SUM(JumlahTersedia) - SUM(JumlahDitahan), 0)')
-                    ->whereColumn('StokSukuCadang.SukuCadangId', 'SukuCadang.Id'),
+                    ->whereColumn('StokSukuCadang.SukuCadangId', 'SukuCadang.Id'), 'StokSukuCadang.GudangId'),
                 'JumlahTersediaBersih',
             );
 
@@ -110,7 +117,7 @@ final class SukuCadangController extends Controller
         $halaman = $daftar->halaman();
 
         // Stok dijumlahkan hanya untuk baris yang benar-benar tampil di halaman ini.
-        $agregatStok = DB::table('StokSukuCadang')
+        $agregatStok = $this->lingkupGudang->saringDasar(DB::table('StokSukuCadang'), 'StokSukuCadang.GudangId')
             ->select('SukuCadangId', DB::raw('SUM(JumlahTersedia) - SUM(JumlahDitahan) as bersih'))
             ->whereIn('SukuCadangId', $halaman->getCollection()->pluck('Id'))
             ->groupBy('SukuCadangId')
@@ -137,7 +144,8 @@ final class SukuCadangController extends Controller
      */
     private function jumlahDibawahMinimum(): int
     {
-        $saldo = DB::table('StokSukuCadang')
+        // Sama dengan angka stok di tiap baris: hanya gudang yang terlihat.
+        $saldo = $this->lingkupGudang->saringDasar(DB::table('StokSukuCadang'), 'StokSukuCadang.GudangId')
             ->select('SukuCadangId', DB::raw('SUM(JumlahTersedia) - SUM(JumlahDitahan) as bersih'))
             ->groupBy('SukuCadangId');
 
@@ -178,7 +186,7 @@ final class SukuCadangController extends Controller
      */
     private function stokPerGudang(SukuCadang $sukuCadang): array
     {
-        $baris = $sukuCadang->stok()
+        $baris = $this->lingkupGudang->saring($sukuCadang->stok()->getQuery(), 'StokSukuCadang.GudangId')
             ->with(['gudang', 'lokasiGudang', 'kelompokSukuCadang'])
             ->get()
             ->map(fn (StokSukuCadang $satu): array => [
@@ -207,9 +215,11 @@ final class SukuCadangController extends Controller
      */
     private function pemakaianTerakhir(SukuCadang $sukuCadang): array
     {
+        $pemakaian = fn () => $this->lingkupGudang->saring($sukuCadang->pemakaian()->getQuery(), 'PemakaianSukuCadang.GudangId');
+
         return [
-            'total' => (int) $sukuCadang->pemakaian()->count(),
-            'data' => array_values($sukuCadang->pemakaian()
+            'total' => (int) $pemakaian()->count(),
+            'data' => array_values($pemakaian()
                 ->with(['perintahKerja', 'gudang', 'dipakaiOleh'])
                 ->limit(self::MAKS_RIWAYAT)
                 ->get()
@@ -233,7 +243,7 @@ final class SukuCadangController extends Controller
      */
     private function reservasiAktif(SukuCadang $sukuCadang): array
     {
-        return array_values($sukuCadang->reservasi()
+        return array_values($this->lingkupGudang->saring($sukuCadang->reservasi()->getQuery(), 'ReservasiSukuCadang.GudangId')
             ->where('Status', StatusReservasiSukuCadang::Aktif->value)
             ->with(['perintahKerja', 'gudang'])
             ->limit(self::MAKS_RIWAYAT)

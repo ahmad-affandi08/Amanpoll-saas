@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { CalendarRange, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { FilterMetrik, PilihanDimensi } from '@/features/Pelaporan/types';
 import { Combobox } from '@/components/ui/combobox';
-import { opsiDari } from '@/lib/pilihan';
+import { opsiDari, opsiUnitPengelola, TANPA_PILIHAN } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { tambahHari, tanggalHariIni } from '@/lib/waktu';
 
@@ -27,17 +28,27 @@ export function BarisFilter({
   filter,
   pilihanUnit,
   pilihanLokasi,
+  pilihanUnitPengelola = [],
   url,
   paramTambahan = {},
 }: {
   filter: FilterMetrik;
   pilihanUnit: PilihanDimensi[];
   pilihanLokasi: PilihanDimensi[];
+  /** Kosong bila organisasi tidak memakai unit pengelola; pemilihnya lalu tidak tampil. */
+  pilihanUnitPengelola?: UnitPengelolaRingkas[];
   url: string;
   paramTambahan?: Record<string, string>;
 }) {
   const [dari, setDari] = useState(filter.Dari);
   const [sampai, setSampai] = useState(filter.Sampai);
+
+  // Rentang dari server bisa berganti tanpa lewat baris ini (mis. membuka laporan tersimpan
+  // yang memulihkan filternya) sementara state halaman dipertahankan.
+  useEffect(() => {
+    setDari(filter.Dari);
+    setSampai(filter.Sampai);
+  }, [filter.Dari, filter.Sampai]);
 
   const terapkan = (ubahan: Partial<FilterMetrik>) => {
     const berikutnya = {
@@ -45,6 +56,7 @@ export function BarisFilter({
       Sampai: ubahan.Sampai ?? sampai,
       UnitOrganisasiId: ubahan.UnitOrganisasiId ?? filter.UnitOrganisasiId,
       LokasiId: ubahan.LokasiId ?? filter.LokasiId,
+      UnitPengelolaId: ubahan.UnitPengelolaId ?? filter.UnitPengelolaId ?? [],
     };
 
     setDari(berikutnya.Dari);
@@ -106,11 +118,26 @@ export function BarisFilter({
         />
       </div>
 
+      {pilihanUnitPengelola.length > 0 && (
+        <div className="space-y-1">
+          <Label className="text-xs">Unit pengelola</Label>
+          <Combobox
+            nilai={filter.UnitPengelolaId?.[0] ?? TANPA_PILIHAN}
+            onPilih={(nilai) => terapkan({ UnitPengelolaId: nilai === TANPA_PILIHAN ? [] : [nilai] })}
+            opsi={opsiUnitPengelola(pilihanUnitPengelola, 'Semua unit pengelola')}
+            placeholder="Semua unit pengelola"
+            className="w-[11rem]"
+          />
+        </div>
+      )}
+
       <Button
         type="button"
         variant="ghost"
         size="sm"
-        onClick={() => terapkan({ ...tanggalMundur(30), UnitOrganisasiId: [], LokasiId: [] })}
+        onClick={() =>
+          terapkan({ ...tanggalMundur(30), UnitOrganisasiId: [], LokasiId: [], UnitPengelolaId: [] })
+        }
         className="ml-auto"
       >
         <RotateCcw className="size-4" />

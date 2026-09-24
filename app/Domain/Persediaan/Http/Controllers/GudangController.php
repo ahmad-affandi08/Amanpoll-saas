@@ -19,6 +19,7 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\LokasiGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
+use App\Domain\Platform\Application\Services\OpsiUnitPengelola;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
@@ -26,6 +27,7 @@ use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\DaftarTersaring;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -43,11 +45,13 @@ final class GudangController extends Controller
     {
         return DaftarTersaring::untuk(
             $request,
-            Gudang::query()->with(['lokasi', 'penanggungJawab', 'lokasiGudang'])->withCount('lokasiGudang'),
+            Gudang::query()->with(['lokasi', 'penanggungJawab', 'lokasiGudang', 'unitPengelola:Id,Kode,Nama'])->withCount('lokasiGudang'),
         )
             ->cari(['Kode', 'Nama'])
             ->urut(['Nama', 'Kode', 'Status'], bawaan: 'Nama')
-            ->faset(['Status', 'LokasiId']);
+            ->faset(['Status', 'LokasiId'])
+            // Bukan faset biasa: pilihan "Belum ada" menyaring kolom yang masih kosong.
+            ->saring('UnitPengelolaId', fn (Builder $kueri, string $nilai) => OpsiUnitPengelola::saring($kueri, $nilai));
     }
 
     public function ekspor(Request $request, EksporDaftar $ekspor): StreamedResponse
@@ -60,6 +64,10 @@ final class GudangController extends Controller
                 KolomEkspor::atribut('Kode', 'Kode'),
                 KolomEkspor::atribut('Nama', 'Nama'),
                 KolomEkspor::dari('Lokasi', fn (Gudang $g): string => BacaRelasi::teks(BacaRelasi::model($g, 'lokasi'), 'Nama')),
+                // Hanya bila organisasi memakai unit pengelola; berkas organisasi satu bagian tetap sama.
+                ...(OpsiUnitPengelola::dipakai()
+                    ? [KolomEkspor::dari('Unit Pengelola', fn (Gudang $g): string => BacaRelasi::teks(BacaRelasi::model($g, 'unitPengelola'), 'Nama'))]
+                    : []),
                 KolomEkspor::dari('Penanggung Jawab', fn (Gudang $g): string => BacaRelasi::teks(BacaRelasi::model($g, 'penanggungJawab'), 'Nama')),
                 KolomEkspor::atribut('Jumlah Lokasi Gudang', 'lokasi_gudang_count'),
                 KolomEkspor::atribut('Status', 'Status'),
@@ -86,11 +94,18 @@ final class GudangController extends Controller
             fn (Gudang $satu) => [$satu->Id => LokasiGudangResource::collection($satu->lokasiGudang)],
         );
 
+        // Faset memuat unit nonaktif (gudang lama bisa milik unit yang kini nonaktif);
+        // daftarnya kosong tepat bila organisasi tidak memakai unit pengelola.
+        $penyaringUnitPengelola = OpsiUnitPengelola::daftar(termasukNonaktif: true);
+
         return Inertia::render('Gudang/Index', [
             'gudang' => GudangResource::collection($halaman),
             'lokasiGudangPerGudang' => $lokasiGudangPerGudang,
             'filter' => $daftar->filterBerlaku(),
             'lokasi' => Lokasi::query()->orderBy('Nama')->get(['Id', 'Nama']),
+            'unitPengelolaDipakai' => $penyaringUnitPengelola !== [],
+            'pilihanUnitPengelola' => $penyaringUnitPengelola === [] ? [] : OpsiUnitPengelola::daftar(),
+            'penyaringUnitPengelola' => $penyaringUnitPengelola,
             'wajib' => [
                 'gudang' => AturanWajib::untuk(SimpanGudangRequest::class),
                 'lokasiGudang' => AturanWajib::untuk(SimpanLokasiGudangRequest::class),
@@ -109,7 +124,7 @@ final class GudangController extends Controller
     {
         $this->authorize('view', $gudang);
 
-        $gudang->load(['lokasi', 'penanggungJawab']);
+        $gudang->load(['lokasi', 'penanggungJawab', 'unitPengelola:Id,Kode,Nama']);
 
         $kueri = StokSukuCadang::query()
             ->where('StokSukuCadang.GudangId', $gudang->Id)

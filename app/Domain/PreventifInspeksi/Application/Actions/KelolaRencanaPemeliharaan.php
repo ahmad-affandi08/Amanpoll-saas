@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PreventifInspeksi\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
+use App\Core\Izin\ScopeLingkup;
 use App\Core\Organisasi\KalenderOrganisasi;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
@@ -55,6 +56,7 @@ final class KelolaRencanaPemeliharaan
                 'ToleransiHari' => $data['ToleransiHari'] ?? 0,
                 'BuatPerintahKerjaHariSebelum' => $data['BuatPerintahKerjaHariSebelum'] ?? 7,
                 'Aktif' => $data['Aktif'] ?? true,
+                'UnitPengelolaId' => filled($data['UnitPengelolaId'] ?? null) ? $data['UnitPengelolaId'] : null,
             ]);
 
             $this->layananAudit->catat(
@@ -102,6 +104,9 @@ final class KelolaRencanaPemeliharaan
                 'ToleransiHari' => $data['ToleransiHari'] ?? $rencana->ToleransiHari,
                 'BuatPerintahKerjaHariSebelum' => $data['BuatPerintahKerjaHariSebelum'] ?? $rencana->BuatPerintahKerjaHariSebelum,
                 'Aktif' => $data['Aktif'] ?? $rencana->Aktif,
+                'UnitPengelolaId' => array_key_exists('UnitPengelolaId', $data)
+                    ? (filled($data['UnitPengelolaId']) ? $data['UnitPengelolaId'] : null)
+                    : $rencana->UnitPengelolaId,
             ]);
 
             $this->layananAudit->catat(
@@ -114,6 +119,38 @@ final class KelolaRencanaPemeliharaan
 
             return $rencana;
         });
+    }
+
+    /**
+     * Saran unit pengelola rencana: unit pengelola bersama seluruh asetnya (PRD 8.21).
+     *
+     * Hanya bila setiap aset rencana dikelola unit yang sama; satu aset tanpa
+     * unit pengelola atau dua unit yang berbeda berarti tidak ada saran.
+     * Unit rencana hanyalah cadangan -- tiket preventif mengambil unit
+     * pengelola asetnya lebih dulu -- jadi saran ini tidak pernah disimpan
+     * diam-diam; formulir hanya mengisikannya sebagai bawaan. Aset dibaca
+     * lepas dari ScopeLingkup supaya saran sama bagi setiap koordinator.
+     */
+    public function saranUnitPengelola(RencanaPemeliharaan $rencana): ?string
+    {
+        $asetIds = RencanaPemeliharaanAset::query()
+            ->where('RencanaPemeliharaanId', $rencana->Id)
+            ->pluck('AsetId');
+
+        if ($asetIds->isEmpty()) {
+            return null;
+        }
+
+        $unit = Aset::query()
+            ->withoutGlobalScope(ScopeLingkup::class)
+            ->whereIn('Id', $asetIds)
+            ->pluck('UnitPengelolaId')
+            ->unique()
+            ->values();
+
+        $satu = $unit->first();
+
+        return $unit->count() === 1 && is_string($satu) && $satu !== '' ? $satu : null;
     }
 
     public function tetapkanAset(

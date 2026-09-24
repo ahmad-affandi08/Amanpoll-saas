@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\PreventifInspeksi\Http\Requests;
 
+use App\Domain\Platform\Http\Requests\UnitPengelolaSah;
+use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaan;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class SimpanRencanaPemeliharaanRequest extends FormRequest
@@ -18,6 +20,8 @@ final class SimpanRencanaPemeliharaanRequest extends FormRequest
      */
     public function rules(): array
     {
+        $rencana = $this->route('rencanaPemeliharaan');
+
         return [
             'Kode' => ['nullable', 'string', 'max:80'],
             'Nama' => ['required', 'string', 'max:200'],
@@ -32,6 +36,7 @@ final class SimpanRencanaPemeliharaanRequest extends FormRequest
             'ToleransiHari' => ['nullable', 'integer', 'min:0'],
             'BuatPerintahKerjaHariSebelum' => ['nullable', 'integer', 'min:0'],
             'Aktif' => ['nullable', 'boolean'],
+            'UnitPengelolaId' => UnitPengelolaSah::aturan($rencana instanceof RencanaPemeliharaan ? $rencana->UnitPengelolaId : null),
         ];
     }
 }

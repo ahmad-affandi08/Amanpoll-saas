@@ -4,16 +4,18 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BarisKosong, KartuAngka, durasi, tanggal } from '@/components/shared/riwayat';
-import type { Pengguna, RingkasanPengguna } from '@/features/Pengguna/types';
+import type { LingkupEfektifPengguna, Pengguna, RingkasanPengguna } from '@/features/Pengguna/types';
 import { TabBebanKerja } from '@/features/Pengguna/components/TabBebanKerja';
 import { TabAktivitas } from '@/features/Pengguna/components/TabAktivitas';
+import { KartuLingkupEfektif } from '@/features/Pengguna/components/KartuLingkupEfektif';
 
 interface Props {
   pengguna: Pengguna;
   ringkasan: RingkasanPengguna;
+  lingkupEfektif: LingkupEfektifPengguna;
 }
 
-export default function PenggunaShow({ pengguna, ringkasan }: Props) {
+export default function PenggunaShow({ pengguna, ringkasan, lingkupEfektif }: Props) {
   return (
     <KerangkaAplikasi>
       <Head title={pengguna.Nama} />
@@ -52,6 +54,8 @@ export default function PenggunaShow({ pengguna, ringkasan }: Props) {
           catatan={pengguna.JenisPengguna === 'Eksternal' ? 'pengguna eksternal' : undefined}
         />
       </div>
+
+      <KartuLingkupEfektif lingkup={lingkupEfektif} />
 
       <Tabs defaultValue="beban-kerja">
         <TabsList>

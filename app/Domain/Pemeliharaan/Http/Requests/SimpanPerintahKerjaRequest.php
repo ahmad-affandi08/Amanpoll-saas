@@ -6,6 +6,7 @@ namespace App\Domain\Pemeliharaan\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
+use App\Domain\Platform\Http\Requests\UnitPengelolaSah;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -30,6 +31,7 @@ final class SimpanPerintahKerjaRequest extends FormRequest
             'Prioritas' => ['required', Rule::enum(PrioritasKeluhan::class)],
             'LokasiId' => [Rule::requiredIf(! $adaKeluhan), 'nullable', 'string', Rule::exists('Lokasi', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))],
             'UnitOrganisasiId' => ['nullable', 'string', Rule::exists('UnitOrganisasi', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))],
+            'UnitPengelolaId' => UnitPengelolaSah::aturan(),
             'DijadwalkanMulaiPada' => ['nullable', 'date'],
             'DijadwalkanSelesaiPada' => ['nullable', 'date', 'after_or_equal:DijadwalkanMulaiPada'],
             'MembutuhkanWaktuHenti' => ['required', 'boolean'],

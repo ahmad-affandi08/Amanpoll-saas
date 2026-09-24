@@ -12,7 +12,8 @@ final class KeluhanResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $usulan = $this->resource instanceof Keluhan ? $this->resource->UsulanUrgensi : null;
+        $keluhan = $this->resource instanceof Keluhan ? $this->resource : null;
+        $usulan = $keluhan?->UsulanUrgensi;
 
         return [
             'Id' => $this->Id,
@@ -21,6 +22,7 @@ final class KeluhanResource extends JsonResource
             'TingkatLayananId' => $this->TingkatLayananId,
             'AsetId' => $this->AsetId,
             'LokasiId' => $this->LokasiId,
+            'UnitPengelolaId' => $keluhan?->UnitPengelolaId,
             'Judul' => $this->Judul,
             'Deskripsi' => $this->Deskripsi,
             'Prioritas' => $this->Prioritas,
@@ -37,6 +39,12 @@ final class KeluhanResource extends JsonResource
             'KodeAset' => $this->whenLoaded('aset', fn () => $this->aset?->KodeAset),
             'NamaLokasi' => $this->whenLoaded('lokasi', fn () => $this->lokasi?->Nama),
             'NamaPelapor' => $this->whenLoaded('pelapor', fn () => $this->pelapor?->Nama),
+            // Bagian yang memelihara (PRD 8.21); ditampilkan "Dikelola: <unit>".
+            'UnitPengelola' => $this->whenLoaded('unitPengelola', function () use ($keluhan): ?array {
+                $unit = $keluhan?->unitPengelola;
+
+                return $unit === null ? null : ['Id' => $unit->Id, 'Kode' => $unit->Kode, 'Nama' => $unit->Nama];
+            }),
             'DilaporkanPada' => $this->DilaporkanPada?->toIso8601String(),
             'DiresponsPada' => $this->DiresponsPada?->toIso8601String(),
             'BatasResponsPada' => $this->BatasResponsPada?->toIso8601String(),

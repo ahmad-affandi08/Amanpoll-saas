@@ -9,6 +9,7 @@ use App\Domain\Aset\Domain\Enums\KondisiAset;
 use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Domain\Enums\TingkatKritisAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Platform\Http\Requests\UnitPengelolaSah;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -45,6 +46,8 @@ final class SimpanAsetRequest extends FormRequest
                 Rule::exists('Penyedia', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'UnitOrganisasiId' => ['nullable', 'string',
                 Rule::exists('UnitOrganisasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
+            // Bagian yang memeliharanya (PRD 8.21); nilai tersimpan tetap sah walau unitnya kini nonaktif.
+            'UnitPengelolaId' => UnitPengelolaSah::aturan($aset?->UnitPengelolaId),
             'LokasiId' => ['nullable', 'string',
                 Rule::exists('Lokasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'NomorSeri' => ['nullable', 'string', 'max:160'],

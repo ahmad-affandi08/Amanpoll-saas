@@ -32,7 +32,8 @@ import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { PemilihNomenklatur } from '@/features/Aset/components/PemilihNomenklatur';
-import { opsiDari, TANPA_PILIHAN } from '@/lib/pilihan';
+import { opsiDari, opsiUnitPengelola, TANPA_PILIHAN, TANPA_UNIT_PENGELOLA } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { InputUang } from '@/components/shared/InputUang';
 
 interface Props {
@@ -44,6 +45,17 @@ interface Props {
   wajib: Record<string, AturanWajib>;
   kategoriAset: KategoriAset[];
   lokasi: Lokasi[];
+  /** Batas sekali ubah massal, dari AturUnitPengelolaAsetRequest. */
+  maksUbahMassal: number;
+  /**
+   * Organisasi memakai unit pengelola (PRD 8.21). Bila tidak, isian, kolom, penyaring,
+   * dan aksi massalnya tidak ditampilkan sama sekali.
+   */
+  unitPengelolaDipakai: boolean;
+  /** Unit pengelola aktif, untuk formulir dan ubah massal. */
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  /** Termasuk unit nonaktif, untuk penyaring. */
+  penyaringUnitPengelola: UnitPengelolaRingkas[];
 }
 
 const SEMUA = '__semua__';
@@ -57,11 +69,14 @@ function MedanFilterAset({
   setForm,
   kategoriAset,
   lokasi,
+  penyaringUnitPengelola,
 }: {
   form: FilterAset;
   setForm: Dispatch<SetStateAction<FilterAset>>;
   kategoriAset: KategoriAset[];
   lokasi: Lokasi[];
+  /** Kosong bila organisasi tidak memakai unit pengelola; penyaringnya lalu tidak ditampilkan. */
+  penyaringUnitPengelola: UnitPengelolaRingkas[];
 }) {
   return (
     <>
@@ -103,22 +118,43 @@ function MedanFilterAset({
           placeholder="Semua"
         />
       </div>
+      {penyaringUnitPengelola.length > 0 && (
+        <div className="space-y-1.5">
+          <Label>Unit Pengelola</Label>
+          <Combobox
+            nilai={form.unitPengelolaId ?? SEMUA}
+            onPilih={(v) => setForm((f) => ({ ...f, unitPengelolaId: v === SEMUA ? undefined : v }))}
+            opsi={[
+              { nilai: SEMUA, label: 'Semua' },
+              { nilai: TANPA_UNIT_PENGELOLA, label: 'Belum ada' },
+              ...opsiUnitPengelola(penyaringUnitPengelola, false),
+            ]}
+            placeholder="Semua"
+          />
+        </div>
+      )}
     </>
   );
 }
 
 function jumlahFilterAktif(filter: FilterAset): number {
-  return [filter.cari, filter.kategoriAsetId, filter.lokasiId, filter.status].filter(Boolean).length;
+  return [filter.cari, filter.kategoriAsetId, filter.lokasiId, filter.status, filter.unitPengelolaId].filter(
+    Boolean,
+  ).length;
 }
 
 function DialogTambahAset({
   kategoriAset,
   lokasi,
   wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
 }: {
   kategoriAset: KategoriAset[];
   lokasi: Lokasi[];
   wajib: AturanWajib;
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -129,6 +165,7 @@ function DialogTambahAset({
     NomorSeri: '',
     HargaPerolehan: '',
     AlkesAspakId: TANPA_PILIHAN,
+    UnitPengelolaId: TANPA_PILIHAN,
     Status: 'Aktif',
     Kondisi: 'Baik',
     TingkatKritis: 'Normal',
@@ -136,10 +173,15 @@ function DialogTambahAset({
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
+    const { UnitPengelolaId, ...data } = form.data;
     const payload = {
-      ...form.data,
-      LokasiId: form.data.LokasiId === SEMUA ? null : form.data.LokasiId,
-      AlkesAspakId: form.data.AlkesAspakId === TANPA_PILIHAN ? null : form.data.AlkesAspakId,
+      ...data,
+      LokasiId: data.LokasiId === SEMUA ? null : data.LokasiId,
+      AlkesAspakId: data.AlkesAspakId === TANPA_PILIHAN ? null : data.AlkesAspakId,
+      // Organisasi tanpa unit pengelola tidak mengirim isiannya sama sekali.
+      ...(unitPengelolaDipakai
+        ? { UnitPengelolaId: UnitPengelolaId === TANPA_PILIHAN ? null : UnitPengelolaId }
+        : {}),
     };
     router.post(ruteAset.index, payload, { onSuccess: () => setBuka(false) });
   };
@@ -190,6 +232,22 @@ function DialogTambahAset({
                 />
               </div>
             </div>
+            {unitPengelolaDipakai && (
+              <div className="space-y-2">
+                <Label nama="UnitPengelolaId">Unit Pengelola</Label>
+                <Combobox
+                  nilai={form.data.UnitPengelolaId}
+                  onPilih={(v) => form.setData('UnitPengelolaId', v)}
+                  opsi={opsiUnitPengelola(pilihanUnitPengelola)}
+                />
+                {form.errors.UnitPengelolaId && (
+                  <p className="text-sm text-destructive">{form.errors.UnitPengelolaId}</p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  Bagian yang memelihara aset ini, mis. IPSRS atau IT.
+                </p>
+              </div>
+            )}
             <div className="space-y-2">
               <Label nama="AlkesAspakId">Nomenklatur Alkes (ASPAK)</Label>
               <PemilihNomenklatur
@@ -228,7 +286,101 @@ function DialogTambahAset({
   );
 }
 
-export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset, lokasi }: Props) {
+/** Ubah massal unit pengelola aset terpilih (PRD 8.21); izinnya sama dengan mengubah satu aset. */
+function DialogAturUnitPengelola({
+  terpilih,
+  maks,
+  pilihanUnitPengelola,
+  onSelesai,
+}: {
+  terpilih: string[];
+  maks: number;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  onSelesai: () => void;
+}) {
+  const [buka, setBuka] = useState(false);
+  const form = useForm<{ UnitPengelolaId: string; AsetId: string[] }>({
+    UnitPengelolaId: '',
+    AsetId: [],
+  });
+  const melebihiBatas = terpilih.length > maks;
+
+  const ubahBuka = (terbuka: boolean) => {
+    if (terbuka) {
+      // Tanpa pilihan awal: menekan Simpan tanpa memilih tidak boleh diam-diam mengosongkan unit pengelola.
+      form.setData({ UnitPengelolaId: '', AsetId: [] });
+      form.clearErrors();
+    }
+    setBuka(terbuka);
+  };
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    form.transform((data) => ({
+      AsetId: terpilih,
+      UnitPengelolaId: data.UnitPengelolaId === TANPA_PILIHAN ? null : data.UnitPengelolaId,
+    }));
+    form.put(ruteAset.unitPengelola, {
+      preserveScroll: true,
+      onSuccess: () => {
+        setBuka(false);
+        onSelesai();
+      },
+    });
+  };
+
+  return (
+    <Dialog open={buka} onOpenChange={ubahBuka}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" disabled={melebihiBatas}>
+          Atur Unit Pengelola
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Atur Unit Pengelola</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Unit pengelola untuk {terpilih.length} aset terpilih. Pilih &ldquo;Tanpa unit pengelola&rdquo;
+            untuk mengosongkannya.
+          </p>
+          <div className="space-y-2">
+            <Label>Unit Pengelola</Label>
+            <Combobox
+              nilai={form.data.UnitPengelolaId}
+              onPilih={(v) => form.setData('UnitPengelolaId', v)}
+              opsi={opsiUnitPengelola(pilihanUnitPengelola)}
+              placeholder="Pilih unit pengelola"
+            />
+            {form.errors.UnitPengelolaId && (
+              <p className="text-sm text-destructive">{form.errors.UnitPengelolaId}</p>
+            )}
+            {form.errors.AsetId && <p className="text-sm text-destructive">{form.errors.AsetId}</p>}
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={form.processing || form.data.UnitPengelolaId === ''}>
+              Simpan
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default function AsetIndex({
+  aset,
+  filter,
+  maksLabel,
+  wajib,
+  kategoriAset,
+  lokasi,
+  maksUbahMassal,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
+  penyaringUnitPengelola,
+}: Props) {
   const [form, setForm] = useState<FilterAset>(filter);
   const [sheetFilterBuka, setSheetFilterBuka] = useState(false);
   // Paginasi memakai preserveState, jadi pilihan bertahan saat berpindah halaman.
@@ -274,7 +426,13 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
           aksi={
             <>
               <TombolEkspor url={ruteAset.ekspor} filter={filter as Record<string, string>} />
-              <DialogTambahAset kategoriAset={kategoriAset} lokasi={lokasi} wajib={wajib.aset} />
+              <DialogTambahAset
+                kategoriAset={kategoriAset}
+                lokasi={lokasi}
+                wajib={wajib.aset}
+                unitPengelolaDipakai={unitPengelolaDipakai}
+                pilihanUnitPengelola={pilihanUnitPengelola}
+              />
             </>
           }
         />
@@ -296,7 +454,13 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
                 <SheetTitle>Filter Aset</SheetTitle>
               </SheetHeader>
               <form onSubmit={terapkanFilter} className="space-y-4 px-4">
-                <MedanFilterAset form={form} setForm={setForm} kategoriAset={kategoriAset} lokasi={lokasi} />
+                <MedanFilterAset
+                  form={form}
+                  setForm={setForm}
+                  kategoriAset={kategoriAset}
+                  lokasi={lokasi}
+                  penyaringUnitPengelola={penyaringUnitPengelola}
+                />
               </form>
               <SheetFooter className="flex-row">
                 <Button type="button" variant="outline" className="flex-1" onClick={resetFilter}>
@@ -313,10 +477,18 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
         {/* Desktop/tablet: filter inline */}
         <form
           onSubmit={terapkanFilter}
-          className="hidden grid-cols-2 gap-4 rounded-[9px] border border-border bg-card p-4 md:grid lg:grid-cols-5 [&>:first-child]:lg:col-span-2"
+          className={`hidden grid-cols-2 gap-4 rounded-[9px] border border-border bg-card p-4 md:grid ${
+            unitPengelolaDipakai ? 'lg:grid-cols-6' : 'lg:grid-cols-5'
+          } [&>:first-child]:lg:col-span-2`}
         >
-          <MedanFilterAset form={form} setForm={setForm} kategoriAset={kategoriAset} lokasi={lokasi} />
-          <div className="flex items-end gap-2 lg:col-span-5">
+          <MedanFilterAset
+            form={form}
+            setForm={setForm}
+            kategoriAset={kategoriAset}
+            lokasi={lokasi}
+            penyaringUnitPengelola={penyaringUnitPengelola}
+          />
+          <div className="col-span-full flex items-end gap-2">
             <Button type="submit">Terapkan</Button>
             <Button type="button" variant="outline" onClick={resetFilter}>
               Reset
@@ -353,6 +525,11 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
                   {a.NamaLokasi ?? 'Lokasi belum diatur'} · {a.NamaKategoriAset ?? '—'}
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">Kondisi: {a.Kondisi}</div>
+                {unitPengelolaDipakai && (
+                  <div className="text-sm text-muted-foreground">
+                    Unit pengelola: {a.NamaUnitPengelola ?? 'Belum ada'}
+                  </div>
+                )}
               </button>
             ))}
             <KontrolPaginasi
@@ -373,10 +550,18 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
                 </span>
               )}
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" onClick={() => setTerpilih([])}>
                 Bersihkan pilihan
               </Button>
+              {unitPengelolaDipakai && (
+                <DialogAturUnitPengelola
+                  terpilih={terpilih}
+                  maks={maksUbahMassal}
+                  pilihanUnitPengelola={pilihanUnitPengelola}
+                  onSelesai={() => setTerpilih([])}
+                />
+              )}
               <Button size="sm" disabled={terpilih.length > maksLabel} asChild={terpilih.length <= maksLabel}>
                 {terpilih.length <= maksLabel ? (
                   <Link href={ruteAset.label(terpilih)}>Cetak Label</Link>
@@ -404,6 +589,7 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
                   <TableHead>Nama</TableHead>
                   <TableHead>Kategori</TableHead>
                   <TableHead>Lokasi</TableHead>
+                  {unitPengelolaDipakai && <TableHead>Unit Pengelola</TableHead>}
                   <TableHead>Harga Perolehan</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
@@ -429,6 +615,11 @@ export default function AsetIndex({ aset, filter, maksLabel, wajib, kategoriAset
                     </TableCell>
                     <TableCell>{a.NamaKategoriAset ?? '—'}</TableCell>
                     <TableCell>{a.NamaLokasi ?? '—'}</TableCell>
+                    {unitPengelolaDipakai && (
+                      <TableCell className="min-w-32 whitespace-normal">
+                        {a.NamaUnitPengelola ?? <span className="text-muted-foreground">Belum ada</span>}
+                      </TableCell>
+                    )}
                     <TableCell>{a.HargaPerolehan ? formatUang(a.HargaPerolehan, a.MataUang) : '—'}</TableCell>
                     <TableCell>{badgeStatus(a.Status)}</TableCell>
                   </TableRow>

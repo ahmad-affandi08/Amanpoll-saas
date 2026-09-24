@@ -6,6 +6,7 @@ namespace App\Domain\PreventifInspeksi\Http\Controllers;
 
 use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Platform\Application\Services\OpsiUnitPengelola;
 use App\Domain\PreventifInspeksi\Application\Actions\JadwalkanPemeliharaanPreventif;
 use App\Domain\PreventifInspeksi\Application\Actions\KelolaRencanaPemeliharaan;
 use App\Domain\PreventifInspeksi\Http\Requests\SimpanRencanaPemeliharaanAsetRequest;
@@ -37,7 +38,7 @@ final class RencanaPemeliharaanController extends Controller
 
         return $ekspor->unduh(
             RencanaPemeliharaan::query()
-                ->with(['templatDaftarPeriksa'])
+                ->with(['templatDaftarPeriksa', 'unitPengelola:Id,Kode,Nama'])
                 ->withCount('aset')
                 ->orderBy('Nama')
                 ->orderBy('Id'),
@@ -52,6 +53,9 @@ final class RencanaPemeliharaanController extends Controller
                 KolomEkspor::atribut('Toleransi (hari)', 'ToleransiHari'),
                 KolomEkspor::dari('Daftar Periksa', fn (RencanaPemeliharaan $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'templatDaftarPeriksa'), 'Nama')),
                 KolomEkspor::atribut('Jumlah Aset', 'aset_count'),
+                ...(OpsiUnitPengelola::dipakai()
+                    ? [KolomEkspor::dari('Unit Pengelola', fn (RencanaPemeliharaan $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'unitPengelola'), 'Nama'))]
+                    : []),
                 KolomEkspor::dari('Aktif', fn (RencanaPemeliharaan $r): string => $r->Aktif ? 'Ya' : 'Tidak'),
             ],
             'jadwal-preventif',
@@ -64,7 +68,7 @@ final class RencanaPemeliharaanController extends Controller
         $this->authorize('viewAny', RencanaPemeliharaan::class);
 
         $daftarRencana = RencanaPemeliharaan::query()
-            ->with(['templatDaftarPeriksa'])
+            ->with(['templatDaftarPeriksa', 'unitPengelola:Id,Kode,Nama'])
             ->withCount('aset')
             ->orderBy('Nama')
             ->get();
@@ -78,6 +82,9 @@ final class RencanaPemeliharaanController extends Controller
             'wajib' => ['rencana' => AturanWajib::untuk(SimpanRencanaPemeliharaanRequest::class)],
             'rencana' => $daftarRencana,
             'templatDaftarPeriksa' => $templatList,
+            'unitPengelolaDipakai' => OpsiUnitPengelola::dipakai(),
+            'pilihanUnitPengelola' => OpsiUnitPengelola::daftar(),
+            'saringanUnitPengelola' => OpsiUnitPengelola::daftar(termasukNonaktif: true),
         ]);
     }
 
@@ -100,6 +107,7 @@ final class RencanaPemeliharaanController extends Controller
 
         $rencanaPemeliharaan->load([
             'templatDaftarPeriksa',
+            'unitPengelola:Id,Kode,Nama',
             'aset' => fn ($q) => $q->with(['aset.lokasi', 'jadwal' => fn ($j) => $j->latest('TanggalJadwal')->limit(5)]),
         ]);
 
@@ -114,10 +122,13 @@ final class RencanaPemeliharaanController extends Controller
             ->get(['Id', 'Nama', 'Kode']);
 
         return Inertia::render('RencanaPemeliharaan/Show', [
-            'wajib' => ['aset' => AturanWajib::untuk(SimpanRencanaPemeliharaanAsetRequest::class)],
+            'wajib' => ['aset' => AturanWajib::untuk(SimpanRencanaPemeliharaanAsetRequest::class), 'rencana' => AturanWajib::untuk(SimpanRencanaPemeliharaanRequest::class)],
             'rencana' => $rencanaPemeliharaan,
             'asetTersedia' => $asetTersedia,
             'templatDaftarPeriksa' => $templatList,
+            'unitPengelolaDipakai' => OpsiUnitPengelola::dipakai(),
+            'pilihanUnitPengelola' => OpsiUnitPengelola::daftar($rencanaPemeliharaan->UnitPengelolaId),
+            'saranUnitPengelolaId' => $this->kelolaRencana->saranUnitPengelola($rencanaPemeliharaan),
         ]);
     }
 

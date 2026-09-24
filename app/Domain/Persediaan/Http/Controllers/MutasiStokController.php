@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Persediaan\Http\Controllers;
 
+use App\Core\Izin\ScopeLingkup;
 use App\Domain\Persediaan\Application\Actions\BatalkanMutasiStok;
 use App\Domain\Persediaan\Application\Actions\BuatMutasiStok;
 use App\Domain\Persediaan\Application\Actions\HapusDetailMutasiStok;
 use App\Domain\Persediaan\Application\Actions\PostingMutasiStok;
 use App\Domain\Persediaan\Application\Actions\TambahDetailMutasiStok;
+use App\Domain\Persediaan\Application\Services\LingkupGudang;
 use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanDetailMutasiStokRequest;
 use App\Domain\Persediaan\Http\Requests\SimpanMutasiStokRequest;
@@ -22,7 +24,9 @@ use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -31,14 +35,31 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class MutasiStokController extends Controller
 {
+    public function __construct(private readonly LingkupGudang $lingkupGudang) {}
+
+    /**
+     * Nama kedua gudang dimuat lepas dari ScopeLingkup: mutasi yang terlihat karena
+     * satu sisinya tetap menyebut nama gudang di sisi lain, bukan tanda kosong.
+     *
+     * @return array<string, Closure(Relation<*, *, *>): mixed>
+     */
+    private static function relasiGudang(): array
+    {
+        return [
+            'gudangAsal' => fn (Relation $relasi) => $relasi->withoutGlobalScope(ScopeLingkup::class),
+            'gudangTujuan' => fn (Relation $relasi) => $relasi->withoutGlobalScope(ScopeLingkup::class),
+        ];
+    }
+
     /**
      * @param  array<string, mixed>  $filter
      * @return Builder<MutasiStok>
      */
     private function kueriTersaring(array $filter): Builder
     {
-        return MutasiStok::query()
-            ->with(['gudangAsal', 'gudangTujuan', 'dibuatOleh'])
+        // Mutasi terlihat bila salah satu sisinya di gudang yang terlihat (PRD 8.21); ikut terbawa ke ekspor.
+        return $this->lingkupGudang->saring(MutasiStok::query(), 'MutasiStok.GudangAsalId', 'MutasiStok.GudangTujuanId')
+            ->with([...self::relasiGudang(), 'dibuatOleh'])
             ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
             ->when($filter['jenis'] ?? null, fn ($q, $v) => $q->where('Jenis', $v))
             ->latest('DibuatPada')
@@ -87,7 +108,7 @@ final class MutasiStokController extends Controller
     {
         $this->authorize('view', $mutasiStok);
 
-        $mutasiStok->load(['gudangAsal', 'gudangTujuan', 'dibuatOleh', 'detailMutasiStok.sukuCadang', 'detailMutasiStok.kelompokSukuCadang', 'detailMutasiStok.lokasiGudangAsal', 'detailMutasiStok.lokasiGudangTujuan']);
+        $mutasiStok->load([...self::relasiGudang(), 'dibuatOleh', 'detailMutasiStok.sukuCadang', 'detailMutasiStok.kelompokSukuCadang', 'detailMutasiStok.lokasiGudangAsal', 'detailMutasiStok.lokasiGudangTujuan']);
 
         return Inertia::render('MutasiStok/Show', [
             'wajib' => ['detail' => AturanWajib::untuk(SimpanDetailMutasiStokRequest::class)],

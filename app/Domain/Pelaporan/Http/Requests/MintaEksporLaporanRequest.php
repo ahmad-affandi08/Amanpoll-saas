@@ -31,6 +31,8 @@ final class MintaEksporLaporanRequest extends FormRequest
             'Filter.UnitOrganisasiId.*' => ['string', 'max:26'],
             'Filter.LokasiId' => ['nullable', 'array'],
             'Filter.LokasiId.*' => ['string', 'max:26'],
+            'Filter.UnitPengelolaId' => ['nullable', 'array'],
+            'Filter.UnitPengelolaId.*' => ['string', 'max:26', new UnitPengelolaLaporanSah],
         ];
     }
 }

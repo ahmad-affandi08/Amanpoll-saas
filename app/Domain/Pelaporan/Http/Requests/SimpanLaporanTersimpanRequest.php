@@ -32,6 +32,8 @@ final class SimpanLaporanTersimpanRequest extends FormRequest
             'Konfigurasi.Filter.UnitOrganisasiId.*' => ['string', 'max:26'],
             'Konfigurasi.Filter.LokasiId' => ['nullable', 'array'],
             'Konfigurasi.Filter.LokasiId.*' => ['string', 'max:26'],
+            'Konfigurasi.Filter.UnitPengelolaId' => ['nullable', 'array'],
+            'Konfigurasi.Filter.UnitPengelolaId.*' => ['string', 'max:26', new UnitPengelolaLaporanSah],
         ];
     }
 }

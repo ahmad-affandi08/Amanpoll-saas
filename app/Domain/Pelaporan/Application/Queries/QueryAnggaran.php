@@ -23,11 +23,28 @@ final class QueryAnggaran implements PenyediaKpi
 
     public function hitung(string $kunci, FilterMetrik $filter): HasilKpi
     {
-        return match ($kunci) {
+        $hasil = match ($kunci) {
             'anggaran.serapan' => $this->serapan($filter),
             'anggaran.sisa' => $this->sisa($filter),
             default => throw new DataTidakDitemukan("KPI {$kunci} bukan milik QueryAnggaran."),
         };
+
+        return $this->tandaiUnitPengelolaTidakBerlaku($hasil, $filter);
+    }
+
+    /**
+     * Anggaran dimiliki unit organisasi, bukan unit pengelola (PRD 8.21), jadi
+     * filter unit pengelola tidak menyaringnya. Kartu diberi tanda supaya angka
+     * seluruh organisasi tidak terbaca sebagai angka satu bagian. Tanda hanya
+     * muncul saat filter itu dipakai.
+     */
+    private function tandaiUnitPengelolaTidakBerlaku(HasilKpi $hasil, FilterMetrik $filter): HasilKpi
+    {
+        if (! $filter->adaFilterUnitPengelola()) {
+            return $hasil;
+        }
+
+        return new HasilKpi($hasil->nilai, $hasil->rincian, [...$hasil->konteks, 'FilterUnitPengelolaBerlaku' => false]);
     }
 
     private function serapan(FilterMetrik $filter): HasilKpi

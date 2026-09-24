@@ -42,6 +42,7 @@ use App\Domain\Pelaporan\Application\Queries\QueryPreventif;
 use App\Domain\Pelaporan\Application\Queries\QueryStok;
 use App\Domain\Pelaporan\Application\Queries\QueryTingkatLayanan;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
+use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
 use App\Domain\Pelaporan\Application\Services\PenyusunBarisLaporan;
 use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pemasaran\Application\Services\RegistriDatasetDemo;
@@ -184,6 +185,7 @@ final class AmanpollServiceProvider extends ServiceProvider
                 $app->make(PenyusunBarisLaporan::class),
                 $app->make(LayananNotifikasi::class),
                 $app->make(LayananAudit::class),
+                $app->make(PenjagaFilterMetrik::class),
             );
             foreach ([PenulisEksporCsv::class, PenulisEksporXlsx::class, PenulisEksporPdf::class] as $penulis) {
                 $layanan->daftarkanPenulis($app->make($penulis));

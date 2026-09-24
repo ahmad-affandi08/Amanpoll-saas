@@ -1,3 +1,5 @@
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+
 export interface TitikUkurKalibrasi {
   Id: string;
   OrganisasiId: string;
@@ -56,6 +58,9 @@ export interface RencanaKalibrasi {
   TanggalBerikutnya: string;
   PeringatanHariSebelum: number;
   Aktif: boolean;
+  /** Bagian yang memelihara instrumen ini (PRD 8.21); untuk penyaringan. */
+  UnitPengelolaId?: string | null;
+  unit_pengelola?: UnitPengelolaRingkas | null;
   DibuatPada?: string;
   DiperbaruiPada?: string;
   StatusKalibrasi?: 'Valid' | 'SegeraJatuhTempo' | 'Terlambat' | 'TidakAktif';

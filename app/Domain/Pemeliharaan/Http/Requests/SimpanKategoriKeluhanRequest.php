@@ -7,6 +7,7 @@ namespace App\Domain\Pemeliharaan\Http\Requests;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
+use App\Domain\Platform\Http\Requests\UnitPengelolaSah;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,6 +32,8 @@ final class SimpanKategoriKeluhanRequest extends FormRequest
             'PrioritasBawaan' => ['required', Rule::enum(PrioritasKeluhan::class)],
             'AsetWajib' => ['required', 'boolean'],
             'PeranPenanggungJawabId' => ['nullable', 'string', Rule::exists('Peran', 'Id')->where(fn ($query) => $query->where('OrganisasiId', $organisasiId))],
+            // Antrean yang menerima keluhan kategori ini (PRD 8.21); nilai tersimpan tetap sah walau unitnya kini nonaktif.
+            'UnitPengelolaId' => UnitPengelolaSah::aturan($kategoriKeluhan?->UnitPengelolaId),
             'Aktif' => ['required', 'boolean'],
         ];
     }

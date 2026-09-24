@@ -47,6 +47,10 @@ export interface Aset {
   OrganisasiId: string;
   UnitOrganisasiId: string | null;
   NamaUnitOrganisasi: string | null;
+  /** Bagian yang memelihara aset ini (PRD 8.21). */
+  UnitPengelolaId: string | null;
+  KodeUnitPengelola?: string | null;
+  NamaUnitPengelola?: string | null;
   LokasiId: string | null;
   NamaLokasi: string | null;
   KategoriAsetId: string;
@@ -175,6 +179,8 @@ export interface FilterAset {
   kategoriAsetId?: string;
   lokasiId?: string;
   status?: string;
+  /** Id unit pengelola, atau TANPA_UNIT_PENGELOLA. */
+  unitPengelolaId?: string;
   urutkan?: string;
   arah?: string;
 }

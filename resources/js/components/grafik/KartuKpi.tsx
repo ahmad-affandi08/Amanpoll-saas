@@ -53,6 +53,9 @@ export function KartuKpi({
               {kpi.Konteks.FilterDimensiBerlaku === false && (
                 <p className="mt-1 text-safety-600">Filter unit dan lokasi tidak berlaku untuk KPI ini.</p>
               )}
+              {kpi.Konteks.FilterUnitPengelolaBerlaku === false && (
+                <p className="mt-1 text-safety-600">Filter unit pengelola tidak berlaku untuk KPI ini.</p>
+              )}
             </TooltipContent>
           </Tooltip>
         </div>

@@ -117,6 +117,7 @@ export default function GudangShow({ gudang, lokasiGudang, stok, filter, ringkas
             <>
               <span className="font-mono">{gudang.Kode}</span>
               {gudang.NamaLokasi && ` · ${gudang.NamaLokasi}`}
+              {gudang.NamaUnitPengelola && ` · Dikelola ${gudang.NamaUnitPengelola}`}
               {gudang.NamaPenanggungJawab && ` · PJ ${gudang.NamaPenanggungJawab}`}
             </>
           }

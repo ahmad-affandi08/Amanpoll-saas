@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Persediaan\Http\Controllers;
 
+use App\Domain\Persediaan\Application\Services\LingkupGudang;
 use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Http\Resources\StokSukuCadangResource;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
@@ -22,6 +23,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /** Hanya baca. */
 final class StokSukuCadangController extends Controller
 {
+    public function __construct(private readonly LingkupGudang $lingkupGudang) {}
+
     /**
      * Penyaring daftar stok, dipakai bersama halaman dan ekspornya.
      *
@@ -35,6 +38,9 @@ final class StokSukuCadangController extends Controller
             ->select('StokSukuCadang.*')
             ->leftJoin('SukuCadang', 'SukuCadang.Id', '=', 'StokSukuCadang.SukuCadangId')
             ->leftJoin('Gudang', 'Gudang.Id', '=', 'StokSukuCadang.GudangId');
+
+        // Hanya stok di gudang yang terlihat pengguna (PRD 8.21); ikut terbawa ke ekspor.
+        $this->lingkupGudang->saring($kueri, 'StokSukuCadang.GudangId');
 
         return DaftarTersaring::untuk($request, $kueri)
             ->cari(['SukuCadang.Nama', 'SukuCadang.Kode', 'Gudang.Nama'])

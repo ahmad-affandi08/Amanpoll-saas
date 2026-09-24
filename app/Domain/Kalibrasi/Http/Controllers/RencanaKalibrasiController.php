@@ -13,6 +13,7 @@ use App\Domain\Kalibrasi\Http\Requests\SimpanRencanaKalibrasiRequest;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\JenisKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Platform\Application\Services\OpsiUnitPengelola;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
@@ -47,9 +48,10 @@ final class RencanaKalibrasiController extends Controller
     private function kueriTersaring(Request $request): Builder
     {
         return RencanaKalibrasi::query()
-            ->with(['aset', 'jenisKalibrasi', 'penyedia'])
+            ->with(['aset', 'jenisKalibrasi', 'penyedia', 'unitPengelola:Id,Kode,Nama'])
             ->withCount('pelaksanaanKalibrasi')
             ->when($request->filled('asetId'), fn ($q) => $q->where('AsetId', $request->input('asetId')))
+            ->when($request->filled('unitPengelolaId'), fn ($q) => $q->where('UnitPengelolaId', $request->input('unitPengelolaId')))
             ->when($request->filled('jenisKalibrasiId'), fn ($q) => $q->where('JenisKalibrasiId', $request->input('jenisKalibrasiId')))
             ->when($request->has('aktif'), fn ($q) => $q->where('Aktif', $request->boolean('aktif')))
             ->orderBy('TanggalBerikutnya')
@@ -68,6 +70,9 @@ final class RencanaKalibrasiController extends Controller
                 KolomEkspor::dari('Aset', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'aset'), 'Nama')),
                 KolomEkspor::dari('Jenis Kalibrasi', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'jenisKalibrasi'), 'Nama')),
                 KolomEkspor::dari('Penyedia', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'penyedia'), 'Nama')),
+                ...(OpsiUnitPengelola::dipakai()
+                    ? [KolomEkspor::dari('Unit Pengelola', fn (RencanaKalibrasi $r): string => BacaRelasi::teks(BacaRelasi::model($r, 'unitPengelola'), 'Nama'))]
+                    : []),
                 KolomEkspor::atribut('Interval (hari)', 'IntervalHari'),
                 KolomEkspor::tanggal('Mulai', 'TanggalMulai'),
                 KolomEkspor::tanggal('Jatuh Tempo Berikutnya', 'TanggalBerikutnya'),
@@ -88,10 +93,11 @@ final class RencanaKalibrasiController extends Controller
         $hariIni = $this->kalender->hariIni($organisasiId);
 
         $daftarRencana = RencanaKalibrasi::query()
-            ->with(['aset', 'jenisKalibrasi', 'penyedia'])
+            ->with(['aset', 'jenisKalibrasi', 'penyedia', 'unitPengelola:Id,Kode,Nama'])
             ->withCount('pelaksanaanKalibrasi')
             ->where('OrganisasiId', $organisasiId)
             ->when($request->filled('asetId'), fn ($q) => $q->where('AsetId', $request->input('asetId')))
+            ->when($request->filled('unitPengelolaId'), fn ($q) => $q->where('UnitPengelolaId', $request->input('unitPengelolaId')))
             ->when($request->filled('jenisKalibrasiId'), fn ($q) => $q->where('JenisKalibrasiId', $request->input('jenisKalibrasiId')))
             ->when($request->has('aktif'), fn ($q) => $q->where('Aktif', $request->boolean('aktif')))
             ->orderBy('TanggalBerikutnya')
@@ -127,7 +133,7 @@ final class RencanaKalibrasiController extends Controller
             ->where('OrganisasiId', $organisasiId)
             ->where('Status', StatusAset::Aktif->value)
             ->orderBy('Nama')
-            ->get(['Id', 'KodeAset', 'Nama']);
+            ->get(['Id', 'KodeAset', 'Nama', 'UnitPengelolaId']);
 
         $jenisList = JenisKalibrasi::query()
             ->where('OrganisasiId', $organisasiId)
@@ -150,7 +156,11 @@ final class RencanaKalibrasiController extends Controller
                 'asetId' => $request->input('asetId'),
                 'jenisKalibrasiId' => $request->input('jenisKalibrasiId'),
                 'status' => $request->input('status'),
+                'unitPengelolaId' => $request->input('unitPengelolaId'),
             ],
+            'unitPengelolaDipakai' => OpsiUnitPengelola::dipakai(),
+            'saringanUnitPengelola' => OpsiUnitPengelola::daftar(termasukNonaktif: true),
+            'pilihanUnitPengelola' => OpsiUnitPengelola::daftar(),
         ]);
     }
 
@@ -172,6 +182,7 @@ final class RencanaKalibrasiController extends Controller
 
         $rencanaKalibrasi->load([
             'aset.lokasi',
+            'unitPengelola:Id,Kode,Nama',
             'jenisKalibrasi.titikUkur',
             'penyedia',
             'pelaksanaanKalibrasi' => fn ($q) => $q->with(['dilaksanakanOleh', 'diverifikasiOleh'])->latest('TanggalKalibrasi'),

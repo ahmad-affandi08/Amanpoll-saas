@@ -1,3 +1,5 @@
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+
 export type IdPerintahKerja = string;
 
 export type StatusPerintahKerja =
@@ -117,6 +119,9 @@ export interface PerintahKerja {
   LokasiId: string | null;
   NamaLokasi?: string | null;
   UnitOrganisasiId: string | null;
+  UnitPengelolaId: string | null;
+  /** Bagian yang memelihara (PRD 8.21); ada bila relasinya dimuat. */
+  UnitPengelola?: UnitPengelolaRingkas | null;
   DijadwalkanMulaiPada: string | null;
   DijadwalkanSelesaiPada: string | null;
   DiterimaPada: string | null;
@@ -178,6 +183,7 @@ export interface KeluhanRingkas {
   Prioritas: PrioritasPerintahKerja;
   LokasiId: string | null;
   AsetId: string | null;
+  UnitPengelolaId?: string | null;
 }
 
 export interface AsetRingkas {
@@ -185,6 +191,7 @@ export interface AsetRingkas {
   KodeAset: string;
   Nama: string;
   LokasiId: string | null;
+  UnitPengelolaId?: string | null;
 }
 
 export interface LokasiRingkas {

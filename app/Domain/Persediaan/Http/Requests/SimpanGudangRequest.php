@@ -7,6 +7,7 @@ namespace App\Domain\Persediaan\Http\Requests;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Persediaan\Domain\Enums\StatusGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
+use App\Domain\Platform\Http\Requests\UnitPengelolaSah;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -34,6 +35,8 @@ final class SimpanGudangRequest extends FormRequest
                 Rule::exists('Lokasi', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'PenanggungJawabId' => ['nullable', 'string',
                 Rule::exists('Pengguna', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))],
+            // Bagian pemilik gudang (PRD 8.21); nilai tersimpan tetap sah walau unitnya kini nonaktif.
+            'UnitPengelolaId' => UnitPengelolaSah::aturan($gudang?->UnitPengelolaId),
             'Status' => ['required', 'string', Rule::enum(StatusGudang::class)],
         ];
     }

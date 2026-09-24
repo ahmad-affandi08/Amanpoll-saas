@@ -23,8 +23,7 @@ final class SimpanReservasiSukuCadangRequest extends FormRequest
         $organisasiId = app(KonteksOrganisasi::class)->id();
 
         return [
-            'GudangId' => ['required', 'string',
-                Rule::exists('Gudang', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId))],
+            'GudangId' => ['required', 'string', new GudangTerlihat],
             'SukuCadangId' => ['required', 'string',
                 Rule::exists('SukuCadang', 'Id')->where(fn ($q) => $q->where('OrganisasiId', $organisasiId)->whereNull('DihapusPada'))],
             'PerintahKerjaId' => ['nullable', 'string',

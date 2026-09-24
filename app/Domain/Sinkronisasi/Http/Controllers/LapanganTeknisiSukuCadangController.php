@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Sinkronisasi\Http\Controllers;
 
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
+use App\Domain\Persediaan\Application\Services\LingkupGudang;
 use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\ReservasiSukuCadang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
@@ -70,7 +71,7 @@ final class LapanganTeknisiSukuCadangController extends Controller
      * Sama dengan data stok yang diberikan halaman tiket dasbor kepada teknisi
      * yang ditugaskan: dijaga `operate` pada tiketnya, bukan `Stok.Kelola`.
      */
-    public function cari(Request $request, PerintahKerja $perintahKerja): JsonResponse
+    public function cari(Request $request, PerintahKerja $perintahKerja, LingkupGudang $lingkupGudang): JsonResponse
     {
         $this->authorize('operate', $perintahKerja);
         $kata = trim((string) $request->query('cari', ''));
@@ -89,12 +90,12 @@ final class LapanganTeknisiSukuCadangController extends Controller
             ->limit(self::BATAS_HASIL)
             ->get(['Id', 'Kode', 'Nama', 'NomorBagian', 'SatuanDasar']);
 
-        $stok = StokSukuCadang::query()
+        // Hanya gudang yang terlihat teknisi (PRD 8.21), sama dengan yang diterima
+        // GudangTerlihat saat permintaannya dikirim ke endpoint reservasi.
+        $stok = $lingkupGudang->saring(StokSukuCadang::query(), 'StokSukuCadang.GudangId')
             ->with('gudang:Id,Nama')
             ->whereIn('SukuCadangId', $sukuCadang->pluck('Id'))
             ->get()
-            // Gudang di luar lingkup pengguna tidak termuat relasinya; stoknya tidak ditampilkan.
-            ->filter(fn (StokSukuCadang $baris): bool => $baris->gudang !== null)
             ->groupBy('SukuCadangId');
 
         return response()->json([

@@ -111,7 +111,14 @@ final class QueryKeluhan implements PenyediaKpi
         );
     }
 
-    /** @return Builder<Keluhan> */
+    /**
+     * Keluhan tidak punya kolom unit organisasi, jadi filter unit organisasi
+     * dibaca dari asetnya (makna lama, tidak berubah). Unit pengelola dibaca
+     * dari kolom keluhan sendiri -- antrian yang menerima keluhan, bukan
+     * pengelola aset saat ini.
+     *
+     * @return Builder<Keluhan>
+     */
     private function lingkup(FilterMetrik $filter): Builder
     {
         $query = Keluhan::query();
@@ -120,7 +127,10 @@ final class QueryKeluhan implements PenyediaKpi
             $query->whereIn('LokasiId', $filter->lokasiId);
         }
         if ($filter->adaFilterUnit()) {
-            $query->whereIn('AsetId', $this->asetDalamLingkup($filter));
+            $query->whereIn('AsetId', $this->asetDalamLingkup($filter, termasukUnitPengelola: false));
+        }
+        if ($filter->adaFilterUnitPengelola()) {
+            $query->whereIn('UnitPengelolaId', $filter->unitPengelolaId);
         }
 
         return $query;

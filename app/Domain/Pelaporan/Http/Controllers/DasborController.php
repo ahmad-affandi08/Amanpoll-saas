@@ -7,6 +7,7 @@ namespace App\Domain\Pelaporan\Http\Controllers;
 use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pelaporan\Application\Services\LayananDasbor;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
+use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
 use App\Domain\Pelaporan\Domain\Enums\BentukKomponen;
 use App\Domain\Pelaporan\Domain\KatalogKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
@@ -27,9 +28,10 @@ final class DasborController extends Controller
         LayananDasbor $layananDasbor,
         LayananMetrik $layananMetrik,
         KalenderOrganisasi $kalender,
+        PenjagaFilterMetrik $penjagaFilter,
     ): Response {
         $pengguna = $request->user('web');
-        $filter = FilterMetrik::dariArray($request->all(), $kalender->zona());
+        $filter = $penjagaFilter->bersihkan(FilterMetrik::dariArray($request->all(), $kalender->zona()));
 
         $tersimpan = $layananDasbor->dasborUntuk($pengguna);
         $dipilih = $this->pilihDasbor($request, $tersimpan);
@@ -66,6 +68,8 @@ final class DasborController extends Controller
                 ->get(['Id', 'Nama'])
                 ->map(fn (Lokasi $lokasi): array => ['Id' => $lokasi->Id, 'Nama' => $lokasi->Nama])
                 ->all(),
+            // Kosong bila organisasi tidak memakai unit pengelola; klien lalu menyembunyikan pemilihnya.
+            'pilihanUnitPengelola' => $penjagaFilter->pilihan(),
             'katalogKpi' => $this->katalogDenganBentuk($layananMetrik->katalogUntuk($pengguna)),
         ]);
     }

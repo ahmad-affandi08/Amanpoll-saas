@@ -26,7 +26,8 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { TANPA_PILIHAN, TANPA_UNIT_PENGELOLA, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { Combobox } from '@/components/ui/combobox';
 
@@ -42,16 +43,42 @@ interface Props {
   filter: FilterDaftar;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
+  /** Organisasi memakai unit pengelola (PRD 8.21); bila tidak, isian, kolom, dan penyaringnya tidak tampil. */
+  unitPengelolaDipakai: boolean;
+  /** Unit pengelola aktif, untuk formulir. */
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  /** Termasuk unit nonaktif, untuk penyaring. */
+  penyaringUnitPengelola: UnitPengelolaRingkas[];
+}
+
+/** Unit nonaktif yang tersimpan di gudang ini tetap dapat dipilih ulang, seperti yang diterima server. */
+function pilihanUntukGudang(pilihan: UnitPengelolaRingkas[], gudang: Gudang | null): UnitPengelolaRingkas[] {
+  if (!gudang?.UnitPengelolaId || pilihan.some((unit) => unit.Id === gudang.UnitPengelolaId)) {
+    return pilihan;
+  }
+
+  return [
+    ...pilihan,
+    {
+      Id: gudang.UnitPengelolaId,
+      Kode: gudang.KodeUnitPengelola ?? '',
+      Nama: gudang.NamaUnitPengelola ?? gudang.UnitPengelolaId,
+    },
+  ];
 }
 
 function DialogFormGudang({
   gudang,
   lokasi,
   wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
 }: {
   gudang: Gudang | null;
   lokasi: LokasiRingkas[];
   wajib: AturanWajib;
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(
@@ -60,16 +87,28 @@ function DialogFormGudang({
           Kode: gudang.Kode,
           Nama: gudang.Nama,
           LokasiId: gudang.LokasiId ?? TANPA_PILIHAN,
+          UnitPengelolaId: gudang.UnitPengelolaId ?? TANPA_PILIHAN,
           Status: gudang.Status,
         }
-      : { Kode: '', Nama: '', LokasiId: TANPA_PILIHAN, Status: 'Aktif' as StatusGudang },
+      : {
+          Kode: '',
+          Nama: '',
+          LokasiId: TANPA_PILIHAN,
+          UnitPengelolaId: TANPA_PILIHAN,
+          Status: 'Aktif' as StatusGudang,
+        },
   );
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
+    const { UnitPengelolaId, ...data } = form.data;
     const payload = {
-      ...form.data,
-      LokasiId: form.data.LokasiId === TANPA_PILIHAN ? null : form.data.LokasiId,
+      ...data,
+      LokasiId: data.LokasiId === TANPA_PILIHAN ? null : data.LokasiId,
+      // Organisasi tanpa unit pengelola tidak mengirim isiannya sama sekali.
+      ...(unitPengelolaDipakai
+        ? { UnitPengelolaId: UnitPengelolaId === TANPA_PILIHAN ? null : UnitPengelolaId }
+        : {}),
     };
     const opsi = {
       onSuccess: () => {
@@ -117,6 +156,22 @@ function DialogFormGudang({
                 opsi={[opsiKosong('Tidak diisi'), ...opsiDari(lokasi, (l) => l.Nama)]}
               />
             </div>
+            {unitPengelolaDipakai && (
+              <div className="space-y-2">
+                <Label nama="UnitPengelolaId">Unit Pengelola</Label>
+                <Combobox
+                  nilai={form.data.UnitPengelolaId}
+                  onPilih={(v) => form.setData('UnitPengelolaId', v)}
+                  opsi={opsiUnitPengelola(pilihanUntukGudang(pilihanUnitPengelola, gudang))}
+                />
+                {form.errors.UnitPengelolaId && (
+                  <p className="text-sm text-destructive">{form.errors.UnitPengelolaId}</p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  Bagian pemilik gudang. Stoknya terlihat oleh pengguna berlingkup bagian itu.
+                </p>
+              </div>
+            )}
             <div className="space-y-2">
               <Label nama="Status">Status</Label>
               <Select
@@ -228,7 +283,16 @@ function DialogLokasiGudang({
   );
 }
 
-export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, filter, wajib }: Props) {
+export default function GudangIndex({
+  gudang,
+  lokasiGudangPerGudang,
+  lokasi,
+  filter,
+  wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
+  penyaringUnitPengelola,
+}: Props) {
   const konfirmasi = useKonfirmasi();
   const hapus = async (item: Gudang) => {
     if (
@@ -263,6 +327,23 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
         cell: ({ row }) => row.original.NamaLokasi ?? '—',
         meta: { label: 'Lokasi' },
       },
+      ...(unitPengelolaDipakai
+        ? [
+            {
+              // Id berbeda dari faset `UnitPengelolaId` supaya kolom ini tidak dianggap kolom bayangan.
+              id: 'UnitPengelola',
+              accessorFn: (row: Gudang) => row.NamaUnitPengelola ?? '',
+              header: 'Unit Pengelola',
+              cell: ({ row }: { row: { original: Gudang } }) => (
+                <span className="block min-w-32 whitespace-normal">
+                  {row.original.NamaUnitPengelola ?? <span className="text-muted-foreground">Belum ada</span>}
+                </span>
+              ),
+              enableSorting: false,
+              meta: { label: 'Unit Pengelola' },
+            } satisfies ColumnDef<Gudang>,
+          ]
+        : []),
       {
         id: 'PenanggungJawab',
         accessorFn: (row) => row.NamaPenanggungJawab ?? '',
@@ -289,7 +370,13 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
               lokasiGudang={lokasiGudangPerGudang[row.original.Id] ?? []}
               wajib={wajib.lokasiGudang}
             />
-            <DialogFormGudang gudang={row.original} lokasi={lokasi} wajib={wajib.gudang} />
+            <DialogFormGudang
+              gudang={row.original}
+              lokasi={lokasi}
+              wajib={wajib.gudang}
+              unitPengelolaDipakai={unitPengelolaDipakai}
+              pilihanUnitPengelola={pilihanUnitPengelola}
+            />
             <Button variant="ghost" size="sm" onClick={() => hapus(row.original)}>
               Hapus
             </Button>
@@ -300,7 +387,7 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
         meta: { label: 'Aksi' },
       },
     ],
-    [lokasiGudangPerGudang, lokasi, wajib],
+    [lokasiGudangPerGudang, lokasi, wajib, unitPengelolaDipakai, pilihanUnitPengelola],
   );
 
   return (
@@ -311,7 +398,13 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
         deskripsi="Kelola gudang beserta lokasi penyimpanan di dalamnya."
         aksi={
           <>
-            <DialogFormGudang gudang={null} lokasi={lokasi} wajib={wajib.gudang} />
+            <DialogFormGudang
+              gudang={null}
+              lokasi={lokasi}
+              wajib={wajib.gudang}
+              unitPengelolaDipakai={unitPengelolaDipakai}
+              pilihanUnitPengelola={pilihanUnitPengelola}
+            />
           </>
         }
         className="mb-6"
@@ -343,6 +436,18 @@ export default function GudangIndex({ gudang, lokasiGudangPerGudang, lokasi, fil
               title: 'Lokasi',
               options: lokasi.map((satu) => ({ label: satu.Nama, value: satu.Id })),
             },
+            ...(unitPengelolaDipakai
+              ? [
+                  {
+                    columnId: 'UnitPengelolaId',
+                    title: 'Unit Pengelola',
+                    options: [
+                      { label: 'Belum ada', value: TANPA_UNIT_PENGELOLA },
+                      ...penyaringUnitPengelola.map((satu) => ({ label: satu.Nama, value: satu.Id })),
+                    ],
+                  },
+                ]
+              : []),
           ]}
           pencarianPlaceholder="Cari nama atau kode gudang..."
           pesanKosong="Tidak ada gudang yang cocok."

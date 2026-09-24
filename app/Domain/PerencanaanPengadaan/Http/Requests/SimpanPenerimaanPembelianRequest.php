@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Http\Requests;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Persediaan\Http\Requests\GudangTerlihat;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -21,7 +22,8 @@ final class SimpanPenerimaanPembelianRequest extends FormRequest
 
         return [
             'Nomor' => ['nullable', 'string', 'max:100'],
-            'GudangId' => ['nullable', 'string', Rule::exists('Gudang', 'Id')->where('OrganisasiId', $organisasiId)],
+            // Barang hanya boleh diterima ke gudang yang terlihat penerimanya (PRD 8.21).
+            'GudangId' => ['nullable', 'string', new GudangTerlihat],
             'TanggalTerima' => ['required', 'date'],
             'NomorSuratJalan' => ['nullable', 'string', 'max:160'],
             'Catatan' => ['nullable', 'string', 'max:3000'],

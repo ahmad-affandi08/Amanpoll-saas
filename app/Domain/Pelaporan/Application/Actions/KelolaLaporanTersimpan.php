@@ -7,6 +7,7 @@ namespace App\Domain\Pelaporan\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
+use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
@@ -21,6 +22,7 @@ final class KelolaLaporanTersimpan
         private readonly LayananMetrik $metrik,
         private readonly LayananAudit $audit,
         private readonly KalenderOrganisasi $kalender,
+        private readonly PenjagaFilterMetrik $penjagaFilter,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -38,7 +40,9 @@ final class KelolaLaporanTersimpan
 
             $konfigurasi = [
                 'KunciKpi' => $kunciKpi,
-                'Filter' => FilterMetrik::dariArray((array) ($data['Konfigurasi']['Filter'] ?? []), $this->kalender->zona($pengguna->OrganisasiId))->keArray(),
+                'Filter' => $this->penjagaFilter->bersihkan(
+                    FilterMetrik::dariArray((array) ($data['Konfigurasi']['Filter'] ?? []), $this->kalender->zona($pengguna->OrganisasiId)),
+                )->keArray(),
             ];
 
             $baru = $laporan === null;

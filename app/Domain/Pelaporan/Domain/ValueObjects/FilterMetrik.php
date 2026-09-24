@@ -15,12 +15,19 @@ use Carbon\CarbonImmutable;
  * kolom waktu berjam. Kolom `date` memakai `tanggalDari()`/`tanggalSampai()`:
  * `dari->toDateString()` memberi tanggal UTC, yang untuk Jakarta adalah hari
  * sebelumnya.
+ *
+ * Unit pengelola (PRD 8.21) adalah dimensi ketiga di samping unit organisasi
+ * dan lokasi: "siapa yang memelihara", bukan "milik siapa". Kueri metrik
+ * memakai kolom unit pengelola barisnya sendiri bila ada (Keluhan,
+ * PerintahKerja, Aset, Gudang untuk stok) dan tidak pernah menukarnya dengan
+ * filter unit organisasi.
  */
 final readonly class FilterMetrik
 {
     /**
      * @param  list<string>  $unitOrganisasiId
      * @param  list<string>  $lokasiId
+     * @param  list<string>  $unitPengelolaId  ditaruh paling akhir supaya pemanggil posisional lama tidak bergeser
      */
     public function __construct(
         public CarbonImmutable $dari,
@@ -28,6 +35,7 @@ final readonly class FilterMetrik
         public array $unitOrganisasiId = [],
         public array $lokasiId = [],
         public string $zona = 'UTC',
+        public array $unitPengelolaId = [],
     ) {}
 
     /** Rentang bawaan dasbor: 30 hari terakhir sampai akhir hari ini, di zona organisasi. */
@@ -57,10 +65,42 @@ final readonly class FilterMetrik
         return new self(
             $dari->startOfDay()->utc(),
             $sampai->endOfDay()->utc(),
-            array_values(array_filter(array_map('strval', (array) ($data['UnitOrganisasiId'] ?? [])))),
-            array_values(array_filter(array_map('strval', (array) ($data['LokasiId'] ?? [])))),
+            self::daftarId($data['UnitOrganisasiId'] ?? []),
+            self::daftarId($data['LokasiId'] ?? []),
             $zona,
+            self::daftarId($data['UnitPengelolaId'] ?? []),
         );
+    }
+
+    /**
+     * Salinan dengan unit pengelola diganti, mis. setelah nilai yang bukan
+     * unit pengelola organisasi ini dibuang.
+     *
+     * @param  list<string>  $unitPengelolaId
+     */
+    public function denganUnitPengelola(array $unitPengelolaId): self
+    {
+        return new self(
+            $this->dari,
+            $this->sampai,
+            $this->unitOrganisasiId,
+            $this->lokasiId,
+            $this->zona,
+            array_values(array_unique($unitPengelolaId)),
+        );
+    }
+
+    /**
+     * Id dari kueri URL. Nilai bersarang (`?UnitPengelolaId[0][]=x`) dibuang,
+     * bukan diubah paksa menjadi teks "Array".
+     *
+     * @return list<string>
+     */
+    private static function daftarId(mixed $nilai): array
+    {
+        $daftar = array_filter((array) $nilai, fn (mixed $satu): bool => is_string($satu) || is_int($satu));
+
+        return array_values(array_filter(array_map('strval', $daftar), fn (string $satu): bool => $satu !== ''));
     }
 
     public function adaFilterUnit(): bool
@@ -71,6 +111,11 @@ final readonly class FilterMetrik
     public function adaFilterLokasi(): bool
     {
         return $this->lokasiId !== [];
+    }
+
+    public function adaFilterUnitPengelola(): bool
+    {
+        return $this->unitPengelolaId !== [];
     }
 
     /** Tanggal kalender hari pertama rentang (Y-m-d), untuk kolom `date`. */
@@ -122,6 +167,7 @@ final readonly class FilterMetrik
             'Sampai' => $this->tanggalSampai(),
             'UnitOrganisasiId' => $this->unitOrganisasiId,
             'LokasiId' => $this->lokasiId,
+            'UnitPengelolaId' => $this->unitPengelolaId,
         ];
     }
 }

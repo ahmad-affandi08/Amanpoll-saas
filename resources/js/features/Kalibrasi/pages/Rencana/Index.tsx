@@ -19,19 +19,25 @@ import { DialogFormRencana } from '@/features/Kalibrasi/components/DialogFormRen
 import type { AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 
 interface Props {
   rencanaKalibrasi: RencanaKalibrasi[];
-  aset: { Id: string; KodeAset: string; Nama: string }[];
+  aset: { Id: string; KodeAset: string; Nama: string; UnitPengelolaId?: string | null }[];
   jenisKalibrasi: { Id: string; Kode: string; Nama: string }[];
   penyedia: { Id: string; Kode: string; Nama: string }[];
   filter: {
     asetId?: string;
     jenisKalibrasiId?: string;
     status?: string;
+    unitPengelolaId?: string;
   };
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
+  /** Organisasi memakai unit pengelola (PRD 8.21); bila tidak, halaman tampil seperti sebelumnya. */
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  saringanUnitPengelola: UnitPengelolaRingkas[];
 }
 
 export default function KalibrasiRencanaIndex({
@@ -41,6 +47,9 @@ export default function KalibrasiRencanaIndex({
   penyedia,
   filter,
   wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
+  saringanUnitPengelola,
 }: Props) {
   const konfirmasi = useKonfirmasi();
   const [pencarian, setPencarian] = useState('');
@@ -99,6 +108,8 @@ export default function KalibrasiRencanaIndex({
                 jenisKalibrasi={jenisKalibrasi}
                 penyedia={penyedia}
                 wajib={wajib.rencana}
+                pilihanUnitPengelola={pilihanUnitPengelola}
+                unitPengelolaDipakai={unitPengelolaDipakai}
               />
             </>
           }
@@ -107,7 +118,13 @@ export default function KalibrasiRencanaIndex({
         {/* Filter Card */}
         <Card className="border-border">
           <CardHeader className="p-4 sm:p-5 border-b border-border">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div
+              className={
+                unitPengelolaDipakai
+                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3'
+                  : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3'
+              }
+            >
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                 <Input
@@ -161,6 +178,25 @@ export default function KalibrasiRencanaIndex({
                   className="h-9 text-xs"
                 />
               </div>
+
+              {unitPengelolaDipakai && (
+                <div>
+                  <Combobox
+                    nilai={filter.unitPengelolaId ?? '__all__'}
+                    onPilih={(val) => terapkanFilter('unitPengelolaId', val)}
+                    opsi={[
+                      { nilai: '__all__', label: 'Semua Unit Pengelola' },
+                      ...opsiDari(
+                        saringanUnitPengelola,
+                        (unit) => unit.Nama,
+                        (unit) => unit.Kode,
+                      ),
+                    ]}
+                    placeholder="Unit Pengelola"
+                    className="h-9 text-xs"
+                  />
+                </div>
+              )}
             </div>
           </CardHeader>
 
@@ -179,6 +215,7 @@ export default function KalibrasiRencanaIndex({
                     <tr>
                       <th className="px-4 py-3 font-medium">Aset / Instrumen</th>
                       <th className="px-4 py-3 font-medium">Jenis Kalibrasi</th>
+                      {unitPengelolaDipakai && <th className="px-3 py-3 font-medium">Unit Pengelola</th>}
                       <th className="px-3 py-3 font-medium">Penyedia / Lab</th>
                       <th className="px-3 py-3 font-medium">Interval</th>
                       <th className="px-3 py-3 font-medium">Jatuh Tempo</th>
@@ -205,6 +242,11 @@ export default function KalibrasiRencanaIndex({
                           <td className="px-4 py-3 text-muted-foreground">
                             {rk.jenisKalibrasi?.Nama ?? '—'}
                           </td>
+                          {unitPengelolaDipakai && (
+                            <td className="px-3 py-3 text-muted-foreground">
+                              {rk.unit_pengelola?.Nama ?? '—'}
+                            </td>
+                          )}
                           <td className="px-3 py-3 text-muted-foreground">
                             {rk.penyedia?.Nama ? (
                               <span>{rk.penyedia.Nama}</span>
@@ -252,6 +294,8 @@ export default function KalibrasiRencanaIndex({
                                 jenisKalibrasi={jenisKalibrasi}
                                 penyedia={penyedia}
                                 wajib={wajib.rencana}
+                                pilihanUnitPengelola={pilihanUnitPengelola}
+                                unitPengelolaDipakai={unitPengelolaDipakai}
                               />
                               <Button
                                 variant="ghost"

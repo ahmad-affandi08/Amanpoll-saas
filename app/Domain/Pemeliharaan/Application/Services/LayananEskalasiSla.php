@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\DB;
 
 final class LayananEskalasiSla
 {
-    public function __construct(private readonly LayananNotifikasi $notifikasi) {}
+    public function __construct(
+        private readonly LayananNotifikasi $notifikasi,
+        private readonly PenerimaNotifikasiKeluhan $penerimaNotifikasi,
+    ) {}
 
     public function proses(): int
     {
@@ -64,7 +67,7 @@ final class LayananEskalasiSla
         $judul = "SLA {$jenisBatas} {$keluhan->Nomor} - Tahap {$aturan->Tahap}";
         $jumlah = 0;
 
-        foreach ($this->penerima($keluhan->OrganisasiId, $aturan) as $penggunaId) {
+        foreach ($this->penerima($keluhan, $aturan) as $penggunaId) {
             $sudahDikirim = Notifikasi::query()
                 ->where('PenggunaId', $penggunaId)
                 ->where('JenisPeristiwa', $jenisPeristiwa)
@@ -91,14 +94,23 @@ final class LayananEskalasiSla
         return $jumlah;
     }
 
-    /** @return list<string> */
-    private function penerima(string $organisasiId, EskalasiTingkatLayanan $aturan): array
+    /**
+     * Pengguna dan pemegang peran yang ditunjuk aturan eskalasi, hanya yang
+     * lingkupnya mencakup keluhan (PRD 8.21): eskalasi keluhan antrean IT
+     * tidak sampai ke koordinator IPSRS yang memang tidak bisa membukanya.
+     *
+     * Berjalan dari cron: lingkup dihitung di organisasi pemilik keluhan oleh
+     * `PemeriksaLingkupBaris`, bukan dari konteks yang kebetulan berlaku.
+     *
+     * @return list<string>
+     */
+    private function penerima(Keluhan $keluhan, EskalasiTingkatLayanan $aturan): array
     {
         $penerima = collect($aturan->PenggunaId ? [$aturan->PenggunaId] : []);
         if ($aturan->PeranId !== null) {
             $penerima = $penerima->merge(
                 DB::table('PenggunaPeran')
-                    ->where('OrganisasiId', $organisasiId)
+                    ->where('OrganisasiId', $keluhan->OrganisasiId)
                     ->where('PeranId', $aturan->PeranId)
                     ->where(fn ($query) => $query->whereNull('BerlakuMulai')->orWhere('BerlakuMulai', '<=', now()))
                     ->where(fn ($query) => $query->whereNull('BerlakuSampai')->orWhere('BerlakuSampai', '>=', now()))
@@ -106,7 +118,10 @@ final class LayananEskalasiSla
             );
         }
 
-        return $penerima->filter()->unique()->values()->map(fn ($id): string => (string) $id)->all();
+        return $this->penerimaNotifikasi->yangMencakup(
+            $keluhan,
+            $penerima->filter()->unique()->values()->map(fn ($id): string => (string) $id)->all(),
+        );
     }
 
     private function labelPemicu(EskalasiTingkatLayanan $aturan): string

@@ -9,6 +9,8 @@ use App\Core\Organisasi\KonteksOrganisasi;
 use App\Core\Peristiwa\LayananKotakKeluar;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use App\Domain\Pemeliharaan\Application\Services\LayananKalkulasiSla;
+use App\Domain\Pemeliharaan\Application\Services\PenentuUnitPengelola;
+use App\Domain\Pemeliharaan\Application\Services\PenerimaNotifikasiKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\AturanTingkatLayanan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
@@ -18,7 +20,6 @@ use App\Domain\Platform\Application\Services\LayananNomorDokumen;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
-use Illuminate\Support\Facades\DB;
 
 final class BuatKeluhan
 {
@@ -30,9 +31,20 @@ final class BuatKeluhan
         private readonly LayananNotifikasi $notifikasi,
         private readonly LayananAudit $audit,
         private readonly LayananKotakKeluar $kotakKeluar,
+        private readonly PenentuUnitPengelola $penentuUnitPengelola,
+        private readonly PenerimaNotifikasiKeluhan $penerimaNotifikasi,
     ) {}
 
-    /** @param array<string, mixed> $data */
+    /**
+     * Satu-satunya jalan keluhan tercipta: dasbor, Mode Lapangan (online dan
+     * antrean offline), dan API semuanya lewat sini.
+     *
+     * `UnitPengelolaId` selalu diturunkan di sini dari kategori (naik ke induk)
+     * lalu aset (PRD 8.21), bukan diterima dari pemanggil, supaya keluhan yang
+     * sama mendarat di antrean yang sama dari jalur mana pun.
+     *
+     * @param  array<string, mixed>  $data
+     */
     public function jalankan(array $data, string $pelaporId): Keluhan
     {
         $keluhan = $this->transaksi->jalankan(function () use ($data, $pelaporId): Keluhan {
@@ -64,6 +76,10 @@ final class BuatKeluhan
 
             $keluhan = Keluhan::create([
                 ...$data,
+                'UnitPengelolaId' => $this->penentuUnitPengelola->untukKeluhan(
+                    is_string($data['KategoriKeluhanId']) ? $data['KategoriKeluhanId'] : null,
+                    is_string($data['AsetId'] ?? null) && $data['AsetId'] !== '' ? $data['AsetId'] : null,
+                ),
                 'Nomor' => $this->nomorDokumen->berikutnya($organisasiId, 'Keluhan'),
                 'TingkatLayananId' => $kategori->TingkatLayananId,
                 'Prioritas' => $prioritas,
@@ -104,25 +120,18 @@ final class BuatKeluhan
         return $keluhan;
     }
 
+    /**
+     * Routing kategori (`PeranPenanggungJawabId`), atau koordinator unit pengelola
+     * bila kategorinya tidak menunjuk peran; hanya penerima yang lingkupnya
+     * mencakup keluhan ini (lihat `PenerimaNotifikasiKeluhan`).
+     */
     private function kirimNotifikasiRouting(Keluhan $keluhan): void
     {
         $peranId = KategoriKeluhan::query()->whereKey($keluhan->KategoriKeluhanId)->value('PeranPenanggungJawabId');
-        if ($peranId === null) {
-            return;
-        }
 
-        $penerima = DB::table('PenggunaPeran')
-            ->where('OrganisasiId', $keluhan->OrganisasiId)
-            ->where('PeranId', $peranId)
-            ->where('PenggunaId', '!=', $keluhan->PelaporId)
-            ->where(fn ($query) => $query->whereNull('BerlakuMulai')->orWhere('BerlakuMulai', '<=', now()))
-            ->where(fn ($query) => $query->whereNull('BerlakuSampai')->orWhere('BerlakuSampai', '>=', now()))
-            ->distinct()
-            ->pluck('PenggunaId');
-
-        foreach ($penerima as $penggunaId) {
+        foreach ($this->penerimaNotifikasi->untukKeluhanBaru($keluhan, is_string($peranId) ? $peranId : null) as $penggunaId) {
             $this->notifikasi->kirim(
-                penggunaId: (string) $penggunaId,
+                penggunaId: $penggunaId,
                 jenisPeristiwa: 'Keluhan.Baru',
                 isi: "Keluhan {$keluhan->Nomor} ({$keluhan->Judul}) perlu ditinjau.",
                 judul: 'Keluhan Baru',

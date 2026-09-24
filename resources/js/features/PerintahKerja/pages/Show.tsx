@@ -20,6 +20,8 @@ import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { DialogUbahStatus } from '@/features/PerintahKerja/components/DialogUbahStatus';
 import { DialogTugaskanTeknisi } from '@/features/PerintahKerja/components/DialogTugaskanTeknisi';
+import { DialogAlihkanUnitPengelola } from '@/features/PerintahKerja/components/DialogAlihkanUnitPengelola';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { DialogReservasiSukuCadang } from '@/features/PerintahKerja/components/DialogReservasiSukuCadang';
 import { DialogCatatBiaya } from '@/features/PerintahKerja/components/DialogCatatBiaya';
 import { DialogAnalisisKegagalan } from '@/features/PerintahKerja/components/DialogAnalisisKegagalan';
@@ -43,6 +45,11 @@ interface Props {
   transisiDiizinkan: StatusPerintahKerja[];
   penugasanSaya: PenugasanPerintahKerjaItem | null;
   teknisi: TeknisiOpsi[];
+  /** Pengguna aktif yang tidak tampil di pilihan teknisi karena lingkupnya tidak mencakup tiket ini. */
+  jumlahTeknisiDiluarLingkup: number;
+  /** Organisasi memakai unit pengelola (PRD 8.21). */
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
   stok: StokOpsi[];
   gudang: GudangOpsi[];
   penyedia: PenyediaOpsi[];
@@ -71,10 +78,19 @@ export default function PerintahKerjaShow({
   transisiDiizinkan,
   penugasanSaya,
   teknisi,
+  jumlahTeknisiDiluarLingkup,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
   stok,
   kodeKegagalan,
   wajib,
 }: Props) {
+  const dapatDialihkan =
+    dapatMengelola &&
+    unitPengelolaDipakai &&
+    perintahKerja.Status !== 'Ditutup' &&
+    perintahKerja.Status !== 'Dibatalkan';
+
   // Aksi respon penugasan teknisi
   const formResponsPenugasan = useForm({
     Respons: 'Terima' as 'Terima' | 'Tolak',
@@ -156,7 +172,9 @@ export default function PerintahKerjaShow({
         }
         deskripsi={
           <>
-            Lokasi: {perintahKerja.NamaLokasi ?? '—'} · Persentase Selesai: {perintahKerja.PersentaseSelesai}%
+            Lokasi: {perintahKerja.NamaLokasi ?? '—'}
+            {unitPengelolaDipakai && <> · Unit pengelola: {perintahKerja.UnitPengelola?.Nama ?? '—'}</>} ·
+            Persentase Selesai: {perintahKerja.PersentaseSelesai}%
           </>
         }
         aksi={
@@ -179,6 +197,14 @@ export default function PerintahKerjaShow({
                   Tolak
                 </Button>
               </div>
+            )}
+
+            {dapatDialihkan && (
+              <DialogAlihkanUnitPengelola
+                perintahKerja={perintahKerja}
+                pilihanUnitPengelola={pilihanUnitPengelola}
+                wajib={wajib.unitPengelola}
+              />
             )}
 
             <DialogUbahStatus
@@ -495,6 +521,7 @@ export default function PerintahKerjaShow({
                   perintahKerja={perintahKerja}
                   teknisi={teknisi}
                   wajib={wajib.penugasan}
+                  jumlahDiluarLingkup={jumlahTeknisiDiluarLingkup}
                 />
               )}
             </CardHeader>

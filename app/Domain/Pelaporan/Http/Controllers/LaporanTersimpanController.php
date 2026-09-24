@@ -10,6 +10,7 @@ use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Actions\KelolaLaporanTersimpan;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
+use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Http\Requests\SimpanLaporanTersimpanRequest;
 use App\Domain\Pelaporan\Infrastructure\Persistence\Models\LaporanTersimpan;
@@ -33,6 +34,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /** Laporan tersimpan (21.03) beserta pemicu ekspornya (21.05). */
 final class LaporanTersimpanController extends Controller
 {
+    /** @var list<string> */
+    private const KUNCI_FILTER = ['Dari', 'Sampai', 'UnitOrganisasiId', 'LokasiId', 'UnitPengelolaId'];
+
     public function __construct(private readonly PemeriksaIzin $izin) {}
 
     /**
@@ -86,18 +90,25 @@ final class LaporanTersimpanController extends Controller
         );
     }
 
-    public function index(Request $request, LayananMetrik $layananMetrik, KalenderOrganisasi $kalender): Response
-    {
+    public function index(
+        Request $request,
+        LayananMetrik $layananMetrik,
+        KalenderOrganisasi $kalender,
+        PenjagaFilterMetrik $penjagaFilter,
+    ): Response {
         $this->authorize('viewAny', LaporanTersimpan::class);
 
         $pengguna = $request->user('web');
-        $filter = FilterMetrik::dariArray($request->all(), $kalender->zona());
 
         $laporan = $this->kueriTersaring($request)
             ->limit(BatasDaftar::MAKS)
             ->get();
 
         $dibuka = $this->laporanDibuka($request, $laporan);
+
+        $filter = $penjagaFilter->bersihkan(
+            FilterMetrik::dariArray($this->dataFilter($request, $dibuka), $kalender->zona()),
+        );
 
         return Inertia::render('Laporan/Index', [
             'wajib' => ['laporan' => AturanWajib::untuk(SimpanLaporanTersimpanRequest::class)],
@@ -118,6 +129,8 @@ final class LaporanTersimpanController extends Controller
             ),
             'pilihanUnit' => UnitOrganisasi::query()->orderBy('Nama')->get(['Id', 'Nama'])->all(),
             'pilihanLokasi' => Lokasi::query()->orderBy('Nama')->get(['Id', 'Nama'])->all(),
+            // Kosong bila organisasi tidak memakai unit pengelola; klien lalu menyembunyikan pemilihnya.
+            'pilihanUnitPengelola' => $penjagaFilter->pilihan(),
             'eksporTerakhir' => $this->eksporTerakhir($pengguna->Id),
         ]);
     }
@@ -165,6 +178,23 @@ final class LaporanTersimpanController extends Controller
             'Filter' => (array) ($laporan->Konfigurasi['Filter'] ?? []),
             'DiperbaruiPada' => $laporan->DiperbaruiPada->toIso8601String(),
         ];
+    }
+
+    /**
+     * Membuka laporan tersimpan tanpa filter di URL memulihkan filter yang
+     * tersimpan bersamanya -- rentang, unit organisasi, lokasi, dan unit
+     * pengelola. Begitu pengguna mengubah filter di layar, kiriman baris filter
+     * selalu membawa rentangnya sehingga pilihan di URL yang berlaku.
+     *
+     * @return array<string, mixed>
+     */
+    private function dataFilter(Request $request, ?LaporanTersimpan $dibuka): array
+    {
+        if ($dibuka !== null && ! $request->hasAny(self::KUNCI_FILTER)) {
+            return (array) ($dibuka->Konfigurasi['Filter'] ?? []);
+        }
+
+        return $request->all();
     }
 
     /** @param Collection<int, LaporanTersimpan> $laporan */

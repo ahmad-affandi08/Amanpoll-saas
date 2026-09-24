@@ -25,6 +25,10 @@ import { Persetujuan, daftarIsi as isiPersetujuan } from '@/features/Dokumentasi
 import { Persiapan, daftarIsi as isiPersiapan } from '@/features/Dokumentasi/components/isi/Persiapan';
 import { Preventif, daftarIsi as isiPreventif } from '@/features/Dokumentasi/components/isi/Preventif';
 import { SiklusAset, daftarIsi as isiSiklusAset } from '@/features/Dokumentasi/components/isi/SiklusAset';
+import {
+  UnitPengelola,
+  daftarIsi as isiUnitPengelola,
+} from '@/features/Dokumentasi/components/isi/UnitPengelola';
 
 interface Props {
   halaman: string;
@@ -47,6 +51,7 @@ const isiPer: Record<string, { daftarIsi: ButirDaftarIsi[]; Komponen: ComponentT
   persediaan: { daftarIsi: isiPersediaan, Komponen: Persediaan },
   'mutasi-stok': { daftarIsi: isiMutasiStok, Komponen: MutasiStok },
   pengadaan: { daftarIsi: isiPengadaan, Komponen: Pengadaan },
+  'unit-pengelola': { daftarIsi: isiUnitPengelola, Komponen: UnitPengelola },
   persetujuan: { daftarIsi: isiPersetujuan, Komponen: Persetujuan },
   lanjutan: { daftarIsi: isiLanjutan, Komponen: Lanjutan },
 };

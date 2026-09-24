@@ -2,6 +2,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/data-table/DataTable';
@@ -24,7 +25,8 @@ import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
-import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+import { TANPA_PILIHAN, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
@@ -42,8 +44,60 @@ interface Props {
   filter: FilterDaftar;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
+  /** Organisasi memakai unit pengelola (PRD 8.21); bila tidak, isian dan kolomnya disembunyikan. */
+  pakaiUnitPengelola: boolean;
+  /** Unit pengelola aktif untuk isian formulir. */
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  /** Unit yang diwarisi dari induk, per Id kategori yang kolomnya sendiri kosong. */
+  unitPengelolaWarisan: Record<string, UnitPengelolaRingkas>;
+  /** Kategori aktif yang tidak punya unit pengelola, sendiri maupun dari induknya. */
+  jumlahTanpaUnitPengelola: number;
 }
 const PRIORITAS: PrioritasKeluhan[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
+
+/** Unit pengelola sebuah kategori: miliknya sendiri, warisan induk, atau penanda belum ada. */
+function SelBarisUnitPengelola({
+  item,
+  warisan,
+}: {
+  item: KategoriKeluhan;
+  warisan: UnitPengelolaRingkas | undefined;
+}) {
+  if (item.UnitPengelola) {
+    return (
+      <div className="text-sm">
+        <div>{item.UnitPengelola.Nama}</div>
+        <div className="font-mono text-xs text-muted-foreground">{item.UnitPengelola.Kode}</div>
+      </div>
+    );
+  }
+  if (warisan) {
+    return (
+      <div className="text-sm">
+        <div>{warisan.Nama}</div>
+        <div className="text-xs text-muted-foreground">Mengikuti kategori induk</div>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-1 text-sm">
+      <Badge variant="perhatian">Belum ada</Badge>
+      <div className="text-xs text-muted-foreground">Hanya lewat aset atau lokasi</div>
+    </div>
+  );
+}
+
+/**
+ * Pilihan unit pengelola untuk satu kategori: unit aktif, ditambah unit yang sudah
+ * tersimpan pada kategori itu walau kini nonaktif, supaya isiannya tidak tampil kosong.
+ */
+function pilihanUnitUntuk(
+  item: KategoriKeluhan | null,
+  daftar: UnitPengelolaRingkas[],
+): UnitPengelolaRingkas[] {
+  const tersimpan = item?.UnitPengelola;
+  return tersimpan && !daftar.some((unit) => unit.Id === tersimpan.Id) ? [...daftar, tersimpan] : daftar;
+}
 
 function DialogKategori({
   item,
@@ -51,12 +105,16 @@ function DialogKategori({
   tingkatLayanan,
   peran,
   wajib,
+  pakaiUnitPengelola,
+  pilihanUnitPengelola,
 }: {
   item: KategoriKeluhan | null;
   kategori: Ringkas[];
   tingkatLayanan: Ringkas[];
   peran: Ringkas[];
   wajib: AturanWajib;
+  pakaiUnitPengelola: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -67,6 +125,7 @@ function DialogKategori({
     PrioritasBawaan: item?.PrioritasBawaan ?? ('Normal' as PrioritasKeluhan),
     AsetWajib: item?.AsetWajib ?? false,
     PeranPenanggungJawabId: item?.PeranPenanggungJawabId ?? TANPA_PILIHAN,
+    UnitPengelolaId: item?.UnitPengelolaId ?? TANPA_PILIHAN,
     Aktif: item?.Aktif ?? true,
   });
 
@@ -79,6 +138,7 @@ function DialogKategori({
       TingkatLayananId: data.TingkatLayananId === TANPA_PILIHAN ? null : data.TingkatLayananId,
       PeranPenanggungJawabId:
         data.PeranPenanggungJawabId === TANPA_PILIHAN ? null : data.PeranPenanggungJawabId,
+      UnitPengelolaId: data.UnitPengelolaId === TANPA_PILIHAN ? null : data.UnitPengelolaId,
     }));
     item ? form.put(ruteKategoriKeluhan.detail(item.Id), opsi) : form.post(ruteKategoriKeluhan.index, opsi);
   };
@@ -162,6 +222,26 @@ function DialogKategori({
                 opsi={[opsiKosong('Tanpa routing'), ...opsiDari(peran, (p) => p.Nama)]}
               />
             </div>
+            {pakaiUnitPengelola && (
+              <div className="space-y-1.5">
+                <Label nama="UnitPengelolaId">Unit Pengelola</Label>
+                <Combobox
+                  nilai={form.data.UnitPengelolaId}
+                  onPilih={(v) => form.setData('UnitPengelolaId', v)}
+                  opsi={opsiUnitPengelola(
+                    pilihanUnitUntuk(item, pilihanUnitPengelola),
+                    'Tanpa unit pengelola (ikuti induk, lalu aset)',
+                  )}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Keluhan kategori ini masuk antrean unit ini. Bila kosong, antrean diambil dari kategori
+                  induk, lalu dari unit pengelola aset yang dilaporkan.
+                </p>
+                {form.errors.UnitPengelolaId && (
+                  <p className="text-sm text-destructive">{form.errors.UnitPengelolaId}</p>
+                )}
+              </div>
+            )}
             <div className="flex flex-wrap gap-6">
               <label className="flex items-center gap-2 text-sm">
                 <Switch checked={form.data.AsetWajib} onCheckedChange={(v) => form.setData('AsetWajib', v)} />{' '}
@@ -190,6 +270,10 @@ export default function KategoriKeluhanIndex({
   peran,
   filter,
   wajib,
+  pakaiUnitPengelola,
+  pilihanUnitPengelola,
+  unitPengelolaWarisan,
+  jumlahTanpaUnitPengelola,
 }: Props) {
   const konfirmasi = useKonfirmasi();
   const columns = useMemo<ColumnDef<KategoriKeluhan>[]>(
@@ -229,6 +313,19 @@ export default function KategoriKeluhanIndex({
           </div>
         ),
       },
+      ...(pakaiUnitPengelola
+        ? [
+            {
+              id: 'unitPengelola',
+              header: 'Unit Pengelola',
+              enableSorting: false,
+              cell: ({ row }) => (
+                <SelBarisUnitPengelola item={row.original} warisan={unitPengelolaWarisan[row.original.Id]} />
+              ),
+              meta: { label: 'Unit Pengelola' },
+            } satisfies ColumnDef<KategoriKeluhan>,
+          ]
+        : []),
       {
         id: 'status',
         accessorFn: (row) => (row.Aktif ? 'Aktif' : 'Nonaktif'),
@@ -250,6 +347,8 @@ export default function KategoriKeluhanIndex({
               tingkatLayanan={tingkatLayanan}
               peran={peran}
               wajib={wajib.kategoriKeluhan}
+              pakaiUnitPengelola={pakaiUnitPengelola}
+              pilihanUnitPengelola={pilihanUnitPengelola}
             />
             <Button
               variant="ghost"
@@ -270,7 +369,15 @@ export default function KategoriKeluhanIndex({
         ),
       },
     ],
-    [pilihanInduk, tingkatLayanan, peran, wajib],
+    [
+      pilihanInduk,
+      tingkatLayanan,
+      peran,
+      wajib,
+      pakaiUnitPengelola,
+      pilihanUnitPengelola,
+      unitPengelolaWarisan,
+    ],
   );
 
   return (
@@ -287,11 +394,23 @@ export default function KategoriKeluhanIndex({
               tingkatLayanan={tingkatLayanan}
               peran={peran}
               wajib={wajib.kategoriKeluhan}
+              pakaiUnitPengelola={pakaiUnitPengelola}
+              pilihanUnitPengelola={pilihanUnitPengelola}
             />
           </>
         }
         className="mb-6"
       />
+      {pakaiUnitPengelola && jumlahTanpaUnitPengelola > 0 && (
+        <Alert variant="perhatian" className="mb-4">
+          <AlertTitle>{jumlahTanpaUnitPengelola} kategori aktif belum punya unit pengelola</AlertTitle>
+          <AlertDescription>
+            Keluhan kategori itu hanya masuk antrean unit pengelola lewat asetnya. Keluhan tanpa aset tidak
+            masuk antrean bagian mana pun dan hanya terlihat oleh pengguna yang lingkupnya mencakup lokasinya.
+            Isi Unit Pengelola pada kategori itu atau kategori induknya.
+          </AlertDescription>
+        </Alert>
+      )}
       <DataTable
         columns={columns}
         data={kategori.data}

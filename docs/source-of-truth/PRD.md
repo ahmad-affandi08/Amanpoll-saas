@@ -1266,10 +1266,11 @@ Satu organisasi bisa punya lebih dari satu bagian yang memelihara aset, masing-m
 
 ### Di mana unit pengelola dicatat
 
-- `Aset.UnitPengelolaId`: diisi di formulir aset, impor aset, dan bisa diubah massal.
+- `Aset.UnitPengelolaId`: diisi di formulir aset dan bisa diubah massal dari daftar aset. Impor aset belum ada di produk; bila dibangun, templatnya wajib memuat kolom unit pengelola (kode unit) dengan validasi yang sama.
 - `KategoriKeluhan.UnitPengelolaId`: kategori (atau induknya) menentukan antrian mana yang menerima keluhan.
 - `Keluhan.UnitPengelolaId`: ditentukan saat keluhan dibuat, dari mana pun keluhan dibuat (dasbor, Mode Lapangan, antrian offline). Urutannya: kategori keluhan (naik ke induk sampai ketemu) → aset → kosong. Koordinator pemegang `Keluhan.Kelola` bisa **mengalihkan** keluhan ke unit pengelola lain dengan alasan; pengalihan tercatat di audit dan riwayat.
 - `PerintahKerja.UnitPengelolaId`: isian eksplisit di formulir → keluhan asal → aset → rencana preventif/kalibrasi asal → kosong. Tiket preventif, kalibrasi, dan tindak lanjut inspeksi ikut terisi. `PerintahKerja.UnitOrganisasiId` yang kosong diisi dari unit organisasi aset.
+- Koordinator pemegang `PerintahKerja.Kelola` bisa mengalihkan perintah kerja ke unit pengelola lain dengan alasan. Pengalihan ditolak bila ada teknisi aktif yang tidak lagi bisa membuka tiket itu. Mengalihkan keluhan ikut mengalihkan perintah kerjanya yang belum final dan masih berunit sama.
 - `Gudang.UnitPengelolaId`: gudang milik satu bagian.
 - `RencanaPemeliharaan.UnitPengelolaId` dan `RencanaKalibrasi.UnitPengelolaId`: dipakai untuk menurunkan unit pengelola tiket yang dihasilkan dan untuk penyaringan.
 

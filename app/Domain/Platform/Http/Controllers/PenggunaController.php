@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Http\Controllers;
 
+use App\Core\Izin\LingkupAkses;
 use App\Domain\Platform\Application\Actions\BuatPengguna;
 use App\Domain\Platform\Application\Actions\UbahPengguna;
 use App\Domain\Platform\Application\Actions\UbahStatusPengguna;
 use App\Domain\Platform\Application\DTO\PenggunaData;
+use App\Domain\Platform\Application\Services\LingkupEfektifPengguna;
 use App\Domain\Platform\Http\Requests\SimpanPenggunaRequest;
 use App\Domain\Platform\Http\Resources\PenggunaResource;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
@@ -67,15 +69,22 @@ final class PenggunaController extends Controller
         );
     }
 
-    public function index(Request $request): Response
+    public function index(Request $request, LingkupAkses $lingkupAkses): Response
     {
         $this->authorize('viewAny', Pengguna::class);
 
         $daftar = $this->daftar($request);
+        $halaman = $daftar->halaman();
+        // Putusan LingkupAkses per baris (PRD 8.21): kolom Lingkup dan peringatan di dialog
+        // peran. Dibaca sebelum Resource membungkus isi paginator.
+        $lingkupSeluruhOrganisasi = $lingkupAkses->tanpaBatasUntuk(
+            $halaman->getCollection()->map(fn (Pengguna $satu): string => (string) $satu->Id),
+        );
 
         return Inertia::render('Pengguna/Index', [
-            'pengguna' => PenggunaResource::collection($daftar->halaman()),
+            'pengguna' => PenggunaResource::collection($halaman),
             'filter' => $daftar->filterBerlaku(),
+            'lingkupSeluruhOrganisasi' => $lingkupSeluruhOrganisasi,
             'peranTersedia' => Peran::query()->orderBy('Nama')->get(['Id', 'Nama']),
             // Dipakai membatasi cakupan penugasan peran; tanpa keduanya peran
             // hanya dapat ditetapkan untuk seluruh organisasi.
@@ -92,7 +101,7 @@ final class PenggunaController extends Controller
      * menonaktifkan atau memindahkan seseorang, penyelia perlu tahu apa yang
      * sedang dipegangnya; rinciannya diambil tab lewat RiwayatPenggunaController.
      */
-    public function show(Pengguna $pengguna): Response
+    public function show(Pengguna $pengguna, LingkupEfektifPengguna $lingkupEfektif): Response
     {
         $this->authorize('view', $pengguna);
 
@@ -101,6 +110,7 @@ final class PenggunaController extends Controller
         return Inertia::render('Pengguna/Show', [
             'pengguna' => new PenggunaResource($pengguna),
             'ringkasan' => $this->ringkasanPengguna($pengguna),
+            'lingkupEfektif' => $lingkupEfektif->untuk($pengguna),
         ]);
     }
 

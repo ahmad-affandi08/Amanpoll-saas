@@ -38,6 +38,12 @@ final class PerintahKerjaPolicy
         return $this->dapatMengelola($pengguna);
     }
 
+    /** Memindahkan perintah kerja ke unit pengelola lain (PRD 8.21): hak koordinator, bukan teknisi. */
+    public function alihkanUnitPengelola(Pengguna $pengguna, PerintahKerja $perintahKerja): bool
+    {
+        return $this->dapatMengelola($pengguna);
+    }
+
     public function ubahStatus(Pengguna $pengguna, PerintahKerja $perintahKerja, string $statusTujuan): bool
     {
         if ($this->dapatMengelola($pengguna)) {

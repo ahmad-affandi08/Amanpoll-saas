@@ -81,7 +81,7 @@ final class QueryBiaya implements PenyediaKpi
         $query = BiayaPerintahKerja::query()
             ->whereBetween('TanggalBiaya', [$filter->tanggalDari(), $filter->tanggalSampai()]);
 
-        if ($filter->adaFilterUnit() || $filter->adaFilterLokasi()) {
+        if ($filter->adaFilterUnit() || $filter->adaFilterLokasi() || $filter->adaFilterUnitPengelola()) {
             $query->whereIn('PerintahKerjaId', $this->perintahKerjaDalamLingkup($filter));
         }
 
@@ -99,6 +99,9 @@ final class QueryBiaya implements PenyediaKpi
         }
         if ($filter->adaFilterLokasi()) {
             $subquery->whereIn('LokasiId', $filter->lokasiId);
+        }
+        if ($filter->adaFilterUnitPengelola()) {
+            $subquery->whereIn('UnitPengelolaId', $filter->unitPengelolaId);
         }
 
         return $subquery->getQuery();

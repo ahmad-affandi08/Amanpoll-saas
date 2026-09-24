@@ -33,6 +33,7 @@ final class LayananEksporLaporan
         private readonly PenyusunBarisLaporan $penyusun,
         private readonly LayananNotifikasi $notifikasi,
         private readonly LayananAudit $audit,
+        private readonly PenjagaFilterMetrik $penjagaFilter,
     ) {}
 
     public function daftarkanPenulis(PenulisEkspor $penulis): void
@@ -87,6 +88,7 @@ final class LayananEksporLaporan
                 'Organisasi' => KopOrganisasi::nama($organisasi),
                 'Judul' => $judul,
                 'Rentang' => $filter->tanggalDari().' s.d. '.$filter->tanggalSampai(),
+                ...$this->keteranganUnitPengelola($filter),
                 'Dibuat' => CarbonImmutable::now($filter->zona)->format('d-m-Y H:i').' '.$filter->zona,
                 'Oleh' => $pengguna->Nama,
             ]);
@@ -136,6 +138,29 @@ final class LayananEksporLaporan
         ]);
 
         return $berkas;
+    }
+
+    /**
+     * Baris keterangan "Unit Pengelola" di kop, hanya bila filter itu dipakai.
+     *
+     * Berkas ekspor beredar lepas dari layar yang menampilkan filternya; tanpa
+     * baris ini angka satu bagian (mis. IT) terbaca sebagai angka seluruh
+     * organisasi. Organisasi tanpa unit pengelola tidak melihat baris baru.
+     *
+     * @return array<string, string>
+     */
+    private function keteranganUnitPengelola(FilterMetrik $filter): array
+    {
+        if (! $filter->adaFilterUnitPengelola()) {
+            return [];
+        }
+
+        $nama = array_column(array_filter(
+            $this->penjagaFilter->pilihan(),
+            fn (array $unit): bool => in_array($unit['Id'], $filter->unitPengelolaId, true),
+        ), 'Nama');
+
+        return $nama === [] ? [] : ['Unit Pengelola' => implode(', ', $nama)];
     }
 
     /** Cap waktu nama berkas mengikuti jam dinding organisasi, sama seperti kop "Dibuat". */

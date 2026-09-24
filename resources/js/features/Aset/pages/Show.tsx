@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PanelKolaborasi } from '@/components/kolaborasi/PanelKolaborasi';
 import type { Aset, KategoriAset, ModelAset } from '@/features/Aset/types';
 import type { Lokasi } from '@/features/Lokasi/types';
-import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
+import type { UnitOrganisasi, UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { VARIAN_BADGE_STATUS_ASET } from '@/features/Aset/status';
 import { ruteAset } from '@/features/Aset/api';
@@ -36,6 +36,8 @@ interface Props {
   penyedia: Penyedia[];
   unitOrganisasi: UnitOrganisasi[];
   lokasi: Lokasi[];
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
 }
 
 export default function AsetShow({
@@ -47,6 +49,8 @@ export default function AsetShow({
   penyedia,
   unitOrganisasi,
   lokasi,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
 }: Props) {
   return (
     <KerangkaAplikasi>
@@ -106,6 +110,8 @@ export default function AsetShow({
             penyedia={penyedia}
             unitOrganisasi={unitOrganisasi}
             wajib={wajib.aset}
+            unitPengelolaDipakai={unitPengelolaDipakai}
+            pilihanUnitPengelola={pilihanUnitPengelola}
           />
         </TabsContent>
         <TabsContent value="lokasi">

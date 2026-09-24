@@ -32,6 +32,8 @@ export interface MetrikKpi {
     Pembilang?: number;
     Penyebut?: number;
     FilterDimensiBerlaku?: boolean;
+    /** False bila filter unit pengelola sedang dipakai tetapi tidak menyaring KPI ini (mis. anggaran). */
+    FilterUnitPengelolaBerlaku?: boolean;
     [kunci: string]: unknown;
   };
 }
@@ -90,6 +92,8 @@ export interface FilterMetrik {
   Sampai: string;
   UnitOrganisasiId: string[];
   LokasiId: string[];
+  /** PRD 8.21; selalu kosong bila organisasi tidak memakai unit pengelola. */
+  UnitPengelolaId: string[];
   /** Filter dikirim apa adanya sebagai muatan kunjungan Inertia. */
   [kunci: string]: string | string[];
 }

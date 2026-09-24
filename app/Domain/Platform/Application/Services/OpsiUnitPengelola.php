@@ -6,6 +6,8 @@ namespace App\Domain\Platform\Application\Services;
 
 use App\Core\Izin\ScopeLingkup;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Satu sumber pilihan unit pengelola untuk seluruh formulir dan penyaring (PRD 8.21).
@@ -18,6 +20,9 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
  */
 final class OpsiUnitPengelola
 {
+    /** Nilai penyaring "Belum ada unit pengelola", di samping Id unit. */
+    public const TANPA = 'tanpa';
+
     /**
      * @param  string|null  $sertakanId  Unit yang tetap dimuat walau nonaktif -- nilai tersimpan pada
      *                                   baris yang sedang diubah, supaya pemilihnya tidak tampil kosong.
@@ -65,5 +70,36 @@ final class OpsiUnitPengelola
             ->withoutGlobalScope(ScopeLingkup::class)
             ->where('MengelolaAset', true)
             ->exists();
+    }
+
+    /**
+     * Penyaring daftar menurut unit pengelola: Id dipisah koma, boleh berisi TANPA
+     * untuk baris yang kolomnya masih kosong.
+     *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $kueri
+     */
+    public static function saring(Builder $kueri, string $nilai, string $kolom = 'UnitPengelolaId'): void
+    {
+        $pilihan = array_values(array_filter(explode(',', $nilai), static fn (string $satu): bool => $satu !== ''));
+        $tanpa = in_array(self::TANPA, $pilihan, true);
+        $unitIds = array_values(array_diff($pilihan, [self::TANPA]));
+
+        if (! $tanpa && $unitIds === []) {
+            return;
+        }
+
+        $kolom = $kueri->qualifyColumn($kolom);
+
+        $kueri->where(function (Builder $syarat) use ($kolom, $tanpa, $unitIds): void {
+            if ($unitIds !== []) {
+                $syarat->orWhereIn($kolom, $unitIds);
+            }
+
+            if ($tanpa) {
+                $syarat->orWhereNull($kolom);
+            }
+        });
     }
 }

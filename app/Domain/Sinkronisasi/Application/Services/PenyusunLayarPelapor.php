@@ -370,8 +370,11 @@ final class PenyusunLayarPelapor
                 ],
                 'LokasiLabel' => $this->labelLokasi($this->cariLokasi($keluhan->LokasiId)),
             ],
+            // Hanya perubahan status: baris pengalihan unit pengelola (status sebelum = sesudah)
+            // adalah urusan internal antrean dan tampil sebagai langkah status ganda.
             'riwayat' => array_values(RiwayatStatusKeluhan::query()
                 ->where('KeluhanId', $keluhan->Id)
+                ->where(fn ($kueri) => $kueri->whereNull('StatusSebelum')->orWhereColumn('StatusSebelum', '!=', 'StatusSesudah'))
                 ->oldest('DiubahPada')
                 ->orderBy('Id')
                 ->get(['StatusSesudah', 'DiubahPada'])

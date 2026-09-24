@@ -8,6 +8,7 @@ use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Domain\Pelaporan\Application\Services\LayananEksporLaporan;
 use App\Domain\Pelaporan\Application\Services\LayananMetrik;
+use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Http\Requests\MintaEksporLaporanRequest;
 use App\Domain\Pelaporan\Jobs\BuatEksporLaporan;
@@ -26,6 +27,7 @@ final class EksporLaporanController extends Controller
         MintaEksporLaporanRequest $request,
         LayananMetrik $layananMetrik,
         KalenderOrganisasi $kalender,
+        PenjagaFilterMetrik $penjagaFilter,
     ): RedirectResponse {
         $pengguna = $request->user('web');
         $data = $request->validated();
@@ -42,7 +44,7 @@ final class EksporLaporanController extends Controller
         BuatEksporLaporan::dispatch(
             $pengguna->Id,
             $diizinkan,
-            FilterMetrik::dariArray($data['Filter'] ?? [], $kalender->zona())->keArray(),
+            $penjagaFilter->bersihkan(FilterMetrik::dariArray($data['Filter'] ?? [], $kalender->zona()))->keArray(),
             $data['Format'],
             $data['Judul'],
         );

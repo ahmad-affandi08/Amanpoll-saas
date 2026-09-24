@@ -22,7 +22,8 @@ import type {
 } from '@/features/PerintahKerja/types';
 import { DAFTAR_JENIS, DAFTAR_PRIORITAS } from '@/features/PerintahKerja/status';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
-import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { dariMasukanWaktu } from '@/lib/waktu';
@@ -32,11 +33,17 @@ export function DialogBuatPerintahKerja({
   aset,
   lokasi,
   wajib,
+  pilihanUnitPengelola = [],
+  unitPengelolaDipakai = false,
 }: {
   keluhan: KeluhanRingkas[];
   aset: AsetRingkas[];
   lokasi: LokasiRingkas[];
   wajib: AturanWajib;
+  /** Unit bertanda Mengelola Aset yang masih aktif (PRD 8.21). */
+  pilihanUnitPengelola?: UnitPengelolaRingkas[];
+  /** Isian unit pengelola hanya tampil bila organisasi memakai fitur ini. */
+  unitPengelolaDipakai?: boolean;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -51,7 +58,19 @@ export function DialogBuatPerintahKerja({
     MembutuhkanPersetujuan: false,
     DijadwalkanMulaiPada: '',
     DijadwalkanSelesaiPada: '',
+    UnitPengelolaId: TANPA_PILIHAN,
   });
+
+  /**
+   * Unit pengelola yang akan diturunkan server bila isian dibiarkan otomatis:
+   * keluhan asal lebih dulu, lalu aset utama. Hanya pratinjau; penentunya
+   * tetap BuatPerintahKerja di server.
+   */
+  const keluhanDipilih = keluhan.find((k) => k.Id === form.data.KeluhanId);
+  const asetUtamaId = keluhanDipilih?.AsetId ?? form.data.AsetIds[0];
+  const unitTurunanId =
+    keluhanDipilih?.UnitPengelolaId ?? aset.find((a) => a.Id === asetUtamaId)?.UnitPengelolaId ?? null;
+  const unitTurunan = pilihanUnitPengelola.find((u) => u.Id === unitTurunanId);
 
   const tanganiPilihKeluhan = (keluhanId: string) => {
     if (keluhanId === TANPA_PILIHAN) {
@@ -81,6 +100,7 @@ export function DialogBuatPerintahKerja({
       ...data,
       KeluhanId: data.KeluhanId === TANPA_PILIHAN ? null : data.KeluhanId,
       LokasiId: data.LokasiId ? data.LokasiId : null,
+      UnitPengelolaId: data.UnitPengelolaId === TANPA_PILIHAN ? null : data.UnitPengelolaId,
       DijadwalkanMulaiPada: dariMasukanWaktu(data.DijadwalkanMulaiPada),
       DijadwalkanSelesaiPada: dariMasukanWaktu(data.DijadwalkanSelesaiPada),
     }));
@@ -195,6 +215,31 @@ export function DialogBuatPerintahKerja({
                 {form.errors.LokasiId && <p className="text-sm text-destructive">{form.errors.LokasiId}</p>}
               </div>
             </div>
+
+            {unitPengelolaDipakai && (
+              <div className="space-y-1.5">
+                <Label nama="UnitPengelolaId">Unit Pengelola</Label>
+                <Combobox
+                  nilai={form.data.UnitPengelolaId}
+                  onPilih={(val) => form.setData('UnitPengelolaId', val)}
+                  opsi={opsiUnitPengelola(pilihanUnitPengelola, 'Otomatis dari keluhan atau aset')}
+                  placeholder="Pilih unit pengelola"
+                  className="cursor-pointer"
+                />
+                {form.data.UnitPengelolaId === TANPA_PILIHAN && (
+                  <p className="text-xs text-muted-foreground">
+                    {unitTurunan
+                      ? `Akan masuk antrian ${unitTurunan.Nama}.`
+                      : unitTurunanId
+                        ? 'Unit pengelola diturunkan dari keluhan atau aset yang dipilih.'
+                        : 'Keluhan dan aset yang dipilih belum punya unit pengelola; perintah kerja tercatat tanpa unit pengelola.'}
+                  </p>
+                )}
+                {form.errors.UnitPengelolaId && (
+                  <p className="text-sm text-destructive">{form.errors.UnitPengelolaId}</p>
+                )}
+              </div>
+            )}
 
             <div className="space-y-1.5">
               <Label nama="AsetIds">Aset yang Ditangani (Pilih satu atau lebih)</Label>

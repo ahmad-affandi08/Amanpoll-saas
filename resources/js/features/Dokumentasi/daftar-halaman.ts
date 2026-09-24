@@ -121,6 +121,11 @@ export const grupDokumentasi: GrupDokumentasi[] = [
     label: 'Lanjutan',
     halaman: [
       {
+        slug: 'unit-pengelola',
+        judul: 'Beberapa Unit Pengelola',
+        ringkas: 'Memisahkan antrian, teknisi, gudang, dan stok per bagian, mis. IPSRS dan IT.',
+      },
+      {
         slug: 'persetujuan',
         judul: 'Alur Persetujuan',
         ringkas: 'Menyusun tahap persetujuan dan membacanya saat berjalan.',

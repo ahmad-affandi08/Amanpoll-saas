@@ -48,6 +48,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
             Route::get('/pindai/{kode}', [AsetPindaiController::class, 'tampilkan'])->name('pindai');
             // Sebelum '/{aset}' supaya 'ekspor' tidak tertelan sebagai id aset.
             Route::get('/ekspor', [AsetController::class, 'ekspor'])->middleware('throttle:ekspor')->name('ekspor');
+            // Sebelum '/{aset}' supaya 'unit-pengelola' tidak tertelan sebagai id aset.
+            Route::put('/unit-pengelola', [AsetController::class, 'aturUnitPengelola'])->name('unit-pengelola');
             // Sebelum '/{aset}' supaya 'label' tidak tertelan sebagai id aset.
             Route::get('/label', LabelAsetController::class)->name('label');
             Route::get('/kelayakan', [KelayakanAsetController::class, 'index'])->name('kelayakan.index');

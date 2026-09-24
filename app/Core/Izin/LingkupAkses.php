@@ -6,6 +6,7 @@ namespace App\Core\Izin;
 
 use App\Core\Organisasi\KonteksOrganisasi;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -48,6 +49,45 @@ final class LingkupAkses
         return $this->lingkup($penggunaId)['Lokasi'];
     }
 
+    /**
+     * tanpaBatas() untuk banyak pengguna sekaligus, dipakai halaman daftar.
+     *
+     * Jawabannya cukup dari penugasan yang berlaku -- tanpa peran, atau satu
+     * penugasan tanpa cakupan, berarti tanpa batas -- jadi tidak perlu
+     * menelusuri hierarki unit dan ruangan per pengguna: satu kueri untuk
+     * seluruh halaman, bukan satu per baris.
+     *
+     * @param  iterable<mixed, string>  $penggunaIds
+     * @return array<string, bool> kunci: Id pengguna
+     */
+    public function tanpaBatasUntuk(iterable $penggunaIds): array
+    {
+        $hasil = [];
+
+        foreach ($penggunaIds as $penggunaId) {
+            $hasil[(string) $penggunaId] = true;
+        }
+
+        $organisasiId = $this->konteksOrganisasi->id();
+
+        if ($organisasiId === null || $hasil === []) {
+            return $hasil;
+        }
+
+        $penugasan = $this->kueriPenugasanBerlaku($organisasiId)
+            ->whereIn('PenggunaId', array_keys($hasil))
+            ->get(['PenggunaId', 'UnitOrganisasiId', 'LokasiId'])
+            ->groupBy('PenggunaId');
+
+        foreach ($penugasan as $penggunaId => $milikPengguna) {
+            $hasil[(string) $penggunaId] = $milikPengguna->contains(
+                fn (object $satu): bool => $satu->UnitOrganisasiId === null && $satu->LokasiId === null,
+            );
+        }
+
+        return $hasil;
+    }
+
     public function bersihkanCache(string $organisasiId, string $penggunaId): void
     {
         $this->cache->forget($this->kunciCache($organisasiId, $penggunaId));
@@ -77,15 +117,8 @@ final class LingkupAkses
      */
     private function hitung(string $organisasiId, string $penggunaId): array
     {
-        $penugasan = DB::table('PenggunaPeran')
-            ->where('OrganisasiId', $organisasiId)
+        $penugasan = $this->kueriPenugasanBerlaku($organisasiId)
             ->where('PenggunaId', $penggunaId)
-            ->where(function ($q): void {
-                $q->whereNull('BerlakuMulai')->orWhere('BerlakuMulai', '<=', now());
-            })
-            ->where(function ($q): void {
-                $q->whereNull('BerlakuSampai')->orWhere('BerlakuSampai', '>=', now());
-            })
             ->get(['UnitOrganisasiId', 'LokasiId']);
 
         // Tanpa peran sama sekali berarti tanpa izin apa pun; membatasi datanya
@@ -128,6 +161,19 @@ final class LingkupAkses
         );
 
         return ['TanpaBatas' => false, 'Unit' => $unit, 'Lokasi' => $lokasi];
+    }
+
+    /** Penugasan peran yang sedang berlaku (rentang BerlakuMulai–BerlakuSampai) di satu organisasi. */
+    private function kueriPenugasanBerlaku(string $organisasiId): Builder
+    {
+        return DB::table('PenggunaPeran')
+            ->where('OrganisasiId', $organisasiId)
+            ->where(function ($q): void {
+                $q->whereNull('BerlakuMulai')->orWhere('BerlakuMulai', '<=', now());
+            })
+            ->where(function ($q): void {
+                $q->whereNull('BerlakuSampai')->orWhere('BerlakuSampai', '>=', now());
+            });
     }
 
     /**

@@ -19,10 +19,11 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
 import type { Keluhan, PrioritasKeluhan, StatusKeluhan } from '@/features/Keluhan/types';
 import type { Paginasi } from '@/types/global';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { VARIAN_PRIORITAS_KELUHAN, VARIAN_STATUS_KELUHAN } from '@/features/Keluhan/status';
 import { ruteKeluhan } from '@/features/Keluhan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 
@@ -47,7 +48,12 @@ interface Props {
   kategori: KategoriRingkas[];
   aset: AsetRingkas[];
   lokasi: Ringkas[];
-  filter: { status?: string; prioritas?: string };
+  /** Seluruh kategori (termasuk nonaktif) untuk penyaring daftar. */
+  pilihanKategori: Ringkas[];
+  /** Organisasi memakai unit pengelola (PRD 8.21): penyaring dan penanda antrean ditampilkan. */
+  pakaiUnitPengelola: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  filter: { status?: string; prioritas?: string; kategori?: string; unitPengelola?: string };
   dapatMengelola: boolean;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
@@ -205,16 +211,22 @@ function filterAktif(filter: Props['filter']): Record<string, string> {
   );
 }
 
+/** Nilai penyaring `unitPengelola` untuk keluhan yang belum masuk antrean unit mana pun (server: `tanpa`). */
+const TANPA_UNIT_PENGELOLA = 'tanpa';
+
 export default function KeluhanIndex({
   keluhan,
   kategori,
   aset,
   lokasi,
+  pilihanKategori,
+  pakaiUnitPengelola,
+  pilihanUnitPengelola,
   filter,
   dapatMengelola,
   wajib,
 }: Props) {
-  const filterData = (kunci: 'status' | 'prioritas', nilai: string) =>
+  const filterData = (kunci: keyof Props['filter'], nilai: string) =>
     router.get(
       ruteKeluhan.index,
       { ...filter, [kunci]: nilai === TANPA_PILIHAN ? undefined : nilai },
@@ -232,7 +244,7 @@ export default function KeluhanIndex({
         }
         aksi={
           <>
-              <TombolEkspor url={ruteKeluhan.ekspor} filter={filter as Record<string, string>} />
+            <TombolEkspor url={ruteKeluhan.ekspor} filter={filter as Record<string, string>} />
             <DialogBuatKeluhan
               kategori={kategori}
               aset={aset}
@@ -244,7 +256,13 @@ export default function KeluhanIndex({
         }
         className="mb-6"
       />
-      <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
+      <div
+        className={
+          pakaiUnitPengelola
+            ? 'mb-4 grid gap-2 sm:grid-cols-2 xl:max-w-5xl xl:grid-cols-4'
+            : 'mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-4xl lg:grid-cols-3'
+        }
+      >
         <Combobox
           nilai={filter.status ?? TANPA_PILIHAN}
           onPilih={(value) => filterData('status', value)}
@@ -277,12 +295,38 @@ export default function KeluhanIndex({
           ]}
           placeholder="Semua prioritas"
         />
+        <Combobox
+          nilai={filter.kategori ?? TANPA_PILIHAN}
+          onPilih={(value) => filterData('kategori', value)}
+          opsi={[opsiKosong('Semua kategori'), ...opsiDari(pilihanKategori, (item) => item.Nama)]}
+          placeholder="Semua kategori"
+        />
+        {pakaiUnitPengelola && (
+          <Combobox
+            nilai={filter.unitPengelola ?? TANPA_PILIHAN}
+            onPilih={(value) => filterData('unitPengelola', value)}
+            opsi={[
+              opsiKosong('Semua unit pengelola'),
+              ...opsiUnitPengelola(pilihanUnitPengelola, false),
+              { nilai: TANPA_UNIT_PENGELOLA, label: 'Tanpa unit pengelola' },
+            ]}
+            placeholder="Semua unit pengelola"
+          />
+        )}
       </div>
       {keluhan.data.length === 0 ? (
         <KeadaanKosong
           ilustrasi="/assets/3d/keluhan.webp"
-          judul="Belum ada keluhan."
-          deskripsi="Buat keluhan pertama agar masalah dapat segera ditindaklanjuti."
+          judul={
+            Object.keys(filterAktif(filter)).length > 0
+              ? 'Tidak ada keluhan yang cocok.'
+              : 'Belum ada keluhan.'
+          }
+          deskripsi={
+            Object.keys(filterAktif(filter)).length > 0
+              ? 'Ubah atau kosongkan penyaring untuk melihat keluhan lain.'
+              : 'Buat keluhan pertama agar masalah dapat segera ditindaklanjuti.'
+          }
         />
       ) : (
         <div className="space-y-3">
@@ -298,6 +342,11 @@ export default function KeluhanIndex({
                     <span className="font-mono text-xs text-muted-foreground">{item.Nomor}</span>
                     <Badge variant={VARIAN_PRIORITAS_KELUHAN[item.Prioritas]}>{item.Prioritas}</Badge>
                     <Badge variant={VARIAN_STATUS_KELUHAN[item.Status]}>{item.Status}</Badge>
+                    {pakaiUnitPengelola && (
+                      <span className="text-xs text-muted-foreground">
+                        Dikelola: {item.UnitPengelola?.Nama ?? 'belum ada unit'}
+                      </span>
+                    )}
                   </div>
                   <h2 className="mt-2 truncate font-medium text-foreground">{item.Judul}</h2>
                   <p className="mt-1 text-sm text-muted-foreground">

@@ -85,7 +85,7 @@ final class JadwalkanPemeliharaanPreventif
             }
 
             $hasil = $this->transaksi->jalankan(function () use ($asetPlan, $rencana, $aset, $tanggalJadwal, $penggunaSistem): array {
-                // Buat Perintah Kerja Preventif
+                // Unit pengelola: aset lebih dulu, rencana sebagai cadangan (PRD 8.21).
                 $perintahKerja = $this->buatPerintahKerja->jalankan([
                     'OrganisasiId' => $asetPlan->OrganisasiId,
                     'Jenis' => 'Preventif',
@@ -95,7 +95,7 @@ final class JadwalkanPemeliharaanPreventif
                     'LokasiId' => $aset->LokasiId,
                     'AsetIds' => [$aset->Id],
                     'DijadwalkanMulaiPada' => $this->kalender->awalHari($tanggalJadwal, $asetPlan->OrganisasiId),
-                ], $penggunaSistem);
+                ], $penggunaSistem, $rencana->UnitPengelolaId);
 
                 // Buat Pelaksanaan Daftar Periksa jika templat terhubung
                 if ($rencana->TemplatDaftarPeriksaId !== null) {

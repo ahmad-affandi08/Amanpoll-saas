@@ -39,6 +39,7 @@ final class DokumentasiController extends Controller
         'persediaan',
         'mutasi-stok',
         'pengadaan',
+        'unit-pengelola',
         'persetujuan',
         'lanjutan',
     ];

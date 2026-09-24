@@ -67,9 +67,25 @@ final class QueryKalibrasi implements PenyediaKpi
         ]);
     }
 
-    /** @return Builder<RencanaKalibrasi> */
+    /**
+     * Unit organisasi dan lokasi dibaca dari aset rencana; unit pengelola dari
+     * rencana itu sendiri, atau dari asetnya bila rencana belum diisi.
+     *
+     * @return Builder<RencanaKalibrasi>
+     */
     private function lingkup(FilterMetrik $filter): Builder
     {
-        return $this->saringLewatAset(RencanaKalibrasi::query(), $filter);
+        $query = RencanaKalibrasi::query();
+
+        if ($filter->adaFilterUnit() || $filter->adaFilterLokasi()) {
+            $query->whereIn('RencanaKalibrasi.AsetId', $this->asetDalamLingkup($filter, termasukUnitPengelola: false));
+        }
+
+        return $this->saringUnitPengelolaRencana(
+            $query,
+            $filter,
+            'RencanaKalibrasi.UnitPengelolaId',
+            'RencanaKalibrasi.AsetId',
+        );
     }
 }

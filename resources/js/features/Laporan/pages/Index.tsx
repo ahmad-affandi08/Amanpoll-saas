@@ -33,6 +33,7 @@ import type {
   PilihanDimensi,
 } from '@/features/Pelaporan/types';
 import type { PageProps } from '@/types/global';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { Combobox } from '@/components/ui/combobox';
@@ -46,6 +47,7 @@ interface Props {
   formatEkspor: { Nilai: FormatEkspor; Label: string }[];
   pilihanUnit: PilihanDimensi[];
   pilihanLokasi: PilihanDimensi[];
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
   eksporTerakhir: EksporItem[];
 }
 
@@ -59,6 +61,7 @@ export default function LaporanIndex({
   formatEkspor,
   pilihanUnit,
   pilihanLokasi,
+  pilihanUnitPengelola,
   eksporTerakhir,
 }: Props) {
   const { flash } = usePage<PageProps>().props;
@@ -70,6 +73,15 @@ export default function LaporanIndex({
     () => (dibuka ? dibuka.KunciKpi.filter((kunci) => metrik[kunci] !== undefined) : []),
     [dibuka, metrik],
   );
+
+  /** Nama unit pengelola pada filter tersimpan, supaya "Pekerjaan IT" dan "Pekerjaan IPSRS" dapat dibedakan. */
+  const namaUnitPengelola = (item: LaporanTersimpanItem): string | null => {
+    const nama = (item.Filter.UnitPengelolaId ?? [])
+      .map((id) => pilihanUnitPengelola.find((unit) => unit.Id === id)?.Nama)
+      .filter((satu): satu is string => satu !== undefined);
+
+    return nama.length > 0 ? nama.join(', ') : null;
+  };
 
   const hapus = async (item: LaporanTersimpanItem) => {
     const lanjut = await konfirmasi({
@@ -121,6 +133,7 @@ export default function LaporanIndex({
           filter={filter}
           pilihanUnit={pilihanUnit}
           pilihanLokasi={pilihanLokasi}
+          pilihanUnitPengelola={pilihanUnitPengelola}
           url={rutePelaporan.laporan}
           paramTambahan={dibuka ? { laporan: dibuka.Id } : {}}
         />
@@ -142,9 +155,10 @@ export default function LaporanIndex({
                         dibuka?.Id === item.Id ? 'border-teknisi-600 bg-teknisi-600/5' : 'border-border'
                       }`}
                     >
+                      {/* Tanpa filter di URL: server memulihkan filter yang tersimpan bersama laporannya. */}
                       <Link
                         href={rutePelaporan.laporan}
-                        data={{ ...filter, laporan: item.Id }}
+                        data={{ laporan: item.Id }}
                         preserveState
                         preserveScroll
                         className="min-w-0 flex-1"
@@ -152,6 +166,7 @@ export default function LaporanIndex({
                         <span className="block truncate text-sm font-medium">{item.Nama}</span>
                         <span className="block truncate text-xs text-muted-foreground">
                           {item.KunciKpi.length} KPI
+                          {namaUnitPengelola(item) ? ` · ${namaUnitPengelola(item)}` : ''}
                           {!item.Milik && item.NamaPemilik ? ` · ${item.NamaPemilik}` : ''}
                         </span>
                       </Link>

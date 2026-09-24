@@ -24,14 +24,21 @@ import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { DialogBuatPerintahKerja } from '@/features/PerintahKerja/components/DialogBuatPerintahKerja';
 import type { AturanWajib } from '@/lib/aturan-wajib';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 
 interface Props {
   perintahKerja: Paginasi<PerintahKerja>;
   keluhan: KeluhanRingkas[];
   aset: AsetRingkas[];
   lokasi: LokasiRingkas[];
-  filter: { status?: string; prioritas?: string };
+  filter: { status?: string; prioritas?: string; unitPengelola?: string };
   dapatMengelola: boolean;
+  /** Organisasi memakai unit pengelola (PRD 8.21); bila tidak, halaman tampil seperti sebelumnya. */
+  unitPengelolaDipakai: boolean;
+  /** Unit pengelola aktif untuk formulir buat. */
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  /** Termasuk unit nonaktif: tiket lama bisa saja milik unit yang kini nonaktif. */
+  saringanUnitPengelola: UnitPengelolaRingkas[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
@@ -78,8 +85,11 @@ export default function PerintahKerjaIndex({
   filter,
   dapatMengelola,
   wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
+  saringanUnitPengelola,
 }: Props) {
-  const filterData = (kunci: 'status' | 'prioritas', nilai: string) => {
+  const filterData = (kunci: 'status' | 'prioritas' | 'unitPengelola', nilai: string) => {
     router.get(
       rutePerintahKerja.index,
       { ...filter, [kunci]: nilai === TANPA_PILIHAN ? undefined : nilai },
@@ -99,16 +109,15 @@ export default function PerintahKerjaIndex({
         }
         aksi={
           <>
-            <TombolEkspor
-              url="/pemeliharaan/perintah-kerja/ekspor"
-              filter={filter as Record<string, string>}
-            />
+            <TombolEkspor url={rutePerintahKerja.ekspor} filter={filter as Record<string, string>} />
             {dapatMengelola && (
               <DialogBuatPerintahKerja
                 keluhan={keluhan}
                 aset={aset}
                 lokasi={lokasi}
                 wajib={wajib.perintahKerja}
+                pilihanUnitPengelola={pilihanUnitPengelola}
+                unitPengelolaDipakai={unitPengelolaDipakai}
               />
             )}
           </>
@@ -116,7 +125,13 @@ export default function PerintahKerjaIndex({
         className="mb-6"
       />
 
-      <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl">
+      <div
+        className={
+          unitPengelolaDipakai
+            ? 'mb-4 grid gap-2 sm:grid-cols-3 lg:max-w-3xl'
+            : 'mb-4 grid gap-2 sm:grid-cols-2 lg:max-w-xl'
+        }
+      >
         <Select value={filter.status ?? TANPA_PILIHAN} onValueChange={(val) => filterData('status', val)}>
           <SelectTrigger className="w-full cursor-pointer">
             <SelectValue placeholder="Semua status" />
@@ -151,6 +166,27 @@ export default function PerintahKerjaIndex({
             ))}
           </SelectContent>
         </Select>
+
+        {unitPengelolaDipakai && (
+          <Select
+            value={filter.unitPengelola ?? TANPA_PILIHAN}
+            onValueChange={(val) => filterData('unitPengelola', val)}
+          >
+            <SelectTrigger className="w-full cursor-pointer" aria-label="Saring unit pengelola">
+              <SelectValue placeholder="Semua unit pengelola" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
+                Semua unit pengelola
+              </SelectItem>
+              {saringanUnitPengelola.map((unit) => (
+                <SelectItem key={unit.Id} value={unit.Id} className="cursor-pointer">
+                  {unit.Nama}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {perintahKerja.data.length === 0 ? (
@@ -187,6 +223,12 @@ export default function PerintahKerjaIndex({
                     </dd>
                     <dt className="text-muted-foreground">Lokasi</dt>
                     <dd className="min-w-0 text-foreground">{item.NamaLokasi ?? '—'}</dd>
+                    {unitPengelolaDipakai && (
+                      <>
+                        <dt className="text-muted-foreground">Pengelola</dt>
+                        <dd className="min-w-0 text-foreground">{item.UnitPengelola?.Nama ?? '—'}</dd>
+                      </>
+                    )}
                     <dt className="text-muted-foreground">Teknisi</dt>
                     <dd className="min-w-0 text-foreground">
                       {item.Penugasan && item.Penugasan.length > 0
@@ -214,6 +256,7 @@ export default function PerintahKerjaIndex({
                   <th className="px-4 py-3">Nomor</th>
                   <th className="px-4 py-3">Judul & Jenis</th>
                   <th className="px-4 py-3">Aset & Lokasi</th>
+                  {unitPengelolaDipakai && <th className="px-4 py-3">Unit Pengelola</th>}
                   <th className="px-4 py-3">Prioritas</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Teknisi</th>
@@ -250,6 +293,15 @@ export default function PerintahKerjaIndex({
                         </div>
                         <div className="text-xs text-muted-foreground">{item.NamaLokasi ?? '—'}</div>
                       </td>
+                      {unitPengelolaDipakai && (
+                        <td className="px-4 py-3 text-xs">
+                          {item.UnitPengelola ? (
+                            <span className="font-medium">{item.UnitPengelola.Nama}</span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </td>
+                      )}
                       <td className="px-4 py-3">
                         <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[item.Prioritas]}>
                           {item.Prioritas}

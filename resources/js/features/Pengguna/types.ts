@@ -41,6 +41,27 @@ export interface PeranRingkas {
   Nama: string;
 }
 
+/** Satu unit atau ruangan dalam lingkup pengguna, beserta peran yang memberikannya. */
+export interface CakupanLingkup {
+  Id: string;
+  Nama: string;
+  Peran: string[];
+}
+
+/**
+ * Lingkup data yang benar-benar berlaku (PRD 8.21), dihitung server lewat LingkupAkses.
+ * `JumlahUnit`/`JumlahLokasi` sudah termasuk sub-unit dan ruangan di bawahnya.
+ */
+export interface LingkupEfektifPengguna {
+  SeluruhOrganisasi: boolean;
+  TanpaPeran: boolean;
+  PeranTanpaLingkup: string[];
+  Unit: (CakupanLingkup & { MengelolaAset: boolean })[];
+  Lokasi: CakupanLingkup[];
+  JumlahUnit: number;
+  JumlahLokasi: number;
+}
+
 /** Ringkasan beban kerja di kepala halaman detail pengguna. */
 export interface RingkasanPengguna {
   PenugasanBerjalan: number;

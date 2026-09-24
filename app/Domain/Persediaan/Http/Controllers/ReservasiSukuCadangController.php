@@ -7,6 +7,7 @@ namespace App\Domain\Persediaan\Http\Controllers;
 use App\Domain\Persediaan\Application\Actions\BuatReservasiSukuCadang;
 use App\Domain\Persediaan\Application\Actions\KonsumsiReservasiSukuCadang;
 use App\Domain\Persediaan\Application\Actions\LepaskanReservasiSukuCadang;
+use App\Domain\Persediaan\Application\Services\LingkupGudang;
 use App\Domain\Persediaan\Domain\Enums\StatusSukuCadang;
 use App\Domain\Persediaan\Http\Requests\SimpanReservasiSukuCadangRequest;
 use App\Domain\Persediaan\Http\Resources\ReservasiSukuCadangResource;
@@ -27,13 +28,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class ReservasiSukuCadangController extends Controller
 {
+    public function __construct(private readonly LingkupGudang $lingkupGudang) {}
+
     /**
      * @param  array<string, mixed>  $filter
      * @return Builder<ReservasiSukuCadang>
      */
     private function kueriTersaring(array $filter): Builder
     {
-        return ReservasiSukuCadang::query()
+        // Hanya reservasi di gudang yang terlihat pengguna (PRD 8.21); ikut terbawa ke ekspor.
+        return $this->lingkupGudang->saring(ReservasiSukuCadang::query(), 'ReservasiSukuCadang.GudangId')
             ->with(['gudang', 'sukuCadang', 'dibuatOleh'])
             ->when($filter['status'] ?? null, fn ($q, $v) => $q->where('Status', $v))
             ->latest('DibuatPada')

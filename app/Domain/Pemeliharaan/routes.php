@@ -37,12 +37,14 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::get('/keluhan/{keluhan}', [KeluhanController::class, 'show'])->name('keluhan.show');
         Route::put('/keluhan/{keluhan}/status', [KeluhanController::class, 'ubahStatus'])->name('keluhan.status');
         Route::put('/keluhan/{keluhan}/prioritas', [KeluhanController::class, 'ubahPrioritas'])->name('keluhan.prioritas');
+        Route::put('/keluhan/{keluhan}/unit-pengelola', [KeluhanController::class, 'alihkanUnitPengelola'])->name('keluhan.unit-pengelola');
 
         Route::get('/perintah-kerja', [PerintahKerjaController::class, 'index'])->name('perintah-kerja.index');
         Route::get('/perintah-kerja/ekspor', [PerintahKerjaController::class, 'ekspor'])->middleware('throttle:ekspor')->name('perintah-kerja.ekspor');
         Route::post('/perintah-kerja', [PerintahKerjaController::class, 'store'])->name('perintah-kerja.store');
         Route::get('/perintah-kerja/{perintahKerja}', [PerintahKerjaController::class, 'show'])->name('perintah-kerja.show');
         Route::put('/perintah-kerja/{perintahKerja}/status', [PerintahKerjaController::class, 'ubahStatus'])->name('perintah-kerja.status');
+        Route::put('/perintah-kerja/{perintahKerja}/unit-pengelola', [PerintahKerjaController::class, 'alihkanUnitPengelola'])->name('perintah-kerja.unit-pengelola');
         Route::post('/perintah-kerja/{perintahKerja}/penugasan', [PenugasanPerintahKerjaController::class, 'store'])->name('perintah-kerja.penugasan.store');
         Route::post('/perintah-kerja/{perintahKerja}/penugasan/{penugasan}/respons', [PenugasanPerintahKerjaController::class, 'respons'])->name('perintah-kerja.penugasan.respons');
         Route::post('/perintah-kerja/{perintahKerja}/waktu-kerja', [WaktuKerjaController::class, 'store'])->name('perintah-kerja.waktu-kerja');

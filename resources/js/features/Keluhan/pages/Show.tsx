@@ -21,6 +21,8 @@ import { ruteKeluhan } from '@/features/Keluhan/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+import { TANPA_PILIHAN, opsiUnitPengelola } from '@/lib/pilihan';
 
 interface Props {
   keluhan: Keluhan;
@@ -30,6 +32,12 @@ interface Props {
   transisiDiizinkan: StatusKeluhan[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
+  /** Organisasi memakai unit pengelola (PRD 8.21). */
+  pakaiUnitPengelola: boolean;
+  /** Unit tujuan pengalihan; kosong bila pengguna tidak boleh mengalihkan. */
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  /** Alasan keluhan ini tidak dapat dialihkan (mis. sudah ditutup), atau null. */
+  hambatanPengalihan: string | null;
 }
 function formatTanggal(nilai: string | null): string {
   return nilai ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }) : '—';
@@ -159,13 +167,105 @@ function DialogPrioritas({
   );
 }
 
+/**
+ * Alihkan keluhan ke antrean unit pengelola lain (PRD 8.21). Alasan wajib; tercatat di audit
+ * dan riwayat. Perintah kerja yang masih mengikuti antrean lama ikut dialihkan server.
+ */
+function DialogAlihkan({
+  keluhan,
+  pilihan,
+  wajib,
+}: {
+  keluhan: Keluhan;
+  pilihan: UnitPengelolaRingkas[];
+  wajib: AturanWajib;
+}) {
+  const [buka, setBuka] = useState(false);
+  const tujuan = pilihan.filter((unit) => unit.Id !== keluhan.UnitPengelolaId);
+  const form = useForm({ UnitPengelolaId: TANPA_PILIHAN, Alasan: '', Versi: keluhan.Versi });
+  const ubahBuka = (terbuka: boolean) => {
+    if (terbuka) {
+      form.setData({ UnitPengelolaId: TANPA_PILIHAN, Alasan: '', Versi: keluhan.Versi });
+      form.clearErrors();
+    }
+    setBuka(terbuka);
+  };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    form.transform((data) => ({
+      ...data,
+      UnitPengelolaId: data.UnitPengelolaId === TANPA_PILIHAN ? null : data.UnitPengelolaId,
+    }));
+    form.put(ruteKeluhan.unitPengelola(keluhan.Id), {
+      preserveScroll: true,
+      onSuccess: () => setBuka(false),
+    });
+  };
+  return (
+    <Dialog open={buka} onOpenChange={ubahBuka}>
+      <DialogTrigger asChild>
+        <Button variant="outline" disabled={tujuan.length === 0}>
+          Alihkan
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Alihkan ke Unit Pengelola Lain</DialogTitle>
+        </DialogHeader>
+        <AturanWajibProvider aturan={wajib}>
+          <form onSubmit={submit} className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Saat ini dikelola{' '}
+              <span className="font-medium text-foreground">
+                {keluhan.UnitPengelola?.Nama ?? 'belum ada unit pengelola'}
+              </span>
+              . Perintah kerja keluhan ini yang masih di antrean lama ikut dialihkan.
+            </p>
+            <div className="space-y-1.5">
+              <Label nama="UnitPengelolaId">Unit pengelola tujuan</Label>
+              <Combobox
+                nilai={form.data.UnitPengelolaId}
+                onPilih={(v) => form.setData('UnitPengelolaId', v)}
+                opsi={opsiUnitPengelola(tujuan, false)}
+                placeholder="Pilih unit pengelola"
+              />
+              {form.errors.UnitPengelolaId && (
+                <p className="text-sm text-destructive">{form.errors.UnitPengelolaId}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label nama="Alasan">Alasan pengalihan</Label>
+              <Textarea
+                rows={3}
+                value={form.data.Alasan}
+                onChange={(e) => form.setData('Alasan', e.target.value)}
+                placeholder="Mis. printer adalah perangkat IT, bukan peralatan gedung."
+              />
+              {form.errors.Alasan && <p className="text-sm text-destructive">{form.errors.Alasan}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={form.processing}>
+                Alihkan Keluhan
+              </Button>
+            </DialogFooter>
+          </form>
+        </AturanWajibProvider>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function KeluhanShow({
   keluhan,
   dapatMengelola,
   prioritasAwal,
   transisiDiizinkan,
   wajib,
+  pakaiUnitPengelola,
+  pilihanUnitPengelola,
+  hambatanPengalihan,
 }: Props) {
+  const dapatMengalihkan = pakaiUnitPengelola && dapatMengelola;
   return (
     <KerangkaAplikasi>
       <Head title={keluhan.Nomor} />
@@ -191,10 +291,19 @@ export default function KeluhanShow({
         deskripsi={
           <>
             Dilaporkan {formatTanggal(keluhan.DilaporkanPada)} oleh {keluhan.NamaPelapor}
+            {pakaiUnitPengelola && (
+              <>
+                {' · '}Dikelola: {keluhan.UnitPengelola?.Nama ?? 'belum ada unit pengelola'}
+              </>
+            )}
           </>
         }
         aksi={
           <>
+            {/* Keluhan final tidak dapat dialihkan: tombolnya tidak ditawarkan sama sekali. */}
+            {dapatMengalihkan && hambatanPengalihan === null && (
+              <DialogAlihkan keluhan={keluhan} pilihan={pilihanUnitPengelola} wajib={wajib.unitPengelola} />
+            )}
             {dapatMengelola && (
               <DialogPrioritas keluhan={keluhan} prioritasAwal={prioritasAwal} wajib={wajib.prioritas} />
             )}
@@ -231,6 +340,25 @@ export default function KeluhanShow({
                     {keluhan.NamaAset ? `${keluhan.KodeAset} · ${keluhan.NamaAset}` : 'Tidak terkait aset'}
                   </dd>
                 </div>
+                {pakaiUnitPengelola && (
+                  <div>
+                    <dt className="text-muted-foreground">Dikelola</dt>
+                    <dd className="font-medium">
+                      {keluhan.UnitPengelola ? (
+                        <>
+                          {keluhan.UnitPengelola.Nama}{' '}
+                          <span className="font-mono text-xs font-normal text-muted-foreground">
+                            {keluhan.UnitPengelola.Kode}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="font-normal text-muted-foreground">
+                          Belum ada unit pengelola (hanya terlihat lewat lokasinya)
+                        </span>
+                      )}
+                    </dd>
+                  </div>
+                )}
                 <div>
                   <dt className="text-muted-foreground">Tingkat layanan</dt>
                   <dd className="font-medium">{keluhan.NamaTingkatLayanan ?? 'Tanpa SLA'}</dd>
@@ -288,7 +416,12 @@ export default function KeluhanShow({
               <ol className="space-y-4">
                 {keluhan.RiwayatStatus.map((riwayat) => (
                   <li key={riwayat.Id} className="relative border-l-2 border-border pl-4">
-                    <div className="font-medium text-sm">{riwayat.StatusSesudah}</div>
+                    <div className="font-medium text-sm">
+                      {/* Status sebelum = sesudah hanya ditulis pengalihan unit pengelola. */}
+                      {riwayat.StatusSebelum === riwayat.StatusSesudah
+                        ? 'Dialihkan ke unit pengelola lain'
+                        : riwayat.StatusSesudah}
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {formatTanggal(riwayat.DiubahPada)} · {riwayat.NamaPengubah ?? 'Sistem'}
                     </div>

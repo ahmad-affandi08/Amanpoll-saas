@@ -24,19 +24,32 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
-import { opsiDari } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiUnitPengelola } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
+  /** Organisasi memakai unit pengelola (PRD 8.21); bila tidak, halaman tampil seperti sebelumnya. */
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  saringanUnitPengelola: UnitPengelolaRingkas[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
 
-export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa, wajib }: Props) {
+export default function RencanaPemeliharaanIndex({
+  rencana,
+  templatDaftarPeriksa,
+  wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
+  saringanUnitPengelola,
+}: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialog, setBukaDialog] = useState(false);
   const [pencarian, setPencarian] = useState('');
+  const [saringanUnit, setSaringanUnit] = useState(TANPA_PILIHAN);
   const [menjalankanScheduler, setMenjalankanScheduler] = useState(false);
 
   const form = useForm({
@@ -50,16 +63,22 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
     IntervalSatuan: 'Hari',
     BuatPerintahKerjaHariSebelum: 7,
     Aktif: true,
+    UnitPengelolaId: TANPA_PILIHAN,
   });
 
   const daftarTersaring = rencana.filter(
     (r) =>
-      r.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
-      r.Kode.toLowerCase().includes(pencarian.toLowerCase()),
+      (saringanUnit === TANPA_PILIHAN || r.UnitPengelolaId === saringanUnit) &&
+      (r.Nama.toLowerCase().includes(pencarian.toLowerCase()) ||
+        r.Kode.toLowerCase().includes(pencarian.toLowerCase())),
   );
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
+    form.transform((data) => ({
+      ...data,
+      UnitPengelolaId: data.UnitPengelolaId === TANPA_PILIHAN ? null : data.UnitPengelolaId,
+    }));
     form.post(ruteRencanaPemeliharaan.index, {
       onSuccess: () => {
         setBukaDialog(false);
@@ -208,6 +227,27 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                             />
                           </div>
 
+                          {unitPengelolaDipakai && (
+                            <div className="space-y-1.5">
+                              <Label nama="UnitPengelolaId" htmlFor="UnitPengelolaId">
+                                Unit Pengelola
+                              </Label>
+                              <Combobox
+                                nilai={form.data.UnitPengelolaId}
+                                onPilih={(val) => form.setData('UnitPengelolaId', val)}
+                                opsi={opsiUnitPengelola(pilihanUnitPengelola)}
+                                placeholder="Pilih unit pengelola"
+                                className="cursor-pointer"
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Dipakai untuk tiket preventif bila asetnya belum punya unit pengelola.
+                              </p>
+                              {form.errors.UnitPengelolaId && (
+                                <p className="text-xs text-destructive">{form.errors.UnitPengelolaId}</p>
+                              )}
+                            </div>
+                          )}
+
                           <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
                               <Label nama="Prioritas" htmlFor="Prioritas">
@@ -294,7 +334,13 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
         </div>
 
         {/* Filter Pencarian */}
-        <div className="flex items-center gap-2 max-w-sm">
+        <div
+          className={
+            unitPengelolaDipakai
+              ? 'grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2'
+              : 'flex items-center gap-2 max-w-sm'
+          }
+        >
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-grafit-500" />
             <Input
@@ -305,6 +351,23 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
               onChange={(e) => setPencarian(e.target.value)}
             />
           </div>
+          {unitPengelolaDipakai && (
+            <Select value={saringanUnit} onValueChange={setSaringanUnit}>
+              <SelectTrigger className="w-full cursor-pointer" aria-label="Saring unit pengelola">
+                <SelectValue placeholder="Semua unit pengelola" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={TANPA_PILIHAN} className="cursor-pointer">
+                  Semua unit pengelola
+                </SelectItem>
+                {saringanUnitPengelola.map((unit) => (
+                  <SelectItem key={unit.Id} value={unit.Id} className="cursor-pointer">
+                    {unit.Nama}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         {/* Daftar Kartu Rencana */}
@@ -352,6 +415,14 @@ export default function RencanaPemeliharaanIndex({ rencana, templatDaftarPeriksa
                         {r.aset_count ?? r.aset?.length ?? 0} Aset
                       </span>
                     </div>
+                    {unitPengelolaDipakai && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-grafit-500">Unit Pengelola:</span>
+                        <span className="font-semibold text-grafit-950">
+                          {r.unit_pengelola?.Nama ?? 'Mengikuti aset'}
+                        </span>
+                      </div>
+                    )}
                     {r.templat_daftar_periksa && (
                       <div className="flex items-center justify-between pt-1">
                         <span className="text-grafit-500">Checklist:</span>

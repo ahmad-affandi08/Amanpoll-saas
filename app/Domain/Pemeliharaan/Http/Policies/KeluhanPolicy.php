@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemeliharaan\Http\Policies;
 
-use App\Core\Izin\LingkupAkses;
 use App\Core\Izin\PemeriksaIzin;
+use App\Core\Izin\PemeriksaLingkupBaris;
 use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusKeluhan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
@@ -15,7 +15,7 @@ final class KeluhanPolicy
 {
     public function __construct(
         private readonly PemeriksaIzin $izin,
-        private readonly LingkupAkses $lingkup,
+        private readonly PemeriksaLingkupBaris $pemeriksaLingkup,
         private readonly KonteksOrganisasi $konteks,
     ) {}
 
@@ -31,11 +31,16 @@ final class KeluhanPolicy
 
     /**
      * Memantau garis waktu status keluhan rekan (PRD 8.20): hanya keluhan yang
-     * lokasinya ada di lingkup unit/ruangan pengguna. Diperiksa di sini, bukan
-     * hanya lewat `ScopeLingkup` pada pengikatan rute, supaya pemanggil yang
-     * memuat keluhan tanpa scope tetap tertolak. Yang boleh dilihat terbatas
-     * pada nomor, judul, alat/lokasi, status, dan jamnya — penyusun layarnya
-     * yang memastikan.
+     * tercakup lingkup unit/ruangan pengguna. Diperiksa di sini, bukan hanya
+     * lewat `ScopeLingkup` pada pengikatan rute, supaya pemanggil yang memuat
+     * keluhan tanpa scope tetap tertolak. Yang boleh dilihat terbatas pada
+     * nomor, judul, alat/lokasi, status, dan jamnya — penyusun layarnya yang
+     * memastikan.
+     *
+     * "Tercakup" memakai `PemeriksaLingkupBaris`, semantik yang sama persis
+     * dengan daftar yang terlihat (`kolomLingkup` Keluhan): ruangannya, atau
+     * unit pengelolanya (PRD 8.21). Pantau tidak pernah menolak keluhan yang
+     * tampil di daftar pengguna yang sama, dan sebaliknya.
      */
     public function pantau(Pengguna $pengguna, Keluhan $keluhan): bool
     {
@@ -43,11 +48,7 @@ final class KeluhanPolicy
             return false;
         }
 
-        if ($keluhan->PelaporId === $pengguna->Id || $this->lingkup->tanpaBatas($pengguna->Id)) {
-            return true;
-        }
-
-        return in_array($keluhan->LokasiId, $this->lingkup->lokasiDiizinkan($pengguna->Id), true);
+        return $keluhan->PelaporId === $pengguna->Id || $this->pemeriksaLingkup->mencakup($pengguna->Id, $keluhan);
     }
 
     public function create(Pengguna $pengguna): bool
@@ -78,6 +79,12 @@ final class KeluhanPolicy
     }
 
     public function ubahPrioritas(Pengguna $pengguna, Keluhan $keluhan): bool
+    {
+        return $this->dapatMengelola($pengguna);
+    }
+
+    /** Mengalihkan keluhan ke unit pengelola lain (PRD 8.21): koordinator pemegang `Keluhan.Kelola`. */
+    public function alihkanUnitPengelola(Pengguna $pengguna, Keluhan $keluhan): bool
     {
         return $this->dapatMengelola($pengguna);
     }

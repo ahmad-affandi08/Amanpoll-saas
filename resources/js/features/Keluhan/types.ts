@@ -1,3 +1,5 @@
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+
 export type IdKeluhan = string;
 export type PrioritasKeluhan = 'Rendah' | 'Normal' | 'Tinggi' | 'Kritis';
 export type StatusKeluhan =
@@ -50,6 +52,9 @@ export interface KategoriKeluhan {
   PrioritasBawaan: PrioritasKeluhan;
   AsetWajib: boolean;
   PeranPenanggungJawabId: string | null;
+  /** Antrean yang menerima keluhan kategori ini (PRD 8.21); kosong: mengikuti induk, lalu aset. */
+  UnitPengelolaId: string | null;
+  UnitPengelola: UnitPengelolaRingkas | null;
   Aktif: boolean;
   NamaInduk: string | null;
   NamaTingkatLayanan: string | null;
@@ -72,6 +77,9 @@ export interface Keluhan {
   TingkatLayananId: string | null;
   AsetId: string | null;
   LokasiId: string;
+  /** Bagian yang memelihara (PRD 8.21), diturunkan saat dibuat atau dialihkan koordinator. */
+  UnitPengelolaId: string | null;
+  UnitPengelola?: UnitPengelolaRingkas | null;
   Judul: string;
   Deskripsi: string;
   Prioritas: PrioritasKeluhan;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Platform\Application\Actions\PasangPeranAwal;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -218,5 +220,140 @@ final class DemoAwalSeeder extends Seeder
                 ]
             );
         }
+
+        // 11. Dua unit pengelola (PRD 8.21)
+        $this->semaiUnitPengelola($organisasiId, $unitId, $lokasiId, $kategoriAsetId);
+    }
+
+    /**
+     * Dua bagian pemeliharaan dalam satu organisasi: Teknik & Fasilitas dan IT.
+     *
+     * Masing-masing mendapat aset, kategori keluhan, gudang, serta teknisi dan
+     * koordinator yang perannya berlingkup unitnya sendiri, supaya pemisahan
+     * antrian, penugasan, dan stok bisa dicoba langsung dari akun contoh.
+     * Peran Teknisi dan Koordinator diambil dari katalog peran awal, bukan
+     * dibuat ulang di sini.
+     */
+    private function semaiUnitPengelola(string $organisasiId, string $unitIndukId, string $lokasiId, string $kategoriAsetTiId): void
+    {
+        $konteks = app(KonteksOrganisasi::class);
+        $konteksSebelumnya = $konteks->id();
+        $konteks->tetapkan($organisasiId);
+
+        try {
+            app(PasangPeranAwal::class)->jalankan($organisasiId);
+        } finally {
+            $konteks->tetapkan($konteksSebelumnya);
+        }
+
+        $peranKoordinator = (string) DB::table('Peran')->where('OrganisasiId', $organisasiId)->where('Kode', 'KOORDINATOR-PEMELIHARAAN')->value('Id');
+        $peranTeknisi = (string) DB::table('Peran')->where('OrganisasiId', $organisasiId)->where('Kode', 'TEKNISI')->value('Id');
+
+        $kategoriAsetFasilitasId = $this->simpan('KategoriAset', ['OrganisasiId' => $organisasiId, 'Kode' => 'KAT-FAS'], [
+            'Nama' => 'Mesin & Utilitas Gedung',
+            'UmurManfaatBulan' => 120,
+            'MetodePenyusutanBawaan' => 'GarisLurus',
+            'PersentaseNilaiResidu' => 10.0000,
+            'MemerlukanPemeliharaan' => 1,
+            'DiperbaruiPada' => now(),
+        ]);
+
+        $bagian = [
+            [
+                'Kode' => 'TEKFAS',
+                'Nama' => 'Teknik & Fasilitas',
+                'KategoriAset' => $kategoriAsetFasilitasId,
+                'Aset' => ['AST-FAS-001', 'Genset 250 kVA Gedung Pusat'],
+                'KategoriKeluhan' => ['KK-FAS', 'Listrik & Utilitas'],
+                'Gudang' => ['GDG-FAS', 'Gudang Teknik & Fasilitas'],
+                'Koordinator' => ['koordinator.teknik@amanpoll.test', 'Rudi Hartono'],
+                'Teknisi' => ['teknisi.teknik@amanpoll.test', 'Agus Setiawan'],
+            ],
+            [
+                'Kode' => 'IT',
+                'Nama' => 'Teknologi Informasi',
+                'KategoriAset' => $kategoriAsetTiId,
+                'Aset' => ['AST-IT-001', 'Printer Jaringan Lantai 1'],
+                'KategoriKeluhan' => ['KK-IT', 'Komputer & Jaringan'],
+                'Gudang' => ['GDG-IT', 'Gudang IT'],
+                'Koordinator' => ['koordinator.it@amanpoll.test', 'Maya Lestari'],
+                'Teknisi' => ['teknisi.it@amanpoll.test', 'Fajar Nugroho'],
+            ],
+        ];
+
+        foreach ($bagian as $satu) {
+            $unitPengelolaId = $this->simpan('UnitOrganisasi', ['OrganisasiId' => $organisasiId, 'Kode' => $satu['Kode']], [
+                'IndukId' => $unitIndukId,
+                'Nama' => $satu['Nama'],
+                'Jenis' => 'Bagian',
+                'Status' => 'Aktif',
+                'MengelolaAset' => 1,
+                'DiperbaruiPada' => now(),
+            ]);
+
+            // Aset tetap milik kantor pusat; yang memeliharanya bagian ini.
+            $this->simpan('Aset', ['OrganisasiId' => $organisasiId, 'KodeAset' => $satu['Aset'][0]], [
+                'UnitOrganisasiId' => $unitIndukId,
+                'LokasiId' => $lokasiId,
+                'KategoriAsetId' => $satu['KategoriAset'],
+                'UnitPengelolaId' => $unitPengelolaId,
+                'Nama' => $satu['Aset'][1],
+                'Status' => 'Aktif',
+                'Kondisi' => 'Baik',
+                'DiperbaruiPada' => now(),
+            ]);
+
+            $this->simpan('KategoriKeluhan', ['OrganisasiId' => $organisasiId, 'Kode' => $satu['KategoriKeluhan'][0]], [
+                'Nama' => $satu['KategoriKeluhan'][1],
+                'UnitPengelolaId' => $unitPengelolaId,
+                'Aktif' => 1,
+            ]);
+
+            $this->simpan('Gudang', ['OrganisasiId' => $organisasiId, 'Kode' => $satu['Gudang'][0]], [
+                'Nama' => $satu['Gudang'][1],
+                'LokasiId' => $lokasiId,
+                'UnitPengelolaId' => $unitPengelolaId,
+                'Status' => 'Aktif',
+                'DiperbaruiPada' => now(),
+            ]);
+
+            foreach ([[$satu['Koordinator'], $peranKoordinator], [$satu['Teknisi'], $peranTeknisi]] as [[$email, $nama], $peranId]) {
+                $penggunaId = $this->simpan('Pengguna', ['OrganisasiId' => $organisasiId, 'Email' => $email], [
+                    'UnitOrganisasiId' => $unitPengelolaId,
+                    'Nama' => $nama,
+                    'KataSandi' => Hash::make((string) config('amanpoll.demo.kata_sandi')),
+                    'JenisPengguna' => 'Internal',
+                    'Status' => 'Aktif',
+                    'DiperbaruiPada' => now(),
+                ]);
+
+                // Berlingkup unitnya sendiri: tanpa ini keduanya melihat seluruh organisasi.
+                $this->simpan('PenggunaPeran', [
+                    'OrganisasiId' => $organisasiId,
+                    'PenggunaId' => $penggunaId,
+                    'PeranId' => $peranId,
+                ], [
+                    'UnitOrganisasiId' => $unitPengelolaId,
+                    'LokasiId' => null,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * updateOrInsert yang mempertahankan Id baris yang sudah ada, supaya
+     * menjalankan seeder berulang tidak memutus relasi yang menunjuknya.
+     *
+     * @param  array<string, mixed>  $kunci
+     * @param  array<string, mixed>  $nilai
+     */
+    private function simpan(string $tabel, array $kunci, array $nilai): string
+    {
+        $ada = DB::table($tabel)->where($kunci)->value('Id');
+        $id = is_string($ada) ? $ada : (string) Str::ulid();
+
+        DB::table($tabel)->updateOrInsert($kunci, $ada === null ? [...$nilai, 'Id' => $id, 'DibuatPada' => now()] : $nilai);
+
+        return $id;
     }
 }

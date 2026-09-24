@@ -20,10 +20,14 @@ export function DialogTugaskanTeknisi({
   perintahKerja,
   teknisi,
   wajib,
+  jumlahDiluarLingkup = 0,
 }: {
   perintahKerja: PerintahKerja;
+  /** Hanya pengguna aktif yang lingkup aksesnya mencakup perintah kerja ini (PRD 8.21). */
   teknisi: TeknisiOpsi[];
   wajib: AturanWajib;
+  /** Pengguna aktif yang disembunyikan karena lingkupnya tidak mencakup perintah kerja ini. */
+  jumlahDiluarLingkup?: number;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm({
@@ -90,6 +94,11 @@ export function DialogTugaskanTeknisi({
             <div className="space-y-1.5">
               <Label nama="PenggunaIds">Pilih Teknisi</Label>
               <div className="max-h-48 overflow-y-auto rounded-md border border-input p-2 space-y-1">
+                {teknisi.length === 0 && (
+                  <p className="px-2 py-3 text-sm text-muted-foreground">
+                    Belum ada pengguna aktif yang lingkup aksesnya mencakup perintah kerja ini.
+                  </p>
+                )}
                 {teknisi.map((t) => {
                   const dipilih = form.data.PenggunaIds.includes(t.Id);
                   return (
@@ -114,6 +123,14 @@ export function DialogTugaskanTeknisi({
                   );
                 })}
               </div>
+              {jumlahDiluarLingkup > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {perintahKerja.UnitPengelola
+                    ? `Hanya pengguna yang lingkupnya mencakup ${perintahKerja.UnitPengelola.Nama} atau lokasi tiket ini yang ditampilkan.`
+                    : 'Hanya pengguna yang lingkupnya mencakup lokasi atau unit tiket ini yang ditampilkan.'}{' '}
+                  {jumlahDiluarLingkup} pengguna lain tidak dapat membuka tiket ini.
+                </p>
+              )}
               {form.errors.PenggunaIds && (
                 <p className="text-sm text-destructive">{form.errors.PenggunaIds}</p>
               )}

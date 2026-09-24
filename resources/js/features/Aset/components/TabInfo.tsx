@@ -6,10 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { DatePicker } from '@/components/ui/date-picker';
 import type { Aset, KategoriAset, ModelAset } from '@/features/Aset/types';
-import type { UnitOrganisasi } from '@/features/UnitOrganisasi/types';
+import type { UnitOrganisasi, UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import type { Penyedia } from '@/features/Penyedia/types';
 import { ruteAset } from '@/features/Aset/api';
-import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
@@ -23,6 +23,8 @@ export function TabInfo({
   penyedia,
   unitOrganisasi,
   wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
 }: {
   aset: Aset;
   kategoriAset: KategoriAset[];
@@ -30,6 +32,9 @@ export function TabInfo({
   penyedia: Penyedia[];
   unitOrganisasi: UnitOrganisasi[];
   wajib: AturanWajib;
+  /** Organisasi memakai unit pengelola (PRD 8.21); bila tidak, isiannya tidak tampil dan tidak dikirim. */
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
 }) {
   const form = useForm({
     KategoriAsetId: aset.KategoriAsetId,
@@ -37,6 +42,7 @@ export function TabInfo({
     PenyediaId: aset.PenyediaId ?? TANPA_PILIHAN,
     AlkesAspakId: aset.AlkesAspakId ?? TANPA_PILIHAN,
     UnitOrganisasiId: aset.UnitOrganisasiId ?? TANPA_PILIHAN,
+    UnitPengelolaId: aset.UnitPengelolaId ?? TANPA_PILIHAN,
     KodeAset: aset.KodeAset,
     Nama: aset.Nama,
     NomorSeri: aset.NomorSeri ?? '',
@@ -62,8 +68,12 @@ export function TabInfo({
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
+    const { UnitPengelolaId, ...data } = form.data;
     const payload = {
-      ...form.data,
+      ...data,
+      ...(unitPengelolaDipakai
+        ? { UnitPengelolaId: UnitPengelolaId === TANPA_PILIHAN ? null : UnitPengelolaId }
+        : {}),
       ModelAsetId: form.data.ModelAsetId === TANPA_PILIHAN ? null : form.data.ModelAsetId,
       PenyediaId: form.data.PenyediaId === TANPA_PILIHAN ? null : form.data.PenyediaId,
       UnitOrganisasiId: form.data.UnitOrganisasiId === TANPA_PILIHAN ? null : form.data.UnitOrganisasiId,
@@ -136,6 +146,22 @@ export function TabInfo({
           </p>
           {form.errors.AlkesAspakId && <p className="text-sm text-destructive">{form.errors.AlkesAspakId}</p>}
         </div>
+        {unitPengelolaDipakai && (
+          <div className="space-y-2">
+            <Label nama="UnitPengelolaId">Unit Pengelola</Label>
+            <Combobox
+              nilai={form.data.UnitPengelolaId}
+              onPilih={(v) => form.setData('UnitPengelolaId', v)}
+              opsi={opsiUnitPengelola(pilihanUnitPengelola)}
+            />
+            <p className="text-sm text-muted-foreground">
+              Bagian yang memelihara aset ini. Unit Organisasi tetap mencatat pemilik atau pemakainya.
+            </p>
+            {form.errors.UnitPengelolaId && (
+              <p className="text-sm text-destructive">{form.errors.UnitPengelolaId}</p>
+            )}
+          </div>
+        )}
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label nama="UnitOrganisasiId">Unit Organisasi</Label>

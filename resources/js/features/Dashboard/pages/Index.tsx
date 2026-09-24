@@ -17,6 +17,7 @@ import type {
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 
 interface Props {
   susunan: SusunanDasbor;
@@ -25,6 +26,7 @@ interface Props {
   dasborTersimpan: DasborTersimpanRingkas[];
   pilihanUnit: PilihanDimensi[];
   pilihanLokasi: PilihanDimensi[];
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
 }
 
 /** Dasbor operasional (21.02). */
@@ -35,6 +37,7 @@ export default function DashboardIndex({
   dasborTersimpan,
   pilihanUnit,
   pilihanLokasi,
+  pilihanUnitPengelola,
 }: Props) {
   const komponenTampil = susunan.Komponen.filter((komponen) => metrik[komponen.KunciKpi] !== undefined);
 
@@ -90,6 +93,7 @@ export default function DashboardIndex({
           filter={filter}
           pilihanUnit={pilihanUnit}
           pilihanLokasi={pilihanLokasi}
+          pilihanUnitPengelola={pilihanUnitPengelola}
           url={rutePelaporan.dasbor}
           paramTambahan={{ dasbor: susunan.Kunci }}
         />

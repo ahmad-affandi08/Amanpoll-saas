@@ -7,6 +7,7 @@ namespace App\Domain\Pelaporan\Application\Queries;
 use App\Domain\Pelaporan\Domain\Contracts\PenyediaKpi;
 use App\Domain\Pelaporan\Domain\ValueObjects\FilterMetrik;
 use App\Domain\Pelaporan\Domain\ValueObjects\HasilKpi;
+use App\Domain\Persediaan\Application\Services\LingkupGudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 /** KPI persediaan (21.01: stock). */
 final class QueryStok implements PenyediaKpi
 {
+    public function __construct(private readonly LingkupGudang $lingkupGudang) {}
+
     public function kunciDilayani(): array
     {
         return ['stok.nilai', 'stok.di_bawah_minimum'];
@@ -74,18 +77,31 @@ final class QueryStok implements PenyediaKpi
         );
     }
 
-    /** @return Builder<StokSukuCadang> */
+    /**
+     * Stok mengikuti gudangnya: lokasi gudang dan unit pengelola gudang (PRD 8.21).
+     * Gudang tidak punya unit organisasi, jadi filter itu tidak berlaku di sini.
+     * Tanpa filter pun, pengguna berlingkup hanya menghitung stok gudang yang
+     * terlihat olehnya, sama seperti halaman stok.
+     *
+     * @return Builder<StokSukuCadang>
+     */
     private function lingkup(FilterMetrik $filter): Builder
     {
-        $query = StokSukuCadang::query();
+        $query = $this->lingkupGudang->saring(StokSukuCadang::query(), 'StokSukuCadang.GudangId');
 
-        if ($filter->adaFilterLokasi()) {
-            $query->whereIn(
-                'GudangId',
-                Gudang::query()->select('Id')->whereIn('LokasiId', $filter->lokasiId)->getQuery(),
-            );
+        if (! $filter->adaFilterLokasi() && ! $filter->adaFilterUnitPengelola()) {
+            return $query;
         }
 
-        return $query;
+        $gudang = Gudang::query()->select('Id');
+
+        if ($filter->adaFilterLokasi()) {
+            $gudang->whereIn('LokasiId', $filter->lokasiId);
+        }
+        if ($filter->adaFilterUnitPengelola()) {
+            $gudang->whereIn('UnitPengelolaId', $filter->unitPengelolaId);
+        }
+
+        return $query->whereIn('GudangId', $gudang->getQuery());
     }
 }

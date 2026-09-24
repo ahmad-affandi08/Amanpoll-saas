@@ -18,7 +18,8 @@ import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
-import { opsiDari } from '@/lib/pilihan';
+import { TANPA_PILIHAN, opsiDari, opsiUnitPengelola } from '@/lib/pilihan';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tambahHari, tanggalHariIni } from '@/lib/waktu';
 
@@ -46,6 +47,7 @@ function nilaiAwal(rencana: RencanaKalibrasi | null) {
         TanggalBerikutnya: rencana.TanggalBerikutnya,
         PeringatanHariSebelum: rencana.PeringatanHariSebelum,
         Aktif: rencana.Aktif,
+        UnitPengelolaId: rencana.UnitPengelolaId ?? TANPA_PILIHAN,
       }
     : {
         AsetId: '',
@@ -56,6 +58,7 @@ function nilaiAwal(rencana: RencanaKalibrasi | null) {
         TanggalBerikutnya: hitungTanggalBerikutnya(hariIni, 365),
         PeringatanHariSebelum: 30,
         Aktif: true,
+        UnitPengelolaId: TANPA_PILIHAN,
       };
 }
 
@@ -65,21 +68,45 @@ export function DialogFormRencana({
   jenisKalibrasi,
   penyedia,
   wajib,
+  pilihanUnitPengelola = [],
+  unitPengelolaDipakai = false,
 }: {
   rencana: RencanaKalibrasi | null;
-  aset: { Id: string; KodeAset: string; Nama: string }[];
+  aset: { Id: string; KodeAset: string; Nama: string; UnitPengelolaId?: string | null }[];
   jenisKalibrasi: { Id: string; Kode: string; Nama: string }[];
   penyedia: { Id: string; Kode: string; Nama: string }[];
   wajib: AturanWajib;
+  /** Unit pengelola aktif (PRD 8.21); isiannya hanya tampil bila organisasi memakai fitur ini. */
+  pilihanUnitPengelola?: UnitPengelolaRingkas[];
+  unitPengelolaDipakai?: boolean;
 }) {
   const [buka, setBuka] = useState(false);
   const form = useForm(nilaiAwal(rencana));
+  /** Selama isian unit pengelola belum disentuh, memilih aset mengisikan unit pengelola asetnya. */
+  const [unitDisentuh, setUnitDisentuh] = useState(false);
+
+  /** Nilai tersimpan yang unitnya kini nonaktif tetap muncul di pilihan, supaya tidak tampil kosong. */
+  const opsiUnit =
+    rencana?.unit_pengelola && !pilihanUnitPengelola.some((unit) => unit.Id === rencana.unit_pengelola?.Id)
+      ? [...pilihanUnitPengelola, rencana.unit_pengelola]
+      : pilihanUnitPengelola;
+
+  const pilihAset = (asetId: string) => {
+    const unitAset = aset.find((a) => a.Id === asetId)?.UnitPengelolaId;
+
+    form.setData({
+      ...form.data,
+      AsetId: asetId,
+      UnitPengelolaId: !unitDisentuh && !rencana && unitAset ? unitAset : form.data.UnitPengelolaId,
+    });
+  };
 
   /** useForm mengunci nilai saat mount, jadi isinya disegarkan dari props tiap kali dibuka. */
   const ubahBuka = (terbuka: boolean) => {
     if (terbuka) {
       form.setData(nilaiAwal(rencana));
       form.clearErrors();
+      setUnitDisentuh(false);
     }
     setBuka(terbuka);
   };
@@ -92,6 +119,11 @@ export function DialogFormRencana({
         form.reset();
       },
     };
+
+    form.transform((data) => ({
+      ...data,
+      UnitPengelolaId: data.UnitPengelolaId === TANPA_PILIHAN ? null : data.UnitPengelolaId,
+    }));
 
     if (rencana) {
       form.put(ruteKalibrasi.rencanaDetail(rencana.Id), opsi);
@@ -134,13 +166,37 @@ export function DialogFormRencana({
               </Label>
               <Combobox
                 nilai={form.data.AsetId}
-                onPilih={(val) => form.setData('AsetId', val)}
+                onPilih={pilihAset}
                 opsi={opsiDari(aset, (a) => `${a.KodeAset} - ${a.Nama}`)}
                 placeholder="Pilih Aset"
                 className="h-9 text-xs"
               />
               {form.errors.AsetId && <p className="text-xs text-destructive">{form.errors.AsetId}</p>}
             </div>
+
+            {unitPengelolaDipakai && (
+              <div className="space-y-1.5">
+                <Label nama="UnitPengelolaId" htmlFor="UnitPengelolaId">
+                  Unit Pengelola
+                </Label>
+                <Combobox
+                  nilai={form.data.UnitPengelolaId}
+                  onPilih={(val) => {
+                    setUnitDisentuh(true);
+                    form.setData('UnitPengelolaId', val);
+                  }}
+                  opsi={opsiUnitPengelola(opsiUnit)}
+                  placeholder="Pilih unit pengelola"
+                  className="h-9 text-xs"
+                />
+                {!rencana && !unitDisentuh && (
+                  <p className="text-[11px] text-grafit-500">Terisi dari unit pengelola aset yang dipilih.</p>
+                )}
+                {form.errors.UnitPengelolaId && (
+                  <p className="text-xs text-destructive">{form.errors.UnitPengelolaId}</p>
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">

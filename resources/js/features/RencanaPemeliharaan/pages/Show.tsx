@@ -22,6 +22,8 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { tanggalHariIni } from '@/lib/waktu';
+import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+import { DialogUnitPengelolaRencana } from '@/features/RencanaPemeliharaan/components/DialogUnitPengelolaRencana';
 
 interface Props {
   rencana: RencanaPemeliharaan;
@@ -29,9 +31,21 @@ interface Props {
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
+  /** Organisasi memakai unit pengelola (PRD 8.21). */
+  unitPengelolaDipakai: boolean;
+  pilihanUnitPengelola: UnitPengelolaRingkas[];
+  /** Unit pengelola bersama seluruh aset rencana ini, bila semuanya sama. */
+  saranUnitPengelolaId: string | null;
 }
 
-export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }: Props) {
+export default function RencanaPemeliharaanShow({
+  rencana,
+  asetTersedia,
+  wajib,
+  unitPengelolaDipakai,
+  pilihanUnitPengelola,
+  saranUnitPengelolaId,
+}: Props) {
   const konfirmasi = useKonfirmasi();
   const [bukaDialogAset, setBukaDialogAset] = useState(false);
 
@@ -129,6 +143,20 @@ export default function RencanaPemeliharaanShow({ rencana, asetTersedia, wajib }
                   </div>
                 )}
               </div>
+
+              {unitPengelolaDipakai && (
+                <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-grafit-700">
+                  <span>
+                    Unit pengelola: <strong>{rencana.unit_pengelola?.Nama ?? 'Mengikuti aset'}</strong>
+                  </span>
+                  <DialogUnitPengelolaRencana
+                    rencana={rencana}
+                    pilihanUnitPengelola={pilihanUnitPengelola}
+                    saranUnitPengelolaId={saranUnitPengelolaId}
+                    wajib={wajib.rencana}
+                  />
+                </div>
+              )}
             </div>
 
             <Dialog open={bukaDialogAset} onOpenChange={setBukaDialogAset}>

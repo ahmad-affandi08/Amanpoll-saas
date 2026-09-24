@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Domain\Pemeliharaan\Http\Controllers;
 
 use App\Core\Izin\PemeriksaIzin;
+use App\Core\Izin\PemeriksaLingkupBaris;
 use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Pemeliharaan\Application\Actions\AlihkanUnitPengelolaPerintahKerja;
 use App\Domain\Pemeliharaan\Application\Actions\BuatPerintahKerja;
 use App\Domain\Pemeliharaan\Application\Actions\UbahStatusPerintahKerja;
 use App\Domain\Pemeliharaan\Domain\Enums\PrioritasKeluhan;
 use App\Domain\Pemeliharaan\Domain\Enums\StatusPerintahKerja;
 use App\Domain\Pemeliharaan\Http\Requests\AksiWaktuHentiAsetRequest;
+use App\Domain\Pemeliharaan\Http\Requests\AlihkanUnitPengelolaPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanAnalisisKegagalanRequest;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanBiayaPerintahKerjaRequest;
 use App\Domain\Pemeliharaan\Http\Requests\SimpanPenugasanPerintahKerjaRequest;
@@ -23,9 +26,11 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KodeKegagalan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PenugasanPerintahKerja;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
+use App\Domain\Persediaan\Application\Services\LingkupGudang;
 use App\Domain\Persediaan\Http\Requests\SimpanReservasiSukuCadangRequest;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\Gudang;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\StokSukuCadang;
+use App\Domain\Platform\Application\Services\OpsiUnitPengelola;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
@@ -53,6 +58,7 @@ final class PerintahKerjaController extends Controller
         $filter = $request->validate([
             'status' => ['nullable', Rule::enum(StatusPerintahKerja::class)],
             'prioritas' => ['nullable', Rule::enum(PrioritasKeluhan::class)],
+            'unitPengelola' => ['nullable', 'string', 'size:26'],
         ]);
         $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola');
 
@@ -61,11 +67,14 @@ final class PerintahKerjaController extends Controller
         return Inertia::render('PerintahKerja/Index', [
             'wajib' => ['perintahKerja' => AturanWajib::untuk(SimpanPerintahKerjaRequest::class), 'status' => AturanWajib::untuk(UbahStatusPerintahKerjaRequest::class)],
             'perintahKerja' => PerintahKerjaResource::collection($daftar),
-            'keluhan' => Keluhan::query()->whereIn('Status', ['Diterima', 'Diproses'])->latest('DilaporkanPada')->get(['Id', 'Nomor', 'Judul', 'Prioritas', 'LokasiId', 'AsetId']),
-            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId']),
+            'keluhan' => Keluhan::query()->whereIn('Status', ['Diterima', 'Diproses'])->latest('DilaporkanPada')->get(['Id', 'Nomor', 'Judul', 'Prioritas', 'LokasiId', 'AsetId', 'UnitPengelolaId']),
+            'aset' => Aset::query()->where('Status', StatusAset::Aktif->value)->orderBy('Nama')->get(['Id', 'KodeAset', 'Nama', 'LokasiId', 'UnitPengelolaId']),
             'lokasi' => Lokasi::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
             'filter' => $filter,
             'dapatMengelola' => $dapatMengelola,
+            'unitPengelolaDipakai' => OpsiUnitPengelola::dipakai(),
+            'pilihanUnitPengelola' => OpsiUnitPengelola::daftar(),
+            'saringanUnitPengelola' => OpsiUnitPengelola::daftar(termasukNonaktif: true),
         ]);
     }
 
@@ -84,13 +93,14 @@ final class PerintahKerjaController extends Controller
         $dapatMengelola = $this->izin->boleh($request->user('web')->Id, 'PerintahKerja.Kelola');
 
         return PerintahKerja::query()
-            ->with(['keluhan', 'lokasi', 'aset', 'penugasan.pengguna'])
+            ->with(['keluhan', 'lokasi', 'aset', 'penugasan.pengguna', 'unitPengelola:Id,Kode,Nama'])
             ->withSum('waktuKerja as TotalWaktuKerjaMenit', 'DurasiMenit')
             ->withSum('waktuHenti as TotalDowntimeMenit', 'DurasiMenit')
             ->withSum('biaya as TotalBiaya', 'Jumlah')
             ->when(! $dapatMengelola, fn ($query) => $query->whereHas('penugasan', fn ($penugasan) => $penugasan->where('PenggunaId', $request->user('web')->Id)->whereIn('Status', ['Ditugaskan', 'Diterima'])))
             ->when($filter['status'] ?? null, fn ($query, $status) => $query->where('Status', $status))
             ->when($filter['prioritas'] ?? null, fn ($query, $prioritas) => $query->where('Prioritas', $prioritas))
+            ->when($filter['unitPengelola'] ?? null, fn ($query, $unitPengelolaId) => $query->where('UnitPengelolaId', $unitPengelolaId))
             ->latest('DibuatPada')
             ->orderBy('Id');
     }
@@ -103,6 +113,7 @@ final class PerintahKerjaController extends Controller
         $filter = $request->validate([
             'status' => ['nullable', Rule::enum(StatusPerintahKerja::class)],
             'prioritas' => ['nullable', Rule::enum(PrioritasKeluhan::class)],
+            'unitPengelola' => ['nullable', 'string', 'size:26'],
         ]);
 
         return $ekspor->unduh(
@@ -117,6 +128,9 @@ final class PerintahKerjaController extends Controller
                 KolomEkspor::dari('Aset', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'aset'), 'Nama')),
                 KolomEkspor::dari('Kode Aset', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'aset'), 'KodeAset')),
                 KolomEkspor::dari('Lokasi', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'lokasi'), 'Nama')),
+                ...(OpsiUnitPengelola::dipakai()
+                    ? [KolomEkspor::dari('Unit Pengelola', fn (PerintahKerja $p): string => BacaRelasi::teks(BacaRelasi::model($p, 'unitPengelola'), 'Nama'))]
+                    : []),
                 KolomEkspor::dari('Teknisi', fn (PerintahKerja $p): string => $p->penugasan
                     ->map(fn (PenugasanPerintahKerja $satu): string => BacaRelasi::teks(BacaRelasi::model($satu, 'pengguna'), 'Nama'))
                     ->filter()
@@ -146,7 +160,7 @@ final class PerintahKerjaController extends Controller
     {
         $this->authorize('view', $perintahKerja);
         $perintahKerja->load([
-            'keluhan', 'lokasi', 'aset', 'penugasan.pengguna', 'riwayatStatus.diubahOleh',
+            'keluhan', 'lokasi', 'aset', 'penugasan.pengguna', 'riwayatStatus.diubahOleh', 'unitPengelola:Id,Kode,Nama',
             'waktuKerja.pengguna', 'waktuHenti.aset', 'biaya',
             'analisisKegagalan.kodeMasalah', 'analisisKegagalan.kodePenyebab', 'analisisKegagalan.kodeTindakan',
             'reservasiSukuCadang.sukuCadang', 'reservasiSukuCadang.gudang', 'pemakaianSukuCadang.sukuCadang',
@@ -160,14 +174,19 @@ final class PerintahKerjaController extends Controller
             ->selectRaw('PenggunaId, COUNT(*) as jumlah')
             ->groupBy('PenggunaId')
             ->pluck('jumlah', 'PenggunaId');
-        $teknisi = Pengguna::query()->where('OrganisasiId', $request->user('web')->OrganisasiId)->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama', 'Jabatan'])
+        $calonTeknisi = Pengguna::query()->where('OrganisasiId', $request->user('web')->OrganisasiId)->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama', 'Jabatan']);
+        $idTercakup = array_flip(app(PemeriksaLingkupBaris::class)->penggunaYangMencakup($perintahKerja, $calonTeknisi->pluck('Id')->all()));
+        $teknisi = $calonTeknisi
+            ->filter(fn (Pengguna $pengguna): bool => isset($idTercakup[$pengguna->Id]))
+            ->values()
             ->map(fn (Pengguna $pengguna) => [
                 'Id' => $pengguna->Id,
                 'Nama' => $pengguna->Nama,
                 'Jabatan' => $pengguna->Jabatan,
                 'BebanAktif' => (int) ($beban[$pengguna->Id] ?? 0),
             ]);
-        $stok = StokSukuCadang::query()
+        // Hanya stok di gudang yang terlihat pengguna (PRD 8.21), sama dengan yang diterima GudangTerlihat saat reservasi.
+        $stok = app(LingkupGudang::class)->saring(StokSukuCadang::query(), 'StokSukuCadang.GudangId')
             ->with(['sukuCadang', 'gudang'])
             ->whereColumn('JumlahTersedia', '>', 'JumlahDitahan')
             ->limit(BatasDaftar::MAKS)
@@ -183,7 +202,7 @@ final class PerintahKerjaController extends Controller
             ])->values();
 
         return Inertia::render('PerintahKerja/Show', [
-            'wajib' => ['perintahKerja' => AturanWajib::untuk(SimpanPerintahKerjaRequest::class), 'status' => AturanWajib::untuk(UbahStatusPerintahKerjaRequest::class), 'penugasan' => AturanWajib::untuk(SimpanPenugasanPerintahKerjaRequest::class), 'biaya' => AturanWajib::untuk(SimpanBiayaPerintahKerjaRequest::class), 'analisis' => AturanWajib::untuk(SimpanAnalisisKegagalanRequest::class), 'waktuHenti' => AturanWajib::untuk(AksiWaktuHentiAsetRequest::class), 'reservasi' => AturanWajib::untuk(SimpanReservasiSukuCadangRequest::class)],
+            'wajib' => ['perintahKerja' => AturanWajib::untuk(SimpanPerintahKerjaRequest::class), 'status' => AturanWajib::untuk(UbahStatusPerintahKerjaRequest::class), 'penugasan' => AturanWajib::untuk(SimpanPenugasanPerintahKerjaRequest::class), 'biaya' => AturanWajib::untuk(SimpanBiayaPerintahKerjaRequest::class), 'analisis' => AturanWajib::untuk(SimpanAnalisisKegagalanRequest::class), 'waktuHenti' => AturanWajib::untuk(AksiWaktuHentiAsetRequest::class), 'reservasi' => AturanWajib::untuk(SimpanReservasiSukuCadangRequest::class), 'unitPengelola' => AturanWajib::untuk(AlihkanUnitPengelolaPerintahKerjaRequest::class)],
             'perintahKerja' => new PerintahKerjaResource($perintahKerja),
             'dapatMengelola' => $dapatMengelola,
             'dapatMengoperasikan' => Gate::allows('operate', $perintahKerja),
@@ -192,11 +211,23 @@ final class PerintahKerjaController extends Controller
                 ->map(fn (StatusPerintahKerja $status): string => $status->value)->values(),
             'penugasanSaya' => $perintahKerja->penugasan->firstWhere('PenggunaId', $request->user('web')->Id),
             'teknisi' => $teknisi,
+            'jumlahTeknisiDiluarLingkup' => $calonTeknisi->count() - $teknisi->count(),
+            'unitPengelolaDipakai' => OpsiUnitPengelola::dipakai(),
+            'pilihanUnitPengelola' => OpsiUnitPengelola::daftar(),
             'stok' => $stok,
             'gudang' => Gudang::query()->orderBy('Nama')->get(['Id', 'Nama']),
             'penyedia' => Penyedia::query()->where('Status', 'Aktif')->orderBy('Nama')->get(['Id', 'Nama']),
             'kodeKegagalan' => KodeKegagalan::query()->where('Aktif', true)->orderBy('Jenis')->orderBy('Kode')->get(['Id', 'Kode', 'Nama', 'Jenis']),
         ]);
+    }
+
+    public function alihkanUnitPengelola(AlihkanUnitPengelolaPerintahKerjaRequest $request, PerintahKerja $perintahKerja, AlihkanUnitPengelolaPerintahKerja $aksi): RedirectResponse
+    {
+        $this->authorize('alihkanUnitPengelola', $perintahKerja);
+        $tujuan = $request->validated('UnitPengelolaId');
+        $aksi->jalankan($perintahKerja, is_string($tujuan) ? $tujuan : null, $request->string('Alasan')->toString());
+
+        return back()->with('sukses', 'Unit pengelola perintah kerja berhasil dialihkan.');
     }
 
     public function ubahStatus(UbahStatusPerintahKerjaRequest $request, PerintahKerja $perintahKerja, UbahStatusPerintahKerja $aksi): RedirectResponse

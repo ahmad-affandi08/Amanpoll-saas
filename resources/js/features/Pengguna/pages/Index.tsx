@@ -26,6 +26,8 @@ import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { Combobox } from '@/components/ui/combobox';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { opsiDari, opsiKosong, TANPA_PILIHAN } from '@/lib/pilihan';
 
 interface Acuan {
@@ -39,6 +41,8 @@ interface Props {
   peranTersedia: PeranRingkas[];
   unitOrganisasi: Acuan[];
   lokasi: Acuan[];
+  /** Putusan server per Id pengguna di halaman ini: true = melihat seluruh organisasi. */
+  lingkupSeluruhOrganisasi: Record<string, boolean>;
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
 }
@@ -173,16 +177,26 @@ function DialogKelolaPeran({
   peranTersedia,
   unitOrganisasi,
   lokasi,
+  seluruhOrganisasi,
 }: {
   pengguna: Pengguna;
   peranTersedia: PeranRingkas[];
   unitOrganisasi: Acuan[];
   lokasi: Acuan[];
+  /** Lingkup saat ini menurut server; false berarti pengguna sekarang berlingkup. */
+  seluruhOrganisasi: boolean;
 }) {
   const [buka, setBuka] = useState(false);
   const [peranTerpilih, setPeranTerpilih] = useState('');
   const [unitTerpilih, setUnitTerpilih] = useState(TANPA_PILIHAN);
   const [lokasiTerpilih, setLokasiTerpilih] = useState(TANPA_PILIHAN);
+  const [konfirmasiSeluruh, setKonfirmasiSeluruh] = useState(false);
+  const [galat, setGalat] = useState<Record<string, string>>({});
+  const [memproses, setMemproses] = useState(false);
+
+  // PRD 8.21: satu penetapan tanpa unit dan ruangan menghapus seluruh batas pengguna yang tadinya berlingkup.
+  const tanpaLingkup = unitTerpilih === TANPA_PILIHAN && lokasiTerpilih === TANPA_PILIHAN;
+  const akanMembukaSeluruh = !seluruhOrganisasi && peranTerpilih !== '' && tanpaLingkup;
 
   const tambahkan = () => {
     if (!peranTerpilih) return;
@@ -192,13 +206,19 @@ function DialogKelolaPeran({
         PeranId: peranTerpilih,
         UnitOrganisasiId: unitTerpilih === TANPA_PILIHAN ? null : unitTerpilih,
         LokasiId: lokasiTerpilih === TANPA_PILIHAN ? null : lokasiTerpilih,
+        KonfirmasiSeluruhOrganisasi: konfirmasiSeluruh,
       },
       {
         preserveScroll: true,
+        onStart: () => setMemproses(true),
+        onFinish: () => setMemproses(false),
+        onError: (errors) => setGalat(errors),
         onSuccess: () => {
           setPeranTerpilih('');
           setUnitTerpilih(TANPA_PILIHAN);
           setLokasiTerpilih(TANPA_PILIHAN);
+          setKonfirmasiSeluruh(false);
+          setGalat({});
         },
       },
     );
@@ -249,19 +269,28 @@ function DialogKelolaPeran({
           <div className="space-y-2 border-t border-border pt-3">
             <Combobox
               nilai={peranTerpilih}
-              onPilih={setPeranTerpilih}
+              onPilih={(v) => {
+                setPeranTerpilih(v);
+                setGalat({});
+              }}
               opsi={opsiDari(peranTersedia, (p) => p.Nama)}
               placeholder="Pilih peran"
             />
             <div className="grid grid-cols-2 gap-2">
               <Combobox
                 nilai={unitTerpilih}
-                onPilih={setUnitTerpilih}
+                onPilih={(v) => {
+                  setUnitTerpilih(v);
+                  setGalat({});
+                }}
                 opsi={[opsiKosong('Semua unit'), ...opsiDari(unitOrganisasi, (u) => u.Nama)]}
               />
               <Combobox
                 nilai={lokasiTerpilih}
-                onPilih={setLokasiTerpilih}
+                onPilih={(v) => {
+                  setLokasiTerpilih(v);
+                  setGalat({});
+                }}
                 opsi={[opsiKosong('Semua ruangan'), ...opsiDari(lokasi, (l) => l.Nama)]}
               />
             </div>
@@ -269,7 +298,35 @@ function DialogKelolaPeran({
               Membatasi unit atau ruangan membuat pengguna ini hanya melihat data di dalamnya, beserta
               sub-unit dan ruangan di bawahnya. Dibiarkan kosong berarti seluruh organisasi.
             </p>
-            <Button onClick={tambahkan} className="w-full">
+            {(akanMembukaSeluruh || galat.KonfirmasiSeluruhOrganisasi) && (
+              <Alert variant="perhatian">
+                <AlertTitle>Pengguna ini akan melihat seluruh organisasi</AlertTitle>
+                <AlertDescription>
+                  Saat ini {pengguna.Nama} hanya melihat data unit atau ruangan tertentu. Satu peran tanpa
+                  unit dan ruangan menghapus seluruh batas itu, termasuk dari peran lainnya.
+                </AlertDescription>
+                <label className="flex items-start gap-2 pt-1 text-sm text-foreground">
+                  <Checkbox
+                    className="mt-0.5"
+                    checked={konfirmasiSeluruh}
+                    onCheckedChange={(v) => setKonfirmasiSeluruh(v === true)}
+                  />
+                  Saya mengerti, tetapkan untuk seluruh organisasi
+                </label>
+              </Alert>
+            )}
+            {Object.entries(galat)
+              .filter(([kunci]) => kunci !== 'KonfirmasiSeluruhOrganisasi' || !akanMembukaSeluruh)
+              .map(([kunci, pesan]) => (
+                <p key={kunci} className="text-sm text-destructive">
+                  {pesan}
+                </p>
+              ))}
+            <Button
+              onClick={tambahkan}
+              className="w-full"
+              disabled={memproses || (akanMembukaSeluruh && !konfirmasiSeluruh)}
+            >
               Tetapkan
             </Button>
           </div>
@@ -286,9 +343,12 @@ export default function PenggunaIndex({
   lokasi,
   filter,
   wajib,
+  lingkupSeluruhOrganisasi,
 }: Props) {
   const { boleh } = useIzin();
   const bolehKelola = boleh('Pengguna.Kelola');
+  const namaUnit = (id: string | null) => unitOrganisasi.find((u) => u.Id === id)?.Nama;
+  const namaLokasi = (id: string | null) => lokasi.find((l) => l.Id === id)?.Nama;
 
   const ubahStatus = (item: Pengguna) => {
     const statusBaru = item.Status === 'Aktif' ? 'Nonaktif' : 'Aktif';
@@ -340,6 +400,35 @@ export default function PenggunaIndex({
         meta: { label: 'Peran' },
       },
       {
+        id: 'Lingkup',
+        header: 'Lingkup',
+        cell: ({ row }) => {
+          if (row.original.Peran.length === 0) {
+            return <span className="text-sm text-muted-foreground">—</span>;
+          }
+
+          if (lingkupSeluruhOrganisasi[row.original.Id] !== false) {
+            return <span className="text-sm text-muted-foreground">Seluruh organisasi</span>;
+          }
+
+          const cakupan = row.original.Peran.flatMap((p) => [
+            namaUnit(p.UnitOrganisasiId),
+            namaLokasi(p.LokasiId),
+          ]);
+
+          return (
+            <div className="flex flex-wrap items-center gap-1">
+              <Badge variant="sukses">Terbatas</Badge>
+              <span className="text-sm text-muted-foreground">
+                {[...new Set(cakupan.filter(Boolean))].join(', ')}
+              </span>
+            </div>
+          );
+        },
+        enableSorting: false,
+        meta: { label: 'Lingkup' },
+      },
+      {
         accessorKey: 'Status',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
@@ -363,6 +452,7 @@ export default function PenggunaIndex({
                     peranTersedia={peranTersedia}
                     unitOrganisasi={unitOrganisasi}
                     lokasi={lokasi}
+                    seluruhOrganisasi={lingkupSeluruhOrganisasi[row.original.Id] !== false}
                   />
                   <Button variant="ghost" size="sm" onClick={() => ubahStatus(row.original)}>
                     {row.original.Status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}
@@ -376,7 +466,7 @@ export default function PenggunaIndex({
           ]
         : []),
     ],
-    [bolehKelola, peranTersedia, unitOrganisasi, lokasi, wajib],
+    [bolehKelola, peranTersedia, unitOrganisasi, lokasi, wajib, lingkupSeluruhOrganisasi],
   );
 
   return (
