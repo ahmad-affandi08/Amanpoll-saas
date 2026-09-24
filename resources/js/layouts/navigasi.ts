@@ -21,6 +21,8 @@ import {
 export interface SubItemNav {
   label: string;
   href: string;
+  /** Aktif hanya bila jalurnya sama persis, bukan juga untuk jalur turunannya. */
+  tepat?: boolean;
   kodeIzin?: string | null;
   /** Kode fitur paket; menu disembunyikan saat paket tidak memuatnya. */
   kodeFitur?: string | null;
@@ -29,6 +31,8 @@ export interface SubItemNav {
 export interface ItemNav {
   label: string;
   href?: string;
+  /** Aktif hanya bila jalurnya sama persis, bukan juga untuk jalur turunannya. */
+  tepat?: boolean;
   icon: LucideIcon;
   kodeIzin?: string | null;
   kodeFitur?: string | null;

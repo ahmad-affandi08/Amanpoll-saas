@@ -48,6 +48,11 @@ final class DashboardGrowthTest extends KasusGrowth
         $this->semaiPerjalanan();
         $this->aktingSebagai([KatalogIzinPemasaran::ANALYTICS_LIHAT]);
 
+        // Satu kampanye sudah ada sebelum diukur: kueri pemuat kampanye hanya berjalan bila
+        // ada barisnya, jadi yang dibandingkan adalah satu lawan enam kampanye, bukan nol lawan
+        // lima. Permintaan pemanasan mengisi cache bersama (mis. status modul menu konsol).
+        $this->buatMetrikKampanye('kampanye-awal');
+        $this->hitungKueri();
         $satu = $this->hitungKueri();
 
         for ($i = 0; $i < 5; $i++) {

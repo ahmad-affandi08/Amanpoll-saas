@@ -535,6 +535,28 @@ Administrasi
 
 Menu disembunyikan berdasarkan izin, tetapi authorization tetap dilakukan backend.
 
+## 11.1 Konsol platform
+
+Konsol platform (`/admin-platform`) memakai kerangka yang sama dengan dashboard tenant: sidebar gelap yang bisa diciutkan, menu bergrup dari komponen bersama `MenuSidebar`, profil di kaki sidebar, dan header putih. Pembedanya hanya label "Konsol Platform" di kepala sidebar dan header.
+
+```text
+Bisnis
+├── Paket
+└── Langganan
+
+Growth & Marketing
+├── Ringkasan
+├── Analitik (Dashboard Growth, Eksperimen A/B)
+├── Prospek & Penjualan (Prospek, Aturan Skor, Trial, Demo Produk, Referral)
+├── Situs & Konten (Halaman Publik, Formulir, Konten & SEO, Konten Sosial, Redirect)
+└── Kampanye & Pesan (Kampanye, Otomasi, Template/Sequence Email, WhatsApp, Consent)
+
+Pengaturan
+└── Layanan Luar
+```
+
+Menu konsol disaring oleh izin admin platform dan oleh modul pemasaran yang aktif; halaman modul yang mati tidak ditawarkan karena rutenya menjawab 404. Daftar halaman pemasaran hanya satu (`HALAMAN_PEMASARAN`), dipakai sidebar dan kartu pintasan di Ringkasan.
+
 ---
 
 # 12. Page Anatomy

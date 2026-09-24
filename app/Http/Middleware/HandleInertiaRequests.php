@@ -7,6 +7,7 @@ namespace App\Http\Middleware;
 use App\Core\Izin\PemeriksaIzin;
 use App\Core\Izin\PemeriksaIzinPlatform;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
+use App\Domain\Pemasaran\Application\Services\PemeriksaFiturPlatform;
 use App\Domain\Platform\Application\Services\PenentuModeLapangan;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -20,6 +21,7 @@ final class HandleInertiaRequests extends Middleware
         private readonly PemeriksaEntitlement $pemeriksaEntitlement,
         private readonly PemeriksaIzinPlatform $pemeriksaIzinPlatform,
         private readonly PenentuModeLapangan $penentuModeLapangan,
+        private readonly PemeriksaFiturPlatform $pemeriksaFiturPlatform,
     ) {}
 
     public function share(Request $request): array
@@ -61,8 +63,11 @@ final class HandleInertiaRequests extends Middleware
 
                 return $admin === null ? [] : [
                     'Nama' => $admin->Nama,
+                    'Email' => $admin->Email,
                     'SuperAdmin' => $admin->SuperAdmin === true,
                     'Izin' => $this->pemeriksaIzinPlatform->daftarKode($admin),
+                    // Menu konsol menyembunyikan halaman modul yang mati; rutenya tetap dijaga `fitur.platform`.
+                    'ModulAktif' => array_keys(array_filter($this->pemeriksaFiturPlatform->status())),
                 ];
             },
             // Entitlement dibagikan supaya UI dapat menyembunyikan menu dan menonaktifkan tombol.

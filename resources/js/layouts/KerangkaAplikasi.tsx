@@ -5,13 +5,11 @@ import { useHakLangganan } from '@/hooks/use-hak-langganan';
 import { useIzin } from '@/hooks/use-izin';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { PenyediaSinkronisasiOffline, useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
-import { cn } from '@/lib/utils';
 import { LoncengNotifikasi } from '@/components/notifikasi/LoncengNotifikasi';
 import { IndikatorSinkronisasi } from '@/components/shared/IndikatorSinkronisasi';
 import { LogoLambang } from '@/components/shared/Logo';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ruteAuth } from '@/features/Auth/api';
 import { ruteDokumentasi } from '@/features/Dokumentasi/api';
 import { ruteLapangan } from '@/features/Lapangan/api';
@@ -30,17 +28,11 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
@@ -51,27 +43,13 @@ import {
   CircleUserRound,
   BellRing,
   BookOpen,
-  ChevronRight,
   ChevronsUpDown,
   LogOut,
   RotateCw,
   Smartphone,
 } from 'lucide-react';
-import { type GrupNav, type ItemNav, semuaGrup } from '@/layouts/navigasi';
-
-function tautanAktif(pathSekarang: string, href?: string): boolean {
-  if (!href) return false;
-  if (href === '/') return pathSekarang === '/';
-  return pathSekarang === href || pathSekarang.startsWith(`${href}/`);
-}
-
-function apakahGrupItemAktif(pathSekarang: string, item: ItemNav): boolean {
-  if (item.href && tautanAktif(pathSekarang, item.href)) return true;
-  if (item.subItems) {
-    return item.subItems.some((sub) => tautanAktif(pathSekarang, sub.href));
-  }
-  return false;
-}
+import { MenuSidebar } from '@/layouts/MenuSidebar';
+import { type GrupNav, semuaGrup } from '@/layouts/navigasi';
 
 function getInisial(name?: string): string {
   if (!name) return 'AP';
@@ -166,130 +144,8 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar, bukaModeLap
         </SidebarMenu>
       </SidebarHeader>
 
-      {/* Konten Menu Utama & Submenu Collapsible */}
       <SidebarContent>
-        {grupTampil.map((grup, i) => (
-          <SidebarGroup key={grup.label ?? `utama-${i}`}>
-            {grup.label && (
-              <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
-                {grup.label}
-              </SidebarGroupLabel>
-            )}
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {grup.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = apakahGrupItemAktif(pathSekarang, item);
-
-                  // Kasus 1: Menu dengan Submenu Bertingkat
-                  if (item.subItems && item.subItems.length > 0) {
-                    // Ketika sidebar di-collapse ke mode ikon: tampilkan DropdownMenu popout di sebelah kanan
-                    if (isCollapsed) {
-                      return (
-                        <SidebarMenuItem key={item.label}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <SidebarMenuButton
-                                tooltip={item.label}
-                                isActive={isActive}
-                                className="cursor-pointer"
-                              >
-                                <Icon size={18} strokeWidth={1.75} />
-                                <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                              </SidebarMenuButton>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                              side="right"
-                              align="start"
-                              sideOffset={10}
-                              className="min-w-52 rounded-xl bg-card p-1.5 shadow-xl border border-border"
-                            >
-                              <DropdownMenuLabel className="text-xs font-bold text-muted-foreground uppercase px-2.5 py-1.5 tracking-wider">
-                                {item.label}
-                              </DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              {item.subItems.map((subItem) => (
-                                <DropdownMenuItem key={subItem.href} asChild>
-                                  <Link
-                                    href={subItem.href}
-                                    className={cn(
-                                      'flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-md cursor-pointer transition-colors',
-                                      tautanAktif(pathSekarang, subItem.href)
-                                        ? 'bg-teknisi-700 text-white font-semibold'
-                                        : 'text-foreground',
-                                    )}
-                                  >
-                                    <span>{subItem.label}</span>
-                                  </Link>
-                                </DropdownMenuItem>
-                              ))}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </SidebarMenuItem>
-                      );
-                    }
-
-                    // Ketika sidebar dalam mode expanded: tampilkan Collapsible inline accordion
-                    return (
-                      <Collapsible
-                        key={item.label}
-                        asChild
-                        defaultOpen={isActive}
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              tooltip={item.label}
-                              isActive={isActive}
-                              className="cursor-pointer"
-                            >
-                              <Icon size={18} strokeWidth={1.75} />
-                              <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.subItems.map((subItem) => (
-                                <SidebarMenuSubItem key={subItem.href}>
-                                  <SidebarMenuSubButton
-                                    asChild
-                                    isActive={tautanAktif(pathSekarang, subItem.href)}
-                                  >
-                                    <Link href={subItem.href}>
-                                      <span>{subItem.label}</span>
-                                    </Link>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuItem>
-                      </Collapsible>
-                    );
-                  }
-
-                  // Kasus 2: Menu Tunggal / Biasa (Dashboard, Persetujuan Saya, Penyedia)
-                  return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={tautanAktif(pathSekarang, item.href)}
-                        tooltip={item.label}
-                      >
-                        <Link href={item.href || '#'}>
-                          <Icon size={18} strokeWidth={1.75} />
-                          <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <MenuSidebar grup={grupTampil} pathSekarang={pathSekarang} />
       </SidebarContent>
 
       {/* Footer Profil Pengguna Interaktif */}

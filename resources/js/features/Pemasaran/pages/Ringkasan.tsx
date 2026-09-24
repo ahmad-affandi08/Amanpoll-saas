@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { HALAMAN_PEMASARAN } from '@/features/Pemasaran/navigasi';
 
 interface Modul {
   Kode: string;
@@ -19,117 +20,6 @@ interface Props {
   izinSaya: string[];
   superAdmin: boolean;
 }
-
-const PINTASAN = [
-  {
-    label: 'Dashboard Growth',
-    href: '/admin-platform/pemasaran/growth',
-    keterangan: 'Funnel, KPI, revenue per channel, dan alert growth.',
-    izin: 'platform.analytics.lihat',
-  },
-  {
-    label: 'Prospek',
-    href: '/admin-platform/pemasaran/prospek',
-    keterangan: 'Pipeline, skor, dan aktivitas prospek.',
-    izin: 'platform.prospek.lihat',
-  },
-  {
-    label: 'Aturan Skor',
-    href: '/admin-platform/pemasaran/prospek/aturan-skor',
-    keterangan: 'Bobot tiap sinyal terhadap skor prospek.',
-    izin: 'platform.prospek.lihat',
-  },
-  {
-    label: 'Trial',
-    href: '/admin-platform/pemasaran/trial',
-    keterangan: 'Trial berjalan beserta checklist aktivasinya.',
-    izin: 'platform.prospek.lihat',
-  },
-  {
-    label: 'Kampanye',
-    href: '/admin-platform/pemasaran/kampanye',
-    keterangan: 'Kampanye dan biayanya.',
-    izin: 'platform.kampanye.lihat',
-  },
-  {
-    label: 'Demo Produk',
-    href: '/admin-platform/pemasaran/demo',
-    keterangan: 'Sandbox demo, sesinya, dan reset datasetnya.',
-    izin: 'platform.pemasaran.lihat',
-  },
-  {
-    label: 'Halaman Publik',
-    href: '/admin-platform/pemasaran/halaman',
-    keterangan: 'Landing page beserta versinya.',
-    izin: 'platform.halaman.lihat',
-  },
-  {
-    label: 'Formulir',
-    href: '/admin-platform/pemasaran/formulir',
-    keterangan: 'Formulir publik dan kirimannya.',
-    izin: 'platform.halaman.lihat',
-  },
-  {
-    label: 'Konten & SEO',
-    href: '/admin-platform/pemasaran/konten',
-    keterangan: 'Artikel berversi, keyword manager, dan metadata situs publik.',
-    izin: 'platform.konten.lihat',
-  },
-  {
-    label: 'Redirect',
-    href: '/admin-platform/pemasaran/redirect',
-    keterangan: 'Peta alih alamat situs publik.',
-    izin: 'platform.halaman.lihat',
-  },
-  {
-    label: 'Otomasi',
-    href: '/admin-platform/pemasaran/otomasi',
-    keterangan: 'Pemicu, kondisi, jeda, dan aksi beserta eksekusinya.',
-    izin: 'platform.otomasi.lihat',
-  },
-  {
-    label: 'Template Email',
-    href: '/admin-platform/pemasaran/email/template',
-    keterangan: 'Naskah email pemasaran dan variabelnya.',
-    izin: 'platform.email.lihat',
-  },
-  {
-    label: 'Sequence Email',
-    href: '/admin-platform/pemasaran/email/sequence',
-    keterangan: 'Rangkaian email onboarding dan jadwalnya.',
-    izin: 'platform.email.lihat',
-  },
-  {
-    label: 'WhatsApp',
-    href: '/admin-platform/pemasaran/whatsapp',
-    keterangan: 'Template, persetujuan penyedia, dan menu percakapan.',
-    izin: 'platform.whatsapp.lihat',
-  },
-  {
-    label: 'Konten Sosial',
-    href: '/admin-platform/pemasaran/sosial',
-    keterangan: 'Satu konten, banyak distribusi, beserta jadwal terbitnya.',
-    izin: 'platform.konten.lihat',
-  },
-  {
-    label: 'Eksperimen A/B',
-    href: '/admin-platform/pemasaran/eksperimen',
-    keterangan: 'Varian, peserta, dan ambang sampel sebelum pemenang boleh dinyatakan.',
-    izin: 'platform.eksperimen.kelola',
-  },
-  {
-    label: 'Referral',
-    href: '/admin-platform/pemasaran/referral',
-    keterangan: 'Program referral, kode pelanggan, dan imbalannya.',
-    izin: 'platform.referral.lihat',
-  },
-  {
-    label: 'Consent dan Supresi',
-    href: '/admin-platform/pemasaran/email/konsen',
-    keterangan: 'Siapa boleh dikirimi pesan, dan permintaan penghapusan data.',
-    izin: 'platform.email.lihat',
-  },
-] as const;
 
 export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Props) {
   const hidup = modul.filter((satu) => satu.Aktif).length;
@@ -177,7 +67,11 @@ export default function PemasaranRingkasan({ modul, izinSaya, superAdmin }: Prop
       <section className="mt-8">
         <h2 className="text-sm font-medium text-foreground">Halaman Konsol</h2>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {PINTASAN.filter((satu) => superAdmin || izinSaya.includes(satu.izin)).map((satu) => (
+          {HALAMAN_PEMASARAN.filter(
+            (satu) =>
+              (superAdmin || izinSaya.includes(satu.izin)) &&
+              (satu.modul === null || modul.some((m) => m.Kode === satu.modul && m.Aktif)),
+          ).map((satu) => (
             <li key={satu.href}>
               <Link
                 href={satu.href}
