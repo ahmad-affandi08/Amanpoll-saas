@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Notifikasi\Http\Controllers;
 
 use App\Domain\Notifikasi\Application\Actions\SimpanPreferensiNotifikasi;
+use App\Domain\Notifikasi\Application\Services\TujuanWhatsAppNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
 use App\Domain\Notifikasi\Domain\KatalogPeristiwaNotifikasi;
 use App\Domain\Notifikasi\Http\Requests\SimpanPreferensiNotifikasiRequest;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\PreferensiNotifikasi;
@@ -22,27 +24,35 @@ final class PreferensiNotifikasiController extends Controller
         return Inertia::render('PreferensiNotifikasi/Index');
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, TujuanWhatsAppNotifikasi $tujuanWhatsApp): JsonResponse
     {
+        $penggunaId = $request->user('web')->Id;
         $preferensiTersimpan = PreferensiNotifikasi::query()
-            ->where('PenggunaId', $request->user('web')->Id)
+            ->where('PenggunaId', $penggunaId)
             ->get()
             ->keyBy(fn (PreferensiNotifikasi $p) => "{$p->JenisPeristiwa}#{$p->Kanal}");
 
         $hasil = [];
         foreach (KatalogPeristiwaNotifikasi::daftar() as $kode => $label) {
-            foreach (['InApp', 'Email'] as $kanal) {
-                $preferensi = $preferensiTersimpan->get("{$kode}#{$kanal}");
+            foreach (KanalNotifikasi::cases() as $kanal) {
+                $preferensi = $preferensiTersimpan->get("{$kode}#{$kanal->value}");
                 $hasil[] = [
                     'JenisPeristiwa' => $kode,
                     'Label' => $label,
-                    'Kanal' => $kanal,
-                    'Aktif' => $preferensi === null || $preferensi->Aktif,
+                    'Kanal' => $kanal->value,
+                    'Aktif' => $preferensi->Aktif ?? KatalogPeristiwaNotifikasi::aktifBawaan($kode, $kanal),
                 ];
             }
         }
 
-        return response()->json(['data' => $hasil]);
+        // Preferensi WhatsApp boleh diatur lebih dulu; halaman menjelaskan mengapa pesannya belum akan datang.
+        return response()->json([
+            'data' => $hasil,
+            'whatsapp' => [
+                'PenyediaAktif' => $tujuanWhatsApp->penyediaAktif(),
+                'NomorValid' => $tujuanWhatsApp->nomorUntuk($penggunaId) !== null,
+            ],
+        ]);
     }
 
     public function store(SimpanPreferensiNotifikasiRequest $request, SimpanPreferensiNotifikasi $aksi): RedirectResponse

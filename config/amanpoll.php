@@ -146,6 +146,20 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pengirim email (PRD 8.23)
+    |--------------------------------------------------------------------------
+    |
+    | Mailer `amanpoll` meneruskan email ke penyedia email aktif di konsol
+    | platform. Selama belum ada yang aktif, email diteruskan ke mailer
+    | cadangan ini (bawaan `log`: tersimpan di log, tidak terkirim).
+    |
+    */
+    'email' => [
+        'mailer_cadangan' => env('AMANPOLL_EMAIL_MAILER_CADANGAN', 'log'),
+    ],
+
     'langganan' => [
         // Hari setelah tanggal berakhir yang masih memberi akses tulis penuh.
         'hari_tenggang' => env('AMANPOLL_LANGGANAN_HARI_TENGGANG', 7),

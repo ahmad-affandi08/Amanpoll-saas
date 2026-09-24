@@ -3885,6 +3885,50 @@ Yang dipilih:
 
 ---
 
+# FASE 44 — Layanan luar diatur dari konsol platform (pembayaran, WhatsApp, email)
+
+Aturan di PRD 8.23 dan 8.15. Disetujui pemilik produk pada 24 September 2026. Dikerjakan koordinator (fondasi dan halaman konsol) dan tiga agen paralel (WhatsApp, payment gateway, email) dengan kontrak yang ditetapkan lebih dulu.
+
+## 44.01 Fondasi dan konsol
+
+- [x] Tabel `PenyediaLayananPlatform`, kontrak `DeskripsiPenyediaLayanan` dan `DapatDiujiKoneksi`, pembaca kredensial, katalog berbasis tag container.
+- [x] Halaman "Layanan Luar" di konsol platform dengan izin sendiri, uji kredensial, dan kirim email uji.
+
+## 44.02 Payment gateway
+
+- [x] Midtrans, Xendit, Duitku, Tripay, iPaymu, DOKU, Stripe, dan Transfer Bank manual; beberapa boleh aktif, satu utama.
+- [x] Sesi pembayaran per tagihan, pilihan cara bayar di halaman langganan tenant, webhook bertanda tangan per penyedia.
+
+## 44.03 WhatsApp
+
+- [x] Resmi (WhatsApp Cloud API Meta) dan tidak resmi (Fonnte, Wablas, WAHA); satu aktif.
+- [x] Webhook status dan pesan masuk, STOP masuk supresi, balasan menu otomatis.
+- [x] WhatsApp sebagai kanal ketiga engine Notifikasi (In-app, Email, WhatsApp).
+
+## 44.04 Email
+
+- [x] Mailer `amanpoll` yang penyedianya dibaca dari konsol per kiriman, cadangan ke mailer konfigurasi bila belum ada yang aktif.
+- [x] SMTP, Amazon SES, Brevo, SendGrid, Mailgun, Postmark, Resend.
+
+Yang dipilih:
+- Kredensial dienkripsi (`encrypted:array`), bukan di-hash, karena harus dibaca ulang untuk memanggil penyedia. Yang di-hash hanya sidiknya, dengan HMAC berkunci `APP_KEY` supaya rahasia pendek tidak bisa ditebak dari sidik. Kolomnya `$hidden`; halaman konsol hanya menerima tanda "tersimpan" dan empat karakter terakhir rahasia yang panjangnya minimal 12. Isian rahasia yang dikirim kosong mempertahankan nilai lama.
+- Domain Platform tidak mengenal Langganan, Pemasaran, atau Notifikasi: adapter mendaftarkan diri dengan tag `amanpoll.penyedia-layanan`. Setiap adapter membaca kredensialnya sendiri per pemakaian, tanpa cache lintas permintaan, jadi perubahan di konsol langsung berlaku, termasuk untuk worker antrean.
+- Aturan kategori ditegakkan di Action: WhatsApp dan email hanya satu yang aktif; pembayaran boleh banyak dengan satu utama, penyedia aktif pertama otomatis menjadi utama, dan gelar utama berpindah bila yang utama dimatikan. Penyedia hanya bisa diaktifkan bila isian wajibnya lengkap; menyimpan tanpa mengaktifkan tetap boleh.
+- Uji kredensial memakai nilai tersimpan, termasuk milik penyedia yang belum aktif. Galat tak terduga dijawab pesan umum dan hanya jenis galatnya yang dicatat, karena pesan mentah bisa memuat URL berisi kunci.
+- Pembayaran: kontrak `PenyediaPembayaran` kini menerima `Request` utuh karena Stripe dan Tripay menandatangani badan mentah, sedangkan Duitku dan iPaymu mengirim form. Order id gateway disimpan di `SesiPembayaranLangganan` (berlaku 12 jam, dipakai ulang untuk klik "Bayar" berulang); webhook mencari tagihan lewat order id dan menjawab 404 untuk order yang tidak dikenal, bukan menebak. Kunci idempotensi `{orderId}:{status}` sehingga capture lalu settlement tercatat sekali. Status lunas tetap dihitung ulang dari jumlah pembayaran berhasil, dan halaman kembali membaca status dari basis data, bukan parameter URL.
+- iPaymu tidak menandatangani notifikasi, jadi keasliannya dicek balik ke API transaksinya. DOKU tidak punya panggilan murah untuk uji kredensial, jadi tanpa tombol uji.
+- WhatsApp resmi: variabel bernama di template kita (`{{Nama}}`) diubah menjadi `{{1}}`, `{{2}}` saat diajukan ke Meta, dan nilainya dibaca balik dari teks yang dirender saat dikirim. Penyedia tidak resmi tidak punya peninjauan template, jadi template langsung dianggap disetujui dengan alasan yang jujur, dan pesannya teks biasa. Webhook tidak resmi ditolak seluruhnya bila token webhook belum diatur, karena menerima semua kiriman berarti siapa pun bisa mencabut konsen orang lain.
+- Kanal notifikasi WhatsApp: baris hanya dibuat bila penyedia aktif, nomor `Pengguna.Telepon` valid, dan preferensi tidak dimatikan. Bawaan menyala hanya untuk peristiwa yang menuntut tindakan cepat (penugasan perintah kerja, keluhan baru, SLA mendekati dan terlewati); stok, hasil persetujuan, dan permintaan persetujuan mati sampai pengguna menyalakannya. Pesan operasional ke staf tidak tunduk pada konsen pemasaran. Nomor telepon disamarkan di catatan galat. Normalisasi nomor kini satu aturan di `App\Shared\Domain\ValueObjects\NomorWhatsApp`, dipakai juga oleh kanal pemasaran.
+- Email: satu transport `amanpoll` di depan seluruh mailer Laravel, sehingga reset kata sandi, notifikasi, dan email pemasaran ikut tanpa diubah satu per satu. From bawaan aplikasi diganti alamat pengirim penyedia lalu envelope dibuat ulang; From yang disetel pemanggil dibiarkan. Penyedia HTTP API dibuat di atas facade `Http` (tanpa `symfony/http-client`), karena shared hosting sering memblokir port SMTP keluar.
+- Tidak ada paket baru. Semua adapter ditulis dari dokumentasi penyedia dan diuji dengan `Http::fake()`; bentuk permintaan dan webhook masih perlu dicocokkan dengan akun sandbox sungguhan sebelum dipakai produksi.
+
+Ditolak:
+- Menyimpan kredensial di `.env`: pemilik produk ingin mengaturnya dari konsol tanpa akses server.
+- Meng-hash kunci API seperti kata sandi: nilainya tidak bisa dipakai lagi untuk memanggil penyedia.
+- PayPal: tidak mendukung rupiah.
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text

@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Domain\Notifikasi\Http\Controllers\EmailUjiPenyediaController;
 use App\Domain\Notifikasi\Http\Controllers\NotifikasiController;
 use App\Domain\Notifikasi\Http\Controllers\PreferensiNotifikasiController;
 use App\Domain\Notifikasi\Http\Controllers\TemplatNotifikasiController;
+use App\Domain\Platform\Application\Services\KatalogPenyediaLayanan;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth', 'organisasi'])
@@ -25,3 +27,8 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::post('/{notifikasi}/baca', [NotifikasiController::class, 'baca'])->name('baca');
         Route::post('/baca-semua', [NotifikasiController::class, 'bacaSemua'])->name('bacaSemua');
     });
+
+// Email uji dari konsol penyedia layanan platform, memakai kredensial tersimpan walau belum aktif (PRD 8.23).
+Route::middleware(['web', 'auth:platform', 'izin.platform:'.KatalogPenyediaLayanan::IZIN_KELOLA, 'throttle:6,1'])
+    ->post('admin-platform/penyedia-layanan/Email/{kode}/kirim-uji', [EmailUjiPenyediaController::class, 'kirim'])
+    ->name('adminPlatform.penyedia-layanan.email.kirim-uji');

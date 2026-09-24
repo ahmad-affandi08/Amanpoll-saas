@@ -11,7 +11,14 @@ use App\Shared\Domain\Exceptions\AksesDitolak;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/** Endpoint webhook penyedia pembayaran (22.06). */
+/**
+ * Endpoint webhook penyedia pembayaran (22.06, PRD 8.23).
+ *
+ * Permintaan utuh diteruskan ke adapter karena tiap penyedia punya bentuk sendiri
+ * (JSON, form-urlencoded, atau badan mentah yang ditandatangani). Jawabannya 200
+ * JSON dengan `success: true`, bentuk yang diterima semua penyedia (Tripay
+ * mensyaratkannya); tanda tangan yang salah dijawab 403 supaya penyedia mencoba lagi.
+ */
 final class WebhookPembayaranController extends Controller
 {
     public function __invoke(
@@ -26,22 +33,24 @@ final class WebhookPembayaranController extends Controller
 
         $penyediaPembayaran = $registri->untuk($penyedia);
 
-        /** @var array<string, mixed> $muatan */
-        $muatan = $request->json()->all();
-
-        /** @var array<string, string> $header */
-        $header = array_map(
-            fn (array $nilai): string => (string) ($nilai[0] ?? ''),
-            $request->headers->all(),
-        );
-
-        if (! $penyediaPembayaran->webhookSah($muatan, $header)) {
+        if (! $penyediaPembayaran->webhookSah($request)) {
             throw new AksesDitolak('Tanda tangan webhook tidak sah.');
         }
 
-        $pembayaran = $aksi->dariPeristiwa($penyedia, $penyediaPembayaran->terjemahkanWebhook($muatan));
+        $peristiwa = $penyediaPembayaran->terjemahkanWebhook($request);
+
+        if ($peristiwa->hanyaPemberitahuan()) {
+            return response()->json([
+                'success' => true,
+                'Diterima' => true,
+                'Status' => $peristiwa->status->value,
+            ]);
+        }
+
+        $pembayaran = $aksi->dariPeristiwa($penyedia, $peristiwa);
 
         return response()->json([
+            'success' => true,
             'Diterima' => true,
             'PembayaranId' => $pembayaran->Id,
             'Status' => $pembayaran->Status,

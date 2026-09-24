@@ -26,8 +26,18 @@ use App\Domain\Pemasaran\Http\Controllers\RingkasanPemasaranController;
 use App\Domain\Pemasaran\Http\Controllers\SequenceEmailController;
 use App\Domain\Pemasaran\Http\Controllers\TemplateEmailController;
 use App\Domain\Pemasaran\Http\Controllers\TrialController;
+use App\Domain\Pemasaran\Http\Controllers\WebhookWhatsAppController;
 use App\Domain\Pemasaran\Http\Controllers\WhatsAppPemasaranController;
 use Illuminate\Support\Facades\Route;
+
+// Webhook penyedia WhatsApp (MARKETING.md 16): tanpa sesi dan CSRF, keasliannya dijaga tanda tangan atau token penyedia.
+Route::middleware(['api', 'throttle:webhook'])
+    ->prefix('webhook/whatsapp/{penyedia}')
+    ->name('pemasaran.webhook.whatsapp')
+    ->group(function (): void {
+        Route::get('/', [WebhookWhatsAppController::class, 'verifikasi'])->name('.verifikasi');
+        Route::post('/', [WebhookWhatsAppController::class, 'terima']);
+    });
 
 // Konsol Growth & Marketing (MARKETING.md 4).
 Route::middleware(['web', 'auth:platform'])

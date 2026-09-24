@@ -61,4 +61,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
         // Dikecualikan dari pemblokiran tulis: justru lewat sini tenant yang kedaluwarsa memulihkan langganannya.
         Route::post('/tagihan/{tagihan}/bayar', [LanggananTenantController::class, 'bayar'])
             ->name('tagihan.bayar');
+        // Tujuan kembali dari halaman bayar gateway; statusnya tetap menunggu webhook.
+        Route::get('/tagihan/{tagihan}/kembali', [LanggananTenantController::class, 'kembali'])
+            ->name('tagihan.kembali');
     });

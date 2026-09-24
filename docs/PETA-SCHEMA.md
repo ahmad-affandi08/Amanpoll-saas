@@ -1,6 +1,6 @@
 # Peta Schema Amanpoll
 
-Total tabel: **220**, ditambah 4 view.
+Total tabel: **222**, ditambah 4 view.
 
 Pengelompokan diturunkan dari domain pemilik modelnya (`protected $table` di tiap model),
 bukan disusun manual. Tabel yang tidak dimiliki domain mana pun ada di bagian Infrastruktur.
@@ -18,6 +18,7 @@ bukan disusun manual. Tabel yang tidak dimiliki domain mana pun ada di bagian In
 - `Organisasi`
 - `Pengguna`
 - `PenggunaPeran`
+- `PenyediaLayananPlatform`
 - `Peran`
 - `PeranIzin`
 - `PerangkatPengguna`
@@ -205,6 +206,7 @@ bukan disusun manual. Tabel yang tidak dimiliki domain mana pun ada di bagian In
 - `PaketFitur`
 - `PaketLangganan`
 - `PembayaranLangganan`
+- `SesiPembayaranLangganan`
 - `TagihanLangganan`
 
 ## Pemasaran

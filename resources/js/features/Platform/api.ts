@@ -16,4 +16,5 @@ export const rutePlatform = {
   penyediaLayanan: `${AKAR}/penyedia-layanan`,
   penyediaLayananSimpan: (kategori: string, kode: string) => `${AKAR}/penyedia-layanan/${kategori}/${kode}`,
   penyediaLayananUji: (kategori: string, kode: string) => `${AKAR}/penyedia-layanan/${kategori}/${kode}/uji`,
+  penyediaEmailKirimUji: (kode: string) => `${AKAR}/penyedia-layanan/Email/${kode}/kirim-uji`,
 };

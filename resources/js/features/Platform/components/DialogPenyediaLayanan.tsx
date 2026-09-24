@@ -71,20 +71,27 @@ export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
     });
   };
 
-  const uji = async () => {
+  const jalankanUji = async (url: string, pesanGagal: string) => {
     setMenguji(true);
     try {
-      const { data } = await http.post<{ Berhasil: boolean; Pesan: string }>(
-        rutePlatform.penyediaLayananUji(kategori.Kode, penyedia.Kode),
-      );
+      const { data } = await http.post<{ Berhasil: boolean; Pesan: string }>(url);
       toast.success(data.Pesan);
     } catch (galat) {
       const pesan = isAxiosError<{ Pesan?: string }>(galat) ? galat.response?.data?.Pesan : undefined;
-      toast.error(pesan ?? 'Uji koneksi gagal. Coba lagi.');
+      toast.error(pesan ?? pesanGagal);
     } finally {
       setMenguji(false);
     }
   };
+
+  const uji = () =>
+    jalankanUji(
+      rutePlatform.penyediaLayananUji(kategori.Kode, penyedia.Kode),
+      'Uji koneksi gagal. Coba lagi.',
+    );
+
+  const kirimEmailUji = () =>
+    jalankanUji(rutePlatform.penyediaEmailKirimUji(penyedia.Kode), 'Email uji belum terkirim. Coba lagi.');
 
   const galatKredensial = (form.errors as Record<string, string | undefined>).Kredensial;
 
@@ -204,13 +211,23 @@ export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
           </fieldset>
 
           <DialogFooter className="gap-2 sm:justify-between">
-            {penyedia.DapatDiuji ? (
-              <Button type="button" variant="ghost" onClick={uji} disabled={menguji || form.processing}>
-                {menguji ? 'Menguji…' : 'Uji kredensial tersimpan'}
-              </Button>
-            ) : (
-              <span />
-            )}
+            <div className="flex flex-wrap gap-2">
+              {penyedia.DapatDiuji && (
+                <Button type="button" variant="ghost" onClick={uji} disabled={menguji || form.processing}>
+                  {menguji ? 'Menguji…' : 'Uji kredensial tersimpan'}
+                </Button>
+              )}
+              {kategori.Kode === 'Email' && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={kirimEmailUji}
+                  disabled={menguji || form.processing}
+                >
+                  Kirim email uji ke saya
+                </Button>
+              )}
+            </div>
             <div className="flex gap-2">
               <Button type="button" variant="outline" onClick={() => ubahBuka(false)}>
                 Batal

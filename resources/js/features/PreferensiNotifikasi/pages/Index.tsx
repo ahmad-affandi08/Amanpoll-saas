@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { http } from '@/lib/http';
-import type { PreferensiBaris } from '@/features/Notifikasi/types';
+import type { KesiapanWhatsApp, PreferensiBaris } from '@/features/Notifikasi/types';
+import { KANAL_NOTIFIKASI } from '@/features/Notifikasi/status';
+import { ruteProfil } from '@/features/Profil/api';
 import { rutePreferensiNotifikasi } from '@/features/PreferensiNotifikasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
 export default function PreferensiNotifikasiIndex() {
   const [data, setData] = useState<PreferensiBaris[]>([]);
+  const [whatsApp, setWhatsApp] = useState<KesiapanWhatsApp | null>(null);
   const [memuat, setMemuat] = useState(true);
 
   const muat = () => {
     setMemuat(true);
     http
       .get(rutePreferensiNotifikasi.data)
-      .then((res) => setData(res.data.data))
+      .then((res) => {
+        setData(res.data.data);
+        setWhatsApp(res.data.whatsapp);
+      })
       .finally(() => setMemuat(false));
   };
 
@@ -50,39 +57,64 @@ export default function PreferensiNotifikasiIndex() {
 
       {memuat && <p className="text-sm text-muted-foreground">Memuat...</p>}
 
+      {!memuat && whatsApp && !whatsApp.PenyediaAktif && (
+        <Alert variant="info" className="mb-4">
+          <AlertTitle>WhatsApp belum aktif</AlertTitle>
+          <AlertDescription>
+            Penyedia WhatsApp belum diaktifkan oleh pengelola platform. Pilihan WhatsApp tetap tersimpan dan
+            berlaku begitu penyedianya aktif.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {!memuat && whatsApp?.PenyediaAktif && !whatsApp.NomorValid && (
+        <Alert variant="perhatian" className="mb-4">
+          <AlertTitle>Nomor telepon belum diisi</AlertTitle>
+          <AlertDescription>
+            Notifikasi WhatsApp dikirim ke nomor telepon di profil Anda.{' '}
+            <Link href={ruteProfil.index} className="font-medium underline">
+              Isi nomor telepon
+            </Link>{' '}
+            agar pesannya sampai.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {!memuat && (
         <div className="overflow-hidden rounded-md border border-border">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
                 <th className="px-4 py-2 text-left font-medium text-foreground">Peristiwa</th>
-                <th className="px-4 py-2 text-center font-medium text-foreground">In-App</th>
-                <th className="px-4 py-2 text-center font-medium text-foreground">Email</th>
+                {KANAL_NOTIFIKASI.map((kanal) => (
+                  <th key={kanal.value} className="px-4 py-2 text-center font-medium text-foreground">
+                    {kanal.label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {peristiwaUnik.map((jenisPeristiwa) => {
-                const barisInApp = data.find(
-                  (b) => b.JenisPeristiwa === jenisPeristiwa && b.Kanal === 'InApp',
-                );
-                const barisEmail = data.find(
-                  (b) => b.JenisPeristiwa === jenisPeristiwa && b.Kanal === 'Email',
-                );
+                const barisPeristiwa = data.filter((b) => b.JenisPeristiwa === jenisPeristiwa);
                 return (
                   <tr key={jenisPeristiwa} className="border-t border-border">
                     <td className="px-4 py-3 text-foreground">
-                      {barisInApp?.Label ?? barisEmail?.Label ?? jenisPeristiwa}
+                      {barisPeristiwa[0]?.Label ?? jenisPeristiwa}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      {barisInApp && (
-                        <Switch checked={barisInApp.Aktif} onCheckedChange={(v) => ubah(barisInApp, v)} />
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {barisEmail && (
-                        <Switch checked={barisEmail.Aktif} onCheckedChange={(v) => ubah(barisEmail, v)} />
-                      )}
-                    </td>
+                    {KANAL_NOTIFIKASI.map((kanal) => {
+                      const baris = barisPeristiwa.find((b) => b.Kanal === kanal.value);
+                      return (
+                        <td key={kanal.value} className="px-4 py-3 text-center">
+                          {baris && (
+                            <Switch
+                              checked={baris.Aktif}
+                              onCheckedChange={(v) => ubah(baris, v)}
+                              aria-label={`${baris.Label} lewat ${kanal.label}`}
+                            />
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}

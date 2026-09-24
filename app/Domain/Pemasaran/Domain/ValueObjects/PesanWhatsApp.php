@@ -14,5 +14,7 @@ final readonly class PesanWhatsApp
         public string $isiTeks,
         /** Id template di sisi penyedia; kosong berarti penyedia mencarinya sendiri dari kodenya. */
         public ?string $idTemplatePenyedia = null,
+        /** Naskah template sebelum dirender; penyedia resmi memakainya untuk menyusun parameter template. */
+        public ?string $naskahTemplate = null,
     ) {}
 }

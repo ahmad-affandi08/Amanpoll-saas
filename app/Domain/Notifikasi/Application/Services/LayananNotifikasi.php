@@ -6,6 +6,7 @@ namespace App\Domain\Notifikasi\Application\Services;
 
 use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
 use App\Domain\Notifikasi\Domain\Enums\StatusNotifikasi;
+use App\Domain\Notifikasi\Domain\KatalogPeristiwaNotifikasi;
 use App\Domain\Notifikasi\Domain\Repositories\NotifikasiRepository;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\PreferensiNotifikasi;
@@ -19,7 +20,10 @@ final class LayananNotifikasi
      */
     private const KANAL_BAWAAN = [KanalNotifikasi::InApp->value];
 
-    public function __construct(private readonly NotifikasiRepository $notifikasiRepository) {}
+    public function __construct(
+        private readonly NotifikasiRepository $notifikasiRepository,
+        private readonly TujuanWhatsAppNotifikasi $tujuanWhatsApp,
+    ) {}
 
     /**
      * @param  list<string>|null  $kanal
@@ -33,8 +37,15 @@ final class LayananNotifikasi
         ?string $entitasId = null,
         ?array $kanal = null,
     ): void {
-        foreach ($kanal ?? self::KANAL_BAWAAN as $satuKanal) {
+        // Tanpa daftar kanal eksplisit, WhatsApp ikut dicoba; preferensi bawaannya yang memutuskan (KatalogPeristiwaNotifikasi).
+        $daftarKanal = $kanal ?? [...self::KANAL_BAWAAN, KanalNotifikasi::WhatsApp->value];
+
+        foreach (array_unique($daftarKanal) as $satuKanal) {
             if (! $this->aktifUntukPengguna($penggunaId, $jenisPeristiwa, $satuKanal)) {
+                continue;
+            }
+
+            if ($satuKanal === KanalNotifikasi::WhatsApp->value && ! $this->whatsAppDapatDikirim($penggunaId)) {
                 continue;
             }
 
@@ -62,6 +73,18 @@ final class LayananNotifikasi
             ->where('Kanal', $kanal)
             ->first();
 
-        return $preferensi === null || $preferensi->Aktif;
+        if ($preferensi !== null) {
+            return $preferensi->Aktif;
+        }
+
+        $kanalDikenal = KanalNotifikasi::tryFrom($kanal);
+
+        return $kanalDikenal === null || KatalogPeristiwaNotifikasi::aktifBawaan($jenisPeristiwa, $kanalDikenal);
+    }
+
+    /** Tanpa penyedia aktif atau nomor yang sah, baris WhatsApp hanya akan menjadi kegagalan yang pasti. */
+    private function whatsAppDapatDikirim(string $penggunaId): bool
+    {
+        return $this->tujuanWhatsApp->penyediaAktif() && $this->tujuanWhatsApp->nomorUntuk($penggunaId) !== null;
     }
 }

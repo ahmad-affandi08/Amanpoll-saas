@@ -18,7 +18,7 @@ final class KatalogPenyediaLayanan
 {
     public const TAG = 'amanpoll.penyedia-layanan';
 
-    /** Kredensial pembayaran dan WhatsApp setara kunci brankas, jadi izinnya berdiri sendiri. */
+    /** Kredensial pembayaran, WhatsApp, dan email setara kunci brankas, jadi izinnya berdiri sendiri. */
     public const IZIN_KELOLA = 'platform.penyedia-layanan.kelola';
 
     /** @var list<DeskripsiPenyediaLayanan>|null */

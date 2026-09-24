@@ -53,6 +53,19 @@ export interface InstruksiPembayaran {
   Instruksi: Record<string, unknown>;
 }
 
+/** Penyedia pembayaran yang dinyalakan di konsol platform; tanpa kredensial apa pun. */
+export interface MetodePembayaran {
+  Kode: string;
+  Nama: string;
+}
+
+/** Ringkasan tagihan saat pengguna kembali dari halaman bayar; statusnya dibaca dari server. */
+export interface PembayaranKembali {
+  Nomor: string;
+  Lunas: boolean;
+  LabelStatus: string;
+}
+
 export interface FiturPaketTersimpan {
   Kode: string;
   Diizinkan: boolean;

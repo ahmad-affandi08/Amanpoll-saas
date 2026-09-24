@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertTriangle, CheckCircle2, CreditCard, Lock } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Clock, CreditCard, Lock } from 'lucide-react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   angka,
@@ -19,6 +22,8 @@ import type {
   DefinisiFitur,
   Entitlement,
   InstruksiPembayaran,
+  MetodePembayaran,
+  PembayaranKembali,
   RingkasanPenyimpanan,
   StatusLangganan,
   TagihanItem,
@@ -33,6 +38,8 @@ interface Props {
   penyimpanan: RingkasanPenyimpanan;
   katalogFitur: DefinisiFitur[];
   tagihan: TagihanItem[];
+  metodePembayaran: MetodePembayaran[];
+  pembayaranKembali: PembayaranKembali | null;
 }
 
 /** Status dipetakan ke nada visual; warnanya selalu didampingi ikon dan teks. */
@@ -63,8 +70,11 @@ export default function LanggananIndex({
   penyimpanan,
   katalogFitur,
   tagihan,
+  metodePembayaran,
+  pembayaranKembali,
 }: Props) {
-  const { flash } = usePage<PageProps>().props;
+  const { flash, errors } = usePage<PageProps>().props;
+  const [penyedia, setPenyedia] = useState(metodePembayaran[0]?.Kode ?? '');
   const instruksi = flash.instruksiPembayaran as InstruksiPembayaran | undefined;
 
   const nada = NADA_STATUS[entitlement.Status];
@@ -94,6 +104,8 @@ export default function LanggananIndex({
             </div>
           </div>
         )}
+
+        {pembayaranKembali && <KartuPembayaranKembali pembayaran={pembayaranKembali} />}
 
         {instruksi && <KartuInstruksi instruksi={instruksi} />}
 
@@ -222,10 +234,30 @@ export default function LanggananIndex({
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
             <CardTitle>Tagihan</CardTitle>
+            {metodePembayaran.length > 1 && (
+              <div className="flex items-center gap-2">
+                <Label htmlFor="metode-pembayaran" className="text-sm text-muted-foreground">
+                  Metode bayar
+                </Label>
+                <Select value={penyedia} onValueChange={setPenyedia}>
+                  <SelectTrigger id="metode-pembayaran" className="w-56">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {metodePembayaran.map((metode) => (
+                      <SelectItem key={metode.Kode} value={metode.Kode}>
+                        {metode.Nama}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
+            {errors.Penyedia && <p className="text-sm text-destructive">{errors.Penyedia}</p>}
             {tagihan.length === 0 ? (
               <KeadaanKosong
                 judul="Belum ada tagihan."
@@ -263,7 +295,11 @@ export default function LanggananIndex({
                             size="sm"
                             variant="outline"
                             onClick={() =>
-                              router.post(ruteLangganan.tagihanBayar(baris.Id), {}, { preserveScroll: true })
+                              router.post(
+                                ruteLangganan.tagihanBayar(baris.Id),
+                                { Penyedia: penyedia },
+                                { preserveScroll: true },
+                              )
                             }
                           >
                             <CreditCard aria-hidden="true" className="size-4" />
@@ -288,6 +324,38 @@ function Rincian({ label, nilai }: { label: string; nilai: string }) {
     <div className="space-y-0.5">
       <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className="text-sm font-medium text-foreground">{nilai}</dd>
+    </div>
+  );
+}
+
+function KartuPembayaranKembali({ pembayaran }: { pembayaran: PembayaranKembali }) {
+  return (
+    <div
+      role="status"
+      className="flex items-start gap-3 rounded-[8px] border border-border bg-permukaan-100 p-4"
+    >
+      {pembayaran.Lunas ? (
+        <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-sukses-700" />
+      ) : (
+        <Clock aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
+      )}
+      <div className="flex-1 space-y-0.5 text-sm">
+        <p className="font-medium text-foreground">
+          {pembayaran.Lunas
+            ? `Pembayaran tagihan ${pembayaran.Nomor} sudah diterima.`
+            : `Pembayaran tagihan ${pembayaran.Nomor} menunggu konfirmasi.`}
+        </p>
+        <p className="text-muted-foreground">
+          {pembayaran.Lunas
+            ? 'Langganan diperpanjang otomatis.'
+            : 'Status diperbarui setelah penyedia pembayaran mengirim konfirmasi. Muat ulang halaman ini beberapa saat lagi.'}
+        </p>
+      </div>
+      {!pembayaran.Lunas && (
+        <Button size="sm" variant="outline" onClick={() => router.reload()}>
+          Muat ulang
+        </Button>
+      )}
     </div>
   );
 }

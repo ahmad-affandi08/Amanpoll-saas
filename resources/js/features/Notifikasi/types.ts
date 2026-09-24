@@ -1,3 +1,5 @@
+export type KanalNotifikasi = 'InApp' | 'Email' | 'WhatsApp';
+
 export interface Notifikasi {
   Id: string;
   Kanal: string;
@@ -14,7 +16,7 @@ export interface Notifikasi {
 export interface TemplatNotifikasi {
   Id: string;
   Kode: string;
-  Kanal: 'InApp' | 'Email';
+  Kanal: KanalNotifikasi;
   JudulTemplat: string | null;
   IsiTemplat: string;
   Variabel: string[] | null;
@@ -25,6 +27,12 @@ export interface TemplatNotifikasi {
 export interface PreferensiBaris {
   JenisPeristiwa: string;
   Label: string;
-  Kanal: string;
+  Kanal: KanalNotifikasi;
   Aktif: boolean;
+}
+
+/** Mengapa WhatsApp belum akan datang walau preferensinya menyala. */
+export interface KesiapanWhatsApp {
+  PenyediaAktif: boolean;
+  NomorValid: boolean;
 }

@@ -6,11 +6,13 @@ namespace App\Domain\Langganan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Langganan\Domain\Enums\StatusPembayaranLangganan;
+use App\Domain\Langganan\Domain\Enums\StatusSesiPembayaran;
 use App\Domain\Langganan\Domain\Enums\StatusTagihanLangganan;
 use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
 use App\Domain\Langganan\Domain\ValueObjects\PeristiwaPembayaran;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\PembayaranLangganan;
+use App\Domain\Langganan\Infrastructure\Persistence\Models\SesiPembayaranLangganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
@@ -34,15 +36,18 @@ final class CatatPembayaranLangganan
             return $sudahAda;
         }
 
-        $tagihan = TagihanLangganan::query()
-            ->withoutGlobalScopes()
-            ->where('Nomor', $peristiwa->nomorTagihan)
-            ->first()
-            ?? throw new DataTidakDitemukan("Tagihan {$peristiwa->nomorTagihan} tidak ditemukan.");
+        $sesi = $this->sesiUntuk($kodePenyedia, $peristiwa);
+        $tagihan = $sesi !== null
+            ? $this->tagihanDariSesi($sesi)
+            : TagihanLangganan::query()
+                ->withoutGlobalScopes()
+                ->where('Nomor', $peristiwa->nomorTagihan)
+                ->first()
+                ?? throw new DataTidakDitemukan("Tagihan {$peristiwa->nomorTagihan} tidak ditemukan.");
 
         try {
             return $this->transaksi->jalankan(
-                fn (): PembayaranLangganan => $this->tulis($kodePenyedia, $peristiwa, $tagihan),
+                fn (): PembayaranLangganan => $this->tulis($kodePenyedia, $peristiwa, $tagihan, $sesi),
             );
         } catch (UniqueConstraintViolationException) {
             // Pengiriman kembar tiba bersamaan; yang satu sudah menang.
@@ -55,6 +60,7 @@ final class CatatPembayaranLangganan
         string $kodePenyedia,
         PeristiwaPembayaran $peristiwa,
         TagihanLangganan $tagihan,
+        ?SesiPembayaranLangganan $sesi,
     ): PembayaranLangganan {
         $pembayaran = PembayaranLangganan::create([
             'OrganisasiId' => $tagihan->OrganisasiId,
@@ -68,6 +74,12 @@ final class CatatPembayaranLangganan
             'DibayarPada' => $peristiwa->status->mengurangiTagihan() ? CarbonImmutable::now() : null,
             'MuatanData' => $peristiwa->muatanMentah,
         ]);
+
+        // Sesi yang sudah dibayar tidak turun lagi oleh kabar gagal/kedaluwarsa yang tiba terlambat.
+        if ($sesi !== null && (string) $sesi->Status !== StatusSesiPembayaran::Dibayar->value) {
+            $sesi->Status = StatusSesiPembayaran::dariPeristiwa($peristiwa)->value;
+            $sesi->save();
+        }
 
         $this->perbaruiStatusTagihan($tagihan);
 
@@ -131,6 +143,33 @@ final class CatatPembayaranLangganan
         }
 
         return $tagihan;
+    }
+
+    /**
+     * Webhook gateway menyebut order id sesi, bukan nomor tagihan. Order id yang
+     * tidak dikenal ditolak: menebak tagihan dari data kiriman membuka jalan
+     * melunasi tagihan lain.
+     */
+    private function sesiUntuk(string $kodePenyedia, PeristiwaPembayaran $peristiwa): ?SesiPembayaranLangganan
+    {
+        if ($peristiwa->idPesananPenyedia === null) {
+            return null;
+        }
+
+        return SesiPembayaranLangganan::query()
+            ->withoutGlobalScopes()
+            ->where('Penyedia', $kodePenyedia)
+            ->where('IdPesananPenyedia', $peristiwa->idPesananPenyedia)
+            ->first()
+            ?? throw new DataTidakDitemukan('Sesi pembayaran tidak ditemukan.');
+    }
+
+    private function tagihanDariSesi(SesiPembayaranLangganan $sesi): TagihanLangganan
+    {
+        return TagihanLangganan::query()
+            ->withoutGlobalScopes()
+            ->find($sesi->TagihanLanggananId)
+            ?? throw new DataTidakDitemukan('Tagihan sesi pembayaran tidak ditemukan.');
     }
 
     private function cariYangSudahAda(string $kodePenyedia, string $idPeristiwa): ?PembayaranLangganan

@@ -8,4 +8,5 @@ enum KanalNotifikasi: string
 {
     case InApp = 'InApp';
     case Email = 'Email';
+    case WhatsApp = 'WhatsApp';
 }

@@ -159,7 +159,8 @@ class NotifikasiTest extends TestCase
 
         $awal = $this->actingAs($pengguna)->get('/notifikasi/preferensi/data');
         $awal->assertOk();
-        $this->assertTrue(collect($awal->json('data'))->every(fn ($p) => $p['Aktif'] === true));
+        // In-app dan email menyala untuk semua peristiwa; bawaan WhatsApp diuji di NotifikasiWhatsAppTest.
+        $this->assertTrue(collect($awal->json('data'))->where('Kanal', '!==', 'WhatsApp')->every(fn ($p) => $p['Aktif'] === true));
 
         $this->actingAs($pengguna)->post('/notifikasi/preferensi', [
             'JenisPeristiwa' => 'Persetujuan.PerluTindakan', 'Kanal' => 'Email', 'Aktif' => false,

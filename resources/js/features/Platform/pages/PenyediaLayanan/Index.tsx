@@ -14,12 +14,13 @@ interface Props {
 const DESKRIPSI_KATEGORI: Record<KategoriPenyediaLayanan['Kode'], string> = {
   Pembayaran:
     'Cara pelanggan membayar tagihan langganan. Boleh lebih dari satu yang aktif; pelanggan memilih saat membayar.',
-  WhatsApp: 'Pengirim pesan WhatsApp pemasaran. Hanya satu yang dipakai pada satu waktu.',
+  WhatsApp:
+    'Pengirim pesan WhatsApp pemasaran dan notifikasi ke staf. Hanya satu yang dipakai pada satu waktu.',
   Email:
     'Pengirim seluruh email sistem: reset kata sandi, notifikasi, dan email pemasaran. Hanya satu yang dipakai pada satu waktu.',
 };
 
-/** Pengaturan payment gateway dan WhatsApp milik platform (PRD 8.23). */
+/** Pengaturan payment gateway, WhatsApp, dan email milik platform (PRD 8.23). */
 export default function PlatformPenyediaLayananIndex({ kategori }: Props) {
   return (
     <KerangkaPlatform>

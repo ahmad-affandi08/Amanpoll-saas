@@ -69,6 +69,7 @@ final class PengirimWhatsAppPemasaran
                 bahasa: $template->Bahasa,
                 isiTeks: $pengiriman->IsiTeks,
                 idTemplatePenyedia: $template->IdTemplatePenyedia,
+                naskahTemplate: $template->IsiTeks,
             ));
         } catch (Throwable $galat) {
             $pengiriman->Galat = mb_substr($galat->getMessage(), 0, 500);

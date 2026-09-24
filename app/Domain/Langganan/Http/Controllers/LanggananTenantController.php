@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace App\Domain\Langganan\Http\Controllers;
 
 use App\Domain\Kolaborasi\Application\Services\RingkasanPenyimpananBerkas;
+use App\Domain\Langganan\Application\Actions\MulaiPembayaranLangganan;
 use App\Domain\Langganan\Application\Services\PemeriksaEntitlement;
 use App\Domain\Langganan\Application\Services\PenjagaBatasLangganan;
 use App\Domain\Langganan\Application\Services\RegistriPenyediaPembayaran;
+use App\Domain\Langganan\Domain\Contracts\PenyediaPembayaran;
 use App\Domain\Langganan\Domain\Enums\StatusTagihanLangganan;
 use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Langganan\Domain\ValueObjects\DefinisiFitur;
+use App\Domain\Langganan\Http\Requests\BayarTagihanLanggananRequest;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\Langganan;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
+use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Http\Controllers\Controller;
-use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Domain\Exceptions\AksesDitolak;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,6 +26,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Halaman langganan milik tenant: paket berjalan, pemakaian terhadap batas, dan tagihannya (22.04/22.06). */
@@ -74,7 +79,7 @@ final class LanggananTenantController extends Controller
         );
     }
 
-    public function index(RingkasanPenyimpananBerkas $penyimpanan): Response
+    public function index(RingkasanPenyimpananBerkas $penyimpanan, RegistriPenyediaPembayaran $registri): Response
     {
         $this->authorize('viewAny', Langganan::class);
 
@@ -91,26 +96,77 @@ final class LanggananTenantController extends Controller
                 ->get()
                 ->map(fn (TagihanLangganan $tagihan): array => $this->ringkasTagihan($tagihan))
                 ->all(),
+            // Hanya kode dan nama: kredensial penyedia tidak pernah ikut ke peramban.
+            'metodePembayaran' => array_values(array_map(
+                fn (PenyediaPembayaran $penyedia): array => ['Kode' => $penyedia->kode(), 'Nama' => $penyedia->nama()],
+                $registri->aktif(),
+            )),
+            'pembayaranKembali' => $this->ringkasPembayaranKembali(),
         ]);
     }
 
-    /** Memulai pembayaran sebuah tagihan. */
-    public function bayar(TagihanLangganan $tagihan, RegistriPenyediaPembayaran $registri): RedirectResponse
-    {
-        $this->authorize('bayar', Langganan::class);
-
-        $status = StatusTagihanLangganan::tryFrom((string) $tagihan->Status);
-        if ($status === null || ! $status->masihDapatDibayar()) {
-            throw new AturanBisnisDilanggar('Tagihan ini sudah tidak dapat dibayar.');
+    /**
+     * Memulai pembayaran sebuah tagihan di penyedia pilihan tenant: gateway
+     * mengalihkan peramban ke halaman bayarnya, transfer manual menampilkan
+     * rinciannya di halaman ini.
+     */
+    public function bayar(
+        BayarTagihanLanggananRequest $request,
+        TagihanLangganan $tagihan,
+        RegistriPenyediaPembayaran $registri,
+        MulaiPembayaranLangganan $aksi,
+    ): SymfonyResponse {
+        $pembayar = $request->user();
+        if (! $pembayar instanceof Pengguna) {
+            throw new AksesDitolak('Sesi pengguna tidak dikenal.');
         }
 
-        $instruksi = $registri->bawaan()->mulaiPembayaran($tagihan);
+        $penyedia = $registri->aktifUntuk($request->kodePenyedia());
+        $instruksi = $aksi->jalankan($tagihan, $penyedia, $pembayar);
+
+        if ($instruksi->urlPembayaran !== null) {
+            return Inertia::location($instruksi->urlPembayaran);
+        }
 
         return back()->with('instruksiPembayaran', [
-            'Penyedia' => $registri->bawaan()->nama(),
+            'Penyedia' => $penyedia->nama(),
             'NomorTagihan' => (string) $tagihan->Nomor,
-            'Instruksi' => $instruksi,
+            'Instruksi' => $instruksi->rincian,
         ]);
+    }
+
+    /**
+     * Tujuan kembali dari halaman bayar gateway. Parameter yang ditempelkan gateway
+     * di URL diabaikan: status yang ditampilkan dibaca dari tagihan, yang hanya
+     * berubah lewat webhook bertanda tangan.
+     */
+    public function kembali(TagihanLangganan $tagihan): RedirectResponse
+    {
+        $this->authorize('viewAny', Langganan::class);
+
+        return redirect()->route('langganan.index')->with('pembayaranKembali', $tagihan->Id);
+    }
+
+    /** @return array{Nomor: string, Lunas: bool, LabelStatus: string}|null */
+    private function ringkasPembayaranKembali(): ?array
+    {
+        $tagihanId = session('pembayaranKembali');
+        if (! is_string($tagihanId) || $tagihanId === '') {
+            return null;
+        }
+
+        $tagihan = TagihanLangganan::query()->find($tagihanId);
+        if ($tagihan === null) {
+            return null;
+        }
+
+        $status = StatusTagihanLangganan::tryFrom((string) $tagihan->Status);
+
+        return [
+            'Nomor' => (string) $tagihan->Nomor,
+            'Lunas' => $status === StatusTagihanLangganan::Lunas,
+            'LabelStatus' => $status?->label() ?? (string) $tagihan->Status,
+        ];
     }
 
     /** @return array<string, mixed> */

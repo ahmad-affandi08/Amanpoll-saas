@@ -25,6 +25,7 @@ import type {
   TingkatLayanan,
 } from '@/features/Keluhan/types';
 import { ruteTingkatLayanan } from '@/features/TingkatLayanan/api';
+import { KANAL_NOTIFIKASI } from '@/features/Notifikasi/status';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
@@ -45,6 +46,20 @@ interface Props {
   wajib: Record<string, AturanWajib>;
 }
 const PRIORITAS: PrioritasKeluhan[] = ['Rendah', 'Normal', 'Tinggi', 'Kritis'];
+/** Kombinasi kanal eskalasi; in-app selalu ikut supaya jejaknya terbaca di aplikasi. */
+const PILIHAN_KANAL_ESKALASI = [
+  { value: 'InApp', label: 'In-app' },
+  { value: 'InApp,Email', label: 'In-app + Email' },
+  { value: 'InApp,WhatsApp', label: 'In-app + WhatsApp' },
+  { value: 'InApp,Email,WhatsApp', label: 'In-app + Email + WhatsApp' },
+];
+
+function nilaiKanalEskalasi(kanal: string[]): string {
+  return KANAL_NOTIFIKASI.filter((satu) => satu.value === 'InApp' || kanal.includes(satu.value))
+    .map((satu) => satu.value)
+    .join(',');
+}
+
 const HARI = [
   { nilai: 1, label: 'Sen' },
   { nilai: 2, label: 'Sel' },
@@ -299,15 +314,18 @@ function DialogTingkatLayanan({
                     <div className="space-y-1.5">
                       <Label>Kanal</Label>
                       <Select
-                        value={eskalasi.Kanal.includes('Email') ? 'InApp,Email' : 'InApp'}
+                        value={nilaiKanalEskalasi(eskalasi.Kanal)}
                         onValueChange={(v) => ubahEskalasi(indeks, { Kanal: v.split(',') })}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="InApp">In-app</SelectItem>
-                          <SelectItem value="InApp,Email">In-app + Email</SelectItem>
+                          {PILIHAN_KANAL_ESKALASI.map((pilihan) => (
+                            <SelectItem key={pilihan.value} value={pilihan.value}>
+                              {pilihan.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>

@@ -27,8 +27,24 @@ use App\Domain\Langganan\Domain\Contracts\PemberiImbalanLangganan;
 use App\Domain\Langganan\Domain\Events\PeristiwaLangganan;
 use App\Domain\Langganan\Infrastructure\Services\PembacaPembayaranLanggananBawaan;
 use App\Domain\Langganan\Infrastructure\Services\PemberiImbalanLanggananBawaan;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranDoku;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranDuitku;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranIpaymu;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranMidtrans;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranStripe;
 use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTransferManual;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranTripay;
+use App\Domain\Langganan\Infrastructure\Services\PenyediaPembayaranXendit;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
+use App\Domain\Notifikasi\Domain\Contracts\DapatMengirimNotifikasiWhatsApp;
+use App\Domain\Notifikasi\Infrastructure\Services\PenyediaEmailAmazonSes;
+use App\Domain\Notifikasi\Infrastructure\Services\PenyediaEmailBrevo;
+use App\Domain\Notifikasi\Infrastructure\Services\PenyediaEmailMailgun;
+use App\Domain\Notifikasi\Infrastructure\Services\PenyediaEmailPostmark;
+use App\Domain\Notifikasi\Infrastructure\Services\PenyediaEmailResend;
+use App\Domain\Notifikasi\Infrastructure\Services\PenyediaEmailSendGrid;
+use App\Domain\Notifikasi\Infrastructure\Services\PenyediaEmailSmtp;
+use App\Domain\Notifikasi\Infrastructure\Services\TransportEmailAmanpoll;
 use App\Domain\Pelaporan\Application\Queries\QueryAnggaran;
 use App\Domain\Pelaporan\Application\Queries\QueryAset;
 use App\Domain\Pelaporan\Application\Queries\QueryBiaya;
@@ -47,6 +63,7 @@ use App\Domain\Pelaporan\Application\Services\PenjagaFilterMetrik;
 use App\Domain\Pelaporan\Application\Services\PenyusunBarisLaporan;
 use App\Domain\Pelaporan\Application\Services\RegistriKpi;
 use App\Domain\Pemasaran\Application\Services\RegistriDatasetDemo;
+use App\Domain\Pemasaran\Application\Services\RegistriPenyediaWhatsApp;
 use App\Domain\Pemasaran\Application\Services\RegistriTindakanOtomasi;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaEmailPemasaran;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaSosial;
@@ -58,7 +75,11 @@ use App\Domain\Pemasaran\Infrastructure\Persistence\Models\EventPemasaran;
 use App\Domain\Pemasaran\Infrastructure\Services\DatasetDemoManufaktur;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaEmailLaravel;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaSosialLog;
+use App\Domain\Pemasaran\Infrastructure\Services\PenyediaWhatsAppFonnte;
 use App\Domain\Pemasaran\Infrastructure\Services\PenyediaWhatsAppLog;
+use App\Domain\Pemasaran\Infrastructure\Services\PenyediaWhatsAppMetaCloud;
+use App\Domain\Pemasaran\Infrastructure\Services\PenyediaWhatsAppWablas;
+use App\Domain\Pemasaran\Infrastructure\Services\PenyediaWhatsAppWaha;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanDaftarkanSequence;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHentikanSequence;
 use App\Domain\Pemasaran\Infrastructure\Tindakan\TindakanHitungUlangSkor;
@@ -83,6 +104,9 @@ use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\RencanaPen
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\TagihanPenyedia;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\UsulanAset;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\PermintaanPersetujuan;
+use App\Domain\Platform\Application\Services\KatalogPenyediaLayanan;
+use App\Domain\Platform\Application\Services\PembacaKredensialPenyedia;
+use App\Domain\Platform\Domain\Enums\KategoriPenyediaLayanan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Lokasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
@@ -109,6 +133,7 @@ use App\Shared\Infrastructure\Persistence\TransaksiDatabaseLaravel;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Mail\MailManager;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -196,11 +221,23 @@ final class AmanpollServiceProvider extends ServiceProvider
             return $layanan;
         });
 
+        // Payment gateway tagihan langganan; yang aktif dan kredensialnya diatur di konsol platform (PRD 8.23).
+        $penyediaPembayaran = [
+            PenyediaPembayaranTransferManual::class,
+            PenyediaPembayaranMidtrans::class,
+            PenyediaPembayaranXendit::class,
+            PenyediaPembayaranDuitku::class,
+            PenyediaPembayaranTripay::class,
+            PenyediaPembayaranIpaymu::class,
+            PenyediaPembayaranDoku::class,
+            PenyediaPembayaranStripe::class,
+        ];
+        $this->app->tag($penyediaPembayaran, 'amanpoll.penyedia-layanan');
         $this->app->singleton(
             RegistriPenyediaPembayaran::class,
-            function ($app): RegistriPenyediaPembayaran {
-                $registri = new RegistriPenyediaPembayaran;
-                foreach ([PenyediaPembayaranTransferManual::class] as $penyedia) {
+            function ($app) use ($penyediaPembayaran): RegistriPenyediaPembayaran {
+                $registri = new RegistriPenyediaPembayaran($app->make(PembacaKredensialPenyedia::class));
+                foreach ($penyediaPembayaran as $penyedia) {
                     $registri->daftarkan($app->make($penyedia));
                 }
 
@@ -217,13 +254,42 @@ final class AmanpollServiceProvider extends ServiceProvider
             };
         });
 
-        // Penyedia WhatsApp dipilih lewat konfigurasi; bawaannya hanya menulis ke log, bukan mengirim.
-        $this->app->bind(PenyediaWhatsApp::class, function ($app): PenyediaWhatsApp {
-            $kode = (string) config('amanpoll.pemasaran.penyedia_whatsapp', 'Log');
+        // Adapter WhatsApp resmi dan tidak resmi; yang di-tag muncul sebagai pilihan di konsol platform.
+        $this->app->tag([
+            PenyediaWhatsAppMetaCloud::class,
+            PenyediaWhatsAppFonnte::class,
+            PenyediaWhatsAppWablas::class,
+            PenyediaWhatsAppWaha::class,
+        ], 'amanpoll.penyedia-layanan');
+        $this->app->bind(RegistriPenyediaWhatsApp::class, fn ($app): RegistriPenyediaWhatsApp => new RegistriPenyediaWhatsApp([
+            $app->make(PenyediaWhatsAppMetaCloud::class),
+            $app->make(PenyediaWhatsAppFonnte::class),
+            $app->make(PenyediaWhatsAppWablas::class),
+            $app->make(PenyediaWhatsAppWaha::class),
+        ]));
 
-            return match ($kode) {
-                default => $app->make(PenyediaWhatsAppLog::class),
-            };
+        // Penyedia utama dari konsol platform menang; tanpanya konfigurasi, lalu log yang tidak mengirim apa pun.
+        $this->app->bind(PenyediaWhatsApp::class, function ($app): PenyediaWhatsApp {
+            $registri = $app->make(RegistriPenyediaWhatsApp::class);
+            $kandidat = [
+                $app->make(PembacaKredensialPenyedia::class)->kodeUtama(KategoriPenyediaLayanan::WhatsApp),
+                (string) config('amanpoll.pemasaran.penyedia_whatsapp', 'Log'),
+            ];
+
+            foreach ($kandidat as $kode) {
+                if ($kode !== null && $registri->ada($kode)) {
+                    return $registri->untuk($kode);
+                }
+            }
+
+            return $app->make(PenyediaWhatsAppLog::class);
+        });
+
+        // Notifikasi staf memakai penyedia WhatsApp yang sama; penyedia tanpa jalur notifikasi jatuh ke log.
+        $this->app->bind(DapatMengirimNotifikasiWhatsApp::class, function ($app): DapatMengirimNotifikasiWhatsApp {
+            $penyedia = $app->make(PenyediaWhatsApp::class);
+
+            return $penyedia instanceof DapatMengirimNotifikasiWhatsApp ? $penyedia : $app->make(PenyediaWhatsAppLog::class);
         });
 
         // Penyedia penjadwal sosial; bawaannya hanya menulis ke log sampai adapter nyatanya ada.
@@ -259,6 +325,8 @@ final class AmanpollServiceProvider extends ServiceProvider
             $app->make(TindakanKirimWhatsApp::class),
             $app->make(TindakanWebhook::class),
         ]));
+
+        $this->daftarkanPengirimEmail();
     }
 
     public function boot(): void
@@ -318,6 +386,39 @@ final class AmanpollServiceProvider extends ServiceProvider
         EventPemasaran::observe(PemicuOtomasiPemasaran::class);
 
         $this->catatPekerjaanGagal();
+    }
+
+    /**
+     * Seluruh email aplikasi lewat mailer `amanpoll`, yang penyedianya dipilih di konsol platform (PRD 8.23).
+     *
+     * Adapter di-tag supaya muncul di konsol; transport `amanpoll` membaca penyedia aktif
+     * pada setiap kiriman dan jatuh ke mailer cadangan bila belum ada yang aktif.
+     */
+    private function daftarkanPengirimEmail(): void
+    {
+        $this->app->tag([
+            PenyediaEmailSmtp::class,
+            PenyediaEmailAmazonSes::class,
+            PenyediaEmailBrevo::class,
+            PenyediaEmailSendGrid::class,
+            PenyediaEmailMailgun::class,
+            PenyediaEmailPostmark::class,
+            PenyediaEmailResend::class,
+        ], KatalogPenyediaLayanan::TAG);
+
+        $this->callAfterResolving('mail.manager', function (object $pengelola): void {
+            // Mail::fake() menukar mailer dengan tiruan yang tidak mengenal transport.
+            if (! $pengelola instanceof MailManager) {
+                return;
+            }
+
+            $pengelola->extend('amanpoll', fn (): TransportEmailAmanpoll => new TransportEmailAmanpoll(
+                $this->app->make(PembacaKredensialPenyedia::class),
+                $this->app->make(KatalogPenyediaLayanan::class),
+                $pengelola,
+                (string) config('amanpoll.email.mailer_cadangan', 'log'),
+            ));
+        });
     }
 
     /**

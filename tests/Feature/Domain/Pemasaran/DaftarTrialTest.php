@@ -12,7 +12,9 @@ use App\Domain\Langganan\Domain\Contracts\MenerimaKartuDiMuka;
 use App\Domain\Langganan\Domain\Contracts\PenyediaPembayaran;
 use App\Domain\Langganan\Domain\Enums\StatusLangganan;
 use App\Domain\Langganan\Domain\Enums\StatusPembayaranLangganan;
+use App\Domain\Langganan\Domain\ValueObjects\InstruksiPembayaran;
 use App\Domain\Langganan\Domain\ValueObjects\PeristiwaPembayaran;
+use App\Domain\Langganan\Domain\ValueObjects\PesananPembayaran;
 use App\Domain\Langganan\Infrastructure\Persistence\Models\TagihanLangganan;
 use App\Domain\Pemasaran\Application\Actions\DaftarkanTrial;
 use App\Domain\Pemasaran\Application\Services\LayananKonfigurasiPemasaran;
@@ -30,6 +32,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
 use App\Http\Middleware\TetapkanSesiPengunjung;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -291,23 +294,17 @@ final class DaftarTrialTest extends KasusTrial
                 return 'Kartu Uji';
             }
 
-            /** @return array<string, mixed> */
-            public function mulaiPembayaran(TagihanLangganan $tagihan): array
+            public function mulaiPembayaran(TagihanLangganan $tagihan, PesananPembayaran $pesanan): InstruksiPembayaran
             {
-                return [];
+                return InstruksiPembayaran::rincian([]);
             }
 
-            /**
-             * @param  array<string, mixed>  $muatan
-             * @param  array<string, string>  $header
-             */
-            public function webhookSah(array $muatan, array $header): bool
+            public function webhookSah(Request $permintaan): bool
             {
                 return true;
             }
 
-            /** @param array<string, mixed> $muatan */
-            public function terjemahkanWebhook(array $muatan): PeristiwaPembayaran
+            public function terjemahkanWebhook(Request $permintaan): PeristiwaPembayaran
             {
                 throw new \LogicException('Tidak dipakai dalam test ini.');
             }

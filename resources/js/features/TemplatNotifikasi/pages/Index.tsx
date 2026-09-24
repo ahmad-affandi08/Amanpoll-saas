@@ -19,7 +19,8 @@ import {
 } from '@/components/ui/dialog';
 import { DataTable } from '@/components/data-table/DataTable';
 import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader';
-import type { TemplatNotifikasi } from '@/features/Notifikasi/types';
+import type { KanalNotifikasi, TemplatNotifikasi } from '@/features/Notifikasi/types';
+import { KANAL_NOTIFIKASI } from '@/features/Notifikasi/status';
 import { ruteTemplatNotifikasi } from '@/features/TemplatNotifikasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
@@ -81,14 +82,17 @@ function DialogFormTemplat({ templat, wajib }: { templat: TemplatNotifikasi | nu
               <Label nama="Kanal">Kanal</Label>
               <Select
                 value={form.data.Kanal}
-                onValueChange={(v) => form.setData('Kanal', v as 'InApp' | 'Email')}
+                onValueChange={(v) => form.setData('Kanal', v as KanalNotifikasi)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="InApp">In-App</SelectItem>
-                  <SelectItem value="Email">Email</SelectItem>
+                  {KANAL_NOTIFIKASI.map((kanal) => (
+                    <SelectItem key={kanal.value} value={kanal.value}>
+                      {kanal.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -203,10 +207,7 @@ export default function TemplatNotifikasiIndex({ templatNotifikasi, filter, waji
           {
             columnId: 'Kanal',
             title: 'Kanal',
-            options: [
-              { label: 'InApp', value: 'InApp' },
-              { label: 'Email', value: 'Email' },
-            ],
+            options: KANAL_NOTIFIKASI,
           },
         ]}
         pencarianPlaceholder="Cari kode atau judul templat..."

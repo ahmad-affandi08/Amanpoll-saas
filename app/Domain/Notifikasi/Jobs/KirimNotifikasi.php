@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Domain\Notifikasi\Jobs;
 
 use App\Core\Organisasi\ScopeOrganisasi;
+use App\Domain\Notifikasi\Application\Services\TujuanWhatsAppNotifikasi;
+use App\Domain\Notifikasi\Domain\Contracts\DapatMengirimNotifikasiWhatsApp;
 use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
 use App\Domain\Notifikasi\Domain\Enums\StatusNotifikasi;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
 use App\Domain\Notifikasi\Notifications\NotifikasiUmum;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
+use App\Shared\Domain\ValueObjects\NomorWhatsApp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -47,6 +51,10 @@ final class KirimNotifikasi implements ShouldQueue
                 $this->kirimEmail($notifikasi);
             }
 
+            if ($notifikasi->Kanal === KanalNotifikasi::WhatsApp->value) {
+                $this->kirimWhatsApp($notifikasi);
+            }
+
             $notifikasi->Status = StatusNotifikasi::Terkirim->value;
             $notifikasi->DikirimPada = now()->toImmutable();
             $notifikasi->save();
@@ -78,5 +86,30 @@ final class KirimNotifikasi implements ShouldQueue
         }
 
         $pengguna->notify(new NotifikasiUmum($notifikasi->Judul, $notifikasi->Isi));
+    }
+
+    /**
+     * Pesan operasional ke staf: tidak melewati consent pemasaran, hanya preferensi yang
+     * sudah diperiksa saat barisnya dibuat. Galatnya disimpan di KesalahanTerakhir, jadi
+     * nomor penerima disamarkan dan galat tak dikenal tidak diteruskan apa adanya.
+     */
+    private function kirimWhatsApp(Notifikasi $notifikasi): void
+    {
+        $nomor = app(TujuanWhatsAppNotifikasi::class)->nomorUntuk($notifikasi->PenggunaId);
+
+        if ($nomor === null) {
+            throw new AturanBisnisDilanggar('Pengguna tidak lagi memiliki nomor telepon yang dapat dipakai WhatsApp.');
+        }
+
+        try {
+            app(DapatMengirimNotifikasiWhatsApp::class)->kirimNotifikasi($nomor, (string) $notifikasi->Judul, $notifikasi->Isi);
+        } catch (AturanBisnisDilanggar $galat) {
+            throw new AturanBisnisDilanggar(
+                str_replace($nomor, NomorWhatsApp::samarkan($nomor), $galat->getMessage()),
+                previous: $galat,
+            );
+        } catch (Throwable $galat) {
+            throw new AturanBisnisDilanggar('Pengiriman WhatsApp gagal karena galat tak terduga ('.class_basename($galat).').', previous: $galat);
+        }
     }
 }

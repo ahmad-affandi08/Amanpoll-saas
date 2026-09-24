@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'amanpoll'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,6 +36,12 @@ return [
     */
 
     'mailers' => [
+
+        // Penyedia dan kredensialnya dipilih di konsol platform (PRD 8.23); tanpa penyedia aktif
+        // email diteruskan ke `amanpoll.email.mailer_cadangan`.
+        'amanpoll' => [
+            'transport' => 'amanpoll',
+        ],
 
         'smtp' => [
             'transport' => 'smtp',

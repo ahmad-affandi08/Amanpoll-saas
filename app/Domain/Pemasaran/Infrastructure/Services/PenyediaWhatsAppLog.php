@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domain\Pemasaran\Infrastructure\Services;
 
+use App\Domain\Notifikasi\Domain\Contracts\DapatMengirimNotifikasiWhatsApp;
 use App\Domain\Pemasaran\Domain\Contracts\PenyediaWhatsApp;
 use App\Domain\Pemasaran\Domain\Enums\StatusPersetujuanTemplateWa;
 use App\Domain\Pemasaran\Domain\ValueObjects\PersetujuanTemplateWa;
 use App\Domain\Pemasaran\Domain\ValueObjects\PesanWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\StatusKirimanWhatsApp;
+use App\Shared\Domain\ValueObjects\NomorWhatsApp;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /** Penyedia bawaan yang hanya menulis ke log: akun WhatsApp Business belum ada. */
-final class PenyediaWhatsAppLog implements PenyediaWhatsApp
+final class PenyediaWhatsAppLog implements DapatMengirimNotifikasiWhatsApp, PenyediaWhatsApp
 {
     // Ia tidak pernah menyetujui template sendiri; itu berarti berbohong atas nama penyedia.
     public function kode(): string
@@ -27,6 +29,17 @@ final class PenyediaWhatsAppLog implements PenyediaWhatsApp
             'Kepada' => $pesan->kepada,
             'Template' => $pesan->kodeTemplate,
             'Bahasa' => $pesan->bahasa,
+        ]);
+
+        return (string) Str::ulid();
+    }
+
+    /** Nomor staf disamarkan: log dibaca lebih banyak orang daripada tabel notifikasi. */
+    public function kirimNotifikasi(string $nomor, string $judul, string $isi): string
+    {
+        Log::info('Notifikasi WhatsApp ditulis ke log, bukan dikirim.', [
+            'Kepada' => NomorWhatsApp::samarkan($nomor),
+            'Judul' => $judul,
         ]);
 
         return (string) Str::ulid();
