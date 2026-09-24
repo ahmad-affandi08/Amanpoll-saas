@@ -1350,6 +1350,17 @@ Konfirmasi dicatat per perintah kerja (siapa, cara, waktu, nama dan jabatan pene
 - Setelan organisasi **"Wajibkan konfirmasi penerima"** (bawaan mati; menggantikan "Wajibkan tanda tangan penerima", nilai lama dipindahkan): bila menyala, koordinator tidak bisa memverifikasi (Menunggu Verifikasi → Selesai) sebelum ada konfirmasi "Sudah beres". Server menolak dengan pesan yang jelas.
 - Detail perintah kerja di dasbor menampilkan kartu konfirmasi (cara, penerima, waktu, tanda tangan).
 
+## 8.23 Payment gateway dan WhatsApp diatur dari konsol platform
+
+Disetujui pemilik produk pada 24 September 2026.
+
+- Penyedia layanan luar milik platform dipilih dan dikonfigurasi di konsol platform (**Pembayaran & WhatsApp**, `/admin-platform/penyedia-layanan`), bukan lewat `.env`. Hanya admin super atau admin berizin `platform.penyedia-layanan.kelola` yang boleh membukanya.
+- **Payment gateway** untuk tagihan langganan: Midtrans, Xendit, Duitku, Tripay, iPaymu, DOKU, Stripe, dan Transfer Bank manual. Boleh lebih dari satu aktif; pelanggan memilih cara bayar saat membayar. Satu penyedia ditandai **utama** sebagai pilihan pertama. Status lunas hanya berasal dari webhook penyedia yang tanda tangannya sah, tidak dari parameter URL halaman kembali.
+- **WhatsApp** untuk pesan pemasaran: **resmi** (WhatsApp Cloud API milik Meta; template harus disetujui Meta) atau **tidak resmi** (Fonnte, Wablas, WAHA; memakai nomor WhatsApp biasa lewat pindai QR, tanpa persetujuan template). Hanya satu penyedia WhatsApp yang aktif. Penyedia tidak resmi ditandai jelas di konsol berikut risikonya: nomor bisa diblokir WhatsApp.
+- Tiap penyedia punya **mode uji (sandbox)** bila penyedianya menyediakan, dan tombol **uji kredensial** bila penyedianya punya panggilan murah untuk memeriksanya.
+- **Penyimpanan kredensial.** Kunci API harus bisa dibaca ulang untuk memanggil penyedia, jadi kredensial disimpan **terenkripsi** (AES-256 dengan `APP_KEY`), bukan di-hash. Yang di-hash hanyalah **sidik** kredensial (HMAC SHA-256) untuk menandai perubahan di audit. Nilai rahasia tidak pernah dikirim kembali ke peramban, tidak masuk audit, dan tidak dicatat di log; konsol hanya menampilkan tanda "tersimpan" dan empat karakter terakhir rahasia yang cukup panjang. Mengosongkan isian rahasia saat menyimpan berarti mempertahankan nilai lama. Kehilangan `APP_KEY` berarti kredensial harus diisi ulang.
+- Penyedia hanya bisa diaktifkan bila seluruh isian wajibnya terisi.
+
 ---
 
 ## 9. Search, Filter, dan Data Table

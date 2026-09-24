@@ -12,4 +12,8 @@ export const rutePlatform = {
   langgananTagihan: (id: string) => `${AKAR}/langganan/${id}/tagihan`,
   langgananPerpanjang: (id: string) => `${AKAR}/langganan/${id}/perpanjang`,
   langgananBatalkan: (id: string) => `${AKAR}/langganan/${id}/batalkan`,
+
+  penyediaLayanan: `${AKAR}/penyedia-layanan`,
+  penyediaLayananSimpan: (kategori: string, kode: string) => `${AKAR}/penyedia-layanan/${kategori}/${kode}`,
+  penyediaLayananUji: (kategori: string, kode: string) => `${AKAR}/penyedia-layanan/${kategori}/${kode}/uji`,
 };

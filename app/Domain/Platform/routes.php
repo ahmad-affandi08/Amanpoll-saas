@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Platform\Application\Services\KatalogPenyediaLayanan;
 use App\Domain\Platform\Http\Controllers\DokumentasiController;
 use App\Domain\Platform\Http\Controllers\HariLiburController;
 use App\Domain\Platform\Http\Controllers\IzinController;
@@ -14,6 +15,7 @@ use App\Domain\Platform\Http\Controllers\OrganisasiController;
 use App\Domain\Platform\Http\Controllers\PencarianGlobalController;
 use App\Domain\Platform\Http\Controllers\PenggunaController;
 use App\Domain\Platform\Http\Controllers\PenggunaPeranController;
+use App\Domain\Platform\Http\Controllers\PenyediaLayananPlatformController;
 use App\Domain\Platform\Http\Controllers\PeranController;
 use App\Domain\Platform\Http\Controllers\ProfilController;
 use App\Domain\Platform\Http\Controllers\RiwayatPenggunaController;
@@ -108,3 +110,15 @@ Route::middleware(['web', 'auth', 'organisasi'])->group(function (): void {
     Route::post('/profil/tanda-tangan', [TandaTanganProfilController::class, 'simpan'])->name('profil.tanda-tangan.simpan');
     Route::delete('/profil/tanda-tangan', [TandaTanganProfilController::class, 'hapus'])->name('profil.tanda-tangan.hapus');
 });
+
+// Payment gateway dan WhatsApp milik platform, diatur dari konsol (PRD 8.23).
+Route::middleware(['web', 'auth:platform', 'izin.platform:'.KatalogPenyediaLayanan::IZIN_KELOLA])
+    ->prefix('admin-platform/penyedia-layanan')
+    ->name('adminPlatform.penyedia-layanan.')
+    ->group(function (): void {
+        Route::get('/', [PenyediaLayananPlatformController::class, 'index'])->name('index');
+        Route::put('/{kategori}/{kode}', [PenyediaLayananPlatformController::class, 'simpan'])->name('simpan');
+        Route::post('/{kategori}/{kode}/uji', [PenyediaLayananPlatformController::class, 'uji'])
+            ->middleware('throttle:6,1')
+            ->name('uji');
+    });

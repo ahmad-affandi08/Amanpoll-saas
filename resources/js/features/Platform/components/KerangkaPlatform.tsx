@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Boxes, LogOut, Package, ShieldCheck, TrendingUp } from 'lucide-react';
+import { Boxes, KeyRound, LogOut, Package, ShieldCheck, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { rutePlatform } from '@/features/Platform/api';
@@ -13,6 +13,12 @@ const MENU = [
     href: '/admin-platform/pemasaran',
     ikon: TrendingUp,
     kodeIzin: 'platform.pemasaran.lihat',
+  },
+  {
+    label: 'Pembayaran & WhatsApp',
+    href: '/admin-platform/penyedia-layanan',
+    ikon: KeyRound,
+    kodeIzin: 'platform.penyedia-layanan.kelola',
   },
 ] as const;
 
