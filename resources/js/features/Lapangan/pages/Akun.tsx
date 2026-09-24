@@ -291,6 +291,7 @@ function BarisAntrean({
   onPilihVersi: (mutasi: MutasiOffline) => void;
 }) {
   const konflik = mutasi.Status === 'Konflik';
+  const gagal = mutasi.Status === 'Gagal';
 
   return (
     <li
@@ -309,6 +310,11 @@ function BarisAntrean({
             ? (mutasi.Konflik?.Pesan ?? 'Diubah juga oleh orang lain')
             : waktuRelatif(mutasi.DibuatPada)}
         </span>
+        {gagal && (
+          <span className="mt-0.5 block text-[12.5px] leading-[1.35] font-medium text-lapangan-merah-700">
+            {mutasi.Konflik?.Pesan ?? 'Ditolak server. Buka tiketnya untuk memperbaiki.'}
+          </span>
+        )}
       </div>
       {konflik ? (
         <button

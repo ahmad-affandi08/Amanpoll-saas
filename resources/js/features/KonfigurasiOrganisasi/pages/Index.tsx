@@ -31,12 +31,16 @@ function BarisKonfigurasi({ item }: { item: KonfigurasiOrganisasi }) {
   };
 
   return (
-    <div className="flex items-center justify-between border-b border-border py-3 last:border-0">
-      <div>
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border py-3 last:border-0">
+      <div className="min-w-0 flex-1">
         <div className="text-sm font-medium text-foreground">{item.Label}</div>
-        <div className="font-mono text-xs text-muted-foreground">{item.Kunci}</div>
+        <div className="font-mono text-xs break-all text-muted-foreground">{item.Kunci}</div>
       </div>
-      <div className="flex items-center gap-2">
+      <div
+        className={
+          item.Tipe === 'boolean' ? 'flex items-center gap-2' : 'flex w-full items-center gap-2 sm:w-auto'
+        }
+      >
         {item.Tipe === 'boolean' && (
           <Switch checked={Boolean(item.Nilai)} disabled={menyimpan} onCheckedChange={(v) => simpan(v)} />
         )}
@@ -47,7 +51,7 @@ function BarisKonfigurasi({ item }: { item: KonfigurasiOrganisasi }) {
               value={nilai}
               placeholder={item.Rahasia ? 'Diisi tersembunyi' : undefined}
               onChange={(e) => setNilai(e.target.value)}
-              className="w-56"
+              className="min-w-0 flex-1 sm:w-56 sm:flex-none"
             />
             <Button
               size="sm"
