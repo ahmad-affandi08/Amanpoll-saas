@@ -1,5 +1,6 @@
 import { Camera, X } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { perkecilFoto } from '@/features/Lapangan/components/teknisi/foto';
 import { cn } from '@/lib/utils';
 
 /** Pratinjau berkas foto yang dipilih; URL objek dilepas saat daftar berubah. */
@@ -35,7 +36,19 @@ export function FotoPilihan({
   disabled = false,
 }: PropsFotoPilihan) {
   const masukan = useRef<HTMLInputElement | null>(null);
+  const [memproses, setMemproses] = useState(false);
   const pratinjau = usePratinjauFoto(foto);
+
+  /** Foto dikecilkan di HP sebelum ditampilkan dan dikirim (PRD 11.1). */
+  const tambahkan = async (baru: File[]) => {
+    setMemproses(true);
+    try {
+      const kecil = await Promise.all(baru.slice(0, maks - foto.length).map((satu) => perkecilFoto(satu)));
+      onUbah([...foto, ...kecil].slice(0, maks));
+    } finally {
+      setMemproses(false);
+    }
+  };
   const gaya = { width: ukuran, height: ukuran };
 
   return (
@@ -62,7 +75,7 @@ export function FotoPilihan({
       {foto.length < maks && (
         <button
           type="button"
-          disabled={disabled}
+          disabled={disabled || memproses}
           onClick={() => masukan.current?.click()}
           className={cn(
             'flex shrink-0 flex-col items-center justify-center gap-1 rounded-[14px] bg-white text-xs font-bold text-lapangan-oranye-teks outline-2 -outline-offset-2 outline-lapangan-teks-3/35 outline-dashed',
@@ -84,8 +97,8 @@ export function FotoPilihan({
         aria-hidden
         onChange={(event) => {
           const baru = Array.from(event.target.files ?? []);
-          onUbah([...foto, ...baru].slice(0, maks));
           event.target.value = '';
+          void tambahkan(baru);
         }}
       />
     </div>

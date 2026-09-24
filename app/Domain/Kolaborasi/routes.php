@@ -17,6 +17,7 @@ Route::middleware(['web', 'auth', 'organisasi'])
     ->group(function (): void {
         Route::post('/berkas', [BerkasController::class, 'store'])->name('berkas.store');
         Route::get('/berkas/{berkas}/unduh', [BerkasController::class, 'unduh'])->name('berkas.unduh');
+        Route::get('/berkas/{berkas}/thumbnail', [BerkasController::class, 'thumbnail'])->name('berkas.thumbnail');
         Route::delete('/berkas/{berkas}', [BerkasController::class, 'destroy'])->name('berkas.destroy');
 
         Route::get('/lampiran', [LampiranEntitasController::class, 'index'])->name('lampiran.index');

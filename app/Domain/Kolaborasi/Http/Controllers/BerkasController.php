@@ -8,12 +8,12 @@ use App\Core\Entitas\RegistriEntitas;
 use App\Domain\Kolaborasi\Application\Actions\HapusBerkas;
 use App\Domain\Kolaborasi\Application\Actions\LampirkanBerkas;
 use App\Domain\Kolaborasi\Application\Actions\UnggahBerkas;
+use App\Domain\Kolaborasi\Application\Services\PenyimpanBerkas;
 use App\Domain\Kolaborasi\Http\Requests\SimpanBerkasRequest;
 use App\Domain\Kolaborasi\Http\Resources\BerkasResource;
 use App\Domain\Kolaborasi\Infrastructure\Persistence\Models\Berkas;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class BerkasController extends Controller
@@ -48,11 +48,19 @@ final class BerkasController extends Controller
         return back()->with('berkasDiunggah', (new BerkasResource($berkas))->resolve());
     }
 
-    public function unduh(Berkas $berkas): StreamedResponse
+    public function unduh(Berkas $berkas, PenyimpanBerkas $penyimpan): StreamedResponse
     {
         $this->authorize('view', $berkas);
 
-        return Storage::disk($berkas->MediaPenyimpanan)->download($berkas->LokasiPenyimpanan, $berkas->NamaAsli);
+        return $penyimpan->responsUnduh($berkas);
+    }
+
+    /** Thumbnail untuk daftar dan galeri; izinnya sama dengan unduh. */
+    public function thumbnail(Berkas $berkas, PenyimpanBerkas $penyimpan): StreamedResponse
+    {
+        $this->authorize('view', $berkas);
+
+        return $penyimpan->responsThumbnail($berkas);
     }
 
     public function destroy(Berkas $berkas, HapusBerkas $aksi): RedirectResponse

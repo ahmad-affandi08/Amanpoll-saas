@@ -39,7 +39,6 @@ import type {
 import { jamPendek } from '@/features/Lapangan/waktu';
 import { useAksiTiket } from '@/features/Lapangan/components/teknisi/aksiTiket';
 import { BarisDikte } from '@/features/Lapangan/components/teknisi/BarisDikte';
-import { perkecilFoto } from '@/features/Lapangan/components/teknisi/foto';
 import { KanvasTandaTangan } from '@/features/Lapangan/components/teknisi/KanvasTandaTangan';
 import { labelStatusTiket } from '@/features/Lapangan/components/teknisi/KartuTiketTeknisi';
 import { LembarMintaSukuCadang } from '@/features/Lapangan/components/teknisi/LembarMintaSukuCadang';
@@ -1000,8 +999,8 @@ function KelompokFoto({
     if (!berkas) return;
     setMemproses(true);
     try {
-      const kecil = await perkecilFoto(berkas);
-      await props.fotoHook.tambah(props.tiket.Id, kategori, kecil);
+      // `tambah` mengecilkan foto sebelum disimpan di perangkat.
+      await props.fotoHook.tambah(props.tiket.Id, kategori, berkas);
       if (daring) void props.fotoHook.unggahSemua();
     } finally {
       setMemproses(false);

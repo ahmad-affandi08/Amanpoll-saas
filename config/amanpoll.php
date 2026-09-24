@@ -10,6 +10,49 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mesin kompresi berkas
+    |--------------------------------------------------------------------------
+    |
+    | PRD 11.1. Setiap berkas yang disimpan sistem melewati PemampatBerkas.
+    | Ambang dan kualitas diatur di sini, bukan di kode. Kegagalan kompresi
+    | tidak pernah menggagalkan penyimpanan: berkasnya disimpan apa adanya.
+    |
+    */
+    'kompresi' => [
+        'aktif' => env('AMANPOLL_KOMPRESI_AKTIF', true),
+
+        'gambar' => [
+            // Sisi terpanjang gambar tersimpan, dalam piksel.
+            'sisi_maks' => env('AMANPOLL_KOMPRESI_GAMBAR_SISI_MAKS', 2560),
+            'kualitas_webp' => env('AMANPOLL_KOMPRESI_GAMBAR_KUALITAS', 80),
+            'sisi_thumbnail' => env('AMANPOLL_KOMPRESI_THUMBNAIL_SISI', 480),
+            'kualitas_thumbnail' => env('AMANPOLL_KOMPRESI_THUMBNAIL_KUALITAS', 75),
+            // Gambar di atas jumlah piksel ini tidak didekode (batas memori shared hosting); disimpan apa adanya.
+            'piksel_maks' => env('AMANPOLL_KOMPRESI_GAMBAR_PIKSEL_MAKS', 40_000_000),
+        ],
+
+        'gzip' => [
+            'level' => env('AMANPOLL_KOMPRESI_GZIP_LEVEL', 9),
+            // Jenis pada `mime_gzip_bila_hemat` baru di-gzip bila hematnya minimal sekian persen.
+            'hemat_minimal_persen' => env('AMANPOLL_KOMPRESI_GZIP_HEMAT_MINIMAL', 10),
+        ],
+
+        // Selain `text/*`: selalu di-gzip (bila hasilnya lebih kecil).
+        'mime_teks' => [
+            'application/json',
+            'application/xml',
+            'application/csv',
+            'application/x-ndjson',
+        ],
+
+        // Di-gzip hanya bila hemat minimal `gzip.hemat_minimal_persen`.
+        'mime_gzip_bila_hemat' => [
+            'application/pdf',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Data contoh
     |--------------------------------------------------------------------------
     |

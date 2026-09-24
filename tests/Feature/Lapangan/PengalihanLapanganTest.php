@@ -128,7 +128,8 @@ final class PengalihanLapanganTest extends KasusLapangan
         $berkas = $this->dalamOrganisasi(fn () => Berkas::query()->where('DiunggahOleh', $pelapor->Id)->firstOrFail());
 
         // Unduhan dibuka sebagai navigasi peramban, jadi jalurnya dibebaskan secara eksplisit.
-        $this->get("/kolaborasi/berkas/{$berkas->Id}/unduh")->assertOk()->assertDownload('bukti.jpg');
+        // Namanya mengikuti mesin kompresi (PRD 11.1): JPEG yang dikodekan ulang diunduh sebagai .webp.
+        $this->get("/kolaborasi/berkas/{$berkas->Id}/unduh")->assertOk()->assertDownload($berkas->namaUnduhan());
         $this->postJson('/pemeliharaan/keluhan', [])->assertUnprocessable();
     }
 

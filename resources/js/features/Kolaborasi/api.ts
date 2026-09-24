@@ -2,6 +2,8 @@ export const ruteKolaborasi = {
   berkas: '/kolaborasi/berkas',
   berkasDetail: (id: string) => `/kolaborasi/berkas/${id}`,
   berkasUnduh: (id: string) => `/kolaborasi/berkas/${id}/unduh`,
+  /** Thumbnail WebP (gambar aslinya bila tidak ada); izinnya sama dengan unduh. */
+  berkasThumbnail: (id: string) => `/kolaborasi/berkas/${id}/thumbnail`,
   lampiran: '/kolaborasi/lampiran',
   lampiranDetail: (id: string) => `/kolaborasi/lampiran/${id}`,
   tag: '/kolaborasi/tag',

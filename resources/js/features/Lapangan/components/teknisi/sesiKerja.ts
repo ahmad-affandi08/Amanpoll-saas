@@ -10,6 +10,7 @@ import {
   type KonteksOffline,
 } from '@/lib/penyimpanan-offline';
 import { ruteLapangan } from '@/features/Lapangan/api';
+import { perkecilFoto } from '@/features/Lapangan/components/teknisi/foto';
 import type { JawabanChecklistTeknisi, PropsLapangan } from '@/features/Lapangan/types';
 
 /**
@@ -221,12 +222,14 @@ export function useFotoTertunda(perintahKerjaId: string | null) {
     ) => {
       if (!konteks) return;
       const id = crypto.randomUUID();
-      const ekstensi = berkas.type === 'image/png' ? 'png' : 'jpg';
+      // Dikecilkan SEBELUM masuk IndexedDB: foto offline ikut hemat ruang perangkat dan kuota.
+      const kecil = await perkecilFoto(berkas);
+      const ekstensi = kecil.type === 'image/png' ? 'png' : kecil.type === 'image/webp' ? 'webp' : 'jpg';
       const nilai: FotoTertunda = {
         Kunci: `${awalanFotoTiket(perintahKerjaIdFoto)}${id}`,
         PerintahKerjaId: perintahKerjaIdFoto,
         Kategori: kategori,
-        Berkas: berkas,
+        Berkas: kecil,
         NamaBerkas: `${kategori}-${new Date().toISOString().replace(/[:.]/g, '-')}.${ekstensi}`,
         Keterangan: keterangan,
         DibuatPada: new Date().toISOString(),

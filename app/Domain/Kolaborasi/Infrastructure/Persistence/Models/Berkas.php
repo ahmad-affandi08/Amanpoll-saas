@@ -7,10 +7,16 @@ namespace App\Domain\Kolaborasi\Infrastructure\Persistence\Models;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
+use App\Shared\Infrastructure\Kompresi\MetodeKompresi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Satu berkas tersimpan. Isi fisiknya boleh dipakai bersama beberapa baris
+ * dengan hash dan metode kompresi yang sama dalam satu organisasi (PRD 11.1):
+ * tulis dan hapus lewat `PenyimpanBerkas`, jangan langsung ke `Storage`.
+ */
 final class Berkas extends ModelDasar
 {
     use MilikOrganisasi, SoftDeletes;
@@ -30,6 +36,10 @@ final class Berkas extends ModelDasar
         'JenisMime',
         'UkuranByte',
         'HashSha256',
+        'MetodeKompresi',
+        'UkuranAsliByte',
+        'UkuranTersimpanByte',
+        'LokasiThumbnail',
         'DataTambahan',
         'DiunggahOleh',
     ];
@@ -38,10 +48,28 @@ final class Berkas extends ModelDasar
     {
         return [
             'UkuranByte' => 'integer',
+            'MetodeKompresi' => MetodeKompresi::class,
+            'UkuranAsliByte' => 'integer',
+            'UkuranTersimpanByte' => 'integer',
             'DataTambahan' => 'array',
             'DibuatPada' => 'immutable_datetime',
             'DihapusPada' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * Nama berkas yang diterima pengguna saat mengunduh: gambar yang dikodekan
+     * ulang berekstensi `.webp`, selebihnya nama aslinya.
+     */
+    public function namaUnduhan(): string
+    {
+        if ($this->MetodeKompresi !== MetodeKompresi::GambarUlang) {
+            return $this->NamaAsli;
+        }
+
+        $dasar = pathinfo($this->NamaAsli, PATHINFO_FILENAME);
+
+        return ($dasar === '' ? 'gambar' : $dasar).'.webp';
     }
 
     /** @return BelongsTo<Organisasi, $this> */

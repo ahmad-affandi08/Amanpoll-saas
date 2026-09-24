@@ -20,6 +20,10 @@ final class BerkasResource extends JsonResource
             'NamaAsli' => $berkas->NamaAsli,
             'JenisMime' => $berkas->JenisMime,
             'UkuranByte' => $berkas->UkuranByte,
+            'NamaUnduhan' => $berkas->namaUnduhan(),
+            'MetodeKompresi' => $berkas->MetodeKompresi->value,
+            'UkuranAsliByte' => $berkas->UkuranAsliByte,
+            'UkuranTersimpanByte' => $berkas->UkuranTersimpanByte,
             'DiunggahOleh' => $berkas->DiunggahOleh,
             'DibuatPada' => $berkas->DibuatPada->toIso8601String(),
         ];

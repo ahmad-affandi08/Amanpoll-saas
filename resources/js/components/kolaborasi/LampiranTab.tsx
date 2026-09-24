@@ -3,6 +3,7 @@ import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { http } from '@/lib/http';
+import { pampatkanGambar } from '@/lib/pemampat-gambar';
 import type { LampiranEntitas } from '@/features/Kolaborasi/types';
 import { ruteKolaborasi } from '@/features/Kolaborasi/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
@@ -36,13 +37,15 @@ export function LampiranTab({ jenisEntitas, entitasId }: Props) {
 
   useEffect(muat, [jenisEntitas, entitasId]);
 
-  const unggah = (e: FormEvent) => {
+  const unggah = async (e: FormEvent) => {
     e.preventDefault();
     if (!file) return;
     setMengunggah(true);
+    // Gambar dikecilkan dulu di peramban; berkas lain dikirim apa adanya.
+    const berkas = await pampatkanGambar(file);
     router.post(
       ruteKolaborasi.berkas,
-      { Berkas: file, JenisEntitas: jenisEntitas, EntitasId: entitasId },
+      { Berkas: berkas, JenisEntitas: jenisEntitas, EntitasId: entitasId },
       {
         forceFormData: true,
         preserveScroll: true,
@@ -69,7 +72,7 @@ export function LampiranTab({ jenisEntitas, entitasId }: Props) {
 
   return (
     <div className="space-y-3">
-      <form onSubmit={unggah} className="flex gap-2">
+      <form onSubmit={(e) => void unggah(e)} className="flex gap-2">
         <Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="flex-1" />
         <Button type="submit" disabled={!file || mengunggah}>
           Unggah

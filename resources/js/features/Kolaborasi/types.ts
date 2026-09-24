@@ -2,7 +2,13 @@ export interface Berkas {
   Id: string;
   NamaAsli: string;
   JenisMime: string | null;
+  /** Ukuran yang diterima saat mengunduh. */
   UkuranByte: number | null;
+  /** Gambar yang dikodekan ulang diunduh sebagai `.webp`. */
+  NamaUnduhan: string;
+  MetodeKompresi: 'Tidak' | 'Gzip' | 'GambarUlang';
+  UkuranAsliByte: number | null;
+  UkuranTersimpanByte: number | null;
   DiunggahOleh: string | null;
   DibuatPada: string;
 }
