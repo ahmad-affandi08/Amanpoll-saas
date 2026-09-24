@@ -173,6 +173,8 @@ Mengelola pekerjaan operasional:
 
 ### 4.5 Teknisi
 
+Setelah login, teknisi langsung masuk **Mode Lapangan** (8.20) dan tidak melihat dasbor web.
+
 Fokus pada mobile-first workflow:
 
 - Scan QR/barcode.
@@ -188,6 +190,8 @@ Fokus pada mobile-first workflow:
 - Menyelesaikan pekerjaan.
 
 ### 4.6 Pelapor / Pengguna Unit
+
+Staf lokasi atau unit yang melaporkan kerusakan fasilitas atau peralatan. Setelah login, pelapor langsung masuk **Mode Lapangan** (8.20) dan tidak melihat dasbor web.
 
 - Melihat aset pada scope yang diizinkan.
 - Melaporkan kerusakan/keluhan.
@@ -1120,6 +1124,8 @@ Ketentuan:
 - Data sensitif yang disimpan lokal diminimalkan.
 - Logout membersihkan data lokal yang seharusnya tidak bertahan.
 
+Mode Lapangan (8.20) adalah wajah offline ini bagi pengguna. Antrian, paket offline, dan penyelesaian konflik yang sudah ada dipakai ulang, bukan dibuat ulang.
+
 ---
 
 ## 8.18 Laporan dan Dashboard
@@ -1182,6 +1188,62 @@ Ketentuan:
 
 ---
 
+## 8.20 Mode Lapangan (Teknisi dan Pelapor)
+
+Tampilan bergaya aplikasi HP (PWA) untuk peran lapangan. Desain dan papan acuannya ada di DESIGN §36 (`docs/source-of-truth/mockup-mode-lapangan/`). Disetujui pemilik produk pada 24 September 2026.
+
+### Siapa yang masuk Mode Lapangan
+
+- Peran memiliki penanda **Tampilan Lapangan** (kolom boolean pada `Peran`). Admin organisasi bisa mengubahnya di halaman Peran. Katalog peran bawaan menandai `TEKNISI` dan `PELAPOR`.
+- **Pengguna lapangan murni** adalah pengguna yang *seluruh* perannya bertanda Tampilan Lapangan.
+  - Setelah login, ia diarahkan ke Mode Lapangan.
+  - Setiap rute halaman dasbor web yang ia buka dialihkan ke beranda Mode Lapangan. Pengalihan dilakukan middleware di sisi server, bukan hanya dengan menyembunyikan menu.
+- **Pengguna campuran** (punya peran lapangan dan peran meja) tetap masuk dasbor. Ia bisa berpindah ke Mode Lapangan dan kembali lewat menu Akun; pilihannya diingat di perangkat itu.
+- Penentuan tidak boleh memakai kode peran (`TEKNISI`, `PELAPOR`) secara harfiah. Tenant bebas mengganti nama peran.
+
+### Login
+
+- **Tidak ada halaman login baru.** Mode Lapangan memakai halaman login dan `LoginController` yang sudah ada. Yang berubah hanya tujuan pengalihan sesudah login berhasil.
+- `redirect()->intended()` tetap dihormati. Bila URL yang dituju adalah halaman dasbor dan pengguna itu lapangan murni, middleware yang mengalihkannya ke Mode Lapangan.
+- Keluar dari Mode Lapangan memakai alur logout yang ada, termasuk peringatan perubahan yang belum tersinkron dan pembersihan data lokal (8.17).
+
+### Cakupan
+
+- **Teknisi**:
+  - tiket kerja yang ditugaskan kepadanya: daftar, detail, terima, mulai, checklist, diagnosis/tindakan, minta suku cadang, foto, ringkasan, tanda tangan, selesai;
+  - pindai QR aset, aset ditemukan, riwayat aset;
+  - notifikasi;
+  - akun, antrian sinkronisasi, dan konflik.
+- **Pelapor**:
+  - lapor kerusakan dalam 3 langkah (alat → masalah → kirim), dengan pencegahan laporan ganda dan opsi "lapor lokasi saja";
+  - laporan saya dan lacak laporan;
+  - tambah keterangan;
+  - konfirmasi selesai dengan penilaian;
+  - aset di lokasinya;
+  - notifikasi dan akun.
+
+### Aturan
+
+- Seluruh aturan bisnis tetap milik domain pemiliknya: Pemeliharaan, Aset, Persediaan, Sinkronisasi. Controller Mode Lapangan hanya menyusun data untuk layar dan memanggil Action yang sudah ada. Tidak ada salinan logika status, SLA, stok, atau penomoran.
+- Otorisasi memakai policy yang sama dengan dasbor. Teknisi yang ditugaskan sudah boleh melihat dan mengerjakan tiketnya tanpa `PerintahKerja.Kelola` (`PerintahKerjaPolicy::view/ubahStatus/operate`), dan tampilan lapangan tidak boleh melonggarkannya.
+- Lingkup unit/ruangan (`ScopeLingkup`) dan tenancy berlaku seperti biasa.
+- Teknisi **meminta** suku cadang ke gudang; stok berkurang hanya saat gudang menyerahkan barang. Teknisi tidak diberi `Stok.Kelola`.
+- Pelapor hanya melihat keluhan miliknya. Membuat keluhan tidak butuh izin tambahan (`KeluhanPolicy::create`).
+- Rute Mode Lapangan berada di bawah awalan `/lapangan`. Rute lama `/offline/teknisi` dialihkan ke `/lapangan`, supaya PWA yang sudah terpasang tetap berfungsi.
+- Pindai QR memakai resolusi aset yang sudah ada (`aset.pindai`). Kamera memakai BarcodeDetector bawaan peramban, dengan cadangan isian kode aset. Tidak ada pustaka pemindai baru tanpa persetujuan.
+
+### Perbaikan peran bawaan (prasyarat)
+
+Katalog peran bawaan saat ini memberi izin terlalu luas bagi dua peran lapangan:
+
+- `PELAPOR` memegang `Keluhan.Kelola`, sehingga melihat dan mengubah status seluruh keluhan. Izin ini dicabut dari katalog.
+- `TEKNISI` memegang `PerintahKerja.Kelola` dan `Keluhan.Kelola`, sehingga melihat seluruh tiket organisasi. Keduanya dicabut dari katalog. Teknisi cukup ditugaskan.
+- Pemilihan dasbor bawaan (`LayananDasbor::preset`) diperbaiki agar tidak lagi menukar dasbor Teknisi dengan Supervisor.
+
+Katalog hanya dipakai saat peran bawaan dipasang. Peran milik tenant yang sudah berjalan tidak diubah diam-diam; perubahan untuk tenant lama dilakukan lewat perintah artisan yang eksplisit dan tercatat di audit.
+
+---
+
 ## 9. Search, Filter, dan Data Table
 
 Semua modul daftar utama wajib memiliki pola konsisten:
@@ -1226,6 +1288,8 @@ Quick action sesuai izin:
 - Mulai pekerjaan yang ditugaskan.
 - Inspeksi.
 - Mutasi/serah terima bila workflow mengizinkan.
+
+Di Mode Lapangan (8.20), hasil pindai tampil sebagai lembar "Aset ditemukan" di atas kamera, dengan aksi cepat sesuai izin.
 
 ---
 

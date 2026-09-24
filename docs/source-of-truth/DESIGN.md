@@ -12,6 +12,7 @@
 | Karakter Visual | Teknisi · industri · presisi · operasional |
 | Font Utama | IBM Plex Sans |
 | Font Data Teknis | IBM Plex Mono |
+| Mode Lapangan | Bahasa visual tersendiri untuk peran lapangan (Teknisi, Pelapor): lihat §36 |
 
 ---
 
@@ -779,6 +780,9 @@ bila kalimat bawaannya belum menjelaskan aturan bisnisnya.
 
 ## 15.1 Dashboard Teknisi
 
+> Pengguna lapangan (Teknisi dan Pelapor) tidak melihat dasbor ini: mereka langsung masuk Mode Lapangan (§36).
+> Bagian ini hanya berlaku bagi pengguna yang memegang peran lapangan sekaligus peran meja dan memilih tampilan lengkap.
+
 Urutan:
 
 1. Pekerjaan hari ini.
@@ -961,7 +965,7 @@ Dibatalkan → Grafit
 
 # 19. Iconography
 
-Gunakan Lucide React.
+Gunakan Lucide React. Ikon 3D (clay) hanya dipakai di Mode Lapangan, dengan aturan §36.5; dasbor web tetap Lucide saja.
 
 Aturan:
 
@@ -1396,6 +1400,8 @@ bulat, dan nilai enum (`PerluPerhatian`) ditampilkan sebagai kata (`Perlu Perhat
 
 # 34. Visual QA Checklist
 
+Checklist ini berlaku untuk dasbor web. Halaman Mode Lapangan memakai checklist §36.9: font, gradien hero, dan radius besar di sana memang disengaja.
+
 Sebelum halaman dianggap selesai:
 
 - [ ] Font IBM Plex Sans terpakai.
@@ -1423,6 +1429,8 @@ Sebelum halaman dianggap selesai:
 
 # 35. Design Definition of Done
 
+Berlaku untuk dasbor web; Mode Lapangan memakai §36.9.
+
 Sebuah halaman Amanpoll dinyatakan selesai secara desain hanya bila:
 
 1. Menggunakan token Amanpoll.
@@ -1437,3 +1445,175 @@ Sebuah halaman Amanpoll dinyatakan selesai secara desain hanya bila:
 10. Loading, empty, error, dan permission state sudah dipikirkan.
 11. Tidak ada visual placeholder/template yang tidak relevan.
 12. Tidak terasa seperti template admin generik.
+
+---
+
+# 36. Mode Lapangan (Teknisi dan Pelapor)
+
+Mode Lapangan adalah tampilan bergaya aplikasi HP untuk dua peran lapangan: **Teknisi**, yang mengerjakan tiket kerja, dan **Pelapor**, yaitu staf lokasi atau unit yang melaporkan kerusakan. Pengguna lapangan murni tidak pernah melihat dasbor web.
+
+Desainnya disetujui pemilik produk pada 24 September 2026, sesudah versi pertama yang bergaya panel admin ditolak karena generik. Bahasa visualnya mengacu pada aplikasi KAI Access, ditambah ikon 3D bergaya clay.
+
+## 36.1 Acuan visual yang mengikat
+
+- `docs/source-of-truth/mockup-mode-lapangan/teknisi.png`: 18 layar.
+- `docs/source-of-truth/mockup-mode-lapangan/pelapor.png`: 15 layar.
+
+Kedua papan itu adalah spesifikasi tampilan. Bangun sedekat mungkin dengannya: tata letak, hierarki, komponen, ikon, dan microcopy. Bila papan dan teks bagian ini berbeda, teks bagian ini yang menang.
+
+**Layar 01 "Masuk" di kedua papan tidak dibangun.** Mode Lapangan memakai halaman login yang sudah ada (`resources/js/features/Auth/pages/Login.tsx`) tanpa perubahan tampilan. Setelah login, pengarahan dilakukan di server (PRD 8.20). Jangan membuat halaman login, layar sambutan, atau onboarding baru.
+
+Data di papan (PT Graha Nusantara, Budi, Rina, nomor tiket, aset) hanyalah contoh. Konteks produk tetap multi-industri: jangan menulis istilah khusus satu industri (mis. rumah sakit) di teks antarmuka.
+
+## 36.2 Kerangka layar
+
+- Tanpa sidebar dan tanpa tabel. Satu kolom selebar layar HP; di layar lebar isi dipusatkan dengan lebar maksimum 480px.
+- **Hero**: header gradien biru tua dengan dekorasi lingkaran samar. Isinya sapaan dan nama (atau judul halaman), tombol notifikasi bulat, dan chip status (sinkronisasi, lokasi). Hero naik menutupi area status bar.
+- **Kartu apung**: kartu putih radius 20px yang menimpa bagian bawah hero, berisi ringkasan dan grid menu ikon 3D.
+- **Appbar**: layar alur (detail, formulir, langkah kerja, kamera) memakai header gradien ringkas dengan tombol kembali bulat, judul, dan subjudul. Layar alur tidak memakai navigasi bawah.
+- **Navigasi bawah**: putih, radius atas 26px, lima slot, tombol tengah bulat oranye yang menonjol.
+  - Teknisi: Beranda · Tugas · **Pindai** · Aset · Akun.
+  - Pelapor: Beranda · Laporan · **Lapor** · Aset · Akun.
+  - Tab aktif ditandai ikon oranye dan label tebal.
+- **Bilah aksi**: aksi utama layar alur menempel di bawah, dalam bilah putih radius atas 24px.
+- **Lembar bawah** (bottom sheet) untuk pilihan dan input pendek: minta suku cadang, tambah keterangan, hasil pindai.
+
+## 36.3 Komponen khas
+
+- **Tiket**: kartu dengan sobekan berlekuk di kedua sisi dan garis putus-putus. Dipakai untuk tiket kerja, laporan keluhan, dan bukti selesai.
+- **Rute jam**: dua jam besar dan tebal di kiri-kanan, dihubungkan garis titik dengan ikon 3D di tengah. Contoh: "09.00 Dilaporkan ··⏱ sisa 1j 49m·· 11.30 Target SLA", atau "09.05 Mulai ··42 mnt·· 09.47 Selesai". Dipakai di beranda, daftar, detail, ringkasan, dan layar selesai.
+- **Perhentian (stasiun)**:
+  - Langkah pengerjaan teknisi: Checklist • Diagnosis • Suku cadang • Foto • Selesai. Perhentian yang selesai oranye bertanda centang.
+  - Lacak laporan pelapor: Dilaporkan → Ditinjau → Ditugaskan → Dikerjakan → Selesai. Perhentian saat ini bercincin oranye dan bertanda "Sekarang".
+  - Jadwal hari ini di beranda teknisi.
+- **Chip status**: pil berwarna lembut dengan teks warna -700, selalu bertuliskan statusnya. Pemetaannya:
+  - Kritis / Terlambat: merah.
+  - Tinggi: oranye.
+  - Menunggu…: kuning.
+  - Ditugaskan / Dikerjakan / Diproses: biru.
+  - Selesai / Ditutup: hijau.
+  - Lainnya: abu.
+- **Tab pil**: segmen dengan jumlah (Hari ini 5 · Terlambat 1 · Selesai), bukan tab bergaris.
+- **Isian bergaya formulir tiket**: label kecil di dalam kotak isian putih radius 16px.
+- **Banner info**: kartu gradien (oranye, biru, atau hijau) dengan ikon 3D besar di kanan.
+- **Ilustrasi momen**: layar sukses dan kosong memakai ikon 3D besar (±104px) di dalam lingkaran lembut.
+
+## 36.4 Warna dan tipografi
+
+Token dipasang di `resources/css/app.css` dengan awalan `lapangan-` supaya tidak bercampur dengan palet dasbor. `WarnaPaletTerdefinisiTest` diperluas agar ikut memeriksa awalan ini.
+
+| Token | Nilai | Pemakaian |
+|---|---|---|
+| `lapangan-navy-900` | `#0B2239` | Gradien hero (awal), teks judul papan |
+| `lapangan-navy-800` | `#12324F` | Tab aktif, tombol navy, chip terpilih |
+| `lapangan-biru-600` | `#1F5F8B` | Gradien hero (akhir), teks tautan biru |
+| `lapangan-biru-500` | `#2A7BB0` | Sorotan gradien, fokus isian |
+| `lapangan-biru-50` | `#EAF3F9` | Tint wadah ikon, chip biru |
+| `lapangan-oranye-700` | `#C2530A` | **Tombol aksi utama**; teks putih 4,6:1 |
+| `lapangan-oranye-600` | `#E8650C` | Aksen non-teks: ikon aktif, titik, garis perhentian |
+| `lapangan-oranye-teks` | `#A8470A` | Teks oranye di atas putih/tint (≥ 4,5:1) |
+| `lapangan-oranye-50` | `#FFF1E6` | Tint oranye |
+| `lapangan-hijau-700` / `-50` | `#0E7A4F` / `#E7F6EF` | Status selesai |
+| `lapangan-merah-700` / `-50` | `#B3261E` / `#FDECEA` | Kritis, terlambat, keluar |
+| `lapangan-kuning-700` / `-50` | `#8A5A00` / `#FFF6DC` | Menunggu |
+| `lapangan-teks` | `#0F1B26` | Teks utama |
+| `lapangan-teks-2` | `#4A5866` | Teks sekunder |
+| `lapangan-teks-3` | `#5B6773` | Metadata; 5,3:1 di atas latar (jangan lebih muda) |
+| `lapangan-garis` | `#E3E8EE` | Garis dan bingkai isian |
+| `lapangan-latar` | `#F2F5F8` | Latar layar |
+
+- Gradien hero: `radial-gradient(120% 90% at 100% 0%, #2A7BB0, transparent 55%), linear-gradient(160deg, #0B2239, #12324F 45%, #1F5F8B)`.
+- Font Mode Lapangan: **Plus Jakarta Sans** (400–800). Paket `@fontsource/plus-jakarta-sans` adalah dependensi npm baru dan **wajib disetujui pemilik produk sebelum dipasang**. Sampai disetujui, pakai IBM Plex Sans dengan tata letak yang sama. Dasbor web tetap IBM Plex Sans.
+- Angka dan jam penting besar dan tebal (22–24px, 800) dengan `tabular-nums`. Teks isi 15px. Minimum 12px.
+
+## 36.5 Ikon
+
+- **Ikon 3D clay**: Microsoft Fluent Emoji 3D (lisensi MIT). Berkas PNG 256px disimpan sebagai aset statis di `public/aset/3d/<nama>.png`, beserta berkas lisensinya. Hanya salin ikon yang benar-benar dipakai; ini bukan paket npm.
+  - Dipakai untuk: grid menu, kepala kartu penting, ilustrasi jenis aset, kategori keluhan, banner, layar sukses/kosong, dan baris menu Akun.
+  - Selalu di atas wadah tint radius 16–18px, atau berdiri bebas sebagai ilustrasi.
+- **Lucide** tetap dipakai untuk UI kecil: navigasi bawah, panah, tombol ikon, status bar, dan isi chip.
+- Tidak ada emoji teks di antarmuka.
+
+Pemetaan ikon 3D (nama berkas Fluent) yang dipakai papan acuan:
+
+| Makna | Ikon 3D |
+|---|---|
+| Tiket Saya / checklist | `clipboard`, `memo` |
+| Pindai aset | `magnifying_glass_tilted_left`, `camera`, `camera_with_flash` |
+| Preventif / jadwal | `spiral_calendar`, `alarm_clock` |
+| Suku cadang / gudang | `nut_and_bolt`, `package` |
+| Riwayat | `card_index_dividers`, `bookmark_tabs` |
+| Keluhan / lapor | `megaphone` |
+| Bantuan | `headphone`, `telephone_receiver` |
+| Alat kerja / merek Mode Lapangan | `hammer_and_wrench`, `wrench`, `toolbox`, `gear` |
+| SLA / durasi | `stopwatch`, `hourglass_done` |
+| Selesai / berhasil | `party_popper`, `trophy`, `check_mark_button`, `star`, `sparkles` |
+| Konfirmasi ya / tidak | `thumbs_up`, `cross_mark` |
+| Offline / sinkron | `satellite_antenna`, `cloud`, `mobile_phone` |
+| Lokasi | `round_pushpin`, `office_building`, `door` |
+| Peringatan | `warning`, `construction`, `police_car_light` |
+| Kategori: Listrik, AC & Udara, Air & Pipa, Lift, IT & Printer, Bangunan, Keamanan, Lainnya | `high_voltage`, `snowflake`, `droplet`, `elevator`, `desktop_computer`/`printer`, `brick`, `video_camera`, `toolbox` |
+| Jenis aset (contoh) | genset `battery`, lift `elevator`, AC `snowflake`, pompa `droplet`, forklift `articulated_lorry`, CCTV `video_camera`, panel `electric_plug`, APAR `fire_extinguisher`, lampu `light_bulb` |
+| Akun / notifikasi | `bell`, `shield`, `man_mechanic`, `waving_hand`, `handshake` |
+
+Ikon jenis aset dipilih dari kategori aset. Kategori tanpa padanan memakai `toolbox`.
+
+## 36.6 Layar Teknisi (papan `teknisi.png`)
+
+1. ~~Masuk~~: tidak dibangun, pakai login yang ada.
+2. Menyiapkan Mode Lapangan: paket offline diunduh (persentase, tiket, aset, checklist).
+3. Beranda: hero + chip sinkron. Kartu apung "Jadwal hari ini" dengan perhentian jam, lalu grid menu 4 ikon (Tiket Saya, Pindai Aset, Suku Cadang, Riwayat). Di bawahnya tiket "Kerjakan sekarang" dengan tombol Mulai, dan banner info.
+4. Notifikasi: tab Semua/Tiket/Info, ikon 3D per jenis, penanda belum dibaca.
+5. Tiket Saya: tab pil Hari ini/Terlambat/Selesai. Tiket dengan rute jam dan ikon aset.
+6. Detail tiket: tiket besar (prioritas, status, rute SLA), kartu aset, asal keluhan beserta kutipannya, checklist, lokasi, riwayat aset. Bilah aksi: Alihkan | **Terima & Mulai**.
+7. Checklist: perhentian langkah + timer di appbar. Pilihan Sesuai/Tidak sesuai berukuran besar, isian ukur dengan rentang normal. Bilah aksi: Jeda | Simpan & lanjut.
+8. Diagnosis & tindakan: chip kode kegagalan dengan ikon 3D, isian penyebab/tindakan, tombol dikte.
+9. Minta suku cadang (lembar bawah): stok per gudang, jumlah, gudang ambil. **Teknisi hanya meminta; stok berkurang saat gudang menyerahkan barang.**
+10. Foto sebelum/sesudah: foto tersimpan di HP saat offline (lencana "Di HP").
+11. Ringkasan & tanda tangan: rute Mulai → Selesai, kondisi aset, tanda tangan pengawas.
+12. Selesai: ilustrasi 3D, bukti tiket, tugas berikutnya, "Kembali ke Beranda".
+13. Kamera pindai: layar penuh gelap, bingkai pindai, senter, "Ketik kode aset".
+14. Aset ditemukan (lembar bawah di atas kamera): aset + kondisi, tiket terbuka, aksi cepat (Mulai kerja, Inspeksi, Lapor, Riwayat).
+15. Riwayat aset: ringkasan angka + garis waktu pekerjaan.
+16. Beranda saat offline: chip "Offline · N menunggu dikirim" dan kartu kuning menuju antrian. Semua tetap bisa dipakai.
+17. Akun & sinkronisasi: profil, antrian perubahan, konflik, data offline, bantuan, Keluar.
+18. Konflik: dua kartu versi (perangkat vs server) lengkap dengan siapa dan kapan, bidang yang berbeda, pilih satu. Versi yang tidak dipilih tetap tercatat di riwayat.
+
+## 36.7 Layar Pelapor (papan `pelapor.png`)
+
+1. ~~Masuk~~: tidak dibangun, pakai login yang ada.
+2. Beranda: "Halo, <nama>" + lokasi. Kartu apung dengan aksi besar "Laporkan Kerusakan" dan grid 8 kategori ikon 3D, lalu tiket "Laporan aktif" (yang menunggu konfirmasi disorot dan diberi tombol Konfirmasi).
+3. Notifikasi: kabar status dalam bahasa sehari-hari, dengan tombol aksi bila perlu.
+4. Pilih alat (langkah 1/3, indikator langkah di appbar): kartu "Pindai QR alat", isian lokasi dan cari alat, daftar aset di lokasi, jalan keluar "Tidak tahu alatnya? Laporkan lokasi saja".
+5. Alat ditemukan: aset terisi dari QR. **Cegah laporan ganda**: bila alat sudah punya laporan terbuka, tawarkan "Pantau laporan itu" atau "Tetap lapor".
+6. Apa masalahnya (2/3): kategori, pilihan cepat masalah, cerita singkat + tombol mikrofon, tingkat urgensi dalam bahasa awam (Tidak buru-buru / Mengganggu kerja / Kerja terhenti / Berbahaya), foto.
+7. Tinjau & kirim (3/3): ringkasan bergaya tiket dengan tombol "Ubah" per bagian, kontak, sakelar notifikasi.
+8. Laporan terkirim: nomor laporan ditulis besar seperti kode booking, rute jam kirim → target ditinjau, "apa selanjutnya", catatan kirim otomatis saat offline.
+9. Laporan Saya: tab pil Aktif/Perlu konfirmasi/Selesai. Tiket dengan jejak kemajuan.
+10. Lacak laporan: tiket + rute jam, perhentian perjalanan laporan, kartu teknisi dengan tombol telepon.
+11. Tambah keterangan (lembar bawah): pilihan cepat, catatan, foto.
+12. Konfirmasi selesai: apa yang dikerjakan (foto sebelum/sesudah), dua pilihan besar (jempol/silang), bintang 1–5, komentar.
+13. Terima kasih: ilustrasi 3D, ringkasan perjalanan laporan.
+14. Aset di lokasi: kondisi, penanda laporan terbuka, tombol Lapor per aset, banner info gedung.
+15. Akun: profil + angka ringkas, notifikasi, nomor ekstensi, panduan, pasang aplikasi, Keluar.
+
+## 36.8 Larangan: agar tidak kembali ke gaya panel admin
+
+- Tidak ada tabel, DataTable, sidebar, atau breadcrumb.
+- Tidak ada label kecil HURUF KAPITAL berderet dan tidak ada kartu bergaris tepi kiri berwarna.
+- Tidak ada deretan lencana. Satu hal besar per kartu.
+- Tidak ada grafik KPI.
+- Tidak ada komponen dasbor yang ditempel apa adanya. Komponen `components/ui` boleh dipakai sebagai dasar perilaku (dialog, sheet, input), tetapi tampilannya mengikuti §36.
+
+## 36.9 Checklist Mode Lapangan
+
+- [ ] Sesuai papan acuan: tata letak, komponen, dan ikon.
+- [ ] Hero atau appbar gradien, kartu apung, tiket dengan rute jam dipakai sesuai §36.3.
+- [ ] Aksi utama memakai tombol `lapangan-oranye-700` (teks putih) dan menempel di bawah pada layar alur.
+- [ ] Kontras AA; metadata tidak lebih muda dari `lapangan-teks-3`; teks minimum 12px.
+- [ ] Target sentuh ≥ 44px, tombol utama 52px.
+- [ ] Status selalu bertuliskan teks.
+- [ ] Berfungsi offline sesuai PRD 8.17 dan menampilkan status sinkron.
+- [ ] Keadaan kosong, memuat, galat, dan tanpa izin ada (memakai ilustrasi 3D).
+- [ ] Nyaman di lebar 360px; di layar lebar isi dipusatkan maksimum 480px.
+- [ ] Tidak ada dark mode.

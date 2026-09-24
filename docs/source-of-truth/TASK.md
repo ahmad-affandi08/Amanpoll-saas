@@ -3522,6 +3522,107 @@ di `KatalogPeristiwaPemasaran` punya produsennya kecuali `FORMULIR_DIMULAI` dan
 
 ---
 
+# FASE 39 — Mode Lapangan (Teknisi dan Pelapor)
+
+Tampilan aplikasi HP untuk peran lapangan: PRD 8.20, DESIGN §36. Acuan visual yang mengikat ada di
+`docs/source-of-truth/mockup-mode-lapangan/teknisi.png` dan `pelapor.png`; bangun sedekat mungkin dengannya.
+
+Batasan yang tidak boleh dilanggar:
+- **Tidak membuat halaman login baru.** Layar 01 "Masuk" di kedua papan diberi cap "tidak dibangun". Login tetap
+  memakai halaman dan `LoginController` yang ada; yang berubah hanya tujuan pengalihan sesudah login.
+- Tidak menyalin logika bisnis. Controller Mode Lapangan menyusun data layar dan memanggil Action milik domain
+  pemiliknya (Pemeliharaan, Aset, Persediaan, Sinkronisasi).
+- Infrastruktur offline FASE 20 (antrian, paket, konflik, hook `use-sinkronisasi-offline`) dipakai ulang, tidak ditulis ulang.
+- Penentuan pengguna lapangan memakai penanda pada `Peran`, bukan kode peran harfiah.
+- Dependensi baru butuh persetujuan pemilik produk: font `@fontsource/plus-jakarta-sans` (sampai disetujui pakai IBM Plex
+  Sans), dan pustaka pemindai QR apa pun (bawaannya BarcodeDetector peramban + isian kode). Ikon 3D Fluent Emoji (MIT)
+  adalah berkas statis di `public/aset/3d/`, bukan paket; salin hanya yang dipakai, bersama lisensinya.
+- Rute di bawah `/lapangan`, didaftarkan di `app/Domain/Sinkronisasi/routes.php`, domain yang sudah memiliki ruang kerja
+  teknisi offline. Membuat domain baru di `app/Domain` butuh persetujuan.
+- Halaman di `resources/js/features/Lapangan/`, kerangka di `resources/js/layouts/KerangkaLapangan.tsx`.
+
+Urutan pengerjaan di bawah ini mengikat: 39.01 dan 39.02 menutup celah akses, jadi keduanya dikerjakan lebih dulu.
+
+## 39.01 Peran dan izin bawaan (prasyarat)
+
+- [ ] Cabut `Keluhan.Kelola` dari `PELAPOR` di `KatalogPeranAwal`: pelapor hanya melihat keluhan miliknya.
+- [ ] Cabut `PerintahKerja.Kelola` dan `Keluhan.Kelola` dari `TEKNISI`: teknisi hanya melihat tiket yang ditugaskan kepadanya.
+- [ ] Pastikan teknisi tetap bisa menerima, mengerjakan, dan menyelesaikan tiket yang ditugaskan tanpa `PerintahKerja.Kelola`.
+  Periksa juga minta suku cadang dan pelaksanaan checklist/inspeksi. Bila ada aksi yang ternyata mensyaratkan Kelola,
+  pisahkan izinnya; jangan mengembalikan Kelola.
+- [ ] Perbaiki `LayananDasbor::preset` agar peran teknisi tidak lagi mendapat Dasbor Supervisor.
+- [ ] Perintah artisan eksplisit untuk menerapkan katalog baru ke tenant lama, tercatat di audit. Jangan mengubah peran tenant diam-diam.
+
+## 39.02 Penanda Tampilan Lapangan dan pengarahan
+
+- [ ] Kolom boolean `TampilanLapangan` pada `Peran` (migrasi), bisa diubah di halaman Peran. Katalog: `TEKNISI` dan `PELAPOR` bernilai benar.
+- [ ] Layanan penentu "pengguna lapangan murni" (seluruh perannya bertanda), di-cache seperti `LingkupAkses`.
+- [ ] Setelah login berhasil, pengguna lapangan murni diarahkan ke `/lapangan`.
+- [ ] Middleware host dasbor: pengguna lapangan murni yang membuka halaman dasbor dialihkan ke `/lapangan`. Rute JSON
+  bersama (notifikasi, cari, sinkronisasi, unduhan berkas) tetap bisa diakses.
+- [ ] Pengguna campuran bisa beralih Mode Lapangan ⇄ dasbor dari menu Akun; pilihan diingat per perangkat.
+- [ ] `/offline/teknisi` dialihkan ke `/lapangan`.
+
+## 39.03 Kerangka dan fondasi visual
+
+- [ ] Token `lapangan-*` (DESIGN §36.4) di `app.css`; `WarnaPaletTerdefinisiTest` ikut memeriksa awalan ini.
+- [ ] `KerangkaLapangan`: hero atau appbar gradien, kartu apung, navigasi bawah dengan tombol tengah, bilah aksi, lembar bawah;
+  lebar maksimum 480px di layar lebar.
+- [ ] Komponen tiket, rute jam, perhentian (stasiun), chip status, tab pil, isian bergaya tiket, banner, ilustrasi momen.
+- [ ] Aset ikon 3D di `public/aset/3d/` beserta lisensinya, dengan pemetaan makna → ikon sesuai DESIGN §36.5.
+
+## 39.04 Teknisi: beranda, notifikasi, tiket
+
+- [ ] Menyiapkan Mode Lapangan: pengunduhan paket offline pertama kali (papan layar 02).
+- [ ] Beranda: jadwal hari ini, grid menu, tiket "Kerjakan sekarang", banner (layar 03).
+- [ ] Notifikasi (layar 04).
+- [ ] Tiket Saya dan Detail tiket, termasuk Alihkan dan Terima & Mulai (layar 05–06).
+
+## 39.05 Teknisi: mengerjakan tiket
+
+- [ ] Checklist dengan perhentian langkah dan timer (layar 07).
+- [ ] Diagnosis dan tindakan (layar 08).
+- [ ] Minta suku cadang lewat lembar bawah; hanya permintaan, bukan pengubahan stok (layar 09).
+- [ ] Foto sebelum/sesudah, tersimpan di perangkat saat offline (layar 10).
+- [ ] Ringkasan, tanda tangan, dan layar selesai (layar 11–12).
+
+## 39.06 Teknisi: pindai aset
+
+- [ ] Kamera pindai (BarcodeDetector) dengan cadangan ketik kode aset; keadaan izin kamera ditolak (layar 13).
+- [ ] Aset ditemukan dengan aksi cepat sesuai izin (layar 14).
+- [ ] Riwayat aset (layar 15).
+
+## 39.07 Pelapor: lapor kerusakan
+
+- [ ] Beranda pelapor (papan pelapor layar 02) dan notifikasi (layar 03).
+- [ ] Langkah 1: pilih alat atau pindai QR; lapor lokasi saja (layar 04).
+- [ ] Alat ditemukan beserta pencegahan laporan ganda: pantau laporan yang ada atau tetap lapor (layar 05).
+- [ ] Langkah 2: masalah, urgensi berbahasa awam, foto (layar 06).
+- [ ] Langkah 3: tinjau & kirim; laporan terkirim, juga saat offline (layar 07–08).
+
+## 39.08 Pelapor: pantau dan konfirmasi
+
+- [ ] Laporan Saya dan Lacak laporan (layar 09–10).
+- [ ] Tambah keterangan (layar 11).
+- [ ] Konfirmasi selesai dengan penilaian, dan layar terima kasih (layar 12–13).
+- [ ] Aset di lokasi (layar 14).
+
+## 39.09 Akun, offline, konflik
+
+- [ ] Akun dan sinkronisasi: antrian, konflik, data offline, keluar (papan teknisi layar 17, papan pelapor layar 15).
+- [ ] Beranda saat offline (layar 16) dan layar konflik (layar 18), memakai penyelesaian konflik FASE 20.
+- [ ] Keadaan kosong, memuat, galat, dan tanpa izin di setiap layar (DESIGN §36.9).
+
+### Gate 39
+
+- Pengguna lapangan murni: login lewat halaman yang ada → beranda Mode Lapangan. Membuka URL dasbor mana pun dialihkan
+  kembali ke Mode Lapangan (diuji di test).
+- Teknisi hanya melihat tiket yang ditugaskan kepadanya; pelapor hanya melihat keluhannya sendiri (diuji di test, termasuk lingkup unit).
+- Alur teknisi dari terima sampai selesai dan alur lapor pelapor berjalan offline → online tanpa transaksi ganda.
+- Tampilan sesuai papan acuan dan checklist DESIGN §36.9, diperiksa di lebar 360px dan 390px.
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text
@@ -3604,11 +3705,17 @@ di `KatalogPeristiwaPemasaran` punya produsennya kecuali `FORMULIR_DIMULAI` dan
 37 Dashboard Growth
 ↓
 38 Pemasaran Lanjutan
+↓
+39 Mode Lapangan (Teknisi + Pelapor)
 ```
 
 Alasan urutan tersebut: setiap fase memakai fondasi dari fase sebelumnya. Dashboard berada dekat akhir karena dashboard harus membaca data transaksi yang sudah benar, bukan menjadi halaman demo yang lebih dulu dibuat.
 
 Pemisahan host berada di 24.5 karena ia mengubah rute autentikasi: dikerjakan sebelum Testing Lengkap dan Deployment, bukan sesudahnya. Pemasaran berada setelah rilis karena seluruh prasyaratnya — IAM, Notifikasi, Integrasi, Langganan, UI Core, Hardening — baru lengkap di titik itu, dan attribution lintas host menuntut 24.5 sudah lulus.
+
+Mode Lapangan (39) dikerjakan setelah seluruh modul operasional, offline (20), dan UI Core (23) stabil, karena ia
+hanya wajah baru di atas aksi yang sudah ada. Di dalam fase itu, perbaikan izin peran bawaan (39.01) dan pengarahan
+(39.02) wajib selesai sebelum layar dibangun.
 
 ---
 
