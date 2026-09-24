@@ -48,7 +48,7 @@ const HALAMAN = [
   { nama: 'dashboard', path: '/', teknisi: true },
   { nama: 'keluhan', path: '/pemeliharaan/keluhan', teknisi: true },
   { nama: 'perintah-kerja', path: '/pemeliharaan/perintah-kerja', teknisi: true },
-  { nama: 'offline-teknisi', path: '/offline/teknisi', teknisi: true },
+  { nama: 'mode-lapangan', path: '/lapangan', teknisi: true },
   { nama: 'daftar-periksa', path: '/daftar-periksa/templat', teknisi: true },
   { nama: 'inspeksi', path: '/inspeksi', teknisi: true },
   { nama: 'aset', path: '/aset', teknisi: false },

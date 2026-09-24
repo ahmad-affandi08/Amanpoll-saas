@@ -15,7 +15,7 @@ export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'laporan', judul: 'Laporan dan dasbor' },
   { id: 'kepatuhan', judul: 'Kepatuhan' },
   { id: 'integrasi', judul: 'Integrasi dan kunci API' },
-  { id: 'offline', judul: 'Mode teknisi offline' },
+  { id: 'offline', judul: 'Mode Lapangan' },
   { id: 'audit', judul: 'Log audit' },
 ];
 
@@ -72,13 +72,21 @@ export function Lanjutan() {
         </P>
       </Bagian>
 
-      <Bagian id="offline" judul="Mode teknisi offline">
+      <Bagian id="offline" judul="Mode Lapangan">
         <P>
-          <Jalur ruas={['Platform', 'Mode Teknisi (Offline)']} />
+          Tampilan aplikasi HP untuk teknisi dan pelapor. Pengguna yang seluruh perannya bertanda{' '}
+          <Ui>Tampilan Lapangan</Ui> langsung dibawa ke sini setelah masuk dan tidak melihat dasbor ini.
+          Tandanya diatur per peran di{' '}
+          <Jalur ruas={['Sistem & Konfigurasi', 'Administrasi', 'Peran & Izin']} />: <Ui>Teknisi</Ui> untuk
+          yang mengerjakan tiket kerja, <Ui>Pelapor</Ui> untuk staf lokasi yang melaporkan kerusakan.
         </P>
         <P>
-          Untuk teknisi yang bekerja di area tanpa sinyal — ruang mesin, basement, lapangan. Pekerjaan yang
-          dicatat di mode ini disimpan di perangkat dan dikirim saat jaringan kembali ada.
+          Pengguna yang juga memegang peran lain tetap masuk dasbor dan dapat beralih lewat menu akun,{' '}
+          <Ui>Buka Mode Lapangan</Ui>. Pilihannya diingat di perangkat itu.
+        </P>
+        <P>
+          Mode Lapangan tetap berjalan di area tanpa sinyal — ruang mesin, basement, lapangan. Pekerjaan yang
+          dicatat disimpan di perangkat dan dikirim saat jaringan kembali ada.
         </P>
         <Catatan>
           Pengiriman ulang aman diulang: satu catatan yang terkirim dua kali tidak menjadi dua perintah kerja.

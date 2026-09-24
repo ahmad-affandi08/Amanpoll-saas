@@ -79,7 +79,7 @@ try {
   // "Keluhan" berada di dalam grup yang dapat terlipat, sehingga tidak layak
   // dijadikan penanda bahwa drawer terbuka.
   const drawerTerbuka = await page
-    .getByRole('link', { name: 'Mode Teknisi (Offline)' })
+    .getByRole('link', { name: 'Dashboard' })
     .first()
     .isVisible();
   catat('Menu utama terbuka sebagai drawer', drawerTerbuka);
@@ -170,8 +170,8 @@ try {
     catat('Detail perintah kerja dapat dibuka', false, 'tidak ada perintah kerja pada basis data uji');
   }
 
-  // 5. Mode teknisi offline — jalur kerja lapangan.
-  await page.goto(`${PANGKAL}/offline/teknisi`, { waitUntil: 'networkidle' });
+  // 5. Mode Lapangan — jalur kerja lapangan (dulu /offline/teknisi).
+  await page.goto(`${PANGKAL}/lapangan`, { waitUntil: 'networkidle' });
   const overflowOffline = await page.evaluate(
     () => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
   );

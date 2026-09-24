@@ -13,7 +13,6 @@ import {
   ClipboardList,
   FileSignature,
   ShoppingCart,
-  SmartphoneNfc,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -46,7 +45,6 @@ const navUtama: GrupNav = {
   items: [
     { label: 'Dashboard', href: '/', icon: LayoutDashboard },
     { label: 'Persetujuan Saya', href: '/persetujuan/permintaan', icon: FileCheck },
-    { label: 'Mode Teknisi (Offline)', href: '/offline/teknisi', icon: SmartphoneNfc },
     {
       label: 'Laporan & Dasbor',
       icon: ChartColumn,
