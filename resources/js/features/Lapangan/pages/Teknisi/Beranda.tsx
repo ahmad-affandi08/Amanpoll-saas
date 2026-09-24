@@ -8,7 +8,7 @@ import { ruteLapangan } from '@/features/Lapangan/api';
 import { Banner, PitaInfo } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { Ikon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { JudulBagian, Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { MenuGrid3D } from '@/features/Lapangan/components/MenuGrid3D';
 import { PerhentianJadwal, type HalteJadwal } from '@/features/Lapangan/components/Perhentian';

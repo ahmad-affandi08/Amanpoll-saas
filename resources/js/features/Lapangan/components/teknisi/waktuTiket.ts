@@ -1,5 +1,5 @@
 import type { TitikRute } from '@/features/Lapangan/components/RuteJam';
-import type { NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import type { NamaIkon3D } from '@/components/shared/Ikon3D';
 import type { TiketTeknisi } from '@/features/Lapangan/types';
 import { jamPendek, tanggalPendek } from '@/features/Lapangan/waktu';
 

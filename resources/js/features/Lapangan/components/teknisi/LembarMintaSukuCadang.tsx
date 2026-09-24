@@ -7,7 +7,7 @@ import { http } from '@/lib/http';
 import { cn } from '@/lib/utils';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { WadahIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { WadahIkon3D } from '@/components/shared/Ikon3D';
 import { IsianTiket, MasukanTiket } from '@/features/Lapangan/components/IsianTiket';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';

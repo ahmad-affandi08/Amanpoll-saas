@@ -72,3 +72,22 @@ export function tambahHari(tanggal: string, hari: number): string {
 
   return waktu.toISOString().slice(0, 10);
 }
+
+/**
+ * "Selamat pagi" / "siang" / "sore" / "malam" menurut jam perangkat. Dipakai sapaan Mode
+ * Lapangan (DESIGN.md 36) dan kartu Masuk (DESIGN.md 37).
+ */
+export function salamWaktu(sekarang: Date = new Date()): string {
+  const jam = sekarang.getHours();
+  if (jam >= 4 && jam < 11) {
+    return 'Selamat pagi';
+  }
+  if (jam >= 11 && jam < 15) {
+    return 'Selamat siang';
+  }
+  if (jam >= 15 && jam < 18) {
+    return 'Selamat sore';
+  }
+
+  return 'Selamat malam';
+}

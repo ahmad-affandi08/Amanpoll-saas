@@ -8,7 +8,7 @@ import { DialogKonflik } from '@/features/Sinkronisasi/components/DialogKonflik'
 import type { MutasiOffline, OperasiOffline } from '@/features/Sinkronisasi/types';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
-import { Ikon3D, WadahIkon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, WadahIkon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 import { BarisDaftar, Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
 import { useKeluarLapangan } from '@/features/Lapangan/hooks/use-keluar-lapangan';

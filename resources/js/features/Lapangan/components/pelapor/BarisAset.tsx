@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ChevronRight, ClipboardList, Wrench } from 'lucide-react';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
-import { WadahIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { WadahIkon3D } from '@/components/shared/Ikon3D';
 import { ikonKategori } from '@/features/Lapangan/ikon';
 import type { AsetPelapor, WarnaChip } from '@/features/Lapangan/types';
 

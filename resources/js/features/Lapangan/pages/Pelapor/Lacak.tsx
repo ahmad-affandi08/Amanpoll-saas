@@ -4,7 +4,7 @@ import { useState } from 'react';
 import KerangkaLapangan, { TombolAppbar } from '@/layouts/KerangkaLapangan';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
-import { Ikon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
 import { PerhentianLinimasa, type TitikLinimasa } from '@/features/Lapangan/components/Perhentian';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';

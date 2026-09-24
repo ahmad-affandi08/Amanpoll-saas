@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 
 const KELAS_GRADIEN = {
   oranye: 'gradien-banner-oranye-lapangan',

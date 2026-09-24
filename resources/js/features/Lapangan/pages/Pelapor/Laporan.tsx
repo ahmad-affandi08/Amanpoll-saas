@@ -11,7 +11,7 @@ import { PitaPelapor } from '@/features/Lapangan/components/pelapor/PitaPelapor'
 import { diTabLaporan, type TabLaporan } from '@/features/Lapangan/components/pelapor/status';
 import { TiketLaporan } from '@/features/Lapangan/components/pelapor/TiketLaporan';
 import type { PropsLaporanPelapor } from '@/features/Lapangan/types';
-import type { NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import type { NamaIkon3D } from '@/components/shared/Ikon3D';
 
 const KOSONG: Record<TabLaporan, { ikon: NamaIkon3D; judul: string; teks: string }> = {
   aktif: {

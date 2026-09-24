@@ -9,7 +9,7 @@ import { ruteLapangan } from '@/features/Lapangan/api';
 import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 import { Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
 import type { PropsKonflikTeknisi } from '@/features/Lapangan/types';

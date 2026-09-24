@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
 import { KartuApung } from '@/features/Lapangan/components/Kartu';
-import type { NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import type { NamaIkon3D } from '@/components/shared/Ikon3D';
 import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { PerhentianLangkah, type LangkahPerhentian } from '@/features/Lapangan/components/Perhentian';
 import { ruteLapangan } from '@/features/Lapangan/api';

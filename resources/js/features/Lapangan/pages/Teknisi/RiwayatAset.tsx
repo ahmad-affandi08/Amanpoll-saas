@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import KerangkaLapangan, { TombolAppbar } from '@/layouts/KerangkaLapangan';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 import { Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';

@@ -6,7 +6,7 @@ import { useSinkronisasiOffline } from '@/hooks/use-sinkronisasi-offline';
 import KerangkaLapangan from '@/layouts/KerangkaLapangan';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { PitaInfo } from '@/features/Lapangan/components/Banner';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 import { AreaTiket, IsianTiket } from '@/features/Lapangan/components/IsianTiket';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';

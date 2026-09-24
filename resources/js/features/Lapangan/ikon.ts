@@ -1,5 +1,4 @@
-import type { NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
-import type { TintIkon } from '@/features/Lapangan/types';
+import type { NamaIkon3D, TintIkon } from '@/components/shared/Ikon3D';
 
 interface PadananIkon {
   pola: RegExp;

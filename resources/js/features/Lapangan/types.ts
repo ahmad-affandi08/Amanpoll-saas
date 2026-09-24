@@ -18,9 +18,6 @@ export type PropsLapangan = PageProps;
 /** Warna chip status (DESIGN.md 36.3). Teks -700 di atas tint -50; `putih` untuk chip di atas hero. */
 export type WarnaChip = 'merah' | 'oranye' | 'kuning' | 'biru' | 'hijau' | 'abu' | 'putih';
 
-/** Tint wadah ikon 3D (papan acuan: `.t-oranye`, `.t-hijau`, dst.). */
-export type TintIkon = 'biru' | 'oranye' | 'hijau' | 'kuning' | 'merah' | 'ungu' | 'putih' | 'latar';
-
 /** Keadaan satu perhentian (stasiun): sudah dilewati, sedang berlangsung, atau belum. */
 export type KeadaanPerhentian = 'lewat' | 'kini' | 'nanti';
 

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import KerangkaLapangan from '@/layouts/KerangkaLapangan';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
-import { Ikon3D, WadahIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, WadahIkon3D } from '@/components/shared/Ikon3D';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';
 import { Sobekan } from '@/features/Lapangan/components/Tiket';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';

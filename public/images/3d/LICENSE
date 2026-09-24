@@ -1,5 +1,9 @@
 Ikon 3D di folder ini berasal dari Microsoft Fluent Emoji (https://github.com/microsoft/fluentui-emoji),
-gaya "3D", berkas PNG 256px. Hanya ikon yang dipakai Mode Lapangan yang disalin (DESIGN.md 36.5).
+gaya "3D", berkas PNG 256px. Hanya ikon yang dipakai Mode Lapangan (DESIGN.md 36.5) dan halaman
+autentikasi (DESIGN.md 37) yang disalin. Sumber berkas: assets/<Nama>/3D/<nama>_3d.png di repo itu.
+
+Ditambahkan 24 September 2026 untuk halaman autentikasi (arah desain 2):
+factory, hospital, hotel, key, locked_with_key, rocket, school.
 
 MIT License
 

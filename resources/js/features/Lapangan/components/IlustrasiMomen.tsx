@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 
 export type JenisMomen = 'sukses' | 'kosong' | 'galat' | 'tanpa-izin' | 'offline';
 

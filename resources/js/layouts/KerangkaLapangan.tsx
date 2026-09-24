@@ -74,7 +74,8 @@ import { ruteNotifikasi } from '@/features/Notifikasi/api';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipSinkron } from '@/features/Lapangan/components/ChipSinkron';
 import type { KunciNavLapangan, ModeLapangan, PropsLapangan } from '@/features/Lapangan/types';
-import { inisialNama, salamWaktu } from '@/features/Lapangan/waktu';
+import { inisialNama } from '@/features/Lapangan/waktu';
+import { salamWaktu } from '@/lib/waktu';
 
 interface PropsDasar {
   judulHalaman: string;

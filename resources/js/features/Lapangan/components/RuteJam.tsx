@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 
 export interface TitikRute {
   /** Jam besar, mis. "09.00" atau "±10.30". */

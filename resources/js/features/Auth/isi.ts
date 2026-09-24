@@ -1,96 +1,56 @@
-import type { LucideIcon } from 'lucide-react';
-import { Building2, QrCode, Smartphone, Timer } from 'lucide-react';
+import type { NamaIkon3D } from '@/components/shared/Ikon3D';
 
 /**
- * Salinan panel pemasaran halaman autentikasi (DESIGN.md 37).
+ * Salinan halaman autentikasi (DESIGN.md 37).
  *
- * Seluruh kalimat di sini menjelaskan fitur yang benar-benar ada di produk
- * (PRD 8.7, 8.17, 8.20, 8.21, 8.4, 8.18). Tidak ada testimoni, logo pelanggan,
- * jumlah pengguna, atau angka pencapaian: repo belum punya satu pun yang
- * disetujui. Durasi trial tidak ditulis di sini; ia datang dari server.
+ * Kalimat hero menjelaskan fitur yang benar-benar ada (tiket kerja dengan SLA, Mode Lapangan
+ * di HP, preventif terjadwal). Tidak ada testimoni, logo pelanggan, jumlah pengguna, atau
+ * angka pencapaian: repo belum punya satu pun yang disetujui. Durasi trial tidak ditulis di
+ * sini; ia datang dari server.
  */
 
-export interface ManfaatProduk {
-  ikon: LucideIcon;
-  judul: string;
-  keterangan: string;
-  /** Versi sangat singkat untuk pita manfaat di layar sempit. */
-  ringkas: string;
+export interface JenisTempat {
+  ikon: NamaIkon3D;
+  label: string;
 }
 
-export interface TiketContoh {
-  nomor: string;
-  judul: string;
-  unit: string;
-  status: string;
-  varian: 'proses' | 'perhatian';
-  sla: string;
-}
-
-export const manfaatProduk: ManfaatProduk[] = [
-  {
-    ikon: Timer,
-    judul: 'Tiket kerja dengan SLA',
-    keterangan: 'Keluhan menjadi tiket kerja, tenggat SLA-nya terpantau.',
-    ringkas: 'Tiket kerja dan SLA',
-  },
-  {
-    ikon: Smartphone,
-    judul: 'Mode Lapangan di HP',
-    keterangan: 'Teknisi dan pelapor bekerja dari HP, juga saat sinyal putus.',
-    ringkas: 'Mode Lapangan di HP',
-  },
-  {
-    ikon: QrCode,
-    judul: 'QR di setiap aset',
-    keterangan: 'Pindai label untuk melihat riwayat atau melapor kerusakan.',
-    ringkas: 'QR di setiap aset',
-  },
-  {
-    ikon: Building2,
-    judul: 'Beberapa unit pengelola',
-    keterangan: 'Teknik dan IT punya antrean, teknisi, dan gudang sendiri.',
-    ringkas: 'Beberapa unit pengelola',
-  },
+/** Jenis tempat yang dirawat asetnya (PRD 1, 3.1: multi-industri). Jenis, bukan nama pelanggan. */
+export const jenisTempat: JenisTempat[] = [
+  { ikon: 'factory', label: 'Pabrik' },
+  { ikon: 'office_building', label: 'Gedung' },
+  { ikon: 'package', label: 'Gudang' },
+  { ikon: 'school', label: 'Kampus' },
+  { ikon: 'hotel', label: 'Hotel' },
+  { ikon: 'hospital', label: 'Klinik' },
 ];
 
-/** Data rekaan untuk pratinjau produk; ditandai "Contoh tampilan" di layar, bukan data pelanggan. */
-export const tiketContoh: TiketContoh[] = [
-  {
-    nomor: 'PK-0142',
-    judul: 'AC ruang server tidak dingin',
-    unit: 'IT',
-    status: 'Dikerjakan',
-    varian: 'proses',
-    sla: 'Sisa 3 jam',
-  },
-  {
-    nomor: 'PK-0139',
-    judul: 'Servis berkala genset gedung B',
-    unit: 'Teknik',
-    status: 'Menunggu suku cadang',
-    varian: 'perhatian',
-    sla: 'Sisa 1 hari',
-  },
-];
+/**
+ * Data rekaan untuk tiket ilustrasi hero. Ditandai "Contoh" di layar; bukan data pelanggan.
+ * Bentuknya mengikuti tiket Mode Lapangan (DESIGN.md 36.3): nomor, status, rute jam, teknisi.
+ */
+export const tiketContoh = {
+  nomor: 'PK/2026/0142',
+  status: 'Dikerjakan',
+  judul: 'Genset Gedung B tidak mau menyala',
+  dilaporkan: '08.05',
+  targetSla: '10.30',
+  sisa: 'sisa 1j 25m',
+  teknisi: 'Budi Santoso',
+  inisial: 'BS',
+  keterangan: 'Teknisi listrik · tiba 08.21',
+  posisi: 'Di lokasi',
+} as const;
 
-export const isiPanelAutentikasi = {
-  judul: 'Aset dan pemeliharaan, rapi dalam satu sistem',
-  subjudul: 'Untuk pabrik, gedung, kampus, hotel, rumah sakit, dan organisasi lain yang merawat banyak aset.',
-  pitaBaru: {
-    label: 'Baru',
-    teks: 'Mode Lapangan di HP dan Unit Pengelola',
-  },
-  pratinjau: {
-    judul: 'Ringkasan pemeliharaan',
-    catatan: 'Contoh tampilan',
-    kpi: [
-      { label: 'Tiket terbuka', nilai: '18' },
-      { label: 'Lewat SLA', nilai: '2' },
-      { label: 'Preventif minggu ini', nilai: '11' },
-    ],
-  },
+export const isiAutentikasi = {
+  judulBaris1: 'Tiap aset punya jadwal.',
+  judulBaris2: 'Tiap keluhan punya tenggat.',
+  paragraf:
+    'Teknisi menerima tiket di HP, pengelola melihat pekerjaan bergerak di pabrik, gedung, gudang, sampai kampus.',
+  judulJenisTempat: 'Untuk merawat aset di',
+  catatanContoh: 'Contoh',
+  kaki: 'Manajemen aset dan pemeliharaan',
   ajakan: {
+    pertanyaan: 'Belum punya akun?',
     tombol: (durasiHari: number) => `Coba gratis ${durasiHari} hari`,
   },
 } as const;

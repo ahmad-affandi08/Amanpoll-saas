@@ -6,10 +6,10 @@ import KerangkaLapangan, { TombolAppbar } from '@/layouts/KerangkaLapangan';
 import { ruteNotifikasi } from '@/features/Notifikasi/api';
 import type { Notifikasi } from '@/features/Notifikasi/types';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { WadahIkon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { WadahIkon3D, type NamaIkon3D, type TintIkon } from '@/components/shared/Ikon3D';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
 import { PanelTabPil, TabPil } from '@/features/Lapangan/components/TabPil';
-import type { PropsHalamanNotifikasi, TintIkon } from '@/features/Lapangan/types';
+import type { PropsHalamanNotifikasi } from '@/features/Lapangan/types';
 import { jamPendek, kelompokHari } from '@/features/Lapangan/waktu';
 
 type TabNotifikasi = 'semua' | 'tiket' | 'info';

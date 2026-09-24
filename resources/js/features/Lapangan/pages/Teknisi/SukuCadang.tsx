@@ -4,7 +4,7 @@ import { ruteLapangan } from '@/features/Lapangan/api';
 import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { WadahIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { WadahIkon3D } from '@/components/shared/Ikon3D';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
 import type { PropsSukuCadangTeknisi, WarnaChip } from '@/features/Lapangan/types';
 import { tanggalPendek } from '@/features/Lapangan/waktu';

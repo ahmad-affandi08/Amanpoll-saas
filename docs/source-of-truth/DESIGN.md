@@ -141,7 +141,7 @@ font-family:
 Dasbor web tidak menggunakan:
 
 - Inter.
-- Plus Jakarta Sans (khusus Mode Lapangan, §36.4).
+- Plus Jakarta Sans (hanya Mode Lapangan §36.4 dan halaman autentikasi §37, keduanya disetujui pemilik produk pada 24 September 2026).
 - Roboto.
 - Poppins.
 
@@ -184,7 +184,6 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 
 | Token | Hex | Fungsi |
 |---|---|---|
-| `Teknisi-950` | `#10263A` | Ujung gelap latar panel pemasaran halaman autentikasi (§37) |
 | `Teknisi-900` | `#17324D` | Sidebar, heading kuat, identitas utama |
 | `Teknisi-800` | `#1D4663` | Hover gelap |
 | `Teknisi-700` | `#205B78` | Secondary strong |
@@ -279,7 +278,6 @@ Contoh baseline:
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --color-teknisi-950: #10263A;
   --color-teknisi-900: #17324D;
   --color-teknisi-800: #1D4663;
   --color-teknisi-700: #205B78;
@@ -1463,7 +1461,7 @@ Desainnya disetujui pemilik produk pada 24 September 2026, sesudah versi pertama
 
 Kedua papan itu adalah spesifikasi tampilan. Bangun sedekat mungkin dengannya: tata letak, hierarki, komponen, ikon, dan microcopy. Bila papan dan teks bagian ini berbeda, teks bagian ini yang menang.
 
-**Layar 01 "Masuk" di kedua papan tidak dibangun.** Mode Lapangan memakai halaman login yang sudah ada (`resources/js/features/Auth/pages/Login.tsx`) tanpa perubahan tampilan. Setelah login, pengarahan dilakukan di server (PRD 8.20). Jangan membuat halaman login, layar sambutan, atau onboarding baru.
+**Layar 01 "Masuk" di kedua papan tidak dibangun.** Mode Lapangan memakai halaman login bersama (`resources/js/features/Auth/pages/Login.tsx`, tampilannya §37). Setelah login, pengarahan dilakukan di server (PRD 8.20). Jangan membuat halaman login, layar sambutan, atau onboarding khusus Mode Lapangan.
 
 Data di papan (PT Graha Nusantara, Budi, Rina, nomor tiket, aset) hanyalah contoh. Konteks produk tetap multi-industri: jangan menulis istilah khusus satu industri (mis. rumah sakit) di teks antarmuka.
 
@@ -1526,14 +1524,16 @@ Token dipasang di `resources/css/app.css` dengan awalan `lapangan-` supaya tidak
 | `lapangan-garis` | `#E3E8EE` | Garis dan bingkai isian |
 | `lapangan-garis-2` | `#EEF1F5` | Pemisah baris di dalam kartu |
 | `lapangan-latar` | `#F2F5F8` | Latar layar |
+| `lapangan-oranye-200` | `#FFC58F` | Baris aksen judul hero halaman autentikasi (§37), hanya di atas bagian gelap gradien |
+| `lapangan-biru-100` | `#CFE2EF` | Paragraf hero halaman autentikasi (§37), hanya di atas bagian gelap gradien |
 
 - Gradien hero: `radial-gradient(120% 90% at 100% 0%, #2A7BB0, transparent 55%), linear-gradient(160deg, #0B2239, #12324F 45%, #1F5F8B)`.
-- Font Mode Lapangan: **Plus Jakarta Sans** (400–800), paket `@fontsource/plus-jakarta-sans`, disetujui pemilik produk pada 24 September 2026. Font dipasang lewat atribut `data-tampilan="lapangan"` pada `<html>` selama `KerangkaLapangan` terpasang, sehingga konten portal (lembar bawah, dialog, toast) ikut memakainya. Dasbor web tetap IBM Plex Sans.
+- Font Mode Lapangan: **Plus Jakarta Sans** (400–800), paket `@fontsource/plus-jakarta-sans`, disetujui pemilik produk pada 24 September 2026. Font dipasang lewat atribut `data-tampilan="lapangan"` pada `<html>` selama `KerangkaLapangan` terpasang, sehingga konten portal (lembar bawah, dialog, toast) ikut memakainya. Halaman autentikasi memakai font yang sama lewat `data-tampilan="autentikasi"` (§37, disetujui pada tanggal yang sama bersama arah desain 2). Dasbor web tetap IBM Plex Sans.
 - Angka dan jam penting besar dan tebal (22–24px, 800) dengan `tabular-nums`. Teks isi 15px. Minimum 12px.
 
 ## 36.5 Ikon
 
-- **Ikon 3D clay**: Microsoft Fluent Emoji 3D (lisensi MIT). Berkas PNG 256px disimpan sebagai aset statis di `public/images/3d/<nama>.png`, beserta berkas lisensinya. Hanya salin ikon yang benar-benar dipakai; ini bukan paket npm.
+- **Ikon 3D clay**: Microsoft Fluent Emoji 3D (lisensi MIT). Berkas PNG 256px disimpan sebagai aset statis di `public/images/3d/<nama>.png`, beserta berkas lisensinya. Hanya salin ikon yang benar-benar dipakai; ini bukan paket npm. Komponennya (`Ikon3D`, `WadahIkon3D`, daftar `NAMA_IKON_3D`) ada di `resources/js/components/shared/Ikon3D.tsx` karena dipakai Mode Lapangan dan halaman autentikasi; `Ikon3DTersediaTest` memastikan daftar nama dan berkas di folder itu cocok. Ukuran tampil paling besar ±256px (ukuran berkasnya) agar tidak buram.
   - Dipakai untuk: grid menu, kepala kartu penting, ilustrasi jenis aset, kategori keluhan, banner, layar sukses/kosong, dan baris menu Akun.
   - Selalu di atas wadah tint radius 16–18px, atau berdiri bebas sebagai ilustrasi.
 - **Lucide** tetap dipakai untuk UI kecil: navigasi bawah, panah, tombol ikon, status bar, dan isi chip.
@@ -1560,6 +1560,7 @@ Pemetaan ikon 3D (nama berkas Fluent) yang dipakai papan acuan:
 | Kategori: Listrik, AC & Udara, Air & Pipa, Lift, IT & Printer, Bangunan, Keamanan, Lainnya | `high_voltage`, `snowflake`, `droplet`, `elevator`, `desktop_computer`/`printer`, `brick`, `video_camera`, `toolbox` |
 | Jenis aset (contoh) | genset `battery`, lift `elevator`, AC `snowflake`, pompa `droplet`, forklift `articulated_lorry`, CCTV `video_camera`, panel `electric_plug`, APAR `fire_extinguisher`, lampu `light_bulb` |
 | Akun / notifikasi | `bell`, `shield`, `man_mechanic`, `waving_hand`, `handshake` |
+| Halaman autentikasi (§37) | sapaan `waving_hand`, lupa `key`, reset `locked_with_key`, pilih organisasi `office_building`, daftar trial `rocket`; jenis tempat `factory`, `office_building`, `package`, `school`, `hotel`, `hospital` |
 
 Ikon jenis aset dipilih dari kategori aset. Kategori tanpa padanan memakai `toolbox`.
 
@@ -1629,33 +1630,47 @@ Ikon jenis aset dipilih dari kategori aset. Kategori tanpa padanan memakai `tool
 
 Masuk, Lupa kata sandi, Pilih organisasi, Reset kata sandi, dan Daftar trial dilihat publik, jadi halaman ini juga membawa pesan produk. Kelimanya memakai satu kerangka, `features/Auth/components/KerangkaAutentikasi.tsx`. Fungsinya sama dengan halaman lain: tidak ada halaman login khusus Mode Lapangan (PRD 8.20).
 
-## 37.1 Tata letak
+Tampilannya mengikuti **arah desain 2** (biru merek bergradien, bahasa Mode Lapangan) yang dipilih pemilik produk pada 24 September 2026 dari tiga mockup, menggantikan versi dua kolom dengan panel pemasaran gelap. Login jadi satu keluarga visual dengan aplikasi teknisi: hero gradien, kartu mengapung, tiket bergaya karcis, ikon 3D, dan Plus Jakarta Sans.
 
-- **Desktop (≥ 1024px): dua kolom.** Kiri berlatar putih: logo, judul, formulir selebar 400px (480px untuk Daftar trial) di tengah kolom, lalu tautan sekunder. Kanan: panel pemasaran yang tetap di tempat (`sticky`, setinggi layar) saat formulir panjang digulir.
-- **Tablet dan HP: formulir di layar pertama.** Panel diringkas menjadi pita manfaat di bawah formulir: pita "Baru", judul, empat manfaat versi singkat, dan ajakan trial. Pratinjau produk hanya tampil mulai 640px. Pita tidak boleh berada di atas formulir.
-- Tidak ada gulir horizontal di 390px, 768px, 1280px, maupun 1440px. Di layar setinggi 800px, panel desktop harus muat tanpa digulir; pratinjau hanya menampilkan satu tiket bila tinggi layar ≤ 840px.
+## 37.1 Acuan visual dan tata letak
 
-## 37.2 Isi panel pemasaran
+- Papan acuan: mockup arah 2 (desktop 1440 × 900 dan HP 390 × 844). Bangun sedekat mungkin dengannya; bila papan dan teks bagian ini berbeda, teks ini yang menang.
+- **Hero**: gradien biru (`gradien-hero-autentikasi`: Navy-900 → Navy-800 → Biru-600, sorotan Biru-500 di kanan atas) menempel di atas halaman. Desktop setinggi 560px (580px di 1024–1279px) dengan sudut kanan bawah melengkung 140px, cincin samar, dan jalur putus-putus. HP setinggi 310px (392px mulai 640px) dengan kedua sudut bawah melengkung 36px, satu cincin, dan bulatan oranye lembut.
+- **Desktop (≥ 1024px)**, isi selebar paling banyak 1248px: kiri berisi logo, judul "Tiap aset punya jadwal. / Tiap keluhan punya tenggat." (baris kedua Oranye-200), paragraf pendek, lalu ilustrasi yang menembus batas hero. Kanan berisi kartu formulir 440px (400px di bawah 1280px; Daftar trial 480px/440px) yang mengapung menutupi batas hero, dan footer kecil.
+- **Ilustrasi desktop**: teknisi 3D (`man_mechanic`, 230px) di balik tiket contoh bergaya karcis (sobekan, rute jam 08.05 Dilaporkan → 10.30 Target SLA, teknisi di lokasi), kilau (`sparkles`), serta kotak perkakas dan palu-kunci di tepi hero. Tiket selalu menimpa batas hero karena kotaknya menempel di dasar area hero. Kotak perkakas diperkecil lalu disembunyikan saat kolom kiri lebih sempit dari 640px.
+- **Deretan jenis tempat** "Untuk merawat aset di": Pabrik, Gedung, Gudang, Kampus, Hotel, Klinik, masing-masing ikon 3D di wadah putih 64px. Ini jenis tempat (multi-industri, PRD 1, 3.1), bukan logo atau nama pelanggan. Tampil mulai 640px; di HP disembunyikan agar formulir tetap di layar pertama.
+- **HP dan tablet (< 1024px)**: hero ringkas dengan logo, judul (tanpa paragraf), dan teknisi 3D di kanan; kartu formulir menimpa batas hero. Tombol utama Masuk harus terlihat di layar pertama pada 390 × 844 dan 360 × 740.
+- Tidak ada gulir horizontal di 360px, 390px, 768px, 1024px, 1280px, maupun 1440px.
 
-Seluruh salinan ada di `features/Auth/isi.ts`, tidak ditulis di komponen.
+## 37.2 Kartu formulir
 
-1. Pita "Baru" kecil untuk fitur terbaru (saat ini Mode Lapangan dan Unit Pengelola).
-2. Judul nilai produk dan satu kalimat multi-industri. Amanpoll bukan produk khusus rumah sakit (PRD 1, 3.1).
-3. Ajakan "Coba gratis N hari" ke halaman Daftar trial. N diambil dari server (`amanpoll.langganan.hari_uji_coba`, lewat `LayananKebijakanTenggang::hariUjiCoba()`), bukan ditulis di frontend. Ajakan hanya tampil di Masuk dan Lupa kata sandi, dan hanya bila N > 0. Pilih organisasi, Reset kata sandi, dan Daftar trial tidak menampilkannya karena penggunanya sudah punya akun atau sedang mendaftar.
-4. Empat manfaat dengan ikon Lucide, masing-masing menunjuk fitur yang ada: tiket kerja dan SLA, Mode Lapangan, QR aset, unit pengelola.
-5. Pratinjau produk yang dirakit dari elemen UI dasbor (kartu angka, badge status, baris tiket) dengan data rekaan dan catatan "Contoh tampilan". Bukan gambar dan bukan tangkapan layar pelanggan.
-
-## 37.3 Larangan bukti sosial palsu
-
-Tidak ada testimoni, logo pelanggan, jumlah pengguna, rating, atau klaim angka (mis. "hemat 40%") kecuali sudah disetujui dan sumbernya tercatat di repo, misalnya blok CMS yang diterbitkan. Angka di pratinjau adalah contoh tampilan, bukan klaim, dan harus tetap berlabel begitu.
-
-## 37.4 Warna dan formulir
-
-- Latar panel memakai utilitas `latar-panel-autentikasi` di `app.css`: kisi halus di atas gradien Teknisi-900 ke Teknisi-950, dengan sorotan Teknisi-800. Titik paling terang tetap Teknisi-800, jadi teks putih dan Teknisi-100 di atasnya lolos 4,5:1. Jangan memakai teks Teknisi-300 atau lebih muda di sana.
-- Tombol ajakan di atas panel berlatar putih dengan teks Teknisi-900, bukan amber (§4.2).
-- Isian dan tombol utama setinggi 44px di semua lebar. Label di atas isian; galat di bawah isian dan terhubung lewat `aria-describedby`; bantuan disembunyikan bila galat tampil.
-- Kata sandi punya tombol tampilkan/sembunyikan yang dapat difokus dan bernama ("Tampilkan kata sandi").
+- Kartu putih radius 26px (24px di HP), bayangan `shadow-lapangan-formulir`, padding 36/40/32px (22/20/18px di HP).
+- Kepala kartu: ikon 3D di wadah Oranye-50 56px (48px di HP) lalu judul (h1, 26px/800, Navy-900) dan subjudul 15px. Per halaman:
+  - Masuk: `waving_hand`, sapaan "Selamat pagi/siang/sore/malam" menurut jam lokal peramban (`salamWaktu` di `lib/waktu.ts`), subjudul "Masuk untuk melihat pekerjaan hari ini.".
+  - Lupa kata sandi: `key`. Reset kata sandi: `locked_with_key`. Pilih organisasi: `office_building`. Daftar trial: `rocket`.
+- Isian 52px, radius 14px, bingkai 1,5px `lapangan-garis`, latar `lapangan-latar/50`, ikon Lucide kecil di kiri; fokus berbingkai Biru-500 dengan cincin lembut. Teks 16px.
+- Tombol utama 54px `lapangan-oranye-700` (teks putih 4,6:1), radius 14px. Tautan memakai `lapangan-oranye-teks`. Kotak centang 22px, tercentang Navy-800.
+- Label di atas isian; galat (Merah-700) di bawah isian dan terhubung lewat `aria-describedby`; bantuan disembunyikan bila galat tampil.
+- Kata sandi punya tombol tampilkan/sembunyikan 44px yang dapat difokus dan bernama ("Tampilkan kata sandi").
 - Tombol utama menampilkan keadaan memuat (ikon berputar + kata kerja, mis. "Memeriksa...").
-- `autocomplete`: `email`, `current-password` (Masuk), `new-password` (Reset, Daftar).
+- `autocomplete`: `email`, `current-password` (Masuk), `new-password` (Reset, Daftar). Id isian tetap (`email`, `kata-sandi`, dst.).
 - Pesan sukses flash (sesudah reset atau pendaftaran) tampil di atas formulir dengan `role="status"`.
-- Font tetap IBM Plex Sans. Tanpa kelas `dark:`.
+- Target sentuh ≥ 44px untuk tautan berdiri sendiri ("Lupa kata sandi?", "Kembali ke halaman masuk") dan baris "Ingat saya".
+
+## 37.3 Isi dan ajakan trial
+
+Seluruh salinan hero, tiket contoh, dan jenis tempat ada di `features/Auth/isi.ts`, tidak ditulis di komponen.
+
+- Ajakan "Belum punya akun? Coba gratis N hari" ke halaman Daftar trial. N diambil dari server (`amanpoll.langganan.hari_uji_coba`, lewat `LayananKebijakanTenggang::hariUjiCoba()`, prop `durasiTrialHari`), bukan ditulis di frontend. Ajakan hanya tampil di Masuk dan Lupa kata sandi, dan hanya bila N > 0 (Masuk menampilkan "Daftar" bila N = 0). Pilih organisasi, Reset kata sandi, dan Daftar trial tidak menampilkannya karena penggunanya sudah punya akun atau sedang mendaftar.
+- Tiket di ilustrasi berisi data rekaan dan berlabel kecil "Contoh" di sebelah nomornya. Seluruh ilustrasi `aria-hidden`.
+- Footer: "© <tahun> Amanpoll · Manajemen aset dan pemeliharaan". Jangan menaruh tautan ke halaman yang belum ada (mis. kebijakan privasi, bantuan publik).
+
+## 37.4 Larangan bukti sosial palsu
+
+Tidak ada testimoni, logo pelanggan, jumlah pengguna, rating, atau klaim angka (mis. "hemat 40%") kecuali sudah disetujui dan sumbernya tercatat di repo, misalnya blok CMS yang diterbitkan. Angka di tiket contoh adalah contoh tampilan, bukan klaim, dan harus tetap berlabel begitu. Deretan jenis tempat hanya boleh berisi jenis, bukan nama organisasi.
+
+## 37.5 Warna dan tipografi
+
+- Warna hanya token `lapangan-*` (§36.4), ditambah `lapangan-oranye-200` (`#FFC58F`, baris aksen judul hero) dan `lapangan-biru-100` (`#CFE2EF`, paragraf hero). Keduanya hanya di atas bagian gelap gradien: diukur dari tangkapan layar, latar di belakang teks hero paling terang `rgb(34 72 104)`, jadi Oranye-200 ≥ 6,2:1, Biru-100 ≥ 7,1:1, putih ≥ 9,5:1.
+- Font **Plus Jakarta Sans**, disetujui pemilik produk pada 24 September 2026 bersama arah desain 2. `KerangkaAutentikasi` memasang `data-tampilan="autentikasi"` pada `<html>` selama terpasang dan mencabutnya saat pindah halaman; aturan base di `app.css` memetakannya ke `--font-lapangan`. Dasbor tetap IBM Plex Sans.
+- Tanpa kelas `dark:`.

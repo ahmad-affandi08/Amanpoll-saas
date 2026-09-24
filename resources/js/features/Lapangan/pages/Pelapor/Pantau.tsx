@@ -2,7 +2,7 @@ import { usePage } from '@inertiajs/react';
 import KerangkaLapangan from '@/layouts/KerangkaLapangan';
 import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
-import { Ikon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { Kartu } from '@/features/Lapangan/components/Kartu';
 import { PerhentianLinimasa, type TitikLinimasa } from '@/features/Lapangan/components/Perhentian';
 import { Sobekan } from '@/features/Lapangan/components/Tiket';

@@ -1,6 +1,6 @@
 import { CloudOff, Copy, CopyCheck } from 'lucide-react';
 import { useState } from 'react';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';
 import { Sobekan } from '@/features/Lapangan/components/Tiket';
 import { jamPendek } from '@/features/Lapangan/waktu';

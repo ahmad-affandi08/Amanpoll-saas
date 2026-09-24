@@ -62,7 +62,7 @@ try {
   // 1. Masuk dari ponsel.
   await page.goto(`${PANGKAL}/login`, { waitUntil: 'networkidle' });
   await page.getByLabel('Email').fill(process.env.AUDIT_EMAIL ?? 'admin@amanpoll.test');
-  await page.getByLabel('Kata Sandi').fill(process.env.AUDIT_PASS ?? 'password');
+  await page.locator('#kata-sandi').fill(process.env.AUDIT_PASS ?? 'password');
   await page.getByRole('button', { name: 'Masuk' }).click();
   await page.waitForURL((u) => !u.pathname.endsWith('/login'), { timeout: 20000 });
   catat('Teknisi dapat masuk dari layar 360px', true);

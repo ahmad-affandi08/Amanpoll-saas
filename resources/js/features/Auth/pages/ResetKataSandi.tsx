@@ -1,10 +1,11 @@
 import { FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Lock } from 'lucide-react';
 import { ruteAuth } from '@/features/Auth/api';
 import {
   BidangIsian,
   IsianKataSandi,
+  KELAS_FORMULIR,
   TAUTAN_AUTENTIKASI,
   TombolKirim,
 } from '@/features/Auth/components/IsianAutentikasi';
@@ -26,10 +27,11 @@ export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandi
   return (
     <KerangkaAutentikasi
       judulTab="Reset Kata Sandi"
+      ikon="locked_with_key"
       judul="Buat kata sandi baru"
       deskripsi="Kata sandi baru berlaku untuk akun di organisasi yang disebut pada email reset."
     >
-      <form onSubmit={submit} className="space-y-5" noValidate>
+      <form onSubmit={submit} className={KELAS_FORMULIR} noValidate>
         <BidangIsian
           id="kata-sandi-baru"
           label="Kata sandi baru"
@@ -39,6 +41,7 @@ export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandi
           {(atribut) => (
             <IsianKataSandi
               {...atribut}
+              ikon={Lock}
               autoComplete="new-password"
               autoFocus
               value={form.data.KataSandiBaru}
@@ -51,6 +54,7 @@ export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandi
           {(atribut) => (
             <IsianKataSandi
               {...atribut}
+              ikon={Lock}
               autoComplete="new-password"
               value={form.data.KataSandiBaru_confirmation}
               onChange={(e) => form.setData('KataSandiBaru_confirmation', e.target.value)}
@@ -62,8 +66,11 @@ export default function AuthResetKataSandi({ penggunaId, token }: ResetKataSandi
           Simpan kata sandi baru
         </TombolKirim>
 
-        <p className="text-center text-sm">
-          <Link href={ruteAuth.login} className={`inline-flex items-center gap-1.5 ${TAUTAN_AUTENTIKASI}`}>
+        <p className="text-center text-[15px]">
+          <Link
+            href={ruteAuth.login}
+            className={`inline-flex min-h-11 items-center gap-1.5 ${TAUTAN_AUTENTIKASI}`}
+          >
             <ArrowLeft className="size-4" aria-hidden="true" />
             Kembali ke halaman masuk
           </Link>

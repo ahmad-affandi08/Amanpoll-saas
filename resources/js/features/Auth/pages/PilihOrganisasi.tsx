@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import { Building2, ChevronRight, LoaderCircle } from 'lucide-react';
+import { ChevronRight, LoaderCircle } from 'lucide-react';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { ruteAuth } from '@/features/Auth/api';
 import { TAUTAN_AUTENTIKASI } from '@/features/Auth/components/IsianAutentikasi';
 import { KerangkaAutentikasi } from '@/features/Auth/components/KerangkaAutentikasi';
@@ -33,17 +34,18 @@ export default function AuthPilihOrganisasi({ pilihan }: Props) {
   return (
     <KerangkaAutentikasi
       judulTab="Pilih Organisasi"
+      ikon="office_building"
       judul="Pilih organisasi"
       deskripsi="Email Anda terdaftar di beberapa organisasi. Pilih organisasi yang ingin Anda buka."
     >
-      <div className="space-y-5">
+      <div className="space-y-4">
         {props.errors?.PenggunaId ? (
-          <p role="alert" className="text-sm text-destructive">
+          <p role="alert" className="text-sm font-medium text-lapangan-merah-700">
             {props.errors.PenggunaId}
           </p>
         ) : null}
 
-        <ul className="space-y-2" aria-label="Organisasi Anda">
+        <ul className="space-y-2.5" aria-label="Organisasi Anda">
           {pilihan.map((item) => {
             const sedangDipilih = memproses === item.PenggunaId;
 
@@ -54,21 +56,21 @@ export default function AuthPilihOrganisasi({ pilihan }: Props) {
                   disabled={memproses !== null}
                   aria-busy={sedangDipilih}
                   onClick={() => pilih(item.PenggunaId)}
-                  className="flex min-h-14 w-full items-center gap-3 rounded-[7px] border border-border bg-card px-3 py-2.5 text-left transition-colors hover:border-teknisi-300 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-permukaan-50"
+                  className="flex min-h-16 w-full items-center gap-3 rounded-2xl border-[1.5px] border-lapangan-garis bg-white px-3 py-2.5 text-left transition-colors hover:border-lapangan-biru-500 hover:bg-lapangan-biru-50 focus-visible:border-lapangan-biru-500 focus-visible:ring-4 focus-visible:ring-lapangan-biru-500/15 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-lapangan-latar"
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-teknisi-100 text-teknisi-900">
-                    <Building2 className="size-[18px]" aria-hidden="true" />
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-lapangan-biru-50">
+                    <Ikon3D nama="office_building" ukuran={30} className="drop-shadow-none" />
                   </span>
-                  <span className="min-w-0 flex-1 text-sm font-medium break-words text-foreground">
+                  <span className="min-w-0 flex-1 text-[15px] font-bold break-words text-lapangan-teks">
                     {item.NamaOrganisasi}
                   </span>
                   {sedangDipilih ? (
                     <LoaderCircle
-                      className="size-4 shrink-0 animate-spin text-grafit-500"
+                      className="size-5 shrink-0 animate-spin text-lapangan-teks-3"
                       aria-hidden="true"
                     />
                   ) : (
-                    <ChevronRight className="size-4 shrink-0 text-grafit-500" aria-hidden="true" />
+                    <ChevronRight className="size-5 shrink-0 text-lapangan-teks-3" aria-hidden="true" />
                   )}
                 </button>
               </li>
@@ -76,11 +78,11 @@ export default function AuthPilihOrganisasi({ pilihan }: Props) {
           })}
         </ul>
 
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-[15px] text-lapangan-teks-2">
           Bukan Anda?{' '}
           <button
             type="button"
-            className={`cursor-pointer ${TAUTAN_AUTENTIKASI}`}
+            className={`inline-flex min-h-11 cursor-pointer items-center ${TAUTAN_AUTENTIKASI}`}
             onClick={() => router.delete(ruteAuth.pilihOrganisasi)}
           >
             Kembali

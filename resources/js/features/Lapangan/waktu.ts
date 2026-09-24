@@ -51,15 +51,6 @@ export function kelompokHari(nilai: Date | string, sekarang: Date = new Date()):
   return tanggalPendek(tanggal);
 }
 
-/** "Selamat pagi" / "siang" / "sore" / "malam" menurut jam perangkat. */
-export function salamWaktu(sekarang: Date = new Date()): string {
-  const jam = sekarang.getHours();
-  if (jam >= 4 && jam < 11) return 'Selamat pagi';
-  if (jam >= 11 && jam < 15) return 'Selamat siang';
-  if (jam >= 15 && jam < 18) return 'Selamat sore';
-  return 'Selamat malam';
-}
-
 /** Dua huruf inisial untuk avatar: "Budi Santoso" → "BS". */
 export function inisialNama(nama: string | null | undefined): string {
   if (!nama) return 'AP';

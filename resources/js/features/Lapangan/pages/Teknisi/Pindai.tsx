@@ -6,7 +6,7 @@ import KerangkaLapangan from '@/layouts/KerangkaLapangan';
 import type { PaketOffline } from '@/features/Sinkronisasi/types';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { Ikon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { PemindaiQr } from '@/features/Lapangan/components/PemindaiQr';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';

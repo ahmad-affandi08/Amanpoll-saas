@@ -7,7 +7,7 @@ import { ruteLapangan } from '@/features/Lapangan/api';
 import { Banner } from '@/features/Lapangan/components/Banner';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { WadahIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { WadahIkon3D } from '@/components/shared/Ikon3D';
 import { IsianTiket, MasukanTiket } from '@/features/Lapangan/components/IsianTiket';
 import { BarisDaftar, JudulBagian, Kartu, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';

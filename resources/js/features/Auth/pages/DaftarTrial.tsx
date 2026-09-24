@@ -1,11 +1,13 @@
 import { FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Building2, CreditCard, Lock, Mail, Phone, UserRound } from 'lucide-react';
 import { ruteAuth } from '@/features/Auth/api';
 import {
   BidangIsian,
+  CentangAutentikasi,
   IsianAutentikasi,
   IsianKataSandi,
+  KELAS_FORMULIR,
   TAUTAN_AUTENTIKASI,
   TombolKirim,
 } from '@/features/Auth/components/IsianAutentikasi';
@@ -49,6 +51,7 @@ export default function AuthDaftarTrial({
   return (
     <KerangkaAutentikasi
       judulTab="Coba Gratis"
+      ikon="rocket"
       judul={`Coba Amanpoll ${durasiHari} hari`}
       deskripsi={
         namaPaket
@@ -58,9 +61,9 @@ export default function AuthDaftarTrial({
       lebar="lebar"
     >
       <AturanWajibProvider aturan={wajib.trial}>
-        <form onSubmit={submit} className="space-y-5" noValidate>
+        <form onSubmit={submit} className={KELAS_FORMULIR} noValidate>
           {terkunci ? (
-            <p className="rounded-md border border-safety-600/30 bg-safety-500/15 p-3 text-sm text-safety-700">
+            <p className="rounded-[14px] bg-lapangan-kuning-50 px-4 py-3 text-sm font-medium text-lapangan-kuning-700">
               Pendaftaran mandiri sedang ditutup karena trial menuntut kartu sementara penyedia pembayaran
               yang aktif belum dapat menerimanya. Hubungi tim penjualan untuk memulai.
             </p>
@@ -75,6 +78,7 @@ export default function AuthDaftarTrial({
             {(atribut) => (
               <IsianAutentikasi
                 {...atribut}
+                ikon={Building2}
                 value={form.data.NamaOrganisasi}
                 onChange={(e) => form.setData('NamaOrganisasi', e.target.value)}
                 autoComplete="organization"
@@ -83,11 +87,12 @@ export default function AuthDaftarTrial({
             )}
           </BidangIsian>
 
-          <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+          <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
             <BidangIsian id="nama" label="Nama Anda" nama="Nama" galat={form.errors.Nama}>
               {(atribut) => (
                 <IsianAutentikasi
                   {...atribut}
+                  ikon={UserRound}
                   value={form.data.Nama}
                   onChange={(e) => form.setData('Nama', e.target.value)}
                   autoComplete="name"
@@ -100,6 +105,7 @@ export default function AuthDaftarTrial({
               {(atribut) => (
                 <IsianAutentikasi
                   {...atribut}
+                  ikon={Phone}
                   type="tel"
                   inputMode="tel"
                   value={form.data.Telepon}
@@ -115,6 +121,7 @@ export default function AuthDaftarTrial({
             {(atribut) => (
               <IsianAutentikasi
                 {...atribut}
+                ikon={Mail}
                 type="email"
                 inputMode="email"
                 value={form.data.Email}
@@ -125,7 +132,7 @@ export default function AuthDaftarTrial({
             )}
           </BidangIsian>
 
-          <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+          <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
             <BidangIsian
               id="kata-sandi"
               label="Kata sandi"
@@ -136,6 +143,7 @@ export default function AuthDaftarTrial({
               {(atribut) => (
                 <IsianKataSandi
                   {...atribut}
+                  ikon={Lock}
                   autoComplete="new-password"
                   value={form.data.KataSandi}
                   onChange={(e) => form.setData('KataSandi', e.target.value)}
@@ -147,6 +155,7 @@ export default function AuthDaftarTrial({
               {(atribut) => (
                 <IsianKataSandi
                   {...atribut}
+                  ikon={Lock}
                   autoComplete="new-password"
                   value={form.data.KataSandi_confirmation}
                   onChange={(e) => form.setData('KataSandi_confirmation', e.target.value)}
@@ -167,6 +176,7 @@ export default function AuthDaftarTrial({
               {(atribut) => (
                 <IsianAutentikasi
                   {...atribut}
+                  ikon={CreditCard}
                   value={form.data.TokenKartu}
                   onChange={(e) => form.setData('TokenKartu', e.target.value)}
                 />
@@ -175,9 +185,9 @@ export default function AuthDaftarTrial({
           ) : null}
 
           <div className="space-y-1.5">
-            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-foreground">
-              <Checkbox
-                className="mt-0.5"
+            <label className="flex min-h-11 cursor-pointer items-start gap-2.5 py-2.5 text-sm text-lapangan-teks">
+              <CentangAutentikasi
+                className="-mt-0.5"
                 checked={form.data.Persetujuan}
                 onCheckedChange={(nilai) => form.setData('Persetujuan', nilai === true)}
                 disabled={terkunci}
@@ -187,7 +197,7 @@ export default function AuthDaftarTrial({
               <span>Saya menyetujui syarat layanan dan kebijakan privasi Amanpoll.</span>
             </label>
             {form.errors.Persetujuan ? (
-              <p id="persetujuan-galat" className="text-sm text-destructive">
+              <p id="persetujuan-galat" className="text-sm font-medium text-lapangan-merah-700">
                 {form.errors.Persetujuan}
               </p>
             ) : null}
@@ -201,7 +211,7 @@ export default function AuthDaftarTrial({
             Mulai coba gratis
           </TombolKirim>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="pt-1 text-center text-[15px] text-lapangan-teks-2">
             Sudah punya akun?{' '}
             <Link href={ruteAuth.login} className={TAUTAN_AUTENTIKASI}>
               Masuk

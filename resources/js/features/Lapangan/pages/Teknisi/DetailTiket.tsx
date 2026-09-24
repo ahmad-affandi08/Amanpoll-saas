@@ -7,7 +7,7 @@ import KerangkaLapangan, { TombolAppbar } from '@/layouts/KerangkaLapangan';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { PitaInfo } from '@/features/Lapangan/components/Banner';
 import { AreaTiket, IsianTiket } from '@/features/Lapangan/components/IsianTiket';
-import { WadahIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { WadahIkon3D } from '@/components/shared/Ikon3D';
 import { BarisDaftar, Kartu } from '@/features/Lapangan/components/Kartu';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';

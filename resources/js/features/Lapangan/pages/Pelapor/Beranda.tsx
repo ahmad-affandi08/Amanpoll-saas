@@ -2,7 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { ArrowRight, MapPin } from 'lucide-react';
 import KerangkaLapangan from '@/layouts/KerangkaLapangan';
 import { ruteLapangan } from '@/features/Lapangan/api';
-import { Ikon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
 import { JudulBagian, KartuApung } from '@/features/Lapangan/components/Kartu';
 import { MenuGrid3D, type ItemMenu3D } from '@/features/Lapangan/components/MenuGrid3D';

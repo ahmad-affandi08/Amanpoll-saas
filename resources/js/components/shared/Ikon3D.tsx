@@ -1,10 +1,11 @@
 import { cn } from '@/lib/utils';
-import type { TintIkon } from '@/features/Lapangan/types';
 
 /**
  * Nama ikon 3D (Microsoft Fluent Emoji 3D, MIT) yang tersedia di `public/images/3d/<nama>.png`.
- * Hanya ikon yang dipakai Mode Lapangan (DESIGN.md 36.5). Menambah ikon berarti menyalin
- * berkasnya ke `public/images/3d/` lalu menambah namanya di sini.
+ * Dipakai Mode Lapangan (DESIGN.md 36.5) dan halaman autentikasi (DESIGN.md 37), karena itu
+ * komponennya bersama, bukan milik satu fitur. Hanya ikon yang benar-benar dipakai: menambah
+ * ikon berarti menyalin berkasnya ke `public/images/3d/` lalu menambah namanya di sini
+ * (`Ikon3DTersediaTest` memeriksa keduanya cocok).
  */
 export const NAMA_IKON_3D = [
   'alarm_clock',
@@ -26,6 +27,7 @@ export const NAMA_IKON_3D = [
   'droplet',
   'electric_plug',
   'elevator',
+  'factory',
   'fire',
   'fire_extinguisher',
   'gear',
@@ -33,8 +35,12 @@ export const NAMA_IKON_3D = [
   'handshake',
   'headphone',
   'high_voltage',
+  'hospital',
+  'hotel',
   'hourglass_done',
+  'key',
   'light_bulb',
+  'locked_with_key',
   'magnifying_glass_tilted_left',
   'man_mechanic',
   'megaphone',
@@ -46,8 +52,10 @@ export const NAMA_IKON_3D = [
   'party_popper',
   'police_car_light',
   'printer',
+  'rocket',
   'round_pushpin',
   'satellite_antenna',
+  'school',
   'shield',
   'snowflake',
   'sparkles',
@@ -66,6 +74,9 @@ export const NAMA_IKON_3D = [
 ] as const;
 
 export type NamaIkon3D = (typeof NAMA_IKON_3D)[number];
+
+/** Tint wadah ikon 3D (papan acuan Mode Lapangan: `.t-oranye`, `.t-hijau`, dst.). */
+export type TintIkon = 'biru' | 'oranye' | 'hijau' | 'kuning' | 'merah' | 'ungu' | 'putih' | 'latar';
 
 /** Ukuran bernama (px). Angka bebas juga diterima. */
 const UKURAN_IKON = {

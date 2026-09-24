@@ -8,7 +8,7 @@ import KerangkaLapangan from '@/layouts/KerangkaLapangan';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
 import { IlustrasiMomen } from '@/features/Lapangan/components/IlustrasiMomen';
-import { Ikon3D, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D, type NamaIkon3D } from '@/components/shared/Ikon3D';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';
 import type { PropsSiapkanTeknisi } from '@/features/Lapangan/types';
 import { useKonteksOffline } from '@/features/Lapangan/components/teknisi/sesiKerja';

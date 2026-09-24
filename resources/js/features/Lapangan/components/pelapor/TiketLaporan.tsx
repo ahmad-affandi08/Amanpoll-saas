@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
 import { ruteLapangan } from '@/features/Lapangan/api';
 import { ChipStatus } from '@/features/Lapangan/components/ChipStatus';
-import { WadahIkon3D } from '@/features/Lapangan/components/Ikon3D';
+import { WadahIkon3D } from '@/components/shared/Ikon3D';
 import { Sobekan } from '@/features/Lapangan/components/Tiket';
 import { ikonKategori } from '@/features/Lapangan/ikon';
 import type { LaporanPelapor } from '@/features/Lapangan/types';

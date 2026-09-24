@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { Ikon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { IsianTiket, MasukanTiket } from '@/features/Lapangan/components/IsianTiket';
 import { LembarBawah } from '@/features/Lapangan/components/LembarBawah';
 import { TombolLapangan } from '@/features/Lapangan/components/Tombol';

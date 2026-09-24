@@ -3,7 +3,7 @@ import { ChevronRight, ClockAlert, Siren } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { ChipStatus, labelStatus } from '@/features/Lapangan/components/ChipStatus';
-import { Ikon3D } from '@/features/Lapangan/components/Ikon3D';
+import { Ikon3D } from '@/components/shared/Ikon3D';
 import { RuteJam } from '@/features/Lapangan/components/RuteJam';
 import { JudulTiket, Tiket } from '@/features/Lapangan/components/Tiket';
 import { ikonKategori } from '@/features/Lapangan/ikon';

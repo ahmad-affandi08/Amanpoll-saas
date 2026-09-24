@@ -1,7 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
-import { Ikon3D, kelasTint, type NamaIkon3D } from '@/features/Lapangan/components/Ikon3D';
-import type { TintIkon } from '@/features/Lapangan/types';
+import { Ikon3D, kelasTint, type NamaIkon3D, type TintIkon } from '@/components/shared/Ikon3D';
 
 export interface ItemMenu3D {
   label: string;
