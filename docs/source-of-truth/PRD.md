@@ -1231,6 +1231,10 @@ Tampilan bergaya aplikasi HP (PWA) untuk peran lapangan. Desain dan papan acuann
 - Teknisi **meminta** suku cadang ke gudang; stok berkurang hanya saat gudang menyerahkan barang. Teknisi tidak diberi `Stok.Kelola`.
 - Pelapor hanya melihat keluhan miliknya. Membuat keluhan tidak butuh izin tambahan (`KeluhanPolicy::create`).
 - Teknisi menyelesaikan tiket ke `MenungguVerifikasi`; penutupan ke `Selesai` tetap milik koordinator. Layar Pelapor juga terbuka bagi pengguna mode Teknisi, karena teknisi melapor lewat aksi cepat.
+- Urgensi yang dipilih pelapor adalah **usulan**. Ia disimpan terstruktur pada keluhan dan mengisi otomatis pilihan prioritas di formulir koordinator. Prioritas tetap hanya diubah pemegang `Keluhan.Kelola`.
+- Pelapor boleh memantau laporan rekan pada alat atau lokasi dalam lingkupnya, **hanya garis waktu status**: nomor, judul, alat/lokasi, status, dan jam. Tidak ada nama pelapor, nama teknisi, keterangan, atau foto.
+- Saat konfirmasi, pelapor melihat foto berkategori **Sesudah** dari perintah kerja yang berasal dari keluhannya sendiri. Lampiran lain tetap tertutup.
+- Tanda tangan penerima opsional secara bawaan dan bisa diwajibkan per organisasi lewat konfigurasi. Bila diwajibkan, server menolak penyelesaian tanpa tanda tangan.
 - Konfirmasi pelapor (4.6) hanya untuk keluhan miliknya yang berstatus `Selesai`, dan disimpan di kolom `Rating`/`Ulasan`.
   - "Sudah beres" menutup keluhan (`Ditutup`).
   - "Masih bermasalah" mengembalikannya ke `Diproses`, dengan alasan yang tercatat di riwayat status.
