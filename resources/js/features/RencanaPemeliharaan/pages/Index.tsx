@@ -27,6 +27,11 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { TANPA_PILIHAN, opsiDari, opsiUnitPengelola } from '@/lib/pilihan';
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+import {
+  BidangStrategiJadwal,
+  ringkasPemicu,
+  type StrategiJadwal,
+} from '@/features/RencanaPemeliharaan/components/BidangStrategiJadwal';
 
 interface Props {
   rencana: RencanaPemeliharaan[];
@@ -59,9 +64,10 @@ export default function RencanaPemeliharaanIndex({
     Jenis: 'Preventif',
     TemplatDaftarPeriksaId: '',
     Prioritas: 'Normal',
-    StrategiJadwal: 'Interval',
-    IntervalNilai: 30,
-    IntervalSatuan: 'Hari',
+    StrategiJadwal: 'Interval' as StrategiJadwal,
+    IntervalNilai: 30 as number | null,
+    IntervalSatuan: 'Hari' as string | null,
+    AmbangMeter: null as number | string | null,
     BuatPerintahKerjaHariSebelum: 7,
     Aktif: true,
     UnitPengelolaId: TANPA_PILIHAN,
@@ -175,40 +181,11 @@ export default function RencanaPemeliharaanIndex({
                             )}
                           </div>
 
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                              <Label nama="IntervalNilai" htmlFor="IntervalNilai">
-                                Interval <span className="text-destructive">*</span>
-                              </Label>
-                              <Input
-                                id="IntervalNilai"
-                                type="number"
-                                min={1}
-                                value={form.data.IntervalNilai}
-                                onChange={(e) => form.setData('IntervalNilai', Number(e.target.value))}
-                                required
-                              />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label nama="IntervalSatuan" htmlFor="IntervalSatuan">
-                                Satuan Waktu
-                              </Label>
-                              <Select
-                                value={form.data.IntervalSatuan}
-                                onValueChange={(val) => form.setData('IntervalSatuan', val)}
-                              >
-                                <SelectTrigger id="IntervalSatuan" className="cursor-pointer">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Hari">Hari</SelectItem>
-                                  <SelectItem value="Minggu">Minggu</SelectItem>
-                                  <SelectItem value="Bulan">Bulan</SelectItem>
-                                  <SelectItem value="Tahun">Tahun</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
+                          <BidangStrategiJadwal
+                            nilai={form.data}
+                            ubah={(perubahan) => form.setData((data) => ({ ...data, ...perubahan }))}
+                            galat={form.errors}
+                          />
 
                           <div className="space-y-1.5">
                             <Label nama="TemplatDaftarPeriksaId" htmlFor="TemplatDaftarPeriksaId">
@@ -393,10 +370,8 @@ export default function RencanaPemeliharaanIndex({
 
                   <div className="space-y-1.5 border-t border-border pt-2 text-xs text-grafit-700">
                     <div className="flex items-center justify-between">
-                      <span className="text-grafit-500">Interval:</span>
-                      <span className="font-semibold text-grafit-950">
-                        Setiap {r.IntervalNilai} {r.IntervalSatuan}
-                      </span>
+                      <span className="text-grafit-500">Pemicu:</span>
+                      <span className="text-right font-semibold text-grafit-950">{ringkasPemicu(r)}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-grafit-500">Aset Didaftarkan:</span>

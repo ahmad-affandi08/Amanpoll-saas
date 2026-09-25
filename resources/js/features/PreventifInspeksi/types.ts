@@ -86,10 +86,11 @@ export interface RencanaPemeliharaan {
   TemplatDaftarPeriksaId?: string | null;
   Prioritas: string;
   StrategiJadwal: string;
-  IntervalNilai: number;
-  IntervalSatuan: string;
+  /** Kosong pada rencana yang hanya dipicu pemakaian meter. */
+  IntervalNilai: number | null;
+  IntervalSatuan: string | null;
   BerdasarkanMeter: boolean;
-  AmbangMeter?: number | null;
+  AmbangMeter?: number | string | null;
   ToleransiHari: number;
   BuatPerintahKerjaHariSebelum: number;
   Aktif: boolean;
@@ -110,7 +111,9 @@ export interface RencanaPemeliharaanAset {
   AsetId: string;
   TanggalMulai: string;
   TanggalBerikutnya?: string | null;
-  NilaiMeterBerikutnya?: number | null;
+  NilaiMeterBerikutnya?: number | string | null;
+  MeterAsetId?: string | null;
+  meter_aset?: { Id: string; Nama: string; Satuan: string } | null;
   TerakhirDilaksanakanPada?: string | null;
   Aktif: boolean;
   DibuatPada?: string;

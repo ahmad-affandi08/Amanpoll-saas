@@ -40,8 +40,10 @@ export function DialogUnitPengelolaRencana({
   const pakaiSaran = !rencana.UnitPengelolaId && saranUnitPengelolaId !== null;
   const nilaiAwal = () => ({
     Nama: rencana.Nama,
+    StrategiJadwal: rencana.StrategiJadwal,
     IntervalNilai: rencana.IntervalNilai,
     IntervalSatuan: rencana.IntervalSatuan,
+    AmbangMeter: rencana.AmbangMeter ?? null,
     UnitPengelolaId: rencana.UnitPengelolaId ?? saranUnitPengelolaId ?? TANPA_PILIHAN,
   });
   const form = useForm(nilaiAwal());

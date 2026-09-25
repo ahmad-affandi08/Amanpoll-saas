@@ -7,6 +7,8 @@ namespace App\Domain\PreventifInspeksi\Application\Actions;
 use App\Core\Audit\LayananAudit;
 use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Pemeliharaan\Application\Actions\BuatPerintahKerja;
+use App\Domain\PreventifInspeksi\Application\Services\PembacaMeterPreventif;
+use App\Domain\PreventifInspeksi\Domain\Enums\StrategiJadwalPreventif;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\JadwalPemeliharaan;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\PelaksanaanDaftarPeriksa;
 use App\Domain\PreventifInspeksi\Infrastructure\Persistence\Models\RencanaPemeliharaanAset;
@@ -21,6 +23,7 @@ final class JadwalkanPemeliharaanPreventif
         private readonly KelolaRencanaPemeliharaan $kelolaRencana,
         private readonly LayananAudit $layananAudit,
         private readonly KalenderOrganisasi $kalender,
+        private readonly PembacaMeterPreventif $pembacaMeter,
     ) {}
 
     /**
@@ -59,18 +62,47 @@ final class JadwalkanPemeliharaanPreventif
             $rencana = $asetPlan->rencanaPemeliharaan;
             $aset = $asetPlan->aset;
 
-            if (! $rencana || ! $aset || ! $asetPlan->TanggalBerikutnya) {
+            if (! $rencana || ! $aset) {
                 continue;
             }
+
+            $strategi = StrategiJadwalPreventif::dari($rencana->StrategiJadwal);
 
             // Tanggal acuan dibaca per organisasi: rencana di Jayapura sudah
             // berganti hari dua jam sebelum rencana di Jakarta.
             $acuan = $tanggalAcuan ?? $this->kalender->hariIni($asetPlan->OrganisasiId);
             $hariSebelum = $horizonHari ?? ($rencana->BuatPerintahKerjaHariSebelum ?? 7);
             $batasJadwal = $acuan->addDays($hariSebelum);
-            $tanggalJadwal = CarbonImmutable::parse($asetPlan->TanggalBerikutnya);
 
-            if ($tanggalJadwal->greaterThan($batasJadwal)) {
+            $tanggalJadwal = null;
+            if ($strategi->memakaiKalender() && $asetPlan->TanggalBerikutnya !== null) {
+                $jatuhTempo = CarbonImmutable::parse($asetPlan->TanggalBerikutnya);
+                $tanggalJadwal = $jatuhTempo->greaterThan($batasJadwal) ? null : $jatuhTempo;
+            }
+
+            // Pemicu meter: ambang tercapai berarti servis jatuh tempo hari ini. Pada strategi
+            // kombinasi, mana pun yang lebih dulu tercapai menentukan tanggal jadwalnya.
+            $meter = null;
+            $nilaiMeter = null;
+            $meterTercapai = false;
+            $ambangMeter = (float) $rencana->AmbangMeter;
+            if ($strategi->memakaiMeter() && $ambangMeter > 0) {
+                $meter = $this->pembacaMeter->meterUntuk($asetPlan);
+            }
+
+            if ($meter !== null) {
+                $nilaiMeter = $this->pembacaMeter->nilaiTerkini($meter);
+
+                if ($asetPlan->NilaiMeterBerikutnya === null) {
+                    // Rencana yang ditetapkan sebelum ambangnya dievaluasi: pembacaan sekarang menjadi titik awal.
+                    $asetPlan->update(['MeterAsetId' => $meter->Id, 'NilaiMeterBerikutnya' => $nilaiMeter + $ambangMeter]);
+                } elseif ($nilaiMeter >= (float) $asetPlan->NilaiMeterBerikutnya) {
+                    $meterTercapai = true;
+                    $tanggalJadwal = $tanggalJadwal === null ? $acuan : $tanggalJadwal->min($acuan);
+                }
+            }
+
+            if ($tanggalJadwal === null) {
                 continue;
             }
 
@@ -86,13 +118,25 @@ final class JadwalkanPemeliharaanPreventif
                 continue;
             }
 
-            $hasil = $this->transaksi->jalankan(function () use ($asetPlan, $rencana, $aset, $tanggalJadwal, $penggunaSistem): array {
+            $deskripsi = "Pekerjaan pemeliharaan preventif berkala berdasarkan rencana {$rencana->Kode}.";
+            if ($meterTercapai && $meter !== null) {
+                $deskripsi .= sprintf(
+                    ' Pemakaian %s mencapai %s %s (ambang %s %s).',
+                    $meter->Nama,
+                    $this->angka($nilaiMeter),
+                    $meter->Satuan,
+                    $this->angka((float) $asetPlan->NilaiMeterBerikutnya),
+                    $meter->Satuan,
+                );
+            }
+
+            $hasil = $this->transaksi->jalankan(function () use ($asetPlan, $rencana, $aset, $tanggalJadwal, $penggunaSistem, $strategi, $meter, $nilaiMeter, $ambangMeter, $deskripsi): array {
                 // Unit pengelola: aset lebih dulu, rencana sebagai cadangan (PRD 8.21).
                 $perintahKerja = $this->buatPerintahKerja->jalankan([
                     'OrganisasiId' => $asetPlan->OrganisasiId,
                     'Jenis' => 'Preventif',
                     'Judul' => "Pemeliharaan Preventif: {$rencana->Nama} - {$aset->Nama}",
-                    'Deskripsi' => "Pekerjaan pemeliharaan preventif berkala berdasarkan rencana {$rencana->Kode}.",
+                    'Deskripsi' => $deskripsi,
                     'Prioritas' => $rencana->Prioritas ?? 'Normal',
                     'LokasiId' => $aset->LokasiId,
                     'AsetIds' => [$aset->Id],
@@ -120,16 +164,27 @@ final class JadwalkanPemeliharaanPreventif
                     'DihasilkanOtomatis' => true,
                 ]);
 
-                // Majukan TanggalBerikutnya pada RencanaPemeliharaanAset
-                $tanggalBerikutnyaBaru = $this->kelolaRencana->hitungTanggalBerikutnya(
-                    $tanggalJadwal,
-                    $rencana->IntervalNilai,
-                    $rencana->IntervalSatuan
-                );
+                // Majukan kedua pemicu dari servis ini: pada strategi kombinasi, servis karena
+                // meter juga mengatur ulang tanggal, dan sebaliknya.
+                $tanggalBerikutnyaBaru = null;
+                $perubahan = [];
+                if ($strategi->memakaiKalender() && $rencana->IntervalNilai !== null) {
+                    $tanggalBerikutnyaBaru = $this->kelolaRencana->hitungTanggalBerikutnya(
+                        $tanggalJadwal,
+                        $rencana->IntervalNilai,
+                        (string) $rencana->IntervalSatuan,
+                    );
+                    $perubahan['TanggalBerikutnya'] = $tanggalBerikutnyaBaru->toDateString();
+                }
 
-                $asetPlan->update([
-                    'TanggalBerikutnya' => $tanggalBerikutnyaBaru->toDateString(),
-                ]);
+                if ($meter !== null && $nilaiMeter !== null) {
+                    $perubahan['MeterAsetId'] = $meter->Id;
+                    $perubahan['NilaiMeterBerikutnya'] = $nilaiMeter + $ambangMeter;
+                }
+
+                if ($perubahan !== []) {
+                    $asetPlan->update($perubahan);
+                }
 
                 $this->layananAudit->catat(
                     aksi: 'JadwalPemeliharaan.DibuatOtomatis',
@@ -138,7 +193,8 @@ final class JadwalkanPemeliharaanPreventif
                     dataSesudah: [
                         'Jadwal' => $jadwal->toArray(),
                         'PerintahKerjaId' => $perintahKerja->Id,
-                        'TanggalBerikutnyaBaru' => $tanggalBerikutnyaBaru->toDateString(),
+                        'TanggalBerikutnyaBaru' => $tanggalBerikutnyaBaru?->toDateString(),
+                        'NilaiMeterBerikutnyaBaru' => $perubahan['NilaiMeterBerikutnya'] ?? null,
                     ],
                 );
 
@@ -156,5 +212,10 @@ final class JadwalkanPemeliharaanPreventif
             'perintahKerjaDibuat' => $perintahKerjaDibuat,
             'dilewati' => $dilewati,
         ];
+    }
+
+    private function angka(?float $nilai): string
+    {
+        return number_format((float) $nilai, 0, ',', '.');
     }
 }

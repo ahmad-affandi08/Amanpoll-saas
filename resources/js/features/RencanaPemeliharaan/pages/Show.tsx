@@ -24,10 +24,21 @@ import { opsiDari } from '@/lib/pilihan';
 import { tanggalHariIni } from '@/lib/waktu';
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { DialogUnitPengelolaRencana } from '@/features/RencanaPemeliharaan/components/DialogUnitPengelolaRencana';
+import {
+  memakaiKalender,
+  memakaiMeter,
+  ringkasPemicu,
+} from '@/features/RencanaPemeliharaan/components/BidangStrategiJadwal';
+
+/** Kolom tanggal kalender diserialisasi sebagai tengah malam UTC; bagian tanggalnya yang bermakna. */
+const tanggalKalender = (nilai: string | null | undefined): string | null =>
+  nilai ? nilai.slice(0, 10) : null;
 
 interface Props {
   rencana: RencanaPemeliharaan;
   asetTersedia: { Id: string; KodeAset: string; Nama: string; LokasiId?: string | null }[];
+  /** Meter kumulatif aktif milik aset yang dapat ditetapkan, untuk rencana berbasis pemakaian. */
+  meterKumulatif: { Id: string; AsetId: string; Nama: string; Satuan: string }[];
   templatDaftarPeriksa: { Id: string; Nama: string; Kode: string }[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
@@ -41,6 +52,7 @@ interface Props {
 export default function RencanaPemeliharaanShow({
   rencana,
   asetTersedia,
+  meterKumulatif,
   wajib,
   unitPengelolaDipakai,
   pilihanUnitPengelola,
@@ -53,7 +65,12 @@ export default function RencanaPemeliharaanShow({
     AsetId: '',
     TanggalMulai: tanggalHariIni(),
     TanggalBerikutnya: '',
+    MeterAsetId: '',
   });
+
+  const pakaiMeter = memakaiMeter(rencana.StrategiJadwal);
+  const pakaiKalender = memakaiKalender(rencana.StrategiJadwal);
+  const meterAsetTerpilih = meterKumulatif.filter((meter) => meter.AsetId === formAset.data.AsetId);
 
   const daftarkanAset = (e: FormEvent) => {
     e.preventDefault();
@@ -115,10 +132,7 @@ export default function RencanaPemeliharaanShow({
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-4 w-4 text-grafit-500" />
                   <span>
-                    Interval:{' '}
-                    <strong>
-                      Setiap {rencana.IntervalNilai} {rencana.IntervalSatuan}
-                    </strong>
+                    Pemicu: <strong>{ringkasPemicu(rencana)}</strong>
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -174,7 +188,9 @@ export default function RencanaPemeliharaanShow({
                         </Label>
                         <Combobox
                           nilai={formAset.data.AsetId}
-                          onPilih={(val) => formAset.setData('AsetId', val)}
+                          onPilih={(val) =>
+                            formAset.setData((data) => ({ ...data, AsetId: val, MeterAsetId: '' }))
+                          }
                           opsi={opsiDari(asetBelumTerdaftar, (a) => `${a.KodeAset} - ${a.Nama}`)}
                           placeholder="Pilih unit aset..."
                           className="cursor-pointer"
@@ -195,20 +211,50 @@ export default function RencanaPemeliharaanShow({
                         />
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label nama="TanggalBerikutnya" htmlFor="TanggalBerikutnya">
-                          Tanggal Jatuh Tempo Pertama (Opsional)
-                        </Label>
-                        <DatePicker
-                          value={formAset.data.TanggalBerikutnya}
-                          onChange={(val) => formAset.setData('TanggalBerikutnya', val)}
-                          placeholder="Otomatis dihitung jika kosong"
-                        />
-                        <p className="text-[11px] text-grafit-500">
-                          Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai}{' '}
-                          {rencana.IntervalSatuan}.
-                        </p>
-                      </div>
+                      {pakaiKalender && (
+                        <div className="space-y-1.5">
+                          <Label nama="TanggalBerikutnya" htmlFor="TanggalBerikutnya">
+                            Tanggal Jatuh Tempo Pertama (Opsional)
+                          </Label>
+                          <DatePicker
+                            value={formAset.data.TanggalBerikutnya}
+                            onChange={(val) => formAset.setData('TanggalBerikutnya', val)}
+                            placeholder="Otomatis dihitung jika kosong"
+                          />
+                          <p className="text-[11px] text-grafit-500">
+                            Kosongkan agar otomatis dihitung: Tanggal Mulai + {rencana.IntervalNilai}{' '}
+                            {rencana.IntervalSatuan}.
+                          </p>
+                        </div>
+                      )}
+
+                      {pakaiMeter && formAset.data.AsetId !== '' && (
+                        <div className="space-y-1.5">
+                          <Label nama="MeterAsetId" htmlFor="MeterAsetId">
+                            Meter Pemicu
+                          </Label>
+                          {meterAsetTerpilih.length === 0 ? (
+                            <p className="rounded-md bg-safety-500/10 p-3 text-xs text-safety-700">
+                              Aset ini belum punya meter kumulatif aktif. Tambahkan meter di halaman aset
+                              lebih dulu.
+                            </p>
+                          ) : (
+                            <Combobox
+                              nilai={
+                                formAset.data.MeterAsetId ||
+                                (meterAsetTerpilih.length === 1 ? meterAsetTerpilih[0].Id : '')
+                              }
+                              onPilih={(val) => formAset.setData('MeterAsetId', val)}
+                              opsi={opsiDari(meterAsetTerpilih, (m) => `${m.Nama} (${m.Satuan})`)}
+                              placeholder="Pilih meter..."
+                              className="cursor-pointer"
+                            />
+                          )}
+                          {formAset.errors.MeterAsetId && (
+                            <p className="text-xs text-destructive">{formAset.errors.MeterAsetId}</p>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <DialogFooter>
@@ -278,12 +324,23 @@ export default function RencanaPemeliharaanShow({
                         <td className="px-5 py-4 text-grafit-700 text-xs">
                           {item.aset?.lokasi?.Nama ?? '-'}
                         </td>
-                        <td className="px-5 py-4 text-grafit-700 text-xs">{item.TanggalMulai}</td>
+                        <td className="px-5 py-4 text-grafit-700 text-xs">
+                          {tanggalKalender(item.TanggalMulai)}
+                        </td>
                         <td className="px-5 py-4">
                           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-grafit-700">
                             <Calendar aria-hidden="true" className="size-3.5 text-grafit-500" />
-                            {item.TanggalBerikutnya ?? 'Belum dijadwalkan'}
+                            {pakaiKalender
+                              ? (tanggalKalender(item.TanggalBerikutnya) ?? 'Belum dijadwalkan')
+                              : 'Tanpa kalender'}
                           </span>
+                          {pakaiMeter && (
+                            <div className="mt-1 text-xs text-grafit-500">
+                              {item.meter_aset && item.NilaiMeterBerikutnya != null
+                                ? `${item.meter_aset.Nama} ≥ ${Number(item.NilaiMeterBerikutnya).toLocaleString('id-ID')} ${item.meter_aset.Satuan}`
+                                : 'Meter belum terbaca'}
+                            </div>
+                          )}
                         </td>
                         <td className="px-5 py-4 text-xs text-grafit-500">
                           {item.jadwal && item.jadwal.length > 0 ? (

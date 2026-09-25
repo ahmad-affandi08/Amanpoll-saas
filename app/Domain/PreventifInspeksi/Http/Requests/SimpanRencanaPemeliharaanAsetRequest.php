@@ -22,6 +22,7 @@ final class SimpanRencanaPemeliharaanAsetRequest extends FormRequest
             'AsetId' => ['required', 'string', 'size:26'],
             'TanggalMulai' => ['nullable', 'date'],
             'TanggalBerikutnya' => ['nullable', 'date'],
+            'MeterAsetId' => ['nullable', 'string', 'size:26'],
         ];
     }
 }

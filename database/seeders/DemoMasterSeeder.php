@@ -389,6 +389,7 @@ final class DemoMasterSeeder extends Seeder
             ['UTL-KMP-02', 'Jam operasi', 'jam', 17950, 540],
             ['GDL-FRK-01', 'Hour meter', 'jam', 6120, 165],
             ['GDL-FRK-02', 'Hour meter', 'jam', 6480, 172],
+            ['GDL-FRK-03', 'Hour meter', 'jam', 5890, 158],
             ['PRD-INJ-01', 'Jumlah siklus injeksi', 'siklus', 1850000, 92000],
         ];
 

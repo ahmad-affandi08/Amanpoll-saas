@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\PreventifInspeksi\Http\Controllers;
 
+use App\Domain\Aset\Domain\Enums\JenisMeterAset;
 use App\Domain\Aset\Domain\Enums\StatusAset;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Aset\Infrastructure\Persistence\Models\MeterAset;
 use App\Domain\Platform\Application\Services\OpsiUnitPengelola;
 use App\Domain\PreventifInspeksi\Application\Actions\JadwalkanPemeliharaanPreventif;
 use App\Domain\PreventifInspeksi\Application\Actions\KelolaRencanaPemeliharaan;
@@ -108,13 +110,21 @@ final class RencanaPemeliharaanController extends Controller
         $rencanaPemeliharaan->load([
             'templatDaftarPeriksa',
             'unitPengelola:Id,Kode,Nama',
-            'aset' => fn ($q) => $q->with(['aset.lokasi', 'jadwal' => fn ($j) => $j->latest('TanggalJadwal')->limit(5)]),
+            'aset' => fn ($q) => $q->with(['aset.lokasi', 'meterAset:Id,Nama,Satuan', 'jadwal' => fn ($j) => $j->latest('TanggalJadwal')->limit(5)]),
         ]);
 
         $asetTersedia = Aset::query()
             ->where('Status', StatusAset::Aktif->value)
             ->orderBy('Nama')
             ->get(['Id', 'KodeAset', 'Nama', 'LokasiId']);
+
+        // Pilihan meter pemicu saat aset ditetapkan ke rencana berbasis pemakaian.
+        $meterKumulatif = MeterAset::query()
+            ->whereIn('AsetId', $asetTersedia->pluck('Id'))
+            ->where('Jenis', JenisMeterAset::Kumulatif->value)
+            ->where('Aktif', true)
+            ->orderBy('Nama')
+            ->get(['Id', 'AsetId', 'Nama', 'Satuan']);
 
         $templatList = TemplatDaftarPeriksa::query()
             ->where('Aktif', true)
@@ -125,6 +135,7 @@ final class RencanaPemeliharaanController extends Controller
             'wajib' => ['aset' => AturanWajib::untuk(SimpanRencanaPemeliharaanAsetRequest::class), 'rencana' => AturanWajib::untuk(SimpanRencanaPemeliharaanRequest::class)],
             'rencana' => $rencanaPemeliharaan,
             'asetTersedia' => $asetTersedia,
+            'meterKumulatif' => $meterKumulatif,
             'templatDaftarPeriksa' => $templatList,
             'unitPengelolaDipakai' => OpsiUnitPengelola::dipakai(),
             'pilihanUnitPengelola' => OpsiUnitPengelola::daftar($rencanaPemeliharaan->UnitPengelolaId),
@@ -158,6 +169,7 @@ final class RencanaPemeliharaanController extends Controller
             $request->validated('AsetId'),
             $request->validated('TanggalMulai'),
             $request->validated('TanggalBerikutnya'),
+            $request->validated('MeterAsetId'),
         );
 
         return back()->with('sukses', 'Aset berhasil didaftarkan ke dalam rencana pemeliharaan.');
