@@ -127,7 +127,8 @@ class SiklusAsetTest extends TestCase
         ], $atribut));
     }
 
-    public function test_buat_permintaan_mutasi_gagal_tanpa_nomor_dokumen_diatur(): void
+    /** Organisasi yang belum mengatur pola nomor tetap bisa membuat permintaan: pola bawaan dipasang otomatis. */
+    public function test_buat_permintaan_mutasi_tanpa_nomor_dokumen_diatur_memakai_pola_bawaan(): void
     {
         $organisasi = Organisasi::create(['Nama' => 'Org', 'Kode' => 'ORG-'.uniqid(), 'Status' => 'Aktif']);
         $pengguna = $this->buatPengguna($organisasi, self::IZIN_PENUH);
@@ -141,7 +142,10 @@ class SiklusAsetTest extends TestCase
             'LokasiTujuanId' => $lokasiTujuan->Id,
         ]);
 
-        $response->assertStatus(404);
+        $response->assertRedirect()->assertSessionHasNoErrors();
+        $this->konteks()->tetapkan($organisasi->Id);
+        $nomor = (string) PermintaanMutasiAset::query()->where('OrganisasiId', $organisasi->Id)->value('Nomor');
+        $this->assertMatchesRegularExpression('#^MUT/\d{4}/0001$#', $nomor);
     }
 
     public function test_alur_lengkap_mutasi_aset_dari_draft_sampai_eksekusi(): void

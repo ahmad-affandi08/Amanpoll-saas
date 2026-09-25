@@ -179,7 +179,8 @@ final class KalibrasiFeatureTest extends TestCase
         ], $pengguna->Id);
 
         $this->assertNotNull($pelaksanaan->Nomor);
-        $this->assertStringStartsWith('CAL-', $pelaksanaan->Nomor);
+        // Tanpa pola buatan admin, nomor memakai pola bawaan KAL/{Tahun}/{Nomor:4}.
+        $this->assertMatchesRegularExpression('#^KAL/\d{4}/0001$#', $pelaksanaan->Nomor);
         $this->assertSame(2, $pelaksanaan->hasilTitikUkur()->count());
 
         $hasilItems = $pelaksanaan->hasilTitikUkur()->get();

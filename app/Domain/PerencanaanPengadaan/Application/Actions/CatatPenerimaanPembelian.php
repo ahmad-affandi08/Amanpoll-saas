@@ -23,6 +23,7 @@ use App\Domain\Persediaan\Domain\Enums\JenisMutasiStok;
 use App\Domain\Persediaan\Domain\Enums\StatusMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\DetailMutasiStok;
 use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
+use App\Domain\Platform\Application\Services\LayananNomorDokumen;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use Illuminate\Support\Str;
@@ -35,6 +36,7 @@ final class CatatPenerimaanPembelian
         private readonly BuatAset $buatAset,
         private readonly LayananAudit $audit,
         private readonly KalenderOrganisasi $kalender,
+        private readonly LayananNomorDokumen $nomorDokumen,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -125,7 +127,8 @@ final class CatatPenerimaanPembelian
 
         $mutasi = MutasiStok::create([
             'OrganisasiId' => $penerimaan->OrganisasiId,
-            'Nomor' => 'RCV-STK-'.Str::upper(Str::random(10)),
+            // Bernomor dari pola MutasiStok seperti mutasi lainnya, bukan kode acak.
+            'Nomor' => $this->nomorDokumen->berikutnya($penerimaan->OrganisasiId, 'MutasiStok'),
             'Jenis' => JenisMutasiStok::Penerimaan->value,
             'GudangTujuanId' => $penerimaan->GudangId,
             'ReferensiJenis' => 'PenerimaanPembelian',
@@ -168,10 +171,12 @@ final class CatatPenerimaanPembelian
                 $this->buatAset->jalankan([
                     'OrganisasiId' => $po->OrganisasiId,
                     'UnitOrganisasiId' => $asal->UnitOrganisasiId,
+                    // Bagian yang memelihara aset acuannya ikut memelihara unit barunya, supaya
+                    // keluhan dan perintah kerja atas aset ini tidak jatuh ke antrian tanpa pemilik.
+                    'UnitPengelolaId' => $asal->UnitPengelolaId,
                     'KategoriAsetId' => $asal->KategoriAsetId,
                     'ModelAsetId' => $asal->ModelAsetId,
                     'PenyediaId' => $po->PenyediaId,
-                    'KodeAset' => $po->Nomor.'-'.Str::upper(Str::random(8)),
                     'Nama' => $detailPo->Deskripsi,
                     'NomorSeri' => (string) $nomorSeri,
                     'TanggalPerolehan' => $penerimaan->TanggalTerima->toDateString(),
@@ -181,7 +186,9 @@ final class CatatPenerimaanPembelian
                     'Status' => StatusAset::Aktif->value,
                     'Kondisi' => $detail->Kondisi === 'Baik' ? KondisiAset::Baik->value : KondisiAset::PerluPerhatian->value,
                     'TingkatKritis' => TingkatKritisAset::Normal->value,
-                    'Catatan' => "Dibuat otomatis dari penerimaan {$penerimaan->Nomor}.",
+                    // KodeAset sengaja kosong: mesin kode otomatis memberi kode AST berurutan,
+                    // bukan nomor PO bergaris miring dengan akhiran acak.
+                    'Catatan' => "Dibuat otomatis dari penerimaan {$penerimaan->Nomor} ({$po->Nomor}).",
                 ], $penggunaId);
             }
         }

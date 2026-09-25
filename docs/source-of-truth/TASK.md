@@ -3983,6 +3983,38 @@ Verifikasi: tsc, build, Pint, PHPStan 164 (tidak bertambah), 2.416 test lulus; 1
 
 ---
 
+# FASE 47 — Data demo satu perusahaan lengkap
+
+Pemilik produk minta data awal seeder berupa satu perusahaan yang datanya lumayan lengkap (25 September 2026). Organisasi contoh lama (satu lokasi, dua aset) diganti **PT Sinar Nusantara Industri** (kode `SNI`): produsen kemasan plastik dengan kantor pusat Jakarta, pabrik Cikarang, dan gudang distribusi Surabaya. Koordinator mengerjakan fondasi, master, dan orkestrasi; empat agen paralel menulis seeder riwayat per kelompok modul.
+
+- [x] 47.01 Fondasi: profil, langganan Profesional, 11 unit (TEKFAS dan IT memelihara aset), 15 lokasi bertingkat, hari libur 2026, peran bawaan, 14 pengguna untuk setiap peran.
+- [x] 47.02 Master: 13 kategori aset, 24 merek, 18 model, 10 penyedia, 60 aset, meter jam dengan pembacaan 12 bulan, garansi, 3 gudang, 30 suku cadang dengan saldo awal lewat mutasi yang diposting.
+- [x] 47.03 Riwayat pemeliharaan: SLA dan eskalasi, 11 kategori keluhan, 32 kode kegagalan, 50 keluhan, 67 perintah kerja korektif lengkap dengan penugasan, waktu kerja, downtime, biaya, pemakaian suku cadang, analisis kegagalan, dan konfirmasi pelapor.
+- [x] 47.04 Riwayat preventif dan kalibrasi: 12 templat daftar periksa, 9 rencana preventif, ± 210 PK preventif dari penjadwal resmi, 60 inspeksi, 8 rencana kalibrasi dengan 13 pelaksanaan (satu gagal lalu dikalibrasi ulang).
+- [x] 47.05 Riwayat pengadaan: 6 alur persetujuan, anggaran 2025–2027, usulan aset, rencana pengadaan, 34 PP sampai PO, penerimaan, tagihan, dan pembayaran; mutasi stok transfer, opname, dan pengeluaran.
+- [x] 47.06 Kontrak, kepatuhan, dan siklus aset: 8 kontrak, penilaian penyedia, 7 standar kepatuhan, sertifikasi, mutasi, serah terima, penghapusan, relasi aset, tag, dan komentar.
+- [x] 47.07 Setiap teknisi punya pekerjaan aktif hari ini di Mode Lapangan; inbox penyetuju berisi dokumen menunggu.
+
+Yang dipilih:
+- Transaksi riwayat lewat Action resmi dengan jam dimundurkan (`KonteksDemo::padaWaktu`, termasuk `SET timestamp` sesi MySQL untuk kolom DEFAULT CURRENT_TIMESTAMP), bukan insert mentah, supaya nomor dokumen, saldo stok, SLA, dan audit sama dengan hasil aplikasi.
+- Pola nomor demo tanpa reset tahunan: setiap seeder riwayat kembali ke tahun lalu, dan reset tahunan membuat seeder berikutnya menabrak nomor 0001.
+- `AMANPOLL_DEMO_RIWAYAT=false` menyemai fondasi dan master saja (± 10 detik) alih-alih riwayat setahun (± 2,5 menit); test akun contoh memakainya, satu test menjalankan rantai penuh.
+- Notifikasi in-app riwayat dirapikan di akhir: yang lebih tua dari tiga hari dianggap sudah dibaca, antreannya dibuang.
+
+Bug aplikasi yang ditemukan saat menyemai dan langsung diperbaiki (dengan test regresi):
+- Tenant baru tidak punya pola nomor dokumen, sehingga keluhan, perintah kerja, dan mutasi pertamanya gagal "pola belum diatur". Pola bawaan kini dipasang saat pertama kali dibutuhkan.
+- Cron `pemeliharaan:jadwalkan-preventif` mengisi `DibuatOleh` dengan Id milik baris Izin, sehingga FK menolak setiap kali ada PK preventif yang perlu dibuat.
+- Aset dari penerimaan pembelian berkode `PO/…-<acak>` tanpa unit pengelola; kini kode AST otomatis dan unit pengelola diwarisi dari aset acuan. Mutasi stok penerimaan kini bernomor `MS/…`.
+
+Temuan yang belum dikerjakan (dicatat untuk keputusan pemilik produk):
+- Kalibrasi berhasil "Gagal" tetap memajukan tanggal jatuh tempo, sehingga alat yang gagal tampil valid.
+- Mesin persetujuan tidak membaca `Kondisi`/`KondisiAktivasi` tahap; semua PP melewati seluruh tahap tanpa melihat nilai.
+- Penjadwal preventif mengabaikan ambang meter pada rencana berbasis meter/kombinasi.
+- Butir daftar periksa Ya/Tidak berkalimat negatif selalu dinilai tidak sesuai; pelaksanaan daftar periksa dari PK tidak mencatat pelaksana dan waktu mulai.
+- Penerimaan pembelian hanya bisa dicatat pemegang `Pengadaan.Kelola`, bukan petugas gudang.
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text

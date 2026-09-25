@@ -8,17 +8,48 @@ use App\Core\Organisasi\KalenderOrganisasi;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /** Generator nomor dokumen sequential per organisasi+JenisDokumen. */
 final class LayananNomorDokumen
 {
     private const MAKS_PERCOBAAN = 5;
 
+    /**
+     * Awalan bawaan per jenis dokumen yang dinomori aplikasi.
+     *
+     * Tenant baru (pendaftaran trial maupun organisasi yang dibuat konsol) tidak
+     * pernah dibekali pola nomor, sehingga keluhan, perintah kerja, dan mutasi stok
+     * pertamanya gagal dengan "pola belum diatur". Pola bawaan dipasang saat pertama
+     * kali dibutuhkan; admin tetap bebas mengubahnya di Pengaturan Nomor Dokumen.
+     *
+     * @var array<string, string>
+     */
+    public const AWALAN_BAWAAN = [
+        'Keluhan' => 'KLH',
+        'PerintahKerja' => 'PK',
+        'Inspeksi' => 'INS',
+        'Kalibrasi' => 'KAL',
+        'MutasiStok' => 'MS',
+        'ReservasiSukuCadang' => 'RSV',
+        'UsulanAset' => 'UA',
+        'RencanaPengadaan' => 'RP',
+        'PermintaanPembelian' => 'PP',
+        'PermintaanPenawaran' => 'RFQ',
+        'PesananPembelian' => 'PO',
+        'Kontrak' => 'KTR',
+        'PermintaanMutasiAset' => 'MUT',
+        'PengajuanPenghapusanAset' => 'PHA',
+        'SerahTerimaAset' => 'STA',
+    ];
+
     public function __construct(private readonly KalenderOrganisasi $kalender) {}
 
     public function berikutnya(string $organisasiId, string $jenisDokumen): string
     {
         return DB::transaction(function () use ($organisasiId, $jenisDokumen): string {
+            $this->pastikanPolaBawaan($organisasiId, $jenisDokumen);
+
             $baris = DB::table('NomorDokumen')
                 ->where('OrganisasiId', $organisasiId)
                 ->where('JenisDokumen', $jenisDokumen)
@@ -46,6 +77,8 @@ final class LayananNomorDokumen
     /** Pratinjau nomor berikutnya TANPA mengubah NomorTerakhir. */
     public function pratinjau(string $organisasiId, string $jenisDokumen): string
     {
+        $this->pastikanPolaBawaan($organisasiId, $jenisDokumen);
+
         $baris = DB::table('NomorDokumen')
             ->where('OrganisasiId', $organisasiId)
             ->where('JenisDokumen', $jenisDokumen)
@@ -60,6 +93,42 @@ final class LayananNomorDokumen
         $nomorBerikutnya = ($baris->PeriodeAktif === $periodeSaatIni) ? $baris->NomorTerakhir + 1 : 1;
 
         return $this->format($baris->FormatNomor, (string) $baris->Awalan, $nomorBerikutnya, $periodeSaatIni, $sekarang);
+    }
+
+    /**
+     * Memasang pola `{Awalan}/{Tahun}/{Nomor:4}` bila jenis dokumen yang dikenal belum
+     * punya pola. `insertOrIgnore` di atas indeks unik organisasi+jenis membuat dua
+     * permintaan yang berbarengan tetap berakhir dengan satu baris.
+     */
+    private function pastikanPolaBawaan(string $organisasiId, string $jenisDokumen): void
+    {
+        $awalan = self::AWALAN_BAWAAN[$jenisDokumen] ?? null;
+
+        if ($awalan === null) {
+            return;
+        }
+
+        $ada = DB::table('NomorDokumen')
+            ->where('OrganisasiId', $organisasiId)
+            ->where('JenisDokumen', $jenisDokumen)
+            ->exists();
+
+        if ($ada) {
+            return;
+        }
+
+        DB::table('NomorDokumen')->insertOrIgnore([
+            'Id' => (string) Str::ulid(),
+            'OrganisasiId' => $organisasiId,
+            'JenisDokumen' => $jenisDokumen,
+            'Awalan' => $awalan,
+            'FormatNomor' => '{Awalan}/{Tahun}/{Nomor:4}',
+            'NomorTerakhir' => 0,
+            'ResetPeriode' => 'Tahunan',
+            'PeriodeAktif' => null,
+            'DibuatPada' => now(),
+            'DiperbaruiPada' => now(),
+        ]);
     }
 
     /**

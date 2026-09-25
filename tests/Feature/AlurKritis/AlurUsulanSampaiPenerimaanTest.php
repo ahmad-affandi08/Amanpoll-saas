@@ -328,6 +328,7 @@ final class AlurUsulanSampaiPenerimaanTest extends TestCase
             ->get();
         $this->assertCount(1, $mutasiStok);
         $this->assertSame(JenisMutasiStok::Penerimaan->value, $mutasiStok->first()->Jenis);
+        $this->assertMatchesRegularExpression('#^MS/\d{4}/\d{4}$#', (string) $mutasiStok->first()->Nomor);
         $this->assertSame(StatusMutasiStok::Diposting->value, $mutasiStok->first()->Status);
         $this->assertSame($this->gudang->Id, $mutasiStok->first()->GudangTujuanId);
 
@@ -335,6 +336,9 @@ final class AlurUsulanSampaiPenerimaanTest extends TestCase
         $this->assertSame('Switch akses 24 port', $asetBaru->Nama);
         $this->assertSame($this->asetReferensi->KategoriAsetId, $asetBaru->KategoriAsetId);
         $this->assertSame($this->unit->Id, $asetBaru->UnitOrganisasiId);
+        // Unit pengelola diwarisi dari aset acuan; kode dari mesin kode otomatis, bukan nomor PO acak.
+        $this->assertSame($this->unit->Id, $asetBaru->UnitPengelolaId);
+        $this->assertMatchesRegularExpression('/^AST-\d+$/', (string) $asetBaru->KodeAset);
         $this->assertSame($this->penyedia->Id, $asetBaru->PenyediaId);
         $this->assertSame(StatusAset::Aktif->value, $asetBaru->Status);
         $this->assertSame('2026-03-20', $asetBaru->TanggalPerolehan?->toDateString());
@@ -437,6 +441,7 @@ final class AlurUsulanSampaiPenerimaanTest extends TestCase
         $kategori = KategoriAset::create(['Kode' => 'KAT-JAR', 'Nama' => 'Perangkat Jaringan']);
         $this->asetReferensi = Aset::create([
             'UnitOrganisasiId' => $this->unit->Id,
+            'UnitPengelolaId' => $this->unit->Id,
             'KategoriAsetId' => $kategori->Id,
             'KodeAset' => 'AST-REF-001',
             'Nama' => 'Switch Referensi',

@@ -78,6 +78,8 @@ return [
 
     'demo' => [
         'kata_sandi' => env('AMANPOLL_DEMO_KATA_SANDI', 'password'),
+        // false: DemoAwalSeeder hanya menyemai fondasi dan master (± 10 detik), tanpa riwayat setahun (± 2,5 menit).
+        'riwayat' => (bool) env('AMANPOLL_DEMO_RIWAYAT', true),
     ],
 
     /*

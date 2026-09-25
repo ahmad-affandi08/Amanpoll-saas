@@ -37,9 +37,10 @@ final class BuatPerintahKerja
      * diisi unit organisasi aset utamanya.
      *
      * @param  array<string, mixed>  $data
+     * @param  string|null  $penggunaId  Kosong bila dibuat sistem (penjadwal preventif dari cron).
      * @param  string|null  $unitPengelolaRencana  Unit pengelola rencana preventif asal, bila tiketnya dihasilkan rencana.
      */
-    public function jalankan(array $data, string $penggunaId, ?string $unitPengelolaRencana = null): PerintahKerja
+    public function jalankan(array $data, ?string $penggunaId, ?string $unitPengelolaRencana = null): PerintahKerja
     {
         return $this->transaksi->jalankan(function () use ($data, $penggunaId, $unitPengelolaRencana): PerintahKerja {
             $organisasiId = $this->konteks->wajibId();

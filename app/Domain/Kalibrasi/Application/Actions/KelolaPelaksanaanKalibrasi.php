@@ -16,7 +16,6 @@ use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\TitikUkurKalibrasi;
 use App\Domain\Platform\Application\Services\LayananNomorDokumen;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
-use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 use Carbon\Carbon;
 
 final class KelolaPelaksanaanKalibrasi
@@ -55,11 +54,8 @@ final class KelolaPelaksanaanKalibrasi
             // Generate nomor dokumen pelaksanaan kalibrasi
             $nomor = $data['Nomor'] ?? null;
             if ($nomor === null || trim($nomor) === '') {
-                try {
-                    $nomor = $this->layananNomorDokumen->berikutnya($organisasiId, 'Kalibrasi');
-                } catch (DataTidakDitemukan) {
-                    $nomor = 'CAL-'.$this->kalender->sekarang($organisasiId)->format('Ymd').'-'.str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
-                }
+                // Pola bawaan KAL/{Tahun}/{Nomor} dipasang otomatis bila organisasi belum mengaturnya.
+                $nomor = $this->layananNomorDokumen->berikutnya($organisasiId, 'Kalibrasi');
             }
 
             $pelaksanaan = PelaksanaanKalibrasi::create([

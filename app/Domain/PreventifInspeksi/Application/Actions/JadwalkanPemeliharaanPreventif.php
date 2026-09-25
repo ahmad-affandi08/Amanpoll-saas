@@ -34,7 +34,9 @@ final class JadwalkanPemeliharaanPreventif
         ?string $organisasiId = null,
         ?string $penggunaId = null,
     ): array {
-        $penggunaSistem = $penggunaId ?? '01JAMANPOLL000000000000001';
+        // Tanpa pengguna (cron malam) perintah kerja tercatat dibuat sistem: DibuatOleh kosong.
+        // Dulu diisi Id tetap yang ternyata milik baris Izin, sehingga FK menolak dan cron gagal.
+        $penggunaSistem = $penggunaId;
 
         $query = RencanaPemeliharaanAset::query()
             ->with(['rencanaPemeliharaan', 'aset'])

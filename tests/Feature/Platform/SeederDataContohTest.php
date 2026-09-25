@@ -25,6 +25,18 @@ class SeederDataContohTest extends TestCase
 
     private const EMAIL_ADMIN_CONTOH = 'admin@amanpoll.test';
 
+    /** Kode PT Sinar Nusantara Industri, perusahaan demo yang disemai DemoAwalSeeder. */
+    private const KODE_ORGANISASI_CONTOH = 'SNI';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Yang dijaga di sini hanya akun dan organisasi contoh; riwayat setahun diuji
+        // sekali di SeederUnitPengelolaTest karena memakan waktu ± 2,5 menit.
+        config(['amanpoll.demo.riwayat' => false]);
+    }
+
     private function jadikanProduksi(): void
     {
         $this->app->detectEnvironment(static fn (): string => 'production');
@@ -32,7 +44,7 @@ class SeederDataContohTest extends TestCase
 
     private function jumlahOrganisasiContoh(): int
     {
-        return DB::table('Organisasi')->where('Kode', 'AMANPOLL')->count();
+        return DB::table('Organisasi')->where('Kode', self::KODE_ORGANISASI_CONTOH)->count();
     }
 
     private function jumlahAdminContoh(): int

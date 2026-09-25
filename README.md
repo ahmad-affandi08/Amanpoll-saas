@@ -144,15 +144,30 @@ Bila perubahan tampilan tidak muncul, pastikan `npm run dev` berjalan atau jalan
 
 ## Akun demo
 
-Dibuat oleh `DemoAwalSeeder` (tidak dijalankan di produksi). Kata sandi semua akun adalah nilai `AMANPOLL_DEMO_KATA_SANDI` (bawaan `password`). Organisasi demo: **PT Amanpoll Solusi Teknologi**.
+Dibuat oleh `DemoAwalSeeder` (tidak dijalankan di produksi). Kata sandi semua akun adalah nilai `AMANPOLL_DEMO_KATA_SANDI` (bawaan `password`).
+
+Perusahaan demo: **PT Sinar Nusantara Industri** (kode `SNI`), produsen kemasan plastik dengan kantor pusat di Jakarta, pabrik di Cikarang, dan gudang distribusi di Surabaya. Isinya 11 unit, 15 lokasi, 60 aset, 10 penyedia, 30 suku cadang di 3 gudang, serta riwayat operasional setahun terakhir: keluhan, perintah kerja, preventif, kalibrasi, pengadaan, kontrak, dan kepatuhan. Riwayat lengkap hanya terbentuk di basis data kosong:
+
+```bash
+php artisan migrate:fresh --seed
+```
 
 | Email | Peran | Mendarat di |
 | --- | --- | --- |
-| `admin@amanpoll.test` | Admin organisasi | Dasbor |
-| `koordinator.teknik@amanpoll.test` | Koordinator bagian Teknik & Fasilitas | Dasbor (antrian Teknik & Fasilitas) |
-| `koordinator.it@amanpoll.test` | Koordinator bagian IT | Dasbor (antrian IT) |
-| `teknisi.teknik@amanpoll.test` | Teknisi Teknik & Fasilitas | Mode Lapangan |
+| `admin@amanpoll.test` | Super Administrator | Dasbor |
+| `manajer.aset@amanpoll.test` | Manajer Aset | Dasbor |
+| `koordinator.teknik@amanpoll.test` | Koordinator Pemeliharaan (Teknik & Fasilitas) | Dasbor (antrian Teknik & Fasilitas) |
+| `koordinator.it@amanpoll.test` | Koordinator Pemeliharaan (IT) | Dasbor (antrian IT) |
+| `teknisi.teknik@amanpoll.test` | Teknisi mekanikal (Teknik & Fasilitas) | Mode Lapangan |
+| `teknisi.listrik@amanpoll.test` | Teknisi elektrikal (Teknik & Fasilitas) | Mode Lapangan |
 | `teknisi.it@amanpoll.test` | Teknisi IT | Mode Lapangan |
+| `kalibrasi@amanpoll.test` | Petugas Kalibrasi | Dasbor |
+| `gudang@amanpoll.test` | Operator Gudang | Dasbor |
+| `pengadaan@amanpoll.test` | Staf Pengadaan | Dasbor |
+| `penyetuju@amanpoll.test` | Penyetuju (Direktur Operasional) | Dasbor |
+| `auditor@amanpoll.test` | Auditor | Dasbor |
+| `pelapor@amanpoll.test` | Pelapor (operator produksi) | Mode Lapangan |
+| `pelapor.kantor@amanpoll.test` | Pelapor (staf keuangan) | Mode Lapangan |
 
 Admin konsol platform tidak dibuat seeder. Buat satu lewat tinker, lalu masuk di `/admin-platform/login`:
 

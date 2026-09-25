@@ -342,6 +342,49 @@ final class PreventifInspeksiTest extends TestCase
         $this->assertSame(1, $totalPK, 'Perintah kerja preventif tidak boleh terduplikasi!');
     }
 
+    /**
+     * Cron malam memanggil penjadwal tanpa pengguna. Dulu penjadwal mengisi DibuatOleh
+     * dengan Id tetap yang ternyata milik baris Izin, sehingga FK menolak dan cron gagal
+     * begitu ada perintah kerja yang benar-benar perlu dibuat (test di atas hanya
+     * menjalankan cron saat jadwalnya sudah ada).
+     */
+    public function test_cron_penjadwalan_preventif_tanpa_pengguna_membuat_perintah_kerja_sistem(): void
+    {
+        CarbonImmutable::setTestNow('2026-03-20 08:00:00');
+
+        $organisasi = Organisasi::create(['Kode' => 'ORG-PM-'.uniqid(), 'Nama' => 'Organisasi Cron Preventif']);
+        $manajer = $this->buatPengguna($organisasi, ['Pemeliharaan.Kelola', 'PerintahKerja.Kelola']);
+        $this->tetapkanKonteks($organisasi);
+        $this->siapkanNomorDokumen($organisasi);
+
+        $aset = Aset::create([
+            'OrganisasiId' => $organisasi->Id,
+            'KategoriAsetId' => $this->buatKategoriAset($organisasi)->Id,
+            'KodeAset' => 'AST-CRON-01',
+            'Nama' => 'Kompresor Utama',
+            'Status' => StatusAset::Aktif->value,
+        ]);
+        $kelolaRencana = app(KelolaRencanaPemeliharaan::class);
+        $rencana = $kelolaRencana->buat([
+            'Kode' => 'PM-CRON',
+            'Nama' => 'Preventif Kompresor',
+            'IntervalNilai' => 1,
+            'IntervalSatuan' => 'Bulan',
+            'BuatPerintahKerjaHariSebelum' => 7,
+            'Prioritas' => 'Normal',
+        ], $manajer->Id);
+        $kelolaRencana->tetapkanAset($rencana, $aset->Id, '2026-03-20', '2026-03-23');
+
+        $this->artisan('pemeliharaan:jadwalkan-preventif', [
+            '--organisasi' => $organisasi->Id,
+            '--tanggal' => '2026-03-20',
+        ])->assertSuccessful();
+
+        $perintahKerja = PerintahKerja::query()->where('OrganisasiId', $organisasi->Id)->sole();
+        $this->assertSame('Preventif', $perintahKerja->Jenis);
+        $this->assertNull($perintahKerja->DibuatOleh, 'Perintah kerja dari cron tercatat dibuat sistem.');
+    }
+
     public function test_gate_13_inspeksi_aset_catat_temuan_dan_buat_perintah_kerja_korektif(): void
     {
         CarbonImmutable::setTestNow('2026-03-20 10:00:00');
