@@ -131,8 +131,8 @@ export default function InspeksiIndex({
 
                       <div className="grid gap-4 py-4">
                         <div className="space-y-1.5">
-                          <Label nama="TemplatInspeksiId" htmlFor="TemplatInspeksiId">
-                            Templat Inspeksi <span className="text-destructive">*</span>
+                          <Label nama="TemplatInspeksiId" htmlFor="TemplatInspeksiId" wajib>
+                            Templat Inspeksi
                           </Label>
                           <Combobox
                             nilai={form.data.TemplatInspeksiId}
@@ -144,8 +144,8 @@ export default function InspeksiIndex({
                         </div>
 
                         <div className="space-y-1.5">
-                          <Label nama="AsetId" htmlFor="AsetId">
-                            Unit Aset yang Diinspeksi <span className="text-destructive">*</span>
+                          <Label nama="AsetId" htmlFor="AsetId" wajib>
+                            Unit Aset yang Diinspeksi
                           </Label>
                           <Combobox
                             nilai={form.data.AsetId}
@@ -157,8 +157,8 @@ export default function InspeksiIndex({
                         </div>
 
                         <div className="space-y-1.5">
-                          <Label nama="DijadwalkanPada" htmlFor="DijadwalkanPada">
-                            Tanggal Jadwal Inspeksi <span className="text-destructive">*</span>
+                          <Label nama="DijadwalkanPada" htmlFor="DijadwalkanPada" wajib>
+                            Tanggal Jadwal Inspeksi
                           </Label>
                           <DatePicker
                             value={form.data.DijadwalkanPada}

@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { Link } from '@inertiajs/react';
-import { Info, TriangleAlert } from 'lucide-react';
+import { ArrowUpRight, Info, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIzin } from '@/hooks/use-izin';
+import { cariMenuDariJalur, izinMenuTerpenuhi } from '@/layouts/navigasi';
 
 /**
  * Satu-satunya tempat gaya teks dokumentasi ditetapkan.
@@ -90,16 +92,36 @@ export function TautanDoc({ ke, children }: { ke: string; children: ReactNode })
   );
 }
 
-/** Jalur menu, mis. Sistem & Konfigurasi -> Struktur & Platform -> Lokasi. */
+/**
+ * Jalur menu, mis. Sistem & Konfigurasi -> Struktur & Platform -> Lokasi, dengan tautan langsung
+ * ke halamannya. Tautan hanya muncul bila pembaca boleh membuka menu itu; jalur yang labelnya
+ * tidak lagi ada di sidebar tampil tanpa tautan (`data-jalur-tanpa-tautan`), agar mudah disapu.
+ */
 export function Jalur({ ruas }: { ruas: string[] }) {
+  const { boleh } = useIzin();
+  const menu = cariMenuDariJalur(ruas);
+  const bolehBuka = menu !== null && izinMenuTerpenuhi(menu.kodeIzin, boleh);
+
   return (
-    <span className="inline-flex flex-wrap items-center gap-1 align-middle">
+    <span
+      className="inline-flex flex-wrap items-center gap-1 align-middle"
+      data-jalur-tanpa-tautan={menu === null ? '' : undefined}
+    >
       {ruas.map((satu, ke) => (
         <span key={satu} className="inline-flex items-center gap-1">
           {ke > 0 && <span className="text-muted-foreground">›</span>}
           <Ui>{satu}</Ui>
         </span>
       ))}
+      {menu && bolehBuka && (
+        <Link
+          href={menu.href}
+          className="ml-1 inline-flex items-center gap-0.5 rounded-xs px-1 text-[0.8125rem] font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          Buka halaman
+          <ArrowUpRight aria-hidden="true" className="size-3.5" />
+        </Link>
+      )}
     </span>
   );
 }

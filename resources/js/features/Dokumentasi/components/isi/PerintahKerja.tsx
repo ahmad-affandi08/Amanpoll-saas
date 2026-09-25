@@ -11,6 +11,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'membuat', judul: 'Membuat perintah kerja' },
@@ -32,6 +33,105 @@ export function PerintahKerja() {
           <Butir>Dari rencana pemeliharaan preventif, dibuatkan sistem sesuai jadwalnya.</Butir>
           <Butir>Dibuat langsung, untuk pekerjaan yang tidak berawal dari laporan siapa pun.</Butir>
         </Daftar>
+        <Tangkapan
+          gambar="perintah-kerja/daftar"
+          alt="Halaman daftar perintah kerja dengan menu Perintah Kerja dan tombol Buat Perintah Kerja"
+          langkah={[
+            {
+              penanda: 'menu',
+              isi: (
+                <>
+                  Buka menu <Ui>Pemeliharaan</Ui> › <Ui>Perintah Kerja</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'buat',
+              isi: (
+                <>
+                  Klik <Ui>Buat Perintah Kerja</Ui> untuk pekerjaan baru.
+                </>
+              ),
+            },
+            {
+              penanda: 'buka',
+              isi: (
+                <>
+                  Klik nomor perintah kerja (mis. <Ui>PK/2026/0067</Ui>) untuk melihat dan mengerjakannya.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="perintah-kerja/formulir"
+          alt="Formulir Buat Perintah Kerja"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Bila pekerjaan berasal dari keluhan, pilih keluhannya di bagian paling atas; judul dan aset
+                  terisi sendiri.
+                </>
+              ),
+            },
+            {
+              penanda: 'jenis',
+              isi: (
+                <>
+                  Pilih <Ui>Jenis Pekerjaan</Ui>: korektif untuk perbaikan, preventif untuk perawatan rutin.
+                </>
+              ),
+            },
+            {
+              penanda: 'prioritas',
+              isi: (
+                <>
+                  Tentukan <Ui>Prioritas</Ui>, lalu centang aset yang ditangani di daftar di bawahnya.
+                </>
+              ),
+            },
+            {
+              penanda: 'simpan',
+              isi: (
+                <>
+                  Klik <Ui>Simpan Perintah Kerja</Ui>.
+                </>
+              ),
+            },
+          ]}
+        />
+        <SubJudul>Mengerjakan perintah kerja</SubJudul>
+        <Tangkapan
+          gambar="perintah-kerja/detail"
+          alt="Halaman detail perintah kerja dengan tombol Tugaskan Teknisi, Mulai Kerja, dan Reservasi Suku Cadang"
+          langkah={[
+            {
+              penanda: 'tugaskan',
+              isi: (
+                <>
+                  Klik <Ui>Tugaskan Teknisi</Ui> untuk memilih pelaksana.
+                </>
+              ),
+            },
+            {
+              penanda: 'mulai',
+              isi: (
+                <>
+                  Teknisi mengeklik <Ui>Mulai Kerja</Ui> saat tiba di lokasi; jam kerjanya mulai dihitung.
+                </>
+              ),
+            },
+            {
+              penanda: 'suku',
+              isi: (
+                <>
+                  Klik <Ui>Reservasi Suku Cadang</Ui> untuk menahan barang yang akan dipakai.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
 
       <Bagian id="status" judul="Status">

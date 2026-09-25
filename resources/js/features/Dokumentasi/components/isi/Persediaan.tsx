@@ -10,6 +10,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'gudang', judul: 'Gudang dan lokasi rak' },
@@ -49,6 +50,28 @@ export function Persediaan() {
         <P>
           <Jalur ruas={['Persediaan & Rekanan', 'Persediaan', 'Suku Cadang']} />
         </P>
+        <Tangkapan
+          gambar="persediaan/suku-cadang"
+          alt="Halaman daftar suku cadang dengan tombol Tambah Suku Cadang"
+          langkah={[
+            {
+              penanda: 'menu',
+              isi: (
+                <>
+                  Buka menu <Ui>Persediaan</Ui> › <Ui>Suku Cadang</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'tambah',
+              isi: (
+                <>
+                  Klik <Ui>Tambah Suku Cadang</Ui>, lalu isi nama, satuan dasar, dan stok minimum.
+                </>
+              ),
+            },
+          ]}
+        />
         <Daftar>
           <Butir>
             <Ui>Satuan Dasar</Ui> wajib dan tidak boleh berubah setelah ada stok, karena seluruh saldo
@@ -76,6 +99,21 @@ export function Persediaan() {
         <P>
           <Jalur ruas={['Persediaan & Rekanan', 'Persediaan', 'Stok Gudang']} />
         </P>
+        <Tangkapan
+          gambar="persediaan/stok"
+          alt="Halaman stok gudang dengan kolom fisik, ditahan, dan tersedia bersih"
+          langkah={[
+            { penanda: 'gudang', isi: <>Pilih gudang untuk melihat saldo satu gudang saja.</> },
+            {
+              penanda: 'tersedia',
+              isi: (
+                <>
+                  Baca kolom <Ui>Tersedia Bersih</Ui> untuk tahu berapa yang benar-benar boleh diambil.
+                </>
+              ),
+            },
+          ]}
+        />
         <P>Ada tiga angka dan ketiganya berbeda:</P>
         <Daftar>
           <Butir>

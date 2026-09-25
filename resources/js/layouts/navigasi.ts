@@ -52,6 +52,44 @@ export function izinMenuTerpenuhi(
   return typeof kodeIzin === 'string' ? boleh(kodeIzin) : kodeIzin.some(boleh);
 }
 
+/**
+ * Menu yang dirujuk jalur dokumentasi, mis. ['Operasional & Aset', 'Pemeliharaan', 'Perintah Kerja'].
+ * Dicari dari label, bukan ditulis ulang sebagai URL, supaya panduan ikut berpindah bila menu pindah
+ * dan jalur yang labelnya usang terlihat (tidak punya tautan).
+ */
+export function cariMenuDariJalur(
+  ruas: readonly string[],
+): { href: string; kodeIzin?: string | readonly string[] | null } | null {
+  const terakhir = ruas[ruas.length - 1];
+  const induk = ruas.length > 1 ? ruas[ruas.length - 2] : undefined;
+
+  for (const grup of semuaGrup) {
+    for (const item of grup.items) {
+      if (item.label === terakhir && (induk === undefined || induk === grup.label)) {
+        // Menu induk tanpa halaman sendiri (hanya submenu) diarahkan ke submenu pertamanya.
+        const tujuan = item.href ?? item.subItems?.[0]?.href;
+        if (tujuan) {
+          return {
+            href: tujuan,
+            kodeIzin: item.href ? item.kodeIzin : (item.subItems?.[0]?.kodeIzin ?? item.kodeIzin),
+          };
+        }
+      }
+
+      if (item.label !== induk) {
+        continue;
+      }
+
+      const sub = item.subItems?.find((satu) => satu.label === terakhir);
+      if (sub) {
+        return { href: sub.href, kodeIzin: sub.kodeIzin ?? item.kodeIzin };
+      }
+    }
+  }
+
+  return null;
+}
+
 export interface GrupNav {
   label: string | null;
   items: ItemNav[];

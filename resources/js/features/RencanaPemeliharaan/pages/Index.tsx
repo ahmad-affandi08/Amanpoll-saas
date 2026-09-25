@@ -166,8 +166,8 @@ export default function RencanaPemeliharaanIndex({
                           />
 
                           <div className="space-y-1.5">
-                            <Label nama="Nama" htmlFor="Nama">
-                              Nama Rencana <span className="text-destructive">*</span>
+                            <Label nama="Nama" htmlFor="Nama" wajib>
+                              Nama Rencana
                             </Label>
                             <Input
                               id="Nama"

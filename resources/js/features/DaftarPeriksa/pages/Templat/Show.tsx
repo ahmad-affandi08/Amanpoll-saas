@@ -327,8 +327,8 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
 
               <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-1">
                 <div className="space-y-1.5">
-                  <Label nama="Pertanyaan" htmlFor="Pertanyaan">
-                    Pertanyaan / Parameter Pemeriksaan <span className="text-destructive">*</span>
+                  <Label nama="Pertanyaan" htmlFor="Pertanyaan" wajib>
+                    Pertanyaan / Parameter Pemeriksaan
                   </Label>
                   <Textarea
                     id="Pertanyaan"

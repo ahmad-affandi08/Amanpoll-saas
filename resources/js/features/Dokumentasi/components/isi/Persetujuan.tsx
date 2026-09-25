@@ -10,6 +10,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'cara-kerja', judul: 'Cara kerja' },
@@ -56,6 +57,32 @@ export function Persetujuan() {
           nilai anggaran, atau jumlah kali harga satuan usulan aset. Tahap pertama selalu berlaku untuk semua
           nilai, dan dokumen tanpa nilai (mutasi, penghapusan) melalui semua tahap.
         </P>
+        <Tangkapan
+          gambar="persetujuan/tahap"
+          alt="Dialog tahap persetujuan permintaan pembelian dengan ambang nilai di tahap direktur"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Di halaman Alur Persetujuan, klik <Ui>Kelola Tahap</Ui> pada alur yang ingin disusun.
+                </>
+              ),
+            },
+            {
+              penanda: 'tahap',
+              isi: <>Setiap tahap menampilkan penyetujunya. Alur harus nonaktif untuk diubah.</>,
+            },
+            {
+              penanda: 'ambang',
+              isi: (
+                <>
+                  Tahap berambang hanya dilalui dokumen senilai itu ke atas, mis. direktur untuk PP mulai Rp
+                  25 juta.
+                </>
+              ),
+            },
+          ]}
+        />
         <Catatan>
           Menunjuk <Tegas>peran</Tegas> lebih tahan banting daripada menunjuk orang. Kalau orangnya resign,
           alur yang menunjuk peran tetap jalan; alur yang menunjuk namanya akan macet.
@@ -70,6 +97,37 @@ export function Persetujuan() {
         <P>
           Penyetuju menemukan antreannya di <Jalur ruas={['Platform', 'Persetujuan Saya']} />.
         </P>
+        <Tangkapan
+          gambar="persetujuan/inbox"
+          alt="Halaman Persetujuan Saya dengan tombol Setujui dan Tolak"
+          langkah={[
+            {
+              penanda: 'menu',
+              isi: (
+                <>
+                  Buka <Ui>Persetujuan Saya</Ui>; tab <Ui>Perlu Tindakan Saya</Ui> berisi yang menunggu
+                  keputusan Anda.
+                </>
+              ),
+            },
+            {
+              penanda: 'setujui',
+              isi: (
+                <>
+                  Klik <Ui>Setujui</Ui>. Dokumen lanjut ke tahap berikutnya atau selesai.
+                </>
+              ),
+            },
+            {
+              penanda: 'tolak',
+              isi: (
+                <>
+                  Klik <Ui>Tolak</Ui> dan tulis alasannya. Penolakan menghentikan seluruh rangkaian.
+                </>
+              ),
+            },
+          ]}
+        />
         <Awas>
           Alur dengan tahap yang penyetujunya tidak ada — peran yang tidak dipegang siapa pun, atau pengguna
           yang sudah dinonaktifkan — membuat dokumen tertahan tanpa ada yang bisa meneruskannya. Periksa ini

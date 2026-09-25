@@ -8,10 +8,12 @@ import {
   Jalur,
   Langkah,
   P,
+  SubJudul,
   Tabel,
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'aturan', judul: 'Aturan dasar' },
@@ -60,8 +62,13 @@ export function MutasiStok() {
         <Langkah
           daftar={[
             {
-              judul: 'Pastikan pola nomor MutasiStok sudah ada',
-              isi: <P>Tanpa itu mutasi menolak dibuat. Lihat halaman Penomoran.</P>,
+              judul: 'Atur pola nomor bila perlu',
+              isi: (
+                <P>
+                  Mutasi langsung bernomor dengan pola bawaan, mis. MS/2026/0001. Ubah dulu di halaman
+                  Penomoran bila organisasi punya format sendiri.
+                </P>
+              ),
             },
             {
               judul: 'Hitung fisik dulu, baru catat',
@@ -85,6 +92,66 @@ export function MutasiStok() {
               judul: 'Posting dokumennya',
               isi: (
                 <P>Saldo baru berubah setelah diposting. Mutasi yang masih draf belum memengaruhi apa pun.</P>
+              ),
+            },
+          ]}
+        />
+        <SubJudul>Membuat mutasi di layar</SubJudul>
+        <Tangkapan
+          gambar="mutasi-stok/formulir"
+          alt="Formulir Buat Mutasi Stok"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Buka menu <Ui>Persediaan</Ui> › <Ui>Mutasi Stok</Ui>, lalu klik <Ui>Buat Mutasi Stok</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'jenis',
+              isi: (
+                <>
+                  Pilih <Ui>Jenis</Ui>; untuk saldo awal pilih Penerimaan.
+                </>
+              ),
+            },
+            {
+              penanda: 'gudang',
+              isi: (
+                <>
+                  Pilih <Ui>Gudang Tujuan</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'draft',
+              isi: (
+                <>
+                  Klik <Ui>Buat Draft</Ui>. Dokumennya terbuka dan siap diisi barisnya.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="mutasi-stok/detail"
+          alt="Halaman detail mutasi stok dengan tombol Tambah Baris dan Posting"
+          langkah={[
+            {
+              penanda: 'baris',
+              isi: (
+                <>
+                  Klik <Ui>Tambah Baris</Ui> untuk setiap suku cadang beserta jumlahnya.
+                </>
+              ),
+            },
+            {
+              penanda: 'posting',
+              isi: (
+                <>
+                  Setelah semua baris benar, klik <Ui>Posting</Ui>. Saldo berubah saat itu juga.
+                </>
               ),
             },
           ]}

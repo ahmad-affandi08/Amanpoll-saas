@@ -183,8 +183,8 @@ export default function RencanaPemeliharaanShow({
 
                     <div className="grid gap-4 py-4">
                       <div className="space-y-1.5">
-                        <Label nama="AsetId" htmlFor="AsetId">
-                          Pilih Aset <span className="text-destructive">*</span>
+                        <Label nama="AsetId" htmlFor="AsetId" wajib>
+                          Pilih Aset
                         </Label>
                         <Combobox
                           nilai={formAset.data.AsetId}
@@ -201,8 +201,8 @@ export default function RencanaPemeliharaanShow({
                       </div>
 
                       <div className="space-y-1.5">
-                        <Label nama="TanggalMulai" htmlFor="TanggalMulai">
-                          Tanggal Mulai Berlaku <span className="text-destructive">*</span>
+                        <Label nama="TanggalMulai" htmlFor="TanggalMulai" wajib>
+                          Tanggal Mulai Berlaku
                         </Label>
                         <DatePicker
                           value={formAset.data.TanggalMulai}

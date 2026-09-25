@@ -4070,6 +4070,27 @@ direktur pada alur PP berambang Rp 25 juta sehingga PP kecil selesai di koordina
 Panduan Penomoran diperbarui: pesan "pola belum diatur" tidak muncul lagi sejak pola
 bawaan dipasang otomatis.
 
+Panduan `/dokumentasi` kini bergambar (tahap A dan B: alur harian Keluhan, Perintah
+Kerja, Preventif, Persediaan, Mutasi Stok, Pengadaan, Persetujuan; 18 gambar). Komponen
+`Tangkapan` menggambar kotak sorot dan nomor di atas tangkapan layar, dan nomor itu
+sama dengan langkah di bawahnya; menyorot langkah menyorot kotaknya. Nomor sengaja tidak
+dicetak ke gambar: posisinya dibaca dari JSON yang ditulis `tools/dokumentasi/tangkap.mjs`,
+yang memotret demo SNI lalu mencari tombol lewat nama aksesibelnya. Setelah tampilan
+berubah cukup jalankan ulang skrip itu, halaman panduan tidak disunting. Playwright tidak
+dijadikan dependensi (pakai paket global lewat `TANGKAP_PLAYWRIGHT`); WebP dibuat kanvas
+peramban. Setiap petunjuk `Jalur` juga diberi tautan "Buka halaman" bila pembaca punya
+izinnya; menu kini boleh meminta salah satu dari beberapa izin.
+Jebakan yang ditemukan:
+- Di Linux Chromium mengabaikan `--lang`; tanpa `LANGUAGE`/`LANG` isian tanggal tampil
+  `mm/dd/yyyy` dan tombol berkas berbahasa Inggris.
+- Dialog lebih tinggi dari layar memotong tombol simpannya, dan tabel yang lebar
+  mendorong kolom aksi keluar layar. Skrip kini gagal bila penanda di luar gambar, dan
+  shot bisa meninggikan layarnya.
+- `DokumentasiTangkapanTest` menjaga setiap gambar dan penanda yang dirujuk panduan.
+  Penyedia datanya tidak boleh memakai `base_path()` (aplikasi belum menyala), dan satu
+  blok tidak boleh dipotong di `/>` pertama karena penutup fragmen `</>` memuatnya; dulu
+  penjaganya hijau tanpa memeriksa satu penanda pun.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan

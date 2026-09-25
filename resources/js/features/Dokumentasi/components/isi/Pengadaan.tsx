@@ -12,6 +12,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'penyedia', judul: 'Penyedia dan kontrak' },
@@ -95,6 +96,36 @@ export function Pengadaan() {
             },
           ]}
         />
+        <Tangkapan
+          gambar="pengadaan/permintaan"
+          alt="Halaman detail permintaan pembelian dengan tombol Tambah Item dan Ajukan Persetujuan"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Buka menu <Ui>Pengadaan</Ui> › <Ui>Permintaan Pembelian</Ui>, lalu buat atau buka
+                  permintaannya.
+                </>
+              ),
+            },
+            {
+              penanda: 'item',
+              isi: (
+                <>
+                  Klik <Ui>Tambah Item</Ui> untuk setiap barang atau jasa yang dibutuhkan.
+                </>
+              ),
+            },
+            {
+              penanda: 'ajukan',
+              isi: (
+                <>
+                  Klik <Ui>Ajukan Persetujuan</Ui>. Permintaan masuk ke alur persetujuan.
+                </>
+              ),
+            },
+          ]}
+        />
         <Tabel
           kepala={['Status pesanan', 'Artinya']}
           baris={[
@@ -135,6 +166,50 @@ export function Pengadaan() {
           berisi pesanan yang sudah dikirim ke penyedia, lalu mencatat barang yang datang dari pesanan itu.
           Menyusun pesanan, persetujuan, dan tagihan tetap urusan bagian pengadaan.
         </P>
+        <Tangkapan
+          gambar="pengadaan/menunggu-penerimaan"
+          alt="Halaman Penerimaan Pembelian dengan daftar pesanan yang menunggu penerimaan"
+          langkah={[
+            {
+              penanda: 'menu',
+              isi: (
+                <>
+                  Buka menu <Ui>Pengadaan</Ui> › <Ui>Penerimaan Pembelian</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'menunggu',
+              isi: (
+                <>
+                  Klik pesanan yang barangnya datang di daftar <Ui>Menunggu Penerimaan</Ui>.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="pengadaan/catat-penerimaan"
+          alt="Halaman pesanan pembelian dengan tombol Catat Penerimaan"
+          langkah={[
+            {
+              penanda: 'item',
+              isi: (
+                <>
+                  Cocokkan barang yang datang dengan daftar <Ui>Item Pesanan</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'catat',
+              isi: (
+                <>
+                  Klik <Ui>Catat Penerimaan</Ui>, isi jumlah yang diterima dan gudangnya, lalu simpan.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
     </>
   );

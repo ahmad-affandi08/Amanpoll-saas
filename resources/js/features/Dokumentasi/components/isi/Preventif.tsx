@@ -1,5 +1,6 @@
 import type { ButirDaftarIsi } from '@/features/Dokumentasi/components/KerangkaDokumentasi';
 import { Bagian, Butir, Catatan, Daftar, Jalur, P, Tegas, Ui } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'daftar-periksa', judul: 'Daftar periksa' },
@@ -18,6 +19,36 @@ export function Preventif() {
           Buat templat daftar periksanya lebih dulu. Rencana preventif dan inspeksi merujuk templat ini, jadi
           tanpa templat keduanya hanya menghasilkan pekerjaan tanpa isi.
         </P>
+        <Tangkapan
+          gambar="preventif/templat"
+          alt="Halaman penyusun templat daftar periksa dengan tombol Tambah Pertanyaan"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Di daftar templat, klik <Ui>Buka Builder</Ui> pada templat yang ingin disusun.
+                </>
+              ),
+            },
+            {
+              penanda: 'tambah',
+              isi: (
+                <>
+                  Klik <Ui>Tambah Pertanyaan</Ui> untuk setiap butir yang harus diperiksa.
+                </>
+              ),
+            },
+            {
+              penanda: 'versi',
+              isi: (
+                <>
+                  Templat yang sudah dipakai diubah lewat <Ui>Buat Versi Baru</Ui>, supaya hasil lama tetap
+                  utuh.
+                </>
+              ),
+            },
+          ]}
+        />
         <P>
           Satu templat berisi butir-butir yang harus diperiksa, masing-masing dengan jenis jawaban:
           lulus/gagal, angka, atau teks. Butir bertipe angka yang punya batas bawah dan atas akan menandai
@@ -52,6 +83,54 @@ export function Preventif() {
             3 bulan atau 2.000 jam. Setelah servis, keduanya dihitung ulang dari hari itu.
           </Butir>
         </Daftar>
+        <Tangkapan
+          gambar="preventif/rencana-baru"
+          alt="Formulir Buat Rencana Pemeliharaan dengan pemicu kalender atau meter"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Buat Rencana Baru</Ui> di halaman Rencana Preventif.
+                </>
+              ),
+            },
+            {
+              penanda: 'pemicu',
+              isi: (
+                <>
+                  Pilih <Ui>Pemicu</Ui>: kalender, pemakaian meter, atau mana yang lebih dulu.
+                </>
+              ),
+            },
+            {
+              penanda: 'interval',
+              isi: (
+                <>
+                  Isi <Ui>Interval</Ui> kalendernya, mis. tiap 30 hari.
+                </>
+              ),
+            },
+            { penanda: 'ambang', isi: <>Isi ambang meternya, mis. tiap 2.000 jam, lalu simpan.</> },
+          ]}
+        />
+        <Tangkapan
+          gambar="preventif/rencana-detail"
+          alt="Halaman detail rencana dengan tombol Daftarkan Aset dan jatuh tempo per aset"
+          langkah={[
+            {
+              penanda: 'daftarkan',
+              isi: (
+                <>
+                  Klik <Ui>Daftarkan Aset ke Rencana</Ui>, pilih aset dan meternya.
+                </>
+              ),
+            },
+            {
+              penanda: 'jatuhTempo',
+              isi: <>Setiap aset menampilkan tanggal jatuh tempo dan angka meter berikutnya.</>,
+            },
+          ]}
+        />
         <Catatan>
           Pemicu meter hanya secepat pembacaannya. Catat pembacaan meter secara rutin agar servis tidak
           terlambat terdeteksi.

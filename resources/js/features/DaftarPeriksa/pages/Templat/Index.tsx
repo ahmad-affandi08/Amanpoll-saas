@@ -99,8 +99,8 @@ function DialogBuatTemplat({
               />
 
               <div className="space-y-1.5">
-                <Label nama="Nama" htmlFor="Nama">
-                  Nama Templat <span className="text-destructive">*</span>
+                <Label nama="Nama" htmlFor="Nama" wajib>
+                  Nama Templat
                 </Label>
                 <Input
                   id="Nama"

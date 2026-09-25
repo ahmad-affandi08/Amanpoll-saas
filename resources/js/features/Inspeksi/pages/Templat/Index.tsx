@@ -104,8 +104,8 @@ function DialogBuatTemplatInspeksi({
               />
 
               <div className="space-y-1.5">
-                <Label nama="Nama" htmlFor="Nama">
-                  Nama Templat <span className="text-destructive">*</span>
+                <Label nama="Nama" htmlFor="Nama" wajib>
+                  Nama Templat
                 </Label>
                 <Input
                   id="Nama"
@@ -150,8 +150,8 @@ function DialogBuatTemplatInspeksi({
               </div>
 
               <div className="space-y-1.5">
-                <Label nama="IntervalHari" htmlFor="IntervalHari">
-                  Interval Siklus (Hari) <span className="text-destructive">*</span>
+                <Label nama="IntervalHari" htmlFor="IntervalHari" wajib>
+                  Interval Siklus (Hari)
                 </Label>
                 <Input
                   id="IntervalHari"

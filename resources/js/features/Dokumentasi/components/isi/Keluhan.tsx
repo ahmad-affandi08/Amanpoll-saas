@@ -12,6 +12,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'sla', judul: 'Tingkat layanan' },
@@ -62,6 +63,72 @@ export function Keluhan() {
         <P>
           <Jalur ruas={['Operasional & Aset', 'Pemeliharaan', 'Keluhan']} />
         </P>
+        <SubJudul>Mencatat keluhan baru</SubJudul>
+        <Tangkapan
+          gambar="keluhan/daftar"
+          alt="Halaman daftar keluhan dengan menu Keluhan, tombol Buat Keluhan, dan saringan status"
+          langkah={[
+            {
+              penanda: 'menu',
+              isi: (
+                <>
+                  Buka menu <Ui>Pemeliharaan</Ui> › <Ui>Keluhan</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'buat',
+              isi: (
+                <>
+                  Klik <Ui>Buat Keluhan</Ui> di kanan atas.
+                </>
+              ),
+            },
+            {
+              penanda: 'saring',
+              isi: <>Untuk mencari keluhan lama, saring menurut status, prioritas, atau kategori.</>,
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="keluhan/formulir"
+          alt="Formulir Buat Keluhan"
+          langkah={[
+            {
+              penanda: 'kategori',
+              isi: (
+                <>
+                  Pilih <Ui>Kategori</Ui>. Tenggat dan prioritas bawaan mengikuti kategori.
+                </>
+              ),
+            },
+            {
+              penanda: 'lokasi',
+              isi: (
+                <>
+                  Pilih <Ui>Lokasi</Ui> kejadian. <Ui>Aset</Ui> boleh dikosongkan bila alatnya belum jelas.
+                </>
+              ),
+            },
+            {
+              penanda: 'judul',
+              isi: (
+                <>
+                  Tulis <Ui>Judul</Ui> singkat dan uraian masalahnya. Foto bukti boleh dilampirkan.
+                </>
+              ),
+            },
+            {
+              penanda: 'kirim',
+              isi: (
+                <>
+                  Klik <Ui>Kirim Keluhan</Ui>. Penanggung jawab kategori menerima pemberitahuan.
+                </>
+              ),
+            },
+          ]}
+        />
+        <SubJudul>Status keluhan</SubJudul>
         <Tabel
           kepala={['Status', 'Artinya']}
           baris={[
@@ -73,6 +140,38 @@ export function Keluhan() {
             ['Ditutup', 'Sudah dikonfirmasi pelapor dan tidak dapat diubah lagi.'],
             ['Ditolak', 'Bukan kerusakan, atau di luar cakupan.'],
             ['Dibatalkan', 'Dicabut sebelum dikerjakan.'],
+          ]}
+        />
+        <SubJudul>Menindaklanjuti keluhan</SubJudul>
+        <Tangkapan
+          gambar="keluhan/detail"
+          alt="Halaman detail keluhan dengan tombol Ubah Status, Alihkan, dan Ubah Prioritas"
+          langkah={[
+            { isi: <>Buka keluhan dari daftar dengan mengeklik nomornya.</> },
+            {
+              penanda: 'status',
+              isi: (
+                <>
+                  Klik <Ui>Ubah Status</Ui> untuk meninjau, menerima, atau menolak keluhan.
+                </>
+              ),
+            },
+            {
+              penanda: 'alihkan',
+              isi: (
+                <>
+                  Klik <Ui>Alihkan</Ui> bila keluhan salah alamat dan perlu ditangani orang lain.
+                </>
+              ),
+            },
+            {
+              penanda: 'prioritas',
+              isi: (
+                <>
+                  Klik <Ui>Ubah Prioritas</Ui> bila tingkat urgensinya perlu disesuaikan.
+                </>
+              ),
+            },
           ]}
         />
         <SubJudul>Dari keluhan ke pekerjaan</SubJudul>
