@@ -81,10 +81,12 @@ function ProfilAdmin({ platform }: { platform: PropsPlatform }) {
             </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="truncate font-medium text-foreground">{platform.Nama ?? 'Admin platform'}</span>
-            <span className="truncate text-xs text-grafit-500">{platform.Email ?? ''}</span>
+            <span className="truncate font-medium text-sidebar-accent-foreground">
+              {platform.Nama ?? 'Admin platform'}
+            </span>
+            <span className="truncate text-xs text-sidebar-muted">{platform.Email ?? ''}</span>
           </div>
-          <ChevronsUpDown className="ml-auto size-4 text-grafit-500 group-data-[collapsible=icon]:hidden" />
+          <ChevronsUpDown className="ml-auto size-4 text-sidebar-muted group-data-[collapsible=icon]:hidden" />
         </SidebarMenuButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -135,12 +137,14 @@ export function KerangkaPlatform({ children }: PropsWithChildren) {
                 size="lg"
                 className="cursor-default hover:bg-transparent active:bg-transparent"
               >
-                <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm border border-border bg-card p-1">
+                <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm bg-card p-1">
                   <LogoLambang className="size-full object-contain" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate text-sm font-semibold text-foreground">Amanpoll</span>
-                  <span className="truncate text-xs leading-tight text-grafit-500">Konsol Platform</span>
+                  <span className="truncate text-sm font-semibold text-sidebar-accent-foreground">
+                    Amanpoll
+                  </span>
+                  <span className="truncate text-xs leading-tight text-sidebar-muted">Konsol Platform</span>
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>

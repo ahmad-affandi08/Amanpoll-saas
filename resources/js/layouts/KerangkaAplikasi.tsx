@@ -84,19 +84,21 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar, bukaModeLap
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
                 >
-                  <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm border border-border bg-card p-1">
+                  <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm bg-card p-1">
                     <LogoLambang className="size-full object-contain" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate text-sm font-semibold text-foreground">Amanpoll</span>
+                    <span className="truncate text-sm font-semibold text-sidebar-accent-foreground">
+                      Amanpoll
+                    </span>
                     <span
-                      className="truncate text-xs leading-tight text-grafit-500"
+                      className="truncate text-xs leading-tight text-sidebar-muted"
                       title="Asset & Maintenance Management Multi-Industri"
                     >
                       Asset & Maintenance Management Multi-Industri
                     </span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4 text-grafit-500 group-data-[collapsible=icon]:hidden" />
+                  <ChevronsUpDown className="ml-auto size-4 text-sidebar-muted group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -167,12 +169,12 @@ function AppSidebar({ grupTampil, pathSekarang, auth, boleh, keluar, bukaModeLap
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-medium text-foreground">
+                    <span className="truncate font-medium text-sidebar-accent-foreground">
                       {auth.pengguna?.Nama ?? 'Pengguna'}
                     </span>
-                    <span className="truncate text-xs text-grafit-500">{auth.pengguna?.Email ?? ''}</span>
+                    <span className="truncate text-xs text-sidebar-muted">{auth.pengguna?.Email ?? ''}</span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4 text-grafit-500 group-data-[collapsible=icon]:hidden" />
+                  <ChevronsUpDown className="ml-auto size-4 text-sidebar-muted group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent

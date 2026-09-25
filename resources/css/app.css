@@ -236,14 +236,19 @@
      * Hover memakai tint Grafit-950/5 yang transparan; item aktif berlatar putih dengan
      * cincin Garis-200 (lihat SidebarMenuButton), bukan blok berwarna.
      */
-    --sidebar: var(--color-permukaan-50);
-    --sidebar-foreground: var(--color-grafit-700);
+    /* Sidebar biru tua Teknisi-900: satu-satunya bidang berwarna identitas (DESIGN.md 4.3).
+       Shade putih ditulis sebagai hex hasil campuran di atas #17324D supaya kontrasnya pasti:
+       teks menu 9:1, teks redup 5,7:1, teks putih di atas hover 11:1 dan di atas aktif 9,7:1. */
+    --sidebar: var(--color-teknisi-900);
+    --sidebar-foreground: #d1d6db;
+    --sidebar-muted: #a2adb8;
     --sidebar-primary: var(--color-teknisi-700);
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: rgb(23 32 39 / 0.05);
-    --sidebar-accent-foreground: var(--color-grafit-950);
-    --sidebar-border: var(--color-garis-200);
-    --sidebar-ring: var(--color-teknisi-600);
+    --sidebar-accent: #253e58;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-aktif: #2e465f;
+    --sidebar-border: #2e465f;
+    --sidebar-ring: var(--color-teknisi-300);
 }
 
 /* Pemetaan agar utility shadcn/ui (bg-background, text-primary, dst) memakai token di atas. */
@@ -271,6 +276,8 @@
 
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-muted: var(--sidebar-muted);
+    --color-sidebar-aktif: var(--sidebar-aktif);
     --color-sidebar-primary: var(--sidebar-primary);
     --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
     --color-sidebar-accent: var(--sidebar-accent);

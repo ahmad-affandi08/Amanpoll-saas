@@ -20,7 +20,7 @@
 
 Amanpoll harus terasa seperti alat kerja profesional untuk teknisi dan operasional, bukan landing page startup, dashboard kripto, atau template admin generik.
 
-**Arah N "Presisi" (disetujui pemilik produk 24 September 2026) berlaku untuk dasbor web tenant dan konsol platform:** rapi, presisi, betah dilihat, tidak ramai. Halaman putih; kartu dan tabel dibatasi garis tipis Garis-200 tanpa bayangan; sidebar terang; satu warna aksen (Teknisi-700) untuk aksi utama dan penanda aktif; warna status hanya untuk status. Tanpa gradien, tanpa mode gelap. Mode Lapangan (§36) dan halaman autentikasi (§37) punya arahnya sendiri dan tidak mengikuti bagian ini.
+**Arah N "Presisi" (disetujui pemilik produk 24 September 2026) berlaku untuk dasbor web tenant dan konsol platform:** rapi, presisi, betah dilihat, tidak ramai. Halaman putih; kartu dan tabel dibatasi garis tipis Garis-200 tanpa bayangan; sidebar biru tua Teknisi-900 sebagai satu-satunya bidang berwarna identitas (disetujui pemilik produk 25 September 2026, §4.3); satu warna aksen (Teknisi-700) untuk aksi utama; warna status hanya untuk status. Tanpa gradien, tanpa mode gelap. Mode Lapangan (§36) dan halaman autentikasi (§37) punya arahnya sendiri dan tidak mengikuti bagian ini.
 
 Karakter yang dituju:
 
@@ -212,10 +212,13 @@ Amanpoll menggunakan warna yang diasosiasikan dengan equipment, engineering, saf
 | `Garis-300` | `#D7DEE3` | Tepi isian (token `input`) |
 | `Garis-200` | `#E7ECEF` | Border kartu, tabel, divider (token `border`) |
 | `Permukaan-100` | `#F4F7F8` | Segmen aktif, latar nonaktif |
-| `Permukaan-50` | `#FAFBFC` | Sidebar, kepala tabel, hover baris |
+| `Permukaan-50` | `#FAFBFC` | Kepala tabel, hover baris |
 | `Putih` | `#FFFFFF` | Latar halaman, kartu, form |
 
 ## 4.2 Penggunaan Warna
+
+Identitas warna Amanpoll dibawa oleh sidebar (§4.3), bukan oleh isi halaman. Isi halaman
+tetap putih dan netral supaya warna status tetap bermakna.
 
 Primary action:
 
@@ -234,6 +237,9 @@ Safety amber hanya untuk:
 - Stok menipis.
 
 Jangan menggunakan amber sebagai warna tombol utama.
+
+Oranye pada logo tidak dijadikan aksen hiasan: ia sudah berarti "perhatian", dan hiasan
+oranye akan dibaca sebagai peringatan.
 
 Red hanya untuk:
 
@@ -267,6 +273,26 @@ maupun Permukaan-50. Angka KPI berwarna netral (Grafit-950); warna status hanya
 di keterangan kecil, titik, atau badge. Dialog dan sheet berlatar putih.
 
 ---
+
+
+## 4.3 Sidebar sebagai identitas
+
+Arah N membuat isi halaman hampir tanpa warna, sehingga aplikasi tidak langsung dikenali
+sebagai Amanpoll. Identitas dibawa satu bidang yang selalu terlihat: sidebar biru tua
+Teknisi-900. Isi halaman tidak ikut berwarna.
+
+Semua shade di sidebar ditulis sebagai hex hasil campuran putih di atas `#17324D`, bukan
+transparansi, agar kontrasnya pasti:
+
+| Token | Hex | Pakai | Kontras |
+|---|---|---|---|
+| `sidebar` | `#17324D` | Latar | — |
+| `sidebar-foreground` | `#D1D6DB` | Teks menu | 9,0:1 |
+| `sidebar-muted` | `#A2ADB8` | Label grup, ikon, email | 5,7:1 |
+| `sidebar-accent` | `#253E58` | Latar hover (teks putih) | 11,0:1 |
+| `sidebar-aktif` | `#2E465F` | Latar item aktif (teks putih) | 9,7:1 |
+| `sidebar-border` | `#2E465F` | Garis submenu | — |
+| `sidebar-ring` | Teknisi-300 | Cincin fokus | 6,6:1 |
 
 # 5. CSS Token Tailwind 4
 
@@ -419,11 +445,12 @@ Sidebar:
 
 - 264px expanded.
 - 72px collapsed.
-- Background `Permukaan-50` dengan garis kanan Garis-200 (arah N).
-- Item setinggi 32px, teks 13,5px Grafit-700, ikon Lucide 16px Grafit-500.
-- Hover: tint Grafit-950/5. Item aktif: latar putih dengan cincin Garis-200, teks tebal Grafit-950, ikon Teknisi-700. Bukan blok berwarna, bukan glow.
-- Group label kalimat biasa 12px Grafit-500 (bukan huruf kapital).
-- Maksimal dua level navigasi langsung; submenu bergaris kiri Garis-200.
+- Background Teknisi-900 (`#17324D`), token `sidebar` (§4.3). Logo di atas petak putih.
+- Item setinggi 32px, teks 13,5px `sidebar-foreground` (`#D1D6DB`), ikon Lucide 16px `sidebar-muted` (`#A2ADB8`).
+- Hover: `sidebar-accent` (`#253E58`), teks dan ikon putih. Item aktif: `sidebar-aktif` (`#2E465F`), teks tebal putih, ikon Teknisi-200. Bukan blok terang, bukan glow.
+- Group label kalimat biasa 12px `sidebar-muted` (bukan huruf kapital).
+- Maksimal dua level navigasi langsung; submenu bergaris kiri `sidebar-border`.
+- Menu melayang (dropdown profil, organisasi, submenu saat diciutkan) tetap putih seperti isi halaman.
 
 Topbar 52px putih bergaris bawah, menempel di atas saat halaman digulir.
 
@@ -533,7 +560,7 @@ Menu disembunyikan berdasarkan izin, tetapi authorization tetap dilakukan backen
 
 ## 11.1 Konsol platform
 
-Konsol platform (`/admin-platform`) memakai kerangka yang sama dengan dashboard tenant: sidebar terang yang bisa diciutkan, menu bergrup dari komponen bersama `MenuSidebar`, profil di kaki sidebar, dan header putih. Pembedanya hanya label "Konsol Platform" di kepala sidebar dan header.
+Konsol platform (`/admin-platform`) memakai kerangka yang sama dengan dashboard tenant: sidebar biru tua yang bisa diciutkan, menu bergrup dari komponen bersama `MenuSidebar`, profil di kaki sidebar, dan header putih. Pembedanya hanya label "Konsol Platform" di kepala sidebar dan header.
 
 ```text
 Bisnis
