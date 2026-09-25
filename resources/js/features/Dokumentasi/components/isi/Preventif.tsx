@@ -23,6 +23,12 @@ export function Preventif() {
           lulus/gagal, angka, atau teks. Butir bertipe angka yang punya batas bawah dan atas akan menandai
           sendiri bila hasilnya di luar rentang.
         </P>
+        <P>
+          Untuk butir Ya/Tidak, tentukan jawaban mana yang menandakan masalah. Pertanyaan positif seperti
+          &quot;Level oli cukup?&quot; bermasalah bila dijawab <Ui>Tidak</Ui>; pertanyaan negatif seperti
+          &quot;Ada kebocoran?&quot; bermasalah bila dijawab <Ui>Ya</Ui>. Skor daftar periksa dihitung dari
+          pilihan ini.
+        </P>
       </Bagian>
 
       <Bagian id="rencana" judul="Rencana preventif">
@@ -30,9 +36,26 @@ export function Preventif() {
           <Jalur ruas={['Operasional & Aset', 'Preventif & Inspeksi', 'Rencana Preventif']} />
         </P>
         <P>
-          Rencana menetapkan pekerjaan berulang atas sebuah aset: tiap berapa lama, memakai daftar periksa
-          yang mana, dan siapa yang mengerjakan.
+          Rencana menetapkan pekerjaan berulang atas sebuah aset: kapan jatuh tempo, memakai daftar periksa
+          yang mana, dan siapa yang mengerjakan. Pemicunya salah satu dari tiga:
         </P>
+        <Daftar>
+          <Butir>
+            <Tegas>Kalender</Tegas>: tiap sekian hari, minggu, bulan, atau tahun.
+          </Butir>
+          <Butir>
+            <Tegas>Pemakaian meter</Tegas>: tiap sekian jam atau kilometer sejak servis terakhir, dibaca dari
+            meter kumulatif aset. Aset harus punya meter sebelum bisa didaftarkan.
+          </Butir>
+          <Butir>
+            <Tegas>Kalender atau meter</Tegas>: mana yang lebih dulu tercapai, misalnya servis kompresor tiap
+            3 bulan atau 2.000 jam. Setelah servis, keduanya dihitung ulang dari hari itu.
+          </Butir>
+        </Daftar>
+        <Catatan>
+          Pemicu meter hanya secepat pembacaannya. Catat pembacaan meter secara rutin agar servis tidak
+          terlambat terdeteksi.
+        </Catatan>
         <Daftar>
           <Butir>
             Sistem membuatkan perintah kerja sendiri saat jadwalnya tiba — tidak perlu dibuat manual.

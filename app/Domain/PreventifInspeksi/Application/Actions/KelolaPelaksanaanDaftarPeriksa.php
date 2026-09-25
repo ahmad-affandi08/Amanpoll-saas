@@ -73,7 +73,7 @@ final class KelolaPelaksanaanDaftarPeriksa
      */
     public function simpanJawaban(PelaksanaanDaftarPeriksa $pelaksanaan, array $daftarJawaban, string $penggunaId): void
     {
-        $this->transaksi->jalankan(function () use ($pelaksanaan, $daftarJawaban): void {
+        $this->transaksi->jalankan(function () use ($pelaksanaan, $daftarJawaban, $penggunaId): void {
             /** @var PelaksanaanDaftarPeriksa $terkunci */
             $terkunci = PelaksanaanDaftarPeriksa::query()->lockForUpdate()->findOrFail($pelaksanaan->Id);
 
@@ -105,7 +105,7 @@ final class KelolaPelaksanaanDaftarPeriksa
                         'OrganisasiId' => $terkunci->OrganisasiId,
                         'NilaiTeks' => $jawaban['NilaiTeks'] ?? null,
                         'NilaiAngka' => isset($jawaban['NilaiAngka']) && is_numeric($jawaban['NilaiAngka']) ? (float) $jawaban['NilaiAngka'] : null,
-                        'NilaiBoolean' => isset($jawaban['NilaiBoolean']) ? (bool) $jawaban['NilaiBoolean'] : null,
+                        'NilaiBoolean' => $this->keBoolean($jawaban['NilaiBoolean'] ?? null),
                         'NilaiTanggal' => $jawaban['NilaiTanggal'] ?? null,
                         'NilaiJson' => $jawaban['NilaiJson'] ?? null,
                         'Sesuai' => $sesuai,
@@ -115,6 +115,10 @@ final class KelolaPelaksanaanDaftarPeriksa
                 );
             }
 
+            // Pelaksanaan yang lahir dari perintah kerja preventif belum punya pelaksana:
+            // yang pertama mengisi jawaban adalah pelaksananya, dan saat itulah pekerjaan dimulai.
+            $terkunci->DilaksanakanOleh ??= $penggunaId;
+            $terkunci->MulaiPada ??= now();
             $terkunci->Status = 'SedangDikerjakan';
             $terkunci->save();
         });
@@ -191,6 +195,23 @@ final class KelolaPelaksanaanDaftarPeriksa
     }
 
     /**
+     * Jawaban Ya/Tidak datang dalam banyak rupa: boolean dari aplikasi, "1"/"0" dari formulir,
+     * "Ya"/"Tidak" dari templat yang disusun lewat layar. Rupa yang tidak dikenal berarti belum dijawab.
+     */
+    private function keBoolean(mixed $nilai): ?bool
+    {
+        if (is_bool($nilai) || $nilai === null) {
+            return $nilai;
+        }
+
+        return match (strtolower(trim((string) $nilai))) {
+            'ya', 'yes', 'true', '1' => true,
+            'tidak', 'no', 'false', '0' => false,
+            default => null,
+        };
+    }
+
+    /**
      * @param  array<string, mixed>  $jawaban
      */
     private function evaluasiKesesuaian(ButirTemplatDaftarPeriksa $butir, array $jawaban): ?bool
@@ -208,21 +229,18 @@ final class KelolaPelaksanaanDaftarPeriksa
             return true;
         }
 
-        // 2. Cek tipe YaTidak
+        // 2. Ya/Tidak: jawaban sesuai bila berbeda dari jawaban pemicu temuan. Pertanyaan
+        // positif ("Oli cukup?") memicu pada "Tidak", pertanyaan negatif ("Ada kebocoran?")
+        // memicu pada "Ya". Tanpa pemicu, "Tidak" yang dianggap temuan.
         if ($butir->TipeJawaban === 'YaTidak') {
-            $nilai = $jawaban['NilaiBoolean'] ?? null;
-            if ($nilai === null && isset($jawaban['NilaiTeks'])) {
-                $nilai = in_array(strtolower((string) $jawaban['NilaiTeks']), ['ya', 'true', '1', 'yes'], true);
+            $nilai = $this->keBoolean($jawaban['NilaiBoolean'] ?? $jawaban['NilaiTeks'] ?? null);
+            if ($nilai === null) {
+                return null;
             }
 
-            if ($butir->MemicuTemuanJika !== null && is_array($butir->MemicuTemuanJika)) {
-                $kondisi = $butir->MemicuTemuanJika['nilai'] ?? false;
-                if ($nilai === $kondisi) {
-                    return false;
-                }
-            }
+            $pemicu = is_array($butir->MemicuTemuanJika) ? $this->keBoolean($butir->MemicuTemuanJika['nilai'] ?? null) : null;
 
-            return $nilai === true;
+            return $nilai !== ($pemicu ?? false);
         }
 
         // 3. Cek kondisi MemicuTemuanJika untuk pilihan/teks

@@ -76,7 +76,9 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
       NilaiMaksimum: b.NilaiMaksimum !== null && b.NilaiMaksimum !== undefined ? String(b.NilaiMaksimum) : '',
       PilihanTeks: Array.isArray(b.Pilihan) ? b.Pilihan.join(', ') : '',
       BuktiFotoWajib: b.BuktiFotoWajib,
-      PemicuNilai: (b.MemicuTemuanJika?.nilai as string) || 'Tidak',
+      PemicuNilai: [true, 'Ya', 'ya', '1'].includes(b.MemicuTemuanJika?.nilai as string | boolean)
+        ? 'Ya'
+        : 'Tidak',
     });
     setBukaDialogButir(true);
   };
@@ -104,9 +106,9 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
         .filter(Boolean);
     }
 
-    if (formButir.data.PemicuNilai) {
-      payload.MemicuTemuanJika = { nilai: formButir.data.PemicuNilai };
-    }
+    // Pemicu hanya bermakna untuk Ya/Tidak; tipe lain dinilai dari batas atau pilihannya sendiri.
+    payload.MemicuTemuanJika =
+      formButir.data.TipeJawaban === 'YaTidak' ? { nilai: formButir.data.PemicuNilai } : null;
 
     if (butirDiedit) {
       router.put(ruteDaftarPeriksa.butirDetail(templat.Id, butirDiedit.Id), payload, {
@@ -275,9 +277,13 @@ export default function DaftarPeriksaTemplatShow({ templat, kategoriAset, wajib 
                           <span>Pilihan: {b.Pilihan.join(' | ')}</span>
                         )}
 
-                        {b.MemicuTemuanJika?.nilai !== undefined && (
+                        {b.TipeJawaban === 'YaTidak' && (
                           <span className="text-safety-700 font-medium">
-                            Pemicu Temuan: "{String(b.MemicuTemuanJika.nilai)}"
+                            Temuan bila dijawab "
+                            {[true, 'Ya', 'ya', '1'].includes(b.MemicuTemuanJika?.nilai as string | boolean)
+                              ? 'Ya'
+                              : 'Tidak'}
+                            "
                           </span>
                         )}
                       </div>
