@@ -37,6 +37,7 @@ final class LayananNomorDokumen
         'PermintaanPembelian' => 'PP',
         'PermintaanPenawaran' => 'RFQ',
         'PesananPembelian' => 'PO',
+        'PenerimaanPembelian' => 'GRN',
         'Kontrak' => 'KTR',
         'PermintaanMutasiAset' => 'MUT',
         'PengajuanPenghapusanAset' => 'PHA',

@@ -4060,6 +4060,16 @@ penyedia (Dikirim, Diterima Sebagian, Diterima Penuh) dan menemukannya di daftar
 "Menunggu Penerimaan" halaman Penerimaan Pembelian; daftar PO, persetujuan, dan tagihan
 tetap milik `Pengadaan.Kelola`. Menu mendukung beberapa izin (cukup salah satu).
 
+Penerimaan tanpa nomor manual dulu diberi kode acak `RCV-202609-X7K2QF`, satu-satunya
+dokumen pengadaan yang tidak mengikuti pola. `PenerimaanPembelian` kini masuk pola
+bawaan (`GRN/{Tahun}/{Nomor:4}`); nomor manual tetap dihormati. Seeder demo berhenti
+membuat nomor GRN sendiri, karena dua penghitung untuk pola yang sama akan bertabrakan
+pada penerimaan pertama yang dicatat lewat aplikasi. Demo juga menampilkan dua fitur
+baru: penerimaan barang dicatat Kepala Gudang (jasa tetap oleh pengadaan), dan tahap
+direktur pada alur PP berambang Rp 25 juta sehingga PP kecil selesai di koordinator.
+Panduan Penomoran diperbarui: pesan "pola belum diatur" tidak muncul lagi sejak pola
+bawaan dipasang otomatis.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan

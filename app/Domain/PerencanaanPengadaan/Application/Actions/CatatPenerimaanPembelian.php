@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
-use App\Core\Organisasi\KalenderOrganisasi;
 use App\Domain\Aset\Application\Actions\BuatAset;
 use App\Domain\Aset\Domain\Enums\KondisiAset;
 use App\Domain\Aset\Domain\Enums\StatusAset;
@@ -26,7 +25,6 @@ use App\Domain\Persediaan\Infrastructure\Persistence\Models\MutasiStok;
 use App\Domain\Platform\Application\Services\LayananNomorDokumen;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
 use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
-use Illuminate\Support\Str;
 
 final class CatatPenerimaanPembelian
 {
@@ -35,7 +33,6 @@ final class CatatPenerimaanPembelian
         private readonly PostingMutasiStok $postingMutasiStok,
         private readonly BuatAset $buatAset,
         private readonly LayananAudit $audit,
-        private readonly KalenderOrganisasi $kalender,
         private readonly LayananNomorDokumen $nomorDokumen,
     ) {}
 
@@ -50,7 +47,11 @@ final class CatatPenerimaanPembelian
             $terkunci = PesananPembelian::query()->lockForUpdate()->findOrFail($po->Id);
             $penerimaan = PenerimaanPembelian::create([
                 'OrganisasiId' => $terkunci->OrganisasiId,
-                'Nomor' => $data['Nomor'] ?? 'RCV-'.$this->kalender->sekarang($terkunci->OrganisasiId)->format('Ym').'-'.Str::upper(Str::random(6)),
+                // Nomor manual (mis. nomor dari sistem gudang lama) boleh diisi; kosong berarti ikut
+                // pola dokumen seperti PO dan PP, bukan kode acak.
+                'Nomor' => filled($data['Nomor'] ?? null)
+                    ? $data['Nomor']
+                    : $this->nomorDokumen->berikutnya($terkunci->OrganisasiId, 'PenerimaanPembelian'),
                 'PesananPembelianId' => $terkunci->Id,
                 'GudangId' => $data['GudangId'] ?? null,
                 'TanggalTerima' => $data['TanggalTerima'] ?? now(),

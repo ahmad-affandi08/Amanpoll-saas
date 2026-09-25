@@ -1,6 +1,5 @@
 import type { ButirDaftarIsi } from '@/features/Dokumentasi/components/KerangkaDokumentasi';
 import {
-  Awas,
   Bagian,
   Blok,
   Butir,
@@ -17,7 +16,7 @@ import {
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'nomor-dokumen', judul: 'Pola nomor dokumen' },
-  { id: 'wajib', judul: 'Yang wajib diisi' },
+  { id: 'wajib', judul: 'Pola bawaan' },
   { id: 'kode-otomatis', judul: 'Kode otomatis' },
   { id: 'hari-libur', judul: 'Hari libur' },
 ];
@@ -49,28 +48,45 @@ export function Penomoran() {
         </P>
       </Bagian>
 
-      <Bagian id="wajib" judul="Yang wajib diisi">
-        <Awas>
-          Delapan jenis ini <Tegas>menolak dibuat</Tegas> selama polanya belum ada. Pesannya berbunyi
-          &ldquo;Pola nomor dokumen untuk &hellip; belum diatur&rdquo;.
-        </Awas>
+      <Bagian id="wajib" judul="Pola bawaan">
+        <P>
+          Jenis dokumen di bawah ini tidak perlu diatur lebih dulu. Bila polanya belum ada, sistem memasang
+          pola bawaan saat dokumen pertama dibuat: <Kode>{'{Awalan}/{Tahun}/{Nomor:4}'}</Kode>, dihitung ulang
+          tiap tahun, mis. <Kode>PO/2026/0001</Kode>. Pola itu boleh diubah kapan saja di halaman Nomor
+          Dokumen; nomor yang sudah terbit tidak ikut berubah.
+        </P>
         <Tabel
-          kepala={['Jenis Dokumen', 'Dipakai saat']}
+          kepala={['Jenis Dokumen', 'Awalan', 'Dipakai saat']}
           baris={[
-            [<Kode key="k">Keluhan</Kode>, 'Keluhan baru dibuat.'],
-            [<Kode key="pk">PerintahKerja</Kode>, 'Perintah kerja dibuat.'],
-            [<Kode key="i">Inspeksi</Kode>, 'Inspeksi berkala dibuat.'],
-            [<Kode key="kal">Kalibrasi</Kode>, 'Pelaksanaan kalibrasi dicatat.'],
-            [<Kode key="ms">MutasiStok</Kode>, 'Mutasi stok dibuat, termasuk saldo awal.'],
-            [<Kode key="ua">UsulanAset</Kode>, 'Usulan aset diajukan.'],
-            [<Kode key="rp">RencanaPengadaan</Kode>, 'Rencana pengadaan disusun.'],
-            [<Kode key="pp">PermintaanPembelian</Kode>, 'Permintaan pembelian dibuat.'],
+            [<Kode key="k">Keluhan</Kode>, 'KLH', 'Keluhan baru dibuat.'],
+            [<Kode key="pk">PerintahKerja</Kode>, 'PK', 'Perintah kerja dibuat.'],
+            [<Kode key="i">Inspeksi</Kode>, 'INS', 'Inspeksi berkala dibuat.'],
+            [<Kode key="kal">Kalibrasi</Kode>, 'KAL', 'Pelaksanaan kalibrasi dicatat.'],
+            [
+              <Kode key="ms">MutasiStok</Kode>,
+              'MS',
+              'Mutasi stok dibuat, termasuk saldo awal dan penerimaan barang.',
+            ],
+            [<Kode key="rsv">ReservasiSukuCadang</Kode>, 'RSV', 'Suku cadang dipesan untuk perintah kerja.'],
+            [<Kode key="ua">UsulanAset</Kode>, 'UA', 'Usulan aset diajukan.'],
+            [<Kode key="rp">RencanaPengadaan</Kode>, 'RP', 'Rencana pengadaan disusun.'],
+            [<Kode key="pp">PermintaanPembelian</Kode>, 'PP', 'Permintaan pembelian dibuat.'],
+            [<Kode key="rfq">PermintaanPenawaran</Kode>, 'RFQ', 'Permintaan penawaran dibuka.'],
+            [<Kode key="po">PesananPembelian</Kode>, 'PO', 'Pesanan pembelian dibuat.'],
+            [
+              <Kode key="grn">PenerimaanPembelian</Kode>,
+              'GRN',
+              'Barang pesanan diterima (bila nomornya dikosongkan).',
+            ],
+            [<Kode key="ktr">Kontrak</Kode>, 'KTR', 'Kontrak dicatat.'],
+            [<Kode key="mut">PermintaanMutasiAset</Kode>, 'MUT', 'Mutasi aset diminta.'],
+            [<Kode key="pha">PengajuanPenghapusanAset</Kode>, 'PHA', 'Penghapusan aset diajukan.'],
+            [<Kode key="sta">SerahTerimaAset</Kode>, 'STA', 'Serah terima aset dibuat.'],
           ]}
         />
         <Catatan>
-          <Kode>PesananPembelian</Kode> dan <Kode>PermintaanPenawaran</Kode> tidak wajib: bila polanya belum
-          ada, sistem menerbitkan nomor cadangan sendiri. Mengaturnya tetap disarankan supaya penomorannya
-          rapi dan dapat ditebak.
+          Ubah polanya sebelum dokumen pertama dibuat bila organisasi sudah punya kebiasaan penomoran sendiri,
+          supaya nomor pertama langsung mengikuti kebiasaan itu.
         </Catatan>
       </Bagian>
 

@@ -73,6 +73,17 @@ export default function PesananPembelianShow(props: Props) {
         <KepalaHalaman
           judul={<span className="font-mono">{pesanan.Nomor}</span>}
           labelBreadcrumb={pesanan.Nomor}
+          // Petugas gudang tidak membuka daftar PO; jejaknya kembali ke Penerimaan Pembelian.
+          breadcrumb={
+            bolehKelola
+              ? undefined
+              : [
+                  { label: 'Dashboard', href: '/' },
+                  { label: 'Pengadaan' },
+                  { label: 'Penerimaan Pembelian', href: rutePenerimaanPembelian.index },
+                  { label: pesanan.Nomor },
+                ]
+          }
           lencana={<Badge variant={VARIAN_STATUS[pesanan.Status]}>{pesanan.Status}</Badge>}
           deskripsi={
             <>

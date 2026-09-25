@@ -73,7 +73,24 @@ final class PenerimaanOlehPetugasGudangTest extends TestCase
         $this->konteks()->tetapkan($this->organisasi->Id);
         $penerimaan = PenerimaanPembelian::query()->sole();
         $this->assertSame($this->petugasGudang->Id, $penerimaan->DiterimaOleh);
+        $this->assertMatchesRegularExpression('#^GRN/\d{4}/0001$#', $penerimaan->Nomor, 'Nomor kosong mengikuti pola dokumen, bukan kode acak.');
         $this->assertSame('DiterimaPenuh', $dikirim->refresh()->Status);
+    }
+
+    public function test_nomor_penerimaan_manual_dipertahankan(): void
+    {
+        [$dikirim, $detail] = $this->buatPo('PO-010', 'Dikirim');
+
+        $this->actingAs($this->petugasGudang)
+            ->post(route('perencanaanPengadaan.penerimaan.store', $dikirim->Id), [
+                'Nomor' => 'BPB-LAMA-0457',
+                'TanggalTerima' => '2026-05-04',
+                'Detail' => [['DetailPesananPembelianId' => $detail->Id, 'JumlahDiterima' => 1, 'Kondisi' => 'Baik']],
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->konteks()->tetapkan($this->organisasi->Id);
+        $this->assertSame('BPB-LAMA-0457', PenerimaanPembelian::query()->sole()->Nomor);
     }
 
     public function test_petugas_gudang_tidak_membuka_po_yang_belum_dikirim_maupun_mengelola_pengadaan(): void

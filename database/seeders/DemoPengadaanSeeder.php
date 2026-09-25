@@ -42,6 +42,7 @@ use App\Shared\Domain\ValueObjects\Uang;
 use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -81,9 +82,10 @@ final class DemoPengadaanSeeder extends Seeder
 
     /**
      * Alur persetujuan per jenis dokumen yang didukung mesin persetujuan.
-     * Tahap: nama, jenis penyetuju (Pengguna/Peran/Unit), email atau kode peran, batas waktu menit.
+     * Tahap: nama, jenis penyetuju (Pengguna/Peran/Unit), email atau kode peran, batas waktu menit,
+     * dan ambang nilai opsional (tahap hanya berlaku untuk dokumen senilai itu ke atas).
      *
-     * @var list<array{0: string, 1: string, 2: string, 3: list<array{0: string, 1: string, 2: string, 3: int}>}>
+     * @var list<array{0: string, 1: string, 2: string, 3: list<array{0: string, 1: string, 2: string, 3: int, 4?: int}>}>
      */
     private const ALUR_PERSETUJUAN = [
         ['ALR-ANGGARAN', 'Persetujuan Anggaran Tahunan', 'Anggaran', [
@@ -93,9 +95,10 @@ final class DemoPengadaanSeeder extends Seeder
             ['Kajian Manajer Aset & Fasilitas', 'Pengguna', self::MANAJER_ASET, 2880],
             ['Persetujuan Direktur Operasional', 'Peran', 'PENYETUJU', 2880],
         ]],
+        // PP di bawah Rp 25 juta cukup diverifikasi koordinator; di atasnya naik ke direktur.
         ['ALR-PP', 'Persetujuan Permintaan Pembelian', 'PermintaanPembelian', [
             ['Verifikasi Koordinator Unit Peminta', 'Unit', 'KOORDINATOR-PEMELIHARAAN', 1440],
-            ['Persetujuan Direktur Operasional', 'Peran', 'PENYETUJU', 2880],
+            ['Persetujuan Direktur Operasional', 'Peran', 'PENYETUJU', 2880, 25_000_000],
         ]],
         ['ALR-PO', 'Persetujuan Pesanan Pembelian', 'PesananPembelian', [
             ['Persetujuan Direktur Operasional', 'Peran', 'PENYETUJU', 1440],
@@ -598,7 +601,10 @@ final class DemoPengadaanSeeder extends Seeder
                     'JenisEntitas' => $jenisEntitas,
                 ]);
 
-                foreach ($daftarTahap as $urutan => [$namaTahap, $jenisPenyetuju, $penyetuju, $batasMenit]) {
+                foreach ($daftarTahap as $urutan => $tahap) {
+                    [$namaTahap, $jenisPenyetuju, $penyetuju, $batasMenit] = $tahap;
+                    $ambangNilai = $tahap[4] ?? null;
+
                     app(BuatTahapPersetujuan::class)->jalankan($alur, [
                         'Urutan' => $urutan + 1,
                         'Nama' => $namaTahap,
@@ -608,6 +614,7 @@ final class DemoPengadaanSeeder extends Seeder
                         'JumlahMinimumPenyetuju' => 1,
                         'BolehMenyetujuiSendiri' => false,
                         'BatasWaktuMenit' => $batasMenit,
+                        'Kondisi' => $ambangNilai === null ? null : ['NilaiMinimum' => $ambangNilai],
                     ]);
                 }
 
@@ -632,6 +639,15 @@ final class DemoPengadaanSeeder extends Seeder
             $this->modelPengguna($email),
             $catatan,
         );
+    }
+
+    private function masihMenunggu(string $jenisEntitas, string $entitasId): bool
+    {
+        return PermintaanPersetujuan::query()
+            ->where('JenisEntitas', $jenisEntitas)
+            ->where('EntitasId', $entitasId)
+            ->where('Status', 'Menunggu')
+            ->exists();
     }
 
     private function permintaanMenunggu(string $jenisEntitas, string $entitasId): PermintaanPersetujuan
@@ -903,13 +919,23 @@ final class DemoPengadaanSeeder extends Seeder
             return;
         }
 
+        // Langkah direktur dijadwalkan untuk setiap PP, tetapi PP di bawah ambang tahapnya
+        // (Rp 25 juta) sudah selesai di koordinator saat langkah ini tiba, jadi dilewati.
         if ($berhenti === 'Ditolak') {
-            $langkah(1, 14, 0, self::PENYETUJU, fn () => $this->tolak('PermintaanPembelian', $this->dokumen[$kunci], self::PENYETUJU, $spek['tolak'] ?? 'Ditolak.'));
+            $langkah(1, 14, 0, self::PENYETUJU, function () use ($kunci, $spek): void {
+                if ($this->masihMenunggu('PermintaanPembelian', $this->dokumen[$kunci])) {
+                    $this->tolak('PermintaanPembelian', $this->dokumen[$kunci], self::PENYETUJU, $spek['tolak'] ?? 'Ditolak.');
+                }
+            });
 
             return;
         }
 
-        if (! $langkah(1, 14, 0, self::PENYETUJU, fn () => $this->setujui('PermintaanPembelian', $this->dokumen[$kunci], self::PENYETUJU, $catatan))) {
+        if (! $langkah(1, 14, 0, self::PENYETUJU, function () use ($kunci, $catatan): void {
+            if ($this->masihMenunggu('PermintaanPembelian', $this->dokumen[$kunci])) {
+                $this->setujui('PermintaanPembelian', $this->dokumen[$kunci], self::PENYETUJU, $catatan);
+            }
+        })) {
             return;
         }
 
@@ -1095,7 +1121,6 @@ final class DemoPengadaanSeeder extends Seeder
         $po = PesananPembelian::query()->findOrFail($this->dokumen["{$kunci}:po"]);
         $detailPo = $po->detail()->get()->keyBy('Deskripsi');
         $kodePenyedia = $spek['penyedia'][0];
-        $tahun = $this->tahunSekarang();
         $adaBarang = false;
 
         $baris = [];
@@ -1124,8 +1149,12 @@ final class DemoPengadaanSeeder extends Seeder
             ];
         }
 
+        // Barang diterima dan dicatat Kepala Gudang; penerimaan jasa (berita acara) oleh pengadaan.
+        // Nomor GRN mengikuti pola dokumen, sama seperti penerimaan yang dicatat lewat aplikasi.
+        $penerima = $adaBarang ? self::GUDANG : self::PENGADAAN;
+        Auth::onceUsingId($this->pengguna($penerima));
+
         app(CatatPenerimaanPembelian::class)->jalankan($po, [
-            'Nomor' => sprintf('GRN/%d/%04d', $tahun, $this->nomorBerikutnya("grn:{$tahun}")),
             'GudangId' => isset($spek['gudang']) ? $this->idDari('Gudang', ['Kode' => $spek['gudang']]) : null,
             'TanggalTerima' => CarbonImmutable::now(),
             'NomorSuratJalan' => sprintf('SJ/%s/%s/%04d', substr($kodePenyedia, 4), CarbonImmutable::now()->format('ym'), 200 + $this->nomorBerikutnya("sj:{$kodePenyedia}")),
@@ -1133,7 +1162,7 @@ final class DemoPengadaanSeeder extends Seeder
                 ? ($hanyaIndeks !== null ? 'Pengiriman parsial; sisa item masih indent dari pabrikan.' : 'Barang diperiksa bersama Kepala Gudang: jumlah dan kondisi sesuai surat jalan.')
                 : 'Penerimaan jasa berdasarkan berita acara penyelesaian pekerjaan.',
             'Detail' => $baris,
-        ], $this->pengguna(self::PENGADAAN));
+        ], $this->pengguna($penerima));
     }
 
     /** @param array{penyedia: list<string>} $spek */
