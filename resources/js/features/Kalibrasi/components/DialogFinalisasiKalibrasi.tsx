@@ -90,8 +90,8 @@ export function DialogFinalisasiKalibrasi({
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={simpan} className="space-y-4">
             <div className="space-y-1.5">
-              <Label nama="HasilFinal" htmlFor="HasilFinal">
-                Hasil Kesimpulan Kalibrasi *
+              <Label nama="HasilFinal" htmlFor="HasilFinal" wajib>
+                Hasil Kesimpulan Kalibrasi
               </Label>
               <Select value={form.data.Hasil} onValueChange={(val) => form.setData('Hasil', val)}>
                 <SelectTrigger>
@@ -106,8 +106,8 @@ export function DialogFinalisasiKalibrasi({
             </div>
 
             <div className="space-y-1.5">
-              <Label nama="NomorSertifikat" htmlFor="NomorSertifikat">
-                Nomor Sertifikat Resmi *
+              <Label nama="NomorSertifikat" htmlFor="NomorSertifikat" wajib>
+                Nomor Sertifikat Resmi
               </Label>
               <Input
                 id="NomorSertifikat"
@@ -124,8 +124,8 @@ export function DialogFinalisasiKalibrasi({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label nama="TglKalibrasi" htmlFor="TglKalibrasi">
-                  Tanggal Pengujian *
+                <Label nama="TglKalibrasi" htmlFor="TglKalibrasi" wajib>
+                  Tanggal Pengujian
                 </Label>
                 <DatePicker
                   value={form.data.TanggalKalibrasi}

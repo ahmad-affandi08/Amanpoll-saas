@@ -8,7 +8,7 @@ import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { tanggal } from '@/components/shared/riwayat';
+import { tanggal, tanggalJam } from '@/components/shared/riwayat';
 import { DialogFinalisasiKalibrasi } from '@/features/Kalibrasi/components/DialogFinalisasiKalibrasi';
 import { EditorTitikUkur } from '@/features/Kalibrasi/components/EditorTitikUkur';
 import type { AturanWajib } from '@/lib/aturan-wajib';
@@ -72,7 +72,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
                 <span className="font-medium">
                   {pelaksanaan.diverifikasiOleh?.Nama ?? 'Petugas Berwenang'}
                 </span>{' '}
-                pada {pelaksanaan.DiverifikasiPada}. Berlaku sampai dengan{' '}
+                pada {tanggalJam(pelaksanaan.DiverifikasiPada)}. Berlaku sampai dengan{' '}
                 <span className="font-semibold">{tanggal(pelaksanaan.TanggalBerlakuSampai ?? null)}</span>.
                 Siklus kalibrasi berikutnya pada instrumen telah otomatis diperbarui.
               </p>
@@ -144,7 +144,7 @@ export default function KalibrasiPelaksanaanShow({ pelaksanaan, wajib }: Props) 
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-muted-foreground">Waktu Verifikasi:</span>
-                <span className="text-muted-foreground font-mono">{pelaksanaan.DiverifikasiPada ?? '—'}</span>
+                <span className="text-muted-foreground">{tanggalJam(pelaksanaan.DiverifikasiPada)}</span>
               </div>
             </CardContent>
           </Card>

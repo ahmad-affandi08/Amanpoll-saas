@@ -10,6 +10,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'jenis', judul: 'Jenis kalibrasi' },
@@ -52,6 +53,52 @@ export function Kalibrasi() {
           Aset yang kategorinya bertanda <Ui>Memerlukan Kalibrasi</Ui> tetapi belum punya rencana akan muncul
           sebagai <Tegas>tidak patuh</Tegas> di dasbor, bukan sebagai aman.
         </Awas>
+        <Tangkapan
+          gambar="kalibrasi/rencana-formulir"
+          alt="Formulir Buat Rencana Kalibrasi Baru"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Buat Rencana Kalibrasi</Ui> di halaman Rencana Kalibrasi.
+                </>
+              ),
+            },
+            { penanda: 'aset', isi: <>Pilih aset atau instrumennya.</> },
+            {
+              penanda: 'jenis',
+              isi: (
+                <>
+                  Pilih <Ui>Jenis Kalibrasi</Ui> supaya titik ukurnya ikut terbawa.
+                </>
+              ),
+            },
+            {
+              penanda: 'penyedia',
+              isi: (
+                <>
+                  Pilih laboratorium rekanan, atau biarkan <Ui>Internal Perusahaan</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'interval',
+              isi: (
+                <>
+                  Isi <Ui>Interval (Hari)</Ui>, mis. 365 untuk tahunan.
+                </>
+              ),
+            },
+            {
+              penanda: 'pengingat',
+              isi: (
+                <>
+                  Atur berapa hari sebelum jatuh tempo status berubah menjadi Segera Jatuh Tempo, lalu simpan.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
 
       <Bagian id="pelaksanaan" judul="Pelaksanaan">
@@ -82,6 +129,33 @@ export function Kalibrasi() {
         <P>
           <Jalur ruas={['Operasional & Aset', 'Kalibrasi', 'Dasbor & Kepatuhan']} />
         </P>
+        <Tangkapan
+          gambar="kalibrasi/dasbor"
+          alt="Dasbor Kalibrasi dengan kartu ringkasan, saringan status, dan tombol Kirim Pengingat"
+          langkah={[
+            {
+              penanda: 'ringkasan',
+              isi: (
+                <>
+                  Kartu di atas menghitung rencana per status; mulai dari <Ui>Terlambat Kalibrasi</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'saring',
+              isi: <>Saring jadwal menurut status untuk melihat instrumen mana yang dimaksud.</>,
+            },
+            {
+              penanda: 'pengingat',
+              isi: (
+                <>
+                  <Ui>Kirim Pengingat</Ui> menjalankan pemeriksaan jatuh tempo sekarang, tanpa menunggu jadwal
+                  hariannya.
+                </>
+              ),
+            },
+          ]}
+        />
         <Tabel
           kepala={['Status', 'Artinya']}
           baris={[

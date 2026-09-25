@@ -13,6 +13,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'membuat', judul: 'Membuat aset' },
@@ -27,7 +28,8 @@ export function Aset() {
     <>
       <Bagian id="membuat" judul="Membuat aset">
         <P>
-          <Jalur ruas={['Operasional & Aset', 'Manajemen Aset', 'Daftar Aset']} /> lalu <Ui>Tambah Aset</Ui>.
+          <Jalur ruas={['Operasional & Aset', 'Manajemen Aset', 'Daftar Aset']} /> lalu{' '}
+          <Ui>Daftarkan Aset</Ui>.
         </P>
         <P>Yang menentukan perilaku aset di modul lain:</P>
         <Daftar>
@@ -38,16 +40,84 @@ export function Aset() {
             <Ui>Lokasi</Ui> menentukan di mana ia dicari dan siapa yang bertanggung jawab atasnya.
           </Butir>
           <Butir>
-            <Ui>Unit Organisasi</Ui> menentukan pemiliknya untuk keperluan laporan dan anggaran.
+            <Ui>Unit Pengelola</Ui> menentukan bagian yang memelihara aset ini, mis. IPSRS atau IT.
           </Butir>
           <Butir>
             <Ui>Nomor Seri</Ui> ikut dicari oleh kotak pencarian, jadi mengisinya mempermudah teknisi
             menemukan aset dari barangnya langsung.
           </Butir>
           <Butir>
-            <Ui>Kode Aset</Ui> boleh dikosongkan; sistem mengisinya sendiri.
+            <Ui>Kode Aset</Ui> terisi sendiri; klik <Ui>Atur sendiri</Ui> bila perlu kode sendiri.
           </Butir>
         </Daftar>
+        <Tangkapan
+          gambar="aset/daftar"
+          alt="Halaman Daftar Aset dengan tombol Daftarkan Aset dan Impor"
+          langkah={[
+            {
+              penanda: 'menu',
+              isi: (
+                <>
+                  Buka menu <Ui>Manajemen Aset</Ui> › <Ui>Daftar Aset</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'daftarkan',
+              isi: (
+                <>
+                  Klik <Ui>Daftarkan Aset</Ui> untuk satu aset.
+                </>
+              ),
+            },
+            {
+              penanda: 'impor',
+              isi: (
+                <>
+                  Atau klik <Ui>Impor</Ui> untuk banyak aset dari Excel; lihat bagian berikutnya.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="aset/formulir"
+          alt="Formulir Daftarkan Aset"
+          langkah={[
+            {
+              penanda: 'kategori',
+              isi: (
+                <>
+                  Isi nama dan pilih <Ui>Kategori</Ui>; hanya keduanya yang wajib.
+                </>
+              ),
+            },
+            {
+              penanda: 'lokasi',
+              isi: (
+                <>
+                  Pilih <Ui>Lokasi Awal</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'pengelola',
+              isi: (
+                <>
+                  Pilih <Ui>Unit Pengelola</Ui> bila organisasi memakainya.
+                </>
+              ),
+            },
+            {
+              penanda: 'seri',
+              isi: (
+                <>
+                  Isi <Ui>Nomor Seri</Ui> dari pelat barangnya, lalu simpan.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
 
       <Bagian id="impor" judul="Impor banyak aset sekaligus">
@@ -56,6 +126,37 @@ export function Aset() {
           <Jalur ruas={['Operasional & Aset', 'Manajemen Aset', 'Daftar Aset']} /> lalu <Ui>Impor</Ui>. Tombol
           ini hanya tampil bagi yang boleh mendaftarkan aset.
         </P>
+        <Tangkapan
+          gambar="aset/impor"
+          alt="Dialog Impor Aset dengan tombol templat, kotak berkas, dan tombol Periksa Berkas"
+          langkah={[
+            {
+              penanda: 'templat',
+              isi: (
+                <>
+                  Unduh <Ui>Templat Excel (XLSX)</Ui> dan isi satu aset per baris.
+                </>
+              ),
+            },
+            {
+              penanda: 'berkas',
+              isi: (
+                <>
+                  Seret berkas yang sudah diisi ke kotak ini, atau klik <Ui>Pilih berkas</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'periksa',
+              isi: (
+                <>
+                  Klik <Ui>Periksa Berkas</Ui>. Tidak ada yang tersimpan sebelum Anda mengonfirmasi hasil
+                  pratinjaunya.
+                </>
+              ),
+            },
+          ]}
+        />
         <Langkah
           daftar={[
             {

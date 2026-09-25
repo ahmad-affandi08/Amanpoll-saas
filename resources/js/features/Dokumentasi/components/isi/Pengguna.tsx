@@ -13,6 +13,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'cara-kerja', judul: 'Cara kerja izin' },
@@ -41,16 +42,52 @@ export function Pengguna() {
           <Jalur ruas={['Sistem & Konfigurasi', 'Administrasi', 'Peran & Izin']} /> lalu <Ui>Tambah Peran</Ui>
           .
         </P>
-        <Daftar urut>
-          <Butir>
-            Beri nama yang menyebut pekerjaannya, bukan orangnya: Teknisi, Penyelia Gudang, Admin.
-          </Butir>
-          <Butir>
-            Buka <Ui>Kelola Izin</Ui> pada peran itu, lalu centang izin yang diperlukan. Daftarnya
-            dikelompokkan per modul.
-          </Butir>
-          <Butir>Simpan. Perubahan izin langsung berlaku pada pengguna yang memegang peran itu.</Butir>
-        </Daftar>
+        <Tangkapan
+          gambar="pengguna/peran"
+          alt="Halaman Peran & Izin dengan tombol Tambah Peran dan Kelola Izin"
+          langkah={[
+            {
+              penanda: 'tambah',
+              isi: (
+                <>
+                  Klik <Ui>Tambah Peran</Ui>. Beri nama yang menyebut pekerjaannya, bukan orangnya: Teknisi,
+                  Penyelia Gudang, Admin.
+                </>
+              ),
+            },
+            {
+              penanda: 'izin',
+              isi: (
+                <>
+                  Klik <Ui>Kelola Izin</Ui> pada baris peran itu.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="pengguna/izin"
+          alt="Dialog izin sebuah peran berisi kotak centang yang dikelompokkan per modul"
+          langkah={[
+            {
+              penanda: 'centang',
+              isi: (
+                <>
+                  Centang izin yang diperlukan. Daftarnya dikelompokkan per modul, mis. Aset, Audit,
+                  Kalibrasi.
+                </>
+              ),
+            },
+            {
+              isi: (
+                <>
+                  Gulir ke bawah dan klik <Ui>Simpan Izin</Ui>. Perubahan langsung berlaku pada pengguna yang
+                  memegang peran itu.
+                </>
+              ),
+            },
+          ]}
+        />
         <Awas>
           Peran bawaan sistem tidak dapat dihapus. Peran yang masih dipegang pengguna juga tidak — lepaskan
           dulu penugasannya.
@@ -68,12 +105,81 @@ export function Pengguna() {
             organisasi dengan kata sandi yang sama, ia diminta memilih organisasinya sesudah masuk.
           </Butir>
           <Butir>
-            <Ui>Jenis</Ui> membedakan pengguna internal dari pihak luar seperti teknisi vendor.
+            <Ui>Jenis Pengguna</Ui> membedakan pengguna internal dari pihak luar seperti teknisi vendor.
           </Butir>
           <Butir>
             Setelah tersimpan, buka <Ui>Kelola Peran</Ui> pada barisnya untuk menetapkan peran.
           </Butir>
         </Daftar>
+        <Tangkapan
+          gambar="pengguna/formulir"
+          alt="Formulir Tambah Pengguna"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Tambah Pengguna</Ui>, lalu isi nama dan kata sandi awalnya.
+                </>
+              ),
+            },
+            {
+              penanda: 'email',
+              isi: (
+                <>
+                  Isi <Ui>Email</Ui>; alamat ini dipakai untuk masuk.
+                </>
+              ),
+            },
+            {
+              penanda: 'jenis',
+              isi: (
+                <>
+                  Pilih <Ui>Jenis Pengguna</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'simpan',
+              isi: (
+                <>
+                  Klik <Ui>Simpan</Ui>.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="pengguna/kelola-peran"
+          alt="Dialog Kelola Peran berisi peran yang dipegang, pemilih peran, dan pembatas unit serta ruangan"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Kelola Peran</Ui> pada baris pengguna. Peran yang sudah dipegang tampil paling atas
+                  dan bisa dicabut.
+                </>
+              ),
+            },
+            { penanda: 'peran', isi: <>Pilih peran yang akan ditambahkan.</> },
+            {
+              penanda: 'lingkup',
+              isi: (
+                <>
+                  Batasi ke unit atau ruangan tertentu bila pengguna hanya boleh melihat data di sana. Biarkan{' '}
+                  <Ui>Semua unit</Ui> untuk seluruh organisasi.
+                </>
+              ),
+            },
+            {
+              penanda: 'tetapkan',
+              isi: (
+                <>
+                  Klik <Ui>Tetapkan</Ui>.
+                </>
+              ),
+            },
+          ]}
+        />
         <Catatan>
           Pengguna yang keluar dari organisasi sebaiknya <Tegas>dinonaktifkan</Tegas>, bukan dihapus.
           Menonaktifkan menutup aksesnya seketika sambil menjaga jejaknya di riwayat perintah kerja dan log

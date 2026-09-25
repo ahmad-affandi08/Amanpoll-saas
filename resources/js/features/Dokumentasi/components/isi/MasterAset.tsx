@@ -1,5 +1,6 @@
 import type { ButirDaftarIsi } from '@/features/Dokumentasi/components/KerangkaDokumentasi';
 import { Bagian, Butir, Catatan, Daftar, Jalur, P, Tegas, Ui } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'urutan', judul: 'Urutan pembuatan' },
@@ -45,6 +46,51 @@ export function MasterAset() {
             <Ui>Induk</Ui> membuat kategori bertingkat, mis. Alat Ukur › Timbangan.
           </Butir>
         </Daftar>
+        <Tangkapan
+          gambar="master-aset/kategori-formulir"
+          alt="Formulir Tambah Kategori Aset"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Tambah Kategori</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'induk',
+              isi: (
+                <>
+                  Pilih <Ui>Kategori Induk</Ui> bila kategori ini bagian dari kategori lain.
+                </>
+              ),
+            },
+            {
+              penanda: 'umur',
+              isi: (
+                <>
+                  Isi <Ui>Umur Manfaat</Ui> dan metode penyusutan bawaan bila dipakai.
+                </>
+              ),
+            },
+            {
+              penanda: 'kalibrasi',
+              isi: (
+                <>
+                  Centang <Ui>Memerlukan Kalibrasi</Ui> untuk alat ukur.
+                </>
+              ),
+            },
+            {
+              penanda: 'pemeliharaan',
+              isi: (
+                <>
+                  Centang <Ui>Memerlukan Pemeliharaan</Ui> untuk aset yang dirawat berkala, lalu simpan.
+                </>
+              ),
+            },
+          ]}
+        />
         <Catatan>
           Mengubah <Tegas>Memerlukan Kalibrasi</Tegas> pada kategori yang sudah punya aset akan mengubah
           cakupan laporan kepatuhan. Tetapkan sedini mungkin.
@@ -70,6 +116,31 @@ export function MasterAset() {
           menyimpan spesifikasi teknis dan interval pemeliharaan serta kalibrasi bawaan, sehingga aset baru
           dari model yang sama tidak perlu diisi ulang satu per satu.
         </P>
+        <Tangkapan
+          gambar="master-aset/model-formulir"
+          alt="Formulir Tambah Model Aset"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Tambah Model</Ui>, lalu pilih kategori dan isi namanya.
+                </>
+              ),
+            },
+            {
+              penanda: 'merek',
+              isi: (
+                <>
+                  Pilih <Ui>Merek</Ui>; buat mereknya dulu bila belum ada.
+                </>
+              ),
+            },
+            {
+              penanda: 'interval',
+              isi: <>Isi interval pemeliharaan dan kalibrasi bawaan; aset baru dari model ini mewarisinya.</>,
+            },
+          ]}
+        />
         <P>
           Menyiapkan model di depan menghemat banyak pekerjaan bila organisasi memiliki puluhan unit barang
           yang sama.

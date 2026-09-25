@@ -10,6 +10,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'mutasi', judul: 'Mutasi aset' },
@@ -34,6 +35,67 @@ export function SiklusAset() {
           Jangan memindahkan aset dengan menyunting kolom <Ui>Lokasi</Ui> di halaman aset. Cara itu mengubah
           lokasinya tanpa meninggalkan alasan dan tanggal perpindahan.
         </Awas>
+        <Tangkapan
+          gambar="siklus-aset/mutasi"
+          alt="Halaman Mutasi Aset dengan tombol Buat Permintaan Mutasi dan kolom Status"
+          langkah={[
+            {
+              penanda: 'buat',
+              isi: (
+                <>
+                  Klik <Ui>Buat Permintaan Mutasi</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'status',
+              isi: (
+                <>
+                  Pantau kolom <Ui>Status</Ui>: Draft, Menunggu persetujuan, Disetujui, lalu Selesai setelah
+                  aset dipindahkan.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="siklus-aset/mutasi-formulir"
+          alt="Formulir Buat Permintaan Mutasi"
+          langkah={[
+            {
+              penanda: 'jenis',
+              isi: (
+                <>
+                  Pilih <Ui>Jenis Mutasi</Ui>, mis. Antar Lokasi, Antar Unit, atau Peminjaman.
+                </>
+              ),
+            },
+            {
+              penanda: 'lokasi',
+              isi: (
+                <>
+                  Isi <Ui>Lokasi Tujuan</Ui>, <Ui>Unit Tujuan</Ui>, atau keduanya; minimal salah satu.
+                </>
+              ),
+            },
+            {
+              penanda: 'unit',
+              isi: (
+                <>
+                  Biarkan <Ui>Tidak diubah</Ui> untuk tujuan yang tetap sama.
+                </>
+              ),
+            },
+            {
+              penanda: 'draft',
+              isi: (
+                <>
+                  Klik <Ui>Buat Draft</Ui>, lalu lengkapi daftar asetnya di halaman draft sebelum diajukan.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
 
       <Bagian id="serah-terima" judul="Serah terima">
@@ -55,6 +117,43 @@ export function SiklusAset() {
           Untuk aset yang dilepas: dijual, dimusnahkan, hilang, atau habis umur manfaatnya. Pengajuan
           penghapusan memuat alasan dan nilai sisa, dan biasanya melewati persetujuan.
         </P>
+        <Tangkapan
+          gambar="siklus-aset/penghapusan-formulir"
+          alt="Formulir Ajukan Penghapusan Aset"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Ajukan Penghapusan</Ui> di halaman Penghapusan.
+                </>
+              ),
+            },
+            {
+              penanda: 'alasan',
+              isi: (
+                <>
+                  Tulis <Ui>Alasan</Ui> pelepasannya.
+                </>
+              ),
+            },
+            {
+              penanda: 'metode',
+              isi: (
+                <>
+                  Pilih <Ui>Metode Penghapusan</Ui>: Dijual, Dimusnahkan, Hibah, Hilang, atau Lainnya.
+                </>
+              ),
+            },
+            {
+              penanda: 'draft',
+              isi: (
+                <>
+                  Klik <Ui>Buat Draft</Ui>, lalu tambahkan aset yang dihapus di halaman draft.
+                </>
+              ),
+            },
+          ]}
+        />
         <P>
           Aset yang dihapus <Tegas>tidak hilang dari sistem</Tegas>. Ia keluar dari daftar aktif tetapi
           seluruh riwayat pemeliharaan, kalibrasi, dan biayanya tetap terbaca di laporan.

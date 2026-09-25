@@ -12,6 +12,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'organisasi', judul: 'Organisasi' },
@@ -37,6 +38,28 @@ export function Organisasi() {
           kalibrasi. Aturlah sebelum data operasional masuk: mengubahnya belakangan <Tegas>tidak</Tegas>{' '}
           menghitung ulang tenggat yang sudah terbit.
         </Awas>
+        <Tangkapan
+          gambar="organisasi/profil"
+          alt="Halaman profil organisasi dengan isian Zona Waktu dan tombol Simpan Perubahan"
+          langkah={[
+            {
+              penanda: 'zona',
+              isi: (
+                <>
+                  Pilih <Ui>Zona Waktu</Ui> tempat organisasi beroperasi, mis. Asia/Jakarta untuk WIB.
+                </>
+              ),
+            },
+            {
+              penanda: 'simpan',
+              isi: (
+                <>
+                  Klik <Ui>Simpan Perubahan</Ui>.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
 
       <Bagian id="unit" judul="Unit organisasi">
@@ -59,6 +82,60 @@ export function Organisasi() {
             <Ui>Urutan</Ui> menentukan posisinya di daftar dan pemilih, bukan hierarki.
           </Butir>
         </Daftar>
+        <Tangkapan
+          gambar="organisasi/unit-formulir"
+          alt="Formulir Tambah Unit Organisasi"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Tambah Unit</Ui> di kanan atas halaman Unit Organisasi.
+                </>
+              ),
+            },
+            {
+              penanda: 'kode',
+              isi: (
+                <>
+                  Kode terisi sendiri; klik <Ui>Atur sendiri</Ui> hanya bila organisasi sudah punya kode unit.
+                </>
+              ),
+            },
+            {
+              penanda: 'jenis',
+              isi: (
+                <>
+                  Isi <Ui>Jenis</Ui>, mis. Divisi, Departemen, atau Cabang.
+                </>
+              ),
+            },
+            {
+              penanda: 'induk',
+              isi: (
+                <>
+                  Pilih <Ui>Induk</Ui> untuk unit bertingkat, atau biarkan <Ui>Tanpa induk</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'pengelola',
+              isi: (
+                <>
+                  Aktifkan <Ui>Mengelola aset</Ui> bila unit ini memelihara aset, mis. IPSRS atau IT. Lihat
+                  halaman Unit Pengelola.
+                </>
+              ),
+            },
+            {
+              penanda: 'simpan',
+              isi: (
+                <>
+                  Klik <Ui>Simpan</Ui>.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
 
       <Bagian id="lokasi" judul="Lokasi">
@@ -74,6 +151,29 @@ export function Organisasi() {
           Sebelum membuat lokasi, buat kategorinya lewat tombol <Ui>Kelola Kategori</Ui> di halaman yang sama.
           Kategori dipakai menyaring daftar dan mengelompokkan laporan, mis. Gedung, Lantai, Ruang, Area Luar.
         </P>
+        <Tangkapan
+          gambar="organisasi/lokasi"
+          alt="Halaman Lokasi dengan tombol Kelola Kategori dan Tambah Lokasi"
+          langkah={[
+            {
+              penanda: 'kategori',
+              isi: (
+                <>
+                  Buat kategorinya dulu lewat <Ui>Kelola Kategori</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'tambah',
+              isi: (
+                <>
+                  Klik <Ui>Tambah Lokasi</Ui>, isi nama, kategori, dan induknya bila lokasi ini bagian dari
+                  gedung atau lantai.
+                </>
+              ),
+            },
+          ]}
+        />
         <Catatan>
           Lokasi yang masih memiliki sub-lokasi atau masih ditempati aset tidak dapat dihapus. Nonaktifkan
           saja bila sudah tidak dipakai — riwayat aset yang pernah menempatinya tetap utuh.

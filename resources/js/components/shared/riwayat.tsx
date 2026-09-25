@@ -45,6 +45,15 @@ export function tanggal(nilai: string | null): string {
   return new Date(nilai).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+/** Tanggal dan jam di zona peramban, mis. untuk waktu verifikasi. */
+export function tanggalJam(nilai: string | null | undefined): string {
+  if (!nilai) {
+    return '—';
+  }
+
+  return new Date(nilai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
 export function durasi(menit: number | null): string {
   if (menit === null || menit === 0) {
     return '—';

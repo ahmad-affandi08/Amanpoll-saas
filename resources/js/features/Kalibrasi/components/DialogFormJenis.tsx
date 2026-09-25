@@ -95,8 +95,8 @@ export function DialogFormJenis({ jenis, wajib }: { jenis: JenisKalibrasi | null
             />
 
             <div className="space-y-1.5">
-              <Label nama="Nama" htmlFor="Nama">
-                Nama Jenis Kalibrasi *
+              <Label nama="Nama" htmlFor="Nama" wajib>
+                Nama Jenis Kalibrasi
               </Label>
               <Input
                 id="Nama"

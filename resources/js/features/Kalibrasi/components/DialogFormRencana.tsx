@@ -161,8 +161,8 @@ export function DialogFormRencana({
         <AturanWajibProvider aturan={wajib}>
           <form onSubmit={simpan} className="space-y-4">
             <div className="space-y-1.5">
-              <Label nama="AsetId" htmlFor="AsetId">
-                Pilih Aset / Instrumen *
+              <Label nama="AsetId" htmlFor="AsetId" wajib>
+                Pilih Aset / Instrumen
               </Label>
               <Combobox
                 nilai={form.data.AsetId}
@@ -230,8 +230,8 @@ export function DialogFormRencana({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label nama="IntervalHari" htmlFor="IntervalHari">
-                  Interval (Hari) *
+                <Label nama="IntervalHari" htmlFor="IntervalHari" wajib>
+                  Interval (Hari)
                 </Label>
                 <Input
                   id="IntervalHari"
@@ -252,8 +252,8 @@ export function DialogFormRencana({
               </div>
 
               <div className="space-y-1.5">
-                <Label nama="TanggalMulai" htmlFor="TanggalMulai">
-                  Tanggal Mulai *
+                <Label nama="TanggalMulai" htmlFor="TanggalMulai" wajib>
+                  Tanggal Mulai
                 </Label>
                 <DatePicker
                   value={form.data.TanggalMulai}
@@ -271,8 +271,8 @@ export function DialogFormRencana({
               </div>
 
               <div className="space-y-1.5">
-                <Label nama="TanggalBerikutnya" htmlFor="TanggalBerikutnya">
-                  Jatuh Tempo Berikutnya *
+                <Label nama="TanggalBerikutnya" htmlFor="TanggalBerikutnya" wajib>
+                  Jatuh Tempo Berikutnya
                 </Label>
                 <DatePicker
                   value={form.data.TanggalBerikutnya}

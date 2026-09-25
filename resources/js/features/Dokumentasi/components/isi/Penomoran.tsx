@@ -13,6 +13,7 @@ import {
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'nomor-dokumen', judul: 'Pola nomor dokumen' },
@@ -46,6 +47,59 @@ export function Penomoran() {
         <P>
           <Kode>{'{Nomor:4}'}</Kode> berarti nomor urut dengan empat digit berpadding nol.
         </P>
+        <Tangkapan
+          gambar="penomoran/daftar"
+          alt="Halaman Nomor Dokumen dengan kolom Pratinjau Berikutnya dan tombol Ubah"
+          langkah={[
+            {
+              penanda: 'pratinjau',
+              isi: (
+                <>
+                  Kolom <Ui>Pratinjau Berikutnya</Ui> menunjukkan nomor yang akan terbit pada dokumen
+                  berikutnya.
+                </>
+              ),
+            },
+            {
+              penanda: 'ubah',
+              isi: (
+                <>
+                  Klik <Ui>Ubah</Ui> pada jenis dokumen yang polanya ingin diganti.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="penomoran/formulir"
+          alt="Formulir Ubah Pola Nomor Dokumen"
+          langkah={[
+            {
+              penanda: 'awalan',
+              isi: (
+                <>
+                  Ganti <Ui>Awalan</Ui> bila perlu, mis. INS menjadi INSP.
+                </>
+              ),
+            },
+            {
+              penanda: 'reset',
+              isi: (
+                <>
+                  Pilih <Ui>Reset Periode</Ui>: kapan hitungan kembali ke 1.
+                </>
+              ),
+            },
+            {
+              penanda: 'format',
+              isi: (
+                <>
+                  Susun <Ui>Format Nomor</Ui> dari placeholder di bawah isiannya, lalu simpan.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
 
       <Bagian id="wajib" judul="Pola bawaan">
@@ -122,15 +176,41 @@ export function Penomoran() {
         </P>
         <Daftar>
           <Butir>
-            <Ui>Berulang Tahunan</Ui> untuk tanggal tetap seperti 17 Agustus; cukup dimasukkan sekali.
+            <Ui>Berulang setiap tahun</Ui> untuk tanggal tetap seperti 17 Agustus; cukup dimasukkan sekali.
           </Butir>
           <Butir>
             Libur nasional yang tanggalnya berubah tiap tahun dimasukkan sebagai tanggal sekali jalan.
           </Butir>
-          <Butir>
-            <Ui>Lokasi</Ui> dapat diisi bila liburnya hanya berlaku di satu lokasi, mis. libur daerah.
-          </Butir>
         </Daftar>
+        <Tangkapan
+          gambar="penomoran/hari-libur"
+          alt="Formulir Tambah Hari Libur"
+          langkah={[
+            {
+              isi: (
+                <>
+                  Klik <Ui>Tambah Hari Libur</Ui>.
+                </>
+              ),
+            },
+            {
+              penanda: 'tanggal',
+              isi: (
+                <>
+                  Pilih <Ui>Tanggal</Ui> dan isi namanya, mis. Hari Kemerdekaan.
+                </>
+              ),
+            },
+            {
+              penanda: 'berulang',
+              isi: (
+                <>
+                  Centang <Ui>Berulang setiap tahun</Ui> bila tanggalnya tetap, lalu simpan.
+                </>
+              ),
+            },
+          ]}
+        />
       </Bagian>
     </>
   );

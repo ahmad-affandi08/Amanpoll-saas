@@ -32,6 +32,8 @@ const SANDI = process.env.TANGKAP_SANDI ?? 'password';
 const DIR_GAMBAR = 'public/assets/dokumentasi';
 const DIR_DATA = 'resources/js/features/Dokumentasi/tangkapan';
 const LEBAR = 1280;
+/** Layar ponsel untuk Mode Lapangan; dipotret dua kali lebih rapat supaya tetap tajam. */
+const LAYAR_HP = { width: 390, height: 844 };
 const TINGGI = 800;
 const KUALITAS_WEBP = 0.82;
 /** Kotak penanda sedikit lebih lega dari elemennya supaya garis sorot tidak menutupi teks. */
@@ -64,6 +66,11 @@ const tautan = (nama) => (p) => terlihat(p.getByRole('link', { name: nama, exact
 /** Bidang isian di dialog, ditemukan dari teks labelnya; kotaknya mencakup label dan isiannya. */
 const bidang = (label) => (p) =>
     terlihat(p.locator('[role=dialog] label').filter({ hasText: label }).locator('xpath=..'));
+/** Bidang isian di isi halaman (bukan dialog), ditemukan dari teks labelnya. */
+const bidangHalaman = (label) => (p) =>
+    terlihat(p.locator('main label').filter({ hasText: label }).locator('xpath=..'));
+/** Label di dialog itu sendiri, untuk kotak centang yang berbagi induk dengan bidang lain. */
+const labelDialog = (teks) => (p) => terlihat(p.locator('[role=dialog] label').filter({ hasText: teks }));
 const dialog = (p) => terlihat(p.locator('[role=dialog]'));
 /** Tombol, tautan, atau pemilih (combobox) di isi halaman yang teksnya persis. */
 const kendali = (teks) => (p) =>
@@ -297,6 +304,279 @@ const DAFTAR = [
         buka: '/persetujuan/permintaan',
         penanda: { menu: menu('Persetujuan Saya'), setujui: tombol('Setujui'), tolak: tombol('Tolak') },
     },
+    // Organisasi & lokasi
+    {
+        nama: 'organisasi/profil',
+        masuk: 'admin',
+        buka: '/platform/organisasi',
+        penanda: {
+            zona: bidangHalaman('Zona Waktu'),
+            simpan: tombol('Simpan Perubahan'),
+        },
+    },
+    {
+        nama: 'organisasi/unit-formulir',
+        masuk: 'admin',
+        buka: '/platform/unit-organisasi',
+        siapkan: (p) => klik(p, tombol('Tambah Unit')),
+        potong: dialog,
+        penanda: {
+            kode: tombol('Atur sendiri'),
+            jenis: bidang('Jenis'),
+            induk: bidang('Induk'),
+            pengelola: bidang('Mengelola aset'),
+            simpan: tombol('Simpan'),
+        },
+    },
+    {
+        nama: 'organisasi/lokasi',
+        masuk: 'admin',
+        buka: '/platform/lokasi',
+        penanda: {
+            kategori: tombol('Kelola Kategori'),
+            tambah: tombol('Tambah Lokasi'),
+        },
+    },
+
+    // Pengguna & peran
+    {
+        nama: 'pengguna/peran',
+        masuk: 'admin',
+        buka: '/platform/peran',
+        penanda: { tambah: tombol('Tambah Peran'), izin: tombol('Kelola Izin') },
+    },
+    {
+        nama: 'pengguna/izin',
+        masuk: 'admin',
+        buka: '/platform/peran',
+        siapkan: (p) => klik(p, tombol('Kelola Izin')),
+        potong: dialog,
+        penanda: {
+            centang: labelDialog('Lihat Aset'),
+        },
+    },
+    {
+        nama: 'pengguna/formulir',
+        masuk: 'admin',
+        buka: '/platform/pengguna',
+        siapkan: (p) => klik(p, tombol('Tambah Pengguna')),
+        potong: dialog,
+        penanda: { email: bidang('Email'), jenis: bidang('Jenis Pengguna'), simpan: tombol('Simpan') },
+    },
+    {
+        nama: 'pengguna/kelola-peran',
+        masuk: 'admin',
+        buka: '/platform/pengguna',
+        siapkan: (p) => klik(p, tombol('Kelola Peran')),
+        potong: dialog,
+        penanda: {
+            peran: (p) =>
+                terlihat(p.locator('[role=dialog] [role=combobox]').filter({ hasText: 'Pilih peran' })),
+            lingkup: (p) =>
+                terlihat(p.locator('[role=dialog] [role=combobox]').filter({ hasText: 'Semua unit' })),
+            tetapkan: tombol('Tetapkan'),
+        },
+    },
+
+    // Penomoran & hari libur
+    {
+        nama: 'penomoran/daftar',
+        masuk: 'admin',
+        buka: '/platform/nomor-dokumen',
+        penanda: { pratinjau: kepalaKolom('Pratinjau Berikutnya'), ubah: tombol('Ubah') },
+    },
+    {
+        nama: 'penomoran/formulir',
+        masuk: 'admin',
+        buka: '/platform/nomor-dokumen',
+        siapkan: async (p) => {
+            await klik(p, tombol('Ubah'));
+            // Isian awalan terfokus dan terseleksi saat dialog terbuka; di gambar tampak seperti salah.
+            await p.evaluate(() => document.activeElement?.blur());
+        },
+        potong: dialog,
+        penanda: { awalan: bidang('Awalan'), reset: bidang('Reset Periode'), format: bidang('Format Nomor') },
+    },
+    {
+        nama: 'penomoran/hari-libur',
+        masuk: 'admin',
+        buka: '/platform/hari-libur',
+        siapkan: (p) => klik(p, tombol('Tambah Hari Libur')),
+        potong: dialog,
+        penanda: { tanggal: bidang('Tanggal'), berulang: labelDialog('Berulang setiap tahun') },
+    },
+
+    // Data induk aset
+    {
+        nama: 'master-aset/kategori-formulir',
+        masuk: 'admin',
+        buka: '/aset-master/kategori',
+        siapkan: (p) => klik(p, tombol('Tambah Kategori')),
+        potong: dialog,
+        penanda: {
+            induk: bidang('Kategori Induk'),
+            umur: bidang('Umur Manfaat'),
+            kalibrasi: labelDialog('Memerlukan Kalibrasi'),
+            pemeliharaan: labelDialog('Memerlukan Pemeliharaan'),
+        },
+    },
+    {
+        nama: 'master-aset/model-formulir',
+        masuk: 'admin',
+        buka: '/aset-master/model',
+        siapkan: (p) => klik(p, tombol('Tambah Model')),
+        potong: dialog,
+        tinggi: 1000,
+        penanda: { merek: bidang('Merek'), interval: bidang('Interval Pemeliharaan') },
+    },
+
+    // Aset
+    {
+        nama: 'aset/daftar',
+        masuk: 'admin',
+        buka: '/aset',
+        penanda: { menu: menu('Daftar Aset'), daftarkan: tombol('Daftarkan Aset'), impor: tombol('Impor') },
+    },
+    {
+        nama: 'aset/formulir',
+        masuk: 'admin',
+        buka: '/aset',
+        siapkan: (p) => klik(p, tombol('Daftarkan Aset')),
+        potong: dialog,
+        penanda: {
+            kategori: bidang('Kategori'),
+            lokasi: bidang('Lokasi Awal'),
+            pengelola: bidang('Unit Pengelola'),
+            seri: bidang('Nomor Seri'),
+        },
+    },
+    {
+        nama: 'aset/impor',
+        masuk: 'admin',
+        buka: '/aset',
+        siapkan: (p) => klik(p, tombol('Impor')),
+        potong: dialog,
+        penanda: {
+            templat: (p) =>
+                terlihat(
+                    p.locator('[role=dialog] a, [role=dialog] button').filter({ hasText: 'Templat Excel' }),
+                ),
+            berkas: bidang('Pilih berkas'),
+            periksa: tombol('Periksa Berkas'),
+        },
+    },
+    // Siklus aset
+    {
+        nama: 'siklus-aset/mutasi',
+        masuk: 'admin',
+        buka: '/mutasi-aset',
+        penanda: { buat: tombol('Buat Permintaan Mutasi'), status: kepalaKolom('Status') },
+    },
+    {
+        nama: 'siklus-aset/mutasi-formulir',
+        masuk: 'admin',
+        buka: '/mutasi-aset',
+        siapkan: (p) => klik(p, tombol('Buat Permintaan Mutasi')),
+        potong: dialog,
+        penanda: {
+            jenis: bidang('Jenis Mutasi'),
+            lokasi: bidang('Lokasi Tujuan'),
+            unit: bidang('Unit Tujuan'),
+            draft: tombol('Buat Draft'),
+        },
+    },
+    {
+        nama: 'siklus-aset/penghapusan-formulir',
+        masuk: 'admin',
+        buka: '/penghapusan-aset',
+        siapkan: (p) => klik(p, tombol('Ajukan Penghapusan')),
+        potong: dialog,
+        penanda: {
+            alasan: bidang('Alasan'),
+            metode: bidang('Metode Penghapusan'),
+            draft: tombol('Buat Draft'),
+        },
+    },
+
+    // Kalibrasi
+    {
+        nama: 'kalibrasi/dasbor',
+        masuk: 'admin',
+        buka: '/kalibrasi',
+        penanda: {
+            ringkasan: (p) => terlihat(p.locator('main div').filter({ hasText: /^Terlambat Kalibrasi/ })),
+            saring: kendali('Terlambat'),
+            pengingat: tombol('Kirim Pengingat'),
+        },
+    },
+    {
+        nama: 'kalibrasi/rencana-formulir',
+        masuk: 'admin',
+        buka: '/kalibrasi/rencana',
+        siapkan: (p) => klik(p, tombol('Buat Rencana Kalibrasi')),
+        potong: dialog,
+        tinggi: 1000,
+        penanda: {
+            aset: bidang('Pilih Aset'),
+            jenis: bidang('Jenis Kalibrasi'),
+            penyedia: bidang('Penyedia / Laboratorium'),
+            interval: bidang('Interval (Hari)'),
+            pengingat: bidang('Jendela Pengingat'),
+        },
+    },
+
+    // Laporan
+    {
+        nama: 'lanjutan/laporan',
+        masuk: 'admin',
+        buka: '/pelaporan/laporan',
+        penanda: { baru: tombol('Laporan baru'), rentang: kendali('30 hari'), unit: kendali('Semua unit') },
+    },
+
+    // Mode Lapangan (layar ponsel)
+    {
+        nama: 'lapangan/teknisi-tugas',
+        masuk: 'teknisi.teknik',
+        hp: true,
+        buka: '/lapangan/teknisi/tugas',
+        penanda: {
+            tab: (p) => terlihat(p.getByRole('tab', { name: /^Hari ini/ })),
+            kartu: (p) => terlihat(p.locator('[role=tabpanel] article')),
+            pindai: (p) => terlihat(p.getByRole('link', { name: 'Pindai' })),
+        },
+    },
+    {
+        nama: 'lapangan/pelapor-beranda',
+        masuk: 'pelapor',
+        hp: true,
+        buka: '/lapangan/pelapor',
+        penanda: {
+            lapor: (p) => terlihat(p.locator('a').filter({ hasText: 'Laporkan Kerusakan' })),
+            jenis: (p) =>
+                terlihat(p.getByText('Atau pilih jenis masalah').locator('xpath=following-sibling::*[1]')),
+            konfirmasi: (p) => terlihat(p.locator('main a span').filter({ hasText: /^Konfirmasi$/ })),
+        },
+    },
+    {
+        nama: 'lapangan/pelapor-lapor',
+        masuk: 'pelapor',
+        hp: true,
+        buka: '/lapangan/pelapor/lapor',
+        penanda: {
+            pindai: (p) =>
+                terlihat(
+                    p.getByText('Pindai QR alat').locator('xpath=ancestor::*[self::button or self::a][1]'),
+                ),
+            lokasi: (p) =>
+                terlihat(p.getByText('Belum dipilih').locator('xpath=ancestor::div[.//button][1]')),
+            tanpa: (p) =>
+                terlihat(
+                    p
+                        .getByText('Tidak tahu alatnya?')
+                        .locator('xpath=ancestor::*[self::button or self::a][1]'),
+                ),
+        },
+    },
 ];
 
 // ---------------------------------------------------------------------------
@@ -318,9 +598,10 @@ async function keWebp(halamanKonversi, png) {
     return Buffer.from(dataUrl.split(',')[1], 'base64');
 }
 
-async function masuk(peramban, peran) {
+async function masuk(peramban, peran, hp = false) {
     const konteks = await peramban.newContext({
-        viewport: { width: LEBAR, height: TINGGI },
+        viewport: hp ? LAYAR_HP : { width: LEBAR, height: TINGGI },
+        ...(hp ? { deviceScaleFactor: 2, isMobile: true, hasTouch: true } : {}),
         locale: 'id-ID',
         timezoneId: 'Asia/Jakarta',
     });
@@ -334,10 +615,12 @@ async function masuk(peramban, peran) {
 }
 
 async function tangkap(p, konversi, satu) {
-    const tinggi = satu.tinggi ?? TINGGI;
-    await p.setViewportSize({ width: LEBAR, height: tinggi });
+    const lebar = satu.hp ? LAYAR_HP.width : LEBAR;
+    const tinggi = satu.tinggi ?? (satu.hp ? LAYAR_HP.height : TINGGI);
+    await p.setViewportSize({ width: lebar, height: tinggi });
     await p.goto(`${PANGKAL}${satu.buka}`);
-    await p.waitForLoadState('networkidle');
+    // Layar lapangan terus menyinkronkan data, jadi jaringannya mungkin tidak pernah benar-benar diam.
+    await p.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
     await p.addStyleTag({
         content:
             '*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}',
@@ -345,7 +628,7 @@ async function tangkap(p, konversi, satu) {
     await p.waitForTimeout(900);
     if (satu.siapkan) await satu.siapkan(p);
 
-    let clip = { x: 0, y: 0, width: LEBAR, height: tinggi };
+    let clip = { x: 0, y: 0, width: lebar, height: tinggi };
     if (satu.potong) {
         const b = await satu.potong(p).boundingBox();
         if (!b) throw new Error('bagian yang dipotong tidak ditemukan');
@@ -356,7 +639,7 @@ async function tangkap(p, konversi, satu) {
         clip = {
             x,
             y,
-            width: Math.min(LEBAR - x, b.width + tepi * 2),
+            width: Math.min(lebar - x, b.width + tepi * 2),
             height: Math.min(tinggi - y, b.height + tepi * 2),
         };
     }
@@ -421,8 +704,9 @@ let gagal = 0;
 
 for (const satu of DAFTAR.filter((t) => !saringan || t.nama.includes(saringan))) {
     try {
-        sesi[satu.masuk] ??= await masuk(peramban, satu.masuk);
-        const hasil = await tangkap(sesi[satu.masuk], konversi, satu);
+        const kunciSesi = `${satu.masuk}${satu.hp ? ':hp' : ''}`;
+        sesi[kunciSesi] ??= await masuk(peramban, satu.masuk, satu.hp);
+        const hasil = await tangkap(sesi[kunciSesi], konversi, satu);
         const catatan = hasil.hilang.length ? `  PENANDA TIDAK DITEMUKAN: ${hasil.hilang.join(', ')}` : '';
         if (hasil.hilang.length) gagal++;
         console.log(`${satu.nama.padEnd(34)} ${String(hasil.ukuranKb).padStart(4)} KB${catatan}`);

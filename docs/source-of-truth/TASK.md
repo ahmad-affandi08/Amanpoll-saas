@@ -4091,6 +4091,16 @@ Jebakan yang ditemukan:
   blok tidak boleh dipotong di `/>` pertama karena penutup fragmen `</>` memuatnya; dulu
   penjaganya hijau tanpa memeriksa satu penanda pun.
 
+Tahap C dan D menambah 24 gambar (42 seluruhnya): Organisasi, Pengguna & Peran,
+Penomoran, Kategori & Model, Mendata Aset, Mutasi & Penghapusan, Kalibrasi, Laporan, dan
+Mode Lapangan. Layar lapangan dipotret di ukuran ponsel (390 px, rapat piksel 2) dan
+tampil selebar aslinya, bukan direntangkan. Saat mencocokkan panduan dengan layarnya
+ditemukan beberapa teks basi: tombol "Tambah Aset" kini "Daftarkan Aset", formulir aset
+tidak lagi punya Unit Organisasi, dan panduan Hari Libur menyebut isian Lokasi yang ada di
+server (`LokasiId`) tetapi tidak pernah ada di layar; baris itu dihapus sampai isiannya
+dibuat. Ikut dirapikan: tanda wajib ganda di formulir Kalibrasi (bintang yang ditulis di
+teks label) dan waktu verifikasi kalibrasi yang tampil sebagai ISO mentah.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan

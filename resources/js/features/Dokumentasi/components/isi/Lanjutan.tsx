@@ -7,9 +7,11 @@ import {
   Daftar,
   Jalur,
   P,
+  SubJudul,
   Tegas,
   Ui,
 } from '@/features/Dokumentasi/components/Prosa';
+import { Tangkapan } from '@/features/Dokumentasi/components/Tangkapan';
 
 export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'laporan', judul: 'Laporan dan dasbor' },
@@ -35,6 +37,28 @@ export function Lanjutan() {
             <Ui>Dasbor Kustom</Ui> menyusun kartu-kartu angka menjadi satu layar pantau.
           </Butir>
         </Daftar>
+        <Tangkapan
+          gambar="lanjutan/laporan"
+          alt="Halaman Laporan Tersimpan dengan tombol Laporan baru dan penyaring"
+          langkah={[
+            {
+              penanda: 'baru',
+              isi: (
+                <>
+                  Klik <Ui>Laporan baru</Ui> dan pilih KPI yang ingin dilihat.
+                </>
+              ),
+            },
+            {
+              penanda: 'rentang',
+              isi: <>Pilih rentang tanggal: 7, 30, atau 90 hari, atau tanggal sendiri.</>,
+            },
+            {
+              penanda: 'unit',
+              isi: <>Persempit menurut unit, lokasi, atau unit pengelola, lalu simpan susunannya.</>,
+            },
+          ]}
+        />
         <P>Keduanya bagian dari paket langganan tertentu; menunya tidak muncul bila paketnya tidak memuat.</P>
       </Bagian>
 
@@ -88,6 +112,67 @@ export function Lanjutan() {
           Mode Lapangan tetap berjalan di area tanpa sinyal — ruang mesin, basement, lapangan. Pekerjaan yang
           dicatat disimpan di perangkat dan dikirim saat jaringan kembali ada.
         </P>
+        <SubJudul>Layar teknisi</SubJudul>
+        <Tangkapan
+          gambar="lapangan/teknisi-tugas"
+          alt="Layar Tiket Saya di ponsel teknisi"
+          langkah={[
+            {
+              penanda: 'tab',
+              isi: (
+                <>
+                  Buka <Ui>Tugas</Ui>. Tab <Ui>Hari ini</Ui> memuat tiket yang harus dikerjakan;{' '}
+                  <Ui>Terlambat</Ui> yang lewat target.
+                </>
+              ),
+            },
+            {
+              penanda: 'kartu',
+              isi: <>Ketuk kartu tiket untuk mulai, mencatat pekerjaan, dan menyelesaikannya.</>,
+            },
+            {
+              penanda: 'pindai',
+              isi: (
+                <>
+                  Ketuk <Ui>Pindai</Ui> untuk membuka aset langsung dari stiker QR-nya.
+                </>
+              ),
+            },
+          ]}
+        />
+        <SubJudul>Layar pelapor</SubJudul>
+        <Tangkapan
+          gambar="lapangan/pelapor-beranda"
+          alt="Beranda pelapor di ponsel"
+          langkah={[
+            {
+              penanda: 'lapor',
+              isi: (
+                <>
+                  Ketuk <Ui>Laporkan Kerusakan</Ui>.
+                </>
+              ),
+            },
+            { penanda: 'jenis', isi: <>Atau langsung pilih jenis masalahnya.</> },
+            {
+              penanda: 'konfirmasi',
+              isi: (
+                <>
+                  Setelah teknisi selesai, ketuk <Ui>Konfirmasi</Ui> bila perbaikannya sudah beres.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Tangkapan
+          gambar="lapangan/pelapor-lapor"
+          alt="Langkah pertama Lapor kerusakan: memilih alat"
+          langkah={[
+            { penanda: 'pindai', isi: <>Cara paling cepat: pindai stiker QR di badan alat.</> },
+            { penanda: 'lokasi', isi: <>Atau pilih lokasi dulu, lalu pilih alatnya dari daftar.</> },
+            { penanda: 'tanpa', isi: <>Tidak tahu alatnya? Laporkan lokasinya saja.</> },
+          ]}
+        />
         <Catatan>
           Pengiriman ulang aman diulang: satu catatan yang terkirim dua kali tidak menjadi dua perintah kerja.
           Karena itu, bila ragu apakah data sudah terkirim, mengirim ulang lebih baik daripada mengetik ulang.
