@@ -25,6 +25,7 @@ use App\Shared\Infrastructure\Validasi\AturanWajib;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -132,6 +133,8 @@ final class PesananPembelianController extends Controller
         return Inertia::render('PesananPembelian/Show', [
             'wajib' => ['penerimaan' => AturanWajib::untuk(SimpanPenerimaanPembelianRequest::class), 'tagihan' => AturanWajib::untuk(SimpanTagihanPenyediaRequest::class)],
             'pesanan' => new PesananPembelianResource($pesananPembelian),
+            // Petugas gudang membuka halaman ini hanya untuk mencatat barang datang.
+            'bolehKelola' => Gate::allows('update', $pesananPembelian),
             'gudang' => Gudang::query()->where('Status', StatusGudang::Aktif->value)->orderBy('Nama')->get(['Id', 'Kode', 'Nama']),
         ]);
     }

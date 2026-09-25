@@ -14,8 +14,18 @@ import { rutePesananPembelian } from '@/features/PesananPembelian/api';
 import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 
+interface PesananMenunggu {
+  Id: string;
+  Nomor: string;
+  Status: 'Dikirim' | 'DiterimaSebagian';
+  NamaPenyedia: string;
+  TanggalKirimRencana: string | null;
+}
+
 interface Props {
   penerimaan: Paginasi<PenerimaanPembelian>;
+  /** PO yang sudah dikirim ke penyedia dan barangnya belum lengkap diterima. */
+  menungguPenerimaan: PesananMenunggu[];
   filter: { cari?: string };
 }
 
@@ -23,7 +33,7 @@ function tanggalLokal(nilai: string | null): string {
   return nilai ? new Date(nilai).toLocaleDateString('id-ID') : '-';
 }
 
-export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) {
+export default function PenerimaanPembelianIndex({ penerimaan, menungguPenerimaan, filter }: Props) {
   const [cari, setCari] = useState(filter.cari ?? '');
 
   function terapkanFilter(event: FormEvent): void {
@@ -42,6 +52,34 @@ export default function PenerimaanPembelianIndex({ penerimaan, filter }: Props) 
             <TombolEkspor url={rutePenerimaanPembelian.ekspor} filter={filter as Record<string, string>} />
           }
         />
+
+        {menungguPenerimaan.length > 0 && (
+          <section aria-labelledby="judul-menunggu" className="space-y-2">
+            <h2 id="judul-menunggu" className="text-sm font-semibold text-foreground">
+              Menunggu Penerimaan ({menungguPenerimaan.length})
+            </h2>
+            <div className="divide-y divide-border overflow-hidden rounded-md border border-border bg-card">
+              {menungguPenerimaan.map((po) => (
+                <Link
+                  key={po.Id}
+                  href={rutePesananPembelian.detail(po.Id)}
+                  className="flex min-h-14 items-center gap-3 px-4 py-2.5 transition-colors hover:bg-permukaan-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-mono text-sm font-medium">{po.Nomor}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {po.NamaPenyedia || '-'} · rencana tiba {tanggalLokal(po.TanggalKirimRencana)}
+                    </p>
+                  </div>
+                  <Badge variant={po.Status === 'Dikirim' ? 'proses' : 'perhatian'}>
+                    {po.Status === 'Dikirim' ? 'Belum diterima' : 'Diterima sebagian'}
+                  </Badge>
+                  <span className="hidden text-xs font-medium text-primary sm:inline">Catat penerimaan</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         <form onSubmit={terapkanFilter} className="flex flex-wrap items-center gap-2">
           <div className="relative w-full sm:w-64">

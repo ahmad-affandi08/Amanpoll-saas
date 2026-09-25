@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { PesananPembelian } from '@/features/PesananPembelian/types';
 import { formatUang } from '@/lib/uang';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
+import { rutePenerimaanPembelian } from '@/features/PenerimaanPembelian/api';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import type { GudangRingkas } from '@/features/PesananPembelian/types';
@@ -22,6 +23,8 @@ interface Props {
   gudang: GudangRingkas[];
   /** Peta field wajib per formulir, dibaca dari FormRequest di server. */
   wajib: Record<string, AturanWajib>;
+  /** Bagian pengadaan; petugas gudang hanya mencatat penerimaan di halaman ini. */
+  bolehKelola: boolean;
 }
 
 const VARIAN_STATUS = {
@@ -36,13 +39,13 @@ const VARIAN_STATUS = {
 const VARIAN_TAGIHAN = { BelumDibayar: 'perhatian', DibayarSebagian: 'proses', Dibayar: 'sukses' } as const;
 
 export default function PesananPembelianShow(props: Props) {
-  const { pesanan, gudang, wajib } = props;
+  const { pesanan, gudang, wajib, bolehKelola } = props;
   const [memproses, setMemproses] = useState(false);
   const detail = pesanan.Detail ?? [];
   const penerimaan = pesanan.Penerimaan ?? [];
   const tagihan = pesanan.Tagihan ?? [];
   const bolehTerima = pesanan.Status === 'Dikirim' || pesanan.Status === 'DiterimaSebagian';
-  const bolehTagih = bolehTerima || pesanan.Status === 'DiterimaPenuh';
+  const bolehTagih = bolehKelola && (bolehTerima || pesanan.Status === 'DiterimaPenuh');
 
   function jalankanAksi(url: string): void {
     router.post(
@@ -61,7 +64,7 @@ export default function PesananPembelianShow(props: Props) {
       <Head title={pesanan.Nomor} />
       <div className="space-y-5">
         <Link
-          href={rutePesananPembelian.index}
+          href={bolehKelola ? rutePesananPembelian.index : rutePenerimaanPembelian.index}
           className="inline-flex min-h-11 items-center gap-2 rounded-[5px] text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:min-h-0"
         >
           <ArrowLeft className="size-4" /> Kembali
@@ -79,7 +82,7 @@ export default function PesananPembelianShow(props: Props) {
           }
           aksi={
             <>
-              {pesanan.Status === 'Draft' && (
+              {bolehKelola && pesanan.Status === 'Draft' && (
                 <Button
                   size="sm"
                   className="min-h-11 sm:min-h-9"
@@ -89,7 +92,7 @@ export default function PesananPembelianShow(props: Props) {
                   <Send /> Ajukan Persetujuan
                 </Button>
               )}
-              {pesanan.Status === 'Disetujui' && (
+              {bolehKelola && pesanan.Status === 'Disetujui' && (
                 <Button
                   size="sm"
                   className="min-h-11 sm:min-h-9"
@@ -165,36 +168,38 @@ export default function PesananPembelianShow(props: Props) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Tagihan</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {tagihan.length === 0 ? (
-              <KeadaanKosong
-                judul="Belum ada tagihan."
-                deskripsi="Tagihan hanya dapat dicatat setelah ada barang yang diterima."
-              />
-            ) : (
-              tagihan.map((item) => (
-                <Link
-                  key={item.Id}
-                  href={ruteTagihanPenyedia.detail(item.Id)}
-                  className="flex flex-col gap-2 rounded-md border border-border p-3 transition hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="min-w-0">
-                    <p className="font-mono font-medium">{item.NomorTagihan}</p>
-                    <p className="text-xs text-muted-foreground">Sisa {formatUang(item.Sisa)}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <strong className="font-mono">{formatUang(item.Total)}</strong>
-                    <Badge variant={VARIAN_TAGIHAN[item.Status]}>{item.Status}</Badge>
-                  </div>
-                </Link>
-              ))
-            )}
-          </CardContent>
-        </Card>
+        {bolehKelola && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Tagihan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {tagihan.length === 0 ? (
+                <KeadaanKosong
+                  judul="Belum ada tagihan."
+                  deskripsi="Tagihan hanya dapat dicatat setelah ada barang yang diterima."
+                />
+              ) : (
+                tagihan.map((item) => (
+                  <Link
+                    key={item.Id}
+                    href={ruteTagihanPenyedia.detail(item.Id)}
+                    className="flex flex-col gap-2 rounded-md border border-border p-3 transition hover:border-primary/40 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-mono font-medium">{item.NomorTagihan}</p>
+                      <p className="text-xs text-muted-foreground">Sisa {formatUang(item.Sisa)}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <strong className="font-mono">{formatUang(item.Total)}</strong>
+                      <Badge variant={VARIAN_TAGIHAN[item.Status]}>{item.Status}</Badge>
+                    </div>
+                  </Link>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {gudang.length === 0 && bolehTerima && (
           <p className="text-sm text-muted-foreground">

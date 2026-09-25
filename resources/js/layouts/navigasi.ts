@@ -23,7 +23,8 @@ export interface SubItemNav {
   href: string;
   /** Aktif hanya bila jalurnya sama persis, bukan juga untuk jalur turunannya. */
   tepat?: boolean;
-  kodeIzin?: string | null;
+  /** Izin yang membuka menu; daftar berarti cukup salah satu. */
+  kodeIzin?: string | readonly string[] | null;
   /** Kode fitur paket; menu disembunyikan saat paket tidak memuatnya. */
   kodeFitur?: string | null;
 }
@@ -34,9 +35,21 @@ export interface ItemNav {
   /** Aktif hanya bila jalurnya sama persis, bukan juga untuk jalur turunannya. */
   tepat?: boolean;
   icon: LucideIcon;
-  kodeIzin?: string | null;
+  kodeIzin?: string | readonly string[] | null;
   kodeFitur?: string | null;
   subItems?: SubItemNav[];
+}
+
+/** Menu tanpa izin selalu tampil; daftar izin cukup dipenuhi salah satunya. */
+export function izinMenuTerpenuhi(
+  kodeIzin: string | readonly string[] | null | undefined,
+  boleh: (kode: string) => boolean,
+): boolean {
+  if (!kodeIzin) {
+    return true;
+  }
+
+  return typeof kodeIzin === 'string' ? boleh(kodeIzin) : kodeIzin.some(boleh);
 }
 
 export interface GrupNav {
@@ -166,7 +179,8 @@ const navRantaiPasok: GrupNav = {
         {
           label: 'Penerimaan Pembelian',
           href: '/perencanaan-pengadaan/penerimaan-pembelian',
-          kodeIzin: 'Pengadaan.Kelola',
+          // Petugas gudang yang menerima barang juga mencatatnya.
+          kodeIzin: ['Pengadaan.Kelola', 'Stok.Kelola'],
         },
         {
           label: 'Tagihan Penyedia',

@@ -49,7 +49,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { MenuSidebar } from '@/layouts/MenuSidebar';
-import { type GrupNav, semuaGrup } from '@/layouts/navigasi';
+import { type GrupNav, izinMenuTerpenuhi, semuaGrup } from '@/layouts/navigasi';
 
 function getInisial(name?: string): string {
   if (!name) return 'AP';
@@ -296,12 +296,12 @@ function KerangkaDalam({ children }: PropsWithChildren) {
         // menyembunyikan; rutenya sendiri tetap dijaga di backend.
         .filter(
           (item) =>
-            (!item.kodeIzin || boleh(item.kodeIzin)) && (!item.kodeFitur || bolehFitur(item.kodeFitur)),
+            izinMenuTerpenuhi(item.kodeIzin, boleh) && (!item.kodeFitur || bolehFitur(item.kodeFitur)),
         )
         .map((item) => {
           if (!item.subItems) return item;
           const subTersaring = item.subItems.filter(
-            (sub) => (!sub.kodeIzin || boleh(sub.kodeIzin)) && (!sub.kodeFitur || bolehFitur(sub.kodeFitur)),
+            (sub) => izinMenuTerpenuhi(sub.kodeIzin, boleh) && (!sub.kodeFitur || bolehFitur(sub.kodeFitur)),
           );
           return { ...item, subItems: subTersaring };
         })

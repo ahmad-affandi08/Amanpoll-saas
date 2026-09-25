@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\PerencanaanPengadaan\Http\Controllers;
 
 use App\Domain\PerencanaanPengadaan\Application\Actions\CatatPenerimaanPembelian;
+use App\Domain\PerencanaanPengadaan\Domain\Enums\StatusPesananPembelian;
 use App\Domain\PerencanaanPengadaan\Http\Requests\SimpanPenerimaanPembelianRequest;
 use App\Domain\PerencanaanPengadaan\Http\Resources\PenerimaanPembelianResource;
 use App\Domain\PerencanaanPengadaan\Infrastructure\Persistence\Models\PenerimaanPembelian;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Ekspor\EksporDaftar;
 use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
+use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -77,8 +79,26 @@ final class PenerimaanPembelianController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        // PO yang sudah dikirim ke penyedia dan barangnya belum lengkap: pintu masuk petugas
+        // gudang, yang tidak membuka daftar PO seluruhnya.
+        $menungguPenerimaan = PesananPembelian::query()
+            ->with('penyedia:Id,Nama')
+            ->whereIn('Status', [StatusPesananPembelian::Dikirim->value, StatusPesananPembelian::DiterimaSebagian->value])
+            ->orderBy('TanggalKirimRencana')
+            ->orderBy('Id')
+            ->limit(BatasDaftar::MAKS)
+            ->get()
+            ->map(fn (PesananPembelian $po): array => [
+                'Id' => $po->Id,
+                'Nomor' => $po->Nomor,
+                'Status' => $po->Status,
+                'NamaPenyedia' => BacaRelasi::teks(BacaRelasi::model($po, 'penyedia'), 'Nama'),
+                'TanggalKirimRencana' => $po->TanggalKirimRencana?->toDateString(),
+            ]);
+
         return Inertia::render('PenerimaanPembelian/Index', [
             'penerimaan' => PenerimaanPembelianResource::collection($penerimaan),
+            'menungguPenerimaan' => $menungguPenerimaan,
             'filter' => $filter,
         ]);
     }

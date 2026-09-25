@@ -25,7 +25,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { MenuSidebar } from '@/layouts/MenuSidebar';
-import type { GrupNav } from '@/layouts/navigasi';
+import { type GrupNav, izinMenuTerpenuhi } from '@/layouts/navigasi';
 import { rutePlatform } from '@/features/Platform/api';
 import { grupNavPlatform } from '@/features/Platform/navigasi';
 
@@ -46,8 +46,8 @@ function inisial(nama?: string): string {
 
 /** Menu mengikuti izin dan modul yang sama dengan backend, jadi konsol tidak menawarkan halaman yang akan ditolak. */
 function saringMenu(grup: GrupNav[], boleh: (kode: string) => boolean, modulAktif: string[]): GrupNav[] {
-  const tampil = (kodeIzin?: string | null, kodeModul?: string | null) =>
-    (!kodeIzin || boleh(kodeIzin)) && (!kodeModul || modulAktif.includes(kodeModul));
+  const tampil = (kodeIzin?: string | readonly string[] | null, kodeModul?: string | null) =>
+    izinMenuTerpenuhi(kodeIzin, boleh) && (!kodeModul || modulAktif.includes(kodeModul));
 
   return grup
     .map((satu) => ({

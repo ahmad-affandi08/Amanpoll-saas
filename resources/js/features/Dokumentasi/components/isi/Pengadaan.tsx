@@ -129,6 +129,12 @@ export function Pengadaan() {
           Penerimaan sebagian didukung: catat apa adanya saat barang datang bertahap. Pesanan otomatis
           berstatus Diterima Sebagian sampai seluruh barisnya terpenuhi.
         </Catatan>
+        <P>
+          Petugas gudang ikut mencatat penerimaan. Di halaman ini ia melihat daftar{' '}
+          <Ui>Menunggu Penerimaan</Ui>
+          berisi pesanan yang sudah dikirim ke penyedia, lalu mencatat barang yang datang dari pesanan itu.
+          Menyusun pesanan, persetujuan, dan tagihan tetap urusan bagian pengadaan.
+        </P>
       </Bagian>
     </>
   );

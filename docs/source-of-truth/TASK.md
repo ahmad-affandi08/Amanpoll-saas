@@ -4029,10 +4029,36 @@ Jumlah x EstimasiHargaSatuan). Tiga keputusan yang disengaja:
 pemanggil mengambil alur aktif pertama untuk jenisnya. Memilih di antara beberapa alur
 menurut kondisi baru dikerjakan bila pemilik produk memintanya.
 
-Temuan yang belum dikerjakan (dicatat untuk keputusan pemilik produk):
-- Penjadwal preventif mengabaikan ambang meter pada rencana berbasis meter/kombinasi.
-- Butir daftar periksa Ya/Tidak berkalimat negatif selalu dinilai tidak sesuai; pelaksanaan daftar periksa dari PK tidak mencatat pelaksana dan waktu mulai.
-- Penerimaan pembelian hanya bisa dicatat pemegang `Pengadaan.Kelola`, bukan petugas gudang.
+Rencana preventif berbasis meter ternyata hanya ada di kolom: formulir tidak menawarkan
+strategi atau ambang, penugasan aset tidak tahu meter mana yang dibaca, dan penjadwal
+hanya membaca tanggal. Kini `RencanaPemeliharaanAset.MeterAsetId` menunjuk meter
+kumulatif aset (dipilih saat penugasan; satu-satunya meter dipakai otomatis, aset tanpa
+meter atau dengan beberapa meter tanpa pilihan ditolak). `NilaiMeterBerikutnya` =
+pembacaan saat servis terakhir + ambang. Strategi kombinasi memicu pada yang lebih dulu
+tercapai lalu menghitung ulang keduanya dari servis itu. Tiga jebakan yang ditutup:
+- Aset yang ditetapkan sebelum ambangnya dievaluasi diberi titik awal pada pembacaan
+  sekarang, tanpa langsung dipicu; kalau tidak, tiap aset lama menerbitkan PK sekaligus.
+- Mengubah ambang mempertahankan titik servis terakhir (1.200 + 500 menjadi 1.200 + 300),
+  bukan mengulang hitungan dari nol.
+- Pembacaan bertanggal depan diabaikan. Seeder demo memutar penjadwal hari demi hari
+  sementara seluruh pembacaan setahun sudah ada; tanpa batas ini penjadwal membaca masa
+  depan. Di produksi batas yang sama menahan salah ketik tanggal.
+Demo SNI kini menambah meter jam untuk forklift ketiga, dan setahun riwayatnya memuat
+PK preventif yang lahir dari pemakaian meter.
+
+Butir Ya/Tidak dinilai terhadap jawaban pemicu temuannya. Pemicu dari layar templat
+tersimpan sebagai teks "Ya"/"Tidak", sedangkan mesin membandingkannya dengan boolean,
+sehingga pemicu tidak pernah menyala dan hanya "Ya" yang dianggap sesuai: "Tidak ada
+kebocoran" tercatat sebagai temuan. Kini teks dan boolean dibaca sama, begitu pula
+jawaban "0"/"1" dari formulir (dulu `(bool) "0"` bernilai benar). Layar templat hanya
+mengirim pemicu untuk butir Ya/Tidak. Pelaksanaan yang lahir dari PK preventif mencatat
+pelaksana dan waktu mulai pada jawaban pertama, tanpa ditimpa pengisi berikutnya.
+
+Penerimaan pembelian kini boleh dicatat pemegang `Stok.Kelola` (peran Operator Gudang),
+karena barang datang di gudang. Petugas gudang hanya membuka PO yang sudah dikirim ke
+penyedia (Dikirim, Diterima Sebagian, Diterima Penuh) dan menemukannya di daftar
+"Menunggu Penerimaan" halaman Penerimaan Pembelian; daftar PO, persetujuan, dan tagihan
+tetap milik `Pengadaan.Kelola`. Menu mendukung beberapa izin (cukup salah satu).
 
 ---
 
