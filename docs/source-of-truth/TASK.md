@@ -4006,8 +4006,12 @@ Bug aplikasi yang ditemukan saat menyemai dan langsung diperbaiki (dengan test r
 - Cron `pemeliharaan:jadwalkan-preventif` mengisi `DibuatOleh` dengan Id milik baris Izin, sehingga FK menolak setiap kali ada PK preventif yang perlu dibuat.
 - Aset dari penerimaan pembelian berkode `PO/…-<acak>` tanpa unit pengelola; kini kode AST otomatis dan unit pengelola diwarisi dari aset acuan. Mutasi stok penerimaan kini bernomor `MS/…`.
 
+Kalibrasi berhasil "Gagal" dulu ikut memajukan jatuh tempo satu interval, sehingga
+alat yang gagal tampil valid sampai periode berikutnya. Sekarang hasil Gagal menarik
+jatuh tempo rencananya ke tanggal kalibrasi itu (langsung jatuh tempo, perlu
+kalibrasi ulang) dan tidak memberi masa berlaku sertifikat.
+
 Temuan yang belum dikerjakan (dicatat untuk keputusan pemilik produk):
-- Kalibrasi berhasil "Gagal" tetap memajukan tanggal jatuh tempo, sehingga alat yang gagal tampil valid.
 - Mesin persetujuan tidak membaca `Kondisi`/`KondisiAktivasi` tahap; semua PP melewati seluruh tahap tanpa melihat nilai.
 - Penjadwal preventif mengabaikan ambang meter pada rencana berbasis meter/kombinasi.
 - Butir daftar periksa Ya/Tidak berkalimat negatif selalu dinilai tidak sesuai; pelaksanaan daftar periksa dari PK tidak mencatat pelaksana dan waktu mulai.

@@ -221,8 +221,19 @@ final class KelolaPelaksanaanKalibrasi
                 ? Carbon::parse($data['TanggalBerlakuSampai'])
                 : null;
 
-            // GATE 14: Perbarui TanggalBerikutnya pada RencanaKalibrasi secara konsisten jika terhubung
-            if ($pelaksanaan->RencanaKalibrasiId !== null) {
+            // Alat yang gagal kalibrasi tidak boleh tampil valid: jatuh temponya ditarik ke tanggal
+            // kalibrasi itu sendiri (perlu kalibrasi ulang) dan tidak punya masa berlaku sertifikat.
+            // Dulu hasil Gagal ikut memajukan jadwal satu interval seperti hasil Lolos.
+            if ($hasil === 'Gagal') {
+                $tanggalBerlakuSampai = null;
+
+                if ($pelaksanaan->RencanaKalibrasiId !== null) {
+                    RencanaKalibrasi::query()
+                        ->whereKey($pelaksanaan->RencanaKalibrasiId)
+                        ->update(['TanggalBerikutnya' => $tanggalKalibrasi->toDateString()]);
+                }
+            } elseif ($pelaksanaan->RencanaKalibrasiId !== null) {
+                // GATE 14: Perbarui TanggalBerikutnya pada RencanaKalibrasi secara konsisten jika terhubung
                 $rencana = RencanaKalibrasi::find($pelaksanaan->RencanaKalibrasiId);
                 if ($rencana && $rencana->IntervalHari > 0) {
                     $tanggalBerikutnya = (clone $tanggalKalibrasi)->addDays($rencana->IntervalHari);

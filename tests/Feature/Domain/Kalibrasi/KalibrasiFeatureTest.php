@@ -273,6 +273,53 @@ final class KalibrasiFeatureTest extends TestCase
         $this->assertSame('2027-06-20', $final->TanggalBerlakuSampai->toDateString());
     }
 
+    /**
+     * Alat yang gagal kalibrasi tidak boleh tampil valid. Dulu hasil Gagal ikut memajukan
+     * TanggalBerikutnya satu interval seperti Lolos, sehingga dasbor menandainya "Valid".
+     */
+    public function test_finalisasi_gagal_tidak_memajukan_jatuh_tempo_dan_tanpa_masa_berlaku(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-CAL-'.uniqid(), 'Nama' => 'Organisasi Kalibrasi']);
+        $pengguna = $this->buatPengguna($organisasi, ['Kalibrasi.Kelola']);
+        $this->tetapkanKonteks($organisasi);
+
+        $aset = $this->buatAset($organisasi, ['KodeAset' => 'AST-GAGAL-01', 'Nama' => 'Pressure Gauge Master']);
+        $kelolaPelaksanaan = app(KelolaPelaksanaanKalibrasi::class);
+        $rencana = app(KelolaRencanaKalibrasi::class)->buat([
+            'AsetId' => $aset->Id,
+            'IntervalHari' => 180,
+            'TanggalMulai' => '2026-01-10',
+            'PeringatanHariSebelum' => 30,
+        ], $pengguna->Id);
+
+        $pelaksanaan = $kelolaPelaksanaan->jadwalkan([
+            'AsetId' => $aset->Id,
+            'RencanaKalibrasiId' => $rencana->Id,
+            'TanggalKalibrasi' => '2026-06-20',
+        ], $pengguna->Id);
+
+        $final = $kelolaPelaksanaan->finalisasi($pelaksanaan, [
+            'Hasil' => 'Gagal',
+            'NomorSertifikat' => 'CERT-GAGAL-001',
+            'TanggalKalibrasi' => '2026-06-20',
+            'TanggalBerlakuSampai' => '2026-12-20',
+        ], $pengguna->Id);
+
+        $this->assertSame('Gagal', $final->Hasil);
+        $this->assertNull($final->TanggalBerlakuSampai, 'Sertifikat gagal tidak punya masa berlaku.');
+        $this->assertSame('2026-06-20', $rencana->fresh()->TanggalBerikutnya->toDateString(), 'Perlu kalibrasi ulang sejak tanggal gagal.');
+
+        // Kalibrasi ulang yang lolos kembali memajukan jadwal satu interval.
+        $ulang = $kelolaPelaksanaan->jadwalkan([
+            'AsetId' => $aset->Id,
+            'RencanaKalibrasiId' => $rencana->Id,
+            'TanggalKalibrasi' => '2026-06-27',
+        ], $pengguna->Id);
+        $kelolaPelaksanaan->finalisasi($ulang, ['Hasil' => 'Lolos', 'TanggalKalibrasi' => '2026-06-27'], $pengguna->Id);
+
+        $this->assertSame('2026-12-24', $rencana->fresh()->TanggalBerikutnya->toDateString());
+    }
+
     public function test_14_05_reminder_due_soon_overdue_dan_anti_duplikasi(): void
     {
         Carbon::setTestNow('2026-09-20');
