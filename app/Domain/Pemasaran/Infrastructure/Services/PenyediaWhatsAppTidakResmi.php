@@ -54,6 +54,7 @@ abstract class PenyediaWhatsAppTidakResmi extends PenyediaWhatsAppHttp
                 rahasia: true,
                 wajib: false,
                 petunjuk: 'Teks acak buatan Anda. Tambahkan ?token=<nilai ini> di akhir URL webhook yang didaftarkan di dashboard penyedia; kosongkan bila webhook tidak dipakai.',
+                hanyaPlatform: true,
             ),
         ];
     }
@@ -71,9 +72,14 @@ abstract class PenyediaWhatsAppTidakResmi extends PenyediaWhatsAppHttp
     /** Tanpa template Meta, notifikasi berangkat sebagai teks biasa dengan judul bercetak tebal. */
     public function kirimNotifikasi(string $nomor, string $judul, string $isi): string
     {
+        return $this->kirimNotifikasiDengan($this->kredensial(), $nomor, $judul, $isi);
+    }
+
+    public function kirimNotifikasiDengan(KredensialPenyedia $kredensial, string $nomor, string $judul, string $isi): string
+    {
         $teks = trim($judul) === '' ? $isi : '*'.trim($judul)."*\n".$isi;
 
-        return $this->kirimTeks($this->kredensial(), $this->nomor($nomor), $teks);
+        return $this->kirimTeks($kredensial, $this->nomor($nomor), $teks);
     }
 
     public function ajukanTemplate(

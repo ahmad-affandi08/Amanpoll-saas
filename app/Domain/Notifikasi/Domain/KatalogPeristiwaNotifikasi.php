@@ -37,6 +37,8 @@ final class KatalogPeristiwaNotifikasi
             'Keluhan.Baru' => 'Keluhan baru masuk sesuai aturan routing kategori',
             'Keluhan.Sla.Mendekati' => 'SLA keluhan mendekati batas',
             'Keluhan.Sla.Terlewati' => 'SLA keluhan telah terlewati',
+            'Layanan.PenyediaBermasalah' => 'Email atau WhatsApp milik organisasi gagal mengirim notifikasi',
+            'Layanan.KuotaWhatsAppHabis' => 'Kuota WhatsApp bawaan bulan ini habis',
         ];
     }
 

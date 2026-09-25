@@ -74,16 +74,18 @@ final class PenyediaWhatsAppMetaCloud extends PenyediaWhatsAppHttp
     {
         return [
             new IsianKredensial('PhoneNumberId', 'Phone number ID', petunjuk: 'WhatsApp Manager > API Setup, pengenal nomor pengirim.'),
-            new IsianKredensial('WabaId', 'WhatsApp Business Account ID', petunjuk: 'Dipakai untuk mengajukan dan memeriksa template.'),
+            new IsianKredensial('WabaId', 'WhatsApp Business Account ID', petunjuk: 'Dipakai untuk mengajukan dan memeriksa template.', hanyaPlatform: true),
             new IsianKredensial('AccessToken', 'Access token', rahasia: true, petunjuk: 'Token permanen System User dengan izin whatsapp_business_messaging dan whatsapp_business_management.'),
-            new IsianKredensial('AppSecret', 'App secret', rahasia: true, petunjuk: 'Pengaturan aplikasi Meta > Dasar; memverifikasi tanda tangan webhook.'),
-            new IsianKredensial('VerifyToken', 'Verify token webhook', rahasia: true, petunjuk: 'Teks acak buatan Anda; isikan juga di pengaturan webhook aplikasi Meta.'),
+            new IsianKredensial('AppSecret', 'App secret', rahasia: true, petunjuk: 'Pengaturan aplikasi Meta > Dasar; memverifikasi tanda tangan webhook.', hanyaPlatform: true),
+            new IsianKredensial('VerifyToken', 'Verify token webhook', rahasia: true, petunjuk: 'Teks acak buatan Anda; isikan juga di pengaturan webhook aplikasi Meta.', hanyaPlatform: true),
             new IsianKredensial('VersiGraph', 'Versi Graph API', wajib: false, petunjuk: 'Mis. v21.0.', bawaan: self::VERSI_BAWAAN),
             new IsianKredensial(
                 'TemplateNotifikasi',
                 'Template notifikasi staf',
                 wajib: false,
                 petunjuk: 'Nama template kategori Utility yang sudah disetujui Meta, berbadan dua parameter: {{1}} judul dan {{2}} isi. Tanpa ini notifikasi WhatsApp ke staf tidak dapat dikirim.',
+                // Nomor organisasi hanya dipakai untuk notifikasi, jadi tanpa template ia tidak berguna.
+                wajibOrganisasi: true,
             ),
             new IsianKredensial('BahasaTemplateNotifikasi', 'Bahasa template notifikasi', wajib: false, petunjuk: 'Kode bahasa template di Meta, mis. id atau en_US.', bawaan: self::BAHASA_NOTIFIKASI_BAWAAN),
         ];
@@ -125,12 +127,16 @@ final class PenyediaWhatsAppMetaCloud extends PenyediaWhatsAppHttp
     /** Pesan yang dimulai bisnis wajib memakai template yang disetujui Meta, jadi teks bebas tidak dicoba. */
     public function kirimNotifikasi(string $nomor, string $judul, string $isi): string
     {
-        $kredensial = $this->kredensial();
+        return $this->kirimNotifikasiDengan($this->kredensial(), $nomor, $judul, $isi);
+    }
+
+    public function kirimNotifikasiDengan(KredensialPenyedia $kredensial, string $nomor, string $judul, string $isi): string
+    {
         $template = $kredensial->ambilAtau('TemplateNotifikasi');
 
         if ($template === '') {
             throw new AturanBisnisDilanggar(
-                'Template notifikasi WhatsApp Cloud API belum diatur di konsol platform (isian "Template notifikasi staf"). Meta hanya mengizinkan pesan yang dimulai bisnis lewat template yang disetujui.',
+                "Template notifikasi WhatsApp Cloud API belum diatur di {$kredensial->tempat} (isian \"Template notifikasi staf\"). Meta hanya mengizinkan pesan yang dimulai bisnis lewat template yang disetujui.",
             );
         }
 

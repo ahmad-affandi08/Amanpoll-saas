@@ -1364,6 +1364,17 @@ Disetujui pemilik produk pada 24 September 2026.
 - **Penyimpanan kredensial.** Kunci API harus bisa dibaca ulang untuk memanggil penyedia, jadi kredensial disimpan **terenkripsi** (AES-256 dengan `APP_KEY`), bukan di-hash. Yang di-hash hanyalah **sidik** kredensial (HMAC SHA-256) untuk menandai perubahan di audit. Nilai rahasia tidak pernah dikirim kembali ke peramban, tidak masuk audit, dan tidak dicatat di log; konsol hanya menampilkan tanda "tersimpan" dan empat karakter terakhir rahasia yang cukup panjang. Mengosongkan isian rahasia saat menyimpan berarti mempertahankan nilai lama. Kehilangan `APP_KEY` berarti kredensial harus diisi ulang.
 - Penyedia hanya bisa diaktifkan bila seluruh isian wajibnya terisi.
 
+### 8.23.1 Email dan WhatsApp milik organisasi
+
+Disetujui pemilik produk pada 25 September 2026.
+
+- **Dua jenis pesan.** Pesan Amanpoll kepada pelanggannya (reset kata sandi, tagihan langganan, email pemasaran ke prospek) selalu lewat penyedia platform. Notifikasi organisasi kepada stafnya sendiri (perintah kerja ditugaskan, keluhan baru, SLA, persetujuan) lewat penyedia platform secara bawaan, dan boleh lewat email serta nomor WhatsApp milik organisasi. Payment gateway tidak dapat dipasang organisasi.
+- **Pengaturan organisasi** ada di **Email & WhatsApp** (`/notifikasi/email-whatsapp`, izin `Integrasi.Kelola`). Pilihan penyedianya sama dengan konsol platform; satu penyedia aktif per kategori. Aturan kredensial sama dengan konsol: terenkripsi, rahasia tidak kembali ke peramban, rahasia kosong mempertahankan nilai lama. Isian yang hanya melayani fitur Amanpoll (webhook, pengajuan template pemasaran) tidak ditanyakan kepada organisasi; template notifikasi WhatsApp resmi justru wajib. Tersedia uji kredensial, email uji ke pengguna yang sedang masuk, WhatsApp uji ke nomor di profilnya, dan penghapusan kredensial.
+- **Fitur paket.** Memakai penyedia sendiri membutuhkan fitur `layanan.penyedia_sendiri` ("Email & WhatsApp Milik Sendiri"). Halaman tetap terbuka untuk semua paket supaya kuota terlihat; menyimpan dan menguji ditolak (402) tanpa fitur itu. Paket yang turun tidak menghapus pengaturan; notifikasi kembali lewat penyedia platform dan kredensial lama masih dapat dihapus.
+- **Email.** Surat notifikasi membawa penanda organisasi. Bila email organisasi gagal, surat tetap dikirim lewat email platform supaya kabar penting tidak hilang. Lewat email platform, nama pengirim menjadi "<nama organisasi> via <nama pengirim platform>" dan balasan diarahkan ke email di profil organisasi.
+- **WhatsApp dan kuota bawaan.** Nomor milik organisasi didahulukan dan tidak berkuota. Tanpanya, notifikasi WhatsApp lewat nomor Amanpoll dibatasi `batas.whatsapp_bulanan` per bulan kalender organisasi; kosong berarti tanpa batas, paket yang tidak memasukkannya berarti tanpa WhatsApp bawaan. Yang dihitung hanya kiriman lewat nomor Amanpoll yang antri atau terkirim. Bila nomor organisasi gagal, pesan **tidak** dialihkan ke nomor Amanpoll, karena itu memakan kuota paket tanpa sepengetahuan organisasi.
+- **Kesehatan.** Kegagalan dan keberhasilan terakhir penyedia organisasi terlihat di halamannya. Pemegang `Integrasi.Kelola` mendapat kabar in-app sekali saat penyedianya berubah dari sehat menjadi bermasalah, dan sekali sebulan saat kuota WhatsApp bawaan habis.
+
 ---
 
 ## 9. Search, Filter, dan Data Table

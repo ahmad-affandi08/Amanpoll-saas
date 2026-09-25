@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { isAxiosError } from 'axios';
-import { Settings2 } from 'lucide-react';
+import { Settings2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -19,12 +19,23 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { http } from '@/lib/http';
-import { rutePlatform } from '@/features/Platform/api';
 import type { KategoriPenyediaLayanan, PenyediaLayanan } from '@/features/Platform/types';
 
+export interface RutePenyediaLayanan {
+  simpan: string;
+  uji: string;
+  /** Email uji ke alamat pengguna, atau WhatsApp uji ke nomornya. */
+  kirimUji?: string;
+  /** Hanya organisasi: membuang kredensial seutuhnya. */
+  hapus?: string;
+}
+
 interface Props {
-  kategori: KategoriPenyediaLayanan;
+  kategori: Pick<KategoriPenyediaLayanan, 'Kode' | 'BolehBanyakAktif'>;
   penyedia: PenyediaLayanan;
+  rute: RutePenyediaLayanan;
+  /** Pengaturan milik organisasi (notifikasi staf), bukan konsol platform. */
+  untukOrganisasi?: boolean;
 }
 
 function nilaiAwal(penyedia: PenyediaLayanan) {
@@ -42,8 +53,9 @@ function nilaiAwal(penyedia: PenyediaLayanan) {
 /**
  * Atur satu penyedia: aktif/utama, mode uji, dan kredensialnya (PRD 8.23).
  * Rahasia yang tersimpan hanya ditandai "tersimpan", tidak pernah ditampilkan.
+ * Dipakai konsol platform dan halaman Email & WhatsApp organisasi.
  */
-export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
+export function DialogPenyediaLayanan({ kategori, penyedia, rute, untukOrganisasi = false }: Props) {
   const [buka, setBuka] = useState(false);
   const [menguji, setMenguji] = useState(false);
   const form = useForm(nilaiAwal(penyedia));
@@ -62,7 +74,7 @@ export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
 
   const kirim = (e: FormEvent) => {
     e.preventDefault();
-    form.put(rutePlatform.penyediaLayananSimpan(kategori.Kode, penyedia.Kode), {
+    form.put(rute.simpan, {
       preserveScroll: true,
       onSuccess: () => {
         toast.success(`${penyedia.Nama} disimpan.`);
@@ -84,14 +96,31 @@ export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
     }
   };
 
-  const uji = () =>
+  const uji = () => jalankanUji(rute.uji, 'Uji koneksi gagal. Coba lagi.');
+
+  const kirimUji = () =>
+    rute.kirimUji &&
     jalankanUji(
-      rutePlatform.penyediaLayananUji(kategori.Kode, penyedia.Kode),
-      'Uji koneksi gagal. Coba lagi.',
+      rute.kirimUji,
+      kategori.Kode === 'Email'
+        ? 'Email uji belum terkirim. Coba lagi.'
+        : 'WhatsApp uji belum terkirim. Coba lagi.',
     );
 
-  const kirimEmailUji = () =>
-    jalankanUji(rutePlatform.penyediaEmailKirimUji(penyedia.Kode), 'Email uji belum terkirim. Coba lagi.');
+  const adaTersimpan = penyedia.Isian.some((isian) => isian.Tersimpan);
+
+  const hapus = () => {
+    if (!rute.hapus || !window.confirm(`Hapus seluruh kredensial ${penyedia.Nama}?`)) {
+      return;
+    }
+    router.delete(rute.hapus, {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success(`Kredensial ${penyedia.Nama} dihapus.`);
+        setBuka(false);
+      },
+    });
+  };
 
   const galatKredensial = (form.errors as Record<string, string | undefined>).Kredensial;
 
@@ -126,9 +155,11 @@ export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
               <span>
                 <span className="block font-medium text-foreground">Aktifkan</span>
                 <span className="block text-xs text-muted-foreground">
-                  {kategori.BolehBanyakAktif
-                    ? 'Penyedia aktif muncul sebagai pilihan cara bayar bagi pelanggan.'
-                    : 'Hanya satu penyedia yang dipakai; mengaktifkan ini menonaktifkan yang lain.'}
+                  {untukOrganisasi
+                    ? 'Notifikasi organisasi dikirim lewat penyedia ini; mengaktifkannya menonaktifkan penyedia lain di kategori yang sama.'
+                    : kategori.BolehBanyakAktif
+                      ? 'Penyedia aktif muncul sebagai pilihan cara bayar bagi pelanggan.'
+                      : 'Hanya satu penyedia yang dipakai; mengaktifkan ini menonaktifkan yang lain.'}
                 </span>
               </span>
             </label>
@@ -217,14 +248,26 @@ export function DialogPenyediaLayanan({ kategori, penyedia }: Props) {
                   {menguji ? 'Menguji…' : 'Uji kredensial tersimpan'}
                 </Button>
               )}
-              {kategori.Kode === 'Email' && (
+              {rute.kirimUji && (
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={kirimEmailUji}
+                  onClick={kirimUji}
                   disabled={menguji || form.processing}
                 >
-                  Kirim email uji ke saya
+                  {kategori.Kode === 'Email' ? 'Kirim email uji ke saya' : 'Kirim WhatsApp uji ke saya'}
+                </Button>
+              )}
+              {rute.hapus && adaTersimpan && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  onClick={hapus}
+                  disabled={menguji || form.processing}
+                >
+                  <Trash2 aria-hidden="true" className="size-4" />
+                  Hapus kredensial
                 </Button>
               )}
             </div>

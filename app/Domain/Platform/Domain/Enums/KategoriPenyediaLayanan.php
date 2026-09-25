@@ -25,4 +25,13 @@ enum KategoriPenyediaLayanan: string
     {
         return $this === self::Pembayaran;
     }
+
+    /**
+     * Email dan WhatsApp boleh dipasang organisasi untuk notifikasi stafnya sendiri.
+     * Pembayaran tidak: gateway itu menerima uang langganan untuk Amanpoll.
+     */
+    public function bolehMilikOrganisasi(): bool
+    {
+        return $this !== self::Pembayaran;
+    }
 }

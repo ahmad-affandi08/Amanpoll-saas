@@ -17,7 +17,8 @@ use Symfony\Component\Mime\Email;
  * Mengirim satu email uji lewat penyedia email tertentu dengan kredensial tersimpannya (PRD 8.23).
  *
  * Tidak lewat mailer `amanpoll`, supaya penyedia bisa dicoba sebelum diaktifkan
- * dan tanpa menyentuh penyedia yang sedang dipakai aplikasi.
+ * dan tanpa menyentuh penyedia yang sedang dipakai aplikasi. Dipakai konsol platform
+ * dan pengaturan Email & WhatsApp organisasi.
  */
 final class KirimEmailUjiPenyedia
 {
@@ -34,8 +35,8 @@ final class KirimEmailUjiPenyedia
                 ))
                 ->to($alamatTujuan)
                 ->subject('Email uji Amanpoll')
-                ->text($this->teks($penyedia))
-                ->html('<p>'.e($this->teks($penyedia)).'</p>');
+                ->text($this->teks($penyedia, $kredensial))
+                ->html('<p>'.e($this->teks($penyedia, $kredensial)).'</p>');
 
             $penyedia->buatTransport($kredensial)->send($surat);
         } catch (AturanBisnisDilanggar $galat) {
@@ -43,29 +44,15 @@ final class KirimEmailUjiPenyedia
         } catch (TransportExceptionInterface $galat) {
             return new HasilUjiKoneksi(
                 false,
-                "Email uji gagal dikirim lewat {$penyedia->nama()}: ".$this->sensor($penyedia, $kredensial, $galat->getMessage()),
+                "Email uji gagal dikirim lewat {$penyedia->nama()}: ".$kredensial->sensor($galat->getMessage(), $penyedia->isian()),
             );
         }
 
         return new HasilUjiKoneksi(true, "Email uji dikirim ke {$alamatTujuan} lewat {$penyedia->nama()}. Periksa kotak masuk dan folder spam.");
     }
 
-    private function teks(DeskripsiPenyediaLayanan $penyedia): string
+    private function teks(DeskripsiPenyediaLayanan $penyedia, KredensialPenyedia $kredensial): string
     {
-        return "Email ini dikirim dari konsol platform Amanpoll untuk memastikan pengiriman lewat {$penyedia->nama()} berjalan.";
-    }
-
-    /** Pesan galat SMTP atau API bisa mengutip kredensial; setiap nilai rahasia dibuang. */
-    private function sensor(DeskripsiPenyediaLayanan $penyedia, KredensialPenyedia $kredensial, string $teks): string
-    {
-        foreach ($penyedia->isian() as $isian) {
-            $nilai = $isian->rahasia ? $kredensial->ambilAtau($isian->kunci) : '';
-
-            if ($nilai !== '') {
-                $teks = str_replace($nilai, '***', $teks);
-            }
-        }
-
-        return mb_substr(trim($teks), 0, 300);
+        return "Email ini dikirim dari {$kredensial->tempat} di Amanpoll untuk memastikan pengiriman lewat {$penyedia->nama()} berjalan.";
     }
 }

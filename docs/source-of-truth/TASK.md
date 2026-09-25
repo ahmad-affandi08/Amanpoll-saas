@@ -4103,6 +4103,60 @@ teks label) dan waktu verifikasi kalibrasi yang tampil sebagai ISO mentah.
 
 ---
 
+# FASE 48 — Email dan WhatsApp milik organisasi
+
+Aturan di PRD 8.23.1. Diputuskan pemilik produk pada 25 September 2026 dari usulan: pesan Amanpoll
+ke pelanggan tetap lewat penyedia platform, notifikasi organisasi ke stafnya boleh lewat email dan
+nomor WhatsApp milik organisasi, email yang gagal pindah ke email platform, WhatsApp tidak, dan
+nomor Amanpoll berkuota per paket.
+
+- [x] 48.01 Tabel `PenyediaLayananOrganisasi`, fitur paket `layanan.penyedia_sendiri` dan `batas.whatsapp_bulanan`, kolom `Notifikasi.SumberPenyedia`.
+- [x] 48.02 Email notifikasi lewat email organisasi dengan pengalihan ke platform; nama "via" dan Reply-To lewat platform.
+- [x] 48.03 WhatsApp notifikasi lewat nomor organisasi; kuota bulanan nomor Amanpoll; kabar sekali untuk penyedia bermasalah dan kuota habis.
+- [x] 48.04 Halaman Email & WhatsApp (`Integrasi.Kelola`) dengan uji kredensial, kirim uji, hapus, dan status kesehatan.
+
+Yang dipilih:
+- Adapter FASE 44 dipakai ulang apa adanya. Yang berubah hanya jalurnya: kontrak notifikasi WhatsApp
+  mendapat `kirimNotifikasiDengan(KredensialPenyedia, ...)` supaya kredensial organisasi diberikan
+  langsung, alih-alih menimpa pembaca kredensial platform secara global di tengah permintaan.
+- Email dipilih di transport `amanpoll`, bukan di pemanggil. Surat notifikasi membawa header
+  `X-Amanpoll-Organisasi` yang dibuang sebelum surat berangkat; surat tanpa header (reset kata sandi,
+  pemasaran) otomatis tetap milik platform tanpa daftar pengecualian.
+- Aturan kredensial (gabung rahasia, isian wajib, sidik) dan penyajian ke halaman dipindah ke
+  `PenyusunKredensialPenyedia` dan `PenyajiPenyediaLayanan`, dipakai konsol dan organisasi. Sensor
+  rahasia di pesan galat kini satu method di `KredensialPenyedia`, yang juga tahu tempat pengaturannya
+  sehingga pesan "belum diatur di ..." menunjuk konsol atau pengaturan organisasi dengan benar.
+- `IsianKredensial` mendapat `hanyaPlatform` (webhook, WABA ID, App Secret) dan `wajibOrganisasi`
+  (template notifikasi Meta): nomor organisasi hanya untuk notifikasi, jadi tanpa template tidak berguna.
+- Kuota dihitung dari `JadwalKirimPada` (jam aplikasi), bukan `DibuatPada` (jam basis data), per bulan
+  kalender zona organisasi, dan hanya baris Platform yang antri atau terkirim. Indeks
+  `(OrganisasiId, Kanal, JadwalKirimPada)` karena tabel Notifikasi memuat setiap kabar in-app.
+- Baris WhatsApp mencatat rencana pengantarnya saat dibuat dan diperbarui saat berangkat. Baris yang
+  direncanakan lewat nomor organisasi tetapi nomornya sudah mati hanya boleh pindah ke nomor Amanpoll
+  bila kuotanya masih ada.
+- Kabar ke pengelola memakai transisi, bukan hitungan: `CatatKesehatanPenyediaOrganisasi::gagal()`
+  mengembalikan true hanya saat penyedia berubah dari sehat menjadi bermasalah; kuota habis sekali per
+  bulan. Kabar tentang notifikasi yang gagal tidak boleh menjadi banjir notifikasi.
+- Uji kredensial yang berhasil ikut mencatat keberhasilan, jadi peringatan "bermasalah" hilang setelah
+  admin memperbaiki perangkatnya tanpa menunggu notifikasi berikutnya.
+
+Ditolak:
+- Webhook WhatsApp per organisasi. Nomor organisasi hanya mengirim notifikasi operasional; balasan
+  STOP dan menu otomatis adalah urusan pemasaran di nomor Amanpoll. Tanpa pemakai, webhook hanya
+  menambah permukaan serangan.
+- Mengalihkan WhatsApp organisasi yang gagal ke nomor Amanpoll: diam-diam memakan kuota paket.
+- Mengunci tabel Notifikasi untuk kuota yang presisi. Batasnya lunak; dua permintaan yang benar-benar
+  bersamaan bisa melampauinya satu-dua pesan.
+- `SumberPenyedia` untuk email: penyedianya baru pasti di transport, termasuk saat dialihkan.
+
+Jebakan yang ditemukan:
+- Sabotase "email organisasi tidak dialihkan" tampak lolos karena skrip hanya membaca `failures`;
+  galat yang dilempar tercatat sebagai `errors`. Periksa keduanya.
+- Organisasi tanpa langganan berada dalam uji coba dengan seluruh fitur menyala, jadi test yang
+  menguji paket tanpa fitur harus memasang langganan sendiri (`KasusLangganan`).
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text

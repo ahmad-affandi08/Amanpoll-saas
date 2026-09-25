@@ -417,6 +417,7 @@ final class AmanpollServiceProvider extends ServiceProvider
                 $this->app->make(KatalogPenyediaLayanan::class),
                 $pengelola,
                 (string) config('amanpoll.email.mailer_cadangan', 'log'),
+                $this->app,
             ));
         });
     }

@@ -577,6 +577,23 @@ const DAFTAR = [
                 ),
         },
     },
+    // Email & WhatsApp organisasi (butuh WhatsApp platform aktif supaya bilah kuota tampil)
+    {
+        nama: 'lanjutan/email-whatsapp',
+        masuk: 'admin',
+        buka: '/notifikasi/email-whatsapp',
+        penanda: {
+            ringkasan: (p) =>
+                terlihat(
+                    p.locator('main h3').filter({ hasText: 'Yang dipakai sekarang' }).locator('xpath=../..'),
+                ),
+            kuota: (p) => terlihat(p.getByRole('progressbar', { name: 'Kuota WhatsApp bawaan' })),
+            atur: (p) =>
+                terlihat(
+                    p.locator('main li').filter({ hasText: 'SMTP' }).getByRole('button', { name: 'Atur' }),
+                ),
+        },
+    },
 ];
 
 // ---------------------------------------------------------------------------

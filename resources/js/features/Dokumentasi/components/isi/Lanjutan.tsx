@@ -6,6 +6,7 @@ import {
   Catatan,
   Daftar,
   Jalur,
+  Kode,
   P,
   SubJudul,
   Tegas,
@@ -17,6 +18,7 @@ export const daftarIsi: ButirDaftarIsi[] = [
   { id: 'laporan', judul: 'Laporan dan dasbor' },
   { id: 'kepatuhan', judul: 'Kepatuhan' },
   { id: 'integrasi', judul: 'Integrasi dan kunci API' },
+  { id: 'email-whatsapp', judul: 'Email dan WhatsApp sendiri' },
   { id: 'offline', judul: 'Mode Lapangan' },
   { id: 'audit', judul: 'Log audit' },
 ];
@@ -94,6 +96,72 @@ export function Lanjutan() {
           <Jalur ruas={['Sistem & Konfigurasi', 'Struktur & Platform', 'Integrasi']} /> mengatur webhook ke
           sistem luar. Pengiriman yang gagal dicoba ulang sendiri secara berkala.
         </P>
+      </Bagian>
+
+      <Bagian id="email-whatsapp" judul="Email dan WhatsApp sendiri">
+        <P>
+          <Jalur ruas={['Sistem & Konfigurasi', 'Struktur & Platform', 'Email & WhatsApp']} />
+        </P>
+        <P>
+          Notifikasi ke staf (perintah kerja ditugaskan, keluhan baru, SLA, persetujuan) secara bawaan dikirim
+          Amanpoll. Email tampil dengan nama pengirim <Ui>nama organisasi via Amanpoll</Ui> dan balasannya
+          diarahkan ke email di profil organisasi. WhatsApp lewat nomor Amanpoll memakai kuota bulanan paket.
+        </P>
+        <Tangkapan
+          gambar="lanjutan/email-whatsapp"
+          alt="Halaman Email & WhatsApp dengan ringkasan pengirim, kuota WhatsApp, dan daftar penyedia email"
+          langkah={[
+            {
+              penanda: 'ringkasan',
+              isi: (
+                <>
+                  Kartu <Ui>Yang dipakai sekarang</Ui> menunjukkan dari mana email dan WhatsApp notifikasi
+                  dikirim saat ini.
+                </>
+              ),
+            },
+            {
+              penanda: 'kuota',
+              isi: (
+                <>
+                  Bilah ini menunjukkan kuota WhatsApp bawaan yang terpakai bulan ini. Saat habis, WhatsApp
+                  berhenti sampai bulan depan; notifikasi in-app tetap berjalan.
+                </>
+              ),
+            },
+            {
+              penanda: 'atur',
+              isi: (
+                <>
+                  Untuk mengirim dari email atau nomor sendiri, klik <Ui>Atur</Ui> pada penyedianya, isi
+                  kredensial, aktifkan, lalu coba <Ui>Kirim email uji ke saya</Ui> atau{' '}
+                  <Ui>Kirim WhatsApp uji ke saya</Ui>.
+                </>
+              ),
+            },
+          ]}
+        />
+        <Daftar>
+          <Butir>
+            Memakai email dan nomor sendiri butuh paket yang memuat{' '}
+            <Ui>Email &amp; WhatsApp Milik Sendiri</Ui>. Halamannya tetap terbuka di paket lain untuk melihat
+            kuota.
+          </Butir>
+          <Butir>
+            Bila email organisasi gagal, email tetap dikirim lewat email Amanpoll supaya kabar penting tidak
+            hilang. Bila nomor WhatsApp organisasi gagal, pesannya <Tegas>tidak</Tegas> dialihkan ke nomor
+            Amanpoll, karena itu memakan kuota paket.
+          </Butir>
+          <Butir>
+            Pemegang izin <Kode>Integrasi.Kelola</Kode> mendapat kabar sekali saat penyedianya mulai gagal dan
+            saat kuota WhatsApp bawaan habis. Galat terakhirnya tampil di bagian atas halaman ini.
+          </Butir>
+        </Daftar>
+        <Catatan>
+          WhatsApp resmi (Meta) butuh template notifikasi yang sudah disetujui Meta, berisi dua parameter:
+          judul dan isi. Penyedia tidak resmi bisa langsung dipakai, tetapi nomornya bisa diblokir WhatsApp;
+          pakai nomor khusus, bukan nomor utama rumah sakit.
+        </Catatan>
       </Bagian>
 
       <Bagian id="offline" judul="Mode Lapangan">

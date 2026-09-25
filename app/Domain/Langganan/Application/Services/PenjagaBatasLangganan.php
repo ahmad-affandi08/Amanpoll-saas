@@ -8,6 +8,7 @@ use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
 use App\Domain\Langganan\Domain\Enums\TipeBatasFitur;
 use App\Domain\Langganan\Domain\KatalogFitur;
+use App\Domain\Notifikasi\Application\Services\PenghitungKuotaWhatsApp;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Shared\Domain\Exceptions\LanggananTidakMengizinkan;
 
@@ -17,6 +18,7 @@ final class PenjagaBatasLangganan
     public function __construct(
         private readonly PemeriksaEntitlement $entitlement,
         private readonly KonteksOrganisasi $konteks,
+        private readonly PenghitungKuotaWhatsApp $kuotaWhatsApp,
     ) {}
 
     /** Memastikan penambahan satu baris tidak melewati batas paket. */
@@ -79,6 +81,8 @@ final class PenjagaBatasLangganan
                 ->whereNull('DihapusPada')
                 ->where('Status', 'Aktif')
                 ->count(),
+            // Kuota bulanan ini ditegakkan saat notifikasi dibuat (LayananNotifikasi), bukan lewat pastikanMasihMuat().
+            KatalogFitur::BATAS_WHATSAPP_BULANAN => $this->kuotaWhatsApp->terpakai($organisasiId),
             default => 0,
         };
     }

@@ -6,10 +6,10 @@ namespace App\Domain\Platform\Http\Controllers;
 
 use App\Domain\Platform\Application\Actions\SimpanPenyediaLayanan;
 use App\Domain\Platform\Application\Services\KatalogPenyediaLayanan;
+use App\Domain\Platform\Application\Services\PenyajiPenyediaLayanan;
 use App\Domain\Platform\Domain\Contracts\DapatDiujiKoneksi;
 use App\Domain\Platform\Domain\Contracts\DeskripsiPenyediaLayanan;
 use App\Domain\Platform\Domain\Enums\KategoriPenyediaLayanan;
-use App\Domain\Platform\Domain\ValueObjects\IsianKredensial;
 use App\Domain\Platform\Http\Requests\SimpanPenyediaLayananRequest;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenyediaLayananPlatform;
 use App\Http\Controllers\Controller;
@@ -32,6 +32,8 @@ use Throwable;
  */
 final class PenyediaLayananPlatformController extends Controller
 {
+    public function __construct(private readonly PenyajiPenyediaLayanan $penyaji) {}
+
     public function index(KatalogPenyediaLayanan $katalog): Response
     {
         $tersimpan = PenyediaLayananPlatform::query()->get()
@@ -111,37 +113,13 @@ final class PenyediaLayananPlatformController extends Controller
     /** @return array<string, mixed> */
     private function ringkas(DeskripsiPenyediaLayanan $penyedia, ?PenyediaLayananPlatform $baris): array
     {
-        $nilai = $baris?->nilaiKredensial() ?? [];
-
         return [
-            'Kode' => $penyedia->kode(),
-            'Nama' => $penyedia->nama(),
-            'Keterangan' => $penyedia->keterangan(),
-            'Resmi' => $penyedia->resmi(),
-            'MendukungModeUji' => $penyedia->mendukungModeUji(),
-            'DapatDiuji' => $penyedia instanceof DapatDiujiKoneksi,
+            ...$this->penyaji->ringkas($penyedia, $baris?->nilaiKredensial() ?? []),
             'Aktif' => (bool) ($baris->Aktif ?? false),
             'Utama' => (bool) ($baris->Utama ?? false),
             'ModeUji' => (bool) ($baris->ModeUji ?? true),
             'DiperbaruiPada' => $baris?->DiperbaruiPada?->toIso8601String(),
-            'Isian' => array_map(
-                fn (IsianKredensial $isian): array => [
-                    ...$isian->keArray(),
-                    'Nilai' => $isian->rahasia ? null : ($nilai[$isian->kunci] ?? $isian->bawaan ?? ''),
-                    'Tersimpan' => ($nilai[$isian->kunci] ?? '') !== '',
-                    'Akhiran' => $isian->rahasia && ($nilai[$isian->kunci] ?? '') !== ''
-                        ? $this->akhiran($nilai[$isian->kunci])
-                        : null,
-                ],
-                $penyedia->isian(),
-            ),
         ];
-    }
-
-    /** Empat karakter terakhir, dan hanya bila rahasianya cukup panjang untuk tetap tak tertebak. */
-    private function akhiran(string $rahasia): ?string
-    {
-        return mb_strlen($rahasia) >= 12 ? mb_substr($rahasia, -4) : null;
     }
 
     private function kategori(string $kode): KategoriPenyediaLayanan

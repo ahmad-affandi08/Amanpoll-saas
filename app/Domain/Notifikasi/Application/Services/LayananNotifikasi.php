@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Notifikasi\Application\Services;
 
+use App\Core\Organisasi\KonteksOrganisasi;
 use App\Domain\Notifikasi\Domain\Enums\KanalNotifikasi;
 use App\Domain\Notifikasi\Domain\Enums\StatusNotifikasi;
+use App\Domain\Notifikasi\Domain\Enums\SumberPenyediaNotifikasi;
 use App\Domain\Notifikasi\Domain\KatalogPeristiwaNotifikasi;
 use App\Domain\Notifikasi\Domain\Repositories\NotifikasiRepository;
 use App\Domain\Notifikasi\Infrastructure\Persistence\Models\Notifikasi;
@@ -23,6 +25,9 @@ final class LayananNotifikasi
     public function __construct(
         private readonly NotifikasiRepository $notifikasiRepository,
         private readonly TujuanWhatsAppNotifikasi $tujuanWhatsApp,
+        private readonly PemilihPengirimNotifikasi $pemilihPengirim,
+        private readonly PenghitungKuotaWhatsApp $kuotaWhatsApp,
+        private readonly KonteksOrganisasi $konteks,
     ) {}
 
     /**
@@ -45,13 +50,20 @@ final class LayananNotifikasi
                 continue;
             }
 
-            if ($satuKanal === KanalNotifikasi::WhatsApp->value && ! $this->whatsAppDapatDikirim($penggunaId)) {
-                continue;
+            $sumber = null;
+
+            if ($satuKanal === KanalNotifikasi::WhatsApp->value) {
+                $sumber = $this->sumberWhatsApp($penggunaId);
+
+                if ($sumber === null) {
+                    continue;
+                }
             }
 
             $notifikasi = $this->notifikasiRepository->simpan(new Notifikasi([
                 'PenggunaId' => $penggunaId,
                 'Kanal' => $satuKanal,
+                'SumberPenyedia' => $sumber?->value,
                 'JenisPeristiwa' => $jenisPeristiwa,
                 'Judul' => $judul,
                 'Isi' => $isi,
@@ -82,9 +94,41 @@ final class LayananNotifikasi
         return $kanalDikenal === null || KatalogPeristiwaNotifikasi::aktifBawaan($jenisPeristiwa, $kanalDikenal);
     }
 
-    /** Tanpa penyedia aktif atau nomor yang sah, baris WhatsApp hanya akan menjadi kegagalan yang pasti. */
-    private function whatsAppDapatDikirim(string $penggunaId): bool
+    /**
+     * Pengantar WhatsApp yang direncanakan, atau null bila baris WhatsApp hanya akan menjadi
+     * kegagalan yang pasti (PRD 8.23).
+     *
+     * Nomor milik organisasi didahulukan dan tidak berkuota. Tanpanya, nomor Amanpoll dipakai
+     * selama kuota bawaan bulan ini masih ada. Baris yang masih antri ikut dihitung, jadi dua
+     * puluh notifikasi beruntun dari satu peristiwa tidak semuanya lolos dari sisa kuota satu.
+     * Batas ini lunak: dua permintaan yang benar-benar bersamaan bisa melampauinya satu-dua
+     * pesan, harga yang diterima ketimbang mengunci tabel Notifikasi di setiap kiriman.
+     */
+    private function sumberWhatsApp(string $penggunaId): ?SumberPenyediaNotifikasi
     {
-        return $this->tujuanWhatsApp->penyediaAktif() && $this->tujuanWhatsApp->nomorUntuk($penggunaId) !== null;
+        $organisasiId = $this->konteks->id();
+
+        if ($organisasiId === null || $this->tujuanWhatsApp->nomorUntuk($penggunaId) === null) {
+            return null;
+        }
+
+        if ($this->pemilihPengirim->whatsAppOrganisasi($organisasiId) !== null) {
+            return SumberPenyediaNotifikasi::Organisasi;
+        }
+
+        if (! $this->tujuanWhatsApp->penyediaAktif()) {
+            return null;
+        }
+
+        $kuota = $this->kuotaWhatsApp->untuk($organisasiId);
+
+        if ($kuota->habis()) {
+            // Diresolusi saat dibutuhkan: pemberitahu itu sendiri mengirim lewat layanan ini.
+            app(PemberitahuLayananPengirim::class)->kuotaWhatsAppHabis($organisasiId, $kuota->batas);
+
+            return null;
+        }
+
+        return SumberPenyediaNotifikasi::Platform;
     }
 }

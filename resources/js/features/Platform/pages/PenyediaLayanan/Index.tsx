@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DialogPenyediaLayanan } from '@/features/Platform/components/DialogPenyediaLayanan';
 import { KerangkaPlatform } from '@/features/Platform/components/KerangkaPlatform';
+import { rutePlatform } from '@/features/Platform/api';
 import type { KategoriPenyediaLayanan, PenyediaLayanan } from '@/features/Platform/types';
 
 interface Props {
@@ -56,7 +57,18 @@ export default function PlatformPenyediaLayananIndex({ kategori }: Props) {
                         </div>
                         <p className="text-sm text-muted-foreground">{penyedia.Keterangan}</p>
                       </div>
-                      <DialogPenyediaLayanan kategori={jenis} penyedia={penyedia} />
+                      <DialogPenyediaLayanan
+                        kategori={jenis}
+                        penyedia={penyedia}
+                        rute={{
+                          simpan: rutePlatform.penyediaLayananSimpan(jenis.Kode, penyedia.Kode),
+                          uji: rutePlatform.penyediaLayananUji(jenis.Kode, penyedia.Kode),
+                          kirimUji:
+                            jenis.Kode === 'Email'
+                              ? rutePlatform.penyediaEmailKirimUji(penyedia.Kode)
+                              : undefined,
+                        }}
+                      />
                     </li>
                   ))}
                 </ul>

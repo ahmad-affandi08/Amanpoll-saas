@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Platform\Application\Services;
 
+use App\Core\Organisasi\ScopeOrganisasi;
 use App\Domain\Platform\Domain\Enums\KategoriPenyediaLayanan;
 use App\Domain\Platform\Domain\ValueObjects\KredensialPenyedia;
+use App\Domain\Platform\Infrastructure\Persistence\Models\PenyediaLayananOrganisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenyediaLayananPlatform;
 
 /**
@@ -50,5 +52,21 @@ final class PembacaKredensialPenyedia
             ->all();
 
         return array_values(array_map(strval(...), $kode));
+    }
+
+    /**
+     * Penyedia email atau WhatsApp aktif milik organisasi, tanpa menilai paket langganannya.
+     *
+     * Dibaca di worker antrian yang tidak punya konteks organisasi, jadi scope-nya
+     * dilepas dan organisasinya disebut sendiri.
+     */
+    public function milikOrganisasi(string $organisasiId, KategoriPenyediaLayanan $kategori): ?PenyediaLayananOrganisasi
+    {
+        return PenyediaLayananOrganisasi::query()
+            ->withoutGlobalScope(ScopeOrganisasi::class)
+            ->where('OrganisasiId', $organisasiId)
+            ->where('Kategori', $kategori->value)
+            ->where('Aktif', true)
+            ->first();
     }
 }

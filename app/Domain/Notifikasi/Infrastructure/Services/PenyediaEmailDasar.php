@@ -76,14 +76,6 @@ abstract class PenyediaEmailDasar implements DapatDiujiKoneksi, DeskripsiPenyedi
     /** Membuang setiap nilai isian rahasia dari teks, lalu memendekkannya. */
     public function sensor(KredensialPenyedia $kredensial, string $teks): string
     {
-        foreach ($this->isian() as $isian) {
-            $nilai = $isian->rahasia ? $kredensial->ambilAtau($isian->kunci) : '';
-
-            if ($nilai !== '') {
-                $teks = str_replace($nilai, '***', $teks);
-            }
-        }
-
-        return mb_substr(trim($teks), 0, 300);
+        return $kredensial->sensor($teks, $this->isian());
     }
 }

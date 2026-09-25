@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Domain\Langganan\Domain\KatalogFitur;
 use App\Domain\Notifikasi\Http\Controllers\EmailUjiPenyediaController;
 use App\Domain\Notifikasi\Http\Controllers\NotifikasiController;
+use App\Domain\Notifikasi\Http\Controllers\PengirimNotifikasiController;
 use App\Domain\Notifikasi\Http\Controllers\PreferensiNotifikasiController;
 use App\Domain\Notifikasi\Http\Controllers\TemplatNotifikasiController;
 use App\Domain\Platform\Application\Services\KatalogPenyediaLayanan;
@@ -22,6 +24,20 @@ Route::middleware(['web', 'auth', 'organisasi'])
         Route::get('/preferensi', [PreferensiNotifikasiController::class, 'halaman'])->name('preferensi.halaman');
         Route::get('/preferensi/data', [PreferensiNotifikasiController::class, 'index'])->name('preferensi.index');
         Route::post('/preferensi', [PreferensiNotifikasiController::class, 'store'])->name('preferensi.store');
+
+        // Email & WhatsApp milik organisasi (PRD 8.23). Halamannya terbuka untuk semua paket supaya
+        // kuota WhatsApp bawaan tetap terlihat; mengubah dan menguji butuh fitur paketnya.
+        Route::get('/email-whatsapp', [PengirimNotifikasiController::class, 'index'])->name('pengirim.index');
+        Route::delete('/email-whatsapp/{kategori}/{kode}', [PengirimNotifikasiController::class, 'hapus'])->name('pengirim.hapus');
+        Route::middleware('fitur:'.KatalogFitur::LAYANAN_PENYEDIA_SENDIRI)->group(function (): void {
+            Route::put('/email-whatsapp/{kategori}/{kode}', [PengirimNotifikasiController::class, 'simpan'])->name('pengirim.simpan');
+            Route::post('/email-whatsapp/{kategori}/{kode}/uji', [PengirimNotifikasiController::class, 'uji'])
+                ->middleware('throttle:6,1')
+                ->name('pengirim.uji');
+            Route::post('/email-whatsapp/{kategori}/{kode}/kirim-uji', [PengirimNotifikasiController::class, 'kirimUji'])
+                ->middleware('throttle:6,1')
+                ->name('pengirim.kirimUji');
+        });
 
         Route::get('/ringkasan', [NotifikasiController::class, 'ringkasan'])->name('ringkasan');
         Route::post('/{notifikasi}/baca', [NotifikasiController::class, 'baca'])->name('baca');

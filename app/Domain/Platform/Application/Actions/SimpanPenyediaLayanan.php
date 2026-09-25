@@ -6,12 +6,10 @@ namespace App\Domain\Platform\Application\Actions;
 
 use App\Core\Audit\LayananAudit;
 use App\Domain\Platform\Application\Services\KatalogPenyediaLayanan;
-use App\Domain\Platform\Domain\Contracts\DeskripsiPenyediaLayanan;
+use App\Domain\Platform\Application\Services\PenyusunKredensialPenyedia;
 use App\Domain\Platform\Domain\Enums\KategoriPenyediaLayanan;
-use App\Domain\Platform\Domain\ValueObjects\IsianKredensial;
 use App\Domain\Platform\Infrastructure\Persistence\Models\PenyediaLayananPlatform;
 use App\Shared\Domain\Contracts\TransaksiDatabase;
-use App\Shared\Domain\Exceptions\AturanBisnisDilanggar;
 use App\Shared\Domain\Exceptions\DataTidakDitemukan;
 
 /**
@@ -26,6 +24,7 @@ final class SimpanPenyediaLayanan
 {
     public function __construct(
         private readonly KatalogPenyediaLayanan $katalog,
+        private readonly PenyusunKredensialPenyedia $penyusun,
         private readonly TransaksiDatabase $transaksi,
         private readonly LayananAudit $audit,
     ) {}
@@ -50,11 +49,11 @@ final class SimpanPenyediaLayanan
                 ->first() ?? new PenyediaLayananPlatform(['Kategori' => $kategori, 'Kode' => $kode]);
 
             $sidikLama = $baris->SidikKredensial;
-            $nilai = $this->gabungkanKredensial($deskripsi, $baris->nilaiKredensial(), (array) ($data['Kredensial'] ?? []));
+            $nilai = $this->penyusun->gabungkan($deskripsi, $baris->nilaiKredensial(), (array) ($data['Kredensial'] ?? []));
             $aktif = (bool) ($data['Aktif'] ?? $baris->Aktif);
 
             if ($aktif) {
-                $this->pastikanIsianWajibLengkap($deskripsi, $nilai);
+                $this->penyusun->pastikanLengkap($deskripsi, $nilai);
             }
 
             $baris->fill([
@@ -62,7 +61,7 @@ final class SimpanPenyediaLayanan
                 'Utama' => $aktif && (bool) ($data['Utama'] ?? $baris->Utama),
                 'ModeUji' => $deskripsi->mendukungModeUji() && (bool) ($data['ModeUji'] ?? $baris->ModeUji),
                 'KredensialTerenkripsi' => $nilai === [] ? null : $nilai,
-                'SidikKredensial' => $nilai === [] ? null : $this->sidik($nilai),
+                'SidikKredensial' => $nilai === [] ? null : $this->penyusun->sidik($nilai),
                 'DiperbaruiOleh' => $adminId,
             ]);
             $baris->save();
@@ -87,55 +86,6 @@ final class SimpanPenyediaLayanan
 
             return $baris;
         });
-    }
-
-    /**
-     * @param  array<string, string>  $lama
-     * @param  array<string, mixed>  $masukan
-     * @return array<string, string>
-     */
-    private function gabungkanKredensial(DeskripsiPenyediaLayanan $deskripsi, array $lama, array $masukan): array
-    {
-        $hasil = [];
-
-        foreach ($deskripsi->isian() as $isian) {
-            $dikirim = array_key_exists($isian->kunci, $masukan);
-            $baru = trim((string) (is_scalar($masukan[$isian->kunci] ?? null) ? $masukan[$isian->kunci] : ''));
-
-            $nilai = match (true) {
-                $isian->rahasia && $baru === '' => $lama[$isian->kunci] ?? '',
-                $dikirim => $baru,
-                default => $lama[$isian->kunci] ?? (string) $isian->bawaan,
-            };
-
-            if ($nilai !== '' && $isian->pilihan !== [] && ! in_array($nilai, $isian->pilihan, true)) {
-                throw new AturanBisnisDilanggar("Pilihan {$isian->label} tidak dikenal.");
-            }
-
-            if ($nilai !== '') {
-                $hasil[$isian->kunci] = $nilai;
-            }
-        }
-
-        return $hasil;
-    }
-
-    /** @param  array<string, string>  $nilai */
-    private function pastikanIsianWajibLengkap(DeskripsiPenyediaLayanan $deskripsi, array $nilai): void
-    {
-        $kosong = array_map(
-            fn (IsianKredensial $isian): string => $isian->label,
-            array_filter(
-                $deskripsi->isian(),
-                fn (IsianKredensial $isian): bool => $isian->wajib && ($nilai[$isian->kunci] ?? '') === '',
-            ),
-        );
-
-        if ($kosong !== []) {
-            throw new AturanBisnisDilanggar(
-                "{$deskripsi->nama()} belum bisa diaktifkan. Lengkapi dulu: ".implode(', ', $kosong).'.',
-            );
-        }
     }
 
     /**
@@ -178,18 +128,5 @@ final class SimpanPenyediaLayanan
                 ?->forceFill(['Utama' => true])
                 ->save();
         }
-    }
-
-    /** @param  array<string, string>  $nilai */
-    private function sidik(array $nilai): string
-    {
-        ksort($nilai);
-
-        // HMAC berkunci APP_KEY: sidik tidak bisa dipakai menebak nilai kredensial yang pendek.
-        return hash_hmac(
-            'sha256',
-            (string) json_encode($nilai, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-            (string) config('app.key'),
-        );
     }
 }

@@ -22,6 +22,7 @@ final class Notifikasi extends ModelDasar
         'OrganisasiId',
         'PenggunaId',
         'Kanal',
+        'SumberPenyedia',
         'JenisPeristiwa',
         'Judul',
         'Isi',

@@ -114,15 +114,7 @@ abstract class PenyediaWhatsAppHttp implements DapatDiujiKoneksi, DapatMembalasW
     /** Membuang setiap nilai isian rahasia dari teks, lalu memendekkannya. */
     protected function sensor(KredensialPenyedia $kredensial, string $teks): string
     {
-        foreach ($this->isian() as $isian) {
-            $nilai = $isian->rahasia ? $kredensial->ambilAtau($isian->kunci) : '';
-
-            if ($nilai !== '') {
-                $teks = str_replace($nilai, '***', $teks);
-            }
-        }
-
-        return mb_substr(trim($teks), 0, 200);
+        return $kredensial->sensor($teks, $this->isian(), 200);
     }
 
     protected function nomor(string $kepada): string

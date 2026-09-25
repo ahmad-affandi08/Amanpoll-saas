@@ -10,6 +10,7 @@ use App\Domain\Pemasaran\Domain\Enums\StatusPersetujuanTemplateWa;
 use App\Domain\Pemasaran\Domain\ValueObjects\PersetujuanTemplateWa;
 use App\Domain\Pemasaran\Domain\ValueObjects\PesanWhatsApp;
 use App\Domain\Pemasaran\Domain\ValueObjects\StatusKirimanWhatsApp;
+use App\Domain\Platform\Domain\ValueObjects\KredensialPenyedia;
 use App\Shared\Domain\ValueObjects\NomorWhatsApp;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -43,6 +44,12 @@ final class PenyediaWhatsAppLog implements DapatMengirimNotifikasiWhatsApp, Peny
         ]);
 
         return (string) Str::ulid();
+    }
+
+    /** Log tidak memanggil siapa pun, jadi kredensial yang diberikan tidak dipakai. */
+    public function kirimNotifikasiDengan(KredensialPenyedia $kredensial, string $nomor, string $judul, string $isi): string
+    {
+        return $this->kirimNotifikasi($nomor, $judul, $isi);
     }
 
     /**

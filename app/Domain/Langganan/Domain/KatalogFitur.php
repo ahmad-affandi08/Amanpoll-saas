@@ -20,12 +20,21 @@ final class KatalogFitur
 
     public const MODUL_INTEGRASI = 'modul.integrasi';
 
+    /** Organisasi boleh mengirim notifikasi lewat email dan WhatsApp miliknya sendiri (PRD 8.23). */
+    public const LAYANAN_PENYEDIA_SENDIRI = 'layanan.penyedia_sendiri';
+
     /** Batas kuota yang hanya dapat ditegakkan saat baris baru dibuat. */
     public const BATAS_ASET = 'batas.aset';
 
     public const BATAS_PENGGUNA = 'batas.pengguna';
 
     public const BATAS_LOKASI = 'batas.lokasi';
+
+    /**
+     * Notifikasi WhatsApp per bulan kalender yang boleh berangkat lewat nomor Amanpoll.
+     * Pesan lewat nomor milik organisasi sendiri tidak dihitung.
+     */
+    public const BATAS_WHATSAPP_BULANAN = 'batas.whatsapp_bulanan';
 
     /** @var array<string, DefinisiFitur>|null */
     private static ?array $katalog = null;
@@ -90,6 +99,12 @@ final class KatalogFitur
                 TipeBatasFitur::Boolean,
             ),
             new DefinisiFitur(
+                self::LAYANAN_PENYEDIA_SENDIRI,
+                'Email & WhatsApp Milik Sendiri',
+                'Notifikasi ke staf dikirim dari alamat email dan nomor WhatsApp organisasi sendiri.',
+                TipeBatasFitur::Boolean,
+            ),
+            new DefinisiFitur(
                 self::BATAS_ASET,
                 'Batas Jumlah Aset',
                 'Banyaknya aset aktif yang boleh tercatat pada organisasi.',
@@ -112,6 +127,14 @@ final class KatalogFitur
                 TipeBatasFitur::Angka,
                 diizinkanBawaan: true,
                 satuanBatas: 'lokasi',
+            ),
+            new DefinisiFitur(
+                self::BATAS_WHATSAPP_BULANAN,
+                'Kuota WhatsApp Bawaan per Bulan',
+                'Notifikasi WhatsApp per bulan yang dikirim lewat nomor Amanpoll. Kosong berarti tanpa batas.',
+                TipeBatasFitur::Angka,
+                diizinkanBawaan: true,
+                satuanBatas: 'pesan WhatsApp per bulan',
             ),
         ];
 

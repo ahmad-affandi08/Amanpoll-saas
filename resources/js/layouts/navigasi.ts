@@ -286,6 +286,7 @@ const navPengaturan: GrupNav = {
         { label: 'Kolom Kustom', href: '/kolaborasi/kolom-kustom', kodeIzin: 'Pengaturan.Kelola' },
         { label: 'Alur Persetujuan', href: '/persetujuan/alur', kodeIzin: 'Persetujuan.Kelola' },
         { label: 'Templat Notifikasi', href: '/notifikasi/templat', kodeIzin: 'Pengaturan.Kelola' },
+        { label: 'Email & WhatsApp', href: '/notifikasi/email-whatsapp', kodeIzin: 'Integrasi.Kelola' },
       ],
     },
     {

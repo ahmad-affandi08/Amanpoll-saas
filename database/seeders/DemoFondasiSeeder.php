@@ -172,7 +172,7 @@ final class DemoFondasiSeeder extends Seeder
             'DiperbaruiPada' => now(),
         ]);
 
-        $batas = ['batas.aset' => 1000, 'batas.pengguna' => 100, 'batas.lokasi' => 300];
+        $batas = ['batas.aset' => 1000, 'batas.pengguna' => 100, 'batas.lokasi' => 300, 'batas.whatsapp_bulanan' => 1000];
 
         foreach (DB::table('FiturPaket')->get(['Id', 'Kode']) as $fitur) {
             $this->simpan('PaketFitur', ['PaketLanggananId' => $paketId, 'FiturPaketId' => $fitur->Id], [
