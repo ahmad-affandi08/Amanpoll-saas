@@ -512,6 +512,7 @@ final class PengadaanFeatureTest extends TestCase
             ->where('AlurPersetujuanId', $alur->Id)
             ->where('EntitasId', $permintaan->Id)
             ->firstOrFail();
+        $this->assertEquals((float) $permintaan->TotalEstimasi, $permintaanPersetujuan->DataTambahan['Nilai'] ?? null);
         app(SetujuiPermintaanPersetujuan::class)->jalankan($permintaanPersetujuan, $penyetuju, 'Disetujui untuk pengujian.');
         $this->actingAs($konteks['pengguna']);
 
@@ -557,6 +558,7 @@ final class PengadaanFeatureTest extends TestCase
             ->where('AlurPersetujuanId', $alur->Id)
             ->where('EntitasId', $po->Id)
             ->firstOrFail();
+        $this->assertEquals((float) $po->refresh()->Total, $permintaanPersetujuan->DataTambahan['Nilai'] ?? null);
         app(SetujuiPermintaanPersetujuan::class)->jalankan($permintaanPersetujuan, $penyetuju, 'PO disetujui.');
         $this->actingAs($konteks['pengguna']);
         $this->assertSame(StatusPesananPembelian::Disetujui->value, $po->refresh()->Status);

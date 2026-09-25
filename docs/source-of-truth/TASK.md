@@ -4011,8 +4011,25 @@ alat yang gagal tampil valid sampai periode berikutnya. Sekarang hasil Gagal men
 jatuh tempo rencananya ke tanggal kalibrasi itu (langsung jatuh tempo, perlu
 kalibrasi ulang) dan tidak memberi masa berlaku sertifikat.
 
+Kolom `Kondisi` tahap persetujuan dulu tersimpan tetapi tidak pernah dibaca, dan
+tidak ada layar untuk mengisinya. Pemilik produk memilih bentuk paling sederhana:
+ambang nilai `{"NilaiMinimum": ...}` per tahap. `PemilihTahapPersetujuan` melewati
+tahap yang ambangnya tidak tercapai. Nilainya dikirim domain asal sebagai
+`DataTambahan.Nilai` (PP: TotalEstimasi, PO: Total, Anggaran: Jumlah, Usulan:
+Jumlah x EstimasiHargaSatuan). Tiga keputusan yang disengaja:
+- Tahap pertama selalu berlaku, dan aktivasi alur menolak ambang di tahap pertama.
+  Kalau semua tahap boleh dilewati, permintaan bisa lahir tanpa penyetuju, sementara
+  pemanggil menulis status "menunggu persetujuan" sesudah mengajukan.
+- Nilai yang tidak diketahui (mutasi, penghapusan) tidak pernah melewati tahap. Satu
+  persetujuan berlebih lebih murah daripada satu yang hilang.
+- Endpoint pengajuan umum membuang `Nilai` kiriman peminta. Tanpa itu, peminta cukup
+  mengirim nilai kecil untuk melewati tahap direktur.
+
+`KondisiAktivasi` pada alur tetap belum dibaca: alur masih dipilih per jenis entitas,
+pemanggil mengambil alur aktif pertama untuk jenisnya. Memilih di antara beberapa alur
+menurut kondisi baru dikerjakan bila pemilik produk memintanya.
+
 Temuan yang belum dikerjakan (dicatat untuk keputusan pemilik produk):
-- Mesin persetujuan tidak membaca `Kondisi`/`KondisiAktivasi` tahap; semua PP melewati seluruh tahap tanpa melihat nilai.
 - Penjadwal preventif mengabaikan ambang meter pada rencana berbasis meter/kombinasi.
 - Butir daftar periksa Ya/Tidak berkalimat negatif selalu dinilai tidak sesuai; pelaksanaan daftar periksa dari PK tidak mencatat pelaksana dan waktu mulai.
 - Penerimaan pembelian hanya bisa dicatat pemegang `Pengadaan.Kelola`, bukan petugas gudang.

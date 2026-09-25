@@ -13,6 +13,8 @@ export interface TahapPersetujuan {
   JumlahMinimumPenyetuju: number;
   BolehMenyetujuiSendiri: boolean;
   BatasWaktuMenit: number | null;
+  /** Tahap hanya berlaku bila nilai permintaan mencapai ambang ini; null = selalu berlaku. */
+  NilaiMinimum: number | null;
 }
 
 export interface AlurPersetujuan {

@@ -17,6 +17,14 @@ final class SimpanTahapPersetujuanRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    /** Ambang yang dikosongkan berarti tahap tanpa syarat, bukan ambang nol. */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('Kondisi') && blank($this->input('Kondisi.NilaiMinimum'))) {
+            $this->merge(['Kondisi' => null]);
+        }
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -41,7 +49,8 @@ final class SimpanTahapPersetujuanRequest extends FormRequest
             'JumlahMinimumPenyetuju' => ['required', 'integer', 'min:1'],
             'BolehMenyetujuiSendiri' => ['sometimes', 'boolean'],
             'BatasWaktuMenit' => ['nullable', 'integer', 'min:1'],
-            'Kondisi' => ['nullable', 'array'],
+            'Kondisi' => ['nullable', 'array:NilaiMinimum'],
+            'Kondisi.NilaiMinimum' => ['nullable', 'numeric', 'min:0', 'max:999999999999999'],
         ];
     }
 }

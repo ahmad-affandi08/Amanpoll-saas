@@ -44,8 +44,18 @@ export function Persetujuan() {
             Tambahkan tahap berurutan. Tiap tahap menetapkan penyetujunya: seorang <Ui>Pengguna</Ui> tertentu,
             pemegang sebuah <Ui>Peran</Ui>, atau atasan di sebuah <Ui>Unit</Ui>.
           </Butir>
+          <Butir>
+            Bila perlu, isi <Ui>Berlaku bila nilai minimal</Ui> pada tahap lanjutan. Dokumen bernilai di bawah
+            ambang itu melewati tahap tersebut, misalnya direktur hanya memeriksa pembelian di atas Rp 25
+            juta.
+          </Butir>
           <Butir>Aktifkan alurnya. Alur yang nonaktif diabaikan seolah tidak ada.</Butir>
         </Daftar>
+        <P>
+          Ambang dibaca dari nilai dokumen: total estimasi permintaan pembelian, total pesanan pembelian,
+          nilai anggaran, atau jumlah kali harga satuan usulan aset. Tahap pertama selalu berlaku untuk semua
+          nilai, dan dokumen tanpa nilai (mutasi, penghapusan) melalui semua tahap.
+        </P>
         <Catatan>
           Menunjuk <Tegas>peran</Tegas> lebih tahan banting daripada menunjuk orang. Kalau orangnya resign,
           alur yang menunjuk peran tetap jalan; alur yang menunjuk namanya akan macet.

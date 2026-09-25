@@ -8,6 +8,7 @@ use App\Core\Audit\LayananAudit;
 use App\Core\Entitas\RegistriEntitas;
 use App\Domain\Persetujuan\Application\Services\LayananNotifikasiPersetujuan;
 use App\Domain\Persetujuan\Application\Services\LayananPenyetuju;
+use App\Domain\Persetujuan\Application\Services\PemilihTahapPersetujuan;
 use App\Domain\Persetujuan\Domain\Enums\JenisKeputusanPersetujuan;
 use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\KeputusanPersetujuan;
@@ -27,6 +28,7 @@ final class SetujuiPermintaanPersetujuan
         private readonly RegistriEntitas $registriEntitas,
         private readonly LayananAudit $layananAudit,
         private readonly LayananNotifikasiPersetujuan $layananNotifikasiPersetujuan,
+        private readonly PemilihTahapPersetujuan $pemilihTahap,
     ) {}
 
     /**
@@ -76,11 +78,11 @@ final class SetujuiPermintaanPersetujuan
                 return;
             }
 
-            $tahapBerikutnya = TahapPersetujuan::query()
-                ->where('AlurPersetujuanId', $permintaan->AlurPersetujuanId)
-                ->where('Urutan', '>', $tahap->Urutan)
-                ->orderBy('Urutan')
-                ->first();
+            $tahapBerikutnya = $this->pemilihTahap->tahapBerikutnya(
+                $permintaan->AlurPersetujuanId,
+                $tahap->Urutan,
+                PemilihTahapPersetujuan::nilaiDari($permintaan->DataTambahan),
+            );
 
             if ($tahapBerikutnya) {
                 $permintaan->TahapSaatIni = $tahapBerikutnya->Urutan;

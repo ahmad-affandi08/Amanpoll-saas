@@ -10,6 +10,7 @@ use App\Domain\Persetujuan\Application\Actions\BatalkanPermintaanPersetujuan;
 use App\Domain\Persetujuan\Application\Actions\SetujuiPermintaanPersetujuan;
 use App\Domain\Persetujuan\Application\Actions\TolakPermintaanPersetujuan;
 use App\Domain\Persetujuan\Application\Services\LayananPenyetuju;
+use App\Domain\Persetujuan\Application\Services\PemilihTahapPersetujuan;
 use App\Domain\Persetujuan\Domain\Enums\StatusPermintaanPersetujuan;
 use App\Domain\Persetujuan\Http\Requests\SimpanKeputusanPersetujuanRequest;
 use App\Domain\Persetujuan\Http\Requests\SimpanPermintaanPersetujuanRequest;
@@ -43,7 +44,12 @@ final class PermintaanPersetujuanController extends Controller
         $alurPersetujuan = AlurPersetujuan::query()->findOrFail($data['AlurPersetujuanId']);
         $this->registriEntitas->pastikanBolehKelola($request->user('web'), $alurPersetujuan->JenisEntitas);
 
-        $aksi->jalankan($alurPersetujuan, $data['EntitasId'], $data['DataTambahan'] ?? null, $request->user('web')->Id);
+        // Nilai penentu ambang tahap hanya boleh datang dari domain asal, bukan dari peminta:
+        // kalau tidak, peminta cukup mengirim nilai kecil untuk melewati tahap berambang.
+        $dataTambahan = $data['DataTambahan'] ?? null;
+        unset($dataTambahan[PemilihTahapPersetujuan::KUNCI_NILAI]);
+
+        $aksi->jalankan($alurPersetujuan, $data['EntitasId'], $dataTambahan ?: null, $request->user('web')->Id);
 
         return back()->with('sukses', 'Permintaan persetujuan berhasil diajukan.');
     }

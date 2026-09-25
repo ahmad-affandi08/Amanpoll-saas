@@ -79,6 +79,7 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         $this->assertSame(StatusAnggaran::MenungguPersetujuan->value, $menunggu->Status);
 
         $permintaan = PermintaanPersetujuan::query()->where('AlurPersetujuanId', $alur->Id)->where('EntitasId', $anggaranDenganApproval->Id)->firstOrFail();
+        $this->assertEquals(500000, $permintaan->DataTambahan['Nilai'] ?? null, 'Nilai anggaran menentukan ambang tahap persetujuan.');
         app(SetujuiPermintaanPersetujuan::class)->jalankan($permintaan, $penyetuju, null);
         $this->assertSame(StatusAnggaran::Aktif->value, $anggaranDenganApproval->refresh()->Status);
     }
@@ -147,6 +148,7 @@ final class PerencanaanPengadaanFeatureTest extends TestCase
         $this->assertSame(StatusUsulanAset::MenungguPersetujuan->value, $menunggu->Status);
 
         $permintaan = PermintaanPersetujuan::query()->where('AlurPersetujuanId', $alur->Id)->where('EntitasId', $usulan->Id)->firstOrFail();
+        $this->assertEquals(500000, $permintaan->DataTambahan['Nilai'] ?? null, 'Nilai usulan = jumlah x estimasi harga satuan.');
         $hasil = app(SetujuiPermintaanPersetujuan::class)->jalankan($permintaan, $penyetuju, 'Layak dan mendesak.');
 
         $this->assertTrue($hasil['selesai']);

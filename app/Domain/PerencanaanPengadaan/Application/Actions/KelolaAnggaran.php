@@ -110,7 +110,7 @@ final class KelolaAnggaran
                 ->first();
 
             if ($alur) {
-                $this->ajukanPersetujuan->jalankan($alur, $anggaran->Id, ['Jumlah' => $anggaran->Jumlah], $penggunaId);
+                $this->ajukanPersetujuan->jalankan($alur, $anggaran->Id, ['Jumlah' => $anggaran->Jumlah, 'Nilai' => $anggaran->Jumlah], $penggunaId);
                 $anggaran->Status = StatusAnggaran::MenungguPersetujuan->value;
             } else {
                 $anggaran->Status = StatusAnggaran::Aktif->value;

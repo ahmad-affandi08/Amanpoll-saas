@@ -1052,6 +1052,7 @@ Approval bersifat generik dan dapat digunakan oleh:
 - Keputusan bersifat append-oriented.
 - Entitas sumber hanya berubah ke status final setelah keputusan memenuhi rule.
 - Approval tidak boleh bergantung pada nama tabel yang di-hardcode di banyak tempat.
+- Tahap boleh berambang nilai (`Kondisi.NilaiMinimum`): dokumen di bawah ambang melewati tahap itu. Nilai berasal dari domain asal lewat `DataTambahan.Nilai`, tidak pernah dari peminta. Tahap pertama selalu berlaku; dokumen tanpa nilai melalui semua tahap.
 
 ---
 

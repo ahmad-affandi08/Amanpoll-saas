@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Persetujuan\Http\Resources;
 
+use App\Domain\Persetujuan\Application\Services\PemilihTahapPersetujuan;
 use App\Domain\Persetujuan\Infrastructure\Persistence\Models\TahapPersetujuan;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Pengguna;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Peran;
@@ -34,6 +35,7 @@ final class TahapPersetujuanResource extends JsonResource
             'JumlahMinimumPenyetuju' => $tahap->JumlahMinimumPenyetuju,
             'BolehMenyetujuiSendiri' => $tahap->BolehMenyetujuiSendiri,
             'BatasWaktuMenit' => $tahap->BatasWaktuMenit,
+            'NilaiMinimum' => PemilihTahapPersetujuan::ambangNilai($tahap),
         ];
     }
 }

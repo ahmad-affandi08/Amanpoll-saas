@@ -144,7 +144,7 @@ final class KelolaPermintaanPembelian
                 throw new AturanBisnisDilanggar('Belum ada alur persetujuan aktif untuk permintaan pembelian.');
             }
 
-            $this->ajukanPersetujuan->jalankan($alur, $terkunci->Id, ['Total' => $terkunci->TotalEstimasi], $penggunaId);
+            $this->ajukanPersetujuan->jalankan($alur, $terkunci->Id, ['Total' => $terkunci->TotalEstimasi, 'Nilai' => $terkunci->TotalEstimasi], $penggunaId);
             $terkunci->Status = StatusPermintaanPembelian::MenungguPersetujuan->value;
             $terkunci->save();
             $this->audit->catat('PermintaanPembelian.Disubmit', 'PermintaanPembelian', $terkunci->Id, dataSesudah: ['Status' => $terkunci->Status, 'TotalEstimasi' => $terkunci->TotalEstimasi]);

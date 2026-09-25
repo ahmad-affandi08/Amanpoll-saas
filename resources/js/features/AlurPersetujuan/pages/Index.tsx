@@ -28,6 +28,8 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { BidangKode } from '@/components/shared/BidangKode';
+import { InputUang } from '@/components/shared/InputUang';
+import { formatUang } from '@/lib/uang';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 
@@ -137,12 +139,16 @@ function FormTahap({
     PenggunaId: tahap?.PenggunaId ?? '',
     JumlahMinimumPenyetuju: tahap?.JumlahMinimumPenyetuju ?? 1,
     BolehMenyetujuiSendiri: tahap?.BolehMenyetujuiSendiri ?? false,
+    NilaiMinimum:
+      tahap?.NilaiMinimum === null || tahap?.NilaiMinimum === undefined ? '' : String(tahap.NilaiMinimum),
   });
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
+    const { NilaiMinimum, ...data } = form.data;
     const payload = {
-      ...form.data,
+      ...data,
+      Kondisi: NilaiMinimum === '' ? null : { NilaiMinimum },
       PeranId: form.data.JenisPenyetuju === 'Peran' ? form.data.PeranId : null,
       PenggunaId: form.data.JenisPenyetuju === 'Pengguna' ? form.data.PenggunaId : null,
     };
@@ -234,6 +240,20 @@ function FormTahap({
         />
         Boleh menyetujui permintaan sendiri
       </label>
+      <div className="col-span-2 space-y-1.5">
+        <Label nama="Kondisi.NilaiMinimum" htmlFor="nilai-minimum-tahap">
+          Berlaku bila nilai minimal (opsional)
+        </Label>
+        <InputUang
+          id="nilai-minimum-tahap"
+          value={form.data.NilaiMinimum}
+          onChange={(nilai) => form.setData('NilaiMinimum', nilai)}
+          placeholder="Kosongkan agar tahap selalu berlaku"
+        />
+        <p className="text-xs text-muted-foreground">
+          Permintaan di bawah nilai ini melewati tahap ini. Tahap pertama selalu berlaku.
+        </p>
+      </div>
       <div className="col-span-2 flex justify-end">
         <Button type="submit" size="sm" disabled={form.processing}>
           {tahap ? 'Simpan Perubahan' : 'Tambah Tahap'}
@@ -299,6 +319,11 @@ function DialogKelolaTahap({
                   {tahap.NamaPengguna ? `: ${tahap.NamaPengguna}` : ''}
                   {tahap.NamaPeran ? `: ${tahap.NamaPeran}` : ''}, min. {tahap.JumlahMinimumPenyetuju})
                 </span>
+                {tahap.NilaiMinimum !== null && (
+                  <span className="ml-2 text-muted-foreground">
+                    · nilai ≥ {formatUang(tahap.NilaiMinimum)}
+                  </span>
+                )}
               </div>
               {!alur.Aktif && (
                 <div className="flex gap-2">

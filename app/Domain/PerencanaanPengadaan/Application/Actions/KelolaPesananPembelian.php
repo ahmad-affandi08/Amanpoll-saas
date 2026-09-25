@@ -107,7 +107,7 @@ final class KelolaPesananPembelian
             throw new AturanBisnisDilanggar('Belum ada alur persetujuan aktif untuk pesanan pembelian.');
         }
 
-        $this->ajukanPersetujuan->jalankan($alur, $po->Id, ['Total' => $po->Total], $penggunaId);
+        $this->ajukanPersetujuan->jalankan($alur, $po->Id, ['Total' => $po->Total, 'Nilai' => $po->Total], $penggunaId);
         $po->Status = StatusPesananPembelian::MenungguPersetujuan->value;
         $po->save();
 

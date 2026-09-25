@@ -164,7 +164,10 @@ final class KelolaUsulanAset
         }
 
         return $this->transaksi->jalankan(function () use ($usulan, $penggunaId, $alur): UsulanAset {
-            $this->ajukanPersetujuan->jalankan($alur, $usulan->Id, ['Prioritas' => $usulan->Prioritas], $penggunaId);
+            $this->ajukanPersetujuan->jalankan($alur, $usulan->Id, [
+                'Prioritas' => $usulan->Prioritas,
+                'Nilai' => $usulan->EstimasiHargaSatuan === null ? null : (float) $usulan->Jumlah * (float) $usulan->EstimasiHargaSatuan,
+            ], $penggunaId);
             $usulan->Status = StatusUsulanAset::MenungguPersetujuan->value;
             $usulan->save();
 
