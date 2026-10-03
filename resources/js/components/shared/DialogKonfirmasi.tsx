@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Ilustrasi3d } from '@/components/shared/Ilustrasi3d';
-import { cn } from '@/lib/utils';
+import { Ilustrasi3d, type NadaIlustrasi } from '@/components/shared/Ilustrasi3d';
 
 export type RagamKonfirmasi = 'bahaya' | 'perhatian' | 'info';
 
@@ -32,8 +31,7 @@ export type HasilKonfirmasi = false | { alasan?: string };
 interface TampilanRagam {
   ilustrasi: string;
   ikon: LucideIcon;
-  warna: string;
-  latar: string;
+  nada: NadaIlustrasi;
   varianTombol: 'destructive' | 'default';
 }
 
@@ -41,22 +39,19 @@ const RAGAM: Record<RagamKonfirmasi, TampilanRagam> = {
   bahaya: {
     ilustrasi: '/assets/3d/hapus.webp',
     ikon: CircleAlert,
-    warna: 'text-bahaya-600',
-    latar: 'bg-bahaya-600/10',
+    nada: 'bahaya',
     varianTombol: 'destructive',
   },
   perhatian: {
     ilustrasi: '/assets/3d/peringatan.webp',
     ikon: TriangleAlert,
-    warna: 'text-safety-600',
-    latar: 'bg-safety-500/15',
+    nada: 'safety',
     varianTombol: 'default',
   },
   info: {
     ilustrasi: '/assets/3d/info.webp',
     ikon: Info,
-    warna: 'text-info-600',
-    latar: 'bg-info-600/10',
+    nada: 'info',
     varianTombol: 'default',
   },
 };
@@ -103,14 +98,7 @@ export function DialogKonfirmasi({ opsi, onSelesai }: Props) {
           <form onSubmit={konfirmasi} className="space-y-5">
             <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
               {ilustrasi && (
-                <div className={cn('flex size-16 items-center justify-center rounded-md', ragam.latar)}>
-                  <Ilustrasi3d
-                    sumber={ilustrasi}
-                    ikonCadangan={ragam.ikon}
-                    warnaCadangan={ragam.warna}
-                    ukuran={40}
-                  />
-                </div>
+                <Ilustrasi3d sumber={ilustrasi} ikonCadangan={ragam.ikon} nada={ragam.nada} ukuran={64} />
               )}
               <div className="min-w-0 space-y-1.5">
                 <AlertDialogPrimitive.Title className="text-base font-semibold text-foreground">
