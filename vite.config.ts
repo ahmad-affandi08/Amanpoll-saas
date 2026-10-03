@@ -5,6 +5,11 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
 
 export default defineConfig({
+  server: {
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: true,
+  },
   plugins: [
     laravel({
       input: ['resources/css/app.css', 'resources/js/app.tsx'],
