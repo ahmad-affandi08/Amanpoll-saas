@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-B8IgdUqA.js";import{t}from"./KepalaHalaman-Dfjs6jDR.js";var n=e();function r(){return(0,n.jsx)(t,{judul:`Pengaturan`,deskripsi:`Halaman modul Pengaturan. Implementasikan use-case dan UI di feature ini.`})}export{r as default};

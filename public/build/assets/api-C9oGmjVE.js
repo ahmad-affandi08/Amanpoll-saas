@@ -1,0 +1,1 @@
+var e={index:`/platform/pengguna`,detail:e=>`/platform/pengguna/${e}`,peran:e=>`/platform/pengguna/${e}/peran`,peranDetail:e=>`/platform/pengguna-peran/${e}`,status:e=>`/platform/pengguna/${e}/status`,bebanKerja:e=>`/platform/pengguna/${e}/beban-kerja`,aktivitas:e=>`/platform/pengguna/${e}/aktivitas`};export{e as t};

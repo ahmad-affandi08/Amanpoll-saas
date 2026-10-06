@@ -1,0 +1,1 @@
+var e={index:`/aspak`,ekspor:`/aspak/ekspor`,imporKatalog:`/aspak/katalog/impor`,cariKatalog:`/aspak/katalog/cari`,pemetaan:`/aspak/pemetaan`,pemetaanDetail:e=>`/aspak/pemetaan/${e}`};export{e as t};

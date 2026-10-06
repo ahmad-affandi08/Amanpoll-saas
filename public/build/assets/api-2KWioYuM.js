@@ -1,0 +1,1 @@
+var e={index:`/pemeliharaan/keluhan`,detail:e=>`/pemeliharaan/keluhan/${e}`,prioritas:e=>`/pemeliharaan/keluhan/${e}/prioritas`,status:e=>`/pemeliharaan/keluhan/${e}/status`,unitPengelola:e=>`/pemeliharaan/keluhan/${e}/unit-pengelola`,ekspor:`/pemeliharaan/keluhan/ekspor`};export{e as t};

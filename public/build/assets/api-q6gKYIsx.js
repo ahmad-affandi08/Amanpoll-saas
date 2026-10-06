@@ -1,0 +1,1 @@
+var e={index:`/platform/peran`,bawaan:`/platform/peran/bawaan`,daftarIzin:`/platform/izin`,detail:e=>`/platform/peran/${e}`,izin:e=>`/platform/peran/${e}/izin`};export{e as t};

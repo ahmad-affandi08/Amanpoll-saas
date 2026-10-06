@@ -1,0 +1,1 @@
+var e=[{value:`InApp`,label:`In-App`},{value:`Email`,label:`Email`},{value:`WhatsApp`,label:`WhatsApp`}];export{e as t};

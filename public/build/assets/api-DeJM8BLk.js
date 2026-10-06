@@ -1,0 +1,1 @@
+var e={index:`/serah-terima-aset`,detail:e=>`/serah-terima-aset/${e}`,detail2:e=>`/serah-terima-aset/${e}/detail`,terima:e=>`/serah-terima-aset/${e}/terima`,ekspor:`/serah-terima-aset/ekspor`};export{e as t};

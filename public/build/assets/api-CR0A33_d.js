@@ -1,0 +1,1 @@
+var e={masuk:`/masuk`,keluar:`/keluar`,beranda:`/`,lead:`/lead`};export{e as t};

@@ -1,0 +1,1 @@
+import{o as e,t}from"./jsx-runtime-B8IgdUqA.js";import{n,t as r}from"./breadcrumb-otomatis-DwK-yE3n.js";var i=t();function a({label:t}){let{url:a}=e();return(0,i.jsx)(n,{jejak:r(a,t),className:`mb-3`})}export{a as t};

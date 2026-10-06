@@ -1,0 +1,1 @@
+var e={index:`/perencanaan-pengadaan/penerimaan-pembelian`,simpan:e=>`/perencanaan-pengadaan/pesanan-pembelian/${e}/penerimaan`,ekspor:`/perencanaan-pengadaan/penerimaan-pembelian/ekspor`};export{e as t};

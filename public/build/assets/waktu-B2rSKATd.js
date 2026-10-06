@@ -1,0 +1,1 @@
+import{a as e,o as t,s as n}from"./KerangkaLapangan-y2OACzHM.js";function r(r){if(!r)return`—`;let i=t(r);return i===`Hari ini`?e(r):i===`Kemarin`?`kemarin ${e(r)}`:`${n(r)}, ${e(r)}`}function i(n){return n?`${t(n)}, ${e(n)}`:`—`}function a(e,r,i=e){return!r||t(r)===`Hari ini`?e:`${i}, ${n(r)}`}export{i as n,r,a as t};

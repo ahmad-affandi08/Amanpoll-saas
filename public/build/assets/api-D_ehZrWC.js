@@ -1,0 +1,1 @@
+var e={index:`/perencanaan-pengadaan/usulan-aset`,detail:e=>`/perencanaan-pengadaan/usulan-aset/${e}`,ajukanPersetujuan:e=>`/perencanaan-pengadaan/usulan-aset/${e}/ajukan-persetujuan`,penilaian:e=>`/perencanaan-pengadaan/usulan-aset/${e}/penilaian`,submit:e=>`/perencanaan-pengadaan/usulan-aset/${e}/submit`,ekspor:`/perencanaan-pengadaan/usulan-aset/ekspor`};export{e as t};

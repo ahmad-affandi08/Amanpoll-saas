@@ -1,0 +1,1 @@
+var e=[`WhatsApp`,`TikTok`,`YouTube`,`LinkedIn`];function t(t){let n=t??``;return e.includes(n)?n:n.replace(/([a-z])([A-Z])/g,`$1 $2`)}export{t};

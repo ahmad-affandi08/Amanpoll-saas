@@ -1,0 +1,1 @@
+var e={index:`/platform/profil`,kataSandi:`/platform/profil/kata-sandi`,perangkatDetail:e=>`/platform/profil/perangkat/${e}`};export{e as t};

@@ -85,7 +85,7 @@ npm ci
 npm run build
 ```
 
-Upload hasil `public/build` bersama aset statis lain di `public/` (lihat langkah 5). Jangan bergantung pada Vite dev server di hosting.
+`public/build` ikut di-commit ke repo (hosting tidak memasang Node), jadi cukup `git pull`; jalankan `npm run build` lalu commit hasilnya setiap kali ada perubahan frontend. Salin `public/build` ke `public_html/build` (lihat langkah 5). Jangan bergantung pada Vite dev server di hosting.
 
 ## Permission
 

@@ -1,0 +1,1 @@
+function e(e){return new Intl.NumberFormat(`id-ID`,{maximumFractionDigits:0}).format(e)}function t(e,t=`∞`){return e==null||e===``?t:new Intl.NumberFormat(`id-ID`,{maximumFractionDigits:4}).format(Number(e))}export{t as n,e as t};

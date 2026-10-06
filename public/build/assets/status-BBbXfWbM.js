@@ -1,0 +1,1 @@
+var e={Baru:`default`,Ditinjau:`perhatian`,Diterima:`secondary`,Diproses:`proses`,Selesai:`sukses`,Ditutup:`netral`,Ditolak:`destructive`,Dibatalkan:`outline`},t={Rendah:`netral`,Normal:`secondary`,Tinggi:`perhatian`,Kritis:`destructive`};export{e as n,t};

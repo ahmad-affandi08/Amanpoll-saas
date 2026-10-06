@@ -1,0 +1,1 @@
+var e={index:`/penghapusan-aset`,detailDetail:e=>`/penghapusan-aset/detail/${e}`,detail:e=>`/penghapusan-aset/${e}`,batalkan:e=>`/penghapusan-aset/${e}/batalkan`,detail2:e=>`/penghapusan-aset/${e}/detail`,eksekusi:e=>`/penghapusan-aset/${e}/eksekusi`,submit:e=>`/penghapusan-aset/${e}/submit`,ekspor:`/penghapusan-aset/ekspor`};export{e as t};

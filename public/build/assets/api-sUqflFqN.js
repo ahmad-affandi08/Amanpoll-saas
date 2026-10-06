@@ -1,0 +1,1 @@
+var e={index:`/suku-cadang`,kompatibilitas:`/kompatibilitas-suku-cadang`,kompatibilitasDetail:e=>`/kompatibilitas-suku-cadang/${e}`,detail:e=>`/suku-cadang/${e}`,kelompok:e=>`/suku-cadang/${e}/kelompok`,kelompokDetail:e=>`/kelompok-suku-cadang/${e}`};export{e as t};

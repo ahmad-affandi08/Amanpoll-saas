@@ -1,0 +1,1 @@
+var e={Draft:`netral`,Menunggu:`perhatian`,Disetujui:`info`,Ditolak:`bahaya`,Dibatalkan:`netral`,Selesai:`sukses`},t={Diserahkan:`perhatian`,Diterima:`sukses`},n={Draft:`netral`,Menunggu:`perhatian`,Disetujui:`info`,Ditolak:`bahaya`,Dibatalkan:`netral`,Selesai:`sukses`};export{n,t as r,e as t};

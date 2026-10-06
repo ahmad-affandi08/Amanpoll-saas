@@ -1,0 +1,1 @@
+var e=`__tanpa__`;function t(e,t,n){return e.map(e=>{let r=n?.(e);return{nilai:e.Id,label:t(e),...r?{keterangan:r}:{}}})}function n(t=`Tidak diisi`){return{nilai:e,label:t}}var r=`tanpa`;function i(e,r=`Tanpa unit pengelola`){let i=t(e,e=>e.Nama,e=>e.Kode);return r===!1?i:[n(r),...i]}export{i as a,n as i,r as n,t as r,e as t};

@@ -1,0 +1,1 @@
+var e={Aktif:`sukses`,Nonaktif:`netral`},t={Aktif:`sukses`,Nonaktif:`netral`},n={Draft:`netral`,Diposting:`sukses`,Dibatalkan:`bahaya`},r={Aktif:`perhatian`,Dilepas:`netral`,Dipakai:`sukses`,Kadaluarsa:`bahaya`};export{t as i,n,r,e as t};

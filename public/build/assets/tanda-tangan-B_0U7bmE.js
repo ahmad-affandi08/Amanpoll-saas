@@ -1,0 +1,1 @@
+import{t as e}from"./http-CNETeAOT.js";var t={lihat:e=>e?`/profil/tanda-tangan?v=${e}`:`/profil/tanda-tangan`,simpan:`/profil/tanda-tangan`,hapus:`/profil/tanda-tangan`};async function n(n){let r=new FormData;r.append(`TandaTangan`,n,`tanda-tangan.png`),await e.post(t.simpan,r)}async function r(){await e.delete(t.hapus)}export{t as n,n as r,r as t};

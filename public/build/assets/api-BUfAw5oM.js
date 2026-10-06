@@ -1,0 +1,1 @@
+import{o as e}from"./jsx-runtime-B8IgdUqA.js";function t(){let{izin:t}=e().props;return{boleh:e=>t.includes(e)}}var n={index:`/dokumentasi`,halaman:e=>`/dokumentasi/${e}`};export{t as n,n as t};

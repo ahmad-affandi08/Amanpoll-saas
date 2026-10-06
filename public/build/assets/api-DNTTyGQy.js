@@ -1,0 +1,1 @@
+var e={index:`/mutasi-stok`,detail:e=>`/mutasi-stok/${e}`,batalkan:e=>`/mutasi-stok/${e}/batalkan`,detail2:e=>`/mutasi-stok/${e}/detail`,posting:e=>`/mutasi-stok/${e}/posting`,barisDetail:e=>`/detail-mutasi-stok/${e}`,ekspor:`/mutasi-stok/ekspor`};export{e as t};

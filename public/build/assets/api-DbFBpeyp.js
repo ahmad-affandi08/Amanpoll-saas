@@ -1,0 +1,1 @@
+var e={dasbor:`/`,laporan:`/pelaporan/laporan`,laporanDetail:e=>`/pelaporan/laporan/${e}`,laporanEkspor:`/pelaporan/laporan/ekspor`,ekspor:`/pelaporan/ekspor`,eksporUnduh:e=>`/pelaporan/ekspor/${e}`,dasborKustom:`/pelaporan/dasbor`,dasborKustomEkspor:`/pelaporan/dasbor/ekspor`,dasborKustomDetail:e=>`/pelaporan/dasbor/${e}`};export{e as t};

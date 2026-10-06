@@ -1,0 +1,1 @@
+var e={index:`/perencanaan-pengadaan/tagihan-penyedia`,detail:e=>`/perencanaan-pengadaan/tagihan-penyedia/${e}`,bayar:e=>`/perencanaan-pengadaan/tagihan-penyedia/${e}/pembayaran`,simpanDariPesanan:e=>`/perencanaan-pengadaan/pesanan-pembelian/${e}/tagihan`,ekspor:`/perencanaan-pengadaan/tagihan-penyedia/ekspor`};export{e as t};

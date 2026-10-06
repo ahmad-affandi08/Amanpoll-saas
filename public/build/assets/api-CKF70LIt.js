@@ -1,0 +1,1 @@
+var e={index:`/kodefikasi`,ekspor:`/kodefikasi/ekspor`,cariKatalog:`/kodefikasi/katalog/cari`,imporKatalog:`/kodefikasi/katalog/impor`,penetapan:`/kodefikasi/penetapan`,untukAset:e=>`/kodefikasi/aset/${e}`};export{e as t};

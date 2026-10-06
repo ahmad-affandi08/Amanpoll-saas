@@ -1,0 +1,1 @@
+var e={login:`/login`,pilihOrganisasi:`/login/organisasi`,daftar:`/daftar`,logout:`/logout`,lupaKataSandi:`/lupa-kata-sandi`,resetKataSandi:(e,t)=>`/reset-kata-sandi/${e}/${t}`};export{e as t};

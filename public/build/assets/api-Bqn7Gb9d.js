@@ -1,0 +1,1 @@
+var e={index:`/kontrak`,detail:e=>`/kontrak/${e}`,batalkan:e=>`/kontrak/${e}/batalkan`,aset:e=>`/kontrak/${e}/aset`,asetDetail:(e,t)=>`/kontrak/${e}/aset/${t}`,layanan:e=>`/kontrak/${e}/layanan`,layananDetail:(e,t)=>`/kontrak/${e}/layanan/${t}`,layananPemakaian:(e,t)=>`/kontrak/${e}/layanan/${t}/pemakaian`,ekspor:`/kontrak/ekspor`};export{e as t};
