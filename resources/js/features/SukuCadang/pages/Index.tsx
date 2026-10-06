@@ -29,6 +29,7 @@ import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface KategoriRingkas {
   Id: string;
@@ -259,7 +260,9 @@ export default function SukuCadangIndex({
         accessorFn: (row) => row.Status,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
-          <Badge variant={VARIAN_BADGE_STATUS_SUKU_CADANG[row.original.Status]}>{row.original.Status}</Badge>
+          <Badge variant={VARIAN_BADGE_STATUS_SUKU_CADANG[row.original.Status]}>
+            {labelEnum(row.original.Status)}
+          </Badge>
         ),
         meta: { label: 'Status' },
       },

@@ -28,6 +28,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { labelEnum } from '@/lib/teks';
 
 interface PosRingkas {
   Id: string;
@@ -232,7 +233,7 @@ export default function RencanaPengadaanIndex({
               <SelectItem value={SEMUA}>Semua status</SelectItem>
               {STATUS.map((item) => (
                 <SelectItem key={item} value={item}>
-                  {item}
+                  {labelEnum(item)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -281,7 +282,7 @@ export default function RencanaPengadaanIndex({
                         {formatUang(item.TotalEstimasi)}
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                        <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                       </td>
                     </tr>
                   ))}
@@ -303,7 +304,7 @@ export default function RencanaPengadaanIndex({
                     </p>
                     <p className="mt-1 font-mono text-sm font-semibold">{formatUang(item.TotalEstimasi)}</p>
                   </div>
-                  <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                  <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                 </Link>
               ))}
             </div>

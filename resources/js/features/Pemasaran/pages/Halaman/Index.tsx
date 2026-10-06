@@ -12,6 +12,7 @@ import type { HalamanRingkas, PilihanHalaman } from '@/features/Pemasaran/types'
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   halaman: Paginasi<HalamanRingkas>;
@@ -45,7 +46,7 @@ export default function PemasaranHalamanIndex({ halaman, pilihan, filter }: Prop
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
-            <Badge variant={varianStatus(row.original.Status)}>{row.original.Status}</Badge>
+            <Badge variant={varianStatus(row.original.Status)}>{labelEnum(row.original.Status)}</Badge>
             {row.original.NoIndex ? <Badge variant="outline">noindex</Badge> : null}
           </div>
         ),

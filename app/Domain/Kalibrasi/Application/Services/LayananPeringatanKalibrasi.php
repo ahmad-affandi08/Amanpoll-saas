@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Kalibrasi\Application\Services;
 
 use App\Core\Organisasi\KalenderOrganisasi;
+use App\Domain\Kalibrasi\Domain\Enums\StatusKepatuhanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Domain\Notifikasi\Application\Services\LayananNotifikasi;
 use Carbon\Carbon;
@@ -43,16 +44,12 @@ final class LayananPeringatanKalibrasi
         $terlambat = 0;
 
         foreach ($rencanaAktif as $rk) {
-            $tglBerikutnya = Carbon::parse($rk->TanggalBerikutnya);
-            $batasPeringatan = (clone $hariIni)->addDays((int) $rk->PeringatanHariSebelum);
-
-            if ($tglBerikutnya->lt($hariIni)) {
-                $terlambat++;
-            } elseif ($tglBerikutnya->lte($batasPeringatan)) {
-                $segeraJatuhTempo++;
-            } else {
-                $valid++;
-            }
+            match ($rk->statusKepatuhan($hariIni)) {
+                StatusKepatuhanKalibrasi::Terlambat => $terlambat++,
+                StatusKepatuhanKalibrasi::SegeraJatuhTempo => $segeraJatuhTempo++,
+                StatusKepatuhanKalibrasi::Valid => $valid++,
+                StatusKepatuhanKalibrasi::TidakAktif => null,
+            };
         }
 
         $persentaseKepatuhan = $total > 0
@@ -99,20 +96,20 @@ final class LayananPeringatanKalibrasi
             ->get();
 
         foreach ($daftarRencana as $rencana) {
-            $tglBerikutnya = Carbon::parse($rencana->TanggalBerikutnya);
-            $batasPeringatan = (clone $hariIni)->addDays((int) $rencana->PeringatanHariSebelum);
+            $tglBerikutnya = $rencana->TanggalBerikutnya;
+            $status = $rencana->statusKepatuhan($hariIni);
 
             $jenisPeristiwa = null;
             $judul = null;
             $isi = null;
 
-            if ($tglBerikutnya->lt($hariIni)) {
+            if ($status === StatusKepatuhanKalibrasi::Terlambat) {
                 // Kalibrasi sudah lewat jatuh tempo
                 $jenisPeristiwa = 'Kalibrasi.Terlambat';
                 $hariTerlambat = (int) $tglBerikutnya->diffInDays($hariIni);
                 $judul = 'Kalibrasi Aset Terlambat';
                 $isi = "Kalibrasi untuk aset {$rencana->aset?->Nama} ({$rencana->aset?->KodeAset}) telah terlambat {$hariTerlambat} hari (jatuh tempo: {$tglBerikutnya->format('d/m/Y')}).";
-            } elseif ($tglBerikutnya->lte($batasPeringatan)) {
+            } elseif ($status === StatusKepatuhanKalibrasi::SegeraJatuhTempo) {
                 // Kalibrasi segera jatuh tempo
                 $jenisPeristiwa = 'Kalibrasi.SegeraJatuhTempo';
                 $sisaHari = (int) $hariIni->diffInDays($tglBerikutnya);

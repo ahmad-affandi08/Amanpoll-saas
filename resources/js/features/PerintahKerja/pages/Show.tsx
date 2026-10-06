@@ -29,6 +29,7 @@ import { DialogCatatBiaya } from '@/features/PerintahKerja/components/DialogCata
 import { DialogAnalisisKegagalan } from '@/features/PerintahKerja/components/DialogAnalisisKegagalan';
 import { DialogDowntimeAset } from '@/features/PerintahKerja/components/DialogDowntimeAset';
 import type { AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface GudangOpsi {
   Id: string;
@@ -175,7 +176,9 @@ export default function PerintahKerjaShow({
             <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[perintahKerja.Prioritas]}>
               {perintahKerja.Prioritas}
             </Badge>
-            <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[perintahKerja.Status]}>{perintahKerja.Status}</Badge>
+            <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[perintahKerja.Status]}>
+              {labelEnum(perintahKerja.Status)}
+            </Badge>
             {perintahKerja.NomorKeluhan && (
               <Badge variant="info">Keluhan: {perintahKerja.NomorKeluhan}</Badge>
             )}

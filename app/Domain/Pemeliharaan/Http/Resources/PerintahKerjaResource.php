@@ -9,6 +9,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\PerintahKerja;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin PerintahKerja */
 final class PerintahKerjaResource extends JsonResource
 {
     /** @return array<string, mixed> */
@@ -56,9 +57,9 @@ final class PerintahKerjaResource extends JsonResource
                 'Id' => $aset->Id,
                 'KodeAset' => $aset->KodeAset,
                 'Nama' => $aset->Nama,
-                'Utama' => (bool) $aset->pivot->Utama,
-                'KondisiAwal' => $aset->pivot->KondisiAwal,
-                'KondisiAkhir' => $aset->pivot->KondisiAkhir,
+                'Utama' => (bool) data_get($aset, 'pivot.Utama'),
+                'KondisiAwal' => data_get($aset, 'pivot.KondisiAwal'),
+                'KondisiAkhir' => data_get($aset, 'pivot.KondisiAkhir'),
             ])->values()),
             'Penugasan' => $this->whenLoaded('penugasan', fn () => $this->penugasan->map(fn ($item) => [
                 'Id' => $item->Id,
@@ -66,7 +67,7 @@ final class PerintahKerjaResource extends JsonResource
                 'NamaPengguna' => $item->pengguna?->Nama,
                 'PeranTugas' => $item->PeranTugas,
                 'Status' => $item->Status,
-                'DitugaskanPada' => $item->DitugaskanPada?->toIso8601String(),
+                'DitugaskanPada' => $item->DitugaskanPada->toIso8601String(),
                 'DiterimaPada' => $item->DiterimaPada?->toIso8601String(),
                 'SelesaiPada' => $item->SelesaiPada?->toIso8601String(),
             ])->values()),
@@ -76,13 +77,13 @@ final class PerintahKerjaResource extends JsonResource
                 'StatusSesudah' => $item->StatusSesudah,
                 'Catatan' => $item->Catatan,
                 'NamaPengubah' => $item->diubahOleh?->Nama,
-                'DiubahPada' => $item->DiubahPada?->toIso8601String(),
+                'DiubahPada' => $item->DiubahPada->toIso8601String(),
             ])->values()),
             'WaktuKerja' => $this->whenLoaded('waktuKerja', fn () => $this->waktuKerja->map(fn ($item) => [
                 'Id' => $item->Id,
                 'PenggunaId' => $item->PenggunaId,
                 'NamaPengguna' => $item->pengguna?->Nama,
-                'MulaiPada' => $item->MulaiPada?->toIso8601String(),
+                'MulaiPada' => $item->MulaiPada->toIso8601String(),
                 'SelesaiPada' => $item->SelesaiPada?->toIso8601String(),
                 'DurasiMenit' => $item->DurasiMenit,
                 'JenisWaktu' => $item->JenisWaktu,
@@ -92,7 +93,7 @@ final class PerintahKerjaResource extends JsonResource
                 'Id' => $item->Id,
                 'AsetId' => $item->AsetId,
                 'NamaAset' => $item->aset?->Nama,
-                'MulaiPada' => $item->MulaiPada?->toIso8601String(),
+                'MulaiPada' => $item->MulaiPada->toIso8601String(),
                 'SelesaiPada' => $item->SelesaiPada?->toIso8601String(),
                 'DurasiMenit' => $item->DurasiMenit,
                 'Jenis' => $item->Jenis,
@@ -104,7 +105,7 @@ final class PerintahKerjaResource extends JsonResource
                 'Deskripsi' => $item->Deskripsi,
                 'Jumlah' => (float) $item->Jumlah,
                 'MataUang' => $item->MataUang,
-                'TanggalBiaya' => $item->TanggalBiaya?->format('Y-m-d'),
+                'TanggalBiaya' => $item->TanggalBiaya->format('Y-m-d'),
             ])->values()),
             'AnalisisKegagalan' => $this->whenLoaded('analisisKegagalan', fn () => $this->analisisKegagalan === null ? null : [
                 'KodeMasalahId' => $this->analisisKegagalan->KodeMasalahId,
@@ -127,7 +128,7 @@ final class PerintahKerjaResource extends JsonResource
                 'NamaSukuCadang' => $item->sukuCadang?->Nama,
                 'Jumlah' => (float) $item->Jumlah,
                 'HargaSatuan' => (float) $item->HargaSatuan,
-                'DipakaiPada' => $item->DipakaiPada?->toIso8601String(),
+                'DipakaiPada' => $item->DipakaiPada->toIso8601String(),
             ])->values()),
             'TotalWaktuKerjaMenit' => (int) ($this->TotalWaktuKerjaMenit ?? 0),
             'TotalDowntimeMenit' => (int) ($this->TotalDowntimeMenit ?? 0),

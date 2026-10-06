@@ -19,16 +19,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
 import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import { KontrolPaginasi, navigasiHalaman } from '@/components/shared/KontrolPaginasi';
-import {
-  Plus,
-  Search,
-  Filter,
-  ArrowRight,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Calendar,
-} from 'lucide-react';
+import { Plus, Search, ArrowRight, AlertTriangle, CheckCircle2, XCircle, Calendar } from 'lucide-react';
 import type { Inspeksi } from '@/features/PreventifInspeksi/types';
 import type { Paginasi } from '@/types/global';
 import { statusInspeksiBadge, hasilInspeksiBadge } from '@/features/PreventifInspeksi/status';

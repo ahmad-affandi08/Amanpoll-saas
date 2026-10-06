@@ -36,7 +36,7 @@ final class OperasionalPerintahKerjaController extends Controller
         GunakanSukuCadangPerintahKerja $aksi,
     ): RedirectResponse {
         $this->authorize('operate', $perintahKerja);
-        $reservasi = ReservasiSukuCadang::query()->findOrFail($request->validated('ReservasiSukuCadangId'));
+        $reservasi = ReservasiSukuCadang::query()->whereKey($request->validated('ReservasiSukuCadangId'))->firstOrFail();
         $aksi->jalankan($perintahKerja, $reservasi, $request->validated('Aksi'), $request->user('web')->Id);
 
         return back()->with('sukses', $request->validated('Aksi') === 'Pakai' ? 'Suku cadang berhasil dipakai dan biaya tercatat.' : 'Sisa reservasi berhasil dikembalikan.');

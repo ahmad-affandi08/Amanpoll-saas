@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { BarisSupresi, PermintaanData, RiwayatKonsen } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   cari: string;
@@ -274,7 +275,7 @@ function DialogSupresi({ pilihan }: { pilihan: { Alasan: string[] } }) {
               <SelectContent>
                 {pilihan.Alasan.map((alasan) => (
                   <SelectItem key={alasan} value={alasan}>
-                    {alasan}
+                    {labelEnum(alasan)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -354,7 +355,7 @@ function DialogPermintaan({ pilihan }: { pilihan: { Jenis: string[] } }) {
               <SelectContent>
                 {pilihan.Jenis.map((jenis) => (
                   <SelectItem key={jenis} value={jenis}>
-                    {jenis}
+                    {labelEnum(jenis)}
                   </SelectItem>
                 ))}
               </SelectContent>

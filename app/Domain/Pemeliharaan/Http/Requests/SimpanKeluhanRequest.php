@@ -42,7 +42,7 @@ final class SimpanKeluhanRequest extends FormRequest
                 return;
             }
 
-            $kategori = KategoriKeluhan::query()->find($this->input('KategoriKeluhanId'));
+            $kategori = KategoriKeluhan::query()->whereKey($this->input('KategoriKeluhanId'))->first();
             if ($kategori?->AsetWajib && ! $this->filled('AsetId')) {
                 $validator->errors()->add('AsetId', 'Aset wajib dipilih untuk kategori keluhan ini.');
             }

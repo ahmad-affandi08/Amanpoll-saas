@@ -29,6 +29,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { dariMasukanWaktu } from '@/lib/waktu';
+import { labelEnum } from '@/lib/teks';
 
 interface PermintaanRingkas {
   Id: string;
@@ -236,7 +237,7 @@ export default function PermintaanPenawaranIndex({
               <SelectItem value={SEMUA}>Semua status</SelectItem>
               {STATUS.map((item) => (
                 <SelectItem key={item} value={item}>
-                  {item}
+                  {labelEnum(item)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -282,7 +283,7 @@ export default function PermintaanPenawaranIndex({
                         {item.JumlahPenyediaDiundang ?? 0} diundang · {item.JumlahPenawaran ?? 0} penawaran
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                        <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                       </td>
                     </tr>
                   ))}
@@ -304,7 +305,7 @@ export default function PermintaanPenawaranIndex({
                       {item.JumlahPenyediaDiundang ?? 0} penyedia
                     </p>
                   </div>
-                  <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                  <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                 </Link>
               ))}
             </div>

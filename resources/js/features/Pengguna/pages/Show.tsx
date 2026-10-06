@@ -9,6 +9,7 @@ import type { LingkupEfektifPengguna, Pengguna, RingkasanPengguna } from '@/feat
 import { TabBebanKerja } from '@/features/Pengguna/components/TabBebanKerja';
 import { TabAktivitas } from '@/features/Pengguna/components/TabAktivitas';
 import { KartuLingkupEfektif } from '@/features/Pengguna/components/KartuLingkupEfektif';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   pengguna: Pengguna;
@@ -24,7 +25,11 @@ export default function PenggunaShow({ pengguna, ringkasan, lingkupEfektif }: Pr
         className="mb-5"
         judul={pengguna.Nama}
         labelBreadcrumb={pengguna.Nama}
-        lencana={<Badge variant={pengguna.Status === 'Aktif' ? 'sukses' : 'netral'}>{pengguna.Status}</Badge>}
+        lencana={
+          <Badge variant={pengguna.Status === 'Aktif' ? 'sukses' : 'netral'}>
+            {labelEnum(pengguna.Status)}
+          </Badge>
+        }
         deskripsi={
           <>
             {pengguna.Email}

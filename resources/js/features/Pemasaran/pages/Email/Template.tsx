@@ -23,6 +23,7 @@ import type { TemplateEmail } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   template: TemplateEmail[];
@@ -173,7 +174,7 @@ function DialogTemplate({
                   <SelectContent>
                     {pilihan.Jenis.map((jenis) => (
                       <SelectItem key={jenis} value={jenis}>
-                        {jenis}
+                        {labelEnum(jenis)}
                       </SelectItem>
                     ))}
                   </SelectContent>

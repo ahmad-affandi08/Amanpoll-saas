@@ -34,6 +34,7 @@ import { PanelPemakaian, PanelReservasi, PanelStok } from '@/features/SukuCadang
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface Ringkas {
   Id: string;
@@ -306,7 +307,9 @@ export default function SukuCadangShow({
           judul={sukuCadang.Nama}
           labelBreadcrumb={sukuCadang.Kode}
           lencana={
-            <Badge variant={VARIAN_BADGE_STATUS_SUKU_CADANG[sukuCadang.Status]}>{sukuCadang.Status}</Badge>
+            <Badge variant={VARIAN_BADGE_STATUS_SUKU_CADANG[sukuCadang.Status]}>
+              {labelEnum(sukuCadang.Status)}
+            </Badge>
           }
           deskripsi={
             <>

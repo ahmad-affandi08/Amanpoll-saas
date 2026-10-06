@@ -23,6 +23,7 @@ import { DialogPartner } from '@/features/PartnerPemasaran/components/DialogPart
 import { DialogAturan } from '@/features/PartnerPemasaran/components/DialogAturan';
 import { DialogBayar } from '@/features/PartnerPemasaran/components/DialogBayar';
 import { DialogAlasan } from '@/features/PartnerPemasaran/components/DialogAlasan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   program: Program[];
@@ -99,7 +100,7 @@ export default function PartnerPemasaranKonsol({
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
+                  <Badge variant={varianStatus(satu.Status)}>{labelEnum(satu.Status)}</Badge>
                   <DialogPartner partner={satu} program={program} pilihan={pilihan} />
                   <Button
                     variant="outline"
@@ -187,7 +188,7 @@ export default function PartnerPemasaranKonsol({
                   )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
+                  <Badge variant={varianStatus(satu.Status)}>{labelEnum(satu.Status)}</Badge>
                   {satu.Status === 'Dikirim' && (
                     <Button
                       size="sm"
@@ -231,7 +232,7 @@ export default function PartnerPemasaranKonsol({
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
+                  <Badge variant={varianStatus(satu.Status)}>{labelEnum(satu.Status)}</Badge>
                   {satu.Status === 'Tertunda' && (
                     <Button
                       size="sm"
@@ -273,7 +274,7 @@ export default function PartnerPemasaranKonsol({
                   )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
+                  <Badge variant={varianStatus(satu.Status)}>{labelEnum(satu.Status)}</Badge>
                   {satu.Status !== 'Dibayar' && <DialogBayar payout={satu} />}
                   {satu.Status !== 'Dibayar' && (
                     <DialogAlasan

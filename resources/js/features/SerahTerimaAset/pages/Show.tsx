@@ -22,6 +22,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   serahTerima: SerahTerimaAset;
@@ -88,7 +89,7 @@ function DialogTambahAset({
                 <SelectContent>
                   {KONDISI.map((k) => (
                     <SelectItem key={k} value={k}>
-                      {k}
+                      {labelEnum(k)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -160,7 +161,7 @@ function DialogTerima({ serahTerima, wajib }: { serahTerima: SerahTerimaAset; wa
                   <SelectContent>
                     {KONDISI.map((k) => (
                       <SelectItem key={k} value={k}>
-                        {k}
+                        {labelEnum(k)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -188,7 +189,9 @@ export default function SerahTerimaAsetShow({ serahTerima, aset, wajib }: Props)
           judul={serahTerima.Jenis}
           labelBreadcrumb={serahTerima.Nomor}
           lencana={
-            <Badge variant={VARIAN_BADGE_STATUS_SERAH_TERIMA[serahTerima.Status]}>{serahTerima.Status}</Badge>
+            <Badge variant={VARIAN_BADGE_STATUS_SERAH_TERIMA[serahTerima.Status]}>
+              {labelEnum(serahTerima.Status)}
+            </Badge>
           }
           deskripsi={
             <>

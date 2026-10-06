@@ -28,6 +28,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   tagihan: TagihanPenyedia;
@@ -123,7 +124,7 @@ function DialogCatatPembayaran({ tagihan, wajib }: { tagihan: Props['tagihan']; 
                   <SelectContent>
                     {METODE.map((item) => (
                       <SelectItem key={item} value={item}>
-                        {item}
+                        {labelEnum(item)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -169,7 +170,7 @@ export default function TagihanPenyediaShow({ tagihan, wajib }: Props) {
         <KepalaHalaman
           judul={<span className="font-mono">{tagihan.NomorTagihan}</span>}
           labelBreadcrumb={tagihan.NomorTagihan}
-          lencana={<Badge variant={VARIAN_STATUS[tagihan.Status]}>{tagihan.Status}</Badge>}
+          lencana={<Badge variant={VARIAN_STATUS[tagihan.Status]}>{labelEnum(tagihan.Status)}</Badge>}
           deskripsi={
             <>
               {tagihan.NamaPenyedia} ·{' '}

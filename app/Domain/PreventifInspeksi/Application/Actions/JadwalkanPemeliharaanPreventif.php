@@ -177,7 +177,7 @@ final class JadwalkanPemeliharaanPreventif
                     $perubahan['TanggalBerikutnya'] = $tanggalBerikutnyaBaru->toDateString();
                 }
 
-                if ($meter !== null && $nilaiMeter !== null) {
+                if ($meter !== null) {
                     $perubahan['MeterAsetId'] = $meter->Id;
                     $perubahan['NilaiMeterBerikutnya'] = $nilaiMeter + $ambangMeter;
                 }

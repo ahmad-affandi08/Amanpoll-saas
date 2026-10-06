@@ -4,7 +4,6 @@ import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -25,6 +24,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   pengajuan: PengajuanPenghapusanAset;
@@ -163,7 +163,9 @@ export default function PenghapusanAsetShow({ pengajuan, aset, wajib }: Props) {
           aksi={
             <>
               <div className="flex items-center gap-2">
-                <Badge variant={VARIAN_BADGE_STATUS_PENGHAPUSAN[pengajuan.Status]}>{pengajuan.Status}</Badge>
+                <Badge variant={VARIAN_BADGE_STATUS_PENGHAPUSAN[pengajuan.Status]}>
+                  {labelEnum(pengajuan.Status)}
+                </Badge>
                 {pengajuan.Status === 'Draft' && (
                   <Button size="sm" onClick={submit}>
                     Submit

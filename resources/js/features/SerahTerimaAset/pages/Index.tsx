@@ -24,6 +24,7 @@ import { VARIAN_BADGE_STATUS_SERAH_TERIMA } from '@/features/SiklusAset/status';
 import { ruteSerahTerimaAset } from '@/features/SerahTerimaAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   serahTerima: Paginasi<SerahTerimaAset>;
@@ -115,7 +116,7 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
               <SelectItem value={SEMUA}>Semua</SelectItem>
               {DAFTAR_STATUS.map((s) => (
                 <SelectItem key={s} value={s}>
-                  {s}
+                  {labelEnum(s)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -155,7 +156,9 @@ export default function SerahTerimaAsetIndex({ serahTerima, filter, wajib }: Pro
                     <TableCell>{s.NamaPihakMenyerahkan ?? '—'}</TableCell>
                     <TableCell>{s.NamaPihakMenerima ?? '—'}</TableCell>
                     <TableCell>
-                      <Badge variant={VARIAN_BADGE_STATUS_SERAH_TERIMA[s.Status]}>{s.Status}</Badge>
+                      <Badge variant={VARIAN_BADGE_STATUS_SERAH_TERIMA[s.Status]}>
+                        {labelEnum(s.Status)}
+                      </Badge>
                     </TableCell>
                   </TableRow>
                 ))}

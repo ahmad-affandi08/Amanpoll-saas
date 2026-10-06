@@ -24,6 +24,7 @@ import { rutePemasaran } from '@/features/Pemasaran/api';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   konten: KontenPemasaran[];
@@ -99,7 +100,7 @@ export default function PemasaranKonten({ konten, keyword, cluster, pilihan, waj
                         <Badge variant={satu.Prioritas === 'Tinggi' ? 'default' : 'secondary'}>
                           {satu.Prioritas}
                         </Badge>
-                        <Badge variant="outline">{satu.Status}</Badge>
+                        <Badge variant="outline">{labelEnum(satu.Status)}</Badge>
                         <DialogKeyword
                           keyword={satu}
                           cluster={cluster}
@@ -131,7 +132,7 @@ function BarisKonten({ konten }: { konten: KontenPemasaran }) {
         </p>
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-2">
-        <Badge variant={varianStatus(konten.Status)}>{konten.Status}</Badge>
+        <Badge variant={varianStatus(konten.Status)}>{labelEnum(konten.Status)}</Badge>
         {konten.NoIndex ? <Badge variant="outline">noindex</Badge> : null}
         <Badge variant="outline">{konten.DiSitemap ? 'Di sitemap' : 'Tidak di sitemap'}</Badge>
       </div>
@@ -182,7 +183,7 @@ function DialogKonten({ pilihan, wajib }: { pilihan: PilihanKonten; wajib: Atura
                 <SelectContent>
                   {pilihan.Jenis.map((satu) => (
                     <SelectItem key={satu} value={satu}>
-                      {satu}
+                      {labelEnum(satu)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -364,7 +365,7 @@ function DialogKeyword({
                   <SelectContent>
                     {pilihan.Prioritas.map((satu) => (
                       <SelectItem key={satu} value={satu}>
-                        {satu}
+                        {labelEnum(satu)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -381,7 +382,7 @@ function DialogKeyword({
                   <SelectContent>
                     {pilihan.StatusKeyword.map((satu) => (
                       <SelectItem key={satu} value={satu}>
-                        {satu}
+                        {labelEnum(satu)}
                       </SelectItem>
                     ))}
                   </SelectContent>

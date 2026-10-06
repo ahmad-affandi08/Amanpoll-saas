@@ -5,6 +5,7 @@ import { BarisKosong, KepalaBagian } from '@/components/shared/riwayat';
 import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
 import type { AktivitasPengguna, Pengguna } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
+import { labelEnum } from '@/lib/teks';
 
 /** Catatan akses butuh jam, bukan hanya tanggal; itulah yang membedakan dua percobaan masuk. */
 function waktu(nilai: string | null): string {
@@ -101,7 +102,9 @@ export function TabAktivitas({ pengguna }: { pengguna: Pengguna }) {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <Badge variant={satu.Status === 'Aktif' ? 'sukses' : 'netral'}>{satu.Status}</Badge>
+                  <Badge variant={satu.Status === 'Aktif' ? 'sukses' : 'netral'}>
+                    {labelEnum(satu.Status)}
+                  </Badge>
                   <span className="w-40 text-right text-xs text-muted-foreground">
                     sinkron {waktu(satu.TerakhirSinkronPada)}
                   </span>

@@ -18,6 +18,7 @@ import { Bidang } from '@/features/PartnerPemasaran/components/Bidang';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 export function DialogAturan({
   aturan,
@@ -96,7 +97,7 @@ export function DialogAturan({
               <SelectContent>
                 {pilihan.JenisKomisi.map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>

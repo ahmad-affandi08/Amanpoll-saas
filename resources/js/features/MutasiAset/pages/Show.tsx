@@ -29,6 +29,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   permintaan: PermintaanMutasiAset;
@@ -280,7 +281,9 @@ export default function MutasiAsetShow({ permintaan, aset, daftarJenis, wajib }:
           }
           aksi={
             <>
-              <Badge variant={VARIAN_BADGE_STATUS_MUTASI[permintaan.Status]}>{permintaan.Status}</Badge>
+              <Badge variant={VARIAN_BADGE_STATUS_MUTASI[permintaan.Status]}>
+                {labelEnum(permintaan.Status)}
+              </Badge>
               {permintaan.Status === 'Draft' && (
                 <Button size="sm" onClick={submit}>
                   Submit
@@ -358,7 +361,7 @@ export default function MutasiAsetShow({ permintaan, aset, daftarJenis, wajib }:
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   {d.DipindaiPada && <Badge variant="sukses">Terverifikasi</Badge>}
-                  <Badge variant={VARIAN_BADGE_DETAIL[d.Status]}>{d.Status}</Badge>
+                  <Badge variant={VARIAN_BADGE_DETAIL[d.Status]}>{labelEnum(d.Status)}</Badge>
                   {bolehMemutuskan && STATUS_DETAIL_TERBUKA.includes(d.Status) && (
                     <>
                       {d.Status !== 'Disetujui' && (

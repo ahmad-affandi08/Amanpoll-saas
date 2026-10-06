@@ -41,13 +41,13 @@ final class ResponsPenugasanPerintahKerja
             $terkunci->Status = $respons === 'Terima'
                 ? StatusPenugasanPerintahKerja::Diterima->value
                 : StatusPenugasanPerintahKerja::Ditolak->value;
-            $terkunci->DiterimaPada = $respons === 'Terima' ? now() : null;
-            $terkunci->SelesaiPada = $respons === 'Tolak' ? now() : null;
+            $terkunci->DiterimaPada = $respons === 'Terima' ? now()->toImmutable() : null;
+            $terkunci->SelesaiPada = $respons === 'Tolak' ? now()->toImmutable() : null;
             $terkunci->save();
 
             if ($respons === 'Terima' && $perintahKerja->Status === StatusPerintahKerja::Ditugaskan->value) {
                 $perintahKerja->Status = StatusPerintahKerja::Diterima->value;
-                $perintahKerja->DiterimaPada ??= now();
+                $perintahKerja->DiterimaPada ??= now()->toImmutable();
                 $perintahKerja->Versi++;
                 $perintahKerja->save();
                 RiwayatStatusPerintahKerja::create([

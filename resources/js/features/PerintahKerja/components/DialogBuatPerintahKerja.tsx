@@ -27,6 +27,7 @@ import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { dariMasukanWaktu } from '@/lib/waktu';
+import { labelEnum } from '@/lib/teks';
 
 export function DialogBuatPerintahKerja({
   keluhan,
@@ -163,7 +164,7 @@ export function DialogBuatPerintahKerja({
                   <SelectContent>
                     {DAFTAR_JENIS.map((jenis) => (
                       <SelectItem key={jenis} value={jenis} className="cursor-pointer">
-                        {jenis}
+                        {labelEnum(jenis)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -195,7 +196,7 @@ export function DialogBuatPerintahKerja({
                   <SelectContent>
                     {DAFTAR_PRIORITAS.map((p) => (
                       <SelectItem key={p} value={p} className="cursor-pointer">
-                        {p}
+                        {labelEnum(p)}
                       </SelectItem>
                     ))}
                   </SelectContent>

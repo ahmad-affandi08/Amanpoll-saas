@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\Pemeliharaan;
 
 use App\Core\Organisasi\KonteksOrganisasi;
+use App\Domain\Pemeliharaan\Application\Actions\SimpanTingkatLayanan;
 use App\Domain\Pemeliharaan\Application\Services\LayananKalkulasiSla;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\AturanTingkatLayanan;
 use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\TingkatLayanan;
@@ -12,6 +13,7 @@ use App\Domain\Platform\Infrastructure\Persistence\Models\HariLibur;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 final class LayananKalkulasiSlaTest extends TestCase
@@ -53,6 +55,60 @@ final class LayananKalkulasiSlaTest extends TestCase
 
         $this->assertSame('2026-09-22 09:30:00', $hasil['respons']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
         $this->assertSame('2026-09-23 08:30:00', $hasil['penyelesaian']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+    }
+
+    public function test_hari_kerja_tersimpan_sebagai_teks_tetap_dikenali_dan_perhitungan_selesai(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-SLA-3', 'Nama' => 'Organisasi SLA']);
+        // Aturan `integer` menerima "1"; lewat API atau formulir biasa, nilainya tersimpan sebagai teks.
+        $tingkat = $this->tingkatLayanan();
+        $tingkat->HariKerja = ['1', '2', '3', '4', '5'];
+
+        $hasil = $this->layanan()->hitungBatas(
+            $organisasi->Id,
+            $tingkat,
+            $this->aturan(),
+            CarbonImmutable::parse('2026-09-18 16:30:00', 'Asia/Jakarta'),
+            'Asia/Jakarta',
+        );
+
+        $this->assertSame('2026-09-21 09:30:00', $hasil['respons']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+    }
+
+    public function test_hari_kerja_tak_terbaca_jatuh_ke_senin_sampai_jumat_alih_alih_berputar_tanpa_akhir(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-SLA-4', 'Nama' => 'Organisasi SLA']);
+        $tingkat = $this->tingkatLayanan();
+        $tingkat->HariKerja = ['bukan-hari', 9, null];
+
+        $hasil = $this->layanan()->hitungBatas(
+            $organisasi->Id,
+            $tingkat,
+            $this->aturan(),
+            CarbonImmutable::parse('2026-09-18 16:30:00', 'Asia/Jakarta'),
+            'Asia/Jakarta',
+        );
+
+        $this->assertSame('2026-09-21 09:30:00', $hasil['respons']?->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s'));
+    }
+
+    public function test_penyimpanan_menormalkan_hari_kerja_menjadi_bilangan_terurut(): void
+    {
+        $organisasi = Organisasi::create(['Kode' => 'ORG-SLA-5', 'Nama' => 'Organisasi SLA']);
+        app(KonteksOrganisasi::class)->tetapkan($organisasi->Id);
+
+        $tersimpan = app(SimpanTingkatLayanan::class)->jalankan([
+            'Kode' => 'SLA-UJI',
+            'Nama' => 'SLA Uji',
+            'HariKerja' => ['5', '1', '3'],
+            'JamKerjaMulai' => '08:00:00',
+            'JamKerjaSelesai' => '17:00:00',
+            'MemperhitungkanHariLibur' => true,
+            'Aktif' => true,
+            'Aturan' => [],
+        ]);
+
+        $this->assertSame('[1,3,5]', DB::table('TingkatLayanan')->where('Id', $tersimpan->Id)->value('HariKerja'));
     }
 
     private function layanan(): LayananKalkulasiSla

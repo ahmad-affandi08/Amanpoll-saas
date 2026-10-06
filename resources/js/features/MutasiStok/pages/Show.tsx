@@ -23,6 +23,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface SukuCadangRingkas {
   Id: string;
@@ -159,7 +160,9 @@ export default function MutasiStokShow({ mutasiStok, sukuCadang, wajib }: Props)
           judul={mutasiStok.Jenis}
           labelBreadcrumb={mutasiStok.Nomor}
           lencana={
-            <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[mutasiStok.Status]}>{mutasiStok.Status}</Badge>
+            <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[mutasiStok.Status]}>
+              {labelEnum(mutasiStok.Status)}
+            </Badge>
           }
           deskripsi={
             <>

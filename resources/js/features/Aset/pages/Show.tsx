@@ -27,6 +27,7 @@ import { TabKalibrasi } from '@/features/Aset/components/TabKalibrasi';
 import { KartuQr } from '@/features/Aset/components/KartuQr';
 import { KartuFotoUtama, TabFoto } from '@/features/Aset/components/GaleriFoto';
 import type { AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   aset: Aset;
@@ -72,7 +73,7 @@ export default function AsetShow({
         className="mb-5"
         judul={aset.Nama}
         labelBreadcrumb={aset.KodeAset}
-        lencana={<Badge variant={VARIAN_BADGE_STATUS_ASET[aset.Status]}>{aset.Status}</Badge>}
+        lencana={<Badge variant={VARIAN_BADGE_STATUS_ASET[aset.Status]}>{labelEnum(aset.Status)}</Badge>}
         aksi={
           <Button variant="outline" size="sm" asChild>
             {/* Unduhan biasa, bukan kunjungan Inertia: responsnya berkas PDF, bukan halaman. */}

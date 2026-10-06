@@ -12,6 +12,7 @@ import type { Paginasi } from '@/types/global';
 import type { Gudang, LokasiGudang } from '@/features/Persediaan/types';
 import { VARIAN_BADGE_STATUS_GUDANG } from '@/features/Persediaan/status';
 import { ruteSukuCadang } from '@/features/SukuCadang/api';
+import { labelEnum } from '@/lib/teks';
 
 interface IsiGudang {
   Id: string;
@@ -104,7 +105,9 @@ export default function GudangShow({ gudang, lokasiGudang, stok, filter, ringkas
         <KepalaHalaman
           judul={gudang.Nama}
           labelBreadcrumb={gudang.Kode}
-          lencana={<Badge variant={VARIAN_BADGE_STATUS_GUDANG[gudang.Status]}>{gudang.Status}</Badge>}
+          lencana={
+            <Badge variant={VARIAN_BADGE_STATUS_GUDANG[gudang.Status]}>{labelEnum(gudang.Status)}</Badge>
+          }
           deskripsi={
             <>
               <span className="font-mono">{gudang.Kode}</span>

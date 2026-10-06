@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { http } from '@/lib/http';
 import type { KategoriPenyediaLayanan, PenyediaLayanan } from '@/features/Platform/types';
+import { labelEnum } from '@/lib/teks';
 
 export interface RutePenyediaLayanan {
   simpan: string;
@@ -214,7 +215,7 @@ export function DialogPenyediaLayanan({ kategori, penyedia, rute, untukOrganisas
                       <SelectContent>
                         {isian.Pilihan.map((pilihan) => (
                           <SelectItem key={pilihan} value={pilihan}>
-                            {pilihan}
+                            {labelEnum(pilihan)}
                           </SelectItem>
                         ))}
                       </SelectContent>

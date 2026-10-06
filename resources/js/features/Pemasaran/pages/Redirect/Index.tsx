@@ -25,6 +25,7 @@ import { rutePemasaran } from '@/features/Pemasaran/api';
 import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   redirect: Paginasi<Redirect>;
@@ -212,7 +213,7 @@ function DialogRedirect({
                 <SelectContent>
                   {pilihan.Kode.map((satu) => (
                     <SelectItem key={satu} value={satu}>
-                      {satu}
+                      {labelEnum(satu)}
                     </SelectItem>
                   ))}
                 </SelectContent>

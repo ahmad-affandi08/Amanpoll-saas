@@ -22,6 +22,7 @@ import { PRIORITAS } from '@/features/UsulanAset/status';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 export function DialogUbahUsulan({
   usulan,
@@ -101,7 +102,7 @@ export function DialogUbahUsulan({
                   <SelectContent>
                     {PRIORITAS.map((item) => (
                       <SelectItem key={item} value={item}>
-                        {item}
+                        {labelEnum(item)}
                       </SelectItem>
                     ))}
                   </SelectContent>

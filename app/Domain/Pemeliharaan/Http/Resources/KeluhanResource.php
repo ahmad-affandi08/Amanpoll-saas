@@ -8,6 +8,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\Keluhan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin Keluhan */
 final class KeluhanResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -45,7 +46,7 @@ final class KeluhanResource extends JsonResource
 
                 return $unit === null ? null : ['Id' => $unit->Id, 'Kode' => $unit->Kode, 'Nama' => $unit->Nama];
             }),
-            'DilaporkanPada' => $this->DilaporkanPada?->toIso8601String(),
+            'DilaporkanPada' => $this->DilaporkanPada->toIso8601String(),
             'DiresponsPada' => $this->DiresponsPada?->toIso8601String(),
             'BatasResponsPada' => $this->BatasResponsPada?->toIso8601String(),
             'BatasPenyelesaianPada' => $this->BatasPenyelesaianPada?->toIso8601String(),

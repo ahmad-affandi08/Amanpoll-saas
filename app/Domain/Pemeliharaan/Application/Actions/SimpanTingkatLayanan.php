@@ -24,6 +24,8 @@ final class SimpanTingkatLayanan
             $tingkatLayanan ??= new TingkatLayanan;
             $sebelum = $tingkatLayanan->exists ? $tingkatLayanan->toArray() : null;
             $tingkatLayanan->fill(collect($data)->except(['Aturan', 'Eskalasi'])->all());
+            // Disimpan sebagai bilangan, apa pun bentuk kirimannya (lihat hariKerjaTerbaca).
+            $tingkatLayanan->HariKerja = $tingkatLayanan->hariKerjaTerbaca();
             $tingkatLayanan->save();
 
             AturanTingkatLayanan::query()->where('TingkatLayananId', $tingkatLayanan->Id)->delete();

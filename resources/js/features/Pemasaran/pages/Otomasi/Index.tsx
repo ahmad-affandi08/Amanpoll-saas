@@ -22,6 +22,7 @@ import type { RingkasanOtomasi } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   otomasi: RingkasanOtomasi[];
@@ -169,7 +170,7 @@ function DialogOtomasi({
                 <SelectContent>
                   {daftarPemicu.map(([kode]) => (
                     <SelectItem key={kode} value={kode}>
-                      {kode}
+                      {labelEnum(kode)}
                     </SelectItem>
                   ))}
                 </SelectContent>

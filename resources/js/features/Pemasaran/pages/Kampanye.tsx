@@ -28,6 +28,7 @@ import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface Kampanye {
   Id: string;
@@ -167,7 +168,7 @@ function DialogFormKampanye({
                   <SelectContent>
                     {pilihan.Objective.map((satu) => (
                       <SelectItem key={satu} value={satu}>
-                        {satu}
+                        {labelEnum(satu)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -186,7 +187,7 @@ function DialogFormKampanye({
                     <SelectContent>
                       {pilihan.Status.map((satu) => (
                         <SelectItem key={satu} value={satu}>
-                          {satu}
+                          {labelEnum(satu)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -381,7 +382,9 @@ export default function PemasaranKampanye({ kampanye, pilihan, filter, wajib }: 
         id: 'Status',
         accessorFn: (row) => row.Status,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: ({ row }) => <Badge variant={varianStatus(row.original.Status)}>{row.original.Status}</Badge>,
+        cell: ({ row }) => (
+          <Badge variant={varianStatus(row.original.Status)}>{labelEnum(row.original.Status)}</Badge>
+        ),
         meta: { label: 'Status' },
       },
       {

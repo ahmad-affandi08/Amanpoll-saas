@@ -7,10 +7,12 @@ namespace App\Domain\Kalibrasi\Infrastructure\Persistence\Models;
 use App\Core\Izin\ScopeLingkup;
 use App\Core\Organisasi\MilikOrganisasi;
 use App\Domain\Aset\Infrastructure\Persistence\Models\Aset;
+use App\Domain\Kalibrasi\Domain\Enums\StatusKepatuhanKalibrasi;
 use App\Domain\Penyedia\Infrastructure\Persistence\Models\Penyedia;
 use App\Domain\Platform\Infrastructure\Persistence\Models\Organisasi;
 use App\Domain\Platform\Infrastructure\Persistence\Models\UnitOrganisasi;
 use App\Shared\Infrastructure\Persistence\ModelDasar;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -93,5 +95,21 @@ final class RencanaKalibrasi extends ModelDasar
     {
         return $this->belongsTo(UnitOrganisasi::class, 'UnitPengelolaId', 'Id')
             ->withoutGlobalScope(ScopeLingkup::class);
+    }
+
+    public function statusKepatuhan(CarbonInterface $hariIni): StatusKepatuhanKalibrasi
+    {
+        return StatusKepatuhanKalibrasi::untuk(
+            (bool) $this->Aktif,
+            $this->TanggalBerikutnya,
+            (int) $this->PeringatanHariSebelum,
+            $hariIni,
+        );
+    }
+
+    /** Selisih hari ke jatuh tempo; negatif bila sudah lewat. */
+    public function sisaHari(CarbonInterface $hariIni): int
+    {
+        return (int) $hariIni->diffInDays($this->TanggalBerikutnya, false);
     }
 }

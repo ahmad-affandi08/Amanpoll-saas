@@ -25,6 +25,7 @@ import { TANPA_PILIHAN } from '@/lib/pilihan';
 import { DialogBuatPerintahKerja } from '@/features/PerintahKerja/components/DialogBuatPerintahKerja';
 import type { AturanWajib } from '@/lib/aturan-wajib';
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   perintahKerja: Paginasi<PerintahKerja>;
@@ -57,10 +58,6 @@ const DAFTAR_STATUS: StatusPerintahKerja[] = [
   'Ditutup',
   'Dibatalkan',
 ];
-
-function formatTanggal(nilai: string | null): string {
-  return nilai ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
-}
 
 function formatRupiah(nilai: number): string {
   return new Intl.NumberFormat('id-ID', {
@@ -136,7 +133,7 @@ export default function PerintahKerjaIndex({
             </SelectItem>
             {DAFTAR_STATUS.map((s) => (
               <SelectItem key={s} value={s} className="cursor-pointer">
-                {s}
+                {labelEnum(s)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -155,7 +152,7 @@ export default function PerintahKerjaIndex({
             </SelectItem>
             {DAFTAR_PRIORITAS.map((p) => (
               <SelectItem key={p} value={p} className="cursor-pointer">
-                {p}
+                {labelEnum(p)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -205,7 +202,9 @@ export default function PerintahKerjaIndex({
                       {item.Nomor}
                     </Link>
                     <Badge variant={VARIAN_PRIORITAS_PERINTAH_KERJA[item.Prioritas]}>{item.Prioritas}</Badge>
-                    <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
+                    <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>
+                      {labelEnum(item.Status)}
+                    </Badge>
                     {item.MenungguKonfirmasiPenerima && (
                       <Badge variant="perhatian">Menunggu konfirmasi penerima</Badge>
                     )}
@@ -305,7 +304,9 @@ export default function PerintahKerjaIndex({
                         </Badge>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>{item.Status}</Badge>
+                        <Badge variant={VARIAN_STATUS_PERINTAH_KERJA[item.Status]}>
+                          {labelEnum(item.Status)}
+                        </Badge>
                         {item.MenungguKonfirmasiPenerima && (
                           <div className="mt-1 text-xs text-safety-700">Menunggu konfirmasi penerima</div>
                         )}

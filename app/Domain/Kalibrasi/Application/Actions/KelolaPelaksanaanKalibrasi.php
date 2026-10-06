@@ -38,13 +38,13 @@ final class KelolaPelaksanaanKalibrasi
 
             $aset = Aset::query()
                 ->where('OrganisasiId', $organisasiId)
-                ->findOrFail($data['AsetId']);
+                ->whereKey($data['AsetId'])->firstOrFail();
 
             $rencanaKalibrasi = null;
             if (! empty($data['RencanaKalibrasiId'])) {
                 $rencanaKalibrasi = RencanaKalibrasi::query()
                     ->where('OrganisasiId', $organisasiId)
-                    ->findOrFail($data['RencanaKalibrasiId']);
+                    ->whereKey($data['RencanaKalibrasiId'])->firstOrFail();
             }
 
             // Jika JenisKalibrasiId tidak diisi tetapi RencanaKalibrasi punya, ambil dari rencana
@@ -129,7 +129,7 @@ final class KelolaPelaksanaanKalibrasi
                     $hasilModel = HasilTitikUkurKalibrasi::query()
                         ->where('OrganisasiId', $organisasiId)
                         ->where('PelaksanaanKalibrasiId', $pelaksanaan->Id)
-                        ->find($item['Id']);
+                        ->whereKey($item['Id'])->first();
                 }
 
                 $nilaiReferensi = isset($item['NilaiReferensi']) && $item['NilaiReferensi'] !== ''
@@ -145,7 +145,7 @@ final class KelolaPelaksanaanKalibrasi
                 $toleransiPlus = isset($item['ToleransiPlus']) ? (float) $item['ToleransiPlus'] : null;
 
                 if (($toleransiMinus === null || $toleransiPlus === null) && ! empty($item['TitikUkurKalibrasiId'])) {
-                    $tu = TitikUkurKalibrasi::find($item['TitikUkurKalibrasiId']);
+                    $tu = TitikUkurKalibrasi::query()->whereKey($item['TitikUkurKalibrasiId'])->first();
                     if ($tu) {
                         $toleransiMinus ??= (float) $tu->ToleransiMinus;
                         $toleransiPlus ??= (float) $tu->ToleransiPlus;
@@ -174,7 +174,7 @@ final class KelolaPelaksanaanKalibrasi
                     'OrganisasiId' => $organisasiId,
                     'PelaksanaanKalibrasiId' => $pelaksanaan->Id,
                     'TitikUkurKalibrasiId' => $item['TitikUkurKalibrasiId'] ?? $hasilModel?->TitikUkurKalibrasiId,
-                    'NamaTitik' => $item['NamaTitik'] ?? $hasilModel?->NamaTitik ?? 'Titik Ukur',
+                    'NamaTitik' => $item['NamaTitik'] ?? $hasilModel->NamaTitik ?? 'Titik Ukur',
                     'NilaiReferensi' => $nilaiReferensi,
                     'NilaiTerukur' => $nilaiTerukur,
                     'Koreksi' => $koreksi,

@@ -31,7 +31,7 @@ final class LayananEskalasiSla
             ->orderBy('Id')
             ->chunkById(100, function ($daftarKeluhan) use (&$jumlah): void {
                 foreach ($daftarKeluhan as $keluhan) {
-                    foreach ($keluhan->tingkatLayanan?->eskalasi ?? [] as $aturan) {
+                    foreach ($keluhan->tingkatLayanan->eskalasi ?? [] as $aturan) {
                         if (! $aturan->Aktif) {
                             continue;
                         }
@@ -86,7 +86,7 @@ final class LayananEskalasiSla
                 judul: $judul,
                 jenisEntitas: 'Keluhan',
                 entitasId: $keluhan->Id,
-                kanal: $aturan->Kanal ?: [KanalNotifikasi::InApp->value],
+                kanal: $this->kanalAturan($aturan),
             );
             $jumlah++;
         }
@@ -129,5 +129,17 @@ final class LayananEskalasiSla
         return $aturan->Pemicu === PemicuEskalasiTingkatLayanan::Menjelang->value
             ? "akan jatuh tempo dalam {$aturan->SetelahMenit} menit"
             : "telah terlewati {$aturan->SetelahMenit} menit";
+    }
+
+    /**
+     * Kanal yang dipilih aturan, hanya yang berupa teks; kosong atau tak terbaca berarti in-app saja.
+     *
+     * @return list<string>
+     */
+    private function kanalAturan(EskalasiTingkatLayanan $aturan): array
+    {
+        $kanal = array_values(array_filter((array) $aturan->Kanal, is_string(...)));
+
+        return $kanal === [] ? [KanalNotifikasi::InApp->value] : $kanal;
     }
 }

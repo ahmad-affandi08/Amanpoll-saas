@@ -31,6 +31,7 @@ import type {
 import { ruteIntegrasi } from '@/features/Integrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   integrasi: IntegrasiEksternal[];
@@ -132,7 +133,7 @@ function DialogBuatIntegrasi({ wajib }: { wajib: AturanWajib }) {
                   <SelectContent>
                     {METODE.map((item) => (
                       <SelectItem key={item} value={item}>
-                        {item}
+                        {labelEnum(item)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -348,7 +349,7 @@ export default function IntegrasiIndex({ integrasi, webhook, antrianPeristiwa, w
                     <span className="text-xs text-muted-foreground">
                       {item.MetodeAutentikasi ?? 'Tanpa autentikasi'}
                     </span>
-                    <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                    <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                   </div>
                 </Link>
               ))

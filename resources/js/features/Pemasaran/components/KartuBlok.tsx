@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { BlokDisunting, PilihanHalaman } from '@/features/Pemasaran/types';
+import { labelEnum } from '@/lib/teks';
 
 /** Blok harga hanya menyebut kode paket; angkanya selalu dibaca dari domain Langganan. */
 function BantuanHarga({ jenis, pilihan }: { jenis: string; pilihan: PilihanHalaman }) {
@@ -119,7 +120,7 @@ export function KartuBlok({
               <SelectContent>
                 {pilihan.Blok.map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>

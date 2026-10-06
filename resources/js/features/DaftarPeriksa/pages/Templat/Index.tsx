@@ -28,6 +28,7 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 const JENIS_TEMPLAT = ['Pemeliharaan', 'Inspeksi', 'Kalibrasi', 'Umum'] as const;
 
@@ -123,7 +124,7 @@ function DialogBuatTemplat({
                   <SelectContent>
                     {JENIS_TEMPLAT.map((jenis) => (
                       <SelectItem key={jenis} value={jenis}>
-                        {jenis}
+                        {labelEnum(jenis)}
                       </SelectItem>
                     ))}
                   </SelectContent>

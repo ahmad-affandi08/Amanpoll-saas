@@ -28,6 +28,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { DatePicker } from '@/components/ui/date-picker';
+import { labelEnum } from '@/lib/teks';
 
 interface AsetRingkas {
   Id: string;
@@ -280,7 +281,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
               <SelectItem value={SEMUA}>Semua status</SelectItem>
               {STATUS.map((item) => (
                 <SelectItem key={item} value={item}>
-                  {item}
+                  {labelEnum(item)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -334,7 +335,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                        <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                       </td>
                       <td className="px-4 py-3 text-right">
                         {item.Status !== 'Dicabut' && <DialogCabut sertifikat={item} wajib={wajib.cabut} />}
@@ -358,7 +359,7 @@ export default function SertifikasiIndex({ sertifikasi, aset, filter, wajib }: P
                         Berlaku sampai {item.BerlakuSampai ?? 'tanpa batas'}
                       </p>
                     </div>
-                    <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                    <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                   </div>
                   {item.Status !== 'Dicabut' && <DialogCabut sertifikat={item} wajib={wajib.cabut} />}
                 </div>

@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Angka {
   Pembilang: number;
@@ -125,7 +126,7 @@ function KartuEksperimen({
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Badge variant={varianStatus(eksperimen.Status)}>{eksperimen.Status}</Badge>
+          <Badge variant={varianStatus(eksperimen.Status)}>{labelEnum(eksperimen.Status)}</Badge>
           {eksperimen.Pemenang ? <Badge variant="outline">Pemenang {eksperimen.Pemenang}</Badge> : null}
           <DialogFormEksperimen eksperimen={eksperimen} pilihan={pilihan} wajib={wajib} />
           {eksperimen.TujuanStatus.map((tujuan) => (
@@ -332,7 +333,7 @@ function DialogFormEksperimen({
                   <SelectContent>
                     {pilihan.Target.map((satu) => (
                       <SelectItem key={satu} value={satu}>
-                        {satu}
+                        {labelEnum(satu)}
                       </SelectItem>
                     ))}
                   </SelectContent>

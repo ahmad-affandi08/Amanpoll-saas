@@ -15,6 +15,7 @@ import type { KeywordSeo, KontenPemasaran, PilihanKonten, VersiKonten } from '..
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   konten: KontenPemasaran;
@@ -60,7 +61,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
         className="mb-5"
         aksi={
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={varianStatus(konten.Status)}>{konten.Status}</Badge>
+            <Badge variant={varianStatus(konten.Status)}>{labelEnum(konten.Status)}</Badge>
             <Badge variant="outline">{konten.DiSitemap ? 'Di sitemap' : 'Tidak di sitemap'}</Badge>
             <Button
               size="sm"
@@ -99,7 +100,7 @@ export default function PemasaranKontenDetail({ konten, versi, keyword, pilihan 
                     <SelectContent>
                       {pilihan.Jenis.map((satu) => (
                         <SelectItem key={satu} value={satu}>
-                          {satu}
+                          {labelEnum(satu)}
                         </SelectItem>
                       ))}
                     </SelectContent>

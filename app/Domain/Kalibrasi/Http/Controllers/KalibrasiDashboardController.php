@@ -10,7 +10,6 @@ use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\PelaksanaanKalibrasi;
 use App\Domain\Kalibrasi\Infrastructure\Persistence\Models\RencanaKalibrasi;
 use App\Http\Controllers\Controller;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -40,20 +39,9 @@ final class KalibrasiDashboardController extends Controller
             ->orderBy('TanggalBerikutnya')
             ->limit(BatasDaftar::MAKS)
             ->get()
-            ->map(function ($rk) use ($hariIni) {
-                $tglBerikutnya = Carbon::parse($rk->TanggalBerikutnya);
-                $batasPeringatan = (clone $hariIni)->addDays((int) $rk->PeringatanHariSebelum);
-
-                if ($tglBerikutnya->lt($hariIni)) {
-                    $status = 'Terlambat';
-                } elseif ($tglBerikutnya->lte($batasPeringatan)) {
-                    $status = 'SegeraJatuhTempo';
-                } else {
-                    $status = 'Valid';
-                }
-
-                $rk->StatusKalibrasi = $status;
-                $rk->SisaHari = (int) $hariIni->diffInDays($tglBerikutnya, false);
+            ->map(function (RencanaKalibrasi $rk) use ($hariIni) {
+                $rk->setAttribute('StatusKalibrasi', $rk->statusKepatuhan($hariIni)->value);
+                $rk->setAttribute('SisaHari', $rk->sisaHari($hariIni));
 
                 return $rk;
             });

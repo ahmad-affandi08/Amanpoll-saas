@@ -9,6 +9,7 @@ import type { Penyedia, RiwayatLayananPenyedia } from '@/features/Penyedia/types
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { ruteKontrak } from '@/features/Kontrak/api';
 import { ruteAset } from '@/features/Aset/api';
+import { labelEnum } from '@/lib/teks';
 
 export function TabLayanan({ penyedia }: { penyedia: Penyedia }) {
   const [data, setData] = useState<RiwayatLayananPenyedia | null>(null);
@@ -67,7 +68,9 @@ export function TabLayanan({ penyedia }: { penyedia: Penyedia }) {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <Badge variant={satu.Status === 'Aktif' ? 'sukses' : 'netral'}>{satu.Status}</Badge>
+                  <Badge variant={satu.Status === 'Aktif' ? 'sukses' : 'netral'}>
+                    {labelEnum(satu.Status)}
+                  </Badge>
                   {satu.Nilai !== null && (
                     <span className="text-sm tabular-nums text-foreground">
                       {formatUang(satu.Nilai, satu.MataUang)}
@@ -105,7 +108,7 @@ export function TabLayanan({ penyedia }: { penyedia: Penyedia }) {
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
                   <Badge variant="outline">{satu.Kondisi}</Badge>
-                  <Badge variant="secondary">{satu.Status}</Badge>
+                  <Badge variant="secondary">{labelEnum(satu.Status)}</Badge>
                   {satu.HargaPerolehan !== null && (
                     <span className="text-sm tabular-nums text-foreground">
                       {formatUang(satu.HargaPerolehan)}

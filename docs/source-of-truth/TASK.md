@@ -4157,6 +4157,29 @@ Jebakan yang ditemukan:
 
 ---
 
+# Audit konsistensi (Oktober 2026)
+
+Sapuan backend lalu frontend. PHPStan turun dari 164 galat ke 0, dan angka itu kini menjadi
+batas (`.ai/rules/general.md`).
+
+Bug nyata yang ikut tertutup:
+- Tingkat layanan dengan `HariKerja` berisi string ("1","2") membuat hitungan tenggat SLA
+  berputar tanpa akhir. Kini dibaca lewat `hariKerjaTerbaca()` dan dinormalkan saat disimpan.
+- Aturan status kalibrasi (Valid, Segera Jatuh Tempo, Terlambat, Tidak Aktif) ada di tiga
+  tempat dengan rumus yang dapat berbeda. Kini satu: enum `StatusKepatuhanKalibrasi`.
+- Kanal eskalasi SLA yang bukan daftar teks tidak lagi merusak pengiriman; jatuh ke In-App.
+- Waktu `now()` mutable ditulis ke kolom immutable di beberapa Action; kini `toImmutable()`.
+- Cabang mati di `KelolaInspeksi` dan `JadwalkanPemeliharaanPreventif` dibersihkan.
+
+Frontend:
+- Nilai enum multi-kata ("MenungguVerifikasi", "DibayarSebagian", "PerluPerhatian") tampil
+  tanpa spasi di lencana dan opsi pilihan. Kini lewat `labelEnum()` di `lib/teks.ts`;
+  nama merek (WhatsApp, TikTok, YouTube, LinkedIn) tetap utuh.
+- 16 impor dan satu fungsi yatim dihapus; `tsc --noUnusedLocals` bersih.
+- Bintang wajib yang ditulis di teks label diganti prop `wajib` pada komponen `Label`.
+
+---
+
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan
 
 ```text

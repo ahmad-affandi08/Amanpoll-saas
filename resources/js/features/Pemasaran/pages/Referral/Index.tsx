@@ -25,6 +25,7 @@ import type { ProgramReferral, RewardReferralRingkas } from '@/features/Pemasara
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 type Pilihan = { Jenis: string[]; JenisDidukung: string[] };
 
@@ -258,7 +259,7 @@ function DialogProgram({
                   <SelectContent>
                     {pilihan.Jenis.map((jenis) => (
                       <SelectItem key={jenis} value={jenis}>
-                        {jenis}
+                        {labelEnum(jenis)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -432,7 +433,7 @@ function DaftarReward({ reward }: { reward: RewardReferralRingkas[] }) {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
+                <Badge variant={varianStatus(satu.Status)}>{labelEnum(satu.Status)}</Badge>
                 {satu.Status === 'Tertunda' || satu.Status === 'Gagal' ? (
                   <>
                     <Button

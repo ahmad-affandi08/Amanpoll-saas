@@ -26,6 +26,7 @@ import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/da
 import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   trial: Paginasi<Trial>;
@@ -67,7 +68,7 @@ export default function PemasaranTrialIndex({ trial, konfigurasi, pilihan, filte
         accessorFn: (row) => row.Status,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
-          <Badge variant={varianStatusTrial(row.original.Status)}>{row.original.Status}</Badge>
+          <Badge variant={varianStatusTrial(row.original.Status)}>{labelEnum(row.original.Status)}</Badge>
         ),
         meta: { label: 'Status' },
       },

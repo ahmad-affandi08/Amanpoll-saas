@@ -49,7 +49,7 @@ final class KelolaWaktuHentiAset
                 throw new AturanBisnisDilanggar('Tidak ada downtime aktif untuk aset pada pekerjaan ini.');
             }
 
-            $selesaiPada = now();
+            $selesaiPada = now()->toImmutable();
             $aktif->SelesaiPada = $selesaiPada;
             $aktif->DurasiMenit = max(0, (int) floor($aktif->MulaiPada->diffInSeconds($selesaiPada) / 60));
             $aktif->Alasan = $alasan;

@@ -8,6 +8,7 @@ import type { BebanKerjaPengguna, Pengguna } from '@/features/Pengguna/types';
 import { rutePengguna } from '@/features/Pengguna/api';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { ruteAset } from '@/features/Aset/api';
+import { labelEnum } from '@/lib/teks';
 
 export function TabBebanKerja({ pengguna }: { pengguna: Pengguna }) {
   const [data, setData] = useState<BebanKerjaPengguna | null>(null);
@@ -66,7 +67,7 @@ export function TabBebanKerja({ pengguna }: { pengguna: Pengguna }) {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   {satu.StatusPerintahKerja && <Badge variant="outline">{satu.StatusPerintahKerja}</Badge>}
-                  <Badge variant={satu.SelesaiPada ? 'sukses' : 'perhatian'}>{satu.Status}</Badge>
+                  <Badge variant={satu.SelesaiPada ? 'sukses' : 'perhatian'}>{labelEnum(satu.Status)}</Badge>
                   <span className="w-24 text-right text-xs text-muted-foreground">
                     {tanggal(satu.SelesaiPada ?? satu.DitugaskanPada)}
                   </span>

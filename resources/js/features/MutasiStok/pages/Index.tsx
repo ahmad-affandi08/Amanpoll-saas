@@ -24,6 +24,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { labelEnum } from '@/lib/teks';
 
 interface Ringkas {
   Id: string;
@@ -196,7 +197,7 @@ export default function MutasiStokIndex({ mutasiStok, gudang, filter, wajib }: P
                     {new Date(m.Tanggal).toLocaleString('id-ID')} &middot; {m.NamaDibuatOleh}
                   </div>
                 </div>
-                <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[m.Status]}>{m.Status}</Badge>
+                <Badge variant={VARIAN_BADGE_STATUS_MUTASI_STOK[m.Status]}>{labelEnum(m.Status)}</Badge>
               </Link>
             ))}
           </div>

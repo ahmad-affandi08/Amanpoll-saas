@@ -12,7 +12,7 @@ Jalankan seluruhnya sebelum menyatakan pekerjaan selesai: `vendor/bin/pint --dir
 
 Setelan ketat itu membuat "hijau" berarti lebih banyak: test tanpa assertion, test yang mencetak keluaran, `markTestIncomplete`, warning dan notice dari `app/`, serta suite yang mendadak kosong semuanya menggagalkan build. `markTestSkipped` tetap boleh — tiga test memang melewati dirinya saat `pcntl` atau biner `mysqldump` tidak ada.
 
-Jumlah galat PHPStan harus tetap **165**. Naik berarti perubahanmu menambah galat baru — perbaiki akses atau tipenya, jangan ditutup. Dilarang: `@phpstan-ignore`, `@var` inline untuk menimpa inferensi, entri baseline baru, dan cast yang hanya untuk membungkam.
+Jumlah galat PHPStan harus tetap **0**. Lebih dari nol berarti perubahanmu menambah galat baru — perbaiki akses atau tipenya, jangan ditutup. Dilarang: `@phpstan-ignore`, `@var` inline untuk menimpa inferensi, entri baseline baru, dan cast yang hanya untuk membungkam.
 
 MariaDB di lingkungan dev kerap mati. Bila test gagal dengan "Connection refused", hidupkan ulang lalu ulangi — itu lingkungan, bukan perubahanmu:
 `mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld && (mariadbd-safe --user=mysql >/tmp/mysql.log 2>&1 &)`

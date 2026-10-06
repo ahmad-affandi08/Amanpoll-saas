@@ -25,6 +25,7 @@ import { TombolEkspor } from '@/components/shared/TombolEkspor';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   jenisEntitasTersedia: string[];
@@ -118,7 +119,7 @@ function DialogFormDefinisi({
                 <SelectContent>
                   {TIPE_DATA.map((t) => (
                     <SelectItem key={t} value={t}>
-                      {t}
+                      {labelEnum(t)}
                     </SelectItem>
                   ))}
                 </SelectContent>

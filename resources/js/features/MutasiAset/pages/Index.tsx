@@ -27,6 +27,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   permintaan: Paginasi<PermintaanMutasiAset>;
@@ -194,7 +195,7 @@ export default function MutasiAsetIndex({
               <SelectItem value={SEMUA}>Semua</SelectItem>
               {DAFTAR_STATUS.map((s) => (
                 <SelectItem key={s} value={s}>
-                  {s}
+                  {labelEnum(s)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -236,7 +237,7 @@ export default function MutasiAsetIndex({
                     <TableCell>{p.NamaLokasiTujuan ?? p.NamaUnitTujuan ?? '—'}</TableCell>
                     <TableCell>{p.NamaDimintaOleh ?? '—'}</TableCell>
                     <TableCell>
-                      <Badge variant={VARIAN_BADGE_STATUS_MUTASI[p.Status]}>{p.Status}</Badge>
+                      <Badge variant={VARIAN_BADGE_STATUS_MUTASI[p.Status]}>{labelEnum(p.Status)}</Badge>
                     </TableCell>
                   </TableRow>
                 ))}

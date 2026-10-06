@@ -31,7 +31,7 @@ final class KelolaPelaksanaanDaftarPeriksa
             $templat = TemplatDaftarPeriksa::query()
                 ->with('butir')
                 ->where('OrganisasiId', $organisasiId)
-                ->findOrFail($data['TemplatDaftarPeriksaId']);
+                ->whereKey($data['TemplatDaftarPeriksaId'])->firstOrFail();
 
             if (! $templat->Aktif) {
                 throw new AturanBisnisDilanggar('Templat daftar periksa tidak aktif.');
@@ -118,7 +118,7 @@ final class KelolaPelaksanaanDaftarPeriksa
             // Pelaksanaan yang lahir dari perintah kerja preventif belum punya pelaksana:
             // yang pertama mengisi jawaban adalah pelaksananya, dan saat itulah pekerjaan dimulai.
             $terkunci->DilaksanakanOleh ??= $penggunaId;
-            $terkunci->MulaiPada ??= now();
+            $terkunci->MulaiPada ??= now()->toImmutable();
             $terkunci->Status = 'SedangDikerjakan';
             $terkunci->save();
         });
@@ -175,7 +175,7 @@ final class KelolaPelaksanaanDaftarPeriksa
             $sebelum = $terkunci->toArray();
 
             $terkunci->Status = 'Selesai';
-            $terkunci->SelesaiPada = now();
+            $terkunci->SelesaiPada = now()->toImmutable();
             $terkunci->Skor = $skor;
             if ($catatan !== null) {
                 $terkunci->Catatan = $catatan;
@@ -244,7 +244,7 @@ final class KelolaPelaksanaanDaftarPeriksa
         }
 
         // 3. Cek kondisi MemicuTemuanJika untuk pilihan/teks
-        if ($butir->MemicuTemuanJika !== null && is_array($butir->MemicuTemuanJika)) {
+        if (is_array($butir->MemicuTemuanJika)) {
             $pemicu = $butir->MemicuTemuanJika['nilai'] ?? null;
             if ($pemicu !== null) {
                 $teks = $jawaban['NilaiTeks'] ?? null;

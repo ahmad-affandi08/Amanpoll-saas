@@ -118,11 +118,11 @@ final class KelolaInspeksi
 
             $templat = TemplatInspeksi::query()
                 ->where('OrganisasiId', $organisasiId)
-                ->findOrFail($data['TemplatInspeksiId']);
+                ->whereKey($data['TemplatInspeksiId'])->firstOrFail();
 
             $aset = Aset::query()
                 ->where('OrganisasiId', $organisasiId)
-                ->findOrFail($data['AsetId']);
+                ->whereKey($data['AsetId'])->firstOrFail();
 
             $nomor = $data['Nomor'] ?? null;
             if ($nomor === null) {
@@ -133,24 +133,21 @@ final class KelolaInspeksi
                 }
             }
 
-            $pelaksanaanId = null;
-            if ($templat->TemplatDaftarPeriksaId !== null) {
-                $pelaksanaan = PelaksanaanDaftarPeriksa::create([
-                    'OrganisasiId' => $organisasiId,
-                    'TemplatDaftarPeriksaId' => $templat->TemplatDaftarPeriksaId,
-                    'AsetId' => $aset->Id,
-                    'DilaksanakanOleh' => $data['DilaksanakanOleh'] ?? null,
-                    'Status' => 'Draft',
-                ]);
-                $pelaksanaanId = $pelaksanaan->Id;
-            }
+            // Templat inspeksi selalu menunjuk templat daftar periksa (kolomnya NOT NULL).
+            $pelaksanaan = PelaksanaanDaftarPeriksa::create([
+                'OrganisasiId' => $organisasiId,
+                'TemplatDaftarPeriksaId' => $templat->TemplatDaftarPeriksaId,
+                'AsetId' => $aset->Id,
+                'DilaksanakanOleh' => $data['DilaksanakanOleh'] ?? null,
+                'Status' => 'Draft',
+            ]);
 
             $inspeksi = Inspeksi::create([
                 'OrganisasiId' => $organisasiId,
                 'Nomor' => $nomor,
                 'TemplatInspeksiId' => $templat->Id,
                 'AsetId' => $aset->Id,
-                'PelaksanaanDaftarPeriksaId' => $pelaksanaanId,
+                'PelaksanaanDaftarPeriksaId' => $pelaksanaan->Id,
                 'DijadwalkanPada' => $data['DijadwalkanPada'] ?? now(),
                 'Status' => 'Terjadwal',
                 'DilaksanakanOleh' => $data['DilaksanakanOleh'] ?? null,

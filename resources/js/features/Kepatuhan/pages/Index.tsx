@@ -26,6 +26,7 @@ import { DialogTugaskan } from '@/features/Kepatuhan/components/DialogTugaskan';
 import { DialogPemeriksaan } from '@/features/Kepatuhan/components/DialogPemeriksaan';
 import type { AsetRingkas } from '@/features/Kepatuhan/types';
 import type { AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   kewajiban: Paginasi<KepatuhanAset>;
@@ -152,7 +153,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
               <SelectItem value={SEMUA}>Semua status</SelectItem>
               {STATUS.map((item) => (
                 <SelectItem key={item} value={item}>
-                  {item}
+                  {labelEnum(item)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -206,7 +207,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                        <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
@@ -240,7 +241,7 @@ export default function KepatuhanIndex({ kewajiban, standar, aset, ringkasan, fi
                         Berlaku sampai {item.BerlakuSampai ?? 'tanpa batas'}
                       </p>
                     </div>
-                    <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                    <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                   </div>
                   <div className="flex gap-2">
                     <DialogPemeriksaan kewajiban={item} wajib={wajib.pemeriksaan} />

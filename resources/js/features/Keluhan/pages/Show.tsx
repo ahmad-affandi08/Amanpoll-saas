@@ -23,6 +23,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { TANPA_PILIHAN, opsiUnitPengelola } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   keluhan: Keluhan;
@@ -285,7 +286,7 @@ export default function KeluhanShow({
           <>
             <span className="font-mono text-sm text-muted-foreground">{keluhan.Nomor}</span>
             <Badge variant={VARIAN_PRIORITAS_KELUHAN[keluhan.Prioritas]}>{keluhan.Prioritas}</Badge>
-            <Badge variant={VARIAN_STATUS_KELUHAN[keluhan.Status]}>{keluhan.Status}</Badge>
+            <Badge variant={VARIAN_STATUS_KELUHAN[keluhan.Status]}>{labelEnum(keluhan.Status)}</Badge>
           </>
         }
         deskripsi={

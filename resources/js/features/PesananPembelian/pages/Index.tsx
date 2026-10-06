@@ -29,6 +29,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   pesanan: Paginasi<PesananPembelian>;
@@ -212,7 +213,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
               <SelectItem value={SEMUA}>Semua status</SelectItem>
               {STATUS.map((item) => (
                 <SelectItem key={item} value={item}>
-                  {item}
+                  {labelEnum(item)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -259,7 +260,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
                         {formatUang(item.Total)}
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                        <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                       </td>
                     </tr>
                   ))}
@@ -279,7 +280,7 @@ export default function PesananPembelianIndex({ pesanan, penawaranTerpilih, filt
                     <p className="truncate text-xs text-muted-foreground">{item.NamaPenyedia}</p>
                     <p className="mt-1 font-mono text-sm font-semibold">{formatUang(item.Total)}</p>
                   </div>
-                  <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                  <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                 </Link>
               ))}
             </div>

@@ -28,6 +28,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   rfq: PermintaanPenawaran;
@@ -263,7 +264,7 @@ export default function PermintaanPenawaranShow({ rfq, wajib }: Props) {
         <KepalaHalaman
           judul={<span className="font-mono">{rfq.Nomor}</span>}
           labelBreadcrumb={rfq.Nomor}
-          lencana={<Badge variant={VARIAN_STATUS[rfq.Status]}>{rfq.Status}</Badge>}
+          lencana={<Badge variant={VARIAN_STATUS[rfq.Status]}>{labelEnum(rfq.Status)}</Badge>}
           deskripsi={
             <>
               Sumber {rfq.PermintaanPembelian?.Nomor ?? '-'} · {(rfq.PenyediaDiundang ?? []).length} penyedia
@@ -298,7 +299,7 @@ export default function PermintaanPenawaranShow({ rfq, wajib }: Props) {
                 className="flex items-center justify-between rounded-md border border-border p-3"
               >
                 <span className="text-sm">{item.NamaPenyedia}</span>
-                <Badge variant="netral">{item.Status}</Badge>
+                <Badge variant="netral">{labelEnum(item.Status)}</Badge>
               </div>
             ))}
           </CardContent>
@@ -326,7 +327,7 @@ export default function PermintaanPenawaranShow({ rfq, wajib }: Props) {
                     </div>
                     <div className="flex items-center gap-3">
                       <strong className="font-mono">{formatUang(item.Total)}</strong>
-                      <Badge variant={VARIAN_PENAWARAN[item.Status]}>{item.Status}</Badge>
+                      <Badge variant={VARIAN_PENAWARAN[item.Status]}>{labelEnum(item.Status)}</Badge>
                       {rfq.Status === 'Dibuka' && item.Status === 'Diajukan' && (
                         <Button
                           size="sm"

@@ -8,6 +8,7 @@ import type { Paginasi } from '@/types/global';
 import type { PanggilanBalikWeb, PengirimanPanggilanBalikWeb } from '@/features/Integrasi/types';
 import { ruteIntegrasi } from '@/features/Integrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   webhook: PanggilanBalikWeb;
@@ -89,7 +90,7 @@ export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
                       </td>
                       <td className="px-4 py-3 font-mono text-xs">{item.StatusHttp ?? '—'}</td>
                       <td className="px-4 py-3">
-                        <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                        <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                       </td>
                     </tr>
                   ))}
@@ -101,7 +102,7 @@ export default function IntegrasiPengiriman({ webhook, pengiriman }: Props) {
                 <div key={item.Id} className="space-y-1 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <p className="min-w-0 flex-1 truncate font-medium">{item.Peristiwa}</p>
-                    <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                    <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {waktuLokal(item.DibuatPada)} · percobaan {item.Percobaan} · HTTP {item.StatusHttp ?? '—'}

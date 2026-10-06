@@ -232,8 +232,8 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
             <div className="grid gap-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="Hasil">
-                  Hasil Evaluasi <span className="text-destructive">*</span>
+                <Label htmlFor="Hasil" wajib>
+                  Hasil Evaluasi
                 </Label>
                 <Select
                   value={formHasil.data.Hasil}
@@ -302,8 +302,8 @@ export default function InspeksiShow({ inspeksi }: Props) {
 
             <div className="grid gap-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="Judul">
-                  Judul Pekerjaan <span className="text-destructive">*</span>
+                <Label htmlFor="Judul" wajib>
+                  Judul Pekerjaan
                 </Label>
                 <Input
                   id="Judul"

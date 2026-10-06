@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Notifikasi\Http\Resources;
 
+use App\Domain\Notifikasi\Infrastructure\Persistence\Models\EskalasiTingkatLayanan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin EskalasiTingkatLayanan */
 final class EskalasiTingkatLayananResource extends JsonResource
 {
     public function toArray(Request $request): array

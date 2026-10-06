@@ -1,12 +1,10 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import KerangkaAplikasi from '@/layouts/KerangkaAplikasi';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileBadge, Calendar, ShieldCheck } from 'lucide-react';
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
-import { ruteKalibrasi } from '@/features/Kalibrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { tanggal, tanggalJam } from '@/components/shared/riwayat';
 import { DialogFinalisasiKalibrasi } from '@/features/Kalibrasi/components/DialogFinalisasiKalibrasi';

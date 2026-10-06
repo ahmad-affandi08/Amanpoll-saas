@@ -32,7 +32,7 @@ final class KelolaRencanaKalibrasi
 
             $aset = Aset::query()
                 ->where('OrganisasiId', $organisasiId)
-                ->findOrFail($data['AsetId']);
+                ->whereKey($data['AsetId'])->firstOrFail();
 
             $intervalHari = (int) ($data['IntervalHari'] ?? 365);
             if ($intervalHari <= 0) {
@@ -82,7 +82,7 @@ final class KelolaRencanaKalibrasi
             $organisasiId = $this->konteksOrganisasi->wajibId();
 
             if (isset($data['AsetId']) && $data['AsetId'] !== $rencana->AsetId) {
-                Aset::query()->where('OrganisasiId', $organisasiId)->findOrFail($data['AsetId']);
+                Aset::query()->where('OrganisasiId', $organisasiId)->whereKey($data['AsetId'])->firstOrFail();
             }
 
             $dataLama = $rencana->toArray();
@@ -102,8 +102,8 @@ final class KelolaRencanaKalibrasi
                 'JenisKalibrasiId' => array_key_exists('JenisKalibrasiId', $data) ? $data['JenisKalibrasiId'] : $rencana->JenisKalibrasiId,
                 'PenyediaId' => array_key_exists('PenyediaId', $data) ? $data['PenyediaId'] : $rencana->PenyediaId,
                 'IntervalHari' => $intervalHari,
-                'TanggalMulai' => $tanggalMulai?->toDateString(),
-                'TanggalBerikutnya' => $tanggalBerikutnya?->toDateString(),
+                'TanggalMulai' => $tanggalMulai->toDateString(),
+                'TanggalBerikutnya' => $tanggalBerikutnya->toDateString(),
                 'PeringatanHariSebelum' => isset($data['PeringatanHariSebelum']) ? (int) $data['PeringatanHariSebelum'] : $rencana->PeringatanHariSebelum,
                 'Aktif' => $data['Aktif'] ?? $rencana->Aktif,
                 'UnitPengelolaId' => array_key_exists('UnitPengelolaId', $data)

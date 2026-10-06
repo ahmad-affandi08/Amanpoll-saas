@@ -49,7 +49,7 @@ final class BuatKeluhan
     {
         $keluhan = $this->transaksi->jalankan(function () use ($data, $pelaporId): Keluhan {
             $organisasiId = $this->konteks->wajibId();
-            $kategori = KategoriKeluhan::query()->with('tingkatLayanan')->findOrFail($data['KategoriKeluhanId']);
+            $kategori = KategoriKeluhan::query()->with('tingkatLayanan')->whereKey($data['KategoriKeluhanId'])->firstOrFail();
             $prioritas = $data['Prioritas'] ?? $kategori->PrioritasBawaan;
             $dilaporkanPada = now()->toImmutable();
             $batas = ['respons' => null, 'penyelesaian' => null];
@@ -61,7 +61,7 @@ final class BuatKeluhan
                     ->first();
 
                 if ($aturan !== null) {
-                    $lokasi = Lokasi::query()->findOrFail($data['LokasiId']);
+                    $lokasi = Lokasi::query()->whereKey($data['LokasiId'])->firstOrFail();
                     $zonaWaktu = $lokasi->ZonaWaktu ?: Organisasi::query()->findOrFail($organisasiId)->ZonaWaktu;
                     $batas = $this->kalkulasiSla->hitungBatas(
                         $organisasiId,

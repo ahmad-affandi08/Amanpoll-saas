@@ -8,6 +8,7 @@ use App\Domain\Pemeliharaan\Infrastructure\Persistence\Models\KategoriKeluhan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin KategoriKeluhan */
 final class KategoriKeluhanResource extends JsonResource
 {
     public function toArray(Request $request): array

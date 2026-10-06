@@ -10,6 +10,7 @@ import type { DistribusiSosial, KontenSosial, PilihanSosial } from '@/features/P
 import { DialogFormKonten } from '@/features/Pemasaran/components/DialogFormKonten';
 import { DialogFormDistribusi } from '@/features/Pemasaran/components/DialogFormDistribusi';
 import { DialogJadwal } from '@/features/Pemasaran/components/DialogJadwal';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   konten: KontenSosial[];
@@ -93,7 +94,7 @@ function BarisDistribusi({
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <Badge variant="outline">{distribusi.Channel}</Badge>
-          <Badge variant={varianStatus(distribusi.Status)}>{distribusi.Status}</Badge>
+          <Badge variant={varianStatus(distribusi.Status)}>{labelEnum(distribusi.Status)}</Badge>
           {distribusi.JadwalPada ? (
             <span className="text-xs text-muted-foreground">Terjadwal {distribusi.JadwalPada}</span>
           ) : null}

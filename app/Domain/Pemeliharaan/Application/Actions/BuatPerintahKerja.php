@@ -45,7 +45,7 @@ final class BuatPerintahKerja
         return $this->transaksi->jalankan(function () use ($data, $penggunaId, $unitPengelolaRencana): PerintahKerja {
             $organisasiId = $this->konteks->wajibId();
             $keluhan = filled($data['KeluhanId'] ?? null)
-                ? Keluhan::query()->findOrFail($data['KeluhanId'])
+                ? Keluhan::query()->whereKey($data['KeluhanId'])->firstOrFail()
                 : null;
             $asetIds = array_values(array_unique(array_filter($data['AsetIds'] ?? [])));
 
@@ -82,7 +82,7 @@ final class BuatPerintahKerja
                 'TingkatLayananId' => $keluhan?->TingkatLayananId,
                 'Judul' => ($data['Judul'] ?? null) ?: $keluhan?->Judul,
                 'Deskripsi' => ($data['Deskripsi'] ?? null) ?: $keluhan?->Deskripsi,
-                'Prioritas' => $data['Prioritas'] ?? $keluhan?->Prioritas ?? 'Normal',
+                'Prioritas' => $data['Prioritas'] ?? $keluhan->Prioritas ?? 'Normal',
                 'LokasiId' => ($data['LokasiId'] ?? null) ?: $keluhan?->LokasiId,
                 'BatasResponsPada' => $keluhan?->BatasResponsPada,
                 'BatasPenyelesaianPada' => $keluhan?->BatasPenyelesaianPada,

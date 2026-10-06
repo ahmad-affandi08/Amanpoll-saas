@@ -8,7 +8,6 @@ import {
   Jalur,
   Kode,
   P,
-  SubJudul,
   Tabel,
   Tegas,
   Ui,

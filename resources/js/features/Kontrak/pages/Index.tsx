@@ -31,6 +31,7 @@ import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface PenyediaRingkas {
   Id: string;
@@ -141,7 +142,7 @@ function DialogBuatKontrak({ penyedia, tingkatLayanan }: Pick<Props, 'penyedia' 
                 <SelectContent>
                   {JENIS.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      {labelEnum(item)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -320,7 +321,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
               <SelectItem value={SEMUA}>Semua status</SelectItem>
               {STATUS.map((item) => (
                 <SelectItem key={item} value={item}>
-                  {item}
+                  {labelEnum(item)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -391,7 +392,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
                           {item.Nilai ? formatUang(item.Nilai, item.MataUang) : '—'}
                         </td>
                         <td className="px-4 py-3">
-                          <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                          <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                         </td>
                       </tr>
                     );
@@ -416,7 +417,7 @@ export default function KontrakIndex({ kontrak, penyedia, tingkatLayanan, ringka
                         {item.NamaPenyedia ?? 'Tanpa penyedia'} · {sisa.teks}
                       </p>
                     </div>
-                    <Badge variant={VARIAN_STATUS[item.Status]}>{item.Status}</Badge>
+                    <Badge variant={VARIAN_STATUS[item.Status]}>{labelEnum(item.Status)}</Badge>
                   </Link>
                 );
               })}

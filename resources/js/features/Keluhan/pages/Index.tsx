@@ -27,6 +27,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pi
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { pampatkanGambar } from '@/lib/pemampat-gambar';
+import { labelEnum } from '@/lib/teks';
 
 interface KategoriRingkas {
   Id: string;
@@ -352,7 +353,7 @@ export default function KeluhanIndex({
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-xs text-muted-foreground">{item.Nomor}</span>
                     <Badge variant={VARIAN_PRIORITAS_KELUHAN[item.Prioritas]}>{item.Prioritas}</Badge>
-                    <Badge variant={VARIAN_STATUS_KELUHAN[item.Status]}>{item.Status}</Badge>
+                    <Badge variant={VARIAN_STATUS_KELUHAN[item.Status]}>{labelEnum(item.Status)}</Badge>
                     {pakaiUnitPengelola && (
                       <span className="text-xs text-muted-foreground">
                         Dikelola: {item.UnitPengelola?.Nama ?? 'belum ada unit'}

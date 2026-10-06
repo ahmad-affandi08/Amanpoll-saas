@@ -21,7 +21,7 @@ import type { NomorDokumen } from '@/features/NomorDokumen/types';
 import { ruteNomorDokumen } from '@/features/NomorDokumen/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 

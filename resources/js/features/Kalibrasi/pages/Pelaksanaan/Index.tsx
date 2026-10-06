@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import { Plus, Search, ArrowRight, Filter, FileBadge } from 'lucide-react';
+import { Plus, Search, ArrowRight, FileBadge } from 'lucide-react';
 import type { PelaksanaanKalibrasi } from '@/features/Kalibrasi/types';
 import { hasilKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';
@@ -296,7 +296,9 @@ export default function KalibrasiPelaksanaanIndex({
 
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="AsetId">Pilih Aset / Instrumen *</Label>
+              <Label htmlFor="AsetId" wajib>
+                Pilih Aset / Instrumen
+              </Label>
               <Combobox
                 nilai={form.data.AsetId}
                 onPilih={onAsetChange}
@@ -336,7 +338,9 @@ export default function KalibrasiPelaksanaanIndex({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="TanggalKalibrasi">Tanggal Kalibrasi *</Label>
+                <Label htmlFor="TanggalKalibrasi" wajib>
+                  Tanggal Kalibrasi
+                </Label>
                 <DatePicker
                   value={form.data.TanggalKalibrasi}
                   onChange={(nilai) => form.setData('TanggalKalibrasi', nilai)}

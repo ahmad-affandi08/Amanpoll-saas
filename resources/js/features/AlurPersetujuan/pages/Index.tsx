@@ -32,6 +32,7 @@ import { InputUang } from '@/components/shared/InputUang';
 import { formatUang } from '@/lib/uang';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   alurPersetujuan: Paginasi<AlurPersetujuan>;
@@ -192,7 +193,7 @@ function FormTahap({
           <SelectContent>
             {JENIS_PENYETUJU.map((j) => (
               <SelectItem key={j} value={j}>
-                {j}
+                {labelEnum(j)}
               </SelectItem>
             ))}
           </SelectContent>

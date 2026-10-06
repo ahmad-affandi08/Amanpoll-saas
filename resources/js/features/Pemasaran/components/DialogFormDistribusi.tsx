@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import type { DistribusiSosial, KontenSosial, PilihanSosial } from '@/features/Pemasaran/types';
+import { labelEnum } from '@/lib/teks';
 
 export function DialogFormDistribusi({
   konten,
@@ -79,7 +80,7 @@ export function DialogFormDistribusi({
               <SelectContent>
                 {pilihan.Channel.map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>

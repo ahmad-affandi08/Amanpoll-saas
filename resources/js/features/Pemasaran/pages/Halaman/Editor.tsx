@@ -18,6 +18,7 @@ import { rutePemasaran } from '@/features/Pemasaran/api';
 import { KartuBlok } from '@/features/Pemasaran/components/KartuBlok';
 import { PanelPenerbitan } from '@/features/Pemasaran/components/PanelPenerbitan';
 import { DaftarVersi } from '@/features/Pemasaran/components/DaftarVersi';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   halaman: HalamanDetail | null;
@@ -109,7 +110,11 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
         judul={halaman ? halaman.Judul : 'Halaman Baru'}
         deskripsi={halaman ? halaman.Slug : 'Setiap penyimpanan melahirkan versi baru.'}
         tanpaBreadcrumb
-        lencana={halaman ? <Badge variant={varianStatus(halaman.Status)}>{halaman.Status}</Badge> : undefined}
+        lencana={
+          halaman ? (
+            <Badge variant={varianStatus(halaman.Status)}>{labelEnum(halaman.Status)}</Badge>
+          ) : undefined
+        }
         aksi={
           <div className="flex flex-wrap gap-2">
             <Button variant="ghost" asChild>
@@ -167,7 +172,7 @@ export default function PemasaranHalamanEditor({ halaman, versi, pilihan }: Prop
                   <SelectContent>
                     {pilihan.Tipe.map((satu) => (
                       <SelectItem key={satu} value={satu}>
-                        {satu}
+                        {labelEnum(satu)}
                       </SelectItem>
                     ))}
                   </SelectContent>

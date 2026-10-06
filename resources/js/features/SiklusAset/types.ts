@@ -1,12 +1,7 @@
 export type StatusPermintaanMutasiAset =
   'Draft' | 'Menunggu' | 'Disetujui' | 'Ditolak' | 'Dibatalkan' | 'Selesai';
 export type JenisMutasiAset =
-  | 'AntarLokasi'
-  | 'AntarUnit'
-  | 'Peminjaman'
-  | 'Pengembalian'
-  | 'Reposisi'
-  | 'Akuisisi';
+  'AntarLokasi' | 'AntarUnit' | 'Peminjaman' | 'Pengembalian' | 'Reposisi' | 'Akuisisi';
 
 export interface PilihanJenisMutasiAset {
   nilai: JenisMutasiAset;

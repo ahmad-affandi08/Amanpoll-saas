@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { KeadaanKosong } from '@/components/shared/KeadaanKosong';
-import { Trash2, ArrowRight, Filter, Search } from 'lucide-react';
+import { Trash2, ArrowRight, Search } from 'lucide-react';
 import type { RencanaKalibrasi } from '@/features/Kalibrasi/types';
 import { statusKalibrasiBadge } from '@/features/Kalibrasi/status';
 import { ruteKalibrasi } from '@/features/Kalibrasi/api';

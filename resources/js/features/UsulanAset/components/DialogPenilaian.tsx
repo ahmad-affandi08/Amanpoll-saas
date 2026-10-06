@@ -18,6 +18,7 @@ import type { PrioritasUsulanAset, UsulanAset } from '@/features/UsulanAset/type
 import { ruteUsulanAset } from '@/features/UsulanAset/api';
 import { PRIORITAS } from '@/features/UsulanAset/status';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 export function DialogPenilaian({ usulan, wajib }: { usulan: UsulanAset; wajib: AturanWajib }) {
   const [buka, setBuka] = useState(false);
@@ -92,7 +93,7 @@ export function DialogPenilaian({ usulan, wajib }: { usulan: UsulanAset; wajib: 
                 <SelectContent>
                   {PRIORITAS.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      {labelEnum(item)}
                     </SelectItem>
                   ))}
                 </SelectContent>

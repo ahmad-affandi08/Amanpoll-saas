@@ -24,6 +24,7 @@ import { VARIAN_BADGE_STATUS_PENGHAPUSAN } from '@/features/SiklusAset/status';
 import { rutePenghapusanAset } from '@/features/PenghapusanAset/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   pengajuan: Paginasi<PengajuanPenghapusanAset>;
@@ -77,7 +78,7 @@ function DialogBuatPengajuan({ wajib }: { wajib: AturanWajib }) {
                 <SelectContent>
                   {DAFTAR_METODE.map((m) => (
                     <SelectItem key={m} value={m}>
-                      {m}
+                      {labelEnum(m)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -132,7 +133,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
               <SelectItem value={SEMUA}>Semua</SelectItem>
               {DAFTAR_STATUS.map((s) => (
                 <SelectItem key={s} value={s}>
-                  {s}
+                  {labelEnum(s)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -170,7 +171,7 @@ export default function PenghapusanAsetIndex({ pengajuan, filter, wajib }: Props
                     <TableCell>{p.MetodePenghapusan ?? '—'}</TableCell>
                     <TableCell>{p.NamaDiajukanOleh ?? '—'}</TableCell>
                     <TableCell>
-                      <Badge variant={VARIAN_BADGE_STATUS_PENGHAPUSAN[p.Status]}>{p.Status}</Badge>
+                      <Badge variant={VARIAN_BADGE_STATUS_PENGHAPUSAN[p.Status]}>{labelEnum(p.Status)}</Badge>
                     </TableCell>
                   </TableRow>
                 ))}

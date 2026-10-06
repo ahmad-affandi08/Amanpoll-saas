@@ -1,6 +1,5 @@
 import { HUE_UTAMA } from '@/components/grafik/palet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { formatAngka } from '@/lib/angka';
 import type { Attribution } from '@/features/Pemasaran/types';
 

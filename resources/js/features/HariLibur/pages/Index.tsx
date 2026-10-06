@@ -22,7 +22,7 @@ import type { HariLibur } from '@/features/HariLibur/types';
 import { ruteHariLibur } from '@/features/HariLibur/api';
 import { useKonfirmasi } from '@/hooks/use-konfirmasi';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
-import { adaPenyaringAktif, type FilterDaftar } from '@/components/data-table/daftar-server';
+import type { FilterDaftar } from '@/components/data-table/daftar-server';
 import type { Paginasi } from '@/types/global';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 

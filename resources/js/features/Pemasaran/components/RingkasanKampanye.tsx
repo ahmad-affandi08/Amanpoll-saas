@@ -3,6 +3,7 @@ import { varianStatus } from '@/features/Pemasaran/status';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatAngka } from '@/lib/angka';
 import type { Kampanye, PilihanKampanye } from '@/features/Pemasaran/types';
+import { labelEnum } from '@/lib/teks';
 
 function Butir({ label, isi }: { label: string; isi: React.ReactNode }) {
   return (
@@ -39,7 +40,7 @@ export function RingkasanKampanye({
         <CardContent className="grid gap-3 text-sm sm:grid-cols-2">
           <Butir
             label="Status"
-            isi={<Badge variant={varianStatus(kampanye.Status)}>{kampanye.Status}</Badge>}
+            isi={<Badge variant={varianStatus(kampanye.Status)}>{labelEnum(kampanye.Status)}</Badge>}
           />
           <Butir label="Objective" isi={kampanye.Objective} />
           <Butir

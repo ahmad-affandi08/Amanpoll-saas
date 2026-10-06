@@ -12,6 +12,7 @@ import type { MenuWhatsApp, TemplateWhatsApp } from '@/features/Pemasaran/types'
 import { DialogFormTemplate } from '@/features/Pemasaran/components/DialogFormTemplate';
 import { DialogKeputusan } from '@/features/Pemasaran/components/DialogKeputusan';
 import { KonsolMenu } from '@/features/Pemasaran/components/KonsolMenu';
+import { labelEnum } from '@/lib/teks';
 interface Props {
   template: TemplateWhatsApp[];
   menu: MenuWhatsApp[];
@@ -145,7 +146,9 @@ function KartuTemplate({
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Badge variant={varianStatus(template.StatusPersetujuan)}>{template.StatusPersetujuan}</Badge>
+          <Badge variant={varianStatus(template.StatusPersetujuan)}>
+            {labelEnum(template.StatusPersetujuan)}
+          </Badge>
           <DialogFormTemplate template={template} variabel={variabel} />
           <Button
             variant="outline"

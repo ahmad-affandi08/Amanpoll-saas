@@ -25,6 +25,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { DatePicker } from '@/components/ui/date-picker';
 import { tanggalHariIni } from '@/lib/waktu';
+import { labelEnum } from '@/lib/teks';
 
 const KONDISI: KondisiPenerimaan[] = ['Baik', 'RusakRingan', 'Rusak'];
 
@@ -202,7 +203,7 @@ export function DialogCatatPenerimaan({
                         <SelectContent>
                           {KONDISI.map((nilai) => (
                             <SelectItem key={nilai} value={nilai}>
-                              {nilai}
+                              {labelEnum(nilai)}
                             </SelectItem>
                           ))}
                         </SelectContent>

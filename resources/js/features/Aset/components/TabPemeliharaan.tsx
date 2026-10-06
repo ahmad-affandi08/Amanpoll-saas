@@ -8,6 +8,7 @@ import { ruteKeluhan } from '@/features/Keluhan/api';
 import { rutePerintahKerja } from '@/features/PerintahKerja/api';
 import { BarisKosong, KepalaBagian, durasi, tanggal } from '@/components/shared/riwayat';
 import { DeretStatistik, KartuStatistik } from '@/components/shared/KartuStatistik';
+import { labelEnum } from '@/lib/teks';
 
 export function TabPemeliharaan({ aset }: { aset: Aset }) {
   const [data, setData] = useState<RiwayatPemeliharaanAset | null>(null);
@@ -69,7 +70,7 @@ export function TabPemeliharaan({ aset }: { aset: Aset }) {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <Badge variant="outline">{satu.Prioritas}</Badge>
-                  <Badge variant="secondary">{satu.Status}</Badge>
+                  <Badge variant="secondary">{labelEnum(satu.Status)}</Badge>
                   <span className="w-24 text-right text-xs text-muted-foreground">
                     {tanggal(satu.DilaporkanPada)}
                   </span>
@@ -106,7 +107,7 @@ export function TabPemeliharaan({ aset }: { aset: Aset }) {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   {satu.KondisiAkhir && <Badge variant="outline">{satu.KondisiAkhir}</Badge>}
-                  <Badge variant="secondary">{satu.Status}</Badge>
+                  <Badge variant="secondary">{labelEnum(satu.Status)}</Badge>
                   <span className="w-24 text-right text-xs text-muted-foreground">
                     {tanggal(satu.DiselesaikanPada ?? satu.DijadwalkanMulaiPada)}
                   </span>
@@ -131,7 +132,7 @@ export function TabPemeliharaan({ aset }: { aset: Aset }) {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   {satu.Hasil && <Badge variant="outline">{satu.Hasil}</Badge>}
-                  <Badge variant="secondary">{satu.Status}</Badge>
+                  <Badge variant="secondary">{labelEnum(satu.Status)}</Badge>
                   <span className="w-24 text-right text-xs text-muted-foreground">
                     {tanggal(satu.DilaksanakanPada ?? satu.DijadwalkanPada)}
                   </span>

@@ -27,6 +27,7 @@ import type {
   LangkahOtomasi,
   VersiOtomasi,
 } from '@/features/Pemasaran/types';
+import { labelEnum } from '@/lib/teks';
 
 type Pilihan = {
   Jenis: string[];
@@ -310,7 +311,7 @@ function DialogLangkah({
               <SelectContent>
                 {pilihan.Jenis.map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -351,7 +352,7 @@ function DialogLangkah({
                   <SelectContent>
                     {(pilihan.Bidang[bidang] ?? []).map((satu) => (
                       <SelectItem key={satu} value={satu}>
-                        {satu}
+                        {labelEnum(satu)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -436,7 +437,7 @@ function DaftarEksekusi({ eksekusi }: { eksekusi: EksekusiOtomasi[] }) {
                   {satu.Percobaan > 0 ? ` · percobaan ${satu.Percobaan}` : ''}
                 </p>
               </div>
-              <Badge variant={varianStatus(satu.Status)}>{satu.Status}</Badge>
+              <Badge variant={varianStatus(satu.Status)}>{labelEnum(satu.Status)}</Badge>
             </div>
 
             {satu.Galat ? <p className="text-xs text-destructive">{satu.Galat}</p> : null}

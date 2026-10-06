@@ -17,6 +17,7 @@ import { hitungSisa } from '@/features/PesananPembelian/perhitungan';
 import { DialogCatatPenerimaan } from '@/features/PesananPembelian/components/DialogCatatPenerimaan';
 import { DialogCatatTagihan } from '@/features/PesananPembelian/components/DialogCatatTagihan';
 import type { AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   pesanan: PesananPembelian;
@@ -84,7 +85,7 @@ export default function PesananPembelianShow(props: Props) {
                   { label: pesanan.Nomor },
                 ]
           }
-          lencana={<Badge variant={VARIAN_STATUS[pesanan.Status]}>{pesanan.Status}</Badge>}
+          lencana={<Badge variant={VARIAN_STATUS[pesanan.Status]}>{labelEnum(pesanan.Status)}</Badge>}
           deskripsi={
             <>
               {pesanan.NamaPenyedia} · sumber {pesanan.NomorPermintaanPembelian ?? '-'} ·{' '}
@@ -203,7 +204,7 @@ export default function PesananPembelianShow(props: Props) {
                     </div>
                     <div className="flex items-center gap-3">
                       <strong className="font-mono">{formatUang(item.Total)}</strong>
-                      <Badge variant={VARIAN_TAGIHAN[item.Status]}>{item.Status}</Badge>
+                      <Badge variant={VARIAN_TAGIHAN[item.Status]}>{labelEnum(item.Status)}</Badge>
                     </div>
                   </Link>
                 ))

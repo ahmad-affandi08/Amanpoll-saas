@@ -16,6 +16,7 @@ import type { Partner, Pilihan, Program } from '@/features/PartnerPemasaran/type
 import { Bidang } from '@/features/PartnerPemasaran/components/Bidang';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
+import { labelEnum } from '@/lib/teks';
 
 export function DialogPartner({
   partner,
@@ -91,7 +92,7 @@ export function DialogPartner({
               <SelectContent>
                 {pilihan.Jenis.map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -121,7 +122,7 @@ export function DialogPartner({
               <SelectContent>
                 {pilihan.StatusPartner.map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>

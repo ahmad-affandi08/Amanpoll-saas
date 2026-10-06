@@ -25,6 +25,7 @@ import type { FieldFormulir, Formulir, PilihanFormulir } from '@/features/Pemasa
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   formulir: Formulir[];
@@ -218,7 +219,7 @@ function DialogFormulir({
                   <SelectContent>
                     {pilihan.Sumber.map((satu) => (
                       <SelectItem key={satu} value={satu}>
-                        {satu}
+                        {labelEnum(satu)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -345,7 +346,7 @@ function DialogFormulir({
                       <SelectContent>
                         {pilihan.Jenis.map((jenis) => (
                           <SelectItem key={jenis} value={jenis}>
-                            {jenis}
+                            {labelEnum(jenis)}
                           </SelectItem>
                         ))}
                       </SelectContent>

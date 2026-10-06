@@ -18,6 +18,7 @@ import { DialogTambahLayanan } from '@/features/Kontrak/components/DialogTambahL
 import { DialogPemakaian } from '@/features/Kontrak/components/DialogPemakaian';
 import { DialogBatalkan } from '@/features/Kontrak/components/DialogBatalkan';
 import type { AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   kontrak: Kontrak;
@@ -66,7 +67,7 @@ export default function KontrakShow({ kontrak, aset, wajib }: Props) {
         <KepalaHalaman
           judul={kontrak.Nama}
           labelBreadcrumb={kontrak.Nomor}
-          lencana={<Badge variant={VARIAN_STATUS[kontrak.Status]}>{kontrak.Status}</Badge>}
+          lencana={<Badge variant={VARIAN_STATUS[kontrak.Status]}>{labelEnum(kontrak.Status)}</Badge>}
           deskripsi={
             <span className="font-mono">
               {kontrak.Nomor} · {kontrak.Jenis} · {kontrak.NamaPenyedia ?? 'Tanpa penyedia'}

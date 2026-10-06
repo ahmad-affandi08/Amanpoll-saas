@@ -30,6 +30,7 @@ import { TANPA_PILIHAN, TANPA_UNIT_PENGELOLA, opsiDari, opsiKosong, opsiUnitPeng
 import type { UnitPengelolaRingkas } from '@/features/UnitOrganisasi/types';
 import { BidangKode } from '@/components/shared/BidangKode';
 import { Combobox } from '@/components/ui/combobox';
+import { labelEnum } from '@/lib/teks';
 
 interface LokasiRingkas {
   Id: string;
@@ -356,7 +357,9 @@ export default function GudangIndex({
         accessorFn: (row) => row.Status,
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => (
-          <Badge variant={VARIAN_BADGE_STATUS_GUDANG[row.original.Status]}>{row.original.Status}</Badge>
+          <Badge variant={VARIAN_BADGE_STATUS_GUDANG[row.original.Status]}>
+            {labelEnum(row.original.Status)}
+          </Badge>
         ),
         meta: { label: 'Status' },
       },

@@ -9,6 +9,7 @@ import type { Penyedia, RiwayatPengadaanPenyedia } from '@/features/Penyedia/typ
 import { rutePenyedia } from '@/features/Penyedia/api';
 import { ruteTagihanPenyedia } from '@/features/TagihanPenyedia/api';
 import { rutePesananPembelian } from '@/features/PesananPembelian/api';
+import { labelEnum } from '@/lib/teks';
 
 export function TabPengadaan({ penyedia }: { penyedia: Penyedia }) {
   const [data, setData] = useState<RiwayatPengadaanPenyedia | null>(null);
@@ -69,7 +70,7 @@ export function TabPengadaan({ penyedia }: { penyedia: Penyedia }) {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <Badge variant="secondary">{satu.Status}</Badge>
+                  <Badge variant="secondary">{labelEnum(satu.Status)}</Badge>
                   <span className="text-sm tabular-nums text-foreground">
                     {formatUang(satu.Total, satu.MataUang)}
                   </span>
@@ -105,7 +106,7 @@ export function TabPengadaan({ penyedia }: { penyedia: Penyedia }) {
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <Badge variant="secondary">{satu.Status}</Badge>
+                  <Badge variant="secondary">{labelEnum(satu.Status)}</Badge>
                   <span className="text-sm tabular-nums text-foreground">
                     {formatUang(satu.Total, satu.MataUang)}
                   </span>
@@ -140,7 +141,7 @@ export function TabPengadaan({ penyedia }: { penyedia: Penyedia }) {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <Badge variant={satu.Sisa > 0 ? 'perhatian' : 'sukses'}>{satu.Status}</Badge>
+                  <Badge variant={satu.Sisa > 0 ? 'perhatian' : 'sukses'}>{labelEnum(satu.Status)}</Badge>
                   <span className="text-sm tabular-nums text-foreground">{formatUang(satu.Total)}</span>
                   <span className="w-28 text-right text-xs tabular-nums text-muted-foreground">
                     {satu.Sisa > 0 ? `sisa ${formatUang(satu.Sisa)}` : 'lunas'}

@@ -22,6 +22,9 @@ final class TingkatLayanan extends ModelDasar
 
     public const UPDATED_AT = 'DiperbaruiPada';
 
+    /** Senin sampai Jumat, dipakai bila daftar hari kerja kosong atau tak terbaca. */
+    private const HARI_KERJA_BAWAAN = [1, 2, 3, 4, 5];
+
     protected $fillable = [
         'OrganisasiId',
         'Kode',
@@ -72,5 +75,36 @@ final class TingkatLayanan extends ModelDasar
     public function kategoriKeluhan(): HasMany
     {
         return $this->hasMany(KategoriKeluhan::class, 'TingkatLayananId', 'Id');
+    }
+
+    /**
+     * Hari kerja sebagai bilangan 1 (Senin) sampai 7 (Minggu), tanpa duplikat dan terurut.
+     *
+     * Aturan `integer` menerima "1", sehingga hari yang masuk lewat API atau formulir biasa
+     * dapat tersimpan sebagai teks. Perbandingan hari memakai `in_array(..., true)`, jadi
+     * teks tidak pernah cocok dan perhitungan SLA berputar tanpa akhir mencari hari kerja.
+     *
+     * @return list<int>
+     */
+    public function hariKerjaTerbaca(): array
+    {
+        $hari = [];
+
+        foreach ((array) $this->HariKerja as $satu) {
+            $angka = match (true) {
+                is_int($satu) => $satu,
+                is_string($satu) && ctype_digit($satu) => (int) $satu,
+                default => null,
+            };
+
+            if ($angka !== null && $angka >= 1 && $angka <= 7) {
+                $hari[] = $angka;
+            }
+        }
+
+        $hari = array_values(array_unique($hari));
+        sort($hari);
+
+        return $hari === [] ? self::HARI_KERJA_BAWAAN : $hari;
     }
 }

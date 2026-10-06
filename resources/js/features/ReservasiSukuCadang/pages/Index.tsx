@@ -26,6 +26,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { dariMasukanWaktu } from '@/lib/waktu';
+import { labelEnum } from '@/lib/teks';
 
 interface Ringkas {
   Id: string;
@@ -211,7 +212,7 @@ export default function ReservasiSukuCadangIndex({ reservasi, gudang, sukuCadang
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={VARIAN_BADGE_STATUS_RESERVASI[r.Status]}>{r.Status}</Badge>
+                  <Badge variant={VARIAN_BADGE_STATUS_RESERVASI[r.Status]}>{labelEnum(r.Status)}</Badge>
                   {r.Status === 'Aktif' && (
                     <>
                       <Button size="sm" onClick={() => konsumsi(r)}>

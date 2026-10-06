@@ -15,6 +15,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { PemilihNomenklatur } from '@/features/Aset/components/PemilihNomenklatur';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 export function TabInfo({
   aset,
@@ -253,7 +254,7 @@ export function TabInfo({
             <Combobox
               nilai={form.data.Kondisi}
               onPilih={(v) => form.setData('Kondisi', v as Aset['Kondisi'])}
-              opsi={['Baik', 'PerluPerhatian', 'Rusak'].map((s) => ({ nilai: s, label: s }))}
+              opsi={['Baik', 'PerluPerhatian', 'Rusak'].map((s) => ({ nilai: s, label: labelEnum(s) }))}
             />
           </div>
           <div className="space-y-2">
@@ -261,7 +262,7 @@ export function TabInfo({
             <Combobox
               nilai={form.data.TingkatKritis}
               onPilih={(v) => form.setData('TingkatKritis', v as Aset['TingkatKritis'])}
-              opsi={['Normal', 'Tinggi', 'SangatTinggi'].map((s) => ({ nilai: s, label: s }))}
+              opsi={['Normal', 'Tinggi', 'SangatTinggi'].map((s) => ({ nilai: s, label: labelEnum(s) }))}
             />
           </div>
         </div>

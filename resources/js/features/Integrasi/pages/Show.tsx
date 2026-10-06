@@ -29,6 +29,7 @@ import type {
 import { ruteIntegrasi } from '@/features/Integrasi/api';
 import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   integrasi: IntegrasiEksternal;
@@ -257,7 +258,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
 
         <KepalaHalaman
           judul={integrasi.Nama}
-          lencana={<Badge variant={VARIAN_STATUS[integrasi.Status]}>{integrasi.Status}</Badge>}
+          lencana={<Badge variant={VARIAN_STATUS[integrasi.Status]}>{labelEnum(integrasi.Status)}</Badge>}
           deskripsi={
             <span className="font-mono">
               {integrasi.Kode} · {integrasi.Jenis} · {integrasi.MetodeAutentikasi ?? 'Tanpa autentikasi'}
@@ -272,7 +273,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
                 <SelectContent>
                   {STATUS.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      {labelEnum(item)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -394,7 +395,7 @@ export default function IntegrasiShow({ integrasi, pemetaan, sinkronisasi, wajib
                       <p className="mt-1 text-xs text-bahaya-600">{item.PesanKesalahan}</p>
                     )}
                   </div>
-                  <Badge variant={VARIAN_SINKRON[item.Status]}>{item.Status}</Badge>
+                  <Badge variant={VARIAN_SINKRON[item.Status]}>{labelEnum(item.Status)}</Badge>
                 </div>
               ))
             )}

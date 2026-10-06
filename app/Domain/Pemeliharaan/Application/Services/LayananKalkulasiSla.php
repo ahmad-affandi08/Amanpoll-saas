@@ -51,7 +51,7 @@ final class LayananKalkulasiSla
 
         $sisaMenit = $menit;
         $waktu = $waktuMulai;
-        $hariKerja = $tingkatLayanan->HariKerja ?: [1, 2, 3, 4, 5];
+        $hariKerja = $tingkatLayanan->hariKerjaTerbaca();
 
         while (true) {
             if (! $this->hariDihitung($organisasiId, $tingkatLayanan, $waktu, $hariKerja, $lokasiId)) {

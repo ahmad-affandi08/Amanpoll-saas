@@ -78,7 +78,7 @@ final class UbahStatusPerintahKerja
             }
 
             $sebelum = $terkunci->toArray();
-            $sekarang = now();
+            $sekarang = now()->toImmutable();
             $terkunci->Status = $tujuan->value;
             $terkunci->Versi++;
 

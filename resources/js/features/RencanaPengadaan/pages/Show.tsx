@@ -25,6 +25,7 @@ import { KepalaHalaman } from '@/components/shared/KepalaHalaman';
 import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { Combobox } from '@/components/ui/combobox';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface PosRingkas {
   Id: string;
@@ -318,7 +319,7 @@ export default function RencanaPengadaanShow({ rencana, posAnggaran, usulanDiset
         <KepalaHalaman
           judul={rencana.Nama}
           labelBreadcrumb={rencana.Nomor}
-          lencana={<Badge variant={VARIAN_STATUS[rencana.Status]}>{rencana.Status}</Badge>}
+          lencana={<Badge variant={VARIAN_STATUS[rencana.Status]}>{labelEnum(rencana.Status)}</Badge>}
           deskripsi={
             <>
               <span className="font-mono">

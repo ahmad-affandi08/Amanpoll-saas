@@ -14,6 +14,7 @@ import { TabKontak } from '@/features/Penyedia/components/TabKontak';
 import { TabPenilaian } from '@/features/Penyedia/components/TabPenilaian';
 import { TabPengadaan } from '@/features/Penyedia/components/TabPengadaan';
 import { TabLayanan } from '@/features/Penyedia/components/TabLayanan';
+import { labelEnum } from '@/lib/teks';
 
 interface Props {
   penyedia: Penyedia;
@@ -33,7 +34,11 @@ export default function PenyediaShow({ penyedia, kategoriPenyedia, ringkasan, wa
         className="mb-5"
         judul={penyedia.Nama}
         labelBreadcrumb={penyedia.Nama}
-        lencana={<Badge variant={penyedia.Status === 'Aktif' ? 'sukses' : 'netral'}>{penyedia.Status}</Badge>}
+        lencana={
+          <Badge variant={penyedia.Status === 'Aktif' ? 'sukses' : 'netral'}>
+            {labelEnum(penyedia.Status)}
+          </Badge>
+        }
         deskripsi={
           <>
             <span className="font-mono">{penyedia.Kode}</span>

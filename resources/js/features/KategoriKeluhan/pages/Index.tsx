@@ -30,6 +30,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong, opsiUnitPengelola } from '@/lib/pi
 import { BidangKode } from '@/components/shared/BidangKode';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
+import { labelEnum } from '@/lib/teks';
 
 interface Ringkas {
   Id: string;
@@ -207,7 +208,7 @@ function DialogKategori({
                   <SelectContent>
                     {PRIORITAS.map((p) => (
                       <SelectItem key={p} value={p}>
-                        {p}
+                        {labelEnum(p)}
                       </SelectItem>
                     ))}
                   </SelectContent>

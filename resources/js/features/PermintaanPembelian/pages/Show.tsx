@@ -26,6 +26,7 @@ import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { opsiDari } from '@/lib/pilihan';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface AsetRingkas {
   Id: string;
@@ -108,7 +109,7 @@ function DialogTambahItem({ permintaan, aset, sukuCadang, wajib }: Props) {
                 <SelectContent>
                   {JENIS_ITEM.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      {labelEnum(item)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -252,7 +253,7 @@ export default function PermintaanPembelianShow(props: Props) {
           labelBreadcrumb={permintaan.Nomor}
           lencana={
             <>
-              <Badge variant={VARIAN_STATUS[permintaan.Status]}>{permintaan.Status}</Badge>
+              <Badge variant={VARIAN_STATUS[permintaan.Status]}>{labelEnum(permintaan.Status)}</Badge>
               <Badge variant="secondary">{permintaan.Prioritas}</Badge>
             </>
           }

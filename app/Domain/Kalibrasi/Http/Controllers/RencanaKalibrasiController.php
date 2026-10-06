@@ -20,7 +20,6 @@ use App\Shared\Infrastructure\Ekspor\KolomEkspor;
 use App\Shared\Infrastructure\Persistence\BacaRelasi;
 use App\Shared\Infrastructure\Persistence\BatasDaftar;
 use App\Shared\Infrastructure\Validasi\AturanWajib;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -103,22 +102,9 @@ final class RencanaKalibrasiController extends Controller
             ->orderBy('TanggalBerikutnya')
             ->limit(BatasDaftar::MAKS)
             ->get()
-            ->map(function ($rk) use ($hariIni) {
-                $tglBerikutnya = Carbon::parse($rk->TanggalBerikutnya);
-                $batasPeringatan = (clone $hariIni)->addDays((int) $rk->PeringatanHariSebelum);
-
-                if (! $rk->Aktif) {
-                    $status = 'TidakAktif';
-                } elseif ($tglBerikutnya->lt($hariIni)) {
-                    $status = 'Terlambat';
-                } elseif ($tglBerikutnya->lte($batasPeringatan)) {
-                    $status = 'SegeraJatuhTempo';
-                } else {
-                    $status = 'Valid';
-                }
-
-                $rk->StatusKalibrasi = $status;
-                $rk->SisaHari = (int) $hariIni->diffInDays($tglBerikutnya, false);
+            ->map(function (RencanaKalibrasi $rk) use ($hariIni) {
+                $rk->setAttribute('StatusKalibrasi', $rk->statusKepatuhan($hariIni)->value);
+                $rk->setAttribute('SisaHari', $rk->sisaHari($hariIni));
 
                 return $rk;
             });
@@ -126,7 +112,7 @@ final class RencanaKalibrasiController extends Controller
         // Filter status kalibrasi di collection jika dipilih
         if ($request->filled('status')) {
             $statusFilter = $request->input('status');
-            $daftarRencana = $daftarRencana->filter(fn ($rk) => $rk->StatusKalibrasi === $statusFilter)->values();
+            $daftarRencana = $daftarRencana->filter(fn ($rk) => $rk->getAttribute('StatusKalibrasi') === $statusFilter)->values();
         }
 
         $asetList = Aset::query()
@@ -189,21 +175,8 @@ final class RencanaKalibrasiController extends Controller
         ]);
 
         $hariIni = $this->kalender->hariIni($rencanaKalibrasi->OrganisasiId);
-        $tglBerikutnya = Carbon::parse($rencanaKalibrasi->TanggalBerikutnya);
-        $batasPeringatan = (clone $hariIni)->addDays((int) $rencanaKalibrasi->PeringatanHariSebelum);
-
-        if (! $rencanaKalibrasi->Aktif) {
-            $status = 'TidakAktif';
-        } elseif ($tglBerikutnya->lt($hariIni)) {
-            $status = 'Terlambat';
-        } elseif ($tglBerikutnya->lte($batasPeringatan)) {
-            $status = 'SegeraJatuhTempo';
-        } else {
-            $status = 'Valid';
-        }
-
-        $rencanaKalibrasi->StatusKalibrasi = $status;
-        $rencanaKalibrasi->SisaHari = (int) $hariIni->diffInDays($tglBerikutnya, false);
+        $rencanaKalibrasi->setAttribute('StatusKalibrasi', $rencanaKalibrasi->statusKepatuhan($hariIni)->value);
+        $rencanaKalibrasi->setAttribute('SisaHari', $rencanaKalibrasi->sisaHari($hariIni));
 
         $organisasiId = $rencanaKalibrasi->OrganisasiId;
 

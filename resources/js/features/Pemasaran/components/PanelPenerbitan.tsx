@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import type { HalamanDetail, PilihanHalaman } from '@/features/Pemasaran/types';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import { dariMasukanWaktu, keMasukanWaktu } from '@/lib/waktu';
+import { labelEnum } from '@/lib/teks';
 
 export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; pilihan: PilihanHalaman }) {
   const [status, setStatus] = useState(halaman.Status);
@@ -48,7 +49,7 @@ export function PanelPenerbitan({ halaman, pilihan }: { halaman: HalamanDetail; 
               <SelectContent>
                 {pilihan.Status.filter((satu) => satu !== 'Terbit').map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>

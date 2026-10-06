@@ -29,6 +29,7 @@ import { TANPA_PILIHAN, opsiDari, opsiKosong } from '@/lib/pilihan';
 import { AturanWajibProvider, type AturanWajib } from '@/lib/aturan-wajib';
 import { Combobox } from '@/components/ui/combobox';
 import { InputUang } from '@/components/shared/InputUang';
+import { labelEnum } from '@/lib/teks';
 
 interface Referensi {
   Id: string;
@@ -129,7 +130,7 @@ function DialogBuatUsulan({
                   <SelectContent>
                     {PRIORITAS.map((item) => (
                       <SelectItem key={item} value={item}>
-                        {item}
+                        {labelEnum(item)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -300,7 +301,7 @@ export default function UsulanAsetIndex({
               <SelectItem value={SEMUA}>Semua prioritas</SelectItem>
               {PRIORITAS.map((item) => (
                 <SelectItem key={item} value={item}>
-                  {item}
+                  {labelEnum(item)}
                 </SelectItem>
               ))}
             </SelectContent>

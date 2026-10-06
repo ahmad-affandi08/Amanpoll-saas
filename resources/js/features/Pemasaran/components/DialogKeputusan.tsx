@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { rutePemasaran } from '@/features/Pemasaran/api';
 import type { TemplateWhatsApp } from '@/features/Pemasaran/types';
+import { labelEnum } from '@/lib/teks';
 
 /** Jalur manual untuk penyedia tanpa API: keputusannya tetap milik penyedia, operator hanya menyalin. */
 export function DialogKeputusan({
@@ -65,7 +66,7 @@ export function DialogKeputusan({
               <SelectContent>
                 {pilihan.Status.filter((satu) => template.TujuanStatus.includes(satu)).map((satu) => (
                   <SelectItem key={satu} value={satu}>
-                    {satu}
+                    {labelEnum(satu)}
                   </SelectItem>
                 ))}
               </SelectContent>
