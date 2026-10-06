@@ -21,6 +21,17 @@ use RuntimeException;
  */
 final class PenulisEksporCsv implements PenulisEkspor
 {
+    /**
+     * @param  bool  $denganMerek  footer "Powered by Amanpoll" di baris terakhir
+     *
+     * Baku mati: penulis ini juga dipakai PenyusunTemplatImporAset untuk templat
+     * dan daftar galat yang DIUNGGAH KEMBALI apa adanya. Footer di situ bukan
+     * sekadar tempelan -- ia jadi baris data ekstra yang diproses pengurai impor
+     * dan menggagalkan pratinjau. Hanya laporan yang dibaca manusia (EksporDaftar,
+     * LayananEksporLaporan) yang menyalakannya.
+     */
+    public function __construct(private readonly bool $denganMerek = false) {}
+
     public function format(): FormatEkspor
     {
         return FormatEkspor::Csv;
@@ -47,6 +58,12 @@ final class PenulisEksporCsv implements PenulisEkspor
             fputcsv($berkas, NetralkanRumus::barisCsv($kepala), escape: '');
             foreach ($baris as $satu) {
                 fputcsv($berkas, NetralkanRumus::barisCsv($satu), escape: '');
+            }
+
+            if ($this->denganMerek) {
+                // Teks biasa, tidak diawali karakter pemicu rumus -- tidak perlu lewat NetralkanRumus.
+                fputcsv($berkas, [], escape: '');
+                fputcsv($berkas, ['Powered by Amanpoll'], escape: '');
             }
         } finally {
             fclose($berkas);

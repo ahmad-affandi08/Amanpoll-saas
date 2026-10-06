@@ -295,7 +295,9 @@ final class EksporLaporanTest extends KasusPelaporan
 
     /**
      * Logo yang diunggah kini tersimpan sebagai WebP; Dompdf harus tetap
-     * mencetaknya di kop. Pembandingnya PDF tanpa logo: tanpa gambar sama sekali.
+     * mencetaknya di kop. Pembandingnya PDF tanpa logo organisasi -- bukan
+     * tanpa gambar sama sekali, sebab lambang Amanpoll di footer sudah ikut
+     * tercetak pada PDF itu juga.
      */
     public function test_pdf_laporan_mencetak_logo_webp_organisasi(): void
     {
@@ -306,7 +308,7 @@ final class EksporLaporanTest extends KasusPelaporan
 
         $this->jalankanJob($pengguna, FormatEkspor::Pdf, 'Tanpa Logo');
         $tanpaLogo = Berkas::query()->where('DataTambahan->Judul', 'Tanpa Logo')->firstOrFail();
-        $this->assertStringNotContainsString('/Subtype /Image', $this->isiAsli($tanpaLogo));
+        $jumlahTanpaLogo = $this->jumlahGambar($this->isiAsli($tanpaLogo));
 
         app(UnggahLogoOrganisasi::class)->jalankan(
             $this->organisasi,
@@ -317,7 +319,20 @@ final class EksporLaporanTest extends KasusPelaporan
         $this->jalankanJob($pengguna, FormatEkspor::Pdf, 'Dengan Logo');
         $denganLogo = Berkas::query()->where('DataTambahan->Judul', 'Dengan Logo')->firstOrFail();
 
-        $this->assertStringContainsString('/Subtype /Image', $this->isiAsli($denganLogo));
+        $this->assertGreaterThan($jumlahTanpaLogo, $this->jumlahGambar($this->isiAsli($denganLogo)));
+    }
+
+    /**
+     * Banyak objek gambar yang sungguh tertanam di PDF-nya.
+     *
+     * Bukan jumlah logo: PNG transparan Dompdf menulis dua objek `/Subtype
+     * /Image` per logo (gambarnya sendiri, dan SMask terpisah untuk kanal
+     * alfa-nya), jadi dibandingkan relatif terhadap baseline tanpa logo
+     * organisasi, bukan dicocokkan ke angka tetap.
+     */
+    private function jumlahGambar(string $isi): int
+    {
+        return substr_count($isi, '/Subtype /Image');
     }
 
     /** Isi asli berkas ekspor, gzip sudah dibuka (PRD 11.1). */

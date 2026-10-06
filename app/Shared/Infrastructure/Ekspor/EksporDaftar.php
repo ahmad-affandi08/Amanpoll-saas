@@ -240,8 +240,8 @@ final class EksporDaftar
     private function penulis(FormatEkspor $format, ?Organisasi $organisasi): PenulisEkspor
     {
         return match ($format) {
-            FormatEkspor::Csv => new PenulisEksporCsv,
-            FormatEkspor::Xlsx => new PenulisEksporXlsx,
+            FormatEkspor::Csv => new PenulisEksporCsv(denganMerek: true),
+            FormatEkspor::Xlsx => new PenulisEksporXlsx(denganMerek: true),
             // Hanya PDF yang punya tempat untuk logo; CSV dan XLSX tidak.
             FormatEkspor::Pdf => new PenulisEksporPdf(LogoKopEkspor::dataUri($organisasi?->LogoUrl)),
         };

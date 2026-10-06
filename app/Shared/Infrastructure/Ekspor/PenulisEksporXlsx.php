@@ -17,6 +17,16 @@ use OpenSpout\Writer\XLSX\Writer;
  */
 final class PenulisEksporXlsx implements PenulisEkspor
 {
+    /**
+     * @param  bool  $denganMerek  footer "Powered by Amanpoll" di baris terakhir
+     *
+     * Baku mati, sama seperti PenulisEksporCsv: penulis format ini cocok dipakai
+     * lagi untuk templat yang diunggah kembali apa adanya, dan footer di situ
+     * akan terbaca sebagai baris data ekstra oleh pengurainya. Hanya laporan
+     * yang dibaca manusia (EksporDaftar, LayananEksporLaporan) yang menyalakannya.
+     */
+    public function __construct(private readonly bool $denganMerek = false) {}
+
     public function format(): FormatEkspor
     {
         return FormatEkspor::Xlsx;
@@ -40,6 +50,16 @@ final class PenulisEksporXlsx implements PenulisEkspor
             $penulis->addRow(Row::fromValuesWithStyle(NetralkanRumus::barisXlsx($kepala), $gayaTebal));
             foreach ($baris as $satu) {
                 $penulis->addRow(Row::fromValues(NetralkanRumus::barisXlsx($satu)));
+            }
+
+            if ($this->denganMerek) {
+                $gayaMerek = (new Style)->withFontItalic(true)->withFontColor('6E7A82')->withFontSize(9);
+
+                // OpenSpout tidak punya API penyisipan gambar (lihat PenulisEksporPdf
+                // untuk lambang bergambar); baris penutup ini teks biasa, bukan rumus --
+                // tidak diawali karakter yang dibaca NetralkanRumus sebagai pemicu.
+                $penulis->addRow(Row::fromValues([]));
+                $penulis->addRow(Row::fromValuesWithStyle(['Powered by Amanpoll'], $gayaMerek));
             }
         } finally {
             $penulis->close();

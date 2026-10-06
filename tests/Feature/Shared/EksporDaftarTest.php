@@ -356,14 +356,19 @@ class EksporDaftarTest extends TestCase
 
     public function test_kop_pdf_menyisipkan_logo_yang_tersimpan_di_disk_aplikasi(): void
     {
+        $this->buatAset($this->organisasi);
+        $tanpaLogo = $this->jumlahGambar($this->unduh('?format=pdf'));
+
         Storage::fake('public', ['url' => (string) config('filesystems.disks.public.url')]);
         Storage::disk('public')->put('organisasi/logo.png', (string) base64_decode(self::PNG_SATU_PIKSEL, true));
         $this->organisasi->update(['LogoUrl' => Storage::disk('public')->url('organisasi/logo.png')]);
-        $this->buatAset($this->organisasi);
 
         $isi = $this->unduh('?format=pdf');
 
-        $this->assertStringContainsString('/Subtype /Image', $isi, 'Logo lokal seharusnya ikut tercetak di PDF.');
+        // Lebih banyak dari tanpa logo sama sekali -- lihat jumlahGambar() soal
+        // kenapa membandingkan jumlah alih-alih memeriksa angka tetap: lambang
+        // Amanpoll di footer sudah ikut tercetak bahkan tanpa logo organisasi.
+        $this->assertGreaterThan($tanpaLogo, $this->jumlahGambar($isi), 'Logo lokal seharusnya ikut tercetak di PDF.');
         $this->assertStringContainsString('Organisasi Ekspor', $this->teksPdf($isi));
     }
 
@@ -374,13 +379,34 @@ class EksporDaftarTest extends TestCase
      */
     public function test_logo_jarak_jauh_dilewati_tanpa_menggagalkan_ekspor_pdf(): void
     {
-        $this->organisasi->update(['LogoUrl' => 'https://penyerang.test/logo.png']);
         $this->buatAset($this->organisasi);
+        $tanpaLogo = $this->jumlahGambar($this->unduh('?format=pdf'));
+
+        $this->organisasi->update(['LogoUrl' => 'https://penyerang.test/logo.png']);
 
         $isi = $this->unduh('?format=pdf');
 
-        $this->assertStringNotContainsString('/Subtype /Image', $isi, 'Gambar jarak jauh tidak boleh masuk ke PDF.');
+        // Sama persis dengan tanpa logo sama sekali, bukan nol: sejak footer
+        // "Powered by Amanpoll" ditambahkan, setiap PDF ekspor sudah membawa
+        // gambar itu terlepas dari logo organisasinya. Yang membuktikan logo
+        // jarak jauh ditolak adalah jumlahnya TIDAK bertambah dari baseline
+        // itu, bukan bahwa PDF-nya sama sekali tidak bergambar.
+        $this->assertSame($tanpaLogo, $this->jumlahGambar($isi), 'Gambar jarak jauh tidak boleh masuk ke PDF.');
         $this->assertStringContainsString('Organisasi Ekspor', $this->teksPdf($isi));
+    }
+
+    /**
+     * Banyak objek gambar yang sungguh tertanam di PDF-nya.
+     *
+     * Bukan jumlah logo: PNG transparan Dompdf menulis dua objek `/Subtype
+     * /Image` per logo (gambarnya sendiri, dan SMask terpisah untuk kanal
+     * alfa-nya), jadi angka mentahnya bukan "satu per logo" -- karena itu
+     * dibandingkan relatif terhadap baseline tanpa logo organisasi, bukan
+     * dicocokkan ke angka tetap.
+     */
+    private function jumlahGambar(string $isi): int
+    {
+        return substr_count($isi, '/Subtype /Image');
     }
 
     /** Isi terbaca dari berkas apa pun formatnya, supaya kopnya diperiksa di berkas yang sungguhan. */

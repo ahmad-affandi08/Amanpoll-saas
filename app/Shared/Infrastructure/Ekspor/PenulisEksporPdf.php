@@ -71,6 +71,14 @@ final class PenulisEksporPdf implements PenulisEkspor
         $opsi->set('isHtml5ParserEnabled', true);
         $opsi->set('defaultFont', 'DejaVu Sans');
 
+        // isPhpEnabled TETAP mati seperti isRemoteEnabled di atas -- kalau
+        // dihidupkan, blok <script type="text/php"> di HTML akan dieksekusi
+        // sungguhan oleh Dompdf. Itu dipakai sebagian orang untuk mencetak
+        // nomor halaman, tapi HTML di sini mengandung nilai milik tenant
+        // (nama aset, nilai penyaring); mengeksekusi PHP dari situ mengubah
+        // setiap ekspor PDF menjadi RCE atas nama server. Nomor halaman
+        // karena itu sengaja tidak dicetak -- hanya merek "Powered by
+        // Amanpoll" yang berulang di footer, lewat CSS position:fixed biasa.
         $dompdf = new Dompdf($opsi);
         $dompdf->loadHtml($this->html($kepala, $barisCetak, $meta, $dipotong), 'UTF-8');
         $dompdf->setPaper('A4', 'landscape');
@@ -94,6 +102,7 @@ final class PenulisEksporPdf implements PenulisEkspor
         // masuk <title>; hanya isi tabel yang selama ini dilolosi.
         $judulAman = e($judul);
         $kop = $this->kop($judul, $meta['Organisasi'] ?? '');
+        $footer = $this->footer();
 
         $barisMeta = '';
         foreach ($meta as $kunci => $nilai) {
@@ -130,7 +139,7 @@ final class PenulisEksporPdf implements PenulisEkspor
 <!DOCTYPE html>
 <html lang="id"><head><meta charset="utf-8"><title>{$judulAman}</title>
 <style>
-  @page { margin: 14mm; }
+  @page { margin: 14mm 14mm 22mm 14mm; }
   body { font-family: "DejaVu Sans", sans-serif; font-size: 9pt; color: #172027; }
   h1 { font-size: 15pt; color: #17324D; margin: 0 0 1mm; }
   table.kop { width: 100%; border-collapse: collapse; border-bottom: 2px solid #17324D; margin-bottom: 4mm; }
@@ -143,16 +152,36 @@ final class PenulisEksporPdf implements PenulisEkspor
   table.data { width: 100%; border-collapse: collapse; }
   table.data th { background: #F4F7F8; color: #17324D; text-align: left; padding: 2mm; border-bottom: 1px solid #D7DEE3; }
   table.data td { padding: 1.6mm 2mm; border-bottom: 1px solid #E7ECEF; }
+  table.data tbody tr:nth-child(even) td { background: #FAFBFC; }
   table.data td.angka { text-align: right; }
   .catatan { margin-top: 4mm; color: #C2413B; font-size: 8pt; }
+  footer { position: fixed; left: 0mm; right: 0mm; bottom: -14mm; height: 9mm; border-top: 1px solid #E7ECEF; padding-top: 2mm; }
+  footer table { width: 100%; }
+  footer .merek { text-align: left; font-size: 7.5pt; color: #6E7A82; }
+  footer .merek img { height: 3.5mm; vertical-align: middle; margin-right: 1.5mm; }
 </style></head>
 <body>
   {$kop}
   <table class="meta">{$barisMeta}</table>
   <table class="data"><thead><tr>{$kepalaHtml}</tr></thead><tbody>{$isiHtml}</tbody></table>
   {$catatan}
+  {$footer}
 </body></html>
 HTML;
+    }
+
+    /**
+     * Footer "Powered by Amanpoll" yang berulang di setiap halaman lewat
+     * position:fixed. Lambangnya dilewati diam-diam bila berkasnya tidak
+     * terbaca -- sama seperti logo organisasi di kop (lihat kop()), berkas
+     * ekspor tanpa lambang masih berguna.
+     */
+    private function footer(): string
+    {
+        $logo = LogoAmanpollEkspor::dataUri();
+        $logoHtml = $logo !== null ? '<img src="'.e($logo).'" alt="">' : '';
+
+        return '<footer><table><tr><td class="merek">'.$logoHtml.'Powered by Amanpoll</td></tr></table></footer>';
     }
 
     /**

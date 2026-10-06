@@ -214,9 +214,9 @@ final class AmanpollServiceProvider extends ServiceProvider
                 $app->make(PenjagaFilterMetrik::class),
                 $app->make(PenyimpanBerkas::class),
             );
-            foreach ([PenulisEksporCsv::class, PenulisEksporXlsx::class, PenulisEksporPdf::class] as $penulis) {
-                $layanan->daftarkanPenulis($app->make($penulis));
-            }
+            $layanan->daftarkanPenulis(new PenulisEksporCsv(denganMerek: true));
+            $layanan->daftarkanPenulis(new PenulisEksporXlsx(denganMerek: true));
+            $layanan->daftarkanPenulis($app->make(PenulisEksporPdf::class));
 
             return $layanan;
         });
