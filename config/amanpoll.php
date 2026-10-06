@@ -110,6 +110,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tenant awal
+    |--------------------------------------------------------------------------
+    |
+    | Tenant pertama yang disemai `TenantAwalSeeder` di produksi, supaya calon
+    | klien dapat langsung mencoba tanpa mendaftar. Kata sandi bawaannya
+    | sengaja mudah ditebak dan HARUS diganti setelah masuk pertama kali, atau
+    | diisi lewat environment sebelum seeder dijalankan.
+    |
+    */
+    'tenant_awal' => [
+        'kode' => env('AMANPOLL_TENANT_AWAL_KODE', 'AWAL'),
+        'nama' => env('AMANPOLL_TENANT_AWAL_NAMA', 'Organisasi Awal'),
+        'nama_admin' => env('AMANPOLL_TENANT_AWAL_NAMA_ADMIN', 'Admin'),
+        'email' => env('AMANPOLL_TENANT_AWAL_EMAIL', 'admin@gmail.com'),
+        'kata_sandi' => env('AMANPOLL_TENANT_AWAL_KATA_SANDI', 'password1234'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Pemasaran
     |--------------------------------------------------------------------------
     |

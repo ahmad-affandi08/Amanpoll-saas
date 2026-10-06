@@ -4178,6 +4178,12 @@ Frontend:
 - 16 impor dan satu fungsi yatim dihapus; `tsc --noUnusedLocals` bersih.
 - Bintang wajib yang ditulis di teks label diganti prop `wajib` pada komponen `Label`.
 
+Tenant awal untuk uji coba calon klien: `TenantAwalSeeder` (dipanggil `DatabaseSeeder` hanya di
+produksi) menyemai satu organisasi `AWAL` dengan admin pemilik `admin@gmail.com` dan seluruh peran
+bawaan. Nilainya dibaca dari `config('amanpoll.tenant_awal')` (`AMANPOLL_TENANT_AWAL_*`). Idempotent:
+dijalankan ulang tidak menggandakan dan tidak mengembalikan kata sandi yang sudah diganti. Kata sandi
+bawaan `password1234` sengaja mudah ditebak dan wajib diganti setelah masuk pertama kali.
+
 ---
 
 # 29. Urutan Ringkas yang Tidak Boleh Dibalik Sembarangan

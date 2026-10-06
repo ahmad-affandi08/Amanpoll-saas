@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
+     * Di produksi hanya satu tenant kosong yang disemai (TenantAwalSeeder), bukan data contoh.
      * Data contoh sengaja ditinggalkan di produksi alih-alih menggagalkan
      * seluruh perintah: `db:seed --force` di sana tetap harus menyemai kunci
      * wajibnya sampai tuntas dan keluar bersih, supaya tidak ada yang mengira
@@ -35,7 +36,8 @@ class DatabaseSeeder extends Seeder
         $this->call(self::SEEDER_WAJIB);
 
         if (app()->environment('production')) {
-            $this->command?->warn('Lingkungan produksi: DemoAwalSeeder dilewati.');
+            $this->command?->warn('Lingkungan produksi: DemoAwalSeeder dilewati; yang disemai TenantAwalSeeder.');
+            $this->call(TenantAwalSeeder::class);
 
             return;
         }

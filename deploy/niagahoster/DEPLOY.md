@@ -68,7 +68,7 @@ php artisan db:seed --class=Database\\Seeders\\FiturPlatformSeeder --force
 php artisan db:seed --class=Database\\Seeders\\TahapPipelineSeeder --force
 ```
 
-`php artisan db:seed --force` polos juga menyemai keempatnya dan melewati data contohnya di produksi.
+`php artisan db:seed --force` polos juga menyemai keempatnya, melewati data contohnya di produksi, dan menambah **satu tenant awal** lewat `TenantAwalSeeder`: organisasi `AWAL` dengan admin pemilik `admin@gmail.com` / `password1234` (diubah lewat `AMANPOLL_TENANT_AWAL_*` di `.env` sebelum seeder dijalankan). Tenant ini kosong dan langsung bisa dipakai calon klien di `https://dashboard.amanpoll.com/login`. Seeder idempotent, tidak mengembalikan kata sandi yang sudah diganti. **Ganti kata sandi bawaan itu segera setelah masuk pertama kali.**
 
 ## Cron
 

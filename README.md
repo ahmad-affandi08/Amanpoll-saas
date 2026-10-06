@@ -282,7 +282,7 @@ Panduan lengkap ada di [`deploy/niagahoster/DEPLOY.md`](deploy/niagahoster/DEPLO
    ```bash
    composer install --no-dev --optimize-autoloader
    php artisan migrate --force
-   php artisan db:seed --force      # hanya kunci wajib; data demo dilewati di produksi
+   php artisan db:seed --force      # kunci wajib + satu tenant awal (admin@gmail.com / password1234); data demo dilewati di produksi
    php artisan storage:link
    php artisan optimize
    ```

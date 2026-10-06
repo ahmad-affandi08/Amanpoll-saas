@@ -6,6 +6,8 @@ namespace Tests\Feature\Platform;
 
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\DemoAwalSeeder;
+use Database\Seeders\IzinSeeder;
+use Database\Seeders\TenantAwalSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -115,5 +117,55 @@ class SeederDataContohTest extends TestCase
             password_verify('password', $tersimpan),
             'Kata sandi bawaan tidak boleh ikut berlaku saat konfigurasinya diganti.',
         );
+    }
+
+    public function test_database_seeder_di_produksi_menyemai_satu_tenant_awal_yang_bisa_dipakai_masuk(): void
+    {
+        $this->jadikanProduksi();
+
+        $this->artisan('db:seed', ['--force' => true])->assertExitCode(0);
+
+        $organisasiId = DB::table('Organisasi')->where('Kode', 'AWAL')->value('Id');
+        $this->assertNotNull($organisasiId, 'Tenant awal harus ada di produksi.');
+        $this->assertSame(1, DB::table('Organisasi')->count());
+
+        $admin = DB::table('Pengguna')->where('Email', 'admin@gmail.com')->first();
+        $this->assertNotNull($admin);
+        $this->assertSame($organisasiId, $admin->OrganisasiId);
+        $this->assertTrue(password_verify('password1234', (string) $admin->KataSandi));
+
+        $peranPemilik = DB::table('Peran')->where('OrganisasiId', $organisasiId)->where('Kode', 'PEMILIK')->value('Id');
+        $this->assertSame(
+            1,
+            DB::table('PenggunaPeran')->where('PenggunaId', $admin->Id)->where('PeranId', $peranPemilik)->count(),
+        );
+        $this->assertSame(DB::table('Izin')->count(), DB::table('PeranIzin')->where('PeranId', $peranPemilik)->count());
+        $this->assertGreaterThan(1, DB::table('Peran')->where('OrganisasiId', $organisasiId)->count(), 'Peran bawaan ikut terpasang.');
+    }
+
+    public function test_tenant_awal_tidak_dobel_dan_tidak_mengembalikan_kata_sandi_yang_sudah_diganti(): void
+    {
+        $this->seed(IzinSeeder::class);
+        $this->seed(TenantAwalSeeder::class);
+
+        DB::table('Pengguna')->where('Email', 'admin@gmail.com')->update(['KataSandi' => password_hash('sudah-diganti', PASSWORD_BCRYPT)]);
+
+        $this->seed(TenantAwalSeeder::class);
+
+        $this->assertSame(1, DB::table('Organisasi')->where('Kode', 'AWAL')->count());
+        $this->assertSame(1, DB::table('Pengguna')->where('Email', 'admin@gmail.com')->count());
+        $this->assertSame(1, DB::table('Peran')->where('OrganisasiId', DB::table('Organisasi')->where('Kode', 'AWAL')->value('Id'))->where('Kode', 'PEMILIK')->count());
+        $this->assertTrue(password_verify('sudah-diganti', (string) DB::table('Pengguna')->where('Email', 'admin@gmail.com')->value('KataSandi')));
+    }
+
+    public function test_tenant_awal_mengikuti_konfigurasi(): void
+    {
+        config(['amanpoll.tenant_awal.email' => 'pemilik@contoh.test', 'amanpoll.tenant_awal.kata_sandi' => 'kata-sandi-khusus-uji']);
+
+        $this->seed(TenantAwalSeeder::class);
+
+        $tersimpan = (string) DB::table('Pengguna')->where('Email', 'pemilik@contoh.test')->value('KataSandi');
+        $this->assertTrue(password_verify('kata-sandi-khusus-uji', $tersimpan));
+        $this->assertSame(0, DB::table('Pengguna')->where('Email', 'admin@gmail.com')->count());
     }
 }
